@@ -1,0 +1,87 @@
+project:
+  type: book
+  output-dir: docs
+  post-render: 
+    - fix_style.R
+
+book:
+  title: "Greenhouse Gas Inventory"
+  subtitle: "Climate Pollution Reduction Grant Documentation"
+  # body-footer: "This work is funded by the U.S. Environmental Protection Agency Climate Pollution Reduction Grants (CPRG), award number 00E03476."
+  author: "Metropolitan Council"
+  date: today
+  page-navigation: true
+  search: true
+  sidebar:
+    pinned: true
+    align: center
+    style: "docked"
+    search: true
+    collapse-level: 2
+    # footer: "*On request, this publication will be made available in alternative formats to people with disabilities. Call Metropolitan Council information at 651-602-1140 or TTY 651-291-0904.*"
+  chapters:
+    - index.qmd
+    - part: "Energy"
+      chapters:
+       - _energy/report_energy.qmd
+       - _energy/_data_energy.qmd
+
+    - part: "Transportation"
+      chapters:
+       - _transportation/report_transportation.qmd
+       - _transportation/_data_transportation.qmd
+       
+    - part: "Waste and Wastewater"
+      chapters:
+        - _waste/report_waste.qmd
+        - _waste/_data_waste.qmd
+        
+  appendices:
+    - meta/data_request_template.qmd
+    - figures.qmd
+    - tables.qmd
+    - references.qmd
+
+bibliography: references.bib
+csl: assets/chicago-author-date.csl
+citeproc: true
+zotero: "metcouncil-cprg-ghg"
+
+link-external-newwindow: true
+link-external-icon: true 
+template: style/council-template.html
+resources: 
+      - style/standalone_footer.html
+      - style/standalone_header.html
+      - style/footer-logo.png
+      - style/main-logo.png
+      - style/standalone_header_footer.css
+
+crossref: 
+  ref-hyperlink: true
+  appendix-title: "Appendix"
+      
+execute:
+ echo: false
+ code-overflow: wrap
+
+format: 
+  html:
+    theme: [cosmo, style/council.scss, style/font.scss] 
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    # number-depth: 4
+    copyright: "Metropolitan Council"
+    fig-responsive: true
+    link-external-filter: "metrocouncil.org|tel|metropolitan-council|metrotransit|metrocouncil.metctest.state.mn.us"
+    knitr: 
+      opts_chunk: 
+          echo: false
+          message: false
+          warning: false
+
+filters:
+  - assets/include-files.lua
+  - quarto
+
