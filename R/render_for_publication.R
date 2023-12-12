@@ -2,5 +2,5 @@ styler::style_dir()
 
 testthat::test_dir("tests")
 
-sh("quarto render --cache-refresh --to html")
-sh("quarto preview")
+rstudioapi::terminalExecute("quarto render --cache-refresh --to html")
+rstudioapi::terminalExecute("quarto preview")
