@@ -1,0 +1,63 @@
+## StreetLight Data
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+```
+
+Introduction text 
+Data source description, type
+
+- Qualtiy rank (See @tbl-quality-rank)
+- How, when, and why was the data collected?
+- If this is a modeled dataset, what is the sample?
+- What is the raw unit of measurement? 
+- How was this data accessed? Include any relevant links/citations, code, or downloads.
+- What data cleaning or wrangling was completed? How did you test these processes and outputs?
+- What is the geographic and temporal scope? Did you complete any aggregation?
+- What version is the data? Were there other versions available? If so, why did you choose this version?
+- What assumptions are made when we use this dataset?
+- Which subject matter expert (SME) reviewed this data?
+- Describe testing used to verify data
+
+Be sure to add a citation of this dataset to the references.bib
+
+### Data characteristics
+
+- Were there any missing data? How did you handle missing data?
+- Plots, tables, and description of data distribution
+- Variance, Z-Score, quantiles
+- Facet views by categorical variables
+
+```{r fig-scatter}
+#| fig-cap: "A scatter plot"
+shinipsum::random_ggplotly(type = "point") %>%
+  councilR::plotly_layout(
+    main_title = "Scatter"
+  )
+```
+
+
+```{r fig-boxplot}
+#| fig-cap: "A boxplot"
+shinipsum::random_ggplotly(type = "boxplot") %>%
+  councilR::plotly_layout(
+    main_title = "Boxplot"
+  )
+```
+
+
+```{r fig-density}
+#| fig-cap: "A density plot"
+shinipsum::random_ggplotly(type = "density") %>%
+  councilR::plotly_layout(
+    main_title = "Density"
+  )
+```
+
+
+### Limitations
+
+### Comparison with similar datasets
+
+### Data dictionary
+
+Table with detailed description of columns and definitions for each data table.
