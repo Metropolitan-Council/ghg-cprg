@@ -1,0 +1,41 @@
+# Chapter title
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+hookaddcap()
+```
+
+
+```{r fig-figure}
+#| fig-cap: "A figure"
+# all figure chunks should be named "fig-{plot-desc}"
+shinipsum::random_ggplotly(type = "histogram") %>%
+  councilR::plotly_layout(
+    main_title = "Histogram"
+  )
+```
+
+```{r tbl-table}
+#| tbl-cap: "A table"
+shinipsum::random_table(nrow = 5, ncol = 3) %>%
+  knitr::kable(row.names = FALSE)
+```
+
+<!-- chapter content -->
+
+
+
+```{r echo=FALSE}
+saveCap("chapter-name")
+```
