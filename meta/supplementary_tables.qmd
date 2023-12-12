@@ -1,0 +1,47 @@
+# Supplementary tables
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+```{r, include=FALSE}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+hookaddcap()
+```
+## Acronyms
+
+```{r tbl-acroynms}
+#| tbl-cap: "Acronyms"
+#| out-width: "95%"
+read.csv(file.path(here::here(), "/meta/acronyms.csv")) %>%
+  knitr::kable()
+```
+
+
+## Data Quality
+
+```{r tbl-quality-rank}
+#| tbl-cap: "Data source quality ranking"
+#| out-width: "95%"
+tibble::tribble(
+  ~"Quality Rank", ~"Source Type",
+  "Highest", "Federal, state, and local government agencies",
+  "Second", "Consultant reports for state and local government agencies",
+  "Third", "NGO studies; peer-reviewed journal articles; trade journal articles; conference proceedings",
+  "Fourth", "Conference proceedings and other trade literature: non-peer-reviewed",
+  "Fifth", "Individual estimates (e.g., via personal communication with vendors)"
+) %>%
+  knitr::kable(row.names = FALSE)
+```
+```{r echo=FALSE}
+saveCap("supp-tables")
+```
