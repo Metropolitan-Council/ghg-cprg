@@ -5,3 +5,6 @@
 
 /.quarto/
 *_cache
+.DS_Store
+
+_transportation/report_transportation_files/figure-html/
