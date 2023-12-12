@@ -6,10 +6,20 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
+We are tracking our progress using GitHub Projects. See our project page
+[here](https://github.com/orgs/Metropolitan-Council/projects/8/views/1).
+
 This project uses [`{renv}`](https://rstudio.github.io/renv/index.html).
 Ensure you have `{renv}` installed on your machine. When you open the
 project in RStudio, run `renv::restore()` in your console to
 install/restore the package environment.
+
+## Adding chapters
+
+Use the [chapter_template.qmd](chapter_template.qmd) to start.
+
+If you are writing a data source report, use
+[data_source_template.qmd](data_source_template.qmd).
 
 ## Building the Quarto book/site
 
@@ -21,16 +31,45 @@ quarto render --cache-refresh --to html
 quarto preview
 ```
 
+To run additional cleaning steps, run
+[R/render_for_publication.R](R/render_for_publication.R).
+
 ### File structure
 
 This is a Quarto book project. Top level Quarto files include
 
     #> .
     #> ├── _quarto.yml            # Quarto configuration
-    #> ├── style                  # Quarto template, CSS styling, font files
-    #> ├── assets                 # chapter numbering and filtering
+    #> ├── references.bib         # references
+    #> ├── style/                 # Quarto template, CSS styling, font files
+    #> ├── assets/                # chapter numbering, captions, and filtering helpers
+
+Documents are organized by sector and document purpose.
+
+    #> _transportation/
+    #> ├── _transportation.qmd     # main sector documentation
+    #> ├── data-raw/               # raw data, R code to process and save to data\
+    #> ├── data/                   # cleaned, compressed data. RDS files only
+    #> ├── data_streetlight.qmd    # data source report for StreetLight
+    #> ├── data_transportation.qmd # compiled sector data report
+    #> ├── pa_transportation.qmd   # priority actions
+    #> ├── qc_transportation.qmd   # quality control document
+
+Several prefixes are used to mark document purpose
+
+- `qc_{sector}` indicates a quality control report
+- `pa_{sector}` indidates priority actions for a given sector.
+- `data_{sector}` indicates a combined data report for given sector
+- `data_{source}` indicates an individual data source report. These are
+  added as child documents in the `data_{sector}` document.
 
 When rendered, the output Quarto book/website lives in `docs/`.
+
+### Other data and project files
+
+[MS
+Team](https://teams.microsoft.com/l/channel/19%3a0ea5e55bb4c8449a98334fc1402d4fae%40thread.skype/GHG%2520Inventory?groupId=44f6d2b9-a73a-4969-9267-de486d00b3b8&tenantId=ddbff68b-482a-4573-81e0-fef8156a4fd0).
+Contact Joel, Krysten, or Luis to get access.
 
 ### Citation management
 
