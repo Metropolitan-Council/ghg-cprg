@@ -49,14 +49,3 @@ To add a citation to the document you are writing, go to “Addins” and
 select “Insert a citation”. Enable the Zotero connection. Ensure the
 citation will be written to /references.bib and that the item is added
 to our Zotero group library.
-
-### File structure
-
-This is a Quarto book project. Top level Quarto files include
-
-    #> .
-    #> ├── _quarto.yml            # Quarto configuration
-    #> ├── assets
-    #> │   └── include-files.lua  # chapter numbering and filtering
-
-When rendered, the output Quarto book/website lives in `docs/`.
