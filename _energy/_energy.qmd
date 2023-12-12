@@ -1,0 +1,31 @@
+# Stationary Energy
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  # results = "hide",
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+```{r, include=FALSE}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+hookaddcap()
+```
+
+## Introduction
+
+## Methods
+
+## Results
+
+
+```{r echo=FALSE}
+saveCap("energy")
+```
