@@ -1,0 +1,73 @@
+# Deliverables
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+```{r}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+hookaddcap()
+```
+
+Local inventory of GHG emissions from mobile sources with documentation of the following QC activities: 
+
+(1) narrative report describing data sources and QC measures for data acquisition steps, 
+(1) description of methodology and QC measures for validated proper implementation of methodology, and
+(1) documentation of QAPP implementation.
+(1) listing of emissions reductions options are present with documentation of rationale for each option.
+
+
+## Quality Control {#sec-transportation-qc-procedure}
+
+
+1. Comparison of local estimate of average miles traveled per year and average miles per gallon (by vehicle type) versus state and national averages. 
+
+1. For any values used in local inventory that differ from the state average MPY or the national average MPG by more than 10% the community will provide an explanation of why local factors may differ from state or national averages. Additionally, precision and bias calculations will be in accordance with the [EPA’s Data Assessment Statistical Calculator (DASC) Tool](https://www.epa.gov/sites/default/files/2020-10/dasc_11_3_17.xls) with the community’s estimate taken as the measured value and the LGGIT [@epaLocalGreenhouseGas2017] value taken as the audit value.
+
+
+1. Ensure the GWPs used for the local estimate and the LGGIT [@epaLocalGreenhouseGas2017] estimate are on the same basis. The LGGIT tool uses AR5 GWP (e.g., methane GWP = 28).
+
+1. Review by TL or senior technical reviewer — analytical methods / results are explained clearly, technical terms are defined, conclusions are reasonable based on information presented, and level of technical detail is appropriate.
+
+1. Editor review — verify or remediate draft deliverables to ensure clear, error-free writing.
+
+```{r tbl-transport-qc-mpy}
+#| tbl-cap: "Transportation average miles per year, local and quality control comparison by vehicle and fuel types."
+tibble::tribble(
+  ~"Vehicle Type", ~"Local Avg Miles/yr", ~"QC Avg Miles/yr",
+  "Passenger Car (Gasoline)", "", "",
+  "Passenger Truck (Gasoline)", "", "",
+  "Heavy-duty (Gasoline)", "", "",
+  "Motorcycle (Gasoline)", "", "",
+  "Passenger Car (Diesel)", "", "",
+  "Passenger Truck (Diesel)", "", "",
+  "Heavy-duty (Diesel)", "", ""
+) %>%
+  knitr::kable()
+```
+```{r tbl-transport-qc-mpg}
+#| tbl-cap: "Transportation average miles per gallon, local and quality control comparison by vehicle and fuel types."
+tibble::tribble(
+  ~"Vehicle Type", ~"Local Avg Miles/gal", ~"QC Avg Miles/gal",
+  "Passenger Car (Gasoline)", "", 24.1,
+  "Passenger Truck (Gasoline)", "", 18.5,
+  "Heavy-duty (Gasoline)", "", 10.1,
+  "Motorcycle (Gasoline)", "", 50,
+  "Passenger Car (Diesel)", "", 32.4,
+  "Passenger Truck (Diesel)", "", 22.1,
+  "Heavy-duty (Diesel)", "", 13.0
+) %>%
+  knitr::kable()
+```
+
+```{r echo=FALSE}
+saveCap("qc-transportation")
+```

@@ -1,0 +1,65 @@
+# Deliverables
+
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  # out.width = "100%",
+  dpi = 300
+)
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+```{r}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+hookaddcap()
+```
+
+## Electric power consumption
+
+Local inventory of GHG emissions from electric power consumption with documentation of the following QC activities: 
+
+(1) narrative report describing data sources and QC measures for data acquisition steps, 
+(2) description of methodology and QC measures for validated proper implementation of methodology, and
+(3) documentation of QAPP implementation.
+(4) listing of emissions reductions options are present with documentation of rationale for each option.
+
+### Quality control
+
+1.	Compare (a) the local estimate in inventory versus (b) data from SLOPE [@nrelSLOPEStateLocal2017],  state averages, or other data resources available from DOE such as Form EIA 861 data. Use a table similar to the table below to assess precision and bias of the local estimates versus estimates derived from SLOPE, state averages, or representative EIA 861 data, if available. Additionally, precision and bias calculations will be in accordance with the [EPA’s Data Assessment Statistical Calculator (DASC) Tool](https://www.epa.gov/sites/default/files/2020-10/dasc_11_3_17.xls) with the community’s estimate taken as the measured value and the LGGIT [@epaLocalGreenhouseGas2017] value taken as the audit value.
+
+
+2. SLOPE [@nrelSLOPEStateLocal2017] data are provided in million British thermal units (MMBtu’s) of electricity usage, EIA 861 usage data are provided in megawatt-hours (MWh), but the LGGIT [@epaLocalGreenhouseGas2017] inputs for electricity usage must be in kilowatt-hours (kWh). When comparing any two datasets, ensure that the units of measure are converted to a consistent basis prior to making the comparison. 
+
+3. Ensure the GWPs used for the local estimate and the independent estimate are on the same basis. 
+
+4. Technical review of methods, calculations, and underlying datasets—data are appropriate for intended use, data are complete and representative and current, data sources documented, analytical methods are appropriate, and calculations are accurate.
+
+5. Review by TL or senior technical reviewer — analytical methods and results are explained clearly, technical terms are defined, conclusions are reasonable based on information presented, and level of technical detail is appropriate)
+
+6. Editor review—writing is clear, free of grammatical and typographical errors.
+
+
+```{r tbl-energy-qc, results='markup'}
+#| tbl-cap: "Local estimate comparison with control estimate"
+tibble::tribble(
+  ~"Power Consuming Sector", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"QC Estimate based on SLOPE (Metric Tons CO~2~e)",
+  "Residential", "", "",
+  "Commercial", "", "",
+  "Industrial", "", "",
+  "Transportation", "", "",
+  "Other", "", ""
+) %>%
+  knitr::kable(
+    row.names = FALSE,
+    format = "markdown"
+  )
+```
+
+
+```{r echo=FALSE}
+saveCap("qc-energy")
+```

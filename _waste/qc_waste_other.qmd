@@ -1,0 +1,69 @@
+# Deliverables (Other sources)
+
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  # out.width = "100%",
+  dpi = 300
+)
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+```{r}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+hookaddcap()
+```
+
+
+Local inventory of GHG emissions from the community’s other sources with documentation of the following QC activities: 
+
+(1) narrative report describing data sources and QC measures for data acquisition steps, 
+
+(2) description of methodology and QC measures for validated proper implementation of methodology, and 
+
+(3) documentation of QAPP implementation.
+
+(4) listing of emissions reductions options are present with documentation of rationale for each option.
+
+
+### Quality control
+
+1.	Comparison of (a) local emissions estimates in inventory versus (b) available federal or state estimates for the same source categories (e.g. SLOPE, FLIGHT, etc.). Additionally, precision and bias calculations will be in accordance with the [EPA’s Data Assessment Statistical Calculator (DASC) Tool](https://www.epa.gov/sites/default/files/2020-10/dasc_11_3_17.xls) with the community’s estimate taken as the measured value and the LGGIT [@epaLocalGreenhouseGas2017] value taken as the audit value.
+
+2.	For any values used in local inventory that are inconsistent with federal or state values, the table below will be utilized to assess precision and bias of the local inventory versus the federal or state estimates:
+
+
+```{r tbl-energy-qc, results='markup'}
+#| tbl-cap: "Local estimate comparison with control estimate"
+tibble::tribble(
+  ~"Other Sectors", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"QC Estimate based on SLOPE (Metric Tons CO~2~e)",
+  "Stationary Combustion", "", "",
+  "Agriculture & land management", "", "",
+  "Waste generation", "", "",
+  "Water", "", "",
+  "Wastewater treatment", "", "",
+  "Other", "", ""
+) %>%
+  knitr::kable(
+    row.names = FALSE,
+    format = "markdown"
+  )
+```
+
+3.	When comparing any two datasets, ensure that the units of measure are converted to a consistent basis prior to making the comparison.
+
+4.	Ensure the GWPs used for the local estimate and independent estimate are on the same basis. 
+
+5.	Technical review of methods, calculations, and underlying datasets—data are appropriate for intended use, data are complete and representative and current, data sources documented, analytical methods are appropriate, and calculations are accurate.
+
+6.	Review by TL or senior technical reviewer — analytical methods and results are explained clearly, technical terms are defined, conclusions are reasonable based on information presented, and level of detail appropriate.
+
+7.	Editor review: writing is clear, free of grammatical and typographical errors.
+
+```{r echo=FALSE}
+saveCap("qc-waste-other")
+```
