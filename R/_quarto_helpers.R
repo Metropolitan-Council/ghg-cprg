@@ -195,13 +195,13 @@ save_plotly <- function(a_plotly, fmt = c("png", "pdf"),
         a_plotly$x$layoutAttrs[[x]]$title$text
       }
     )
-  
+
   pl_title <- pl_titles %>%
     rlist::list.clean() %>%
     rlist::list.filter(. != "") %>%
     unlist() %>%
     stringr::str_replace_all("[^[:alnum:]]", " ")
-  
+
   # browser()
   pl_source <-
     purrr::map(
@@ -212,7 +212,7 @@ save_plotly <- function(a_plotly, fmt = c("png", "pdf"),
     ) %>%
     unique() %>%
     unlist()
-  
+
   file_name <- if (file_title == "source") {
     paste0(
       "plotly_", fmt, "/",
@@ -224,14 +224,14 @@ save_plotly <- function(a_plotly, fmt = c("png", "pdf"),
       pl_title, ".", fmt
     )
   }
-  
+
   scope <- kaleido()
-  
+
   scope$transform(
     p = a_plotly,
     file = file_name
   )
-  
+
   if (fmt == "pdf") {
     Sys.sleep(1)
     scope$transform(

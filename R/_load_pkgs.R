@@ -15,19 +15,19 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(tidycensus, quietly = T))
   suppressMessages(library(fuzzyjoin, quietly = T))
   suppressMessages(library(councilR, quietly = T))
-  
+
   # Databases -----
   # suppressMessages(library(ROracle, quietly = T))
   # suppressMessages(library(DBI, quietly = T))
   # suppressMessages(library(odbc, quietly = T))
-  
+
   # Workflow ------
   suppressMessages(library(keyring, quietly = T))
   suppressMessages(library(here, quietly = T))
   suppressMessages(library(fs, quietly = T))
   suppressMessages(library(webshot, quietly = T))
-  
-  
+
+
   # Plotting, Mapping ----
   suppressMessages(library(ggplot2, quietly = T))
   suppressMessages(library(plotly, quietly = T))
@@ -38,20 +38,20 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(htmlwidgets, quietly = T))
   suppressMessages(library(ggpattern, quietly = T))
   suppressMessages(library(scales, quietly = T))
-  
+
   # tables -----
   suppressMessages(library(knitr, quietly = T))
   suppressMessages(library(kableExtra, quietly = T))
-  
-  
+
+
   # Specialty -----
   # devtools::install_github("byu-transpolab/nhts2017") # will not install
   suppressMessages(library(haven, quietly = T))
   suppressMessages(library(osrm, quietly = T))
-  
+
   # require(Hmisc)
   # getRs("reptools.r") # Loads reptools.r from Github
-  
+
   load_packages <- TRUE
   cli::cli_inform(
     c("v" = "Packages\n"),

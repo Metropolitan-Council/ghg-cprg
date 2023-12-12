@@ -1,13 +1,13 @@
 source("R/_load_pkgs.R")
 source("R/_quarto_helpers.R")
 
-if(!reticulate::virtualenv_exists("save-plotly")){
+if (!reticulate::virtualenv_exists("save-plotly")) {
   # if virtual environment with needed python packages does not exist
   # create and use it, then install libraries
 
   reticulate::virtualenv_create("save-plotly")
   reticulate::use_virtualenv("save-plotly")
-  
+
   reticulate::py_install("kaleido")
   reticulate::py_install("plotly")
 }
@@ -22,11 +22,11 @@ list.files(path = ".", pattern = "*.qmd") %>%
   purrr::map(
     function(x) {
       knitr::purl(x,
-                  output = paste0(
-                    "purl/",
-                    stringr::str_replace_all(x, ".qmd", ".R")
-                  ),
-                  documentation = 2
+        output = paste0(
+          "purl/",
+          stringr::str_replace_all(x, ".qmd", ".R")
+        ),
+        documentation = 2
       )
     }
   )
@@ -77,8 +77,8 @@ purrr::map(
   names(pls),
   function(x) {
     save_plotly(get(x),
-                fmt = "pdf",
-                file_title = "source"
+      fmt = "pdf",
+      file_title = "source"
     )
   }
 )
@@ -87,8 +87,8 @@ purrr::map(
   names(pls),
   function(x) {
     save_plotly(get(x),
-                fmt = "svg",
-                file_title = "source"
+      fmt = "svg",
+      file_title = "source"
     )
   }
 )
@@ -105,9 +105,9 @@ purrr::map(
 
 
 # export leaflet -----
-# 
+#
 # l_maps <- list()
-# 
+#
 # purrr::map(
 #   names(l_maps),
 #   function(x) {
@@ -118,7 +118,7 @@ purrr::map(
 #     )
 #   }
 # )
-# 
+#
 # fs::file_delete("temp.html")
 
 # additional export -----
@@ -130,5 +130,3 @@ purrr::map(
 #   title = "A map",
 #   selfcontained = TRUE
 # )
-
-
