@@ -1,0 +1,16 @@
+# List of Tables
+
+```{r, echo=FALSE, message = FALSE, results='markup'}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+library(magrittr)
+
+printCap(book = TRUE) %>%
+  dplyr::filter(stringr::str_detect(Figure, "tbl")) %>%
+  dplyr::select(
+    Table = Figure,
+    `Short Caption`
+  ) %>%
+  unique() %>%
+  knitr::kable(row.names = FALSE)
+```

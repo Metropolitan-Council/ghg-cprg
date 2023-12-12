@@ -1,0 +1,15 @@
+# List of Figures
+
+```{r, echo=FALSE, message = FALSE}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+library(magrittr)
+# complete_figure_index <- readRDS("data/_figure_index.RDS")
+
+printCap(book = TRUE) %>%
+  dplyr::filter(stringr::str_detect(Figure, "fig")) %>%
+  unique() %>%
+  # dplyr::mutate(Download = paste0("<a href='plotly_pdf/", stringr::str_sub(Figure, 2, -1), ".pdf' target='_blank'>PDF</a>")) %>%
+  # dplyr::mutate(Download = ifelse(stringr::str_detect(Figure, "map"), "", Download)) %>%
+  knitr::kable(row.names = FALSE)
+```
