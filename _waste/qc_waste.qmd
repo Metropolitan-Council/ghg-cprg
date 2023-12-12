@@ -44,7 +44,7 @@ Local inventory of GHG emissions from landfills with documentation of the follow
 6.	Editor review—writing is clear, free of grammatical and typing errors.
 
 
-```{r tbl-transport-qc-mpy}
+```{r tbl-waste-qc}
 #| tbl-cap: "Landfill emissions comparison between local estimate and FLIGHT."
 
 tibble::tribble(

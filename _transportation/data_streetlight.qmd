@@ -1,6 +1,7 @@
 ## StreetLight Data
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
+hookaddcap()
 ```
 
 Introduction text 
@@ -27,7 +28,7 @@ Be sure to add a citation of this dataset to the references.bib
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
 
-```{r fig-scatter}
+```{r fig-scatter-stl}
 #| fig-cap: "A scatter plot"
 shinipsum::random_ggplotly(type = "point") %>%
   councilR::plotly_layout(
@@ -36,7 +37,7 @@ shinipsum::random_ggplotly(type = "point") %>%
 ```
 
 
-```{r fig-boxplot}
+```{r fig-boxplot-stl}
 #| fig-cap: "A boxplot"
 shinipsum::random_ggplotly(type = "boxplot") %>%
   councilR::plotly_layout(
@@ -45,7 +46,7 @@ shinipsum::random_ggplotly(type = "boxplot") %>%
 ```
 
 
-```{r fig-density}
+```{r fig-density-stl}
 #| fig-cap: "A density plot"
 shinipsum::random_ggplotly(type = "density") %>%
   councilR::plotly_layout(
@@ -61,3 +62,7 @@ shinipsum::random_ggplotly(type = "density") %>%
 ### Data dictionary
 
 Table with detailed description of columns and definitions for each data table.
+
+```{r echo=FALSE}
+saveCap("stl-data")
+```

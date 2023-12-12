@@ -14,7 +14,8 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 ```{r, include=FALSE}
-source("R/_quarto_helpers.R")
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
 hookaddcap()
 ```
 
@@ -22,5 +23,5 @@ hookaddcap()
 
 
 ```{r echo=FALSE}
-saveCap("transportation-data")
+saveCap("waste-data")
 ```

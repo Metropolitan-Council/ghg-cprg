@@ -36,8 +36,18 @@ Local inventory of GHG emissions from the community’s other sources with docum
 
 2.	For any values used in local inventory that are inconsistent with federal or state values, the table below will be utilized to assess precision and bias of the local inventory versus the federal or state estimates:
 
+3.	When comparing any two datasets, ensure that the units of measure are converted to a consistent basis prior to making the comparison.
 
-```{r tbl-energy-qc, results='markup'}
+4.	Ensure the GWPs used for the local estimate and independent estimate are on the same basis. 
+
+5.	Technical review of methods, calculations, and underlying datasets—data are appropriate for intended use, data are complete and representative and current, data sources documented, analytical methods are appropriate, and calculations are accurate.
+
+6.	Review by TL or senior technical reviewer — analytical methods and results are explained clearly, technical terms are defined, conclusions are reasonable based on information presented, and level of detail appropriate.
+
+7.	Editor review: writing is clear, free of grammatical and typographical errors.
+
+
+```{r tbl-waste-other-qc, results='markup'}
 #| tbl-cap: "Local estimate comparison with control estimate"
 tibble::tribble(
   ~"Other Sectors", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"QC Estimate based on SLOPE (Metric Tons CO~2~e)",
@@ -53,16 +63,6 @@ tibble::tribble(
     format = "markdown"
   )
 ```
-
-3.	When comparing any two datasets, ensure that the units of measure are converted to a consistent basis prior to making the comparison.
-
-4.	Ensure the GWPs used for the local estimate and independent estimate are on the same basis. 
-
-5.	Technical review of methods, calculations, and underlying datasets—data are appropriate for intended use, data are complete and representative and current, data sources documented, analytical methods are appropriate, and calculations are accurate.
-
-6.	Review by TL or senior technical reviewer — analytical methods and results are explained clearly, technical terms are defined, conclusions are reasonable based on information presented, and level of detail appropriate.
-
-7.	Editor review: writing is clear, free of grammatical and typographical errors.
 
 ```{r echo=FALSE}
 saveCap("qc-waste-other")
