@@ -123,14 +123,14 @@
     "href": "figures.html",
     "title": "Appendix C — List of Figures",
     "section": "",
-    "text": "Figure\nShort Caption\n\n\n\n\n@fig-scatter-stl\nA scatter plot\n\n\n@fig-boxplot-stl\nA boxplot\n\n\n@fig-density-stl\nA density plot"
+    "text": "Figure\nShort Caption\n\n\n\n\nFigure 6.1\nA scatter plot\n\n\nFigure 6.2\nA boxplot\n\n\nFigure 6.3\nA density plot"
   },
   {
     "objectID": "tables.html",
     "href": "tables.html",
     "title": "Appendix D — List of Tables",
     "section": "",
-    "text": "Table\nShort Caption\n\n\n\n\n@tbl-energy-qc\nLocal estimate comparison with control estimate\n\n\n@tbl-transport-qc-mpy\nTransportation average miles per year, local and quality control comparison by vehicle and fuel types.\n\n\n@tbl-transport-qc-mpg\nTransportation average miles per gallon, local and quality control comparison by vehicle and fuel types.\n\n\n@tbl-waste-other-qc\nLocal estimate comparison with control estimate\n\n\n@tbl-waste-qc\nLandfill emissions comparison between local estimate and FLIGHT.\n\n\n@tbl-acroynms\nAcronyms\n\n\n@tbl-quality-rank\nData source quality ranking"
+    "text": "Table\nShort Caption\n\n\n\n\nTable 4.1\nLocal estimate comparison with control estimate\n\n\nTable 8.1\nTransportation average miles per year, local and quality control comparison by vehicle and fuel types.\n\n\nTable 8.2\nTransportation average miles per gallon, local and quality control comparison by vehicle and fuel types.\n\n\nTable 13.1\nLocal estimate comparison with control estimate\n\n\nTable 12.1\nLandfill emissions comparison between local estimate and FLIGHT.\n\n\nTable B.1\nAcronyms\n\n\nTable B.2\nData source quality ranking"
   },
   {
     "objectID": "references.html",
