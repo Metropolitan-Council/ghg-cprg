@@ -29,10 +29,10 @@ Local inventory of GHG emissions from electric power consumption with documentat
 
 ### Quality control
 
-1.	Compare (a) the local estimate in inventory versus (b) data from SLOPE [@nrelSLOPEStateLocal2017],  state averages, or other data resources available from DOE such as Form EIA 861 data. Use a table similar to the table below to assess precision and bias of the local estimates versus estimates derived from SLOPE, state averages, or representative EIA 861 data, if available. Additionally, precision and bias calculations will be in accordance with the [EPA’s Data Assessment Statistical Calculator (DASC) Tool](https://www.epa.gov/sites/default/files/2020-10/dasc_11_3_17.xls) with the community’s estimate taken as the measured value and the LGGIT [@epaLocalGreenhouseGas2017] value taken as the audit value.
+1.	Compare (a) the local estimate in inventory versus (b) data from SLOPE [@nrelSLOPEStateLocal2017],  state averages, or other data resources available from DOE such as Form EIA 861 data. Use a table similar to the table below to assess precision and bias of the local estimates versus estimates derived from SLOPE, state averages, or representative EIA 861 data, if available. Additionally, precision and bias calculations will be in accordance with the [EPA’s Data Assessment Statistical Calculator (DASC) Tool](https://www.epa.gov/sites/default/files/2020-10/dasc_11_3_17.xls) with the community’s estimate taken as the measured value and the LGGIT [@usepaLocalGreenhouseGas2017] value taken as the audit value.
 
 
-2. SLOPE [@nrelSLOPEStateLocal2017] data are provided in million British thermal units (MMBtu’s) of electricity usage, EIA 861 usage data are provided in megawatt-hours (MWh), but the LGGIT [@epaLocalGreenhouseGas2017] inputs for electricity usage must be in kilowatt-hours (kWh). When comparing any two datasets, ensure that the units of measure are converted to a consistent basis prior to making the comparison. 
+2. SLOPE [@nrelSLOPEStateLocal2017] data are provided in million British thermal units (MMBtu’s) of electricity usage, EIA 861 usage data are provided in megawatt-hours (MWh), but the LGGIT [@usepaLocalGreenhouseGas2017] inputs for electricity usage must be in kilowatt-hours (kWh). When comparing any two datasets, ensure that the units of measure are converted to a consistent basis prior to making the comparison. 
 
 3. Ensure the GWPs used for the local estimate and the independent estimate are on the same basis. 
 

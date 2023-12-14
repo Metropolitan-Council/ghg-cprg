@@ -31,7 +31,7 @@ Local inventory of GHG emissions from landfills with documentation of the follow
 ## Quality Control {#sec-waste-qc-procedure}
 
 
-1.	Comparison of (a) independent local inventory versus (b) landfill data from FLIGHT. Use a table similar to the table below to assess precision and bias of the local inventory versus QC estimates. Additionally, precision and bias calculations will be in accordance with the [EPA’s Data Assessment Statistical Calculator (DASC) Tool](https://www.epa.gov/sites/default/files/2020-10/dasc_11_3_17.xls) with the community’s estimate taken as the measured value and the LGGIT [@epaLocalGreenhouseGas2017] value taken as the audit value.
+1.	Comparison of (a) independent local inventory versus (b) landfill data from FLIGHT. Use a table similar to the table below to assess precision and bias of the local inventory versus QC estimates. Additionally, precision and bias calculations will be in accordance with the [EPA’s Data Assessment Statistical Calculator (DASC) Tool](https://www.epa.gov/sites/default/files/2020-10/dasc_11_3_17.xls) with the community’s estimate taken as the measured value and the LGGIT [@usepaLocalGreenhouseGas2017] value taken as the audit value.
 
 2.	When comparing any two datasets, ensure that the units of measure are converted to a consistent basis prior to making the comparison.
 

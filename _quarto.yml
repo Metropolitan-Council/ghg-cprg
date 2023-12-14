@@ -51,7 +51,7 @@ book:
     - tables.qmd
     - references.qmd
 
-bibliography: references.bib
+bibliography: metcouncil-cprg-ghg.bib
 csl: assets/chicago-author-date.csl
 citeproc: true
 # zotero: "metcouncil-cprg-ghg"
