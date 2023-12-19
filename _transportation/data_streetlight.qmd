@@ -1,13 +1,14 @@
 ## StreetLight Data
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
 hookaddcap()
 ```
 
 Introduction text 
 Data source description, type
 
-- Qualtiy rank (See @tbl-quality-rank)
+- Quality rank (See @tbl-quality-rank)
 - How, when, and why was the data collected?
 - If this is a modeled dataset, what is the sample?
 - What is the raw unit of measurement? 
@@ -19,7 +20,7 @@ Data source description, type
 - Which subject matter expert (SME) reviewed this data?
 - Describe testing used to verify data
 
-Be sure to add a citation of this dataset to the references.bib
+Be sure to add a citation of this dataset to the Zotero shared library.
 
 ### Data characteristics
 
