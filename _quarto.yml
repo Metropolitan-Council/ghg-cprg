@@ -39,11 +39,11 @@ book:
        
     - part: "Waste and Wastewater"
       chapters:
-        - _waste/_waste.qmd
-        - _waste/data_waste.qmd
-        - _waste/pa_waste.qmd
-        - _waste/qc_waste.qmd
-        - _waste/qc_waste_other.qmd
+       - _waste/_waste.qmd
+       - _waste/data_waste.qmd
+       - _waste/pa_waste.qmd
+       - _waste/qc_waste.qmd
+       - _waste/qc_waste_other.qmd
   appendices:
     - meta/data_request_template.qmd
     - meta/supplementary_tables.qmd
