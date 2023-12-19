@@ -40,7 +40,7 @@ This is a Quarto book project. Top level Quarto files include
 
     #> .
     #> ├── _quarto.yml            # Quarto configuration
-    #> ├── references.bib         # references
+    #> ├── metcouncil-cprg-ghg    # references auto-imported from Zotero
     #> ├── style/                 # Quarto template, CSS styling, font files
     #> ├── assets/                # chapter numbering, captions, and filtering helpers
 
@@ -86,5 +86,6 @@ API](https://quarto.org/docs/visual-editor/technical.html#zotero-web-api).
 
 To add a citation to the document you are writing, go to “Addins” and
 select “Insert a citation”. Enable the Zotero connection. Ensure the
-citation will be written to /references.bib and that the item is added
-to our Zotero group library.
+citation is added to our Zotero group library. Alternatively, you can
+set up automatic exports from Zotero to the root directory of this
+project.
