@@ -46,6 +46,7 @@ book:
        - _waste/qc_waste_other.qmd
   appendices:
     - meta/data_request_template.qmd
+    - meta/supplementary_data.qmd
     - meta/supplementary_tables.qmd
     - figures.qmd
     - tables.qmd
