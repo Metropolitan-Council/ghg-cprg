@@ -15,6 +15,7 @@ mn_counties <- tigris::counties(state = "MN") %>%
     "Ramsey",
     "Scott",
     "Sherburne",
+    "Chisago",
     "Washington"
   ))
 
