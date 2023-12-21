@@ -14,6 +14,15 @@ Ensure you have `{renv}` installed on your machine. When you open the
 project in RStudio, run `renv::restore()` in your console to
 install/restore the package environment.
 
+Additionally, be sure to set your current Council username and password
+with `{keyring}` so you can utilize the defaults parameters with
+`{councilR}`.
+
+``` r
+keyring::key_set("councilR.uid") # your username
+keyring::key_set("councilR.pwd") # your password
+```
+
 ## Adding chapters
 
 Use the [chapter_template.qmd](chapter_template.qmd) to start.
