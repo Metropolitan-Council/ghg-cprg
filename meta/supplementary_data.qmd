@@ -24,30 +24,32 @@ Geographic data were processed in [cprg_geography.R](../R/cprg_geography.R).
 
 ### Counties
 
-County data was pulled using [`{tigris}`](@walkerTigrisLoadCensus2023), an R package that downloads TIGER/Line shapefiles from the US Census Bureau. 2021 geographies for Minnesota and Wisconsin were pulled, combined, and saved. 
+County data was pulled using `{tigris}`, an R package that downloads TIGER/Line shapefiles from the US Census Bureau [@walkerTigrisLoadCensus2023]. 2021 geographies for Minnesota and Wisconsin were pulled, combined, and saved. 
 
 ```{r tbl-cprg-county}
 #| tbl-cap: "County geography metadata"
 #| out-width: "95%"
 cprg_county_meta <- readRDS(file.path(here::here(), "R/data/cprg_county_meta.RDS"))
 
-cprg_county_meta %>% 
+cprg_county_meta %>%
   kable()
 ```
 
 
 ### Cities
 
-Minnesota cities, townships, and unorganized territories were imported from [Minnesota Geospatial Commons](https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg) @mndotCityTownshipUnorganized2023. This data was then filtered on the `COUNTY_NAM` column to include only the workplan area counties.
+Minnesota cities, townships, and unorganized territories were imported from [Minnesota Geospatial Commons](https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg) [@mndotCityTownshipUnorganized2023]. 
 
-Wisconsin cities, towns, and villages were imported from Wisconsin's Legislative Technology Services Bureau @wisconsinlegislatureWisconsinCitiesTowns2023. Data was then filtered on `CNTY_NAME` to include only the workplan area counties.
+Wisconsin cities, towns, and villages were imported from Wisconsin's Legislative Technology Services Bureau [@wisconsinlegislatureWisconsinCitiesTowns2023]. 
+
+Data from both states was then combined and filtered to include only the workplan area counties.
 
 ```{r tbl-cprg-ctu}
 #| tbl-cap: "City geography metadata"
 #| out-width: "95%"
 cprg_ctu_meta <- readRDS(file.path(here::here(), "R/data/cprg_ctu_meta.RDS"))
 
-cprg_ctu_meta %>% 
+cprg_ctu_meta %>%
   kable()
 ```
 
