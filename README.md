@@ -16,7 +16,7 @@ install/restore the package environment.
 
 Additionally, be sure to set your current Council username and password
 with `{keyring}` so you can utilize the defaults parameters with
-`{councilR}`.
+`{councilR}` functions.
 
 ``` r
 keyring::key_set("councilR.uid") # your username
@@ -67,18 +67,12 @@ Documents are organized by sector and document purpose.
 Several prefixes are used to mark document purpose
 
 - `qc_{sector}` indicates a quality control report
-- `pa_{sector}` indidates priority actions for a given sector.
+- `pa_{sector}` indicates priority actions for a given sector.
 - `data_{sector}` indicates a combined data report for given sector
 - `data_{source}` indicates an individual data source report. These are
   added as child documents in the `data_{sector}` document.
 
 When rendered, the output Quarto book/website lives in `docs/`.
-
-### Other data and project files
-
-[MS
-Team](https://teams.microsoft.com/l/channel/19%3a0ea5e55bb4c8449a98334fc1402d4fae%40thread.skype/GHG%2520Inventory?groupId=44f6d2b9-a73a-4969-9267-de486d00b3b8&tenantId=ddbff68b-482a-4573-81e0-fef8156a4fd0).
-Contact Joel, Krysten, or Luis to get access.
 
 ### Citation management
 
@@ -98,3 +92,26 @@ select “Insert a citation”. Enable the Zotero connection. Ensure the
 citation is added to our Zotero group library. Alternatively, you can
 set up automatic exports from Zotero to the root directory of this
 project.
+
+## Data and project files
+
+We use a [MS
+Team](https://teams.microsoft.com/l/channel/19%3a0ea5e55bb4c8449a98334fc1402d4fae%40thread.skype/GHG%2520Inventory?groupId=44f6d2b9-a73a-4969-9267-de486d00b3b8&tenantId=ddbff68b-482a-4573-81e0-fef8156a4fd0).
+Contact Joel, Krysten, or Luis to get access.
+
+Any data you download should NOT be tracked on GitHub to preserve our
+storage. Generally, only .RDS files should be tracked in git.
+
+If you add any raw data (like shapefiles, CSVs, Excel workbooks, etc.
+you downloaded directly from a data source), add it to the `.gitignore`
+(you can use `usethis::use_git_ignore("path/to/file/file")`, edit the
+`.gitignore` manually, or use your git GUI). Then, upload the data to
+the our MS Team, navigating to the appropriate location in
+`GHG Inventory - 2024 Update/ghg-cprg/`. The file structure mirrors the
+file structure of this repo, so if you add data to `_energy/data-raw/`
+in this repo, upload it in the same place in MS Teams.
+
+## Testing
+
+When possible, write a few tests for your data and functions. Save them
+in `/tests`. See the existing files in `/tests` for ideas.

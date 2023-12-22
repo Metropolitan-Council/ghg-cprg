@@ -28,6 +28,6 @@ Document editing
 * [ ] I have reviewed my contributions for typos and misspellings.
 
 GitHub and project management
-* [ ] I have identified and assigned at least one Reviewer (Liz, Sam) to this PR
+* [ ] I have identified and assigned at least one Reviewer (Liz, Sam, Laine) to this PR
 * [ ] I have assigned myself to this PR
 * [ ] I have updated the status in the [GitHub Project](https://github.com/orgs/Metropolitan-Council/projects/8/views/1)
