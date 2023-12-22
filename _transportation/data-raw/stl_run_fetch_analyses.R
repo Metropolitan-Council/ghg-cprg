@@ -1,5 +1,4 @@
-# run once
-# Upload county and city geographies to StreetLight, using their API
+# create StL anlayses ------
 source("R/_load_pkgs.R")
 library(streetlightR)
 
@@ -27,8 +26,8 @@ county21 <- create_streetlight_analysis(
            "CPRG")
 )
 
-county21
-
+# save analysis identifying information
+saveRDS(county21, "_transportation/data-raw/analysis_runs/county21.RDS")
 
 
 ctu21 <- create_streetlight_analysis(
@@ -48,4 +47,12 @@ ctu21 <- create_streetlight_analysis(
            "CPRG")
 )
 
-ctu21
+# save analysis identifying information
+saveRDS(ctu21, "_transportation/data-raw/analysis_runs/ctu21.RDS")
+
+# both these were submitted Friday 12/22/23, around 4pm
+
+# fetch results -----
+
+check_analysis_status(county21$name) %>% 
+  httr2::resp_body_json()
