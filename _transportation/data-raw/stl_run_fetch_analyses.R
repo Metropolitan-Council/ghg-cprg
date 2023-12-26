@@ -11,10 +11,10 @@ streetlightR::streetlight_api_key(key = keyring::key_get("StreetLightAPI"))
 
 county21 <- create_streetlight_analysis(
   login_email = login_email,
-  analysis_name = "CPRG_County_OD_2021",
+  analysis_name = "CPRG_County_OD_NP_2021",
   analysis_type = "OD_Analysis",
-  origin_zone_set = "CPRG_Counties",
-  destination_zone_set = "CPRG_Counties",
+  origin_zone_set = "CPRG_Counties_NP",
+  destination_zone_set = "CPRG_Counties_NP",
   travel_mode_type = "All_Vehicles",
   output_type = "volume",
   trip_attributes = TRUE,
@@ -32,10 +32,10 @@ saveRDS(county21, "_transportation/data-raw/analysis_runs/county21.RDS")
 
 ctu21 <- create_streetlight_analysis(
   login_email = login_email,
-  analysis_name = "CPRG_CTU_OD_2021",
+  analysis_name = "CPRG_CTU_OD_NP_2021",
   analysis_type = "OD_Analysis",
-  origin_zone_set = "CPRG_CTUs",
-  destination_zone_set = "CPRG_CTUs",
+  origin_zone_set = "CPRG_CTUs_NP",
+  destination_zone_set = "CPRG_CTUs_NP",
   travel_mode_type = "All_Vehicles",
   output_type = "volume",
   trip_attributes = TRUE,
@@ -46,13 +46,40 @@ ctu21 <- create_streetlight_analysis(
   tags = c("streetlightR",
            "CPRG")
 )
-
+ctu21
 # save analysis identifying information
 saveRDS(ctu21, "_transportation/data-raw/analysis_runs/ctu21.RDS")
 
-# both these were submitted Friday 12/22/23, around 4pm
+# first submitted with all passthrough zones, and this was not a good configuration
+# (CPRG_CTU_OD_2021 and CPRG_County_OD_2021)
+
+# submitted Tuesday 12/26/23, around 2pm
 
 # fetch results -----
 
-check_analysis_status(county21$name) %>% 
+
+
+county_status <- check_analysis_status(county21$name) %>% 
   httr2::resp_body_json()
+
+county_status$analyses[[1]]$metrics
+
+
+county21_data <- purrr::map(
+  unlist(county_status$analyses[[1]]$metrics),
+  function(x){
+    Sys.sleep(5)
+    streetlightR::get_analysis_data(
+      analysis_name = county21$name,
+      metric = eval(x)
+    ) %>% 
+      mutate(analysis_name = county21$name,
+             metric_group = x) %>% 
+      select(analysis_name, metric_group,
+             everything())
+  }
+)
+
+saveRDS(county21_data,
+        "_transportation/data-raw/analysis_runs/county21_data.RDS")
+
