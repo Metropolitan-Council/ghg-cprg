@@ -1,6 +1,6 @@
 #' Calculate vehicle miles traveled
 #'
-#' @param data_list list, named list of metrics returned from a StL analysis
+#' @param data_list list, named list of metrics returned from a StreetLight analysis
 #'
 #' @return
 #' @export
