@@ -162,4 +162,4 @@ region_2021_plus <- rbind(
                           region_2020,
                           region_2021)
 
-saveRDS(region_2021_plus, paste0("_transportation/data-raw/mndot/plus_yearly_volume_percentage_by_class.RDS"))
+saveRDS(region_2021_plus, paste0("_transportation/data-raw/mndot/most_recent_yearly_volume_percentage_by_class.RDS"))
