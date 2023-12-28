@@ -2044,11 +2044,11 @@
       "Version": "1.2.1",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteHost": "api.github.com",
       "RemoteUsername": "Metropolitan-Council",
       "RemoteRepo": "streetlightR",
       "RemoteRef": "main",
-      "RemoteSha": "da9dcf08c3bbfd68d7b55f7a7d53dbb67b468322",
+      "RemoteSha": "96cbfb20960d6a7583714bdbcef85b88c773f597",
+      "RemoteHost": "api.github.com",
       "Requirements": [
         "R",
         "cli",
@@ -2062,7 +2062,7 @@
         "sf",
         "tibble"
       ],
-      "Hash": "f1c166f03d56e13d8efdc8e6cc6f778b"
+      "Hash": "68a77d4656e7ea358d29b8e402797dac"
     },
     "stringdist": {
       "Package": "stringdist",
