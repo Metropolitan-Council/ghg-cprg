@@ -1,0 +1,37 @@
+Analysis ID: 1594313
+Analysis: CPRG_County_OD_NP_2021
+Created by: liz.roten@metc.state.mn.us
+Created on: 2023-12-26
+Organization: Minnesota DOT (MNDOT) - Regional Subscription
+Folder: streetlightR
+Folder: CPRG
+
+Analysis Setup Details:
+Analysis Type: O-D Analysis
+Additional Project Configuration: Trip Attributes, Speed Percentile Attributes (5, 15, 85, 95), Travel Time Percentile Attributes (5, 15, 85, 95)
+Unit of Measurement: Miles
+Mode of Travel: All Vehicles LBS+
+Output Type: StL All Vehicles Volume
+
+Analysis Options: 
+Data Periods: Jan 01, 2021 - Dec 31, 2021
+
+
+Day Type: 
+0: All Days (M-Su)
+1: Average Weekday (M-F)
+2: Average Weekend Day (Sa-Su)
+
+Day Part: 
+0: All Day (12am-12am)
+1: Early AM (12am-6am)
+2: Peak AM (6am-10am)
+3: Recreation Hours (8am-8pm)
+4: Mid-Day (10am-3pm)
+5: Peak PM (3pm-7pm)
+6: Late PM (7pm-12am)
+
+Country: USA
+Metrics Version: R131-M129
+
+Copyright © 2011 - 2023, StreetLight Data, Inc. All rights reserved.
