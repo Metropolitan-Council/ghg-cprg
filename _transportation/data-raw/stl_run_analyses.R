@@ -1,4 +1,4 @@
-# create StL anlayses ------
+# create StL analyses ------
 source("R/_load_pkgs.R")
 library(streetlightR)
 
@@ -46,7 +46,6 @@ ctu21 <- create_streetlight_analysis(
   tags = c("streetlightR",
            "CPRG")
 )
-ctu21
 # save analysis identifying information
 saveRDS(ctu21, "_transportation/data-raw/analysis_runs/ctu21.RDS")
 
@@ -55,31 +54,25 @@ saveRDS(ctu21, "_transportation/data-raw/analysis_runs/ctu21.RDS")
 
 # submitted Tuesday 12/26/23, around 2pm
 
-# fetch results -----
 
-
-
-county_status <- check_analysis_status(county21$name) %>% 
-  httr2::resp_body_json()
-
-county_status$analyses[[1]]$metrics
-
-
-county21_data <- purrr::map(
-  unlist(county_status$analyses[[1]]$metrics),
-  function(x){
-    Sys.sleep(5)
-    streetlightR::get_analysis_data(
-      analysis_name = county21$name,
-      metric = eval(x)
-    ) %>% 
-      mutate(analysis_name = county21$name,
-             metric_group = x) %>% 
-      select(analysis_name, metric_group,
-             everything())
-  }
+county21_truck <- create_streetlight_analysis(
+  login_email = login_email,
+  analysis_name = "CPRG_County_OD_NP_Truck_2021",
+  analysis_type = "OD_Analysis",
+  origin_zone_set = "CPRG_Counties_NP",
+  destination_zone_set = "CPRG_Counties_NP",
+  travel_mode_type = "Truck",
+  output_type = "index",
+  trip_attributes = TRUE,
+  traveler_attributes = TRUE,
+  date_ranges = list(
+    start_date = "01/01/2021",
+    end_date = "12/31/2021"
+  ),
+  tags = c("streetlightR",
+           "CPRG")
 )
 
-saveRDS(county21_data,
-        "_transportation/data-raw/analysis_runs/county21_data.RDS")
+# save analysis identifying information
+saveRDS(county21_truck, "_transportation/data-raw/analysis_runs/county21_truck.RDS")
 
