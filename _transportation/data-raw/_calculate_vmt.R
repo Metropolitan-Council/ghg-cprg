@@ -22,7 +22,7 @@ calculate_vmt <- function(data_list){
   # get trip lengths
   od_trip_all <- data_list["od_trip_all"][[1]] %>% 
     select(analysis_name, 
-           -metric_group, origin_zone_name,
+           origin_zone_name,
            destination_zone_name,
            day_type,day_part, avg_trip_length_mi,
            avg_all_trip_length_mi) %>% 
