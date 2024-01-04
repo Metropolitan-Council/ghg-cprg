@@ -21,6 +21,18 @@ hookaddcap()
 
 ## Methods
 
+The general workflow for transportation emissions is to find vehicle miles traveled for a given geography, 
+
+### Vehicle Miles Traveled      
+
+To find the estimate number of vehicle miles traveled (VMT), we used the estimated number of vehicles and the average trip length in miles for all origin - destination pairs. VMT is calculated as follows:
+
+$$VMT = trips\times length$$
+
+where 
+
+$$trips = \text{number of trips}\\length = \text{average trip length in miles}$$
+
 ## Results
 
 
