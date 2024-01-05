@@ -40,12 +40,11 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 To test logical validity of trip lengths, we will compare the minimum distance between each origin and destination with the average trip length. These should correlate.
 
 ```{r calc-min-county-dist}
+# create distance matrix
 county_distance_matrix <- sf::st_distance(cprg_county,
                                           cprg_county)
-# I want a table with columns
-# origin_zone_name, destination_zone_name, distance
 
-
+# unpack distance matrix
 cprg_distances <- purrr::map_dfr(
   1:nrow(cprg_county),
   function(x){
@@ -104,7 +103,7 @@ passenger_od_distance <-  passenger_od_trip %>%
 In cases where the origin and destination counties are not adjacent, the average trip length is consistently higher than the minimum distance between the counties. 
 
 ```{r fig-trip-dist-min-dist}
-#| fig-cap: ""
+#| fig-cap: "Avg. trip distance and minimum distance between counties"
 one_slope <- tibble(
   x = 0:max(passenger_od_distance$distance_miles + 10),
   y = 0:max(passenger_od_distance$distance_miles + 10),
@@ -136,7 +135,7 @@ plot_ly(
     name = "1-1 correlation",
     data = one_slope,
     type = "scatter",
-    mode = "line",
+    mode = "lines",
     x = ~x,
     y = ~y,
     hoverinfo = "text",
@@ -157,7 +156,7 @@ plot_ly(
 
 We would also expect that large counties will have longer trip lengths and smaller counties will have shorter trip lengths. 
 
-Comparing trip distance and county area, we see a general positive correlation. 
+Comparing trip distance and county area, we see a general positive correlation (the larger the county, the longer the average trip). 
 
 ```{r fig-trip-county-area}
 #| fig-cap: "Avg. distance for trips within county and county area"
