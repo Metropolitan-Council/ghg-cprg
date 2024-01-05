@@ -4,8 +4,16 @@ source("R/_load_pkgs.R")
 traffic_ratios <- readRDS(paste0("_transportation/data-raw/mndot/most_recent_yearly_volume_percentage_by_class.RDS"))
 
 ## point locations
-locations <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/trans_aadt_traffic_count_locs/gpkg_trans_aadt_traffic_count_locs.zip") %>% 
-  st_transform(crs = 4326) # project to web mercator
+## https://gisdata.mn.gov/dataset/trans-aadt-traffic-count-locs
+tmp_dir <- tempdir()
+tmp_file <- tempfile()
+download.file("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/trans_aadt_traffic_count_locs/gpkg_trans_aadt_traffic_count_locs.zip",
+              destfile = tmp_file)
+unzip(tmp_file, exdir = tmp_dir)
+list.files(tmp_dir)
+locations <- sf::read_sf(paste0(tmp_dir, "/trans_aadt_traffic_count_locs.gpkg")) %>% 
+  sf::st_set_crs(26915)
+rm(tmp_dir, tmp_file)
 
 ## convert to table
 locations_table <- as.data.table(locations) %>% 
@@ -38,20 +46,25 @@ stations_ratios <- inner_join(station_list, traffic_ratios,
                               by = c("continuous_number" = "station_id")) %>% 
   mutate(sequence_n = as.double(sequence_number)) %>% 
   left_join(locations_table, by = "sequence_n") %>% 
-  st_as_sf() %>% 
-  st_transform(crs = 4326) # project to web mercator
+  st_as_sf()
+  # st_transform(crs = 4326) # project to web mercator
 
 
-aadt <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/trans_aadt_traffic_segments/gpkg_trans_aadt_traffic_segments.zip") %>% 
-  st_as_sf() %>% 
-  # filter(CURRENT_YE == "2019") %>% 
-  mutate(aadt_vol = CURRENT_VO) %>% 
-  st_transform(crs = 4326) # project to web mercator
-
+# read in AADT
+tmp_dir <- tempdir()
+tmp_file <- tempfile()
+download.file("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/trans_aadt_traffic_segments/gpkg_trans_aadt_traffic_segments.zip",
+              destfile = tmp_file)
+unzip(tmp_file, exdir = tmp_dir)
+list.files(tmp_dir)
+aadt <- sf::read_sf(paste0(tmp_dir, "/trans_aadt_traffic_segments.gpkg")) %>% 
+  sf::st_set_crs(26915) %>% 
+  mutate(aadt_vol = CURRENT_VO)
+rm(tmp_dir, tmp_file)
 
 ## filter AADT (line) and select cols
 aadt_filtered <- aadt %>% 
-  filter(SEQUENCE_N %in% stations_ratios$sequence_number) %>% 
+  filter(SEQUENCE_N %in% traffic_ratios$sequence_number) %>% 
   select(SEQUENCE_N, ROUTE_LABE, LOCATION_D, CURRENT_YE, CURRENT_VO) %>% 
   as.data.table() %>% 
   clean_names()
