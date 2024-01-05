@@ -32,3 +32,7 @@ _transportation/data-raw/stl_raw_downloads/1594313_CPRG_County_OD_NP_2021.zip
 _transportation/data-raw/mndot/yearly_volume_trends_with_distribution_reports/
 
 _transportation/data-raw/mndot/Current_CC_StationList.xlsx
+
+_transportation/data-raw/mndot/county_route_system/
+
+_transportation/data-raw/wisdot/vmt_by_county/
