@@ -7,4 +7,4 @@ cprg_colors <- list(
   "epa_blue" = "#6994c1",
   "cprg_yellow" = "#ecb81c",
   "cprg_da_yellow" = "#faa819"
- )
+)

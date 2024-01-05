@@ -22,8 +22,10 @@ county21 <- create_streetlight_analysis(
     start_date = "01/01/2021",
     end_date = "12/31/2021"
   ),
-  tags = c("streetlightR",
-           "CPRG")
+  tags = c(
+    "streetlightR",
+    "CPRG"
+  )
 )
 
 # save analysis identifying information
@@ -43,8 +45,10 @@ ctu21 <- create_streetlight_analysis(
     start_date = "01/01/2021",
     end_date = "12/31/2021"
   ),
-  tags = c("streetlightR",
-           "CPRG")
+  tags = c(
+    "streetlightR",
+    "CPRG"
+  )
 )
 # save analysis identifying information
 saveRDS(ctu21, "_transportation/data-raw/analysis_runs/ctu21.RDS")
@@ -69,10 +73,11 @@ county21_truck <- create_streetlight_analysis(
     start_date = "01/01/2021",
     end_date = "12/31/2021"
   ),
-  tags = c("streetlightR",
-           "CPRG")
+  tags = c(
+    "streetlightR",
+    "CPRG"
+  )
 )
 
 # save analysis identifying information
 saveRDS(county21_truck, "_transportation/data-raw/analysis_runs/county21_truck.RDS")
-

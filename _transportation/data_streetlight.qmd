@@ -41,48 +41,60 @@ To test logical validity of trip lengths, we will compare the minimum distance b
 
 ```{r calc-min-county-dist}
 # create distance matrix
-county_distance_matrix <- sf::st_distance(cprg_county,
-                                          cprg_county)
+county_distance_matrix <- sf::st_distance(
+  cprg_county,
+  cprg_county
+)
 
 # unpack distance matrix
 cprg_distances <- purrr::map_dfr(
   1:nrow(cprg_county),
-  function(x){
-    tibble(origin_zone_name = cprg_county$NAME[x],
-       destination_zone_name = cprg_county$NAME,
-       distance_miles = units::set_units(county_distance_matrix[x,],
-                                   "miles") %>% as.numeric())
+  function(x) {
+    tibble(
+      origin_zone_name = cprg_county$NAME[x],
+      destination_zone_name = cprg_county$NAME,
+      distance_miles = units::set_units(
+        county_distance_matrix[x, ],
+        "miles"
+      ) %>% as.numeric()
+    )
   }
 )
-
 ```
 
 ```{r stl-pass-county-run}
 # read in county passenger 2021 StL run
 county21_data <- readRDS("data-raw/analysis_runs/county21_data.RDS")
 
-passenger_od <- county21_data$od_all %>% 
-    filter(day_type == "0: All Days (M-Su)",
-           day_part == "0: All Day (12am-12am)") %>% 
-    select(analysis_name, metric_group,
-           mode_of_travel, origin_zone_name,
-           destination_zone_name, day_type, day_part, 
-           average_daily_o_d_traffic_st_l_volume
-           ) 
+passenger_od <- county21_data$od_all %>%
+  filter(
+    day_type == "0: All Days (M-Su)",
+    day_part == "0: All Day (12am-12am)"
+  ) %>%
+  select(
+    analysis_name, metric_group,
+    mode_of_travel, origin_zone_name,
+    destination_zone_name, day_type, day_part,
+    average_daily_o_d_traffic_st_l_volume
+  )
 
-passenger_od_trip <- county21_data$od_trip_all %>% 
-  filter(day_type == "0: All Days (M-Su)",
-           day_part == "0: All Day (12am-12am)") %>% 
-    select(analysis_name, 
-           origin_zone_name,
-           destination_zone_name,
-           day_type,day_part, avg_trip_length_mi,
-           avg_all_trip_length_mi) 
+passenger_od_trip <- county21_data$od_trip_all %>%
+  filter(
+    day_type == "0: All Days (M-Su)",
+    day_part == "0: All Day (12am-12am)"
+  ) %>%
+  select(
+    analysis_name,
+    origin_zone_name,
+    destination_zone_name,
+    day_type, day_part, avg_trip_length_mi,
+    avg_all_trip_length_mi
+  )
 
 # combine with county distance data
-passenger_od_distance <-  passenger_od_trip %>% 
-  left_join(cprg_distances,  join_by(origin_zone_name, destination_zone_name)) %>% 
-  rowwise() %>% 
+passenger_od_distance <- passenger_od_trip %>%
+  left_join(cprg_distances, join_by(origin_zone_name, destination_zone_name)) %>%
+  rowwise() %>%
   # create tooltip text
   mutate(hovertext = paste0(
     "Origin county: ", origin_zone_name, "<br>",
@@ -90,13 +102,14 @@ passenger_od_distance <-  passenger_od_trip %>%
     "Minimum distance: ", round(distance_miles), " miles", "<br>",
     "Average trip length: ", round(avg_all_trip_length_mi, digits = 2), " miles",
     "<extra></extra>"
-  )) %>% 
+  )) %>%
   mutate(
-    pair_type = case_when(distance_miles == 0 ~ "Adjacent or same county",
-                          origin_zone_name == destination_zone_name ~ "Adjacent or same county",
-                          TRUE ~ "Non-adjacent counties"
-  ))
-
+    pair_type = case_when(
+      distance_miles == 0 ~ "Adjacent or same county",
+      origin_zone_name == destination_zone_name ~ "Adjacent or same county",
+      TRUE ~ "Non-adjacent counties"
+    )
+  )
 ```
 
 
@@ -120,8 +133,10 @@ plot_ly(
   hoverinfo = "text",
   hovertemplate = passenger_od_distance$hovertext,
   opacity = 0.7,
-  colors = c(colors$councilBlue,
-                colors$metrostatsDaPurp),
+  colors = c(
+    colors$councilBlue,
+    colors$metrostatsDaPurp
+  ),
   marker = list(
     size = 18,
     line = list(
@@ -129,7 +144,7 @@ plot_ly(
       width = 2
     )
   )
-) %>% 
+) %>%
   add_trace(
     inherit = FALSE,
     name = "1-1 correlation",
@@ -141,7 +156,7 @@ plot_ly(
     hoverinfo = "text",
     hovertemplate = one_slope$hovertext,
     line = list(color = "gray")
-  ) %>% 
+  ) %>%
   plotly_layout(
     main_title = "Avg. trip distance and minimum distance between counties",
     subtitle = "Adjacent or within counties have a minimum distance of 0 miles",
@@ -150,7 +165,6 @@ plot_ly(
     legend_title = "",
     legend = list(orientation = "h")
   )
-
 ```
 
 
@@ -160,15 +174,17 @@ Comparing trip distance and county area, we see a general positive correlation (
 
 ```{r fig-trip-county-area}
 #| fig-cap: "Avg. distance for trips within county and county area"
-cprg_area <- cprg_county %>% 
-  mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>% 
-           as.numeric())
+cprg_area <- cprg_county %>%
+  mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
+    as.numeric())
 
-passenger_dist_area <- left_join(passenger_od_trip %>% 
+passenger_dist_area <- left_join(
+  passenger_od_trip %>%
     filter(origin_zone_name == destination_zone_name),
-    cprg_area,
-    by =  c("origin_zone_name" = "NAME")) %>% 
-    mutate(hovertext = paste0(
+  cprg_area,
+  by = c("origin_zone_name" = "NAME")
+) %>%
+  mutate(hovertext = paste0(
     "County: ", origin_zone_name, "<br>",
     "County area: ", round(area_sq_mi), " sq. miles", "<br>",
     "Average trip length: ", round(avg_all_trip_length_mi, digits = 2), " miles",
@@ -195,7 +211,7 @@ plot_ly(
       width = 2
     )
   )
-) %>% 
+) %>%
   plotly_layout(
     main_title = "Avg. trip distance within county and county area",
     subtitle = "General positive correlation",
@@ -204,7 +220,6 @@ plot_ly(
     legend_title = "",
     legend = list(orientation = "h")
   )
-
 ```
 
 
@@ -213,14 +228,15 @@ plot_ly(
 To validate our county origin-destination VMT data, we can compare the county totals to the DOT reported values from MnDOT [@mndotVMTRouteSystem2021] and WisDOT [@wisdotWisconsinVehicleMiles2021]. Note that these data include all vehicles, passenger and commercial. 
 
 ```{r}
-mndot_vmt <- readRDS("data-raw/mndot/mndot_vmt_county.RDS") %>% 
+mndot_vmt <- readRDS("data-raw/mndot/mndot_vmt_county.RDS") %>%
   mutate(data_source = "MnDOT")
-wisdot_vmt <- readRDS("data-raw/wisdot/wisdot_vmt_county.RDS") %>% 
+wisdot_vmt <- readRDS("data-raw/wisdot/wisdot_vmt_county.RDS") %>%
   mutate(data_source = "WisDOT")
 
-hpms_vmt <- bind_rows(mndot_vmt,
-                      wisdot_vmt)
-
+hpms_vmt <- bind_rows(
+  mndot_vmt,
+  wisdot_vmt
+)
 ```
 
 

@@ -14,9 +14,11 @@ streetlightR::streetlight_api_key(key = keyring::key_get("StreetLightAPI"))
 cprg_counties <- readRDS("R/data/cprg_county.RDS")
 
 # create zone name, passthrough = TRUE
-stl_counties <- cprg_counties %>% 
-  mutate(name = NAME,
-         is_pass = 0) %>% 
+stl_counties <- cprg_counties %>%
+  mutate(
+    name = NAME,
+    is_pass = 0
+  ) %>%
   select(name, is_pass)
 
 # upload counties
@@ -32,9 +34,11 @@ upload_zone_set(
 cprg_ctu <- readRDS("R/data/cprg_ctu.RDS")
 
 # create zone name, passthrough = TRUE
-stl_ctu <- cprg_ctu %>% 
-  mutate(name = paste0(CTU_NAME, "_", CTU_CLASS, "_", COUNTY_NAM),
-         is_pass = 0) %>% 
+stl_ctu <- cprg_ctu %>%
+  mutate(
+    name = paste0(CTU_NAME, "_", CTU_CLASS, "_", COUNTY_NAM),
+    is_pass = 0
+  ) %>%
   select(name, is_pass)
 
 # double check that zone names are unique
@@ -47,4 +51,3 @@ upload_zone_set(
   zones = stl_ctu,
   zone_set_name = "CPRG_CTUs_NP",
 )
-
