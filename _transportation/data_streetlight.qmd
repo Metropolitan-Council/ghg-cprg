@@ -33,11 +33,13 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
 
-### Passenger county level data
+### Passenger 
+
+#### Trip length validation 
 
 To test logical validity of trip lengths, we will compare the minimum distance between each origin and destination with the average trip length. These should correlate.
 
-```{r}
+```{r calc-min-county-dist}
 county_distance_matrix <- sf::st_distance(cprg_county,
                                           cprg_county)
 # I want a table with columns
@@ -53,9 +55,11 @@ cprg_distances <- purrr::map_dfr(
                                    "miles") %>% as.numeric())
   }
 )
+
 ```
 
-```{r}
+```{r stl-pass-county-run}
+# read in county passenger 2021 StL run
 county21_data <- readRDS("data-raw/analysis_runs/county21_data.RDS")
 
 passenger_od <- county21_data$od_all %>% 
@@ -76,22 +80,16 @@ passenger_od_trip <- county21_data$od_trip_all %>%
            day_type,day_part, avg_trip_length_mi,
            avg_all_trip_length_mi) 
 
-```
-
-
-In cases where the origin and destination counties are not adjacent, the average trip length is consistently higher than the minimum distance between the counties. 
-
-
-```{r fig-scatter-stl}
-#| fig-cap: "A scatter plot"
+# combine with county distance data
 passenger_od_distance <-  passenger_od_trip %>% 
   left_join(cprg_distances,  join_by(origin_zone_name, destination_zone_name)) %>% 
   rowwise() %>% 
+  # create tooltip text
   mutate(hovertext = paste0(
     "Origin county: ", origin_zone_name, "<br>",
     "Destination county: ", destination_zone_name, "<br>",
     "Minimum distance: ", round(distance_miles), " miles", "<br>",
-    "Average trip length: ", round(avg_all_trip_length_mi), " miles",
+    "Average trip length: ", round(avg_all_trip_length_mi, digits = 2), " miles",
     "<extra></extra>"
   )) %>% 
   mutate(
@@ -100,6 +98,13 @@ passenger_od_distance <-  passenger_od_trip %>%
                           TRUE ~ "Non-adjacent counties"
   ))
 
+```
+
+
+In cases where the origin and destination counties are not adjacent, the average trip length is consistently higher than the minimum distance between the counties. 
+
+```{r fig-trip-dist-min-dist}
+#| fig-cap: ""
 one_slope <- tibble(
   x = 0:max(passenger_od_distance$distance_miles + 10),
   y = 0:max(passenger_od_distance$distance_miles + 10),
@@ -115,10 +120,16 @@ plot_ly(
   mode = "markers",
   hoverinfo = "text",
   hovertemplate = passenger_od_distance$hovertext,
-  size = 4,
-  opacity = 0.8,
+  opacity = 0.7,
   colors = c(colors$councilBlue,
-                colors$metrostatsDaPurp)
+                colors$metrostatsDaPurp),
+  marker = list(
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
 ) %>% 
   add_trace(
     inherit = FALSE,
@@ -133,7 +144,8 @@ plot_ly(
     line = list(color = "gray")
   ) %>% 
   plotly_layout(
-    main_title = "Trip distance and minimum distance between counties",
+    main_title = "Avg. trip distance and minimum distance between counties",
+    subtitle = "Adjacent or within counties have a minimum distance of 0 miles",
     x_title = "Minimum distance between counties (miles)",
     y_title = "Average trip distance (miles)",
     legend_title = "",
@@ -143,22 +155,77 @@ plot_ly(
 ```
 
 
-```{r fig-boxplot-stl}
-#| fig-cap: "A boxplot"
-shinipsum::random_ggplotly(type = "boxplot") %>%
-  councilR::plotly_layout(
-    main_title = "Boxplot"
+We would also expect that large counties will have longer trip lengths and smaller counties will have shorter trip lengths. 
+
+Comparing trip distance and county area, we see a general positive correlation. 
+
+```{r fig-trip-county-area}
+#| fig-cap: "Avg. distance for trips within county and county area"
+cprg_area <- cprg_county %>% 
+  mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>% 
+           as.numeric())
+
+passenger_dist_area <- left_join(passenger_od_trip %>% 
+    filter(origin_zone_name == destination_zone_name),
+    cprg_area,
+    by =  c("origin_zone_name" = "NAME")) %>% 
+    mutate(hovertext = paste0(
+    "County: ", origin_zone_name, "<br>",
+    "County area: ", round(area_sq_mi), " sq. miles", "<br>",
+    "Average trip length: ", round(avg_all_trip_length_mi, digits = 2), " miles",
+    "<extra></extra>"
+  ))
+
+
+plot_ly(
+  data = passenger_dist_area,
+  x = ~area_sq_mi,
+  y = ~avg_all_trip_length_mi,
+  # color = ~pair_type,
+  type = "scatter",
+  mode = "markers",
+  hoverinfo = "text",
+  hovertemplate = passenger_dist_area$hovertext,
+  opacity = 0.7,
+  # colors = c(colors$councilBlue,
+  #               colors$metrostatsDaPurp),
+  marker = list(
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
   )
+) %>% 
+  plotly_layout(
+    main_title = "Avg. trip distance within county and county area",
+    subtitle = "General positive correlation",
+    x_title = "County area (square miles)",
+    y_title = "Average trip distance (miles)",
+    legend_title = "",
+    legend = list(orientation = "h")
+  )
+
 ```
 
 
-```{r fig-density-stl}
-#| fig-cap: "A density plot"
-shinipsum::random_ggplotly(type = "density") %>%
-  councilR::plotly_layout(
-    main_title = "Density"
-  )
+#### Comparison with HPMS VMT data
+
+To validate our county origin-destination VMT data, we can compare the county totals to the DOT reported values from MnDOT [@mndotVMTRouteSystem2021] and WisDOT [@wisdotWisconsinVehicleMiles2021]. Note that these data include all vehicles, passenger and commercial. 
+
+```{r}
+mndot_vmt <- readRDS("data-raw/mndot/mndot_vmt_county.RDS") %>% 
+  mutate(data_source = "MnDOT")
+wisdot_vmt <- readRDS("data-raw/wisdot/wisdot_vmt_county.RDS") %>% 
+  mutate(data_source = "WisDOT")
+
+hpms_vmt <- bind_rows(mndot_vmt,
+                      wisdot_vmt)
+
 ```
+
+
+### Freight 
 
 
 ### Limitations
@@ -166,12 +233,6 @@ shinipsum::random_ggplotly(type = "density") %>%
 
 
 ### Comparison with similar datasets
-
-Compare with county level MnDOT data
-
-```{r}
-mndot_vmt <- readRDS("data-raw/mndot/mndot_vmt_county.RDS")
-```
 
 
 ### Data dictionary
