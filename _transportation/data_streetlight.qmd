@@ -49,7 +49,8 @@ cprg_distances <- purrr::map_dfr(
   function(x){
     tibble(origin_zone_name = cprg_county$NAME[x],
        destination_zone_name = cprg_county$NAME,
-       distance_meters = as.numeric(county_distance_matrix[x,]))
+       distance_miles = units::set_units(county_distance_matrix[x,],
+                                   "miles") %>% as.numeric())
   }
 )
 ```
@@ -77,11 +78,67 @@ passenger_od_trip <- county21_data$od_trip_all %>%
 
 ```
 
+
+In cases where the origin and destination counties are not adjacent, the average trip length is consistently higher than the minimum distance between the counties. 
+
+
 ```{r fig-scatter-stl}
 #| fig-cap: "A scatter plot"
-plot_ly(
- passenger_od
+passenger_od_distance <-  passenger_od_trip %>% 
+  left_join(cprg_distances,  join_by(origin_zone_name, destination_zone_name)) %>% 
+  rowwise() %>% 
+  mutate(hovertext = paste0(
+    "Origin county: ", origin_zone_name, "<br>",
+    "Destination county: ", destination_zone_name, "<br>",
+    "Minimum distance: ", round(distance_miles), " miles", "<br>",
+    "Average trip length: ", round(avg_all_trip_length_mi), " miles",
+    "<extra></extra>"
+  )) %>% 
+  mutate(
+    pair_type = case_when(distance_miles == 0 ~ "Adjacent or same county",
+                          origin_zone_name == destination_zone_name ~ "Adjacent or same county",
+                          TRUE ~ "Non-adjacent counties"
+  ))
+
+one_slope <- tibble(
+  x = 0:max(passenger_od_distance$distance_miles + 10),
+  y = 0:max(passenger_od_distance$distance_miles + 10),
+  hovertext = "1-1 slope <extra></extra>"
 )
+
+plot_ly(
+  data = passenger_od_distance,
+  x = ~distance_miles,
+  y = ~avg_all_trip_length_mi,
+  color = ~pair_type,
+  type = "scatter",
+  mode = "markers",
+  hoverinfo = "text",
+  hovertemplate = passenger_od_distance$hovertext,
+  size = 4,
+  opacity = 0.8,
+  colors = c(colors$councilBlue,
+                colors$metrostatsDaPurp)
+) %>% 
+  add_trace(
+    inherit = FALSE,
+    name = "1-1 correlation",
+    data = one_slope,
+    type = "scatter",
+    mode = "line",
+    x = ~x,
+    y = ~y,
+    hoverinfo = "text",
+    hovertemplate = one_slope$hovertext,
+    line = list(color = "gray")
+  ) %>% 
+  plotly_layout(
+    main_title = "Trip distance and minimum distance between counties",
+    x_title = "Minimum distance between counties (miles)",
+    y_title = "Average trip distance (miles)",
+    legend_title = "",
+    legend = list(orientation = "h")
+  )
 
 ```
 
@@ -106,7 +163,16 @@ shinipsum::random_ggplotly(type = "density") %>%
 
 ### Limitations
 
+
+
 ### Comparison with similar datasets
+
+Compare with county level MnDOT data
+
+```{r}
+mndot_vmt <- readRDS("data-raw/mndot/mndot_vmt_county.RDS")
+```
+
 
 ### Data dictionary
 
