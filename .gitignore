@@ -36,3 +36,7 @@ _transportation/data-raw/mndot/Current_CC_StationList.xlsx
 _transportation/data-raw/mndot/county_route_system/
 
 _transportation/data-raw/wisdot/vmt_by_county/
+
+_transportation/data-raw/wisdot/Traffic_Counts.geojson
+
+_transportation/data-raw/wisdot/~$class.xlsx
