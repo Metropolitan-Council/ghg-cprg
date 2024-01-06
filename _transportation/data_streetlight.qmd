@@ -196,14 +196,11 @@ plot_ly(
   data = passenger_dist_area,
   x = ~area_sq_mi,
   y = ~avg_all_trip_length_mi,
-  # color = ~pair_type,
   type = "scatter",
   mode = "markers",
   hoverinfo = "text",
   hovertemplate = passenger_dist_area$hovertext,
   opacity = 0.7,
-  # colors = c(colors$councilBlue,
-  #               colors$metrostatsDaPurp),
   marker = list(
     size = 18,
     line = list(
@@ -227,7 +224,7 @@ plot_ly(
 
 To validate our county origin-destination VMT data, we can compare the county totals to the DOT reported values from MnDOT [@mndotVMTRouteSystem2021] and WisDOT [@wisdotWisconsinVehicleMiles2021]. Note that these data include all vehicles, passenger and commercial. 
 
-```{r}
+```{r hpms-vmt}
 mndot_vmt <- readRDS("data-raw/mndot/mndot_vmt_county.RDS") %>%
   mutate(data_source = "MnDOT")
 wisdot_vmt <- readRDS("data-raw/wisdot/wisdot_vmt_county.RDS") %>%
@@ -239,6 +236,7 @@ hpms_vmt <- bind_rows(
 )
 ```
 
+<!-- scatter plot comparing 2021 HPMS vmt with StL VMT -->
 
 ### Freight 
 
@@ -264,8 +262,6 @@ MnDOT provides AADT road segments, which align with station identification numbe
 To maximize data availability, we used the most recent data available, up to 2021 for both states. 
 
 ### Limitations
-
-
 
 ### Comparison with similar datasets
 

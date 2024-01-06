@@ -8,7 +8,7 @@ traffic_ratios <- readRDS(paste0("_transportation/data-raw/mndot/most_recent_yea
 tmp_dir <- tempdir()
 tmp_file <- tempfile()
 download.file("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/trans_aadt_traffic_count_locs/gpkg_trans_aadt_traffic_count_locs.zip",
-              destfile = tmp_file
+  destfile = tmp_file
 )
 unzip(tmp_file, exdir = tmp_dir)
 locations <- sf::read_sf(paste0(tmp_dir, "/trans_aadt_traffic_count_locs.gpkg"))
@@ -60,7 +60,7 @@ stations_ratios <- inner_join(
 
 # read in AADT
 download.file("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/trans_aadt_traffic_segments/gpkg_trans_aadt_traffic_segments.zip",
-              destfile = tmp_file
+  destfile = tmp_file
 )
 unzip(tmp_file, exdir = tmp_dir)
 aadt <- sf::read_sf(paste0(tmp_dir, "/trans_aadt_traffic_segments.gpkg")) %>%
@@ -78,17 +78,19 @@ aadt_filtered <- aadt %>%
 
 ## join AADT filtered and station ratios. Output is lines
 stations_ratios_aadt <- left_join(
-  aadt_filtered, 
-  stations_ratios %>% 
-    select(sequence_n, continuous_number, year,
-           passenger, medium_duty, heavy_duty) %>% 
+  aadt_filtered,
+  stations_ratios %>%
+    select(
+      sequence_n, continuous_number, year,
+      passenger, medium_duty, heavy_duty
+    ) %>%
     sf::st_drop_geometry(),
   by = "sequence_n"
 ) %>%
   select(sequence_n, continuous_number, year,
-         passenger, medium_duty, heavy_duty,
-         current_volume = current_vo
-  ) %>% 
+    passenger, medium_duty, heavy_duty,
+    current_volume = current_vo
+  ) %>%
   st_transform(4326)
 
 
