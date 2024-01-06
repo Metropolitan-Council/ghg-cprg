@@ -80,12 +80,13 @@ aadt_filtered <- aadt %>%
 stations_ratios_aadt <- left_join(
   aadt_filtered, 
   stations_ratios %>% 
-    select(sequence_n, continuous_number,
+    select(sequence_n, continuous_number, year,
            passenger, medium_duty, heavy_duty) %>% 
     sf::st_drop_geometry(),
   by = "sequence_n"
 ) %>%
-  select(sequence_n, continuous_number, passenger, medium_duty, heavy_duty,
+  select(sequence_n, continuous_number, year,
+         passenger, medium_duty, heavy_duty,
          current_volume = current_vo
   ) %>% 
   st_transform(4326)
