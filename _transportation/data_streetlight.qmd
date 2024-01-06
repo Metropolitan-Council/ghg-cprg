@@ -242,6 +242,26 @@ hpms_vmt <- bind_rows(
 
 ### Freight 
 
+StreetLight does not provide StreetLight Volume for 2021 commercial vehicle analyses. To measure volume for commercial traffic, we used the StreetLight Index, a relative measure of traffic volume [@streetlightdataStreetLightIndex2023, calibrated using AADT values to result in traffic volume. 
+
+StreetLight compares the AADT calibration values for a given zone with StreetLight’s sample size for the same zone, and creates a calibration factor to apply to the entire analysis [@streetlightdataWhatSingleFactor2023]. We generated a calibration zone set for commercial traffic by selecting road segments with both AADT and vehicle classification data in both MN and WI.
+
+State DOT's operates vehicle classification stations across the state, which provide both the volume of traffic on a given road segment and the breakdown of volume by vehicle type. We obtained this breakdown using data from MnDOT [@mndotYearlyVolumeTrends2021] and WisDOT [@wisdotWisconsinVehicleClassification2020]. 
+
+<!-- Add table comparing vehicle classification definitions -->
+
+Then, we selected only the stations within the study area with observations in the last five years (2017-2021). Finally, we joined this data with Average Annual Daily Traffic (AADT) [@mndotVMTRouteSystem2021, @wisdotWisconsinVehicleMiles2021] road segments by station ID. The road segments sampled include multiple road functional classes and segments in all seven metro counties. All traffic sensor stations pulled were permanent, continuous monitoring sites.
+
+<!-- map of calibration points and lines -->
+<!-- plot of passenger/medium/heavy percentages for each calibration zone -->
+
+#### Calibration 
+
+For calibration, we found the ratio of passenger/medium/heavy-duty vehicles for traffic sensors within our study areas. 
+
+MnDOT provides AADT road segments, which align with station identification numbers. Wisconsin does not readily supply road segment data - as suggested by the Wisconsin cartographers office [@statecartographersofficeWisconsinRoadData21], we pulled OpenStreetMaps road data. 
+
+To maximize data availability, we used the most recent data available, up to 2021 for both states. 
 
 ### Limitations
 
