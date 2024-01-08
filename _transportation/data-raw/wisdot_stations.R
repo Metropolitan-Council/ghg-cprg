@@ -99,8 +99,19 @@ wi_stations_ratios_aadt <- wi_station_lines %>%
     current_volume
   )
 
+wi_stations_ratios_points <- wis_station_locations %>% 
+  left_join(wis_station_ratios,
+            by = c("SITE_ID" = "traf_siteid")
+  ) %>%
+  select(
+    site_id = SITE_ID, year,
+    passenger, medium_duty, heavy_duty,
+    current_volume
+  )
+
 # export
-saveRDS(wi_stations_ratios_aadt, paste0("_transportation/data-raw/wisdot/wi_stations_ratios.RDS"))
+saveRDS(wi_stations_ratios_aadt, paste0("_transportation/data-raw/wisdot/wi_stations_ratios_lines.RDS"))
+saveRDS(wi_stations_ratios_points, paste0("_transportation/data-raw/wisdot/wi_stations_ratios_points.RDS") )
 
 # save metadata
 saveRDS(wis_osm$meta, "_transportation/data-raw/wisdot/wi_osm_meta.RDS")

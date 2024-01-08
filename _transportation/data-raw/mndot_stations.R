@@ -95,7 +95,8 @@ stations_ratios_aadt <- left_join(
 
 
 ## export
-saveRDS(stations_ratios_aadt, paste0("_transportation/data-raw/mndot/2021_plus_stations_ratios.RDS"))
+saveRDS(stations_ratios_aadt, paste0("_transportation/data-raw/mndot/mn_stations_ratios.RDS"))
+saveRDS(stations_ratios, "_transportation/data-raw/mndot/mn_stations_ratios_points.RDS")
 
 ## note, if you are getting "GDAL Error 1: PROJ: proj_create_from_database: Cannot find proj.db"
 ## and are on a Mac,
