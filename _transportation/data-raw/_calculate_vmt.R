@@ -12,16 +12,23 @@ calculate_vmt <- function(data_list, class = "passenger"){
     od_table <- "od_all"
     trip_table <- "od_trip_all"
     trip_col <- "average_daily_o_d_traffic_st_l_volume"
+    
+    data_list <- purrr::map(data_list,
+                            function(x){
+                              x %>% 
+                                mutate(vehicle_weight = "Passenger")
+                            })
   } else {
     od_table <- "od_comm"
     trip_table <- "od_trip_comm"
     trip_col <- "average_daily_o_d_traffic_st_l_calibrated_index"
   }
   
+  
+  
+  
   # Get origin-destination volume
   od_all <- data_list[od_table][[1]] %>% 
-    mutate(vehicle_weight = case_when(class == "passenger" ~ "Passenger",
-                                      TRUE ~ vehicle_weight)) %>% 
     select(analysis_name, metric_group,
            mode_of_travel, origin_zone_name,
            destination_zone_name, day_type, day_part, 
@@ -34,8 +41,6 @@ calculate_vmt <- function(data_list, class = "passenger"){
   
   # get trip lengths
   od_trip_all <- data_list[trip_table][[1]] %>% 
-    mutate(vehicle_weight = case_when(class == "passenger" ~ "Passenger",
-                                      TRUE ~ vehicle_weight)) %>% 
     select(analysis_name, 
            origin_zone_name,
            destination_zone_name,
@@ -48,7 +53,11 @@ calculate_vmt <- function(data_list, class = "passenger"){
   
   # calculate origin-destination VMT from volume and avg trip length
   od_trips <- od_all %>% 
-    left_join(od_trip_all) %>% 
+    left_join(od_trip_all, 
+              join_by(analysis_name, 
+                      origin_zone_name, destination_zone_name, 
+                      day_type, day_part,
+                      vehicle_weight)) %>% 
     rowwise() %>% 
     mutate(vmt = estimated_trips * avg_all_trip_length_mi,
            vmt_year = vmt * 365,
