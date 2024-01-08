@@ -176,7 +176,7 @@ Comparing trip distance and county area, we see a general positive correlation (
 #| fig-cap: "Avg. distance for trips within county and county area"
 cprg_area <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-    as.numeric())
+           as.numeric())
 
 passenger_dist_area <- left_join(
   passenger_od_trip %>%
@@ -251,6 +251,19 @@ State DOT's operates vehicle classification stations across the state, which pro
 Then, we selected only the stations within the study area with observations in the last five years (2017-2021). Finally, we joined this data with Average Annual Daily Traffic (AADT) [@mndotVMTRouteSystem2021, @wisdotWisconsinVehicleMiles2021] road segments by station ID. The road segments sampled include multiple road functional classes and segments in all seven metro counties. All traffic sensor stations pulled were permanent, continuous monitoring sites.
 
 <!-- map of calibration points and lines -->
+```{r}
+freight_lines <- bind_rows(readRDS(file.path(here::here(), "_transportation/data-raw/mndot/mn_stations_ratios.RDS")) %>% 
+                             mutate(name = paste0("MN_", sequence_n, "_", continuous_number),
+                                    year = as.numeric(year)) %>% 
+                             select(name, year, passenger, medium_duty, heavy_duty,  current_volume, geometry= geom),
+                           readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wi_stations_ratios.RDS")) %>% 
+                             mutate(name = paste0("WI_", site_id )) %>% 
+                             select(name, year, passenger, medium_duty, heavy_duty,  current_volume, geometry))
+
+freight_points <- bind_rows()
+
+```
+
 <!-- plot of passenger/medium/heavy percentages for each calibration zone -->
 
 #### Calibration 
