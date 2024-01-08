@@ -45,21 +45,29 @@ mn_counties <- tigris::counties(state = "MN") %>%
     "Sherburne",
     "Chisago",
     "Washington"
-  ))
+  )) %>%
+  select(STATEFP,COUNTYFP,GEOID, NAME, NAMELSAD, geometry)
 
+#Downloaded from https://gisdata.mn.gov/dataset/util-eusa. Minnesota provides all three utility types (IOU, Muni, Co-op) in one file
+mn_elecUtils <- st_read(here("shp_util_eusa_MN", "Service_Areas.shp")) %>%
+  select(comments, municipal, mmua_name, full_name, type, utility, street, city, state, zip, website, mpuc_name, mn_utility, eia_utilit, geometry)
 
+#reproject MN counties to same projection as mn_elecUtils to perform intersection
+mn_counties <- st_transform(mn_counties, st_crs(mn_elecUtils))
 
+st_write(mn_counties, here("shp_util_eusa_MN","mn_counties_transformed.shp"), append = FALSE)
+
+#identify utilities that operate in study area
+MNutilities_in_scope <- st_intersection(mn_elecUtils, mn_counties)  # Clip utility to counties
+
+st_write(MNutilities_in_scope, here("shp_util_eusa_MN","MNutilities_in_scope.shp"), append = FALSE)
+
+write_rds(MNutilities_in_scope, here("mn_utility_reporting", "MN_utilities.RDS"))
 ```
 
 Wisconsin utilities
 
 ```{r wisconsin-utilities}
-
-#generate vector encoding the county FIPS codes for the 11-county region
-#elevenCounty_FIPS <- c(27003, 27163, 27037, 27019, 27025, 
- #                27053, 27123, 27139, 27141, 55093, 
-    #            55109)
-
 
 wi_counties <- tigris::counties(state = "WI") %>%
   filter(NAME %in% c(
@@ -68,17 +76,20 @@ wi_counties <- tigris::counties(state = "WI") %>%
   ))
 
 
-#downloaded from . CRS is NAD83(HARN) / Wisconsin Transverse Mercator. -- add to Zotero
-wi_muni <- st_read(here("EL_PSCW_ServTerr (1)", "EL_PSCW_ServTerr_Muni_repaired.shp")) #input data from WI had issues with dimensionality/geometry on some features; I filtered this data to just the 2 municipal utilities -- New Richmond and River Falls -- thatfall within our study area in ArcGIS PRO to address this issue) 
-wi_iou <- st_read(here("EL_PSCW_ServTerr (1)", "EL_PSCW_ServTerr_IOU.shp"))
-wi_coop <- st_read(here("EL_PSCW_ServTerr (1)", "EL_PSCW_ServTerr_Coop.shp"))
+#downloaded from https://psc.wi.gov/Pages/ForConsumers/Maps.aspx. CRS is NAD83(HARN) / Wisconsin Transverse Mercator. -- add to Zotero
+wi_muni <- st_read(here("EL_PSCW_ServTerr (1)", 
+                        "EL_PSCW_ServTerr_Muni_repaired.shp")) #input data from WI had issues with dimensionality/geometry on some features; I filtered this data to just the 2 municipal utilities -- New Richmond and River Falls -- thatfall within our study area in ArcGIS PRO to address this issue) 
+wi_iou <- st_read(here("EL_PSCW_ServTerr (1)", 
+                       "EL_PSCW_ServTerr_IOU.shp"))
+wi_coop <- st_read(here("EL_PSCW_ServTerr (1)", 
+                        "EL_PSCW_ServTerr_Coop.shp"))
 
 
 #harmonize county data CRS to WI state-provided data
 wi_counties <- st_transform(wi_counties, st_crs(wi_iou))
 
 
-identify_utilities_in_scope <- function(wi_counties, utility_files) {
+identify_WIutilities_in_scope <- function(wi_counties, utility_files) {
   utilities_in_scope <- list()
 
   for (utility_file in utility_files) {
@@ -98,24 +109,48 @@ identify_utilities_in_scope <- function(wi_counties, utility_files) {
 }
 
 # Example usage
-utility_files <- c(
-  here("EL_PSCW_ServTerr (1)", "EL_PSCW_ServTerr_Muni_repaired.shp"),
-  here("EL_PSCW_ServTerr (1)", "EL_PSCW_ServTerr_IOU.shp"),
-  here("EL_PSCW_ServTerr (1)", "EL_PSCW_ServTerr_Coop.shp")
+wi_utility_files <- c(
+  here("EL_PSCW_ServTerr (1)", 
+       "EL_PSCW_ServTerr_Muni_repaired.shp"),
+  here("EL_PSCW_ServTerr (1)", 
+       "EL_PSCW_ServTerr_IOU.shp"),
+  here("EL_PSCW_ServTerr (1)", 
+       "EL_PSCW_ServTerr_Coop.shp")
 )
 
 #run function to create lists
-results <- identify_utilities_in_scope(wi_counties, utility_files)
+results <- identify_WIutilities_in_scope(wi_counties, wi_utility_files)
 
-#write outputs of function to separate environmental variables for inspection
-wi_muni_utilitiesInScope <- results$Muni_repaired
-wi_iou_utilitiesInScope <- results$IOU
-wi_coop_utilitiesInScope <- results$Coop
+#write outputs of function to separate environmental variables for inspection, trim to essential columns
+wi_muni_utilitiesInScope <- results$Muni_repaired %>%
+  select(LABEL, Util_Type, PSC_ID, ADDRESS_1, ADDRESS_2, 
+         CITY, STATE, ZIP, GEOID, NAME, NAMELSAD) %>%
+  rename(utility_name = LABEL, utility_type = Util_Type, 
+         county_name = NAME, county = NAMELSAD)
+
+wi_iou_utilitiesInScope <- results$IOU %>%
+  select(LABEL, UTIL_TYPE, PSC_ID, ADDRESS_1, ADDRESS_2,
+         CITY, STATE, ZIP, GEOID, NAME, NAMELSAD) %>%
+  rename(utility_name = LABEL, utility_type = UTIL_TYPE, 
+         county_name = NAME, county = NAMELSAD)
 
 
-combinedUtilities 
-# trim 3 files to shared columns
-#rbind combined_df <- rbind(list1, list2, list3)
+wi_coop_utilitiesInScope <- results$Coop %>%
+  select(LABEL, Util_Type, PSC_ID, ADDRESS_1, ADDRESS_2,
+         CITY, STATE, ZIP, GEOID, NAME, NAMELSAD) %>%
+  rename(utility_name = LABEL, utility_type = Util_Type, 
+         county_name = NAME, county = NAMELSAD)
+  
+
+WIutilities_in_scope <- rbind(wi_muni_utilitiesInScope,
+                            wi_iou_utilitiesInScope,
+                            wi_coop_utilitiesInScope)
+
+st_write(WIutilities_in_scope,here("EL_PSCW_ServTerr (1)", 
+                                   "WIutilities_in_scope.shp"))
+
+write_rds(WIutilities_in_scope, here("wi_utility_reporting", 
+                                     "WI_utilities.RDS"))
   
 ```
 
