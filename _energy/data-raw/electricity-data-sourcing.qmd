@@ -13,6 +13,7 @@ library(councilR)
 library(sf)
 library(stringr)
 library(tigris)
+library(readxl) #check renv
 
 #maintains the use of here() as project root, but creates a new filepath that points to the root of the ghg-cprg project to enable the use of other resources
 cprg_rootDir <- here() %>% str_remove("/_energy/data-raw")
@@ -58,11 +59,49 @@ mn_counties <- st_transform(mn_counties, st_crs(mn_elecUtils))
 st_write(mn_counties, here("shp_util_eusa_MN","mn_counties_transformed.shp"), append = FALSE)
 
 #identify utilities that operate in study area
-MNutilities_in_scope <- st_intersection(mn_elecUtils, mn_counties)  # Clip utility to counties
+MNutilities_in_scope <- st_intersection(mn_elecUtils, mn_counties) %>%
+  select(comments, type, street, city, state, zip, website, mpuc_name,
+         mn_utility, eia_utilit, NAME, NAMELSAD, geometry) %>%
+  rename(utility_name = mpuc_name, utility_type = type, 
+         mn_utility_id = mn_utility, county_name = NAME, county = NAMELSAD)
 
 st_write(MNutilities_in_scope, here("shp_util_eusa_MN","MNutilities_in_scope.shp"), append = FALSE)
 
 write_rds(MNutilities_in_scope, here("mn_utility_reporting", "MN_utilities.RDS"))
+
+distinct_util_type_MN <- MNutilities_in_scope %>%
+  distinct(utility_name, utility_type)
+
+#Great River Energy is an electricity generation/transmission cooperative that is the primary supplier for multiple customer-facing MN electric utilities that operate within our study area. The following dataframe encodes all of the member cooperatives of Great River (and their headquarters city); some of these organizations do not directly report their electricity delivered to the State and so we must referen ce documents submitted by Great River. Info from 2021 Great River Annual Financial Report (https://greatriverenergy.com/wp-content/uploads/2022/04/2021-GRE-Annual-Report-FINAL.pdf)
+
+GreatRiver_utilities <- data.frame(
+  utility = c(
+    "Agralite Electric Cooperative", "Arrowhead Cooperative, Inc.", 
+    "BENCO Electric", "Brown County Rural Electrical Association", 
+    "Connexus Energy", "Cooperative Light & Power", "Crow Wing Power", 
+    "Dakota Electric Association", "East Central Energy", 
+    "Federated Rural Electric Association", 
+    "Goodhue County Cooperative Electric Association", 
+    "Itasca-Mantrap Cooperative Electrical Association", 
+    "Kandiyohi Power Cooperative", "Lake Country Power", 
+    "Lake Region Electric Cooperative", "McLeod Cooperative Power Association", 
+    "Meeker Cooperative Light and Power Association", 
+    "Mille Lacs Energy Cooperative", "Minnesota Valley Electric Cooperative", 
+    "Nobles Cooperative Electric", "North Itasca Electric Cooperative, Inc.", 
+    "Redwood Electric Cooperative", "Runestone Electric Association", 
+    "South Central Electric Association", "Stearns Electric Association", 
+    "Steele-Waseca Cooperative Electric", "Todd-Wadena Electric Cooperative", 
+    "Wright-Hennepin Cooperative Electric Association"
+  ),
+  city = c(
+    "Benson", "Lutsen", "Mankato", "Sleepy Eye", "Ramsey", "Two Harbors", 
+    "Brainerd", "Farmington", "Braham", "Jackson", "Zumbrota", "Park Rapids", 
+    "Spicer", "Cohasset", "Pelican Rapids", "Glencoe", "Litchfield", 
+    "Aitkin", "Jordan", "Worthington", "Bigfork", "Clements", "Alexandria", 
+    "St. James", "Melrose", "Owatonna", "Wadena", "Rockford"
+  )
+)
+
 ```
 
 Wisconsin utilities
@@ -146,20 +185,67 @@ WIutilities_in_scope <- rbind(wi_muni_utilitiesInScope,
                             wi_iou_utilitiesInScope,
                             wi_coop_utilitiesInScope)
 
-st_write(WIutilities_in_scope,here("EL_PSCW_ServTerr (1)", 
-                                   "WIutilities_in_scope.shp"))
+st_write(WIutilities_in_scope, 
+         here("EL_PSCW_ServTerr (1)", "WIutilities_in_scope.shp"),
+         append = FALSE)
+         
 
 write_rds(WIutilities_in_scope, here("wi_utility_reporting", 
                                      "WI_utilities.RDS"))
+
+distinct_util_type_WI <- WIutilities_in_scope %>%
+  distinct(utility_name, utility_type)
   
 ```
 
-Minnesota data processing
+Minnesota utility activity data processing
 
 ```{r}
 
 # Load County-Level Electricity Delivery Data
 mn_electricity_data <- read.csv("path/to/minnesota_electricity_data.csv")
+
+
+# Directory containing Excel files
+dir_mn_electricity <- here("mn_utility_reporting")
+
+# Get list of Excel files in the directory
+file_list <- list.files(path = dir_mn_electricity, pattern = "\\.xlsx$", full.names = TRUE)
+
+# Function to process each file
+process_file <- function(file_path) {
+  utility_name <- tools::file_path_sans_ext(basename(file_path))
+  
+  # Read specific ranges from the file
+  data_A_C <- read_excel(file_path, sheet = "ElectricityByCounty", range = "A12:C56")
+  data_E_G <- read_excel(file_path, sheet = "ElectricityByCounty", range = "E12:G53")
+  
+  # Rename columns
+  colnames(data_A_C) <- c("countyCode", "county", "mWh_delivered")
+  colnames(data_E_G) <- c("countyCode", "county", "mWh_delivered")
+  
+  # Combine the data from both ranges
+  combined_data <- rbind(data_A_C, data_E_G)
+  
+  # Filter for specific counties
+  combined_data <- combined_data %>% 
+    filter(county %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", 
+                         "Scott", "Sherburne", "Chisago", "Washington"))
+  
+  # Add utility name
+  combined_data$utility <- utility_name
+  
+  return(combined_data)
+}
+
+# Process all files and combine the data
+all_data <- do.call(rbind, lapply(file_list, process_file))
+
+
+
+
+
+
 
 # Load EPA Emissions Factors (e.g., eGRID)
 epa_emissions_factors <- read.csv("path/to/epa_emissions_factors.csv")
