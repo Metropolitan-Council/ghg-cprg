@@ -45,11 +45,13 @@ percentages <- purrr::map2_df(report_list, station_nums, get_yearly_vol_percenta
 percent_by_class <- percentages %>%
   rowwise() %>%
   mutate(
+    # aligns with WisDOT weight classifications
     passenger = sum(class1, class2, class3),
-    medium_duty = sum(class4, class5),
+    medium_duty = sum(class4, class5,  class6, class7),
     heavy_duty = sum(
-      class6, class7, class8, class9,
-      class10, class11, class12, class13
+      class8, class9,
+      class10, class11,
+      class12, class13
     ),
     total = sum(passenger, medium_duty, heavy_duty)
   ) %>% # check to see if the total is 1
