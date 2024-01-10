@@ -5,7 +5,7 @@ source("R/_leaflet_helpers.R")
 library(osmdata)
 
 wis_stations <- readxl::read_xlsx("_transportation/data-raw/wisdot/class.xlsx",
-  sheet = 3
+                                  sheet = 3
 )
 wis_station_ratios <- wis_stations %>%
   filter(COUNTY %in% c(
@@ -32,12 +32,26 @@ wis_station_ratios <- wis_stations %>%
     heavy_duty = COMBO_UNIT_TRUCKS / 100
   ) %>%
   select(TRAF_SITEID, LOCATION, YEAR,
-    passenger, medium_duty, heavy_duty,
-    current_volume = AADT
+         passenger, medium_duty, heavy_duty,
+         current_volume = AADT
   ) %>%
   clean_names() %>%
   # make sure the percentages sum to about 1
   mutate(total_pct = sum(passenger, medium_duty, heavy_duty))
+
+wis_class_meta <- readxl::read_xlsx("_transportation/data-raw/wisdot/class.xlsx",
+                                    sheet = "Data Dictionary",
+                                    range = "B3:E51",
+                                    col_names = TRUE) %>% 
+  filter(Variable %in%   c(
+    "TRAF_SITEID", "LOCATION", "COUNTY", "YEAR", "MAX_YEAR",
+    "DURATION",
+    "COUNT_TYPE", "AADT", "AADTT", "LIGHT_DUTY_VEHICLES",
+    "SINGLE_UNIT_TRUCKS", "COMBO_UNIT_TRUCKS",
+    "TOTAL_TRUCKS"
+  )
+  )
+
 
 # fetch station locations data
 wis_station_locations <- sf::read_sf("_transportation/data-raw/wisdot/Traffic_Counts.geojson") %>%
@@ -70,11 +84,11 @@ wis_roads_nearest <- wis_roads[sf::st_nearest_feature(
 leaflet() %>%
   leaflet::addMapPane(name = "Carto Positron", zIndex = 430) %>%
   leaflet::addProviderTiles("CartoDB.PositronOnlyLabels",
-    options = leaflet::leafletOptions(pane = "Carto Positron"),
-    group = "Carto Positron"
+                            options = leaflet::leafletOptions(pane = "Carto Positron"),
+                            group = "Carto Positron"
   ) %>%
   leaflet::addProviderTiles("CartoDB.PositronNoLabels",
-    group = "Carto Positron"
+                            group = "Carto Positron"
   ) %>%
   leaflet::addCircleMarkers(
     data = wis_station_locations
@@ -91,7 +105,7 @@ wi_station_lines <- wis_station_locations %>%
 
 wi_stations_ratios_aadt <- wi_station_lines %>%
   left_join(wis_station_ratios,
-    by = c("SITE_ID" = "traf_siteid")
+            by = c("SITE_ID" = "traf_siteid")
   ) %>%
   select(
     site_id = SITE_ID, year,
