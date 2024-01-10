@@ -87,13 +87,13 @@ saveRDS(county21_truck, "_transportation/data-raw/analysis_runs/county21_truck.R
 
 county21_truck_calib <- create_streetlight_analysis(
   login_email = login_email,
-  analysis_name = "CPRG_County_OD_NP_Truck_Calib_2021",
+  analysis_name = "CPRG_County_OD_NP_Truck_Calib_ReClass_2021",
   analysis_type = "OD_Analysis",
   origin_zone_set = "CPRG_Counties_NP",
   destination_zone_set = "CPRG_Counties_NP",
-  calibration_zone_set = "CPRG_Freight_Calibration_GateEdit",
+  calibration_zone_set = "CPRG_Freight_Calibration_GateEdit_Reclass",
   travel_mode_type = "Truck",
-  output_type = "index",
+  output_type = "zone_counts",
   trip_attributes = TRUE,
   traveler_attributes = TRUE,
   date_ranges = list(
