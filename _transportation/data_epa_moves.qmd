@@ -1,0 +1,64 @@
+## EPA MOVES
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+hookaddcap()
+```
+
+Emissions rates for our region were calculated using the EPA's [Motor Vehicle Emissions Simulator (MOVES4)](https://www.epa.gov/moves) [@usepaMotorVehicleEmission2023]. MOVES calculates emissions factors using Council's regional travel demand model, Minnesota Department of Vehicle Services county vehicle registration data, and the Minnesota Pollution Control Agency vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle's age and size, as well as its fuel intake (diesel or gasoline). The results are specific to the conditions of our region, and so are more accurate than national averages. 
+
+
+
+Data source description, type
+
+- Quality rank (See @tbl-quality-rank)
+- How, when, and why was the data collected?
+- If this is a modeled dataset, what is the sample?
+- What is the raw unit of measurement? 
+- How was this data accessed? Include any relevant links/citations, code, or downloads.
+- What data cleaning or wrangling was completed? How did you test these processes and outputs?
+- What is the geographic and temporal scope? Did you complete any aggregation?
+- What version is the data? Were there other versions available? If so, why did you choose this version?
+- What assumptions are made when we use this dataset?
+- Which subject matter expert (SME) reviewed this data?
+- Describe testing used to verify data
+
+Be sure to add a citation of this dataset to the Zotero shared library.
+
+### Data characteristics
+
+- Were there any missing data? How did you handle missing data?
+- Plots, tables, and description of data distribution
+- Variance, Z-Score, quantiles
+- Facet views by categorical variables
+### Global Warming Potential
+
+### Vehicle classification 
+
+MnDOT [classifies](https://www.dot.state.mn.us/traffic/data/reports/vc/Vehicle_Classification_Scheme.pdf) vehicles by their size and number of axles, using the FHWA standard.
+
+StreetLight classifies commercial vehicles by Federal Highway Administration (FHWA) gross vehicle weight range (GWVR) classes: where vehicles between 14,000 lbs and 26,000 lbs (Class 4 to Class 6) are considered medium-duty, and vehicles greater than 26,000 lbs (Class 7+) are heavy-duty [@streetlightdataTruckTravelMode2023]. 
+
+EPA's Motor Vehicle Emissions Simulator (MOVES) has their own, slightly different vehicle classification system [@assessment_and_standards_division_population_2016, Section 2.2].  
+
+After reviewing MNDOT's [visual definitions of commercial vehicles](https://www.dot.state.mn.us/traffic/data/reports/wim/Definitions_of_Visual_Classifications_of_Heavy_Commercial_Vehicles.pdf), we defined MnDOT vehicle types 4-7 as medium-duty and types 8-13 as heavy-duty. We believe this configuration aligns most closely with both StreetLight's and MOVES' vehicle classifications schemes.    
+
+WisDOT 
+
+<iframe style="width: 900px; height: 1073.15px;" src="https://afdc.energy.gov/data/widgets/10380" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+
+### Limitations
+
+### Comparison with similar datasets
+
+Compare with [GHG Emission Factors Hub](https://www.epa.gov/climateleadership/ghg-emission-factors-hub)
+
+### Data dictionary
+
+Table with detailed description of columns and definitions for each data table.
+
+
+```{r echo=FALSE}
+saveCap("epa-moves")
+```
