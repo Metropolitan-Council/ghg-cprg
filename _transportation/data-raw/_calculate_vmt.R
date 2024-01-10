@@ -118,7 +118,8 @@ calculate_vmt <- function(data_list, class = "passenger"){
     left_join(od_same, od_origin,
               join_by(analysis_name, mode_of_travel, zone, vehicle_weight)) %>% 
     left_join(od_destination,
-              join_by(analysis_name, mode_of_travel, zone, vehicle_weight))
+              join_by(analysis_name, mode_of_travel, zone, vehicle_weight)) %>% 
+    mutate(vmt_total = sum(vmt_origin, vmt_destination, vmt_same))
   
   
   return(vmt_all)
