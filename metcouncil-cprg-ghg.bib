@@ -236,6 +236,13 @@
   langid = {english}
 }
 
+@techreport{mndotMnDOTVehicleClassification,
+  title = {{{MnDOT Vehicle Classification Scheme}}},
+  author = {{MnDOT}},
+  url = {https://www.dot.state.mn.us/traffic/data/reports/vc/Vehicle_Classification_Scheme.pdf},
+  urldate = {2024-01-10}
+}
+
 @misc{mndotVMTRouteSystem2021,
   title = {{{VMT}} by {{Route System}} for Each {{County}}},
   author = {{MnDOT}},
@@ -371,6 +378,18 @@
   url = {https://support.streetlightdata.com/hc/article_attachments/20493302319515},
   urldate = {2023-12-14},
   abstract = {Transportation professionals rely on commercial vehicle volume metrics for a wide range of projects, including pavement and bridge design and management, roadway capacity planning, environmental impact analysis, and infrastructure investment decisions. Traditional data collection methods, such as permanent and temporary traffic counters, can be expensive and challenging, have coverage limitations, and often have data quality issues. StreetLight Data, Inc. (``StreetLight'') has developed Truck Volume Metrics for the U.S. that provide average daily traffic estimates for all roads. This white paper summarizes the methodology and presents validation results for StreetLight's Truck Volume Metrics, as developed for the years 2019 to 2021. This document is updated regularly, so please check our website or reach out to your StreetLight contact to ensure you have the most up-to-date version of this document.}
+}
+
+@techreport{streetlightdataTruckTravelMode2023,
+  type = {Industry},
+  title = {Truck Travel Mode},
+  author = {{StreetLight Data}},
+  year = {2023},
+  month = nov,
+  url = {https://support.streetlightdata.com/hc/en-us/articles/8358369620507-Truck-travel-mode},
+  urldate = {2024-01-10},
+  abstract = {Use the Truck mode of travel to understand the movement of medium- and heavy-duty trucks. This mode of travel is available for Advanced Analytics subscription levels and above. StreetLight Metrics ...},
+  langid = {american}
 }
 
 @techreport{streetlightdataWhatSingleFactor2023,
@@ -509,6 +528,22 @@
   url = {https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P10186IV.pdf},
   urldate = {2023-12-14},
   abstract = {EPA's MOtor Vehicle Emission Simulator (MOVES) is a state-of-the-science emissions modeling system that estimates air pollution emissions for criteria air pollutants, greenhouse gases and air toxics. MOVES covers onroad vehicles such as cars, trucks and buses, and nonroad equipment such as bulldozers and lawnmowers. MOVES does not cover aircraft, locomotives, and commercial marine vessels. MOVES accounts for the phase-in of federal emissions standards, vehicle and equipment activity, fuels, temperatures, humidity, and emission control activities such as inspection and maintenance (I/M) programs. MOVES models calendar year 1990 and 1999 through 2060. Emissions from onroad and nonroad sources can be modeled at the national or county scale using either model defaults or user-supplied inputs. Emissions from onroad sources can also be modeled at a more detailed ``project'' scale if the user supplies detailed inputs describing project parameters. The onroad module uses operating modespecific emission rates to create a consistent approach across all three scales. MOVES is a bottom-up emissions model that is designed to estimate emissions from separate physical emission processes depending on the source. MOVES models ``fleet average'' emissions, rather than emissions from individual vehicles or equipment types. And MOVES adjusts emission rates to represent real-world conditions. This document provides a high-level overview of MOVES4, the latest official version of the MOVES model. The model and supporting}
+}
+
+@techreport{usepaPopulationActivityOnroad2023,
+  type = {Government},
+  title = {Population and {{Activity}} of {{Onroad Vehicles}} in {{MOVES4}}},
+  author = {{USEPA}},
+  year = {2023},
+  month = aug,
+  number = {EPA-420-R-23-005},
+  pages = {1--233},
+  address = {{Ann Arbor, MI}},
+  institution = {{Office of Transportation and Air Quality}},
+  url = {https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P101867U.pdf},
+  urldate = {2024-01-10},
+  abstract = {The United States Environmental Protection Agency's Motor Vehicle Emission Simulator{\textemdash} commonly referred to as MOVES{\textemdash}is a set of modeling tools for estimating air pollution emissions produced by onroad (highway) and nonroad mobile sources. MOVES estimates the emissions of greenhouse gases (GHGs), criteria pollutants and selected air toxics. The MOVES model is currently the official model for use for state implementation plan (SIP) submissions to EPA and for transportation conformity analyses outside of California. The model is also the primary modeling tool for estimating the impact of mobile source regulations on emission inventories. MOVES calculates emission inventories by multiplying emission rates by the appropriate emission-related activity, applying correction and adjustment factors as needed to simulate specific situations and then adding up the emissions from all sources and regions. Vehicle population and activity data are critical inputs for calculating emission inventories from emissions processes such as running exhaust, start exhaust and evaporative emissions. In MOVES, most running emissions are distinguished by operating modes, depending on road type and vehicle speed. Start emissions are determined based on the time a vehicle has been parked prior to the engine starting, known as a ``soak.'' Evaporative emission modes are affected by vehicle operation and the time that vehicles are parked. Emission rates are further categorized by grouping vehicles with similar fuel type, regulatory classification, and other vehicle characteristics into ``source bins.'' This report describes the sources and derivation for onroad vehicle population and activity information and associated adjustments as stored in the MOVES default database. In particular, this report describes the data used to fill the default database tables listed below in Table 1-1. Note that technical details on the default database values for emission rates, correction factors and other inputs, including information on nonroad equipment, are described in other MOVES technical reports.1 These data have been updated for MOVES4 from previous versions of MOVES. In MOVES4, we have updated vehicle activity based on newer data from Annual Energy Outlook, Highway Statistics, Transportation Energy Data Book, and School Bus Fleet Fact Book. We also updated vehicle distributions based on IHS2020 and relative mileage accumulations based on FHWA analysis. In addition, updates have been made for gliders, Class 2b and 3 light heavy-duty (LHD) vehicles, and electric vehicles for MOVES4. Properly characterizing emissions from onroad vehicles requires a detailed understanding of the vehicles that comprise the national fleet and their patterns of operation. The MOVES default database has a domain that encompasses the entire United States, Puerto Rico and the Virgin Islands. In MOVES, users may analyze emission inventories in 1990 and every year from 1999 to 2060. The national default activity information in MOVES provides a reasonable basis for estimating national emissions. As described in this report, the most important of these inputs, such as vehicle miles travelled (VMT) and population estimates, come from long-term systematic national measurements. 7  Due to the availability of these national measurements, the most recent year of measured data in the model and the base year for projected emissions, is 2021. It is important to note that uncertainties and variability in the default data contribute to the uncertainty in the resulting emission estimates. Therefore, MOVES has been specifically designed to accommodate the input of alternate, user-supplied activity data. In particular, when modellers estimate emissions for specific geographic locations, EPA guidance recommends replacing many of the MOVES fleet and activity defaults with local data. This is especially true for inputs where local data is more detailed or up to date than those provided in the MOVES defaults. EPA's Technical Guidance2 provides more information on customizing MOVES with local inputs. Population and activity data are ever changing as new historical data becomes available and new projections are generated. As part of the MOVES development process, the model undergoes major updates and review every few years. The significant updates made to MOVES since the MOVES2014 release were peer-reviewed under EPA's peer review guidance3 in two separate reviews conducted in 2017, 2019, and 2020. Materials from each peer review, including peerreview comments and EPA responses are located on the EPA's science inventory webpage.4 5 The development of fleet and activity inputs will continue to be an important area of focus and improvement for MOVES.},
+  langid = {english}
 }
 
 @misc{usepaPublicationsToolsData23,
