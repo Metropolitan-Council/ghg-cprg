@@ -8,3 +8,5 @@
 .DS_Store
 
 _transportation/report_transportation_files/figure-html/
+_waste/data-raw/score_summary.csv
+_waste/data-raw/ghg-emission-factors-hub-2021.xlsx
