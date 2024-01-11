@@ -50,7 +50,7 @@ cprg_population_meta <- bind_rows(
   cprg_county_meta,
   tribble(
     ~Column, ~Class, ~Description,
-    "population", class(cprg_population$population), "Total population estimate",
+    "population", class(cprg_population$population), "Total county population estimate",
     "population_data_source", class(cprg_population$population_data_source), "Population estimate data source"
   )
 ) %>%
