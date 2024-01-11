@@ -2,13 +2,13 @@
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
-cprg_county <- readRDS("../R/data/cprg_county.RDS")
+cprg_county <- readRDS(file.path(here::here(), "R/data/cprg_county.RDS"))
 hookaddcap()
 ```
 
 [StreetLight Data](https://www.streetlightdata.com/) is a transportation analytics platform that uses aggregated location-based services (LBS) data from cell phones and navigation/GPS data to deliver insights on travel patterns. For this project, we used StreetLight to find the volume of traffic going from each county and city or township unit (CTU) to each CTU for personal and commercial traffic during 2021.
 
-For ease of access, we used `{streetlightR}`, an R package, to interact directly with the StreetLight API. `{streetlightR}` is open-source and maintained by Council staff [^ Maintainer: Liz Roten]. 
+For ease of access, we used `{streetlightR}`, an R package, to interact directly with the StreetLight API. `{streetlightR}` is open-source and maintained by Council staff ^[Maintainer: Liz Roten]. 
 
 Data source description, type
 
@@ -64,7 +64,7 @@ cprg_distances <- purrr::map_dfr(
 
 ```{r stl-pass-county-run}
 # read in county passenger 2021 StL run
-county21_data <- readRDS("data-raw/analysis_runs/county21_data.RDS")
+county21_data <- readRDS(file.path(here::here(), "_transportation/data-raw/analysis_runs/county21_data.RDS"))
 
 passenger_od <- county21_data$od_all %>%
   filter(
@@ -176,7 +176,7 @@ Comparing trip distance and county area, we see a general positive correlation (
 #| fig-cap: "Avg. distance for trips within county and county area"
 cprg_area <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-           as.numeric())
+    as.numeric())
 
 passenger_dist_area <- left_join(
   passenger_od_trip %>%
@@ -225,22 +225,70 @@ plot_ly(
 To validate our county origin-destination VMT data, we can compare the county totals to the DOT reported values from MnDOT [@mndotVMTRouteSystem2021] and WisDOT [@wisdotWisconsinVehicleMiles2021]. Note that these data include all vehicles, passenger and commercial. 
 
 ```{r hpms-vmt}
-mndot_vmt <- readRDS("data-raw/mndot/mndot_vmt_county.RDS") %>%
+mndot_vmt <- readRDS(file.path(here::here(), "_transportation/data-raw/mndot/mndot_vmt_county.RDS")) %>%
   mutate(data_source = "MnDOT")
-wisdot_vmt <- readRDS("data-raw/wisdot/wisdot_vmt_county.RDS") %>%
+wisdot_vmt <- readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wisdot_vmt_county.RDS")) %>%
   mutate(data_source = "WisDOT")
 
 hpms_vmt <- bind_rows(
   mndot_vmt,
   wisdot_vmt
-)
+) %>% 
+  filter(year == 2021)
+
+
+stl_zone_volume <- county21_data$zone_od_all %>% 
+      filter(
+    day_type == "0: All Days (M-Su)",
+    day_part == "0: All Day (12am-12am)"
+  ) %>%
+  group_by(zone_name) %>% 
+  summarize(average_daily_zone_traffic_st_l_volume = sum(average_daily_zone_traffic_st_l_volume))
+
+
+
+hpms_streetlight <- left_join(
+  stl_zone_volume,
+  hpms_vmt,
+  by = c("zone_name" = "county")
+) %>% 
+unique()
+```
+
+
+```{r}
+plot_ly(
+  data = hpms_streetlight,
+  x = ~daily_vmt,
+  y = ~average_daily_zone_traffic_st_l_volume,
+  type = "scatter",
+  mode = "markers",
+  hoverinfo = "text",
+  # hovertemplate = passenger_dist_area$hovertext,
+  opacity = 0.7,
+  marker = list(
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "Avg. trip distance within county and county area",
+    subtitle = "General positive correlation",
+    x_title = "County area (square miles)",
+    y_title = "Average trip distance (miles)",
+    legend_title = "",
+    legend = list(orientation = "h")
+  )
 ```
 
 <!-- scatter plot comparing 2021 HPMS vmt with StL VMT -->
 
 ### Freight 
 
-StreetLight does not provide StreetLight Volume for 2021 commercial vehicle analyses. To measure volume for commercial traffic, we used the StreetLight Index, a relative measure of traffic volume [@streetlightdataStreetLightIndex2023, calibrated using AADT values to result in traffic volume. 
+StreetLight does not provide StreetLight Volume for 2021 commercial vehicle analyses. To measure volume for commercial traffic, we used the StreetLight Index, a relative measure of traffic volume, calibrated using AADT values to result in traffic volume [@streetlightdataStreetLightIndex2023]. 
 
 StreetLight compares the AADT calibration values for a given zone with StreetLight’s sample size for the same zone, and creates a calibration factor to apply to the entire analysis [@streetlightdataWhatSingleFactor2023]. We generated a calibration zone set for commercial traffic by selecting road segments with both AADT and vehicle classification data in both MN and WI.
 
@@ -252,16 +300,19 @@ Then, we selected only the stations within the study area with observations in t
 
 <!-- map of calibration points and lines -->
 ```{r}
-freight_lines <- bind_rows(readRDS(file.path(here::here(), "_transportation/data-raw/mndot/mn_stations_ratios.RDS")) %>% 
-                             mutate(name = paste0("MN_", sequence_n, "_", continuous_number),
-                                    year = as.numeric(year)) %>% 
-                             select(name, year, passenger, medium_duty, heavy_duty,  current_volume, geometry= geom),
-                           readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wi_stations_ratios.RDS")) %>% 
-                             mutate(name = paste0("WI_", site_id )) %>% 
-                             select(name, year, passenger, medium_duty, heavy_duty,  current_volume, geometry))
+freight_lines <- bind_rows(
+  readRDS(file.path(here::here(), "_transportation/data-raw/mndot/mn_stations_ratios.RDS")) %>%
+    mutate(
+      name = paste0("MN_", sequence_n, "_", continuous_number),
+      year = as.numeric(year)
+    ) %>%
+    select(name, year, passenger, medium_duty, heavy_duty, current_volume, geometry = geom),
+  readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wi_stations_ratios.RDS")) %>%
+    mutate(name = paste0("WI_", site_id)) %>%
+    select(name, year, passenger, medium_duty, heavy_duty, current_volume, geometry)
+)
 
 freight_points <- bind_rows()
-
 ```
 
 <!-- plot of passenger/medium/heavy percentages for each calibration zone -->
@@ -270,7 +321,7 @@ freight_points <- bind_rows()
 
 For calibration, we found the ratio of passenger/medium/heavy-duty vehicles for traffic sensors within our study areas. 
 
-MnDOT provides AADT road segments, which align with station identification numbers. Wisconsin does not readily supply road segment data - as suggested by the Wisconsin cartographers office [@statecartographersofficeWisconsinRoadData21], we pulled OpenStreetMaps road data. 
+MnDOT provides AADT road segments, which align with station identification numbers. Wisconsin does not readily supply road segment data - as suggested by the Wisconsin cartographers office [@statecartographersofficeWisconsinRoadData2021], we pulled OpenStreetMaps road data. 
 
 To maximize data availability, we used the most recent data available, up to 2021 for both states. 
 

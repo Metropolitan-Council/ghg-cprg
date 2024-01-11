@@ -5,7 +5,7 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 hookaddcap()
 ```
 
-Emissions rates for our region were calculated using the EPA's [Motor Vehicle Emissions Simulator (MOVES4)](https://www.epa.gov/moves) [@usepaMotorVehicleEmission2023]. MOVES calculates emissions factors using Council's regional travel demand model, Minnesota Department of Vehicle Services county vehicle registration data, and the Minnesota Pollution Control Agency vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle's age and size, as well as its fuel intake (diesel or gasoline). The results are specific to the conditions of our region, and so are more accurate than national averages. 
+Emissions rates for our region were calculated using the EPA's [Motor Vehicle Emissions Simulator (MOVES4)](https://www.epa.gov/moves) [@usepaMotorVehicleEmission2023]. MOVES4 calculates emissions factors using Council's regional travel demand model, Minnesota Department of Vehicle Services county vehicle registration data, and the Minnesota Pollution Control Agency vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle's age and size, as well as its fuel intake (diesel or gasoline). The results are specific to the conditions of our region, and so are more accurate than national averages. 
 
 
 
@@ -35,13 +35,13 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 
 ### Vehicle classification 
 
-MnDOT [classifies](https://www.dot.state.mn.us/traffic/data/reports/vc/Vehicle_Classification_Scheme.pdf) vehicles by their size and number of axles, using the FHWA standard.
+MnDOT classifies and reports vehicles weight distributions using FHWA standards, as compared with their visual vehicle classification guide [@]
 
 StreetLight classifies commercial vehicles by Federal Highway Administration (FHWA) gross vehicle weight range (GWVR) classes: where vehicles between 14,000 lbs and 26,000 lbs (Class 4 to Class 6) are considered medium-duty, and vehicles greater than 26,000 lbs (Class 7+) are heavy-duty [@streetlightdataTruckTravelMode2023]. 
 
-EPA's Motor Vehicle Emissions Simulator (MOVES) has their own, slightly different vehicle classification system [@assessment_and_standards_division_population_2016, Section 2.2].  
+EPA's Motor Vehicle Emissions Simulator (MOVES4) has their own, slightly different vehicle classification system [@usepaPopulationActivityOnroad2023].  
 
-After reviewing MNDOT's [visual definitions of commercial vehicles](https://www.dot.state.mn.us/traffic/data/reports/wim/Definitions_of_Visual_Classifications_of_Heavy_Commercial_Vehicles.pdf), we defined MnDOT vehicle types 4-7 as medium-duty and types 8-13 as heavy-duty. We believe this configuration aligns most closely with both StreetLight's and MOVES' vehicle classifications schemes.    
+After reviewing MnDOT's [visual definitions of commercial vehicles](https://www.dot.state.mn.us/traffic/data/reports/wim/Definitions_of_Visual_Classifications_of_Heavy_Commercial_Vehicles.pdf), we defined MnDOT vehicle types 4-7 as medium-duty and types 8-13 as heavy-duty. We believe this configuration aligns most closely with both StreetLight's and MOVES4' vehicle classifications schemes.    
 
 WisDOT 
 

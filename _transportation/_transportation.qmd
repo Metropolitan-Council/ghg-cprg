@@ -19,6 +19,8 @@ hookaddcap()
 ```
 ## Introduction
 
+Transportation is consistently the highest source of emissions in the state (MPCA report). 
+
 ## Methods
 
 The general workflow for transportation emissions is to find vehicle miles traveled for a given geography, 
