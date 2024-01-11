@@ -11,7 +11,7 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(tidycensus, quietly = TRUE))
   suppressMessages(library(councilR, quietly = TRUE))
   suppressMessages(library(lubridate, quietly = TRUE))
-  
+
   # Workflow ------
   suppressMessages(library(keyring, quietly = TRUE))
   suppressMessages(library(here, quietly = TRUE))
@@ -25,7 +25,7 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(leaflet, quietly = TRUE))
   suppressMessages(library(scales, quietly = TRUE))
   suppressMessages(library(webshot, quietly = TRUE))
-  
+
 
   # tables -----
   suppressMessages(library(knitr, quietly = TRUE))
