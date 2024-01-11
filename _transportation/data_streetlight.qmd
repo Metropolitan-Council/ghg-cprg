@@ -301,7 +301,6 @@ State DOT's operates vehicle classification stations across the state, which pro
 
 Then, we selected only the stations within the study area with observations in the last five years (2017-2021). Finally, we joined this data with Average Annual Daily Traffic (AADT) [@mndotVMTRouteSystem2021, @wisdotWisconsinVehicleMiles2021] road segments by station ID. The road segments sampled include multiple road functional classes and segments in all seven metro counties. All traffic sensor stations pulled were permanent, continuous monitoring sites.
 
-<!-- map of calibration points and lines -->
 ```{r fig-map-calibration-set}
 #| fig-cap: "StreetLight calibration locations and values"
 #| out-width: "95%"
@@ -323,14 +322,21 @@ commercial_points <- readRDS(file.path(here::here(), "_transportation/data/comme
 
 
 council_leaflet() %>% 
-  addCircleMarkers(data = commercial_points,
-                   popup = commercial_points$hover_info) %>% 
   addPolylines(data = commercial_lines,
-               popup = commercial_lines$hover_info)
+               weight = 6,
+               color = "black",
+               popup = commercial_lines$hover_info) %>% 
+    addCircleMarkers(data = commercial_points,
+                   popup = commercial_points$hover_info,
+                   fillColor = colors$councilBlue,
+                   radius = 10) 
+
 ```
 
 
-```{r}
+```{r fig-vehicle-weight-distribution}
+#| fig-cap: "Vehicle weight distribution at calibration points"
+#| out-width: "95%"    
 calibration_long <- commercial_calibration_points %>% 
   arrange(-heavy_commercial_ratio) %>% 
   select(name, 
@@ -364,10 +370,16 @@ plot_ly(
   hoverinfo = "text",
   hovertemplate = ~hovertext
 ) %>% 
-  plotly_layout() %>% 
+  plotly_layout(
+    main_title = "Vehicle weight distribution",
+    y_title = "Proportion of all traffic",
+    x_title = "Calibration zone",
+    legend_title = "Vehicle weight"
+  ) %>% 
   layout(barmode = "stack",
          xaxis = list(
-           rangemode = "normal"
+           rangemode = "normal",
+           ticktext = ""
          ),
          yaxis = list(
            tickformat = "1%"
