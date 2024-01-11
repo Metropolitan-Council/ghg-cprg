@@ -47,7 +47,7 @@ percent_by_class <- percentages %>%
   mutate(
     # aligns with WisDOT weight classifications
     passenger = sum(class1, class2, class3),
-    medium_duty = sum(class4, class5,  class6, class7),
+    medium_duty = sum(class4, class5, class6, class7),
     heavy_duty = sum(
       class8, class9,
       class10, class11,
