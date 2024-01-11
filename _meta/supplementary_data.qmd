@@ -35,6 +35,16 @@ cprg_county_meta %>%
   kable()
 ```
 
+Additionally, population estimates were obtained from the American Community Survey 5-Year estimates (2017-2021) using `{tidycensus}` [@Census2022ACSDP1Y2022.DP05].
+
+```{r tbl-cprg-population}
+#| tbl-cap: "County population metadata"
+#| out-width: "95%"
+cprg_population <- readRDS(file.path(here::here(), "R/data/cprg_population_meta.RDS"))
+
+cprg_population %>%
+  kable()
+```
 
 ### Cities
 

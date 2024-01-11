@@ -1,53 +1,38 @@
 if (exists("load_packages") == FALSE) {
   # Data Manipulation ------
-  suppressMessages(library(data.table, quietly = T))
-  suppressMessages(library(bit64, quietly = T))
-  suppressMessages(library(openxlsx, quietly = T))
-  suppressMessages(library(dplyr, quietly = T))
-  suppressMessages(library(tidyr, quietly = T))
-  suppressMessages(library(janitor, quietly = T))
-  suppressMessages(library(purrr, quietly = T))
-  suppressMessages(library(furrr, quietly = T))
-  suppressMessages(library(future, quietly = T))
-  suppressMessages(library(stringr, quietly = T))
-  suppressMessages(library(srvyr, quietly = T))
-  suppressMessages(library(sf, quietly = T))
-  suppressMessages(library(tidycensus, quietly = T))
-  suppressMessages(library(fuzzyjoin, quietly = T))
-  suppressMessages(library(councilR, quietly = T))
-
-  # Databases -----
-  # suppressMessages(library(ROracle, quietly = T))
-  # suppressMessages(library(DBI, quietly = T))
-  # suppressMessages(library(odbc, quietly = T))
+  suppressMessages(library(dplyr, quietly = TRUE))
+  suppressMessages(library(tidyr, quietly = TRUE))
+  suppressMessages(library(janitor, quietly = TRUE))
+  suppressMessages(library(purrr, quietly = TRUE))
+  suppressMessages(library(furrr, quietly = TRUE))
+  # suppressMessages(library(future, quietly = TRUE))
+  suppressMessages(library(stringr, quietly = TRUE))
+  suppressMessages(library(sf, quietly = TRUE))
+  suppressMessages(library(tidycensus, quietly = TRUE))
+  suppressMessages(library(councilR, quietly = TRUE))
+  suppressMessages(library(lubridate, quietly = TRUE))
 
   # Workflow ------
-  suppressMessages(library(keyring, quietly = T))
-  suppressMessages(library(here, quietly = T))
-  suppressMessages(library(fs, quietly = T))
-  suppressMessages(library(webshot, quietly = T))
+  suppressMessages(library(keyring, quietly = TRUE))
+  suppressMessages(library(here, quietly = TRUE))
+  suppressMessages(library(fs, quietly = TRUE))
 
 
   # Plotting, Mapping ----
-  suppressMessages(library(ggplot2, quietly = T))
-  suppressMessages(library(plotly, quietly = T))
-  suppressMessages(library(janitor, quietly = T))
-  suppressMessages(library(lubridate, quietly = T))
-  suppressMessages(library(RColorBrewer, quietly = T))
-  suppressMessages(library(leaflet, quietly = T))
-  suppressMessages(library(htmlwidgets, quietly = T))
-  suppressMessages(library(ggpattern, quietly = T))
-  suppressMessages(library(scales, quietly = T))
+  suppressMessages(library(ggplot2, quietly = TRUE))
+  suppressMessages(library(plotly, quietly = TRUE))
+  suppressMessages(library(RColorBrewer, quietly = TRUE))
+  suppressMessages(library(leaflet, quietly = TRUE))
+  suppressMessages(library(scales, quietly = TRUE))
+  suppressMessages(library(webshot, quietly = TRUE))
+
 
   # tables -----
-  suppressMessages(library(knitr, quietly = T))
-  suppressMessages(library(kableExtra, quietly = T))
-
+  suppressMessages(library(knitr, quietly = TRUE))
+  suppressMessages(library(kableExtra, quietly = TRUE))
 
   # Specialty -----
-  # devtools::install_github("byu-transpolab/nhts2017") # will not install
-  suppressMessages(library(haven, quietly = T))
-  suppressMessages(library(osrm, quietly = T))
+  suppressMessages(library(osrm, quietly = TRUE))
 
   # require(Hmisc)
   # getRs("reptools.r") # Loads reptools.r from Github
