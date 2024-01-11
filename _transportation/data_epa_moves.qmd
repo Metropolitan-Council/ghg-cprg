@@ -45,6 +45,48 @@ After reviewing MnDOT's [visual definitions of commercial vehicles](https://www.
 
 WisDOT 
 
+```{r}
+library(gt)
+library(gtExtras)
+vehicle_weight_comp <- 
+  tribble(
+    ~`Gross vehicle weight rating (lbs)`, ~`FHWA`, ~`DOT`, ~`StreetLight`,
+    "<6000",  "Class 1: <6,000 lbs",    "Light-duty", "Light-duty",
+    "10,000",  "Class 2: 6,001-10,000lbs",  "Light-duty", "Light-duty",
+    "14,000",  "Class 3: 10,001-14,000 lbs",  "Light-duty", "Light-duty",
+    "16,000",  "Class 4: 14,001-16,000 lbs", "Medium-duty", "Medium-duty",
+    "19,500",  "Class 5: 16,001-19,500 lbs", "Medium-duty", "Medium-duty",
+    "26,000",  "Class 6: 19,501-26,000 lbs", "Medium-duty", "Medium-duty",
+    "33,000",  "Class 7: 26,001-33,000 lbs", "Medium-duty", "Heavy-duty",
+    ">33,000",  "Class 8+: >33,001 lbs", "Heavy-duty", "Heavy-duty"
+  ) 
+# %>% 
+  # group_by(FHWA, DOT, StreetLight)
+
+
+gt::gt(vehicle_weight_comp,
+       row_group_as_column = FALSE) %>% 
+  tab_style(
+    style =  list(cell_fill(color = "lightgray",
+                       alpha = 0.5),
+                  cell_borders(sides= "top")),
+    locations = cells_body(
+      columns = 3:4,
+      rows = 1:3
+    )) %>% 
+    tab_options(column_labels.hidden = FALSE,
+              table.width = px(350),
+              table_body.border.bottom.color = 'white',
+              table_body.border.top.color = "white",
+              table_body.hlines.color = 'white') %>% 
+  as_raw_html()
+  
+gt::rowg
+  gt::opt_row_striping() %>% 
+  gt::as_raw_html()
+```
+
+
 <iframe style="width: 900px; height: 1073.15px;" src="https://afdc.energy.gov/data/widgets/10380" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 
