@@ -2,6 +2,8 @@
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
+
 cprg_county <- readRDS(file.path(here::here(), "R/data/cprg_county.RDS"))
 hookaddcap()
 ```
@@ -117,6 +119,7 @@ In cases where the origin and destination counties are not adjacent, the average
 
 ```{r fig-trip-dist-min-dist}
 #| fig-cap: "Avg. trip distance and minimum distance between counties"
+#| out-width: "95%"
 one_slope <- tibble(
   x = 0:max(passenger_od_distance$distance_miles + 10),
   y = 0:max(passenger_od_distance$distance_miles + 10),
@@ -176,7 +179,7 @@ Comparing trip distance and county area, we see a general positive correlation (
 #| fig-cap: "Avg. distance for trips within county and county area"
 cprg_area <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-    as.numeric())
+           as.numeric())
 
 passenger_dist_area <- left_join(
   passenger_od_trip %>%
@@ -238,7 +241,7 @@ hpms_vmt <- bind_rows(
 
 
 stl_zone_volume <- county21_data$zone_od_all %>% 
-      filter(
+  filter(
     day_type == "0: All Days (M-Su)",
     day_part == "0: All Day (12am-12am)"
   ) %>%
@@ -252,7 +255,7 @@ hpms_streetlight <- left_join(
   hpms_vmt,
   by = c("zone_name" = "county")
 ) %>% 
-unique()
+  unique()
 ```
 
 
@@ -299,20 +302,76 @@ State DOT's operates vehicle classification stations across the state, which pro
 Then, we selected only the stations within the study area with observations in the last five years (2017-2021). Finally, we joined this data with Average Annual Daily Traffic (AADT) [@mndotVMTRouteSystem2021, @wisdotWisconsinVehicleMiles2021] road segments by station ID. The road segments sampled include multiple road functional classes and segments in all seven metro counties. All traffic sensor stations pulled were permanent, continuous monitoring sites.
 
 <!-- map of calibration points and lines -->
-```{r}
-freight_lines <- bind_rows(
-  readRDS(file.path(here::here(), "_transportation/data-raw/mndot/mn_stations_ratios.RDS")) %>%
-    mutate(
-      name = paste0("MN_", sequence_n, "_", continuous_number),
-      year = as.numeric(year)
-    ) %>%
-    select(name, year, passenger, medium_duty, heavy_duty, current_volume, geometry = geom),
-  readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wi_stations_ratios.RDS")) %>%
-    mutate(name = paste0("WI_", site_id)) %>%
-    select(name, year, passenger, medium_duty, heavy_duty, current_volume, geometry)
-)
+```{r fig-map-calibration-set}
+#| fig-cap: "StreetLight calibration locations and values"
+#| out-width: "95%"
+#| out-height: "500px"
+commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_lines.RDS")) %>% 
+  mutate(hover_info = paste0(
+    "Name: ", name, "<br>"
+  ))
 
-freight_points <- bind_rows()
+commercial_points <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_points.RDS")) %>% 
+  mutate(hover_info = paste0(
+    "Name: ", name, "<br>",
+    "AADT: ", scales::comma(current_volume), "<br>",
+    "Year: ", year, "<br>",
+    "Passenger traffic: ", scales::percent(personal_traffic_ratio, accuracy = 1), "<br>",
+    "Medium-duty traffic: ", scales::percent(medium_commercial_ratio,accuracy = 1), "<br>",
+    "Heavy-duty traffic: ", scales::percent(heavy_commercial_ratio, accuracy = 1), "<br>"
+  ))
+
+
+council_leaflet() %>% 
+  addCircleMarkers(data = commercial_points,
+                   popup = commercial_points$hover_info) %>% 
+  addPolylines(data = commercial_lines,
+               popup = commercial_lines$hover_info)
+```
+
+
+```{r}
+calibration_long <- commercial_calibration_points %>% 
+  arrange(-heavy_commercial_ratio) %>% 
+  select(name, 
+         year,
+         personal_traffic_ratio, 
+         medium_commercial_ratio,
+         heavy_commercial_ratio) %>% 
+  sf::st_drop_geometry() %>% 
+  tidyr::pivot_longer(cols = c(personal_traffic_ratio, 
+                               medium_commercial_ratio,
+                               heavy_commercial_ratio),
+                      names_to = "vehicle_weight") %>% 
+  mutate(vehicle_weight = 
+           case_when(vehicle_weight == "personal_traffic_ratio" ~ "Passenger",
+                     vehicle_weight == "medium_commercial_ratio" ~ "Medium-duty",
+                     vehicle_weight == "heavy_commercial_ratio" ~ "Heavy-duty",
+           ),
+         hovertext = paste0(
+           "Name: ", name, "<br>",
+           "Year: ", year, "<br>",
+           scales::percent(value, accuracy = 1), " ", vehicle_weight, "<br>",
+           "<extra></extra>"
+         ))
+
+plot_ly(
+  data = calibration_long,
+  type = "bar",
+  x = ~name, 
+  y = ~value,
+  color = ~vehicle_weight,
+  hoverinfo = "text",
+  hovertemplate = ~hovertext
+) %>% 
+  plotly_layout() %>% 
+  layout(barmode = "stack",
+         xaxis = list(
+           rangemode = "normal"
+         ),
+         yaxis = list(
+           tickformat = "1%"
+         ))
 ```
 
 <!-- plot of passenger/medium/heavy percentages for each calibration zone -->
