@@ -202,9 +202,6 @@ Minnesota utility activity data processing
 
 ```{r}
 
-# Load County-Level Electricity Delivery Data
-mn_electricity_data <- read.csv("path/to/minnesota_electricity_data.csv")
-
 
 # Directory containing Excel files
 dir_mn_electricity <- here("mn_utility_reporting")
@@ -239,26 +236,27 @@ process_file <- function(file_path) {
 }
 
 # Process all files and combine the data
-all_data <- do.call(rbind, lapply(file_list, process_file))
+combined_MNelectUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
+  
+```
+
+Minnesota emissions factor
+
+```{r apply-emissions-factor}
 
 
-
-
-
-
-
-# Load EPA Emissions Factors (e.g., eGRID)
-epa_emissions_factors <- read.csv("path/to/epa_emissions_factors.csv")
+# Load eGRID Total Output Emission Rates (lb/MWh) for CO2 for the MROW subregion (which covers our study area) from https://www.epa.gov/egrid/summary-data 
+eGRID_MROW_emissionsFactor <- 995.8
 
 # Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county, process and merge data -- this will be a separate data colelction process spanning excel reports submitted to state
-processed_data <- mn_electricity_data %>%
-  mutate(GHG_emissions = electricity_delivered * corresponding_factor_from_epa_factors)
+processed_mn_elecUtil_activityData <- combined_MNelectUtil_activityData %>%
+  mutate(GHG_emissions = mWh_delivered * eGRID_MROW_emissionsFactor)
 
 # Aggregate data by county
-county_level_emissions <- processed_data %>%
+county_level_emissions <- processed_mn_elecUtil_activityData %>%
   group_by(county) %>%
-  summarise(total_GHG_emissions = sum(GHG_emissions))
-
+  summarise(total_GHG_emissions_lbs = sum(GHG_emissions, na.rm = TRUE),
+            total_GHG_emissions_tons = total_GHG_emissions_lbs / 2000)
 ```
 
 Wisconsin data processing
