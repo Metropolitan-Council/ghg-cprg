@@ -932,28 +932,6 @@
       ],
       "Hash": "21737c74811cccac01b5097bcb0f8b4c"
     },
-    "gtExtras": {
-      "Package": "gtExtras",
-      "Version": "0.5.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "R",
-        "cli",
-        "commonmark",
-        "dplyr",
-        "fontawesome",
-        "ggplot2",
-        "glue",
-        "gt",
-        "htmltools",
-        "knitr",
-        "paletteer",
-        "rlang",
-        "scales"
-      ],
-      "Hash": "654cdd2db0d2d1c2ab4ae8ee8af63168"
-    },
     "gtable": {
       "Package": "gtable",
       "Version": "0.3.4",
@@ -1557,20 +1535,6 @@
       ],
       "Hash": "7a7939439f7ad17756c51c82a28490fc"
     },
-    "paletteer": {
-      "Package": "paletteer",
-      "Version": "1.5.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "R",
-        "prismatic",
-        "rematch2",
-        "rlang",
-        "rstudioapi"
-      ],
-      "Hash": "2cc72e89c9f4dc12c38d848914aac313"
-    },
     "parallelly": {
       "Package": "parallelly",
       "Version": "1.36.0",
@@ -1704,19 +1668,6 @@
         "R"
       ],
       "Hash": "6b01fc98b1e86c4f705ce9dcfd2f57c7"
-    },
-    "prismatic": {
-      "Package": "prismatic",
-      "Version": "1.1.1",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "R",
-        "farver",
-        "grDevices",
-        "graphics"
-      ],
-      "Hash": "faa2193fdec94a45b4390aefc1280a62"
     },
     "processx": {
       "Package": "processx",
