@@ -1,9 +1,12 @@
 ## State DOT data
+
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 hookaddcap()
 ```
+
+Minnesota and Wisconsin have data. 
 
 Introduction text 
 Data source description, type
@@ -28,32 +31,6 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 - Plots, tables, and description of data distribution
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
-
-```{r fig-scatter}
-#| fig-cap: "A scatter plot"
-shinipsum::random_ggplotly(type = "point") %>%
-  councilR::plotly_layout(
-    main_title = "Scatter"
-  )
-```
-
-
-```{r fig-boxplot}
-#| fig-cap: "A boxplot"
-shinipsum::random_ggplotly(type = "boxplot") %>%
-  councilR::plotly_layout(
-    main_title = "Boxplot"
-  )
-```
-
-
-```{r fig-density}
-#| fig-cap: "A density plot"
-shinipsum::random_ggplotly(type = "density") %>%
-  councilR::plotly_layout(
-    main_title = "Density"
-  )
-```
 
 
 ### Limitations
