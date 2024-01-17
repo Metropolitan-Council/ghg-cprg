@@ -1,6 +1,6 @@
 source("R/_load_pkgs.R")
 # compile MN and WI datasets for upload to StreetLight
-# 
+#
 # lines -----
 mn_stations_lines <- readRDS("_transportation/data-raw/mndot/mn_stations_ratios.RDS") %>%
   mutate(
@@ -58,33 +58,37 @@ commercial_calibration_lines <- bind_rows(
 
 # points -----
 
-mn_stations_points <- readRDS("_transportation/data-raw/mndot/mn_stations_ratios_points.RDS") %>% 
+mn_stations_points <- readRDS("_transportation/data-raw/mndot/mn_stations_ratios_points.RDS") %>%
   mutate(
     name = paste0("MN_", sequence_n, "_", continuous_number),
     year = as.numeric(year)
-  ) %>% 
-  sf::st_transform(4326) %>% 
-  select(name, year, continuous_number, sequence_number, geometry = geom) 
+  ) %>%
+  sf::st_transform(4326) %>%
+  select(name, year, continuous_number, sequence_number, geometry = geom)
 
 
-wi_stations_points <- readRDS("_transportation/data-raw/wisdot/wi_stations_ratios_points.RDS") %>% 
-  mutate(name = paste0("WI_", site_id)) %>% 
+wi_stations_points <- readRDS("_transportation/data-raw/wisdot/wi_stations_ratios_points.RDS") %>%
+  mutate(name = paste0("WI_", site_id)) %>%
   st_as_sf()
 
 wi_stations_points$geometry
 
-commercial_calibration_points <- bind_rows(mn_stations_points,
-                                           wi_stations_points) %>% 
-  select(name, site_id, year, continuous_number, sequence_number) %>% 
+commercial_calibration_points <- bind_rows(
+  mn_stations_points,
+  wi_stations_points
+) %>%
+  select(name, site_id, year, continuous_number, sequence_number) %>%
   left_join(commercial_calibration_lines %>%
-              st_drop_geometry() %>% 
-              select(-passenger,
-                     -medium_duty,
-                     -heavy_duty,
-                     -total,
-                     -is_pass,
-                     -is_bidi,
-                     -calibration_type))
+    st_drop_geometry() %>%
+    select(
+      -passenger,
+      -medium_duty,
+      -heavy_duty,
+      -total,
+      -is_pass,
+      -is_bidi,
+      -calibration_type
+    ))
 
 
 commercial_calibration_meta <- tribble(
@@ -94,10 +98,10 @@ commercial_calibration_meta <- tribble(
   "year", class(commercial_calibration_points$year), "AADT year",
   "continuous_number", class(commercial_calibration_points$continuous_number), "MnDOT site identfier",
   "sequence_number", class(commercial_calibration_points$sequence_number), "MnDOT site identifier",
-  "geometry",class(commercial_calibration_points$geometry)[[1]], "Simple feature geometry",
+  "geometry", class(commercial_calibration_points$geometry)[[1]], "Simple feature geometry",
   "current_volume", class(commercial_calibration_points$current_volume), "AADT (vehicles)",
   "personal_traffic_ratio", class(commercial_calibration_points$personal_traffic_ratio), "Proportion of vehicles that are personal/light-duty",
-  "medium_commercial_ratio",class(commercial_calibration_points$medium_commercial_ratio), "Proportion of vehicles that are medium-duty",
+  "medium_commercial_ratio", class(commercial_calibration_points$medium_commercial_ratio), "Proportion of vehicles that are medium-duty",
   "heavy_commercial_ratio", class(commercial_calibration_points$heavy_commercial_ratio), "Proportion of vehicles that are heavy-duty"
 )
 

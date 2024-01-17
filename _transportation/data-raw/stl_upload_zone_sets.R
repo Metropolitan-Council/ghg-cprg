@@ -73,14 +73,14 @@ commercial_calibration_line_upload <- commercial_calibration_lines %>%
   sfnetworks::activate("edges") %>%
   # calculate direction
   mutate(direction = sfnetworks::edge_azimuth() %>%
-           as.numeric() %>%
-           to_degrees()) %>%
+    as.numeric() %>%
+    to_degrees()) %>%
   st_as_sf() %>%
   select(name, is_pass, direction, is_bidi,
-         calibration_type,
-         calibration_value = current_volume,
-         personal_traffic_ratio, medium_commercial_ratio,
-         heavy_commercial_ratio
+    calibration_type,
+    calibration_value = current_volume,
+    personal_traffic_ratio, medium_commercial_ratio,
+    heavy_commercial_ratio
   )
 
 # upload zone set
