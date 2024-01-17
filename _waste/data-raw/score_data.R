@@ -38,7 +38,35 @@ emissions_factors_cleaned <- emissions_factors %>%
          Combusted = CombustedC,
          Composted = CompostedD)
 
+# join emissions factors to score data
+# landfill = Mixed MSW: Landfilled
+# msw compost = Mixed MSW: Composted (NA)
+# onsite = Mixed MSW: Landfilled
+# organics = Mixed Organics: Composted
+# recycling = Mixed Recyclables: Recyclesd
+# WTE = Mixed MSW: Combusted
+score_final <- score_filtered %>%
+  mutate( # emissions factor in metric tons co2/short tons waste
+    emissions_factor =
+           case_when(Method == "Landfill" ~ as.numeric(filter(emissions_factors_cleaned, Material == "Mixed MSW") %>% 
+                                                         select(Landfilled)),
+                     Method == "MSW Compost" ~ as.numeric(filter(emissions_factors_cleaned, Material == "Mixed MSW") %>% 
+                                                            select(Composted)),
+                     Method == "Onsite" ~ as.numeric(filter(emissions_factors_cleaned, Material == "Mixed MSW") %>% 
+                                                       select(Landfilled)),
+                     Method == "Organics" ~ as.numeric(filter(emissions_factors_cleaned, Material == "Mixed Organics") %>% 
+                                                         select(Composted)),
+                     Method == "Recycling" ~ as.numeric(filter(emissions_factors_cleaned, Material == "Mixed Recyclables") %>% 
+                                                          select(Recycled)),
+                     Method == "WTE" ~ as.numeric(filter(emissions_factors_cleaned, Material == "Mixed MSW") %>% 
+                                                    select(Combusted))
+           ),
+         # emissions in metric tons co2e
+    emissions_metric_tons_co2e = Tons * emissions_factor
+  ) %>%
+  filter(!Method == "MSW Compost") # removing rows filled with 0s and NAs
+
+
 # export
-saveRDS(score_filtered, paste0("_waste/data-raw/mpca_score_waste.RDS"))
-saveRDS(emissions_factors_cleaned, paste0("_waste/data-raw/waste_emissions_factors.RDS"))
+saveRDS(score_final, paste0("_waste/data-raw/mpca_score_waste.RDS"))
 
