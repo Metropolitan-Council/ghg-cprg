@@ -2,11 +2,25 @@
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
+library(gt)
+epa_moves <- readRDS(file.path(here::here(), "_transportation/data/epa_moves.RDS"))
+epa_moves_meta <- readRDS(file.path(here::here(), "_transportation/data/epa_moves_meta.RDS"))
 hookaddcap()
 ```
 
 Emissions rates for our region were calculated using the EPA's [Motor Vehicle Emissions Simulator (MOVES4)](https://www.epa.gov/moves) [@usepaMotorVehicleEmission2023]. MOVES4 calculates emissions factors using Council's regional travel demand model, Minnesota Department of Vehicle Services county vehicle registration data, and the Minnesota Pollution Control Agency vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle's age and size, as well as its fuel intake (diesel or gasoline). The results are specific to the conditions of our region, and so are more accurate than national averages. 
 
+```{r tbl-epa-moves-values}
+#| tbl-cap: "Emissions in grams per vehicle mile traveled by vehicle weight in the Twin Cities region" 
+epa_moves %>% 
+  kable(col.names = 
+          c("MOVES Year",
+            "Vehicle weight",
+            "CO~2~",
+            "CO~2~ and CO~2~ equivalent",
+            "CH~4~",
+            "N~2~O"))
+```
 
 
 Data source description, type
@@ -31,6 +45,7 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 - Plots, tables, and description of data distribution
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
+
 ### Global Warming Potential
 
 ### Vehicle classification 
@@ -41,13 +56,16 @@ StreetLight classifies commercial vehicles by Federal Highway Administration (FH
 
 EPA's Motor Vehicle Emissions Simulator (MOVES4) has their own, slightly different vehicle classification system [@usepaPopulationActivityOnroad2023].  
 
-After reviewing MnDOT's [visual definitions of commercial vehicles](https://www.dot.state.mn.us/traffic/data/reports/wim/Definitions_of_Visual_Classifications_of_Heavy_Commercial_Vehicles.pdf), we defined MnDOT vehicle types 4-7 as medium-duty and types 8-13 as heavy-duty. We believe this configuration aligns most closely with both StreetLight's and MOVES4' vehicle classifications schemes.    
+After reviewing MnDOT's [visual definitions of commercial vehicles](https://www.dot.state.mn.us/traffic/data/reports/wim/Definitions_of_Visual_Classifications_of_Heavy_Commercial_Vehicles.pdf), we defined MnDOT vehicle types 4-7 as medium-duty and types 8-13 as heavy-duty. We believe this configuration aligns most closely with both StreetLight's and MOVES4' vehicle classifications schemes.
 
-WisDOT 
+However, vehicles falling in FHWA class 7 (> 26,000 lbs, < 33,000 lbs) are classfifed as medium duty by state DOTs, and heavy duty by StreetLight. This discrepancy is relatively small, 
 
-```{r}
-library(gt)
-library(gtExtras)
+
+<iframe style="width: 900px; height: 1073.15px;" src="https://afdc.energy.gov/data/widgets/10380" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+
+
+```{r tbl-vehicle-weight-classifications}
+#| tbl-cap: "Vehicle weight classifications by data source" 
 vehicle_weight_comp <- 
   tribble(
     ~`Gross vehicle weight rating (lbs)`, ~`FHWA`, ~`DOT`, ~`StreetLight`,
@@ -60,34 +78,54 @@ vehicle_weight_comp <-
     "33,000",  "Class 7: 26,001-33,000 lbs", "Medium-duty", "Heavy-duty",
     ">33,000",  "Class 8+: >33,001 lbs", "Heavy-duty", "Heavy-duty"
   ) 
-# %>% 
-  # group_by(FHWA, DOT, StreetLight)
-
 
 gt::gt(vehicle_weight_comp,
        row_group_as_column = FALSE) %>% 
   tab_style(
     style =  list(cell_fill(color = "lightgray",
-                       alpha = 0.5),
+                            alpha = 0.5),
                   cell_borders(sides= "top")),
     locations = cells_body(
       columns = 3:4,
       rows = 1:3
     )) %>% 
-    tab_options(column_labels.hidden = FALSE,
-              table.width = px(350),
-              table_body.border.bottom.color = 'white',
-              table_body.border.top.color = "white",
-              table_body.hlines.color = 'white') %>% 
-  as_raw_html()
+  tab_style(
+    style =  list(cell_fill(color = "lightblue",
+                            alpha = 0.5),
+                  cell_borders(sides= "top")),
+    locations = cells_body(
+      columns = 3:4,
+      rows = 4:6
+    )) %>% 
+  tab_style(
+    style =  list(cell_fill(color = "lightblue",
+                            alpha = 0.5),
+                  cell_borders(sides= "top")),
+    locations = cells_body(
+      columns = 3,
+      rows = 7
+    )) %>% 
   
-gt::rowg
-  gt::opt_row_striping() %>% 
-  gt::as_raw_html()
+  tab_style(
+    style =  list(cell_fill(color = "lightgreen",
+                            alpha = 0.5),
+                  cell_borders(sides= "top")),
+    locations = cells_body(
+      columns = 3:4,
+      rows = 8
+    )) %>% 
+  tab_style(
+    style =  list(cell_fill(color = "lightgreen",
+                            alpha = 0.5),
+                  cell_borders(sides= "top")),
+    locations = cells_body(
+      columns = 4,
+      rows = 7
+    )) %>% 
+  as_raw_html()
+
 ```
 
-
-<iframe style="width: 900px; height: 1073.15px;" src="https://afdc.energy.gov/data/widgets/10380" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
 
 
 ### Limitations
