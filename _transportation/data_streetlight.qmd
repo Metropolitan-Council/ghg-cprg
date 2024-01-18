@@ -226,84 +226,6 @@ plot_ly(
 ```
 
 
-#### Comparison with HPMS VMT data
-
-To validate our county origin-destination VMT data, we can compare the county totals to the DOT reported values from MnDOT [@mndotVMTRouteSystem2021] and WisDOT [@wisdotWisconsinVehicleMiles2021]. Note that these data include all vehicles, passenger and commercial. 
-
-```{r hpms-vmt}
-mndot_vmt <- readRDS(file.path(here::here(), "_transportation/data-raw/mndot/mndot_vmt_county.RDS")) %>%
-  mutate(data_source = "MnDOT")
-wisdot_vmt <- readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wisdot_vmt_county.RDS")) %>%
-  mutate(data_source = "WisDOT")
-
-hpms_vmt <- bind_rows(
-  mndot_vmt,
-  wisdot_vmt
-) %>%
-  filter(year == 2021)
-
-stl_vmt <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
-
-stl_zone_volume <- county21_data$zone_od_all %>%
-  filter(
-    day_type == "0: All Days (M-Su)",
-    day_part == "0: All Day (12am-12am)"
-  ) %>%
-  group_by(zone_name) %>%
-  summarize(average_daily_zone_traffic_st_l_volume = sum(average_daily_zone_traffic_st_l_volume))
-
-stl_vmt_all <-  stl_vmt %>% 
-  group_by(zone) %>% 
-  summarise(vmt_total = sum(vmt_total),
-            vmt_same = sum(vmt_same))
-
-hpms_streetlight <- left_join(
-  stl_vmt_all,
-  hpms_vmt,
-  by = c("zone" = "county")
-) %>%
-  unique() %>% 
-    mutate(hovertext = paste0(
-    "County: ", zone, "<br>",
-    "HPMS AADT: ", round(annual_vmt*1e-9), "B<br>",
-    "StreetLight VMT: ", round(vmt_total*1e-9), "B<br>",
-    "<extra></extra>"
-  ))
-
-```
-
-
-```{r fig-streetlight-hpms}
-#| fig-cap: "County vehicle miles traveled and StreetLight Volume"
-#| out-width: "95%"
-plot_ly(
-  data = hpms_streetlight,
-  x = ~annual_vmt,
-  y = ~vmt_total,
-  type = "scatter",
-  mode = "markers",
-  hoverinfo = "text",
-  hovertemplate = hpms_streetlight$hovertext,
-  opacity = 0.7,
-  marker = list(
-    size = 18,
-    line = list(
-      color = "lightgray",
-      width = 2
-    )
-  )
-) %>%
-  plotly_layout(
-    main_title = "County vehicle miles traveled and StreetLight Volume",
-    subtitle = "Strong positive correlation",
-    x_title = "Annual VMT (HPMS)",
-    y_title = "StreetLight VMT",
-    legend_title = "",
-    legend = list(orientation = "h")
-  )
-```
-
-
 ### Freight 
 ```{r}
 wi_osm_meta <- readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wi_osm_meta.RDS"))
@@ -394,6 +316,7 @@ calibration_long <- commercial_points %>%
 
 plot_ly(
   data = calibration_long,
+  source = opts_current$get()$label,
   type = "bar",
   x = ~name,
   y = ~value,
@@ -517,7 +440,7 @@ gt::gt(vehicle_weight_comp,
       rows = 7
     )
   ) %>%
-  fmt_markdown() %>% 
+  fmt_markdown() %>%
   as_raw_html()
 ```
 
@@ -536,7 +459,7 @@ For calibration, we found the ratio of passenger/medium/heavy-duty vehicles for 
 MnDOT provides AADT road segments, which align with station identification numbers. Wisconsin does not readily supply road segment data - as suggested by the Wisconsin cartographers office [@statecartographersofficeWisconsinRoadData2021], we pulled OpenStreetMaps road data (OSM version `r wi_osm_meta$OSM_version`). 
 
 To maximize data availability, we used the most recent data available, up to 2021 for both states. 
- 
+
 ### Limitations
 
 ### Comparison with similar datasets
