@@ -14,15 +14,15 @@ Emissions rates for our region were calculated using the EPA's [Motor Vehicle Em
 #| tbl-cap: "Emissions in grams per vehicle mile traveled by vehicle weight in the Twin Cities region"
 epa_moves %>%
   kable(
-    escape = FALSE, 
+    escape = FALSE,
     col.names =
       c(
         "MOVES Year",
         "Vehicle weight",
-        "CO~2~",
-        "CO~2~ and CO~2~ equivalent",
-        "CH~4~",
-        "N~2~O"
+        "CO₂",
+        "CO₂ and CO₂ equivalent",
+        "CH₄",
+        "N₂O"
       )
   )
 ```
@@ -57,9 +57,17 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 
 ### Comparison with similar datasets
 
-Compare with [GHG Emission Factors Hub](https://www.epa.gov/climateleadership/ghg-emission-factors-hub)
+- [GHG Emission Factors Hub](https://www.epa.gov/climateleadership/ghg-emission-factors-hub)
 
 ### Data dictionary
+
+```{r tlb-epa-moves-meta}
+#| tbl-cap: "EPA MOVES metadata"
+#| out-width: "95%"
+epa_moves_meta %>%
+  kable()
+```
+
 
 Table with detailed description of columns and definitions for each data table.
 
