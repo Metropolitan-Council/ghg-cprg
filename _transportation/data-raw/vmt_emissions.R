@@ -15,19 +15,25 @@ vehicle_emissions <- vehicle_miles %>%
   calculate_emissions(emissions_factors = epa_moves) %>%
   mutate(
     year = 2021,
-    vehicle_weight = factor(vehicle_weight, levels = c(
-      "Passenger",
-      "Medium",
-      "Heavy"
-    )),
+    vehicle_weight = factor(vehicle_weight,
+      levels = c(
+        "Passenger",
+        "Medium",
+        "Heavy"
+      ),
+      ordered = TRUE
+    ),
     vehicle_weight_label = case_when(
       vehicle_weight == "Passenger" ~ "Light-duty",
       TRUE ~ paste0(vehicle_weight, "-duty") %>%
-        factor(levels = c(
-          "Light-duty",
-          "Medium-duty",
-          "Heavy-duty"
-        ))
+        factor(
+          levels = c(
+            "Light-duty",
+            "Medium-duty",
+            "Heavy-duty"
+          ),
+          ordered = TRUE
+        )
     )
   ) %>%
   select(
@@ -39,11 +45,10 @@ vehicle_emissions <- vehicle_miles %>%
     vehicle_weight_label,
     zone,
     everything()
-  ) %>%
+  ) 
   # we are not including heavy duty/long-haul trucks in our calculation
   # because their actual trip origin and destinations are likely to be outside
   # the region
-  filter(vehicle_weight != "Heavy")
 
 
 vehicle_emissions %>%
