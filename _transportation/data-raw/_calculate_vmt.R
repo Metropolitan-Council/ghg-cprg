@@ -115,10 +115,18 @@ calculate_vmt <- function(data_list, class = "passenger"){
     droplevels() # remove extraneous data
   
   vmt_all <- 
-    left_join(od_same, od_origin,
+    left_join(od_same,
+              od_origin,
               join_by(analysis_name, mode_of_travel, zone, vehicle_weight)) %>% 
     left_join(od_destination,
               join_by(analysis_name, mode_of_travel, zone, vehicle_weight)) %>% 
+    rowwise() %>% 
+    # if heavy duty, 
+    # then vmt_origin and vmt_destination are 0
+    # because we assume the origin or destination is outside the region
+    # only vmt_same is counted for 
+    mutate(vmt_origin = ifelse(vehicle_weight == "Heavy", 0, vmt_origin),
+           vmt_destination = ifelse(vehicle_weight == "Heavy", 0, vmt_destination)) %>% 
     mutate(vmt_total = sum(vmt_origin, vmt_destination, vmt_same))
   
   
