@@ -25,7 +25,7 @@ vehicle_emissions <- vehicle_miles %>%
     ),
     vehicle_weight_label = case_when(
       vehicle_weight == "Passenger" ~ "Light-duty",
-      TRUE ~ paste0(vehicle_weight, "-duty") %>%
+      TRUE ~ paste0(vehicle_weight, "-duty")) %>%
         factor(
           levels = c(
             "Light-duty",
@@ -34,7 +34,7 @@ vehicle_emissions <- vehicle_miles %>%
           ),
           ordered = TRUE
         )
-    )
+    
   ) %>%
   select(
     analysis_name,
