@@ -24,6 +24,11 @@ wi_vmt19 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_cou
   output = "data.frame"
 )
 
+wi_vmt18 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2018-c.pdf",
+                                     output = "data.frame"
+)
+
+
 
 
 
@@ -31,10 +36,12 @@ wi_vmt19 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_cou
 # and read in a row as the column names
 # take the column names and add it to the table as a row
 wi_vmt19[[2]][32, ] <- names(wi_vmt19[[2]])
+wi_vmt18[[2]][32, ] <- names(wi_vmt18[[2]])
 
 
 # change column names of second table to be same as first
 names(wi_vmt19[[2]]) <- names(wi_vmt19[[1]])
+names(wi_vmt18[[2]]) <- names(wi_vmt18[[1]])
 
 
 # combine all tables
@@ -51,13 +58,22 @@ wi_vmt_county <- bind_rows(wi_vmt22) %>%
     bind_rows(wi_vmt20) %>%
       clean_names() %>%
       mutate(year = 2020),
-    bind_rows(
-      wi_vmt19
-    ) %>%
+    bind_rows(wi_vmt19) %>%
       clean_names() %>%
       # clean data to remove extra characters
       mutate(
         year = 2019,
+        county = stringr::str_remove(county, "[:digit:]"),
+        annual = stringr::str_remove(annual, "X") %>%
+          stringr::str_remove_all("\\."),
+        daily = stringr::str_remove(daily, "X") %>%
+          stringr::str_remove_all("\\.")
+      ),
+    bind_rows(wi_vmt18) %>%
+      clean_names() %>%
+      # clean data to remove extra characters
+      mutate(
+        year = 2018,
         county = stringr::str_remove(county, "[:digit:]"),
         annual = stringr::str_remove(annual, "X") %>%
           stringr::str_remove_all("\\."),
