@@ -13,16 +13,37 @@ vehicle_miles <- bind_rows(
 
 vehicle_emissions <- vehicle_miles %>%
   calculate_emissions(emissions_factors = epa_moves) %>%
-  mutate(year = 2021) %>%
+  mutate(
+    year = 2021,
+    vehicle_weight = factor(vehicle_weight, levels = c(
+      "Passenger",
+      "Medium",
+      "Heavy"
+    )),
+    vehicle_weight_label = case_when(
+      vehicle_weight == "Passenger" ~ "Light-duty",
+      TRUE ~ paste0(vehicle_weight, "-duty") %>%
+        factor(levels = c(
+          "Light-duty",
+          "Medium-duty",
+          "Heavy-duty"
+        ))
+    )
+  ) %>%
   select(
     analysis_name,
     mode_of_travel,
     year,
     vehicle_type,
     vehicle_weight,
+    vehicle_weight_label,
     zone,
     everything()
-  )
+  ) %>%
+  # we are not including heavy duty/long-haul trucks in our calculation
+  # because their actual trip origin and destinations are likely to be outside
+  # the region
+  filter(vehicle_weight != "Heavy")
 
 
 vehicle_emissions %>%
@@ -38,6 +59,7 @@ vehicle_emissions_meta <-
     "year", class(vehicle_emissions$year), "Emissions estimation year",
     "vehicle_type", class(vehicle_emissions$vehicle_type), "\"passenger\" or \"commercial\"",
     "vehicle_weight", class(vehicle_emissions$vehicle_weight), "\"Passenger\", \"Medium\", or \"Heavy\"",
+    "vehicle_weight_label", class(vehicle_emissions$vehicle_weight_label), "\"Light-duty\", \"Medium-duty\", or \"Heavy-duty\"",
     "zone", class(vehicle_emissions$zone), "County name",
     "vmt_same", class(vehicle_emissions$vmt_same), "Annual vehicle miles traveled for trips beginning and ending in the given county",
     "vmt_origin", class(vehicle_emissions$vmt_origin), "Annual vehicle miles traveled for trips starting in the given county",
