@@ -31,7 +31,7 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(knitr, quietly = TRUE))
   suppressMessages(library(kableExtra, quietly = TRUE))
   suppressMessages(library(gt, quietly = TRUE))
-  
+
 
   # Specialty -----
   suppressMessages(library(osrm, quietly = TRUE))
