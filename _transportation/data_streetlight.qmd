@@ -128,6 +128,7 @@ one_slope <- tibble(
 
 plot_ly(
   data = passenger_od_distance,
+  source = opts_current$get()$label,
   x = ~distance_miles,
   y = ~avg_all_trip_length_mi,
   color = ~pair_type,
@@ -198,6 +199,7 @@ passenger_dist_area <- left_join(
 
 plot_ly(
   data = passenger_dist_area,
+  source = opts_current$get()$label,
   x = ~area_sq_mi,
   y = ~avg_all_trip_length_mi,
   type = "scatter",
