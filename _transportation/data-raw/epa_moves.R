@@ -10,10 +10,20 @@ epa_moves <- tibble::tribble(
   "Heavy", 1212.36, 1213.90, 0.0206, 0.0402
 ) %>%
   janitor::clean_names() %>%
-  mutate(moves_year = case_when(
-    vehicle_weight == "Passenger" ~ 2019,
-    TRUE ~ 2018
-  )) %>%
+  mutate(
+    moves_year = case_when(
+      vehicle_weight == "Passenger" ~ 2019,
+      TRUE ~ 2018
+    ),
+    vehicle_weight = factor(vehicle_weight,
+      levels = c(
+        "Passenger",
+        "Medium",
+        "Heavy"
+      ),
+      ordered = TRUE
+    )
+  ) %>%
   select(moves_year, everything())
 
 
