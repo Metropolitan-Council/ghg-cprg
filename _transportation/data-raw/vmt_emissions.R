@@ -39,16 +39,16 @@ vehicle_emissions_meta <-
     "vehicle_type", class(vehicle_emissions$vehicle_type), "\"passenger\" or \"commercial\"",
     "vehicle_weight", class(vehicle_emissions$vehicle_weight), "\"Passenger\", \"Medium\", or \"Heavy\"",
     "zone", class(vehicle_emissions$zone), "County name",
-    "vmt_same", class(vehicle_emissions$vmt_same), "Vehicle miles traveled for trips beginning and ending in the given county",
-    "vmt_origin", class(vehicle_emissions$vmt_origin), "Vehicle miles traveled for trips starting in the given county",
-    "vmt_destination", class(vehicle_emissions$vmt_destination), "Vehcile miles traveled for trips ending in the given county",
-    "vmt_total", class(vehicle_emissions$vmt_total), "Total vehicle miles traveled for the given county (vmt_same + vmt_origin + vmt_destination)",
+    "vmt_same", class(vehicle_emissions$vmt_same), "Annual vehicle miles traveled for trips beginning and ending in the given county",
+    "vmt_origin", class(vehicle_emissions$vmt_origin), "Annual vehicle miles traveled for trips starting in the given county",
+    "vmt_destination", class(vehicle_emissions$vmt_destination), "Annual vehcile miles traveled for trips ending in the given county",
+    "vmt_total", class(vehicle_emissions$vmt_total), "Total annual vehicle miles traveled for the given county (vmt_same + vmt_origin + vmt_destination)",
     "moves_year", class(vehicle_emissions$moves_year), "EPA MOVES model run year",
-    "total_co2", class(vehicle_emissions$total_co2), "Total grams of CO~2~  attributed to the given county",
-    "total_ch4", class(vehicle_emissions$total_ch4), "Total grams of CH~4~  attributed to the given county",
-    "total_n2o", class(vehicle_emissions$total_n2o), "Total grams of N~2~O  attributed to the given county",
-    "total_co2_w_equiv", class(vehicle_emissions$total_co2_w_equiv), "Total grams of CO~2~ and CO~2~ equivalent attributed to the given county",
-    "emissions_tonnes_co2e", class(vehicle_emissions$emissions_tonnes_co2e), "Total metric tons CO~2~ and CO~2~ equivalent attributed to the given county"
+    "total_co2", class(vehicle_emissions$total_co2), "Annual total grams of CO~2~  attributed to the given county",
+    "total_ch4", class(vehicle_emissions$total_ch4), "Annual total grams of CH~4~  attributed to the given county",
+    "total_n2o", class(vehicle_emissions$total_n2o), "Annual total grams of N~2~O  attributed to the given county",
+    "total_co2_w_equiv", class(vehicle_emissions$total_co2_w_equiv), "Annual total grams of CO~2~ and CO~2~ equivalent attributed to the given county",
+    "emissions_tonnes_co2e", class(vehicle_emissions$emissions_tonnes_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given county"
   )
 
 saveRDS(vehicle_emissions, "_transportation/data/county_vmt_emissions.RDS")
