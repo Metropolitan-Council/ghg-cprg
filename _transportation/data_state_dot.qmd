@@ -20,10 +20,10 @@ These data were compiled from MnDOT and WisDOT county level reports. MnDOT provi
 WisDOT publishes PDF tables with county-level VMT. These were downloaded and data extracted using [`{tabulizer}`](https://github.com/ropensci/tabulizer), an R package interfacing with the Tabula PDF extractor library. Processing code can be found in [wisdot_vmt_county.R](data-raw/wisdot_vmt_county.R). 
 
 ```{r fig-dot-vmt}
-#| tbl-cap: "County vehicle miles traveled"
+#| fig-cap: "County vehicle miles traveled"
 #| out-width: "95%"
-dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>% 
-  filter(year < 2022) %>% 
+dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
+  filter(year < 2022) %>%
   group_by(county)
 
 
@@ -35,13 +35,13 @@ plot_ly(
   color = ~data_source,
   type = "scatter",
   mode = "lines+markers",
-  hovertemplate = ~paste0(
-    county, " County",  "<br>",
+  hovertemplate = ~ paste0(
+    county, " County", "<br>",
     year, "<br>",
-    round(annual_vmt*1e-9, digits = 2), " billion VMT annually", "<br>",
+    round(annual_vmt * 1e-9, digits = 2), " billion VMT annually", "<br>",
     "<extra></extra>"
   )
-) %>% 
+) %>%
   plotly_layout(
     main_title = "County annual vehicle miles traveled",
     x_title = "Year",

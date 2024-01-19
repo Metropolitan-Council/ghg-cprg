@@ -25,7 +25,7 @@ wi_vmt19 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_cou
 )
 
 wi_vmt18 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2018-c.pdf",
-                                     output = "data.frame"
+  output = "data.frame"
 )
 
 

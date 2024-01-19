@@ -23,10 +23,10 @@ vehicle_emissions <- vehicle_miles %>%
     vehicle_weight_label,
     zone,
     everything()
-  ) 
-  # we are not including heavy duty/long-haul trucks in our calculation
-  # because their actual trip origin and destinations are likely to be outside
-  # the region
+  )
+# we are not including heavy duty/long-haul trucks in our calculation
+# because their actual trip origin and destinations are likely to be outside
+# the region
 
 
 vehicle_emissions %>%
