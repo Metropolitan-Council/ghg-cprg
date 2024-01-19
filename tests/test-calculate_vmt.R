@@ -11,7 +11,8 @@ testthat::test_that("Correct number of calibration zone sets", {
 
   testthat::expect_equal(unique(names(c(passenger, commercial))),
                          c("analysis_name", "mode_of_travel", "zone", "vehicle_weight", 
-                           "vmt_same", "vmt_origin", "vmt_destination", "vmt_total"))
+                           "vmt_same", "vmt_origin", "vmt_destination", "vmt_total", 
+                           "vehicle_weight_label"))
   
   testthat::expect_equal(unique(c(commercial$zone, passenger$zone)),
                          c("Anoka", "Carver", "Chisago", "Dakota", "Hennepin", "Pierce", 
@@ -19,7 +20,8 @@ testthat::test_that("Correct number of calibration zone sets", {
   )
   
   testthat::expect_equal(unique(c(passenger$vehicle_weight, commercial$vehicle_weight)),
-                         c("Passenger", "Medium", "Heavy"),
+                         structure(1:3, levels = c("Passenger", "Medium", "Heavy"), class = c("ordered", 
+                                                                                              "factor"))
   )
   
   
