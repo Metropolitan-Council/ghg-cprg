@@ -13,29 +13,7 @@ vehicle_miles <- bind_rows(
 
 vehicle_emissions <- vehicle_miles %>%
   calculate_emissions(emissions_factors = epa_moves) %>%
-  mutate(
-    year = 2021,
-    vehicle_weight = factor(vehicle_weight,
-      levels = c(
-        "Passenger",
-        "Medium",
-        "Heavy"
-      ),
-      ordered = TRUE
-    ),
-    vehicle_weight_label = case_when(
-      vehicle_weight == "Passenger" ~ "Light-duty",
-      TRUE ~ paste0(vehicle_weight, "-duty")) %>%
-        factor(
-          levels = c(
-            "Light-duty",
-            "Medium-duty",
-            "Heavy-duty"
-          ),
-          ordered = TRUE
-        )
-    
-  ) %>%
+  mutate(year = 2021) %>%
   select(
     analysis_name,
     mode_of_travel,

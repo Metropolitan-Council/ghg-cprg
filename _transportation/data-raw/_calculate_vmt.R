@@ -126,8 +126,28 @@ calculate_vmt <- function(data_list, class = "passenger"){
     # because we assume the origin or destination is outside the region
     # only vmt_same is counted for 
     mutate(vmt_origin = ifelse(vehicle_weight == "Heavy", 0, vmt_origin),
-           vmt_destination = ifelse(vehicle_weight == "Heavy", 0, vmt_destination)) %>% 
-    mutate(vmt_total = sum(vmt_origin, vmt_destination, vmt_same))
+           vmt_destination = ifelse(vehicle_weight == "Heavy", 0, vmt_destination),
+           vmt_total = sum(vmt_origin, vmt_destination, vmt_same),
+           vehicle_weight = factor(vehicle_weight,
+                                   levels = c(
+                                     "Passenger",
+                                     "Medium",
+                                     "Heavy"
+                                   ),
+                                   ordered = TRUE
+           ),
+           vehicle_weight_label = case_when(
+             vehicle_weight == "Passenger" ~ "Light-duty",
+             TRUE ~ paste0(vehicle_weight, "-duty")) %>%
+             factor(
+               levels = c(
+                 "Light-duty",
+                 "Medium-duty",
+                 "Heavy-duty"
+               ),
+               ordered = TRUE
+             )) %>% 
+    ungroup()
   
   
   return(vmt_all)
