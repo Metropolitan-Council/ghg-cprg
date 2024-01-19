@@ -19,36 +19,7 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 hookaddcap()
 ```
 
-## MPCA Data
-
-The Minnesota Pollution Control Agency collects an annual inventory, [SCORE](https://public.tableau.com/app/profile/mpca.data.services/viz/SCOREOverview/1991-2021SCORE), of solid waste, recycling and organics as reported by counties across the state. For this project, we used MPCA data for the nine Minnesota counties for the year 2021.
-
-Data source description, type
-
-- Quality rank (See @tbl-quality-rank)
-Highest quality
-- How, when, and why was the data collected?
-- If this is a modeled dataset, what is the sample?
-not modeled - directly reported
-- What is the raw unit of measurement? 
-- How was this data accessed? Include any relevant links/citations, code, or downloads.
-- What data cleaning or wrangling was completed? How did you test these processes and outputs?
-- What is the geographic and temporal scope? Did you complete any aggregation?
-annual, county-level
-- What version is the data? Were there other versions available? If so, why did you choose this version?
-- What assumptions are made when we use this dataset?
-- Which subject matter expert (SME) reviewed this data?
-- Describe testing used to verify data
-
-Be sure to add a citation of this dataset to the Zotero shared library.
-
-### Data characteristics
-
-- Were there any missing data? How did you handle missing data?
-- Plots, tables, and description of data distribution
-- Variance, Z-Score, quantiles
-- Facet views by categorical variables
-
+{{< include data_mpca_score.qmd >}}
 
 ```{r echo=FALSE}
 saveCap("waste-data")

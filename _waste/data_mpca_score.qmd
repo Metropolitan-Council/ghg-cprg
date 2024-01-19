@@ -1,0 +1,85 @@
+## MPCA SCORE
+
+```{r}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+# pull data here
+mpca_score <- readRDS(file.path(here::here(), "_waste/data/mpca_score.RDS"))
+mpca_score_meta <- readRDS(file.path(here::here(), "_waste/data/mpca_score_meta.RDS"))
+# PULL IN DATA FROM TRANSPORTATION TO USE:
+# cprg_county <- readRDS(file.path(here::here(), "R/data/cprg_county.RDS"))
+hookaddcap()
+```
+
+
+The Minnesota Pollution Control Agency collects an annual inventory, [SCORE](https://public.tableau.com/app/profile/mpca.data.services/viz/SCOREOverview/1991-2021SCORE), of solid waste, recycling and organics as reported by counties across the state. For this project, we used MPCA data for the nine Minnesota counties for the year 2021.
+
+Data source description, type
+
+- Quality rank (See @tbl-quality-rank)
+Highest quality
+- How, when, and why was the data collected?
+- If this is a modeled dataset, what is the sample?
+not modeled - directly reported
+- What is the raw unit of measurement? 
+- How was this data accessed? Include any relevant links/citations, code, or downloads.
+- What data cleaning or wrangling was completed? How did you test these processes and outputs?
+- What is the geographic and temporal scope? Did you complete any aggregation?
+annual, county-level
+- What version is the data? Were there other versions available? If so, why did you choose this version?
+- What assumptions are made when we use this dataset?
+- Which subject matter expert (SME) reviewed this data?
+- Describe testing used to verify data
+
+Be sure to add a citation of this dataset to the Zotero shared library.
+
+### Data characteristics
+
+- Were there any missing data? How did you handle missing data?
+Missing WI data
+Removed MSW Compost as empty category
+- Plots, tables, and description of data distribution
+- Variance, Z-Score, quantiles
+- Facet views by categorical variables
+
+## Data distribution
+
+comparative bar plot of total waste for each county - broken down by type?
+ - check with Liz/Laine: is this too many categories for stacked bar
+
+```{r fig-total-waste}
+#| fig-cap: ""
+#| out-width: "95%"
+
+mpca_score %>%
+  select(-"Management Category")%>%
+  filter(!Method == "MSW Compost")%>%
+  pivot_wider(names_from = Method, values_from = Tons, values_fill = 0)%>%
+  plot_ly(
+    x = ~County,
+    y = ~Landfill,
+    name = "Landfill",
+    type = 'bar',
+    hoverinfo = "text"
+  )%>%
+  add_trace(y=~Onsite, name = "Onsite Disposal") %>%
+  add_trace(y=~Organics, name = "Compost") %>%
+  add_trace(y=~Recycling, name = "Recycling") %>%
+  add_trace(y=~WTE, name = "Waste to Energy") %>%
+  plotly_layout(
+    main_title = "Total waste generated per county",
+    x_title = "County",
+    y_title = "Tons Waste",
+    legend_title = "Management Method",
+    barmode = "stack"
+  )
+
+```
+
+compare waste and county area (scatterplot), expect correlation
+expect landfill > recycling > compost
+Note onsite in only two counties
+
+```{r echo=FALSE}
+saveCap("waste-data")
+```
