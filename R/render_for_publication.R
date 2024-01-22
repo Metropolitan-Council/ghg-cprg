@@ -1,3 +1,4 @@
+source("R/_load_pkgs.R")
 styler::style_dir()
 
 testthat::test_dir("tests")
