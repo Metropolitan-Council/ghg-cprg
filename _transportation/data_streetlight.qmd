@@ -383,6 +383,7 @@ However, vehicles falling in FHWA class 7 (> 26,000 lbs, < 33,000 lbs) are class
 
 ```{r tbl-vehicle-weight-classifications}
 #| tbl-cap: "Vehicle weight classifications by data source"
+#| out-width: "95%"
 vehicle_weight_comp <-
   tribble(
     ~`Gross vehicle weight rating (lbs)`, ~`FHWA`, ~`DOT`, ~`StreetLight`,
@@ -468,9 +469,9 @@ gt::gt(vehicle_weight_comp,
   as_raw_html()
 ```
 
-::: {#fig-vehicle-weight-afdc} 
-<iframe style="width: 900px; height: 1073.15px;" src="https://afdc.energy.gov/data/widgets/10380" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
-:::
+<!-- ::: {#fig-vehicle-weight-afdc} -->
+<!-- <iframe style="width: 900px; height: 1073.15px;" src="https://afdc.energy.gov/data/widgets/10380" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe> -->
+<!-- ::: -->
 
 
 
