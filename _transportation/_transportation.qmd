@@ -59,20 +59,20 @@ vmt_emissions_all <- vmt_emissions %>%
   summarise(
     vmt_total = sum(vmt_total),
     vmt_same = sum(vmt_same),
-    emissions_tonnes_co2e = sum(emissions_tonnes_co2e)
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
   )
 
 plot_ly(
   type = "bar",
   source = opts_current$get()$label,
   data = vmt_emissions,
-  y = ~ reorder(zone, emissions_tonnes_co2e),
-  x = ~emissions_tonnes_co2e,
+  y = ~ reorder(zone, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
   color = ~vehicle_weight_label,
   hovertemplate = ~ paste0(
     zone, " County", "<br>",
     vehicle_weight_label, "<br>",
-    round(emissions_tonnes_co2e * 1e-6, digits = 2), " million tonnes", "<br>",
+    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million tonnes", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -113,7 +113,7 @@ plot_ly(
   hovertemplate = ~ paste0(
     zone, " County", "<br>",
     "Population: ", scales::comma(population), "<br>",
-    "Emissions: ", round(emissions_tonnes_co2e * 1e-6, digits = 2), " million tonnes", "<br>",
+    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million tonnes", "<br>",
     "<extra></extra>"
   ),
   opacity = 0.7,

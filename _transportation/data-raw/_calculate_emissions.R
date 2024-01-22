@@ -18,7 +18,7 @@ calculate_emissions <- function(vmt_data,
       total_ch4 = vmt_total * ch4,
       total_n2o = vmt_total * n2o,
       total_co2_w_equiv = vmt_total * co2_co2_equivalent,
-      emissions_tonnes_co2e = total_co2_w_equiv / 1000000
+      emissions_metric_tons_co2e = total_co2_w_equiv / 1000000
     )
 
   return(efficiency)

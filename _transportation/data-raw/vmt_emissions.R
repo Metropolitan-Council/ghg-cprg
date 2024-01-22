@@ -31,7 +31,7 @@ vehicle_emissions <- vehicle_miles %>%
 
 vehicle_emissions %>%
   group_by(zone) %>%
-  summarize(total_emis = sum(emissions_tonnes_co2e))
+  summarize(total_emis = sum(emissions_metric_tons_co2e))
 
 names(vehicle_emissions)
 vehicle_emissions_meta <-
@@ -53,7 +53,7 @@ vehicle_emissions_meta <-
     "total_ch4", class(vehicle_emissions$total_ch4), "Annual total grams of CH~4~  attributed to the given county",
     "total_n2o", class(vehicle_emissions$total_n2o), "Annual total grams of N~2~O  attributed to the given county",
     "total_co2_w_equiv", class(vehicle_emissions$total_co2_w_equiv), "Annual total grams of CO~2~ and CO~2~ equivalent attributed to the given county",
-    "emissions_tonnes_co2e", class(vehicle_emissions$emissions_tonnes_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given county"
+    "emissions_metric_tons_co2e", class(vehicle_emissions$emissions_metric_tons_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given county"
   )
 
 saveRDS(vehicle_emissions, "_transportation/data/county_vmt_emissions.RDS")
