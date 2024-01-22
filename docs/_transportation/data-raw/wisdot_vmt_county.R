@@ -99,4 +99,6 @@ wi_vmt_county <- bind_rows(wi_vmt22) %>%
   )
 
 
+nrow(wi_vmt_county) == 10
+
 saveRDS(wi_vmt_county, "_transportation/data-raw/wisdot/wisdot_vmt_county.RDS")
