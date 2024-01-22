@@ -181,7 +181,7 @@ Comparing trip distance and county area, we see a general positive correlation (
 #| out-width: "95%"
 cprg_area <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-    as.numeric())
+           as.numeric())
 
 passenger_dist_area <- left_join(
   passenger_od_trip %>%
@@ -262,18 +262,42 @@ commercial_points <- readRDS(file.path(here::here(), "_transportation/data/comme
   ))
 
 
+bound_box <- st_bbox(commercial_lines) %>% 
+  unlist()
+
 council_leaflet() %>%
+  addPolygons(
+    data = cprg_county %>% 
+      sf::st_transform(4326),
+    fill = FALSE,
+    color = "gray",
+    popup = cprg_county$NAMELSAD,
+    group = "County outlines"
+  ) %>% 
   addPolylines(
     data = commercial_lines,
     weight = 6,
     color = "black",
-    popup = commercial_lines$hover_info
+    popup = commercial_lines$hover_info,
+    group = "Road segments"
   ) %>%
   addCircleMarkers(
     data = commercial_points,
     popup = commercial_points$hover_info,
     fillColor = colors$councilBlue,
-    radius = 10
+    radius = 10,
+    group = "Stations"
+  ) %>% 
+  leaflet::addLayersControl(
+    overlayGroups =  c("County outlines",
+                       "Stations",
+                       "Road segments")
+  ) %>% 
+  fitBounds(
+    lng1 = bound_box[[1]],
+    lng2 = bound_box[[3]],
+    lat1 = bound_box[[2]],
+    lat2 = bound_box[[4]]
   )
 ```
 
@@ -373,7 +397,7 @@ vehicle_weight_comp <-
   )
 
 gt::gt(vehicle_weight_comp,
-  row_group_as_column = FALSE
+       row_group_as_column = FALSE
 ) %>%
   tab_style(
     style = list(
