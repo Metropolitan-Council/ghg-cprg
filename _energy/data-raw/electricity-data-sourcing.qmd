@@ -278,76 +278,37 @@ Wisconsin data processing
 
 ```{r Wisconsin-data}
 
-#Taking a manual approach to data imputation given the different allocation methods necessitated by data avilability across different types of utilities. We collected data reported to state and federal authorities for all 7 utilities identified in distinct_util_type_WI as operating within St. Croix and Pierce counties
 
-#MUNIS -- two utilities
-#New Richmond -- only operates within St. Croix county, allocate all there
-#source: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/WEGS/WEGS_2021_4139.pdf
+#combine
 
-NewRichmond_mWh_delivered <- data.frame(
-  county = c("St.Croix"),
-  mWh_delivered = c(102201.827), #102,201,827 kWh reported
-  utility = c("New Richmond Utilities")
-)
+#all like..
 
+# rm(all like... ...tot/mwh)
 
-#River Falls Municipal Utility -- operates only within both St Croix and Pierce counties, allocate total activity by number of customer accounts within each
-#source: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/WEGS/WEGS_2021_5110.pdf
-
-riverFalls_PierceProp = 4901/7038 #4,901 of 7,038 total customers in Pierce
-riverFalls_StCroixProp = 2137/7038 #2,137 of 7,038 total customers in St. Croix
-
-riverFalls_tot_mWh <- 128159.282 #128,159,282 kwH
-
-riverFalls_mWh_delivered <- data.frame(
-  county = c("Pierce", "St. Croix"),
-  mWh_delivered = c(riverFalls_PierceProp * riverFalls_tot_mWh, 
-                    riverFalls_StCroixProp * riverFalls_tot_mWh),
-  utility = c("River Falls Municipal Utility", "River Falls Municipal Utility")
-)
-
-
-#IOU - one utility
-#Northern States Power Company -- operates statewide; allocate state-level activity data using proportion of customers in St Croix and Pierce counties
-#source: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_4220.pdf
-northernStates_PierceProp = 7489/266071 
-northernStates_StCroixProp = 24850/266071 
-
-northernStates_tot_mWh <- 6788131 #reported as mWh rather than kWh
-
-northernStates_mWh_delivered <- data.frame(
-  county = c("Pierce", "St. Croix"),
-  mWh_delivered = c(northernStates_PierceProp * northernStates_tot_mWh, 
-                    northernStates_StCroixProp * northernStates_tot_mWh),
-  utility = c("Northern States Power Company - Wisconsin", 
-              "Northern States Power Company - Wisconsin")
-)
-
-
-#COOPERATIVES -- 4 utilities. Co-ops don't report to the state, and two of four are missing data in/for EIA-861 (The Annual Electric Power Industry Report)
+#COOPERATIVES -- 4 utilities. 
+#Co-ops don't report to the state, and two of four are missing data in/for EIA-861 (The Annual Electric Power Industry Report). For these, we estiamte activity based on customer/account number.
+# St Croix Electric Cooperative: 11,637 customer accounts on 2021 annual report https://scecnet.net/elm-2022
+# Pierce-Pepin Electric Cooperative Services: 7,859 customers accounts (as of 12/31/2022, year-end 2021 numbers were not available). https://piercepepin.coop/ppcs-quick-facts
 
 #Dunn County Electric Coop and Polk-Burnett Electric Coop -- activity data provided to federal government at state level (i.e., all electricity delivered in WI) allocated to counties in study area weighted by population
 #source: US Energy Information Administration, Annual Electric Power Industry Report, Form EIA-861 detailed data files (Sales to Ultiamte Customers) -- https://www.eia.gov/electricity/data/eia861/
+#Customer counts from reports to Wisconsin PSC
+#
 
 
+# USE THE FOLLOWING CODE TO GET CENSUS BLOCKS FOR WISCONSIN TO IDENTIFY POPULATIONS IN UTILITY SERVICE AREAS
 
-#census_api_key(Sys.getenv("CENSUS_API_KEY"), install = TRUE)
-
-#get block-level popualtions for whole of Wisconsin, and allocate population to the whole of service areas served by utilities
-wisconsinPopBlocks <- get_decennial(
-  state = "WI",
-  geography = "block",
-  variables = "P1_001N",
-  sumfile = "pl",
-  geometry = TRUE,
-  year = 2020
-) %>% 
+#get block-level populations for whole of Wisconsin, and allocate population to the whole of service areas served by utilities
+#wisconsinPopBlocks <- get_decennial(
+#  state = "WI",
+#  geography = "block",
+#  variables = "P1_001N",
+#  sumfile = "pl",
+#  geometry = TRUE,
+#  year = 2020
+#) %>% 
   #harmonize to Wisconsin state-level data CRS
-  st_transform(st_crs(fullServiceArea_inScopeUtilities_WI))
-
-st_write(wisconsinPopBlocks, here("wi_utility_reporting",
-                                  "wisconsin_2020PopBlocks.shp"))
-
+#  st_transform(st_crs(fullServiceArea_inScopeUtilities_WI))
 
 #The following code threw an error due to an overage of memory, so I shifted to ArcGIS Pro to complete this spatial data task.
 #utilityPopTotals <- fullServiceArea_inScopeUtilities_WI %>%
@@ -369,7 +330,7 @@ WIutilities_in_scope_CensusBlockSums <- st_read(
   here("wi_utility_reporting", "WIutilities_in_scope_CensusBlockSums.shp")
 ) 
 
-# creates table with utility, county, and the proportion of the utility's statewide activity data to allocate to the respective utility-county pair
+# creates table with utility, county, the proportion of the utility's statewide activity data to allocate to the respective utility-county pair
 processed_wi_elecUtil_activityData <- st_drop_geometry(WIutilities_in_scope_CensusBlockSums) %>%
   rename(utility_name = utlty_n, 
          countyUtilityPop = sum_value, 
@@ -380,7 +341,79 @@ processed_wi_elecUtil_activityData <- st_drop_geometry(WIutilities_in_scope_Cens
                      totalUtilityPop = sum_value),
             by = "utility_name") %>%
   select(utility_name, county_name, countyUtilityPop, totalUtilityPop) %>%
-  mutate(propUtilityCustomersInCounty = countyUtilityPop / totalUtilityPop)
+  mutate(propUtilityPopInCounty = countyUtilityPop / totalUtilityPop) %>%
+  mutate(
+    util_Total_mWh = case_when(
+      utility_name == "Dunn Energy Cooperative" ~ 220809,
+      utility_name == "Polk-Burnett Electric Cooperative" ~ 241590,
+      utility_name == "New Richmond Municipal Electric Utility" ~ 102201.827,
+      utility_name == "River Falls Municipal Utility" ~ 128159.282,
+      utility_name == "Northern States Power Company-Wisconsin" ~ 6788131
+  ),
+    utility_TotalCustomerCount = case_when(
+      utility_name == "Dunn Energy Cooperative" ~ 10270,
+      utility_name == "Polk-Burnett Electric Cooperative" ~ 21303,
+      utility_name == "St Croix Electric Cooperative" ~ 11637,
+      utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 7859,
+      utility_name == "Northern States Power Company-Wisconsin" ~ 266071,
+      utility_name == "River Falls Municipal Utility" ~ 7038,
+      utility_name == "New Richmond Municipal Electric Utility" ~ 5333
+      
+  ),
+    utilityCustomer_county = case_when(
+      utility_name == "New Richmond Municipal Electric Utility" ~ 5333,
+      utility_name == "Northern States Power Company-Wisconsin" 
+        & county_name == "Pierce" ~ 7489,
+      utility_name == "Northern States Power Company-Wisconsin" 
+        & county_name == "St. Croix" ~ 24850,  
+      utility_name == "River Falls Municipal Utility" 
+        & county_name == "Pierce" ~ 4901,
+      utility_name == "River Falls Municipal Utility" 
+        & county_name == "St. Croix" ~ 2137
+  ),
+    propCustomerAccountsInCounty = 
+      utilityCustomer_county / utility_TotalCustomerCount,
+    EST_propCustomerAccountsInCounty = 
+      ifelse(!is.na(utilityCustomer_county), 
+      NA, 
+      round(propUtilityPopInCounty * utility_TotalCustomerCount)),
+    utilityCounty_mWh = 
+      ifelse(!is.na(utilityCustomer_county), 
+      round(util_Total_mWh * propUtilityPopInCounty), 
+      NA),
+    mWh_perCustomerAccount = 
+      ifelse(!is.na(EST_propCustomerAccountsInCounty),
+             NA,
+             util_Total_mWh / utility_TotalCustomerCount)
+  )
+             
+#    mWh_perCustomer = 
+#      ifelse(is.na(EST_propCustomerAccountsInCounty), 
+#      NA, 
+#      round(propUtilityPopInCounty * utility_TotalCustomerCount)),
+#    EST_mWh_perCustomer = 
+#      ifelse(!is.na(EST_propCustomerAccountsInCounty), 
+#      NA, 
+#      round(propUtilityPopInCounty * utility_TotalCustomerCount)),
+```
+
+Wisconsin data imputation + emissions factor
+
+```{r}
+
+# Load eGRID Total Output Emission Rates (lb/MWh) for CO2 for the MROW subregion (which covers our study area) from https://www.epa.gov/egrid/summary-data 
+eGRID_MROW_emissionsFactor <- 995.8
+
+# Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county, process and merge data -- this will be a separate data colelction process spanning excel reports submitted to state
+processed_wi_elecUtil_activityData <- processed_wi_elecUtil_activityData %>%
+  mutate(~,
+         GHG_emissions = mWh_delivered * eGRID_MROW_emissionsFactor)
+
+# Aggregate data by county
+WIcounty_level_emissions <- processed_wi_elecUtil_activityData %>%
+  group_by(county_name) %>%
+  summarise(total_GHG_emissions_lbs = sum(GHG_emissions, na.rm = TRUE),
+            total_GHG_emissions_tons = total_GHG_emissions_lbs / 2000)
 ```
 
 \#
@@ -408,6 +441,106 @@ fullServiceArea_inScopeUtilities_WI <- fullServiceArea_inScopeUtilities_WIe %>%
 
 text
 
-```{r}
+```{r graveyard-links}
 
+#Taking a manual approach to data imputation given the different allocation methods necessitated by data avilability across different types of utilities. We collected data reported to state and federal authorities for all 7 utilities identified in distinct_util_type_WI as operating within St. Croix and Pierce counties
+
+#MUNIS -- two utilities
+#New Richmond -- only operates within St. Croix county, allocate all there
+#source: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/WEGS/WEGS_2021_4139.pdf
+
+NewRichmond_tot_mWh <- 102201.827
+  
+NewRichmond_mWh_delivered <- data.frame(
+  county = c("St. Croix"),
+  customerCount = c(5333),
+  utility = c("New Richmond Utilities")
+)
+
+NewRichmond_mWh_delivered$totalCustomers <- NewRichmond_mWh_delivered$customerCount
+NewRichmond_mWh_delivered$mWh_delivered <- NewRichmond_tot_mWh
+
+#River Falls Municipal Utility -- operates only within both St Croix and Pierce counties, allocate total activity by number of customer accounts within each
+#source: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/WEGS/WEGS_2021_5110.pdf
+
+riverFalls_tot_mWh <- 128159.282 #128,159,282 kwH
+
+riverFalls_mWh_delivered <- data.frame(
+  county = c("Pierce", "St. Croix"),
+  customerCount = c(4901, 2137),
+  utility = c("River Falls Municipal Utility", "River Falls Municipal Utility")
+)
+
+# Calculate total customers - a constant value for all rows
+total_customers <- sum(riverFalls_mWh_delivered$customerCount)
+
+# Dynamically calculate the mWh_delivered for each row
+riverFalls_mWh_delivered$mWh_delivered <- 
+  (riverFalls_mWh_delivered$customerCount / total_customers) * riverFalls_tot_mWh
+
+# Add the total_customers as a new constant column
+riverFalls_mWh_delivered$total_customerCount <- total_customers
+
+
+#IOU - one utility
+#Northern States Power Company -- operates statewide; allocate state-level activity data using proportion of customers in St Croix and Pierce counties
+#source: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_4220.pdf
+northernStates_tot_mWh <- 6788131
+
+northernStates_mWh_delivered <- data.frame(
+  county = c("Pierce", "St. Croix"),
+  customerCount <- c(7489, 24850),
+  utility = c("Northern States Power Company - Wisconsin", 
+              "Northern States Power Company - Wisconsin")
+)
+
+# Total customers
+totalCustomers <- sum(northernStates_mWh_delivered$customerCount)
+
+northernStates_mWh_delivered$mWh_delivered <- 
+  (northernStates_mWh_delivered$customerCount/total_customers) * northernStates_tot_mWh
+
+# Add the totalCustomers to the dataframe
+northernStates_mWh_delivered$totalCustomers <- totalCustomers
+
+
+
+#Dunn Energy Cooperative
+
+dunn_tot_mWh <- 220809
+dunnEnergyCoop_mWh_delivered <- data.frame(
+  county = c("YourCountyHere"), # Replace with actual data
+  customers = c(YourNumberOfCustomers), # Replace with actual data
+  mWh_delivered = c(YourMWhDelivered), # Replace with actual data
+  utility = "Dunn Energy Cooperative"
+)
+
+
+#Polk-Burnett Electric Cooperative
+northernStates_tot_mWh
+polkBurnettCoop_mWh_delivered <- data.frame(
+  county = c("YourCountyHere"), # Replace with actual data
+  customers = c(YourNumberOfCustomers), # Replace with actual data
+  mWh_delivered = c(YourMWhDelivered), # Replace with actual data
+  utility = "Polk-Burnett Electric Cooperative"
+)
+
+
+#St Croix Electric Cooperative
+stCroix_tot_mWh
+stCroixCoop_mWh_delivered <- data.frame(
+  county = c("YourCountyHere"), # Replace with actual data
+  customers = c(YourNumberOfCustomers), # Replace with actual data
+  mWh_delivered = c(YourMWhDelivered), # Replace with actual data
+  utility = "St Croix Electric Cooperative"
+)
+
+#Pierce-Pepin Electric Cooperative Services
+piercePepin_tot_mWh
+piercePepinCoop_mWh_delivered <- data.frame(
+  county = c("YourCountyHere"), # Replace with actual data
+  customers = c(YourNumberOfCustomers), # Replace with actual data
+  mWh_delivered = c(YourMWhDelivered), # Replace with actual data
+  utility = "Pierce-Pepin Electric Cooperative Services"
+)
 ```
