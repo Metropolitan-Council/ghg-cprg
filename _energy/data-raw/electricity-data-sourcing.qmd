@@ -58,8 +58,6 @@ mn_elecUtils <- st_read(here("shp_util_eusa_MN", "Service_Areas.shp")) %>%
 #reproject MN counties to same projection as mn_elecUtils to perform intersection
 mn_counties <- st_transform(mn_counties, st_crs(mn_elecUtils))
 
-st_write(mn_counties, here("shp_util_eusa_MN","mn_counties_transformed.shp"), append = FALSE)
-
 #identify utilities that operate in study area
 MNutilities_in_scope <- st_intersection(mn_elecUtils, mn_counties) %>%
   select(comments, type, street, city, state, zip, website, mpuc_name,
@@ -67,44 +65,14 @@ MNutilities_in_scope <- st_intersection(mn_elecUtils, mn_counties) %>%
   rename(utility_name = mpuc_name, utility_type = type, 
          mn_utility_id = mn_utility, county_name = NAME, county = NAMELSAD)
 
-st_write(MNutilities_in_scope, here("shp_util_eusa_MN","MNutilities_in_scope.shp"), append = FALSE)
-
 write_rds(MNutilities_in_scope, here("mn_utility_reporting", "MN_utilities.RDS"))
 
 distinct_util_type_MN <- MNutilities_in_scope %>%
   distinct(utility_name, utility_type)
 
-#Great River Energy is an electricity generation/transmission cooperative that is the primary supplier for multiple customer-facing MN electric utilities that operate within our study area. The following dataframe encodes all of the member cooperatives of Great River (and their headquarters city); some of these organizations do not directly report their electricity delivered to the State and so we must referen ce documents submitted by Great River. Info from 2021 Great River Annual Financial Report (https://greatriverenergy.com/wp-content/uploads/2022/04/2021-GRE-Annual-Report-FINAL.pdf)
-
-
-#
-GreatRiver_utilities <- data.frame(
-  utility = c(
-    "Agralite Electric Cooperative", "Arrowhead Cooperative, Inc.", 
-    "BENCO Electric", "Brown County Rural Electrical Association", 
-    "Connexus Energy", "Cooperative Light & Power", "Crow Wing Power", 
-    "Dakota Electric Association", "East Central Energy", 
-    "Federated Rural Electric Association", 
-    "Goodhue County Cooperative Electric Association", 
-    "Itasca-Mantrap Cooperative Electrical Association", 
-    "Kandiyohi Power Cooperative", "Lake Country Power", 
-    "Lake Region Electric Cooperative", "McLeod Cooperative Power Association", 
-    "Meeker Cooperative Light and Power Association", 
-    "Mille Lacs Energy Cooperative", "Minnesota Valley Electric Cooperative", 
-    "Nobles Cooperative Electric", "North Itasca Electric Cooperative, Inc.", 
-    "Redwood Electric Cooperative", "Runestone Electric Association", 
-    "South Central Electric Association", "Stearns Electric Association", 
-    "Steele-Waseca Cooperative Electric", "Todd-Wadena Electric Cooperative", 
-    "Wright-Hennepin Cooperative Electric Association"
-  ),
-  city = c(
-    "Benson", "Lutsen", "Mankato", "Sleepy Eye", "Ramsey", "Two Harbors", 
-    "Brainerd", "Farmington", "Braham", "Jackson", "Zumbrota", "Park Rapids", 
-    "Spicer", "Cohasset", "Pelican Rapids", "Glencoe", "Litchfield", 
-    "Aitkin", "Jordan", "Worthington", "Bigfork", "Clements", "Alexandria", 
-    "St. James", "Melrose", "Owatonna", "Wadena", "Rockford"
-  )
-)
+#drop intermediary dataframes
+rm(mn_counties)
+rm(mn_elecUtils)
 
 ```
 
@@ -201,6 +169,17 @@ write_rds(WIutilities_in_scope, here("wi_utility_reporting",
 
 distinct_util_type_WI <- WIutilities_in_scope %>%
   distinct(utility_name, utility_type)
+
+
+#remove intermediary dataframes
+rm(wi_muni_utilitiesInScope)
+rm(wi_iou_utilitiesInScope)
+rm(wi_coop_utilitiesInScope)
+rm(wi_utility_files)
+rm(wi_muni)
+rm(wi_iou)
+rm(wi_coop)
+rm(wi_counties)
 ```
 
 Minnesota utility activity data processing
@@ -269,6 +248,11 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
           mWh_delivered = scottNewPragueMuni_mWh,
           utility = "NewPragueUtilitiesCommission")
   
+rm(file_list)
+rm(dir_mn_electricity)
+rm(scottProp)
+rm(scottNewPragueMuni_mWh)
+rm(sherburneElkRiverMuni_mWh)
 ```
 
 Minnesota emissions factor
@@ -392,7 +376,8 @@ processed_wi_elecUtil_activityData <- st_drop_geometry(WIutilities_in_scope_Cens
          county_name = cnty_nm) %>%
   #first, prepare county-level allocations of statewide activity data
   left_join(st_drop_geometry(fullElecUtilityServiceAreas_CensusBlockSums) %>%
-              rename(utility_name = utlty_nm_x, totalUtilityPop = sum_value),
+              rename(utility_name = utlty_nm_x, 
+                     totalUtilityPop = sum_value),
             by = "utility_name") %>%
   select(utility_name, county_name, countyUtilityPop, totalUtilityPop) %>%
   mutate(propUtilityCustomersInCounty = countyUtilityPop / totalUtilityPop)
@@ -419,46 +404,6 @@ population_summary <- joined_data %>%
 # Merge the summarized population back into fullServiceArea_inScopeUtilities_WI
 fullServiceArea_inScopeUtilities_WI <- fullServiceArea_inScopeUtilities_WIe %>%
   left_join(population_summary, by = "utlty_nm_x")
-
-
-
-
-
-utilityCountyTotals
-
-#sum within study area service area
-
-#create sf with TOTAL service area for all 7 utilities that operate within St Croix and Pierce
-
-WIutilities_in_scope #geometries of all utilities within St Croix/Pierce
-
-#sum within total service area for 
-
-#propHH_study = popStudy / popTotal
-#allocated_mWh = propHH_study * utilityTotalmWh
-
-#St Croix Electric Coop and Pierce Pepin Electric Cooperative Services -- activity data estimated by number of accounts, using average activity per account derived from all other WI utilities
-#St Croix Co-op: https://scecnet.net/elm-2022 
-#Pierce Pepin: https://piercepepin.coop/ppcs-quick-facts
-
-
-
-# Join utility data with county customer data
-combined_data <- left_join(county_customer_data, utility_data, by = "utility_id")
-
-# Calculate proportion of electricity delivered to each county
-combined_data <- combined_data %>%
-  mutate(proportion = county_customers / total_customers,
-         county_electricity = total_electricity * proportion)
-
-# Step 3: Aggregate to get total electricity per county
-county_electricity_totals <- combined_data %>%
-  group_by(county) %>%
-  summarise(total_electricity = sum(county_electricity))
-
-# Step 4: Apply emissions factors
-county_electricity_totals <- county_electricity_totals %>%
-  mutate(GHG_emissions = total_electricity * emissions_factor)  # Replace emissions_factor with actual factor
 ```
 
 text
