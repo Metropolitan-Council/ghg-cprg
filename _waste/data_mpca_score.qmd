@@ -52,20 +52,20 @@ comparative bar plot of total waste for each county - broken down by type?
 #| out-width: "95%"
 
 mpca_score %>%
-  select(-"Management Category")%>%
-  filter(!Method == "MSW Compost")%>%
-  pivot_wider(names_from = Method, values_from = Tons, values_fill = 0)%>%
+  select(-"Management Category") %>%
+  filter(!Method == "MSW Compost") %>%
+  pivot_wider(names_from = Method, values_from = Tons, values_fill = 0) %>%
   plot_ly(
     x = ~County,
     y = ~Landfill,
     name = "Landfill",
-    type = 'bar',
+    type = "bar",
     hoverinfo = "text"
-  )%>%
-  add_trace(y=~Onsite, name = "Onsite Disposal") %>%
-  add_trace(y=~Organics, name = "Compost") %>%
-  add_trace(y=~Recycling, name = "Recycling") %>%
-  add_trace(y=~WTE, name = "Waste to Energy") %>%
+  ) %>%
+  add_trace(y = ~Onsite, name = "Onsite Disposal") %>%
+  add_trace(y = ~Organics, name = "Compost") %>%
+  add_trace(y = ~Recycling, name = "Recycling") %>%
+  add_trace(y = ~WTE, name = "Waste to Energy") %>%
   plotly_layout(
     main_title = "Total waste generated per county",
     x_title = "County",
@@ -73,7 +73,6 @@ mpca_score %>%
     legend_title = "Management Method",
     barmode = "stack"
   )
-
 ```
 
 compare waste and county area (scatterplot), expect correlation
