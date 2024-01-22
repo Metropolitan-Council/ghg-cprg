@@ -107,7 +107,7 @@ plot_ly(
   data = vmt_population,
   source = opts_current$get()$label,
   x = ~population,
-  y = ~vmt_total,
+  y = ~emissions_metric_tons_co2e,
   type = "scatter",
   mode = "markers",
   hovertemplate = ~ paste0(
@@ -163,8 +163,8 @@ plot_ly(
   mode = "markers",
   hovertemplate = ~ paste0(
     "County: ", zone, "<br>",
-    "Annual VMT: ", round(annual_vmt * 1e-9), " billion<br>",
-    "StreetLight VMT: ", round(vmt_total * 1e-9), " billion<br>",
+    "Annual VMT: ", round(annual_vmt * 1e-9, digits = 2), " billion<br>",
+    "StreetLight VMT: ", round(vmt_total * 1e-9, digits = 2), " billion<br>",
     "<extra></extra>"
   ),
   opacity = 0.7,

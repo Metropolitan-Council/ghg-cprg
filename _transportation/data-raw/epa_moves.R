@@ -9,10 +9,7 @@ gwp <- tibble::tribble(
   "co2", 1,
   "ch4", 28,
   "n2o", 273
-) %>% 
-  pivot_wider(names_from = ghg,
-              values_from = co2_equiv)
-
+)
 
 epa_moves <- tibble::tribble(
   ~vehicle_weight, ~CO2, ~CH4, ~N2O,
@@ -21,9 +18,11 @@ epa_moves <- tibble::tribble(
   "Heavy", 1212.36, 0.0206, 0.0402
 ) %>%
   janitor::clean_names() %>%
-  rowwise() %>% 
-  mutate(co2_co2_equivalent = 
-           sum(co2, (ch4 * 28), (n2o * 273))) %>% 
+  rowwise() %>%
+  mutate(
+    co2_co2_equivalent =
+      sum(co2, (ch4 * 28), (n2o * 273))
+  ) %>%
   mutate(
     moves_year = case_when(
       vehicle_weight == "Passenger" ~ 2019,
