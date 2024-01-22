@@ -384,7 +384,16 @@ processed_wi_elecUtil_activityData <- st_drop_geometry(WIutilities_in_scope_Cens
     mWh_perCustomerAccount = 
       ifelse(!is.na(EST_propCustomerAccountsInCounty),
              NA,
-             util_Total_mWh / utility_TotalCustomerCount)
+             util_Total_mWh / utility_TotalCustomerCount),
+    EST_utilityCounty_mWh = 
+      ifelse(is.na(EST_propCustomerAccountsInCounty),
+             NA,
+             (EST_propCustomerAccountsInCounty / utility_TotalCustomerCount) 
+             * util_Total_mWh),
+    EST_mWh_perCustomerAccount = 
+       ifelse(is.na(EST_propCustomerAccountsInCounty),
+             NA,
+             EST_utilityCounty_mWh / EST_propCustomerAccountsInCounty),   
   )
              
 #    mWh_perCustomer = 
