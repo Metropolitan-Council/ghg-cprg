@@ -30,13 +30,13 @@ calculate_vmt <- function(data_list, class = "passenger") {
 
   # Get origin-destination volume
   od_all <- data_list[od_table][[1]] %>%
-    select(analysis_name, metric_group,
+    dplyr::select(analysis_name, metric_group,
       mode_of_travel, origin_zone_name,
       destination_zone_name, day_type, day_part,
       estimated_trips = any_of(trip_col),
       vehicle_weight
     ) %>%
-    filter(
+    dplyr::filter(
       day_type == "0: All Days (M-Su)",
       day_part == "0: All Day (12am-12am)"
     )
@@ -44,7 +44,7 @@ calculate_vmt <- function(data_list, class = "passenger") {
 
   # get trip lengths
   od_trip_all <- data_list[trip_table][[1]] %>%
-    select(
+    dplyr::select(
       analysis_name,
       origin_zone_name,
       destination_zone_name,
@@ -53,29 +53,29 @@ calculate_vmt <- function(data_list, class = "passenger") {
       avg_all_trip_length_mi,
       vehicle_weight
     ) %>%
-    filter(
+    dplyr::filter(
       day_type == "0: All Days (M-Su)",
       day_part == "0: All Day (12am-12am)"
     )
 
   # calculate origin-destination VMT from volume and avg trip length
   od_trips <- od_all %>%
-    left_join(
+    dplyr::left_join(
       od_trip_all,
-      join_by(
+      dplyr::join_by(
         analysis_name,
         origin_zone_name, destination_zone_name,
         day_type, day_part,
         vehicle_weight
       )
     ) %>%
-    rowwise() %>%
-    mutate(
+    dplyr::rowwise() %>%
+    dplyr::mutate(
       vmt = estimated_trips * avg_all_trip_length_mi,
       vmt_year = vmt * 365,
       vmt_year_half = vmt_year * 0.5
     ) %>%
-    select(
+    dplyr::select(
       analysis_name,
       mode_of_travel,
       origin_zone_name,
@@ -95,7 +95,7 @@ calculate_vmt <- function(data_list, class = "passenger") {
 
   od_same <- od_trips %>%
     # filter to only trips that have the same origin and destination zones
-    filter(origin_zone_name == destination_zone_name) %>%
+    dplyr::filter(origin_zone_name == destination_zone_name) %>%
     dplyr::mutate(
       zone = origin_zone_name, # create shorter name zone name variable
       vmt_same = vmt_year
@@ -107,7 +107,7 @@ calculate_vmt <- function(data_list, class = "passenger") {
     droplevels() # remove extraneous data
 
   od_origin <- od_trips %>%
-    filter(origin_zone_name != destination_zone_name) %>%
+    dplyr::filter(origin_zone_name != destination_zone_name) %>%
     dplyr::ungroup() %>%
     # get only origin zones
     dplyr::mutate(zone = origin_zone_name) %>%
@@ -123,7 +123,7 @@ calculate_vmt <- function(data_list, class = "passenger") {
 
   od_destination <- od_trips %>%
     # filter to only trips that have different origin and destination
-    filter(origin_zone_name != destination_zone_name) %>%
+    dplyr::filter(origin_zone_name != destination_zone_name) %>%
     dplyr::ungroup() %>%
     # get only destination zones
     dplyr::mutate(zone = destination_zone_name) %>%
@@ -137,21 +137,21 @@ calculate_vmt <- function(data_list, class = "passenger") {
     droplevels() # remove extraneous data
 
   vmt_all <-
-    left_join(
+    dplyr::left_join(
       od_same,
       od_origin,
-      join_by(analysis_name, mode_of_travel, zone, vehicle_weight)
+      dplyr::join_by(analysis_name, mode_of_travel, zone, vehicle_weight)
     ) %>%
-    left_join(
+    dplyr::left_join(
       od_destination,
-      join_by(analysis_name, mode_of_travel, zone, vehicle_weight)
+      dplyr::join_by(analysis_name, mode_of_travel, zone, vehicle_weight)
     ) %>%
-    rowwise() %>%
+    dplyr::rowwise() %>%
     # if heavy duty,
     # then vmt_origin and vmt_destination are 0
     # because we assume the origin or destination is outside the region
     # only vmt_same is counted for heavy duty vehicles
-    mutate(
+    dplyr::mutate(
       vmt_origin = ifelse(vehicle_weight == "Heavy", 0, vmt_origin),
       vmt_destination = ifelse(vehicle_weight == "Heavy", 0, vmt_destination),
       vmt_total = sum(vmt_origin, vmt_destination, vmt_same),
@@ -163,7 +163,7 @@ calculate_vmt <- function(data_list, class = "passenger") {
         ),
         ordered = TRUE
       ),
-      vehicle_weight_label = case_when(
+      vehicle_weight_label = dplyr::case_when(
         vehicle_weight == "Passenger" ~ "Light-duty",
         TRUE ~ paste0(vehicle_weight, "-duty")
       ) %>%
@@ -176,7 +176,7 @@ calculate_vmt <- function(data_list, class = "passenger") {
           ordered = TRUE
         )
     ) %>%
-    ungroup()
+    dplyr::ungroup()
 
 
   return(vmt_all)
