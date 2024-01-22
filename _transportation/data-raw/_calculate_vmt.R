@@ -1,11 +1,15 @@
 #' Calculate vehicle miles traveled
 #'
-#' @param data_list list, named list of metrics returned from a StreetLight analysis
+#' @param data_list list, named list of metrics returned from a StreetLight analysis. 
+#' @param class character, one of "passenger" or "commercial"
 #'
-#' @return
+#' @return table with columns     
+#'   c( "analysis_name", "mode_of_travel", "zone", "vehicle_weight",
+#'   "vmt_same", "vmt_origin", "vmt_destination", "vmt_total",
+#'   "vehicle_weight_label"
+#'   )
 #' @export
 #'
-#' @examples
 calculate_vmt <- function(data_list, class = "passenger") {
   if (class == "passenger") {
     od_table <- "od_all"
