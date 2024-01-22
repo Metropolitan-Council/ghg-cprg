@@ -9,7 +9,8 @@ wisdot_vmt <- readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/w
 dot_vmt <- bind_rows(
   mndot_vmt,
   wisdot_vmt
-)
+) %>% 
+  ungroup()
 
 names(dot_vmt)
 
