@@ -1,13 +1,20 @@
 ## StreetLight Data
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
+
+cprg_county <- readRDS(file.path(here::here(), "R/data/cprg_county.RDS"))
 hookaddcap()
 ```
 
-Introduction text 
+[StreetLight Data](https://www.streetlightdata.com/) is a transportation analytics platform that uses aggregated location-based services (LBS) data from cell phones and navigation/GPS data to deliver insights on travel patterns. For this project, we used StreetLight to find the volume of traffic going from each county and city or township unit (CTU) to each CTU for personal and commercial traffic during 2021.
+
+For ease of access, we used `{streetlightR}`, an R package, to interact directly with the StreetLight API. `{streetlightR}` is open-source and maintained by Council staff ^[Maintainer: Liz Roten]. 
+
 Data source description, type
 
-- Qualtiy rank (See @tbl-quality-rank)
+- StreetLight Data, falls in second rank. Quality rank (See @tbl-quality-rank)
 - How, when, and why was the data collected?
 - If this is a modeled dataset, what is the sample?
 - What is the raw unit of measurement? 
@@ -19,7 +26,7 @@ Data source description, type
 - Which subject matter expert (SME) reviewed this data?
 - Describe testing used to verify data
 
-Be sure to add a citation of this dataset to the references.bib
+Be sure to add a citation of this dataset to the Zotero shared library.
 
 ### Data characteristics
 
@@ -28,36 +35,462 @@ Be sure to add a citation of this dataset to the references.bib
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
 
-```{r fig-scatter-stl}
-#| fig-cap: "A scatter plot"
-shinipsum::random_ggplotly(type = "point") %>%
-  councilR::plotly_layout(
-    main_title = "Scatter"
+### Passenger 
+
+#### Trip length validation 
+
+To test logical validity of trip lengths, we will compare the minimum distance between each origin and destination with the average trip length. These should correlate.
+
+```{r calc-min-county-dist}
+# create distance matrix
+county_distance_matrix <- sf::st_distance(
+  cprg_county,
+  cprg_county
+)
+
+# unpack distance matrix
+cprg_distances <- purrr::map_dfr(
+  1:nrow(cprg_county),
+  function(x) {
+    tibble(
+      origin_zone_name = cprg_county$NAME[x],
+      destination_zone_name = cprg_county$NAME,
+      distance_miles = units::set_units(
+        county_distance_matrix[x, ],
+        "miles"
+      ) %>% as.numeric()
+    )
+  }
+)
+```
+
+```{r stl-pass-county-run}
+# read in county passenger 2021 StL run
+county21_data <- readRDS(file.path(here::here(), "_transportation/data-raw/analysis_runs/county21_data.RDS"))
+
+passenger_od <- county21_data$od_all %>%
+  filter(
+    day_type == "0: All Days (M-Su)",
+    day_part == "0: All Day (12am-12am)"
+  ) %>%
+  select(
+    analysis_name, metric_group,
+    mode_of_travel, origin_zone_name,
+    destination_zone_name, day_type, day_part,
+    average_daily_o_d_traffic_st_l_volume
+  )
+
+passenger_od_trip <- county21_data$od_trip_all %>%
+  filter(
+    day_type == "0: All Days (M-Su)",
+    day_part == "0: All Day (12am-12am)"
+  ) %>%
+  select(
+    analysis_name,
+    origin_zone_name,
+    destination_zone_name,
+    day_type, day_part, avg_trip_length_mi,
+    avg_all_trip_length_mi
+  )
+
+# combine with county distance data
+passenger_od_distance <- passenger_od_trip %>%
+  left_join(cprg_distances, join_by(origin_zone_name, destination_zone_name)) %>%
+  rowwise() %>%
+  # create tooltip text
+  mutate(hovertext = paste0(
+    "Origin county: ", origin_zone_name, "<br>",
+    "Destination county: ", destination_zone_name, "<br>",
+    "Minimum distance: ", round(distance_miles), " miles", "<br>",
+    "Average trip length: ", round(avg_all_trip_length_mi, digits = 2), " miles",
+    "<extra></extra>"
+  )) %>%
+  mutate(
+    pair_type = case_when(
+      distance_miles == 0 ~ "Adjacent or same county",
+      origin_zone_name == destination_zone_name ~ "Adjacent or same county",
+      TRUE ~ "Non-adjacent counties"
+    )
   )
 ```
 
 
-```{r fig-boxplot-stl}
-#| fig-cap: "A boxplot"
-shinipsum::random_ggplotly(type = "boxplot") %>%
-  councilR::plotly_layout(
-    main_title = "Boxplot"
+In cases where the origin and destination counties are not adjacent, the average trip length is consistently higher than the minimum distance between the counties. 
+
+```{r fig-trip-dist-min-dist}
+#| fig-cap: "Avg. trip distance and minimum distance between counties"
+#| out-width: "95%"
+one_slope <- tibble(
+  x = 0:max(passenger_od_distance$distance_miles + 10),
+  y = 0:max(passenger_od_distance$distance_miles + 10),
+  hovertext = "1-1 slope <extra></extra>"
+)
+
+plot_ly(
+  data = passenger_od_distance,
+  source = opts_current$get()$label,
+  x = ~distance_miles,
+  y = ~avg_all_trip_length_mi,
+  color = ~pair_type,
+  type = "scatter",
+  mode = "markers",
+  hoverinfo = "text",
+  hovertemplate = passenger_od_distance$hovertext,
+  opacity = 0.7,
+  colors = c(
+    colors$councilBlue,
+    colors$metrostatsDaPurp
+  ),
+  marker = list(
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  add_trace(
+    inherit = FALSE,
+    name = "1-1 correlation",
+    data = one_slope,
+    type = "scatter",
+    mode = "lines",
+    x = ~x,
+    y = ~y,
+    hoverinfo = "text",
+    hovertemplate = one_slope$hovertext,
+    line = list(color = "gray")
+  ) %>%
+  plotly_layout(
+    main_title = "Avg. trip distance and minimum distance between counties",
+    subtitle = "Adjacent or within counties have a minimum distance of 0 miles",
+    x_title = "Minimum distance between counties (miles)",
+    y_title = "Average trip distance (miles)",
+    legend_title = "",
+    legend = list(orientation = "h")
   )
 ```
 
 
-```{r fig-density-stl}
-#| fig-cap: "A density plot"
-shinipsum::random_ggplotly(type = "density") %>%
-  councilR::plotly_layout(
-    main_title = "Density"
+We would also expect that large counties will have longer trip lengths and smaller counties will have shorter trip lengths. 
+
+Comparing trip distance and county area, we see a general positive correlation (the larger the county, the longer the average trip). 
+
+```{r fig-trip-county-area}
+#| fig-cap: "Avg. distance for trips within county and county area"
+#| out-width: "95%"
+cprg_area <- cprg_county %>%
+  mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
+    as.numeric())
+
+passenger_dist_area <- left_join(
+  passenger_od_trip %>%
+    filter(origin_zone_name == destination_zone_name),
+  cprg_area,
+  by = c("origin_zone_name" = "NAME")
+) %>%
+  mutate(hovertext = paste0(
+    "County: ", origin_zone_name, "<br>",
+    "County area: ", round(area_sq_mi), " sq. miles", "<br>",
+    "Average trip length: ", round(avg_all_trip_length_mi, digits = 2), " miles",
+    "<extra></extra>"
+  ))
+
+
+plot_ly(
+  data = passenger_dist_area,
+  source = opts_current$get()$label,
+  x = ~area_sq_mi,
+  y = ~avg_all_trip_length_mi,
+  type = "scatter",
+  mode = "markers",
+  hoverinfo = "text",
+  hovertemplate = passenger_dist_area$hovertext,
+  opacity = 0.7,
+  marker = list(
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "Avg. trip distance within county and county area",
+    subtitle = "General positive correlation",
+    x_title = "County area (square miles)",
+    y_title = "Average trip distance (miles)",
+    legend_title = "",
+    legend = list(orientation = "h")
   )
 ```
 
+
+### Freight 
+```{r}
+wi_osm_meta <- readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wi_osm_meta.RDS"))
+```
+
+StreetLight does not provide StreetLight Volume for 2021 commercial vehicle analyses. To measure volume for commercial traffic, we used the StreetLight Index, a relative measure of traffic volume, calibrated using AADT values to result in traffic volume [@streetlightdataStreetLightIndex2023]. 
+
+StreetLight compares the AADT calibration values for a given zone with StreetLight’s sample size for the same zone, and creates a calibration factor to apply to the entire analysis [@streetlightdataWhatSingleFactor2023]. We generated a calibration zone set for commercial traffic by selecting road segments with both AADT and vehicle classification data in both MN and WI.
+
+State DOT's operates vehicle classification stations across the state, which provide both the volume of traffic on a given road segment and the breakdown of volume by vehicle type. We obtained this breakdown using data from MnDOT [@mndotYearlyVolumeTrends2021] and WisDOT [@wisdotWisconsinVehicleClassification2020]. 
+
+
+<!-- Add table comparing vehicle classification definitions -->
+
+Then, we selected only the stations within the study area with observations in the last five years (2017-2021). Finally, we joined this data with Average Annual Daily Traffic (AADT) [@mndotVMTRouteSystem2021, @wisdotWisconsinVehicleMiles2021] road segments by station ID. The road segments sampled include multiple road functional classes and segments in all seven metro counties. All traffic sensor stations pulled were permanent, continuous monitoring sites.
+
+```{r fig-map-calibration-set}
+#| fig-cap: "StreetLight calibration locations and values"
+#| out-width: "95%"
+#| out-height: "500px"
+commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_lines.RDS")) %>%
+  mutate(hover_info = paste0(
+    "Name: ", name, "<br>"
+  ))
+
+commercial_points <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_points.RDS")) %>%
+  mutate(hover_info = paste0(
+    "Name: ", name, "<br>",
+    "AADT: ", scales::comma(current_volume), "<br>",
+    "Year: ", year, "<br>",
+    "Passenger traffic: ", scales::percent(personal_traffic_ratio, accuracy = 1), "<br>",
+    "Medium-duty traffic: ", scales::percent(medium_commercial_ratio, accuracy = 1), "<br>",
+    "Heavy-duty traffic: ", scales::percent(heavy_commercial_ratio, accuracy = 1), "<br>"
+  ))
+
+
+bound_box <- st_bbox(commercial_lines) %>%
+  unlist()
+
+council_leaflet() %>%
+  addPolygons(
+    data = cprg_county %>%
+      sf::st_transform(4326),
+    fill = FALSE,
+    color = "gray",
+    popup = cprg_county$NAMELSAD,
+    group = "County outlines"
+  ) %>%
+  addPolylines(
+    data = commercial_lines,
+    weight = 6,
+    color = "black",
+    popup = commercial_lines$hover_info,
+    group = "Road segments"
+  ) %>%
+  addCircleMarkers(
+    data = commercial_points,
+    popup = commercial_points$hover_info,
+    fillColor = colors$councilBlue,
+    radius = 10,
+    group = "Stations"
+  ) %>%
+  leaflet::addLayersControl(
+    overlayGroups = c(
+      "County outlines",
+      "Stations",
+      "Road segments"
+    )
+  ) %>%
+  fitBounds(
+    lng1 = bound_box[[1]],
+    lng2 = bound_box[[3]],
+    lat1 = bound_box[[2]],
+    lat2 = bound_box[[4]]
+  )
+```
+
+
+```{r fig-vehicle-weight-distribution}
+#| fig-cap: "Vehicle weight distribution at calibration points"
+#| out-width: "95%"
+calibration_long <- commercial_points %>%
+  arrange(-heavy_commercial_ratio) %>%
+  select(
+    name,
+    year,
+    personal_traffic_ratio,
+    medium_commercial_ratio,
+    heavy_commercial_ratio
+  ) %>%
+  sf::st_drop_geometry() %>%
+  tidyr::pivot_longer(
+    cols = c(
+      personal_traffic_ratio,
+      medium_commercial_ratio,
+      heavy_commercial_ratio
+    ),
+    names_to = "vehicle_weight"
+  ) %>%
+  mutate(
+    vehicle_weight =
+      case_when(
+        vehicle_weight == "personal_traffic_ratio" ~ "Passenger",
+        vehicle_weight == "medium_commercial_ratio" ~ "Medium-duty",
+        vehicle_weight == "heavy_commercial_ratio" ~ "Heavy-duty",
+      ),
+    hovertext = paste0(
+      "Name: ", name, "<br>",
+      "Year: ", year, "<br>",
+      scales::percent(value, accuracy = 1), " ", vehicle_weight, "<br>",
+      "<extra></extra>"
+    )
+  )
+
+plot_ly(
+  data = calibration_long,
+  source = opts_current$get()$label,
+  type = "bar",
+  x = ~name,
+  y = ~value,
+  color = ~vehicle_weight,
+  hoverinfo = "text",
+  hovertemplate = ~hovertext
+) %>%
+  plotly_layout(
+    main_title = "Vehicle weight distribution",
+    y_title = "Proportion of all traffic",
+    x_title = "Calibration zone",
+    legend_title = "Vehicle weight"
+  ) %>%
+  layout(
+    barmode = "stack",
+    xaxis = list(
+      rangemode = "normal",
+      ticktext = ""
+    ),
+    yaxis = list(
+      tickformat = "1%"
+    )
+  )
+```
+
+#### Vehicle classification and calibration
+
+StreetLight classifies commercial vehicles by Federal Highway Administration (FHWA) gross vehicle weight range (GWVR) classes: where vehicles between 14,000 lbs and 26,000 lbs (Class 4 to Class 6) are considered medium-duty, and vehicles greater than 26,000 lbs (Class 7+) are heavy-duty [@streetlightdataTruckTravelMode2023]. 
+
+
+MnDOT classifies and reports vehicles weight distributions using FHWA standards, as compared with their visual vehicle classification guide [@]
+
+
+EPA's Motor Vehicle Emissions Simulator (MOVES4) has their own, slightly different vehicle classification system [@usepaPopulationActivityOnroad2023].  
+
+After reviewing MnDOT's [visual definitions of commercial vehicles](https://www.dot.state.mn.us/traffic/data/reports/wim/Definitions_of_Visual_Classifications_of_Heavy_Commercial_Vehicles.pdf), we defined MnDOT vehicle types 4-7 as medium-duty and types 8-13 as heavy-duty. We believe this configuration aligns most closely with both StreetLight's and MOVES4' vehicle classifications schemes.
+
+However, vehicles falling in FHWA class 7 (> 26,000 lbs, < 33,000 lbs) are classified as medium duty by state DOTs, and heavy duty by StreetLight. This discrepancy is relatively small, 
+
+
+```{r tbl-vehicle-weight-classifications}
+#| tbl-cap: "Vehicle weight classifications by data source"
+#| out-width: "95%"
+vehicle_weight_comp <-
+  tribble(
+    ~`Gross vehicle weight rating (lbs)`, ~`FHWA`, ~`DOT`, ~`StreetLight`,
+    "<6000", "Class 1: <6,000 lbs", "Light-duty", "Light-duty",
+    "10,000", "Class 2: 6,001-10,000lbs", "Light-duty", "Light-duty",
+    "14,000", "Class 3: 10,001-14,000 lbs", "Light-duty", "Light-duty",
+    "16,000", "Class 4: 14,001-16,000 lbs", "Medium-duty", "Medium-duty",
+    "19,500", "Class 5: 16,001-19,500 lbs", "Medium-duty", "Medium-duty",
+    "26,000", "Class 6: 19,501-26,000 lbs", "Medium-duty", "Medium-duty",
+    "33,000", "Class 7: 26,001-33,000 lbs", "Medium-duty", "Heavy-duty",
+    ">33,000", "Class 8+: >33,001 lbs", "Heavy-duty", "Heavy-duty"
+  )
+
+gt::gt(vehicle_weight_comp,
+  row_group_as_column = FALSE
+) %>%
+  tab_style(
+    style = list(
+      cell_fill(
+        color = "lightgray",
+        alpha = 0.5
+      ),
+      cell_borders(sides = "top")
+    ),
+    locations = cells_body(
+      columns = 3:4,
+      rows = 1:3
+    )
+  ) %>%
+  tab_style(
+    style = list(
+      cell_fill(
+        color = "lightblue",
+        alpha = 0.5
+      ),
+      cell_borders(sides = "top")
+    ),
+    locations = cells_body(
+      columns = 3:4,
+      rows = 4:6
+    )
+  ) %>%
+  tab_style(
+    style = list(
+      cell_fill(
+        color = "lightblue",
+        alpha = 0.5
+      ),
+      cell_borders(sides = "top")
+    ),
+    locations = cells_body(
+      columns = 3,
+      rows = 7
+    )
+  ) %>%
+  tab_style(
+    style = list(
+      cell_fill(
+        color = "lightgreen",
+        alpha = 0.5
+      ),
+      cell_borders(sides = "top")
+    ),
+    locations = cells_body(
+      columns = 3:4,
+      rows = 8
+    )
+  ) %>%
+  tab_style(
+    style = list(
+      cell_fill(
+        color = "lightgreen",
+        alpha = 0.5
+      ),
+      cell_borders(sides = "top")
+    ),
+    locations = cells_body(
+      columns = 4,
+      rows = 7
+    )
+  ) %>%
+  fmt_markdown() %>%
+  as_raw_html()
+```
+
+<!-- ::: {#fig-vehicle-weight-afdc} -->
+<!-- <iframe style="width: 900px; height: 1073.15px;" src="https://afdc.energy.gov/data/widgets/10380" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe> -->
+<!-- ::: -->
+
+
+
+<!-- plot of passenger/medium/heavy percentages for each calibration zone -->
+
+#### Calibration 
+
+For calibration, we found the ratio of passenger/medium/heavy-duty vehicles for traffic sensors within our study areas. 
+
+MnDOT provides AADT road segments, which align with station identification numbers. Wisconsin does not readily supply road segment data - as suggested by the Wisconsin cartographers office [@statecartographersofficeWisconsinRoadData2021], we pulled OpenStreetMaps road data (OSM version `r wi_osm_meta$OSM_version`). 
+
+To maximize data availability, we used the most recent data available, up to 2021 for both states. 
 
 ### Limitations
 
 ### Comparison with similar datasets
+
 
 ### Data dictionary
 

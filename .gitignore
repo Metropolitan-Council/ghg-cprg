@@ -10,3 +10,41 @@
 _transportation/report_transportation_files/figure-html/
 _waste/data-raw/score_summary.csv
 _waste/data-raw/ghg-emission-factors-hub-2021.xlsx
+
+R/WI_Cities%2C_Towns_and_Villages_(July_2023)/
+
+R/WI_Cities%2C_Towns_and_Villages_(July_2023).zip
+
+_transportation/data-raw/stl_raw_downloads/1594313_CPRG_County_OD_NP_2021/1594313_CPRG_County_OD_NP_2021_od_all.csv
+
+_transportation/data-raw/stl_raw_downloads/1594313_CPRG_County_OD_NP_2021/1594313_CPRG_County_OD_NP_2021_od_trip_all.csv
+
+_transportation/data-raw/stl_raw_downloads/1594313_CPRG_County_OD_NP_2021/Zone Activity/
+
+_transportation/data-raw/stl_raw_downloads/1594313_CPRG_County_OD_NP_2021/Shapefile/
+
+_transportation/data-raw/stl_raw_downloads/1594313_CPRG_County_OD_NP_2021/Analysis Details/1594313_CPRG_County_OD_NP_2021_sample_size.csv
+
+_transportation/data-raw/stl_raw_downloads/1594313_CPRG_County_OD_NP_2021/Analysis Details/1594313_CPRG_County_OD_NP_2021_skipped_time_attributes.csv
+
+_transportation/data-raw/stl_raw_downloads/1594313_CPRG_County_OD_NP_2021/Analysis Details/1594313_CPRG_County_OD_NP_2021_zones.csv
+
+_transportation/data-raw/stl_raw_downloads/1594313_CPRG_County_OD_NP_2021.zip
+
+_transportation/data-raw/mndot/yearly_volume_trends_with_distribution_reports/
+
+_transportation/data-raw/mndot/Current_CC_StationList.xlsx
+
+_transportation/data-raw/mndot/county_route_system/
+
+_transportation/data-raw/wisdot/vmt_by_county/
+
+_transportation/data-raw/wisdot/Traffic_Counts.geojson
+
+_transportation/data-raw/wisdot/~$class.xlsx
+
+_transportation/data-raw/stl_raw_downloads/1599856_CPRG_County_OD_NP_Truck_SFCalib_2021/
+
+_transportation/data-raw/stl_raw_downloads/1599856_CPRG_County_OD_NP_Truck_SFCalib_2021.zip
+
+_transportation/data-raw/mndot/~$Current_CC_StationList.xlsx

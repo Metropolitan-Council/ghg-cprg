@@ -1,0 +1,69 @@
+# Supplementary data
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+```{r, include=FALSE}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+hookaddcap()
+```
+
+## Geographic data
+
+Geographic data were processed in [cprg_geography.R](../R/cprg_geography.R).
+
+### Counties
+
+County data was pulled using `{tigris}`, an R package that downloads TIGER/Line shapefiles from the US Census Bureau [@walkerTigrisLoadCensus2023]. 2021 geographies for Minnesota and Wisconsin were pulled, combined, and saved. 
+
+```{r tbl-cprg-county}
+#| tbl-cap: "County geography metadata"
+#| out-width: "95%"
+cprg_county_meta <- readRDS(file.path(here::here(), "R/data/cprg_county_meta.RDS"))
+
+cprg_county_meta %>%
+  kable()
+```
+
+Additionally, population estimates were obtained from the American Community Survey 5-Year estimates (2017-2021) using `{tidycensus}` [@Census2022ACSDP1Y2022.DP05].
+
+```{r tbl-cprg-population}
+#| tbl-cap: "County population metadata"
+#| out-width: "95%"
+cprg_population <- readRDS(file.path(here::here(), "R/data/cprg_population_meta.RDS"))
+
+cprg_population %>%
+  kable()
+```
+
+### Cities
+
+Minnesota cities, townships, and unorganized territories were imported from [Minnesota Geospatial Commons](https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg) [@mndotCityTownshipUnorganized2023]. 
+
+Wisconsin cities, towns, and villages were imported from Wisconsin's Legislative Technology Services Bureau [@wisconsinlegislatureWisconsinCitiesTowns2023]. 
+
+Data from both states was then combined and filtered to include only the workplan area counties.
+
+```{r tbl-cprg-ctu}
+#| tbl-cap: "City geography metadata"
+#| out-width: "95%"
+cprg_ctu_meta <- readRDS(file.path(here::here(), "R/data/cprg_ctu_meta.RDS"))
+
+cprg_ctu_meta %>%
+  kable()
+```
+
+
+```{r echo=FALSE}
+saveCap("supp-data")
+```
