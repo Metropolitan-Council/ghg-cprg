@@ -16,8 +16,9 @@ if (exists("metc_bbx") == FALSE) {
       ) %>%
       leaflet::addProviderTiles("CartoDB.PositronNoLabels",
         group = "Carto Positron"
-      ) %>%
-      leaflet::fitBounds(metc_bbx$lat1, metc_bbx$lon1, metc_bbx$lat2, metc_bbx$lon2)
+      )
+    # %>%
+    # leaflet::fitBounds(metc_bbx$lat1, metc_bbx$lon1, metc_bbx$lat2, metc_bbx$lon2)
   }
 
   cli::cli_inform(

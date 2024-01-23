@@ -19,10 +19,178 @@ hookaddcap()
 ```
 ## Introduction
 
+Transportation is consistently the highest source of emissions in the state (MPCA report). 
+
 ## Methods
+
+The general workflow for transportation emissions is to find vehicle miles traveled for a given geography, 
+
+$$Emmissions = miles \times \frac{\text{GHG grams}}{mile}$$
+
+### Vehicle Miles Traveled      
+
+To find the estimate number of vehicle miles traveled (VMT), we used the estimated number of vehicles and the average trip length in miles for all origin - destination pairs. VMT is calculated as follows:
+
+$$VMT{_v} = trips{_v} \times length{_v}$$
+
+where 
+
+$$trips = \text{number of trips}$$
+$$length = \text{average trip length in miles}$$
+$$v = \text{vehicle type}$$
+
+### Emissions factors
+
+$$Emissions=\frac{1}{2}T_{o} + \frac{1}{2}T_{d}  + T{_d}$$
+
+where
+
+$$T_o=\textrm{grams of emissions for each GHG from all trips originating in the county}$$
+
+$$T_d=\textrm{grams of emissions for each GHG from all trips ending in the county}$$ 
 
 ## Results
 
+```{r}
+vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
+
+vmt_emissions_all <- vmt_emissions %>%
+  group_by(zone) %>%
+  summarise(
+    vmt_total = sum(vmt_total),
+    vmt_same = sum(vmt_same),
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  )
+
+plot_ly(
+  type = "bar",
+  source = opts_current$get()$label,
+  data = vmt_emissions,
+  y = ~ reorder(zone, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
+  color = ~vehicle_weight_label,
+  hovertemplate = ~ paste0(
+    zone, " County", "<br>",
+    vehicle_weight_label, "<br>",
+    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million tonnes", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 annual emissions by vehicle weight",
+    subtitle = "",
+    y_title = "County",
+    x_title = "Greenhouse gases emitted (tonnes)",
+    legend_title = "Vehicle weight"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+```
+
+
+### Correlation with related data
+
+We would expect counties with higher population to have higher emissions and VMT.
+
+```{r fig-emissions-population}
+#| fig-cap: "County population and emissions"
+#| out-width: "95%"
+cprg_population <- readRDS(file.path(here::here(), "R/data/cprg_population.RDS"))
+vmt_population <- left_join(vmt_emissions_all, cprg_population,
+  by = c("zone" = "NAME")
+)
+plot_ly(
+  data = vmt_population,
+  source = opts_current$get()$label,
+  x = ~population,
+  y = ~emissions_metric_tons_co2e,
+  type = "scatter",
+  mode = "markers",
+  hovertemplate = ~ paste0(
+    zone, " County", "<br>",
+    "Population: ", scales::comma(population), "<br>",
+    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million tonnes", "<br>",
+    "<extra></extra>"
+  ),
+  opacity = 0.7,
+  marker = list(
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "County population and emissions",
+    subtitle = "2021 ACS 5-year population estimates. Strong positive correlation",
+    x_title = "Total population",
+    y_title = "Emissions",
+    legend_title = "",
+    legend = list(orientation = "h")
+  )
+```
+
+
+To validate our county origin-destination VMT data, we can compare the county totals to the DOT reported values from MnDOT [@mndotVMTRouteSystem2021] and WisDOT [@wisdotWisconsinVehicleMiles2021]. Note that these data include all vehicles, passenger and commercial. 
+
+```{r hpms-vmt}
+dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
+  filter(year == 2021)
+
+dot_streetlight <- left_join(
+  vmt_emissions_all,
+  dot_vmt,
+  by = c("zone" = "county")
+) %>%
+  unique()
+```
+
+
+```{r fig-streetlight-hpms}
+#| fig-cap: "County vehicle miles traveled and StreetLight Volume"
+#| out-width: "95%"
+plot_ly(
+  data = dot_streetlight,
+  source = opts_current$get()$label,
+  x = ~annual_vmt,
+  y = ~vmt_total,
+  type = "scatter",
+  mode = "markers",
+  hovertemplate = ~ paste0(
+    "County: ", zone, "<br>",
+    "Annual VMT: ", round(annual_vmt * 1e-9, digits = 2), " billion<br>",
+    "StreetLight VMT: ", round(vmt_total * 1e-9, digits = 2), " billion<br>",
+    "<extra></extra>"
+  ),
+  opacity = 0.7,
+  marker = list(
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "County vehicle miles traveled and StreetLight Volume",
+    subtitle = "Strong positive correlation",
+    x_title = "Annual VMT (HPMS)",
+    y_title = "StreetLight VMT",
+    legend_title = "",
+    legend = list(orientation = "h")
+  )
+```
+
+### Comparison with other inventories
+
+- StreetLight GHG inventory method, if released in time.
+- 2018 Met Council inventory
+- LGGIT
 
 
 ```{r echo=FALSE}

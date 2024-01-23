@@ -1,3 +1,7 @@
+source("R/_load_pkgs.R")
+
+# if necessary, remove all cache's and stray html files
+# source("R/remove_caches.R")
 styler::style_dir()
 
 testthat::test_dir("tests")

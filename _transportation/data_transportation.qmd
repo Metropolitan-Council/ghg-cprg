@@ -22,7 +22,10 @@ hookaddcap()
 
 {{< include data_streetlight.qmd >}}
 
-<!-- {{< include other_data.qmd >}} -->
+{{< include data_state_dot.qmd >}}
+
+{{< include data_epa_moves.qmd >}}
+
 
 
 
