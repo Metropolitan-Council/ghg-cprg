@@ -1,5 +1,5 @@
 # manually delete caches and outstanding .html files
-
+source("R/_load_pkgs.R")
 # manually delete caches
 list.files(pattern = "*_cache") %>% fs::dir_delete()
 list.files(path = "_energy/", pattern = "*_cache", full.names = TRUE) %>%
