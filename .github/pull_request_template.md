@@ -8,23 +8,19 @@ Code and styling
 * [ ] I have used `file.path(here::here(), "file_name"))` to source any scripts or read in data
 * [ ] I have not added any large datasets, unless absolutely necessary (explain)
 * [ ] I have commented my code, particularly in hard to understand areas
-* [ ] I have added additional package dependencies as necessary to renv with `renv::install()`
+* [ ] I have added additional package dependencies as necessary with `renv::install()`
 * [ ] I have run `styler::style_dir(".", recursive = TRUE, filetype = c("R", "qmd"))`
 * [ ] Plots
-  - [ ] If plotly, have you "source" argument that matches the chunk name? 
-  - [ ] correct formatting using `councilR::plotly_layout()`?
-* [ ] chunk formatting
-  - [ ] all chunks named
-  - [ ] all figure or table chunks have caption
-  - [ ] `out.width: "95%"` and `out.height: "60%"`
+  - [ ] If plotly, use `source = opts_current$get()$label` in `plot_ly()`
+  - [ ] Use formatting with `councilR::plotly_layout()`?
+* [ ] Chunk formatting
+  - [ ] All chunks named
+  - [ ] All figure or table chunks have caption
+  - [ ] `out.width: "95%"`. If a specific height is needed, use pixels. and/or `out.height: "500px"`
 
 Document editing
-* [ ] I have named my code chunks
-* [ ] My plots have succinct and accurate figure captions using `#| fig.cap: "{caption here}"`
-* [ ] I have used `out.width` and `out.height` in **percentage** format in figure configuration
 * [ ] I have ensured that modified documents knit successfully from [`render_for_publication.R`](https://github.com/Metropolitan-Council/ghg-cprg/blob/main/R/render_for_publication.R)
-* [ ] I have ensured the chapter I've modified knits successfully
-* [ ] I have fixed any missing citations
+* [ ] I have fixed any missing citations, cross references, hyperlinks
 * [ ] I have reviewed my contributions for typos and misspellings.
 
 GitHub and project management
