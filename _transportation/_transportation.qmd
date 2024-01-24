@@ -53,7 +53,7 @@ $$T_d=\textrm{grams of emissions for each GHG from all trips ending in the count
 
 ```{r fig-transportation-county-emissions}
 #| fig-cap: "2021 annual emissions by vehicle weight"
-#| out-width: "95%" 
+#| out-width: "95%"
 vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
 
 vmt_emissions_all <- vmt_emissions %>%
