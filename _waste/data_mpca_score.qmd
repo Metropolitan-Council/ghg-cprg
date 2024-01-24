@@ -55,15 +55,15 @@ mpca_score %>%
   filter(!Method == "MSW Compost") %>%
   # pivot_wider(names_from = Method, values_from = Tons, values_fill = 0) %>%
   plot_ly(
-    x = ~reorder(County, -Tons),
+    x = ~ reorder(County, -Tons),
     y = ~Tons,
     type = "bar",
     hoverinfo = "text",
     color = ~Method,
-    hovertemplate = ~paste0(
+    hovertemplate = ~ paste0(
       "County: ", County, "<br>",
       "Management method: ", Method, "<br>",
-      "Waste generated: ", round(Tons/1000), " thousand tons",
+      "Waste generated: ", round(Tons / 1000), " thousand tons",
       "<extra></extra>"
     )
   ) %>%
@@ -73,7 +73,7 @@ mpca_score %>%
     y_title = "Waste (tons)",
     legend_title = "Management Method",
     barmode = "stack"
-  ) %>% 
+  ) %>%
   layout(
     barmode = "stack"
   )

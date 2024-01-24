@@ -7,7 +7,7 @@ library(readr)
 ## MPCA SCORE ----
 # Summary data collected from https://public.tableau.com/app/profile/mpca.data.services/viz/SCOREOverview/1991-2021SCORE
 
-score_summary <- read_csv("_waste/data-raw/score_summary.csv")
+score_summary <- read_csv(file.path(here::here(), "_waste/data-raw/score_summary.csv"))
 
 # to do: replace mn_counties with general-use list
 mn_counties <- c(
@@ -54,7 +54,7 @@ saveRDS(mpca_score_meta, paste0("_waste/data/mpca_score_meta.RDS"))
 
 # emissions factors from https://www.epa.gov/climateleadership/ghg-emission-factors-hub
 # cleaning to fix formatting
-emissions_factors <- readxl::read_xlsx("_waste/data-raw/ghg-emission-factors-hub-2021.xlsx")
+emissions_factors <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/ghg-emission-factors-hub-2021.xlsx"))
 
 emissions_factors_cleaned <- emissions_factors %>%
   select(2:8) %>%
