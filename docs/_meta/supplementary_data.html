@@ -322,7 +322,7 @@ div.csl-indent {
 <p>Geographic data were processed in <a href="../R/cprg_geography.R">cprg_geography.R</a>.</p>
 <section id="counties" class="level3" data-number="B.1.1">
 <h3 data-number="B.1.1" class="anchored" data-anchor-id="counties"><span class="header-section-number">B.1.1</span> Counties</h3>
-<p>County data was pulled using <code>{tigris}</code>, an R package that downloads TIGER/Line shapefiles from the US Census Bureau <span class="citation" data-cites="walkerTigrisLoadCensus2023">(<a href="#ref-walkerTigrisLoadCensus2023" role="doc-biblioref">Walker 2023</a>)</span>. 2021 geographies for Minnesota and Wisconsin were pulled, combined, and saved.</p>
+<p>County data was pulled using <code>{tigris}</code>, an R package that downloads TIGER/Line shapefiles from the US Census Bureau <span class="citation" data-cites="walkerTigrisLoadCensus2023">(<a href="../references.html#ref-walkerTigrisLoadCensus2023" role="doc-biblioref">Walker 2023</a>)</span>. 2021 geographies for Minnesota and Wisconsin were pulled, combined, and saved.</p>
 <div class="cell" data-hash="supplementary_data_cache/html/tbl-cprg-county_3203ef55144793ffe84a82110bbd1ca0">
 <div class="cell-output-display">
 <div id="tbl-cprg-county" class="anchored">
@@ -378,17 +378,78 @@ div.csl-indent {
 
 </div>
 </div>
+<p>Additionally, population estimates were obtained from the American Community Survey 5-Year estimates (2017-2021) using <code>{tidycensus}</code> <span class="citation" data-cites="Census2022ACSDP1Y2022.DP05">(<a href="../references.html#ref-Census2022ACSDP1Y2022.DP05" role="doc-biblioref">U.S. Census Bureau 2021</a>)</span>.</p>
+<div class="cell" data-hash="supplementary_data_cache/html/tbl-cprg-population_7ffe8c26c2047fe120a6778259c1d667">
+<div class="cell-output-display">
+<div id="tbl-cprg-population" class="anchored">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<caption>Table&nbsp;B.2: County population metadata</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Column</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Class</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">STATE</td>
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">Full state name</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">STATEFP</td>
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">State FIPS code</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">COUNTYFP</td>
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">County FIPS code</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GEOID</td>
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">County GEOID</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NAME</td>
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">County name</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NAMELSAD</td>
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">Full county name</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">population</td>
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">Total county population estimate</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">population_data_source</td>
+<td style="text-align: left;">character</td>
+<td style="text-align: left;">Population estimate data source</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+</div>
+</div>
 </section>
 <section id="cities" class="level3" data-number="B.1.2">
 <h3 data-number="B.1.2" class="anchored" data-anchor-id="cities"><span class="header-section-number">B.1.2</span> Cities</h3>
-<p>Minnesota cities, townships, and unorganized territories were imported from <a href="https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg">Minnesota Geospatial Commons</a> <span class="citation" data-cites="mndotCityTownshipUnorganized2023">(<a href="#ref-mndotCityTownshipUnorganized2023" role="doc-biblioref">MnDOT 2023</a>)</span>.</p>
-<p>Wisconsin cities, towns, and villages were imported from Wisconsin’s Legislative Technology Services Bureau <span class="citation" data-cites="wisconsinlegislatureWisconsinCitiesTowns2023">(<a href="#ref-wisconsinlegislatureWisconsinCitiesTowns2023" role="doc-biblioref">Wisconsin Legislature 2023</a>)</span>.</p>
+<p>Minnesota cities, townships, and unorganized territories were imported from <a href="https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg">Minnesota Geospatial Commons</a> <span class="citation" data-cites="mndotCityTownshipUnorganized2023">(<a href="../references.html#ref-mndotCityTownshipUnorganized2023" role="doc-biblioref">MnDOT 2023</a>)</span>.</p>
+<p>Wisconsin cities, towns, and villages were imported from Wisconsin’s Legislative Technology Services Bureau <span class="citation" data-cites="wisconsinlegislatureWisconsinCitiesTowns2023">(<a href="../references.html#ref-wisconsinlegislatureWisconsinCitiesTowns2023" role="doc-biblioref">Wisconsin Legislature 2023</a>)</span>.</p>
 <p>Data from both states was then combined and filtered to include only the workplan area counties.</p>
 <div class="cell" data-hash="supplementary_data_cache/html/tbl-cprg-ctu_c56e1f41e17ed78893112db8e3f70220">
 <div class="cell-output-display">
 <div id="tbl-cprg-ctu" class="anchored">
 <table data-quarto-postprocess="true" class="table table-sm table-striped small">
-<caption>Table&nbsp;B.2: City geography metadata</caption>
+<caption>Table&nbsp;B.3: City geography metadata</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Column</th>
@@ -446,9 +507,12 @@ div.csl-indent {
 </div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-mndotCityTownshipUnorganized2023" class="csl-entry" role="listitem">
 MnDOT. 2023. <span>“City, <span>Township</span>, and <span>Unorganized Territory</span> in <span>Minnesota</span> - <span>Minnesota Geospatial Commons</span>.”</span> <span>Minnesota Geospatial Commons</span>. <a href="https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg">https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg</a>.
+</div>
+<div id="ref-Census2022ACSDP1Y2022.DP05" class="csl-entry" role="listitem">
+U.S. Census Bureau. 2021. <span>“<span>ACS</span> Demographic and Housing Estimates.”</span> U.S. Census Bureau. <a href="https://data.census.gov/table/ACSDP5Y2021.DP05?g=050XX00US27053_040XX00US27">https://data.census.gov/table/ACSDP5Y2021.DP05?g=050XX00US27053_040XX00US27</a>.
 </div>
 <div id="ref-walkerTigrisLoadCensus2023" class="csl-entry" role="listitem">
 Walker, Kyle. 2023. <em>Tigris: <span>Load</span> Census <span>TIGER</span>/<span>Line</span> Shapefiles</em>. Manual. <a href="https://CRAN.R-project.org/package=tigris">https://CRAN.R-project.org/package=tigris</a>.
