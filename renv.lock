@@ -1703,17 +1703,6 @@
       ],
       "Hash": "1cba04a4e9414bdefc9dcaa99649a8dc"
     },
-    "rJava": {
-      "Package": "rJava",
-      "Version": "1.0-10",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "R",
-        "methods"
-      ],
-      "Hash": "151b95627c232d3822bb6d876286a99c"
-    },
     "rappdirs": {
       "Package": "rappdirs",
       "Version": "0.3.3",
@@ -2239,41 +2228,6 @@
         "cpp11"
       ],
       "Hash": "15b594369e70b975ba9f064295983499"
-    },
-    "tabulizer": {
-      "Package": "tabulizer",
-      "Version": "0.2.3",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "ropensci",
-      "RemoteRepo": "tabulizer",
-      "RemoteRef": "main",
-      "RemoteSha": "bfc79cb128f284eceeecc310b9b957bbfb9dd719",
-      "Remotes": "ropensci/tabulizerjars",
-      "Requirements": [
-        "png",
-        "rJava",
-        "tabulizerjars",
-        "tools",
-        "utils"
-      ],
-      "Hash": "6b3139999e2b2fbe2320d40e6302bbf6"
-    },
-    "tabulizerjars": {
-      "Package": "tabulizerjars",
-      "Version": "1.0.1",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "ropensci",
-      "RemoteRepo": "tabulizerjars",
-      "RemoteRef": "master",
-      "RemoteSha": "d1924e01db15b75251e4eb8f558e6e1a81e1c270",
-      "Requirements": [
-        "rJava"
-      ],
-      "Hash": "2119acf2c46a72b25355d0a4e7148833"
     },
     "terra": {
       "Package": "terra",
