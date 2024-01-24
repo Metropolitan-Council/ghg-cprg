@@ -1,9 +1,3 @@
-# install.packages('tigris')
-# install.packages('tidycensus')
-library(tigris)
-library(ggplot2)
-library(tidyverse)
-library(tidycensus)
 
 ### replace with cprg_county from R -> data
 # load 11 counties
