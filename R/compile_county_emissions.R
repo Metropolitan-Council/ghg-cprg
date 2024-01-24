@@ -32,7 +32,17 @@ transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.R
 
 # combine and write metadata----
 
-emissions_all <- bind_rows(transportation_emissions)
+emissions_all <- bind_rows(transportation_emissions) %>% 
+  mutate(source = factor(source,
+                         c(
+                           # transportation levels
+                           "Light-duty vehicles",
+                           "Medium-duty vehicles",
+                           "Heavy-duty vehicles"
+                           # waste levels
+                           # energy levels
+                           ),
+                         ordered = TRUE))
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
