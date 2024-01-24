@@ -25,4 +25,28 @@ testthat::test_that("Correct plotly configurations", {
     transpo_plot[["x"]][["layoutAttrs"]][[1]][["yaxis"]][["title"]][["text"]],
     "Metric tons CO<sub>2</sub>e"
   )
+
+
+  # missing data plot
+  spec_transpo_plot <- plot_county_emissions(county_emissions,
+    .sector = "Special Transportation",
+    .plotly_source = "testing"
+  )
+
+  testthat::expect_equal(class(spec_transpo_plot)[[1]], "plotly")
+  # check title
+  testthat::expect_equal(
+    spec_transpo_plot[["x"]][["layoutAttrs"]][[1]][["title"]][["text"]],
+    NULL
+  )
+  # check xaxis title
+  testthat::expect_equal(
+    spec_transpo_plot[["x"]][["layoutAttrs"]][[1]][["xaxis"]][["title"]][["text"]],
+    NULL
+  )
+  # check yaxis title
+  testthat::expect_equal(
+    spec_transpo_plot[["x"]][["layoutAttrs"]][[1]][["yaxis"]][["title"]][["text"]],
+    NULL
+  )
 })
