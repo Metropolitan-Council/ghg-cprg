@@ -51,7 +51,9 @@ $$T_d=\textrm{grams of emissions for each GHG from all trips ending in the count
 
 ## Results
 
-```{r}
+```{r fig-transportation-county-emissions}
+#| fig-cap: "2021 annual emissions by vehicle weight"
+#| out-width: "95%" 
 vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
 
 vmt_emissions_all <- vmt_emissions %>%
@@ -72,7 +74,7 @@ plot_ly(
   hovertemplate = ~ paste0(
     zone, " County", "<br>",
     vehicle_weight_label, "<br>",
-    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million tonnes", "<br>",
+    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -80,7 +82,7 @@ plot_ly(
     main_title = "2021 annual emissions by vehicle weight",
     subtitle = "",
     y_title = "County",
-    x_title = "Greenhouse gases emitted (tonnes)",
+    x_title = "Greenhouse gases emitted (metric tons)",
     legend_title = "Vehicle weight"
   ) %>%
   layout(
@@ -113,7 +115,7 @@ plot_ly(
   hovertemplate = ~ paste0(
     zone, " County", "<br>",
     "Population: ", scales::comma(population), "<br>",
-    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million tonnes", "<br>",
+    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
   opacity = 0.7,
