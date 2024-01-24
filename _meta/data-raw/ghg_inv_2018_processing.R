@@ -5,12 +5,20 @@ library(stringr)
 ctus_summary_2018 <- read_csv("_meta/data-raw/ctus_summary_2018.csv")
 Fields_Formulas_GHGInv1 <- read_excel("_meta/data-raw/Fields_Formulas_GHGInv1.xlsx")
 select_fields_v1 <- Fields_Formulas_GHGInv1 %>% filter(Keep_YN == 'Y') %>%
-  mutate(units = case_when(str_detect(ctus_summary_field, fixed('Co2')) ~ 'Tonnes Co2e',
-                           str_detect(ctus_summary_field, fixed('CO2e')) ~ 'Tonnes Co2e',
+  mutate(units = case_when(str_detect(ctus_summary_field, fixed('Co2')) ~ 'Tonnes CO2e',
+                           str_detect(ctus_summary_field, fixed('CO2e')) ~ 'Tonnes CO2e',
                            str_detect(ctus_summary_field, fixed('Therms')) ~ 'Therms',
                            str_detect(ctus_summary_field, fixed('Mmbtu')) ~ 'MMBtu',
                            str_detect(ctus_summary_field, fixed('MWh')) ~ 'MWh',
-                           .default = NA))
+                           .default = NA),
+         sub_sector = case_when(str_detect(ctus_summary_field, fixed('Compost')) ~ 'Compost',
+                                str_detect(ctus_summary_field, fixed('Prop')) ~ 'Propane',
+                                str_detect(ctus_summary_field, fixed('Kerodfo')) ~ 'Other Fuels',
+                                str_detect(ctus_summary_field, fixed('Electricity')) ~ 'Electricity',
+                                str_detect(ctus_summary_field, fixed('Landfill')) ~ 'Landfill',
+                                str_detect(ctus_summary_field, fixed('NG')) ~ 'Natural Gas',
+                                str_detect(ctus_summary_field, fixed('Other Fuels')) ~ 'Other Fuels',)
+         )
 
 data_2018 <- select(ctus_summary_2018, all_of(select_fields_v1[[1]])) %>%
   pivot_longer(cols = !(filter(select_fields_v1, Activity_Emissions %in% c('Metadata', 'Demographics'))[[1]]),
