@@ -15,14 +15,20 @@ select_fields_v1 <- Fields_Formulas_GHGInv1 %>% filter(Keep_YN == 'Y') %>%
                            str_detect(ctus_summary_field, fixed('MWh')) ~ 'MWh',
                            .default = NA),
          sector_source = case_when(Activity_Emissions %in% c('Metadata', 'Demographics') ~ NA,
-                                   str_detect(ctus_summary_field, fixed('Compost')) ~ 'Compost',
-                                   str_detect(ctus_summary_field, fixed('Prop')) ~ 'Propane',
-                                   str_detect(ctus_summary_field, fixed('Kerodfo')) ~ 'Other Fuels',
-                                   str_detect(ctus_summary_field, fixed('Electricity')) ~ 'Electricity',
-                                   str_detect(ctus_summary_field, fixed('Landfill')) ~ 'Landfill',
-                                   str_detect(ctus_summary_field, fixed('NG')) ~ 'Natural Gas',
-                                   str_detect(ctus_summary_field, fixed('Other Fuels')) ~ 'Other Fuels',
-                                   .default = 'Transportation'
+                                   str_detect(ctus_summary_field, fixed('Compost')) ~ 'compost',
+                                   str_detect(ctus_summary_field, fixed('Prop')) ~ 'propane',
+                                   str_detect(ctus_summary_field, fixed('Kerodfo')) ~ 'kerodfo',
+                                   str_detect(ctus_summary_field, fixed('Electricity')) ~ 'electricity',
+                                   str_detect(ctus_summary_field, fixed('Landfill')) ~ 'landfill',
+                                   str_detect(ctus_summary_field, fixed('NG')) ~ 'natural gas',
+                                   str_detect(ctus_summary_field, fixed('Other Fuels')) ~ 'other fuels',
+                                   str_detect(ctus_summary_field, fixed('Heavy')) ~ 'heavy-duty vehicle',
+                                   str_detect(ctus_summary_field, fixed('Medium')) ~ 'medium-duty vehicle',
+                                   str_detect(ctus_summary_field, fixed('Personal')) ~ 'light-duty vehicle',
+                                   str_detect(ctus_summary_field, fixed('Passenger')) ~ 'passenger',
+                                   str_detect(ctus_summary_field, fixed('Transit')) ~ 'transit',
+                                   str_detect(ctus_summary_field, fixed('Trucks')) ~ 'trucks',
+                                   .default = NA
                                 )
          )
 
@@ -31,6 +37,10 @@ data_2018 <- select(ctus_summary_2018, all_of(select_fields_v1[[1]])) %>%
   pivot_longer(cols = !(filter(select_fields_v1, Activity_Emissions %in% c('Metadata', 'Demographics'))[[1]]),
                names_to = 'variable', values_to = 'value') %>%
   left_join(select_fields_v1, by = c('variable' = 'ctus_summary_field')) %>%
-  select(-Keep_YN) 
+  mutate(GEOG_ID = `Ctu Id`,
+            GEOG_DESC = `Ctu Name`, .before = `Ctu Id`) %>%
+  select(-Keep_YN, -`Ctu Id`, -`Ctu Name`) %>% 
+  pivot_wider(names_from = Activity_Emissions, names_sep = '_', 
+              values_from = c(value, units, variable))
 
 saveRDS(data_2018, '_meta/data/inventory_2018.RDS')
