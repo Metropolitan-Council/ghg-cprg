@@ -1,0 +1,42 @@
+﻿ctus_summary_field,Keep_YN,Activity_Emissions
+Abc Sort,,
+Community Designation,,
+Ctu Code,,Metadata
+Ctu Id,Y,Metadata
+Ctu Name,Y,Metadata
+Ctu Type,,
+Five Color,,
+Year,Y,Metadata
+$ Compost Emis T CO2e,Y,Emissions
+$ Electricity Emis T CO2e,Y,Emissions
+$ Electricity R MWh,Y,Activity
+$ Landfill Emis T CO2e,Y,Emissions
+$ NG R Emis T CO2e,Y,Emissions
+$ NG R Therms,Y,Activity
+$ Other Fuels Emis T CO2e,Y,Emissions
+$ Passenger Veh Emis T CO2e,Y,Emissions
+$ Transit Emis T CO2e,Y,Emissions
+$ Trucks Emis T CO2e,Y,Emissions
+Actual R E Emis T Co2E,,
+Actual R E Mwh,,
+Actual R Ng Emis T Co2E,,
+Actual R Ng Therms,,
+Composting Scope1 Co2E Tonnes,,
+Composting Scope3 Co2E Tonnes,,
+Est R E Emis T Co2E,,
+Est R E Mwh,,
+Est R Ng Emis T Co2E,,
+Est R Ng Therms,,
+Kerodfo Emis Tonnes Co2E,Y,Emissions
+Kerodfo Res Use Mmbtu,Y,Activity
+Landfill Scope1 Co2E Tonnes,,
+Landfill Scope3 Co2E Tonnes,,
+Metrotransit Tonnes Co2E,,
+Population,Y,Demographics
+Prop Emis Tonnes Co2E,Y,Emissions
+Prop Res Use Mmbtu,Y,Activity
+show,,
+Total Co2 W Equiv Heavy,Y,Emissions
+Total Co2 W Equiv Medium,Y,Emissions
+Total Co2 W Equiv Personal,Y,Emissions
+Wastwater Tonnes Co2E,,
