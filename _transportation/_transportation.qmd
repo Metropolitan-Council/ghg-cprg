@@ -103,7 +103,7 @@ We would expect counties with higher population to have higher emissions and VMT
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 vmt_population <- left_join(vmt_emissions_all, cprg_population,
-  by = c("zone" = "NAME")
+                            by = c("zone" = "NAME")
 )
 plot_ly(
   data = vmt_population,
@@ -193,6 +193,66 @@ plot_ly(
 - StreetLight GHG inventory method, if released in time.
 - 2018 Met Council inventory
 - LGGIT
+
+#### National Emissions Inventory 
+
+The National Emissions Inventory (NEI) is a comprehensive and detailed estimate of air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants from air emissions sources. The county-level GHG emissions included in the NEI for this category are calculated by running the MOVES model with State-, Local-, and Tribal-submitted activity data and EPA-developed activity inputs based on data from FHWA and other sources [@usepa2020NationalEmissions2023]. 
+
+```{r read-nei}
+epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei.RDS"))
+
+nei_emissions_all <- epa_nei %>% 
+  group_by(zone = county_name) %>% 
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  )
+```
+
+We expect that the NEI data will show higher emissions, because it is based on overall activity, not explicit origin-destination travel. 
+
+```{r fig-activity-vs-nei}
+#| fig-cap: "County estimated emissions, NEI and calculated "
+#| out-width: "95%" 
+plot_ly(
+  data = vmt_emissions_all,
+  source = opts_current$get()$label,
+  x = ~reorder(zone, -emissions_metric_tons_co2e),
+  y = ~emissions_metric_tons_co2e,
+  type = "scatter",
+  mode = "markers",
+  name = "2021 activity/origin-destination",
+  hovertemplate = ~ paste0(
+     zone, " County<br>",
+    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  opacity = 0.8,
+  marker = list(
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>% 
+  add_trace(data = nei_emissions_all,
+            name = "2020 NEI on-road emissions",
+            hovertemplate = ~ paste0(
+              zone, " County<br>",
+              "NEI Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+              "<extra></extra>"
+            )
+  ) %>% 
+  plotly_layout(
+    main_title = "County estimated vehicle emissions",
+    subtitle = "2020 NEI, all on-road emissions",
+    x_title = "County",
+    y_title = "Greenhouse gases emitted (metric tons)",
+    legend_title = "Emissions data source"
+  )
+
+```
+
 
 
 ```{r echo=FALSE}
