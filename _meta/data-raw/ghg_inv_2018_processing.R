@@ -1,9 +1,7 @@
-library(tidyr)
-library(dplyr)
-library(stringr)
+source("R/_load_pkgs.R")
 
-ctus_summary_2018 <- read_csv("_meta/data-raw/ctus_summary_2018.csv")
-Fields_Formulas_GHGInv1 <- read_excel("_meta/data-raw/Fields_Formulas_GHGInv1.xlsx")
+ctus_summary_2018 <- readr::read_csv("_meta/data-raw/ctus_summary_2018.csv")
+Fields_Formulas_GHGInv1 <- readxl::read_excel("_meta/data-raw/Fields_Formulas_GHGInv1.xlsx")
 select_fields_v1 <- Fields_Formulas_GHGInv1 %>% filter(Keep_YN == 'Y') %>%
   mutate(units = case_when(str_detect(ctus_summary_field, fixed('Co2')) ~ 'Tonnes CO2e',
                            str_detect(ctus_summary_field, fixed('CO2e')) ~ 'Tonnes CO2e',
@@ -11,13 +9,16 @@ select_fields_v1 <- Fields_Formulas_GHGInv1 %>% filter(Keep_YN == 'Y') %>%
                            str_detect(ctus_summary_field, fixed('Mmbtu')) ~ 'MMBtu',
                            str_detect(ctus_summary_field, fixed('MWh')) ~ 'MWh',
                            .default = NA),
-         sub_sector = case_when(str_detect(ctus_summary_field, fixed('Compost')) ~ 'Compost',
-                                str_detect(ctus_summary_field, fixed('Prop')) ~ 'Propane',
-                                str_detect(ctus_summary_field, fixed('Kerodfo')) ~ 'Other Fuels',
-                                str_detect(ctus_summary_field, fixed('Electricity')) ~ 'Electricity',
-                                str_detect(ctus_summary_field, fixed('Landfill')) ~ 'Landfill',
-                                str_detect(ctus_summary_field, fixed('NG')) ~ 'Natural Gas',
-                                str_detect(ctus_summary_field, fixed('Other Fuels')) ~ 'Other Fuels',)
+         sector_source = case_when(Activity_Emissions %in% c('Metadata', 'Demographics') ~ NA,
+                                   str_detect(ctus_summary_field, fixed('Compost')) ~ 'Compost',
+                                   str_detect(ctus_summary_field, fixed('Prop')) ~ 'Propane',
+                                   str_detect(ctus_summary_field, fixed('Kerodfo')) ~ 'Other Fuels',
+                                   str_detect(ctus_summary_field, fixed('Electricity')) ~ 'Electricity',
+                                   str_detect(ctus_summary_field, fixed('Landfill')) ~ 'Landfill',
+                                   str_detect(ctus_summary_field, fixed('NG')) ~ 'Natural Gas',
+                                   str_detect(ctus_summary_field, fixed('Other Fuels')) ~ 'Other Fuels',
+                                   .default = 'Transportation'
+                                )
          )
 
 data_2018 <- select(ctus_summary_2018, all_of(select_fields_v1[[1]])) %>%
@@ -25,3 +26,5 @@ data_2018 <- select(ctus_summary_2018, all_of(select_fields_v1[[1]])) %>%
                names_to = 'variable', values_to = 'value') %>%
   left_join(select_fields_v1, by = c('variable' = 'ctus_summary_field')) %>%
   select(-Keep_YN) 
+
+saveRDS(data_2018, '_meta/data/inventory_2018.RDS')
