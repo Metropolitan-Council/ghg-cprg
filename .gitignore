@@ -51,3 +51,15 @@ _meta/data-raw/1.0-communities.csv
 _meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023)/
 
 _meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023).zip
+
+_transportation/data-raw/epa/nei2020/
+
+_transportation/data-raw/epa/community_ghg_inventorytool_11.28.23/
+
+_transportation/data-raw/epa/community_ghg_inventorytool_11.28.23.zip
+
+_transportation/data-raw/epa/community-ghg-data-collection-template_6.22.23_1.xlsx
+
+_transportation/data-raw/epa/metcouncil_community_ghg_inventorytool_11.28.23.xlsm
+
+_transportation/data-raw/epa/metcouncil2_community_ghg_inventorytool_11.28.23.xlsm
