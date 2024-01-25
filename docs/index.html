@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Metropolitan Council">
-<meta name="dcterms.date" content="2024-01-22">
+<meta name="dcterms.date" content="2024-01-24">
 
 <title>Greenhouse Gas Inventory</title>
 <style>
@@ -60,6 +60,14 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.3/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
 </head>
@@ -76,7 +84,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Executive summary</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -104,7 +112,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Preface</span></a>
+ <span class="menu-text">Executive summary</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -275,7 +283,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a></li>
+  <li><a href="#executive-summary" id="toc-executive-summary" class="nav-link active" data-scroll-target="#executive-summary">Executive summary</a></li>
   </ul>
 </nav>
     </div>
@@ -302,7 +310,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 22, 2024</p>
+      <p class="date">January 24, 2024</p>
     </div>
   </div>
   
@@ -312,13 +320,43 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>This is a Quarto book.</p>
-<p>To learn more about Quarto books visit <a href="https://quarto.org/docs/books" class="uri">https://quarto.org/docs/books</a>.</p>
-<div class="cell" data-hash="index_cache/html/unnamed-chunk-1_0867bf389869cbf3eb6fec143f9be22e">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<section id="executive-summary" class="level1 unnumbered">
+<h1 class="unnumbered">Executive summary</h1>
+<p>Overall emissions</p>
+<div class="cell" data-hash="index_cache/html/fig-county-emissions-sector_a9c401bd7de389b2da88a0fa1ef24e6e">
+<div id="fig-county-emissions-sector" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;1: County emissions by sector and category</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-431c537fd4fc8f08a37b" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-431c537fd4fc8f08a37b">{"x":{"visdat":{"7ea03aa5427f":["function () ","plotlyVisDat"]},"cur_data":"7ea03aa5427f","attrs":{"7ea03aa5427f":{"x":{},"y":{},"hovertemplate":{},"color":{},"split":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"stack","title":{"text":"11-county regional greenhouse gas emissions, 2021","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Category","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tones CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tones CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tones CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tones CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Sector","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["Transportation"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Sector","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Sector","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Sector","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-county-emissions-sector","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Transportation"],"y":[554363.26451511763],"hovertemplate":"Transportation - Commercial<br>0.55 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","type":"bar","name":"Commercial","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Transportation"],"y":[8203622.8481473001],"hovertemplate":"Transportation - Passenger<br>8.2 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","type":"bar","name":"Passenger","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</figure>
+</div>
+</div>
+<div class="cell" data-hash="index_cache/html/fig-transportation-emissions_1561208d5903dc2dc1dfa38186779c9c">
+<div id="fig-transportation-emissions" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;2: Transportation county level emissions</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-d9a4eb310545a400eafd" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-d9a4eb310545a400eafd">{"x":{"visdat":{"7ea034852f2b":["function () ","plotlyVisDat"]},"cur_data":"7ea034852f2b","attrs":{"7ea034852f2b":{"x":{},"y":{},"hovertemplate":{},"color":{},"split":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"stack","title":{"text":"Transportation emissions","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Category","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-transportation-emissions","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"y":[11640.382662677001,1305.8742986351999,1394.5944121097998,62505.776944991187,43494.164511983698,832.8343784023001,10266.873796166401,5549.1616594097995,3006.3878129977998,10600.534686167299,10987.356167827198],"hovertemplate":["Anoka County<br>Transportation - Commercial, Heavy-duty vehicles<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Transportation - Commercial, Heavy-duty vehicles<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Transportation - Commercial, Heavy-duty vehicles<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Transportation - Commercial, Heavy-duty vehicles<br>0.06 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Transportation - Commercial, Heavy-duty vehicles<br>0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Transportation - Commercial, Heavy-duty vehicles<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Transportation - Commercial, Heavy-duty vehicles<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Transportation - Commercial, Heavy-duty vehicles<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Transportation - Commercial, Heavy-duty vehicles<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Transportation - Commercial, Heavy-duty vehicles<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Transportation - Commercial, Heavy-duty vehicles<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"Heavy-duty vehicles","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"y":[41396.599761562502,9899.4202490624994,8984.1813346875006,57580.854088125001,142716.5253121875,3079.0903143750002,60902.951798437498,18784.3178653125,12337.88156625,10825.706139374999,26271.794754375002],"hovertemplate":["Anoka County<br>Transportation - Commercial, Medium-duty vehicles<br>0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Transportation - Commercial, Medium-duty vehicles<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Transportation - Commercial, Medium-duty vehicles<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Transportation - Commercial, Medium-duty vehicles<br>0.06 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Transportation - Commercial, Medium-duty vehicles<br>0.14 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Transportation - Commercial, Medium-duty vehicles<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Transportation - Commercial, Medium-duty vehicles<br>0.06 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Transportation - Commercial, Medium-duty vehicles<br>0.02 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Transportation - Commercial, Medium-duty vehicles<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Transportation - Commercial, Medium-duty vehicles<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Transportation - Commercial, Medium-duty vehicles<br>0.03 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"Medium-duty vehicles","marker":{"color":"rgba(33,144,140,1)","line":{"color":"rgba(33,144,140,1)"}},"textfont":{"color":"rgba(33,144,140,1)"},"error_y":{"color":"rgba(33,144,140,1)"},"error_x":{"color":"rgba(33,144,140,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"y":[955752.98987672001,277586.77735908004,184638.41374335001,1077721.39167252,2578212.5281112203,104251.13946205001,1186825.45915038,439320.55114045,260427.22377238001,315376.64328898001,823509.7305701701],"hovertemplate":["Anoka County<br>Transportation - Passenger, Light-duty vehicles<br>0.96 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Transportation - Passenger, Light-duty vehicles<br>0.28 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Transportation - Passenger, Light-duty vehicles<br>0.18 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Transportation - Passenger, Light-duty vehicles<br>1.08 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Transportation - Passenger, Light-duty vehicles<br>2.58 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Transportation - Passenger, Light-duty vehicles<br>0.1 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Transportation - Passenger, Light-duty vehicles<br>1.19 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Transportation - Passenger, Light-duty vehicles<br>0.44 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Transportation - Passenger, Light-duty vehicles<br>0.26 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Transportation - Passenger, Light-duty vehicles<br>0.32 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Transportation - Passenger, Light-duty vehicles<br>0.82 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"Light-duty vehicles","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</figure>
+</div>
+</div>
+<div class="cell" data-hash="index_cache/html/fig-energy-emissions_a5d3d71c0f30c48aa80a0d8f022e93d7">
+<div id="fig-energy-emissions" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;3: Energy county level emissions</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-483d025212394537ed1f" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-483d025212394537ed1f">{"x":{"visdat":{"7ea042ebb23a":["function () ","plotlyVisDat"]},"cur_data":"7ea042ebb23a","attrs":{"7ea042ebb23a":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true},"yaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":false},"source":"fig-energy-emissions","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"type":"bar","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</figure>
+</div>
+</div>
+<div class="cell" data-hash="index_cache/html/fig-waste-emissions_49de19fb6c3d16773043e778d0ce643d">
+<div id="fig-waste-emissions" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;4: Waste and wastewater county level emissions</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-28e5a54fe070968204d1" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-28e5a54fe070968204d1">{"x":{"visdat":{"7ea0b8d63c0":["function () ","plotlyVisDat"]},"cur_data":"7ea0b8d63c0","attrs":{"7ea0b8d63c0":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true},"yaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":false},"source":"fig-waste-emissions","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"type":"bar","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</figure>
 </div>
 </div>
 
