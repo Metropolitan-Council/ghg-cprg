@@ -1,4 +1,5 @@
-# get data from the 2020 national emissions inventory
+# get data from state GHG emissions and removals
+# https://www.epa.gov/ghgemissions/state-ghg-emissions-and-removals
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("R/data/cprg_county.RDS")
 
