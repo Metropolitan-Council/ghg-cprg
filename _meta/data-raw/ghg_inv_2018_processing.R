@@ -20,8 +20,8 @@ select_fields_v1 <- Fields_Formulas_GHGInv1 %>%
     source = case_when(Activity_Emissions %in% c("Metadata", "Demographics") ~ NA,
       str_detect(ctus_summary_field, fixed("Heavy")) ~ "heavy-duty vehicle",
       str_detect(ctus_summary_field, fixed("Medium")) ~ "medium-duty vehicle",
-      str_detect(ctus_summary_field, fixed("Personal")) ~ "light-duty vehicle",
-      str_detect(ctus_summary_field, fixed("Passenger")) ~ "light-duty vehicle", # is this safe assumption? which to use?
+      # str_detect(ctus_summary_field, fixed("Personal")) ~ "light-duty vehicle", # different from passenger numbers? but Passenger is the numbers showing up in GHG 2018 app
+      str_detect(ctus_summary_field, fixed("Passenger")) ~ "light-duty vehicle", 
       str_detect(ctus_summary_field, fixed("Transit")) ~ "transit",
       str_detect(ctus_summary_field, fixed("Trucks")) ~ "trucks", # is this just heavy plus medium duty?
       .default = NA
@@ -31,7 +31,7 @@ select_fields_v1 <- Fields_Formulas_GHGInv1 %>%
       str_detect(ctus_summary_field, fixed("Compost")) ~ "compost",
       str_detect(ctus_summary_field, fixed("Landfill")) ~ "landfill",
       str_detect(ctus_summary_field, fixed("Prop")) ~ "propane",
-      str_detect(ctus_summary_field, fixed("Kerodfo")) ~ "kerosene and other fuels", # need to pick one
+     # str_detect(ctus_summary_field, fixed("Kerodfo")) ~ "kerosene and other fuels", # removed kerodfo -- other fuels entry is the one in GHG 2018 app
       str_detect(ctus_summary_field, fixed("Other Fuels")) ~ "kerosene and other fuels",
       str_detect(ctus_summary_field, fixed("Electricity")) ~ "electricity",
       str_detect(ctus_summary_field, fixed("NG")) ~ "natural gas",

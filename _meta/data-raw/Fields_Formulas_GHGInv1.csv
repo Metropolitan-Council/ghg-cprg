@@ -27,8 +27,8 @@ Est R E Emis T Co2E,,
 Est R E Mwh,,
 Est R Ng Emis T Co2E,,
 Est R Ng Therms,,
-Kerodfo Emis Tonnes Co2E,Y,Emissions
-Kerodfo Res Use Mmbtu,Y,Activity
+Kerodfo Emis Tonnes Co2E,,Emissions
+Kerodfo Res Use Mmbtu,,Activity
 Landfill Scope1 Co2E Tonnes,,
 Landfill Scope3 Co2E Tonnes,,
 Metrotransit Tonnes Co2E,,
@@ -38,5 +38,5 @@ Prop Res Use Mmbtu,Y,Activity
 show,,
 Total Co2 W Equiv Heavy,Y,Emissions
 Total Co2 W Equiv Medium,Y,Emissions
-Total Co2 W Equiv Personal,Y,Emissions
+Total Co2 W Equiv Personal,,
 Wastwater Tonnes Co2E,,
