@@ -38,29 +38,30 @@ transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.R
 # combine and write metadata----
 
 emissions_all <- bind_rows(transportation_emissions) %>%
-  left_join(cprg_county %>% 
-              sf::st_drop_geometry() %>% 
-              select(NAME, geog_id = COUNTYFP),
-            by = c("geog_name" = "NAME")) %>% 
-  
+  left_join(
+    cprg_county %>%
+      sf::st_drop_geometry() %>%
+      select(NAME, geog_id = COUNTYFP),
+    by = c("geog_name" = "NAME")
+  ) %>%
   mutate(source = factor(source,
-                         c(
-                           # transportation levels
-                           "Light-duty vehicles",
-                           "Medium-duty vehicles",
-                           "Heavy-duty vehicles"
-                           # waste levels
-                           # energy levels
-                         ),
-                         ordered = TRUE
-  )) %>% 
+    c(
+      # transportation levels
+      "Light-duty vehicles",
+      "Medium-duty vehicles",
+      "Heavy-duty vehicles"
+      # waste levels
+      # energy levels
+    ),
+    ordered = TRUE
+  )) %>%
   select(year, geog_level, geog_id, geog_name, everything())
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
   "year", class(emissions_all$year), "Emissions estimation year",
   "geog_level", class(emissions_all$geog_level), "Geography level; city or county",
-  "geog_id", class(emissions_all$geog_id), "FIPS code", 
+  "geog_id", class(emissions_all$geog_id), "FIPS code",
   "geog_name", class(emissions_all$geog_name), "Name of geographic area",
   "sector", class(emissions_all$sector), paste0(
     "Emissions sector. One of ",
