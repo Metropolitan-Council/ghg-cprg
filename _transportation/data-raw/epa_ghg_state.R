@@ -16,6 +16,7 @@ ipcc <- ipcc_sectors %>%
   pivot_longer(starts_with("y"),
                names_to = "year",
                values_to = "value") %>% 
+  # reported in millions of metric tons
   mutate(emissions_metric_tons_co2e = value*1000000)
 
 
@@ -30,5 +31,6 @@ econ <- econ_sectors %>%
                names_to = "year",
                values_to = "value") %>% 
   filter(econ_sector == "Transportation") %>% 
+  # reported in millions of metric tons
   mutate(emissions_metric_tons_co2e = value*1000000)
 
