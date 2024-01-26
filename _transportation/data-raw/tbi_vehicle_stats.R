@@ -21,10 +21,12 @@ veh21 <- tbi21$vehicle %>%
                          "Missing: Skip logic" = "Other/Not Provided",
                          "Missing: Non-response" = "Other/Not Provided",
                          "Other" = "Other/Not Provided",
-                         "Hybrid (HEV)" = "Hybrid, Flex, or Electric",
-                         "Electric (EV)" = "Hybrid, Flex, or Electric",
-                         "Flex fuel (FFV)" = "Hybrid, Flex, or Electric",
-                         "Plug-in hybrid (PHEV)" = "Hybrid, Flex, or Electric")
+                         "Hybrid (HEV)" = "Gas + all other fuels",
+                         "Electric (EV)" = "Gas + all other fuels",
+                         "Flex fuel (FFV)" = "Gas + all other fuels",
+                         "Plug-in hybrid (PHEV)" = "Gas + all other fuels",
+                         "Other (e.g., natural gas, bio-diesel)" = "Gas + all other fuels",
+                         "Gas" = "Gas + all other fuels")
   ) %>%
   filter(!fuel == "Other/Not Provided",
          !year == 1980) %>% # this is actually NA.
@@ -51,7 +53,7 @@ veh21 %>%
 
 
 # median vehicle year by fuel type -----
-veh21 %>%
+tbi_vehicle_fuel_age <- veh21 %>%
   select(hh_id, veh_id, fuel, year, hh_weight) %>%
   droplevels() %>%
   # get weights from households
@@ -65,15 +67,7 @@ veh21 %>%
     n = unweighted(n()),
     est_n = survey_total(),
     est_pct = survey_prop()
-  )    
-
-# gasoline/diesel/other distribution within passenger vehicles -----
-veh21 %>%
-  as_survey_design(ids = veh_id, weights = hh_weight) %>%
-  group_by(fuel) %>%
-  summarize(
-    n = unweighted(n()),
-    est_n = survey_total(),
-    est_pct = survey_prop()
   ) %>% 
-  arrange(-est_pct)
+  arrange(-est_n)
+
+saveRDS(tbi_vehicle_fuel_age, "_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS")
