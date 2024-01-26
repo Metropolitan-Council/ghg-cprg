@@ -14,23 +14,32 @@ select_fields_v1 <- Fields_Formulas_GHGInv1 %>% filter(Keep_YN == 'Y') %>%
                            str_detect(ctus_summary_field, fixed('Mmbtu')) ~ 'MMBtu',
                            str_detect(ctus_summary_field, fixed('MWh')) ~ 'MWh',
                            .default = NA),
-         sector_source = case_when(Activity_Emissions %in% c('Metadata', 'Demographics') ~ NA,
-                                   str_detect(ctus_summary_field, fixed('Compost')) ~ 'compost',
-                                   str_detect(ctus_summary_field, fixed('Prop')) ~ 'propane',
-                                   str_detect(ctus_summary_field, fixed('Kerodfo')) ~ 'kerodfo',
-                                   str_detect(ctus_summary_field, fixed('Electricity')) ~ 'electricity',
-                                   str_detect(ctus_summary_field, fixed('Landfill')) ~ 'landfill',
-                                   str_detect(ctus_summary_field, fixed('NG')) ~ 'natural gas',
-                                   str_detect(ctus_summary_field, fixed('Other Fuels')) ~ 'other fuels',
+         source = case_when(Activity_Emissions %in% c('Metadata', 'Demographics') ~ NA,
                                    str_detect(ctus_summary_field, fixed('Heavy')) ~ 'heavy-duty vehicle',
                                    str_detect(ctus_summary_field, fixed('Medium')) ~ 'medium-duty vehicle',
                                    str_detect(ctus_summary_field, fixed('Personal')) ~ 'light-duty vehicle',
-                                   str_detect(ctus_summary_field, fixed('Passenger')) ~ 'passenger',
+                                   str_detect(ctus_summary_field, fixed('Passenger')) ~ 'light-duty vehicle', #is this safe assumption? which to use?
                                    str_detect(ctus_summary_field, fixed('Transit')) ~ 'transit',
-                                   str_detect(ctus_summary_field, fixed('Trucks')) ~ 'trucks',
+                                   str_detect(ctus_summary_field, fixed('Trucks')) ~ 'trucks', # is this just heavy plus medium duty?
                                    .default = NA
+                                ),
+         sub_sector = case_when(Activity_Emissions %in% c('Metadata', 'Demographics') ~ NA,
+                                str_detect(ctus_summary_field, fixed('Compost')) ~ 'compost',
+                                str_detect(ctus_summary_field, fixed('Landfill')) ~ 'landfill',
+                                str_detect(ctus_summary_field, fixed('Prop')) ~ 'propane',
+                                str_detect(ctus_summary_field, fixed('Kerodfo')) ~ 'kerosene and other fuels', # need to pick one
+                                str_detect(ctus_summary_field, fixed('Other Fuels')) ~ 'kerosene and other fuels',
+                                str_detect(ctus_summary_field, fixed('Electricity')) ~ 'electricity',
+                                str_detect(ctus_summary_field, fixed('NG')) ~ 'natural gas',
                                 )
-         )
+         ) %>%   left_join(select(sector_breakdown, -category), by = c('source')) %>%
+  mutate(sub_sector = if_else(is.na(sub_sector.x), sub_sector.y, sub_sector.x),
+         sub_sector.x = NULL, sub_sector.y = NULL) %>%
+  left_join(select(sector_breakdown, -category), by = 'sub_sector') %>%
+  mutate(source = if_else(is.na(source.x), source.y, source.x),
+         source.x = NULL, source.y = NULL,
+         sector = if_else(is.na(sector.x), sector.y, sector.x),
+         sector.x = NULL, sector.y = NULL) %>% unique()
 
 
 data_2018 <- select(ctus_summary_2018, all_of(select_fields_v1[[1]])) %>%
@@ -41,6 +50,8 @@ data_2018 <- select(ctus_summary_2018, all_of(select_fields_v1[[1]])) %>%
             GEOG_DESC = `Ctu Name`, .before = `Ctu Id`) %>%
   select(-Keep_YN, -`Ctu Id`, -`Ctu Name`) %>% 
   pivot_wider(names_from = Activity_Emissions, names_sep = '_', 
-              values_from = c(value, units, variable))
+              values_from = c(value, units, variable)) 
+
 
 saveRDS(data_2018, '_meta/data/inventory_2018.RDS')
+saveRDS(sector_breakdown, '_meta/data/sector_category.RDS')

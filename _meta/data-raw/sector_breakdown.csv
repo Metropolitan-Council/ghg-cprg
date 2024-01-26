@@ -1,14 +1,21 @@
 ﻿sector,source,sub_sector,category
+stationary_energy,buildings,electricity,non-residential
+stationary_energy,buildings,electricity,residential
+stationary_energy,buildings,kerosene and other fuels,non-residential
+stationary_energy,buildings,kerosene and other fuels,residential
+stationary_energy,buildings,natural gas,non-residential
+stationary_energy,buildings,natural gas,residential
+stationary_energy,buildings,propane,non-residential
+stationary_energy,buildings,propane,residential
+transportation,heavy-duty vehicle,on-road,commercial
 transportation,light-duty vehicle,on-road,passenger
 transportation,medium-duty vehicle,on-road,commercial
-transportation,heavy-duty vehicle,on-road,commercial
-stationary_energy,buildings,natural gas,residential
-stationary_energy,buildings,natural gas,non-residential
-stationary_energy,buildings,propane,residential
-stationary_energy,buildings,propane,non-residential
-stationary_energy,buildings,electricity,residential
-stationary_energy,buildings,electricity,non-residential
-waste_wastewater,waste and wastewater,solid waste,waste treated within geography
-waste_wastewater,waste and wastewater,wastewater,waste treated within geography
-waste_wastewater,waste and wastewater,solid waste,waste treated outside geography
-waste_wastewater,waste and wastewater,wastewater,waste treated outside geography
+transportation,transit,on-road,passenger
+waste_wastewater,solid waste,compost,waste treated outside geography
+waste_wastewater,solid waste,compost,waste treated within geography
+waste_wastewater,solid waste,landfill,waste treated outside geography
+waste_wastewater,solid waste,landfill,waste treated within geography
+waste_wastewater,solid waste,recycling,waste treated outside geography
+waste_wastewater,solid waste,recycling,waste treated within geography
+waste_wastewater,wastewater,wastewater,waste treated outside geography
+waste_wastewater,wastewater,wastewater,waste treated within geography
