@@ -1,6 +1,6 @@
 # compile emissions from all sectors into a single data table
 source("R/_load_pkgs.R")
-cprg_county <- readRDS("R/data/cprg_county.RDS")
+cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 # transportation -----
 transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
@@ -73,5 +73,5 @@ emissions_all_meta <- tibble::tribble(
   "factor_source", class(emissions_all$factor_source), "Emissions factor data source"
 )
 
-saveRDS(emissions_all, "R/data/cprg_county_emissions.RDS")
-saveRDS(emissions_all_meta, "R/data/cprg_county_emissions_meta.RDS")
+saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")
+saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
