@@ -1,10 +1,10 @@
 source("R/_load_pkgs.R")
 
 # load in data from GHG Inventory 2018 tableau workbooks
-ctus_summary_2018 <- readr::read_csv("_meta/data-raw/ctus_summary_2018.csv")
+ctus_summary_2018 <- readr::read_csv(file.path(here::here(), "_meta/data-raw/ctus_summary_2018.csv"))
 # load in field names, metadata etc.
-Fields_Formulas_GHGInv1 <- readr::read_csv("_meta/data-raw/Fields_Formulas_GHGInv1.csv")
-sector_breakdown <- readr::read_csv("_meta/data-raw/sector_breakdown.csv")
+Fields_Formulas_GHGInv1 <- readr::read_csv(file.path(here::here(), "_meta/data-raw/Fields_Formulas_GHGInv1.csv"))
+sector_breakdown <- readr::read_csv(file.path(here::here(), "_meta/data-raw/sector_breakdown.csv"))
 
 # manipulate metadata
 select_fields_v1 <- Fields_Formulas_GHGInv1 %>%
