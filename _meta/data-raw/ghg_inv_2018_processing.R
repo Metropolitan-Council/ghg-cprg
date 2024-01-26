@@ -62,10 +62,10 @@ data_2018 <- select(ctus_summary_2018, all_of(select_fields_v1[[1]])) %>%
     GEOG_ID = `Ctu Id`,
     GEOG_DESC = `Ctu Name`, .before = `Ctu Id`
   ) %>%
-  select(-Keep_YN, -`Ctu Id`, -`Ctu Name`) %>%
+  select(-Keep_YN, -`Ctu Id`, -`Ctu Name`, -variable) %>%
   pivot_wider(
     names_from = Activity_Emissions, names_sep = "_",
-    values_from = c(value, units, variable)
+    values_from = c(value, units)
   )
 
 
