@@ -78,7 +78,7 @@ passenger_vmt <- vmt_entry %>%
   magrittr::extract2("VMT")
 
 
-tbi_vehicle_fuel_age %>%
+lggit_vmt_entries <- tbi_vehicle_fuel_age %>%
   # split passenger car VMT between gasoline and diesel
   # based on regional distribution (est_pct)
   mutate(VMT = passenger_vmt * est_pct) %>% 
@@ -109,3 +109,6 @@ tbi_vehicle_fuel_age %>%
   ) %>%  
   select(names(lggit_structure))
 
+write.csv(lggit_vmt_entries,
+          "_transportation/data-raw/epa/community_ghg_inventorytool_11.28.23/lggit_vmt_entries.CSV",
+          row.names = FALSE)
