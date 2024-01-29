@@ -22,7 +22,7 @@ hookaddcap()
 ```{r tbl-acroynms}
 #| tbl-cap: "Acronyms"
 #| out-width: "95%"
-read.csv(file.path(here::here(), "/_meta/acronyms.csv")) %>%
+read.csv(file.path(here::here(), "_meta/data-raw/acronyms.csv")) %>%
   knitr::kable()
 ```
 

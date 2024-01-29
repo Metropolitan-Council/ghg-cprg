@@ -29,7 +29,7 @@ County data was pulled using `{tigris}`, an R package that downloads TIGER/Line 
 ```{r tbl-cprg-county}
 #| tbl-cap: "County geography metadata"
 #| out-width: "95%"
-cprg_county_meta <- readRDS(file.path(here::here(), "R/data/cprg_county_meta.RDS"))
+cprg_county_meta <- readRDS(file.path(here::here(), "_meta/data/cprg_county_meta.RDS"))
 
 cprg_county_meta %>%
   kable()
@@ -40,7 +40,7 @@ Additionally, population estimates were obtained from the American Community Sur
 ```{r tbl-cprg-population}
 #| tbl-cap: "County population metadata"
 #| out-width: "95%"
-cprg_population <- readRDS(file.path(here::here(), "R/data/cprg_population_meta.RDS"))
+cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population_meta.RDS"))
 
 cprg_population %>%
   kable()
@@ -57,7 +57,7 @@ Data from both states was then combined and filtered to include only the workpla
 ```{r tbl-cprg-ctu}
 #| tbl-cap: "City geography metadata"
 #| out-width: "95%"
-cprg_ctu_meta <- readRDS(file.path(here::here(), "R/data/cprg_ctu_meta.RDS"))
+cprg_ctu_meta <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu_meta.RDS"))
 
 cprg_ctu_meta %>%
   kable()

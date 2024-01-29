@@ -5,7 +5,7 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/plot_county_emissions.R"))
 
 
-county_emissions <- readRDS(file.path(here::here(), "R/data/cprg_county_emissions.RDS"))
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 county_emissions_summary <- county_emissions %>%
   group_by(sector, category, data_source, factor_source) %>%
