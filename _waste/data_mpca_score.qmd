@@ -43,7 +43,7 @@ Removed MSW Compost as empty category
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
 
-## Data distribution
+### Data distribution
 
 To check if the data is reasonable, we can start by visualizing the tons of waste generated for each county, broken into categories. 
 
@@ -92,12 +92,12 @@ mpca_score %>%
 # Ignored exploration of area vs. total waste - little correlation, compare to area vs. pop
 cprg_area_mn <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-           as.numeric()) %>%
+    as.numeric()) %>%
   filter(STATE == "Minnesota")
 
 mpca_score %>%
-  filter(!Method == "MSW Compost") %>% 
-  group_by(County) %>% 
+  filter(!Method == "MSW Compost") %>%
+  group_by(County) %>%
   mutate(Total = sum(Tons)) %>%
   full_join(cprg_area_mn, by = join_by(County == NAME)) %>%
   plot_ly(
@@ -118,7 +118,6 @@ mpca_score %>%
     x_title = "Area (sq. mi.)",
     y_title = "Waste (tons)"
   )
-
 ```
 
 We would expect that counties with large populations would generate more waste and smaller counties would generate less.
@@ -132,8 +131,8 @@ cprg_pop_mn <- cprg_pop %>%
   filter(STATE == "Minnesota")
 
 mpca_score %>%
-  filter(!Method == "MSW Compost") %>% 
-  group_by(County) %>% 
+  filter(!Method == "MSW Compost") %>%
+  group_by(County) %>%
   mutate(Total = sum(Tons)) %>%
   full_join(cprg_pop_mn, by = join_by(County == NAME)) %>%
   plot_ly(
@@ -154,11 +153,10 @@ mpca_score %>%
     x_title = "Population",
     y_title = "Waste (tons)"
   )
-
 ```
 
 Note onsite in only two counties
 
-```{r echo=FALSE}
-saveCap("waste-data")
+```{r, echo = "FALSE"}
+saveCap("mpca-score")
 ```

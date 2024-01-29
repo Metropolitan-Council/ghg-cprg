@@ -4,7 +4,7 @@ source("R/_load_pkgs.R")
 # you may need to install a Java binary to work with tabulizer
 # I suggest installing the Adoptium distribution: https://adoptium.net/
 # then, go to your terminal and run `R CMD javareconf` and check for errors
-
+install.package("tabulizer")
 library(tabulizer)
 # each of these calls launch a shiny app that has you manually select the table
 # areas with your mouse

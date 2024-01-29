@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.3.433">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -18,6 +18,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -59,6 +93,14 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="../site_libs/plotly-binding-4.10.3/plotly.js"></script>
+<script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
 </head>
@@ -270,7 +312,18 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#mpca-score" id="toc-mpca-score" class="nav-link active" data-scroll-target="#mpca-score"><span class="header-section-number">10.1</span> MPCA SCORE</a></li>
+  <li><a href="#data-distribution" id="toc-data-distribution" class="nav-link" data-scroll-target="#data-distribution"><span class="header-section-number">10.2</span> Data distribution</a></li>
+  <li><a href="#wi-waste-data" id="toc-wi-waste-data" class="nav-link" data-scroll-target="#wi-waste-data"><span class="header-section-number">10.3</span> WI Waste Data</a></li>
+  <li><a href="#wi-greenhouse-gas-emissions-inventory" id="toc-wi-greenhouse-gas-emissions-inventory" class="nav-link" data-scroll-target="#wi-greenhouse-gas-emissions-inventory"><span class="header-section-number">10.4</span> WI Greenhouse Gas Emissions Inventory</a></li>
+  <li><a href="#population-estimates" id="toc-population-estimates" class="nav-link" data-scroll-target="#population-estimates"><span class="header-section-number">10.5</span> Population estimates</a></li>
+  <li><a href="#data-distribution-1" id="toc-data-distribution-1" class="nav-link" data-scroll-target="#data-distribution-1"><span class="header-section-number">10.6</span> Data distribution</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -292,8 +345,118 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="mpca-score" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="mpca-score"><span class="header-section-number">10.1</span> MPCA SCORE</h2>
+<p>The Minnesota Pollution Control Agency collects an annual inventory, <a href="https://public.tableau.com/app/profile/mpca.data.services/viz/SCOREOverview/1991-2021SCORE">SCORE</a>, of solid waste, recycling and organics as reported by counties across the state. For this project, we used MPCA data for the nine Minnesota counties for the year 2021.</p>
+<p>Data source description, type</p>
+<ul>
+<li>Quality rank (See <a href="../_meta/supplementary_tables.html#tbl-quality-rank">Table&nbsp;<span>C.2</span></a>) Highest quality</li>
+<li>How, when, and why was the data collected?</li>
+<li>If this is a modeled dataset, what is the sample? not modeled - directly reported</li>
+<li>What is the raw unit of measurement?</li>
+<li>How was this data accessed? Include any relevant links/citations, code, or downloads.</li>
+<li>What data cleaning or wrangling was completed? How did you test these processes and outputs?</li>
+<li>What is the geographic and temporal scope? Did you complete any aggregation? annual, county-level</li>
+<li>What version is the data? Were there other versions available? If so, why did you choose this version?</li>
+<li>What assumptions are made when we use this dataset?</li>
+<li>Which subject matter expert (SME) reviewed this data?</li>
+<li>Describe testing used to verify data</li>
+</ul>
+<p>Be sure to add a citation of this dataset to the Zotero shared library.</p>
+<section id="data-characteristics" class="level3" data-number="10.1.1">
+<h3 data-number="10.1.1" class="anchored" data-anchor-id="data-characteristics"><span class="header-section-number">10.1.1</span> Data characteristics</h3>
+<ul>
+<li>Were there any missing data? How did you handle missing data? Missing WI data Removed MSW Compost as empty category</li>
+<li>Plots, tables, and description of data distribution</li>
+<li>Variance, Z-Score, quantiles</li>
+<li>Facet views by categorical variables</li>
+</ul>
+</section>
+</section>
+<section id="data-distribution" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="data-distribution"><span class="header-section-number">10.2</span> Data distribution</h2>
+<p>To check if the data is reasonable, we can start by visualizing the tons of waste generated for each county, broken into categories.</p>
+<p>We would expect waste from landfills to be greater than recycling in most cases, and both landfill and recycling waste to be greater than compost (or “organics”). We can see that this expectation largely holds true, with the exception of Ramsey County, where compost outstrips both recycling and landfill. Part of the explanation for this may lie in the fact that, like Hennepin and Washington, a large portion of Ramsey County’s waste is managed in Waste-to-Energy facilities rather than landfills. This is consistent with waste management strategies of the metropolitan areas within Ramsey, Hennepin and Washington counties (add citation).</p>
+<div class="cell">
+<div id="fig-total-waste" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;10.1: Total waste generated by county</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-2cc071cbac4e601d0d34" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-2cc071cbac4e601d0d34">{"x":{"visdat":{"50d86131d50":["function () ","plotlyVisDat"]},"cur_data":"50d86131d50","attrs":{"50d86131d50":{"x":{},"y":{},"hoverinfo":"text","hovertemplate":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"stack","title":{"text":"Total waste generated per county","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Management Method","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Waste (tons)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Waste (tons)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Waste (tons)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Waste (tons)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["Hennepin","Dakota","Ramsey","Anoka","Washington","Scott","Carver","Sherburne","Chisago"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[187349.81,56150,38922.059999999998,226796.32999999999,442188.60999999999,81696,77767.919999999998,38751.169999999998,30216.299999999999],"hoverinfo":["text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Management method: Landfill<br>Waste generated: 187 thousand tons<extra><\/extra>","County: Carver<br>Management method: Landfill<br>Waste generated: 56 thousand tons<extra><\/extra>","County: Chisago<br>Management method: Landfill<br>Waste generated: 39 thousand tons<extra><\/extra>","County: Dakota<br>Management method: Landfill<br>Waste generated: 227 thousand tons<extra><\/extra>","County: Hennepin<br>Management method: Landfill<br>Waste generated: 442 thousand tons<extra><\/extra>","County: Ramsey<br>Management method: Landfill<br>Waste generated: 82 thousand tons<extra><\/extra>","County: Scott<br>Management method: Landfill<br>Waste generated: 78 thousand tons<extra><\/extra>","County: Sherburne<br>Management method: Landfill<br>Waste generated: 39 thousand tons<extra><\/extra>","County: Washington<br>Management method: Landfill<br>Waste generated: 30 thousand tons<extra><\/extra>"],"type":"bar","name":"Landfill","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[0,0,419.75,0,0,0,0,5.0369999999999999,0],"hoverinfo":["text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Management method: Onsite<br>Waste generated: 0 thousand tons<extra><\/extra>","County: Carver<br>Management method: Onsite<br>Waste generated: 0 thousand tons<extra><\/extra>","County: Chisago<br>Management method: Onsite<br>Waste generated: 0 thousand tons<extra><\/extra>","County: Dakota<br>Management method: Onsite<br>Waste generated: 0 thousand tons<extra><\/extra>","County: Hennepin<br>Management method: Onsite<br>Waste generated: 0 thousand tons<extra><\/extra>","County: Ramsey<br>Management method: Onsite<br>Waste generated: 0 thousand tons<extra><\/extra>","County: Scott<br>Management method: Onsite<br>Waste generated: 0 thousand tons<extra><\/extra>","County: Sherburne<br>Management method: Onsite<br>Waste generated: 0 thousand tons<extra><\/extra>","County: Washington<br>Management method: Onsite<br>Waste generated: 0 thousand tons<extra><\/extra>"],"type":"bar","name":"Onsite","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[44480.379999999997,28290.220000000001,7202.5699999999997,139631.79000000001,163940.72,106028.31,30000.630000000001,6664.9399999999996,35559.25],"hoverinfo":["text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Management method: Organics<br>Waste generated: 44 thousand tons<extra><\/extra>","County: Carver<br>Management method: Organics<br>Waste generated: 28 thousand tons<extra><\/extra>","County: Chisago<br>Management method: Organics<br>Waste generated: 7 thousand tons<extra><\/extra>","County: Dakota<br>Management method: Organics<br>Waste generated: 140 thousand tons<extra><\/extra>","County: Hennepin<br>Management method: Organics<br>Waste generated: 164 thousand tons<extra><\/extra>","County: Ramsey<br>Management method: Organics<br>Waste generated: 106 thousand tons<extra><\/extra>","County: Scott<br>Management method: Organics<br>Waste generated: 30 thousand tons<extra><\/extra>","County: Sherburne<br>Management method: Organics<br>Waste generated: 7 thousand tons<extra><\/extra>","County: Washington<br>Management method: Organics<br>Waste generated: 36 thousand tons<extra><\/extra>"],"type":"bar","name":"Organics","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[198036.35999999999,43549.089999999997,8407.0599999999995,139761.56,342392.04999999999,79274.080000000002,58298.82,33974.089999999997,83655.910000000003],"hoverinfo":["text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Management method: Recycling<br>Waste generated: 198 thousand tons<extra><\/extra>","County: Carver<br>Management method: Recycling<br>Waste generated: 44 thousand tons<extra><\/extra>","County: Chisago<br>Management method: Recycling<br>Waste generated: 8 thousand tons<extra><\/extra>","County: Dakota<br>Management method: Recycling<br>Waste generated: 140 thousand tons<extra><\/extra>","County: Hennepin<br>Management method: Recycling<br>Waste generated: 342 thousand tons<extra><\/extra>","County: Ramsey<br>Management method: Recycling<br>Waste generated: 79 thousand tons<extra><\/extra>","County: Scott<br>Management method: Recycling<br>Waste generated: 58 thousand tons<extra><\/extra>","County: Sherburne<br>Management method: Recycling<br>Waste generated: 34 thousand tons<extra><\/extra>","County: Washington<br>Management method: Recycling<br>Waste generated: 84 thousand tons<extra><\/extra>"],"type":"bar","name":"Recycling","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[18507.98,5.8399999999999999,0,10013.4,355435.96000000002,236011.89999999999,0.70999999999999996,4084,87292.009999999995],"hoverinfo":["text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Management method: WTE<br>Waste generated: 19 thousand tons<extra><\/extra>","County: Carver<br>Management method: WTE<br>Waste generated: 0 thousand tons<extra><\/extra>","County: Chisago<br>Management method: WTE<br>Waste generated: 0 thousand tons<extra><\/extra>","County: Dakota<br>Management method: WTE<br>Waste generated: 10 thousand tons<extra><\/extra>","County: Hennepin<br>Management method: WTE<br>Waste generated: 355 thousand tons<extra><\/extra>","County: Ramsey<br>Management method: WTE<br>Waste generated: 236 thousand tons<extra><\/extra>","County: Scott<br>Management method: WTE<br>Waste generated: 0 thousand tons<extra><\/extra>","County: Sherburne<br>Management method: WTE<br>Waste generated: 4 thousand tons<extra><\/extra>","County: Washington<br>Management method: WTE<br>Waste generated: 87 thousand tons<extra><\/extra>"],"type":"bar","name":"WTE","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</figure>
+</div>
+</div>
+<p>We would expect that counties with large populations would generate more waste and smaller counties would generate less.</p>
+<p>Comparing waste generated and population, we see a general positive correlation.</p>
+<div class="cell">
+<div id="fig-waste-county-pop" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;10.2: Total waste generated by county and county population</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-86a4260b8f573d82e660" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-86a4260b8f573d82e660">{"x":{"visdat":{"50d8234c7488":["function () ","plotlyVisDat"]},"cur_data":"50d8234c7488","attrs":{"50d8234c7488":{"x":{},"y":{},"mode":"markers","hoverinfo":"text","hovertemplate":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"Total waste by county population","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Waste (tons)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Waste (tons)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Waste (tons)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Waste (tons)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Population","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Population","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Population","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Population","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":[360773,105694,56328,435863,1270283,549377,149568,96295,264818,360773,105694,56328,435863,1270283,549377,149568,96295,264818,360773,105694,56328,435863,1270283,549377,149568,96295,264818,360773,105694,56328,435863,1270283,549377,149568,96295,264818,360773,105694,56328,435863,1270283,549377,149568,96295,264818],"y":[448374.52999999997,127995.14999999999,54951.439999999995,516203.08000000002,1303957.3400000001,503010.28999999998,166068.07999999999,83479.236999999994,236723.47,448374.52999999997,127995.14999999999,54951.439999999995,516203.08000000002,1303957.3400000001,503010.28999999998,166068.07999999999,83479.236999999994,236723.47,448374.52999999997,127995.14999999999,54951.439999999995,516203.08000000002,1303957.3400000001,503010.28999999998,166068.07999999999,83479.236999999994,236723.47,448374.52999999997,127995.14999999999,54951.439999999995,516203.08000000002,1303957.3400000001,503010.28999999998,166068.07999999999,83479.236999999994,236723.47,448374.52999999997,127995.14999999999,54951.439999999995,516203.08000000002,1303957.3400000001,503010.28999999998,166068.07999999999,83479.236999999994,236723.47],"mode":"markers","hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Waste generated: 448 thousand tons<br>Population: 360773<extra><\/extra>","County: Carver<br>Waste generated: 128 thousand tons<br>Population: 105694<extra><\/extra>","County: Chisago<br>Waste generated: 55 thousand tons<br>Population: 56328<extra><\/extra>","County: Dakota<br>Waste generated: 516 thousand tons<br>Population: 435863<extra><\/extra>","County: Hennepin<br>Waste generated: 1304 thousand tons<br>Population: 1270283<extra><\/extra>","County: Ramsey<br>Waste generated: 503 thousand tons<br>Population: 549377<extra><\/extra>","County: Scott<br>Waste generated: 166 thousand tons<br>Population: 149568<extra><\/extra>","County: Sherburne<br>Waste generated: 83 thousand tons<br>Population: 96295<extra><\/extra>","County: Washington<br>Waste generated: 237 thousand tons<br>Population: 264818<extra><\/extra>","County: Anoka<br>Waste generated: 448 thousand tons<br>Population: 360773<extra><\/extra>","County: Carver<br>Waste generated: 128 thousand tons<br>Population: 105694<extra><\/extra>","County: Chisago<br>Waste generated: 55 thousand tons<br>Population: 56328<extra><\/extra>","County: Dakota<br>Waste generated: 516 thousand tons<br>Population: 435863<extra><\/extra>","County: Hennepin<br>Waste generated: 1304 thousand tons<br>Population: 1270283<extra><\/extra>","County: Ramsey<br>Waste generated: 503 thousand tons<br>Population: 549377<extra><\/extra>","County: Scott<br>Waste generated: 166 thousand tons<br>Population: 149568<extra><\/extra>","County: Sherburne<br>Waste generated: 83 thousand tons<br>Population: 96295<extra><\/extra>","County: Washington<br>Waste generated: 237 thousand tons<br>Population: 264818<extra><\/extra>","County: Anoka<br>Waste generated: 448 thousand tons<br>Population: 360773<extra><\/extra>","County: Carver<br>Waste generated: 128 thousand tons<br>Population: 105694<extra><\/extra>","County: Chisago<br>Waste generated: 55 thousand tons<br>Population: 56328<extra><\/extra>","County: Dakota<br>Waste generated: 516 thousand tons<br>Population: 435863<extra><\/extra>","County: Hennepin<br>Waste generated: 1304 thousand tons<br>Population: 1270283<extra><\/extra>","County: Ramsey<br>Waste generated: 503 thousand tons<br>Population: 549377<extra><\/extra>","County: Scott<br>Waste generated: 166 thousand tons<br>Population: 149568<extra><\/extra>","County: Sherburne<br>Waste generated: 83 thousand tons<br>Population: 96295<extra><\/extra>","County: Washington<br>Waste generated: 237 thousand tons<br>Population: 264818<extra><\/extra>","County: Anoka<br>Waste generated: 448 thousand tons<br>Population: 360773<extra><\/extra>","County: Carver<br>Waste generated: 128 thousand tons<br>Population: 105694<extra><\/extra>","County: Chisago<br>Waste generated: 55 thousand tons<br>Population: 56328<extra><\/extra>","County: Dakota<br>Waste generated: 516 thousand tons<br>Population: 435863<extra><\/extra>","County: Hennepin<br>Waste generated: 1304 thousand tons<br>Population: 1270283<extra><\/extra>","County: Ramsey<br>Waste generated: 503 thousand tons<br>Population: 549377<extra><\/extra>","County: Scott<br>Waste generated: 166 thousand tons<br>Population: 149568<extra><\/extra>","County: Sherburne<br>Waste generated: 83 thousand tons<br>Population: 96295<extra><\/extra>","County: Washington<br>Waste generated: 237 thousand tons<br>Population: 264818<extra><\/extra>","County: Anoka<br>Waste generated: 448 thousand tons<br>Population: 360773<extra><\/extra>","County: Carver<br>Waste generated: 128 thousand tons<br>Population: 105694<extra><\/extra>","County: Chisago<br>Waste generated: 55 thousand tons<br>Population: 56328<extra><\/extra>","County: Dakota<br>Waste generated: 516 thousand tons<br>Population: 435863<extra><\/extra>","County: Hennepin<br>Waste generated: 1304 thousand tons<br>Population: 1270283<extra><\/extra>","County: Ramsey<br>Waste generated: 503 thousand tons<br>Population: 549377<extra><\/extra>","County: Scott<br>Waste generated: 166 thousand tons<br>Population: 149568<extra><\/extra>","County: Sherburne<br>Waste generated: 83 thousand tons<br>Population: 96295<extra><\/extra>","County: Washington<br>Waste generated: 237 thousand tons<br>Population: 264818<extra><\/extra>"],"type":"scatter","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</figure>
+</div>
+</div>
+<p>Note onsite in only two counties</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveCap</span>(<span class="st">"mpca-score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="wi-waste-data" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="wi-waste-data"><span class="header-section-number">10.3</span> WI Waste Data</h2>
+<p>Waste emissions for Wisconsin counties were unavailable in the same detail as the MPCA data. Thus, we estimated total waste emissions based on statewide emissions estimates, allocated by population.</p>
+</section>
+<section id="wi-greenhouse-gas-emissions-inventory" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="wi-greenhouse-gas-emissions-inventory"><span class="header-section-number">10.4</span> WI Greenhouse Gas Emissions Inventory</h2>
+<p>The most recent <a href="https://widnr.widen.net/view/pdf/o9xmpot5x7/AM610.pdf?t.download=true">Wisconsin Greenhouse Gas Emissions Inventory</a> was done in 2018 by the Wisconsin Department of Natural Resources. Included in the solid waste data for this source are emissions from landfills and waste combustion, taking into account the emissions reduced by waste-to-energy technology or flaring [further research needed]. This inventory does not, however, include emissions generated from composting or recycling.</p>
+<p>For 2018, the Wisconsin DNR reported 2.2 Million Metric Tons Carbon Dioxide Equivalent (MMTCO2e) generated through landfilling and solid waste management.</p>
+<p>The US EPA also completes yearly state-level estimates of emissions for each state, which combined sum to the totals reported in the US Greenhouse Gas Emissions Inventory. The data for these estimates and the US inventory can be explored at the <a href="https://cfpub.epa.gov/ghgdata/inventoryexplorer/index.html">GHG Inventory Data Explorer</a>. The EPA’s total of landfill emissions for Wisconsin for 2018 was 2.450 MMTCO2e, not far off from the Wisconsin DNR’s 2.2 MMTCO2e. The EPA’s estimate for 2021 was 2.422 MMTCO2e.</p>
+<p>Since the EPA completes an inventory for the entire US and its methods may not reflect the specific nuances of emissions in each state, we elected to use the data from the Wisconsin DNR for this inventory.</p>
+<ul>
+<li>Quality rank (See <a href="../_meta/supplementary_tables.html#tbl-quality-rank">Table&nbsp;<span>C.2</span></a>) Highest quality - state-level source</li>
+<li>How, when, and why was the data collected?</li>
+<li>If this is a modeled dataset, what is the sample? not modeled - directly reported</li>
+<li>What is the raw unit of measurement?</li>
+<li>How was this data accessed? Include any relevant links/citations, code, or downloads.</li>
+<li>What data cleaning or wrangling was completed? How did you test these processes and outputs?</li>
+<li>What is the geographic and temporal scope? Did you complete any aggregation?</li>
+<li>What version is the data? Were there other versions available? If so, why did you choose this version?</li>
+<li>What assumptions are made when we use this dataset?</li>
+<li>Which subject matter expert (SME) reviewed this data?</li>
+<li>Describe testing used to verify data</li>
+</ul>
+</section>
+<section id="population-estimates" class="level2" data-number="10.5">
+<h2 data-number="10.5" class="anchored" data-anchor-id="population-estimates"><span class="header-section-number">10.5</span> Population estimates</h2>
+<p>Wisconsin population estimates were retrieved from the <a href="https://www.census.gov/quickfacts/fact/table/piercecountywisconsin,stcroixcountywisconsin,WI/PST120223#PST120223">US Census Bureau</a>.</p>
+<ul>
+<li>Quality rank (See <a href="../_meta/supplementary_tables.html#tbl-quality-rank">Table&nbsp;<span>C.2</span></a>) Highest quality - state-level source</li>
+<li>How, when, and why was the data collected?</li>
+<li>If this is a modeled dataset, what is the sample? not modeled - directly reported</li>
+<li>What is the raw unit of measurement?</li>
+<li>How was this data accessed? Include any relevant links/citations, code, or downloads.</li>
+<li>What data cleaning or wrangling was completed? How did you test these processes and outputs?</li>
+<li>What is the geographic and temporal scope? Did you complete any aggregation?</li>
+<li>What version is the data? Were there other versions available? If so, why did you choose this version?</li>
+<li>What assumptions are made when we use this dataset?</li>
+<li>Which subject matter expert (SME) reviewed this data?</li>
+<li>Describe testing used to verify data</li>
+</ul>
+<section id="data-characteristics-1" class="level3" data-number="10.5.1">
+<h3 data-number="10.5.1" class="anchored" data-anchor-id="data-characteristics-1"><span class="header-section-number">10.5.1</span> Data characteristics</h3>
+<ul>
+<li>Were there any missing data? How did you handle missing data?</li>
+<li>Plots, tables, and description of data distribution</li>
+<li>Variance, Z-Score, quantiles</li>
+<li>Facet views by categorical variables</li>
+</ul>
+</section>
+</section>
+<section id="data-distribution-1" class="level2" data-number="10.6">
+<h2 data-number="10.6" class="anchored" data-anchor-id="data-distribution-1"><span class="header-section-number">10.6</span> Data distribution</h2>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

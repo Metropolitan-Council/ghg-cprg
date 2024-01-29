@@ -21,6 +21,8 @@ hookaddcap()
 
 {{< include data_mpca_score.qmd >}}
 
+{{< include data_wi_emissions.qmd >}}
+
 ```{r echo=FALSE}
 saveCap("waste-data")
 ```

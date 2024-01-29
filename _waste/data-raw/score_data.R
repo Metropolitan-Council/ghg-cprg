@@ -104,6 +104,19 @@ score_final <- score_filtered %>%
   ) %>%
   filter(!Method == "MSW Compost") # removing rows filled with 0s and NAs
 
+mn_emissions_meta <- tribble(
+  ~Column, ~Class, ~Description,
+  "County", class(score_final$County), "MN county of waste origin",
+  "Management Category", class(score_final$`Management Category`), "Waste category
+  (either M__ Municipal Solid Waste or Combined Recycling and Organics)",
+  "Method", class(score_final$Method), "Waste disposal method",
+  "Year", class(score_final$Year), "MPCA SCORE data collection year",
+  "Tons", class(score_final$Tons), "Tons of waste collected",
+  "emissions_factor", class(score_final$emissions_factor), "Appropriate emissions factor from EPA",
+  "emissions_metric_tons_co2e", class(score_final$emissions_metric_tons_co2e),
+  "Calculated emissions in metric tons CO2e"
+)
 
 # export
-saveRDS(score_final, paste0("_waste/data/waste_emissions.RDS"))
+saveRDS(score_final, paste0("_waste/data/mn_emissions.RDS"))
+saveRDS(mn_emissions_meta, paste0("_waste/data/mn_emissions_meta.RDS"))
