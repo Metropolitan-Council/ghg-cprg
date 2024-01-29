@@ -1,22 +1,23 @@
-
-### replace with cprg_county from R -> data
-# load 11 counties
-mn_counties <- counties('MN') %>% 
-  filter(NAME %in% c('Hennepin','Ramsey','Anoka','Dakota','Carver','Sherburne','Chisago','Scott','Washington'))
-
-wi_counties <- counties('WI') %>% 
-  filter(NAME %in% c('St. Croix','Pierce'))
-
-#bind MN and WI together
-all_counties <- rows_append(wi_counties,mn_counties) 
+source("R/_load_pkgs.R")
+source("R/cprg_geography.R")
 
 
-prop_ef <- 62.87 + (3.0 * 25) + (0.6 * 298) # CO2, CH4, N2O converted to CO2 equivalent - kg CO2 per mmBtu
-# source: https://www.epa.gov/sites/default/files/2021-04/documents/emission-factors_mar2020.pdf
+# read in efficiency factors
+eff_fac <- readxl::read_excel('_energy/data-raw/ghg-emission-factors-hub-2021.xlsx')
+# source: https://www.epa.gov/climateleadership/ghg-emission-factors-hub
+### poor formatting but the co2e for propane is:
+prop_ef <- as.numeric(eff_fac %>% filter(...2 == 'Propane') %>% select(...4)) + #CO2 emissions per mmBtu of propane used
+  as.numeric(eff_fac %>% filter(...2 == 'Propane') %>% select(...5)) * as.numeric(eff_fac[6,4]) + #methane emissions per mmBtu propane scale to CO2 equivalency
+  as.numeric(eff_fac %>% filter(...2 == 'Propane') %>% select(...6)) * as.numeric(eff_fac[7,4]) #n20 emissions per mmBtu propane scale to CO2 equivalency
 
-mn_prop_use <- 24000000 # 24 trillion in units of mmBtu (millions BTU) - 2020
-wi_prop_use <- 20000000 # 20 trillion in units of mmBtu (millions BTU) - 2020
+eia2020 <- read.csv('_energy/data-raw/eia-recs-2020.csv')
 # source: https://www.eia.gov/consumption/residential/data/2020/state/pdf/ce2.1.st.pdf
+
+
+# these are the estimated per household values of million btu generation for households that use propane
+mn_prop_use <- eia2020[33,15]
+wi_prop_use <- eia2020[64,15]
+
 
 ### look up codes in ACS
 load_variables(year = 2020, dataset = "acs5") %>% mutate(concept_short = substr(concept,1,10)) %>% distinct(concept_short) %>% print(n=10000)
@@ -24,67 +25,28 @@ load_variables(year = 2020, dataset = "acs5") %>% mutate(concept_short = substr(
 v_heat<- load_variables(year = 2021, dataset = "acs5") %>% mutate(concept_short = substr(concept,1,10)) %>% 
   filter(concept_short == "HOUSE HEAT") %>% print(n=10000)
 
-v2020 <- load_variables(year = 2020, dataset = "pl")
-
-#get number of households in state using propane
-mn_prop_hh <- get_acs(geography = 'state',
+#get number of households in each county using propane
+mn_prop_hh <- get_acs(geography = 'county',
         variables = 'B25040_003',
         state = 'MN',
         year = 2021) %>% 
-  select(estimate)
+  filter(GEOID %in% cprg_county$GEOID) %>% 
+  mutate(mmBtu = estimate * as.numeric(mn_prop_use), #multiply average propane use by household be estimated number of households
+         CO2e = mmBtu * prop_ef * 0.001) # multiply mmBtu per county by emissions factor
 
-wi_prop_hh <- get_acs(geography = 'state',
+# repeat for WI
+wi_prop_hh <- get_acs(geography = 'county',
                       variables = 'B25040_003',
                       state = 'WI',
                       year = 2021) %>% 
-  select(estimate)
+  filter(GEOID %in% cprg_county$GEOID) %>% 
+  mutate(mmBtu = estimate * as.numeric(wi_prop_use), #multiply average propane use by household be estimated number of households
+         CO2e = mmBtu * prop_ef * 0.001) # multiply mmBtu per county by emissions factor and then convert to metric tonnes
 
+#bind data
+prop_county <- rows_append(mn_prop_hh,wi_prop_hh)
+prop_county
 
-mn_prop_county <- get_acs(geography = 'county',
-        variables = 'B25040_003',
-        state = 'MN',
-        year = 2021) %>% 
-  mutate(hh_perc = estimate/as.numeric(mn_prop_hh),
-         mmBtu = hh_perc*mn_prop_use,
-         co2e = mmBtu * prop_ef) %>% 
-  filter(GEOID %in% all_counties$GEOID)
-  
-mn_prop_county
+total_regional_emissions <- sum(prop_county$CO2e) # total regional emissions of the 11 county area
 
-wi_prop_county <- get_acs(geography = 'county',
-                            variables = 'B25040_003',
-                            state = 'WI',
-                            year = 2021) %>% 
-  mutate(hh_perc = estimate/as.numeric(wi_prop_hh),
-         mmBtu = hh_perc*wi_prop_use,
-         co2e = mmBtu * prop_ef) %>% 
-  filter(GEOID %in% all_counties$GEOID)
-
-wi_prop_county
-
-prop_county <- rows_append(mn_prop_county,wi_prop_county)
-write_csv(prop_county,
-          './CPRG/prop-est-2021.csv')
-
-total_regional_emissions <- sum(prop_county$co2e) # kg CO2 equivalency
-total_regional_emissions * 0.001 # metric tonnes CO2 equivalency
-
-mc_emissions <- sum(prop_county$co2e[!prop_county$GEOID %in% c(27025,27141,55093,55109)])
-mc_emissions  * 0.001
-## this is ~4x higher than 2018 GHG estimates for region, though is very similar if only using CO2 emission factor (e.g.ignore methane and N2O)
-## I'm not sure which EIA the 2018 estimate uses, but there's a ~75% increases in estimated propane usage from 2015 to 2020 in midwest (covid?)
-
-county_prop_use
-
-sum(rural_mn$rh_perc)
-
-### need to get estimates from EIA RECS on
-### - estimated number of households using propane in midwest
-### -- breakdown of rural vs urban
-### - avg gallons used per household using
-### - 
-
-## Midwest census region has 2.72 million housing units that use propane
-## - 1.09 mil in west north central midwest (includes MN)
-## - 1.62 mil in east north central midwest (includes WI)
-
+saveRDS(prop_county, "_energy/data-raw/propane_use_county.RDS")
