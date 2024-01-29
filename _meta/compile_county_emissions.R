@@ -1,6 +1,6 @@
 # compile emissions from all sectors into a single data table
 source("R/_load_pkgs.R")
-cprg_county <- readRDS("R/data/cprg_county.RDS")
+cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 # transportation -----
 transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
@@ -38,29 +38,30 @@ transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.R
 # combine and write metadata----
 
 emissions_all <- bind_rows(transportation_emissions) %>%
-  left_join(cprg_county %>% 
-              sf::st_drop_geometry() %>% 
-              select(NAME, geog_id = COUNTYFP),
-            by = c("geog_name" = "NAME")) %>% 
-  
+  left_join(
+    cprg_county %>%
+      sf::st_drop_geometry() %>%
+      select(NAME, geog_id = COUNTYFP),
+    by = c("geog_name" = "NAME")
+  ) %>%
   mutate(source = factor(source,
-                         c(
-                           # transportation levels
-                           "Light-duty vehicles",
-                           "Medium-duty vehicles",
-                           "Heavy-duty vehicles"
-                           # waste levels
-                           # energy levels
-                         ),
-                         ordered = TRUE
-  )) %>% 
+    c(
+      # transportation levels
+      "Light-duty vehicles",
+      "Medium-duty vehicles",
+      "Heavy-duty vehicles"
+      # waste levels
+      # energy levels
+    ),
+    ordered = TRUE
+  )) %>%
   select(year, geog_level, geog_id, geog_name, everything())
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
   "year", class(emissions_all$year), "Emissions estimation year",
   "geog_level", class(emissions_all$geog_level), "Geography level; city or county",
-  "geog_id", class(emissions_all$geog_id), "FIPS code", 
+  "geog_id", class(emissions_all$geog_id), "FIPS code",
   "geog_name", class(emissions_all$geog_name), "Name of geographic area",
   "sector", class(emissions_all$sector), paste0(
     "Emissions sector. One of ",
@@ -73,5 +74,5 @@ emissions_all_meta <- tibble::tribble(
   "factor_source", class(emissions_all$factor_source), "Emissions factor data source"
 )
 
-saveRDS(emissions_all, "R/data/cprg_county_emissions.RDS")
-saveRDS(emissions_all_meta, "R/data/cprg_county_emissions_meta.RDS")
+saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")
+saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")

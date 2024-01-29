@@ -109,8 +109,8 @@ cprg_ctu_meta <- tribble(
 )
 
 #
-saveRDS(cprg_county, "R/data/cprg_county.RDS")
-saveRDS(cprg_county_meta, "R/data/cprg_county_meta.RDS")
+saveRDS(cprg_county, "_meta/data/cprg_county.RDS")
+saveRDS(cprg_county_meta, "_meta/data/cprg_county_meta.RDS")
 
-saveRDS(cprg_ctu, "R/data/cprg_ctu.RDS")
-saveRDS(cprg_ctu_meta, "R/data/cprg_ctu_meta.RDS")
+saveRDS(cprg_ctu, "_meta/data/cprg_ctu.RDS")
+saveRDS(cprg_ctu_meta, "_meta/data/cprg_ctu_meta.RDS")

@@ -1,7 +1,7 @@
 testthat::test_that("Correct plotly configurations", {
   source(file.path(here::here(), "R/plot_county_emissions.R"))
 
-  county_emissions <- readRDS(file.path(here::here(), "R/data/cprg_county_emissions.RDS"))
+  county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
   # transportation
   transpo_plot <- plot_county_emissions(county_emissions,
