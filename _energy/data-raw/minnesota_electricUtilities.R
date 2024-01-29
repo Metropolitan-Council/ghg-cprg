@@ -28,7 +28,7 @@ distinct_util_type_MN <- MNutilities_in_scope %>%
 
 write_rds(MNutilities_in_scope, here("_energy", 
                                      "data", 
-                                     "MN_electricity_inScope_utilityCounties.RDS"))
+                                     "MN_electricity_inScope_utilityCountyPairs.RDS"))
 
 write_rds(distinct_util_type_MN, here("_energy", 
                                       "data", 
