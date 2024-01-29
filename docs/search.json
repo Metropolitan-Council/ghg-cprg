@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Greenhouse Gas Inventory",
     "section": "",
-    "text": "Preface\nThis is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books.\n\n\n[1] 2"
+    "text": "Executive summary\nOverall emissions\n\n\n\nFigure 1: County emissions by sector and category\n\n\n\n\n\n\n\n\nFigure 2: Transportation county level emissions\n\n\n\n\n\n\n\n\nFigure 3: Energy county level emissions\n\n\n\n\n\n\n\n\nFigure 4: Waste and wastewater county level emissions"
   },
   {
     "objectID": "_energy/_energy.html#introduction",
@@ -53,7 +53,7 @@
     "href": "_transportation/_transportation.html#results",
     "title": "5  Mobile combustion",
     "section": "5.3 Results",
-    "text": "5.3 Results\n\n\n\n\n\n\n\n5.3.1 Correlation with related data\nWe would expect counties with higher population to have higher emissions and VMT.\n\n\n\nFigure 5.1: County population and emissions\n\n\n\n\n\nTo validate our county origin-destination VMT data, we can compare the county totals to the DOT reported values from MnDOT (MnDOT 2021) and WisDOT (WisDOT 2021). Note that these data include all vehicles, passenger and commercial.\n\n\n\nFigure 5.2: County vehicle miles traveled and StreetLight Volume\n\n\n\n\n\n\n\n5.3.2 Comparison with other inventories\n\nStreetLight GHG inventory method, if released in time.\n2018 Met Council inventory\nLGGIT\n\n\n\n\n\nMnDOT. 2021. “VMT by Route System for Each County.” MnDOT Website. https://www.dot.state.mn.us/roadway/data/data-products.html#VMT.\n\n\nWisDOT. 2021. “Wisconsin Vehicle Miles of Travel (VMT).” https://wisconsindot.gov/. https://wisconsindot.gov/Pages/projects/data-plan/veh-miles/default.aspx."
+    "text": "5.3 Results\n\n\n\nFigure 5.1: 2021 annual emissions by vehicle weight\n\n\n\n\n\n\n5.3.1 Correlation with related data\nWe would expect counties with higher population to have higher emissions and VMT.\n\n\n\nFigure 5.2: County population and emissions\n\n\n\n\n\nTo validate our county origin-destination VMT data, we can compare the county totals to the DOT reported values from MnDOT (MnDOT 2021) and WisDOT (WisDOT 2021). Note that these data include all vehicles, passenger and commercial.\n\n\n\nFigure 5.3: County vehicle miles traveled and StreetLight Volume\n\n\n\n\n\n\n\n5.3.2 Comparison with other inventories\n\nStreetLight GHG inventory method, if released in time.\n2018 Met Council inventory\nLGGIT\n\n\n\n\n\nMnDOT. 2021. “VMT by Route System for Each County.” MnDOT Website. https://www.dot.state.mn.us/roadway/data/data-products.html#VMT.\n\n\nWisDOT. 2021. “Wisconsin Vehicle Miles of Travel (VMT).” https://wisconsindot.gov/. https://wisconsindot.gov/Pages/projects/data-plan/veh-miles/default.aspx."
   },
   {
     "objectID": "_transportation/data_transportation.html#streetlight-data",
@@ -151,7 +151,7 @@
     "href": "figures.html",
     "title": "Appendix D — List of Figures",
     "section": "",
-    "text": "Figure\nShort Caption\n\n\n\n\nFigure 6.1\nAvg. trip distance and minimum distance between counties\n\n\nFigure 6.2\nAvg. distance for trips within county and county area\n\n\nFigure 6.3\nStreetLight calibration locations and values\n\n\nFigure 6.4\nVehicle weight distribution at calibration points\n\n\nFigure 6.5\nCounty vehicle miles traveled\n\n\nFigure 5.1\nCounty population and emissions\n\n\nFigure 5.2\nCounty vehicle miles traveled and StreetLight Volume"
+    "text": "Figure\nShort Caption\n\n\n\n\nFigure 6.1\nAvg. trip distance and minimum distance between counties\n\n\nFigure 6.2\nAvg. distance for trips within county and county area\n\n\nFigure 6.3\nStreetLight calibration locations and values\n\n\nFigure 6.4\nVehicle weight distribution at calibration points\n\n\nFigure 6.5\nCounty vehicle miles traveled\n\n\nFigure 1\nCounty emissions by sector and category\n\n\nFigure 2\nTransportation county level emissions\n\n\nFigure 3\nEnergy county level emissions\n\n\nFigure 4\nWaste and wastewater county level emissions\n\n\nFigure 5.1\n2021 annual emissions by vehicle weight\n\n\nFigure 5.2\nCounty population and emissions\n\n\nFigure 5.3\nCounty vehicle miles traveled and StreetLight Volume"
   },
   {
     "objectID": "tables.html",

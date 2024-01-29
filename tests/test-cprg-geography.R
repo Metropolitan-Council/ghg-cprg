@@ -1,5 +1,5 @@
 testthat::test_that("County data is as expected", {
-  cprg_county <- readRDS(file.path(here::here(), "R/data/cprg_county.RDS"))
+  cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 
   testthat::expect_equal(nrow(cprg_county), 11)
   testthat::expect_equal(
@@ -18,7 +18,7 @@ testthat::test_that("County data is as expected", {
 })
 
 testthat::test_that("CTU data is as expected", {
-  cprg_ctu <- readRDS(file.path(here::here(), "R/data/cprg_ctu.RDS"))
+  cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
 
   testthat::expect_equal(nrow(cprg_ctu), 289)
   testthat::expect_equal(names(cprg_ctu), c(

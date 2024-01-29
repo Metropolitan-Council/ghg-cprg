@@ -1,9 +1,82 @@
-# Preface {.unnumbered}
-
-This is a Quarto book.
-
-To learn more about Quarto books visit <https://quarto.org/docs/books>.
-
+# Executive summary {.unnumbered}
 ```{r}
-1 + 1
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/plot_county_emissions.R"))
+
+
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+county_emissions_summary <- county_emissions %>%
+  group_by(sector, category, data_source, factor_source) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  )
+
+hookaddcap()
+```
+
+Overall emissions
+
+```{r fig-county-emissions-sector}
+#| fig-cap: "County emissions by sector and category"
+#| out-width: "95%"
+plot_ly(
+  data = county_emissions_summary,
+  source = opts_current$get()$label,
+  x = ~sector,
+  y = ~emissions_metric_tons_co2e,
+  color = ~category,
+  split = ~category,
+  type = "bar",
+  hovertemplate = ~ paste0(
+    sector, " - ", category, "<br>",
+    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout("11-county regional greenhouse gas emissions, 2021",
+    subtitle = "",
+    x_title = "Sector",
+    y_title = "Metric tones CO<sub>2</sub>e",
+    legend_title = "Category"
+  ) %>%
+  layout(barmode = "stack")
+```
+
+
+```{r fig-transportation-emissions}
+#| fig-cap: "Transportation county level emissions"
+#| out-width: "95%"
+plot_county_emissions(
+  county_emissions = county_emissions,
+  .sector = "Transportation",
+  .plotly_source = opts_current$get()$label
+)
+```
+
+```{r fig-energy-emissions}
+#| fig-cap: "Energy county level emissions"
+#| out-width: "95%"
+plot_county_emissions(
+  county_emissions = county_emissions,
+  .sector = "Energy",
+  .plotly_source = opts_current$get()$label
+)
+```
+
+```{r fig-waste-emissions}
+#| fig-cap: "Waste and wastewater county level emissions"
+#| out-width: "95%"
+plot_county_emissions(
+  county_emissions = county_emissions,
+  .sector = "Waste",
+  .plotly_source = opts_current$get()$label
+)
+```
+
+
+```{r echo=FALSE}
+saveCap("exec-summary")
 ```

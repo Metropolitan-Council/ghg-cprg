@@ -32,10 +32,6 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(kableExtra, quietly = TRUE))
   suppressMessages(library(gt, quietly = TRUE))
 
-
-  # Specialty -----
-  suppressMessages(library(osrm, quietly = TRUE))
-
   # require(Hmisc)
   # getRs("reptools.r") # Loads reptools.r from Github
 
