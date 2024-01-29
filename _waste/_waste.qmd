@@ -22,6 +22,31 @@ hookaddcap()
 
 ## Methods
 
+### Wastewater
+
+Wastewater data come from two sources - the Metropolitan Council Environmental Services Division and [xxx]. 
+
+Here is what we did
+
+```{r}
+metro_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metro_ww.RDS")) %>% 
+  filter(year == 2021)
+
+
+plot_ly(
+  data = metro_ww,
+  type = "histogram",
+  nbinsx = 50,
+  color = ~stringr::str_to_sentence(class),
+  x = ~log(emissions_metric_tons_co2e),
+  opacity = 0.6
+) %>% 
+  plotly_layout() %>% 
+  layout(barmode = "overlay")
+
+```
+
+
 ## Results
 
 
