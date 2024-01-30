@@ -2,7 +2,7 @@
 #
 # for now, use values from the last MOVES run
 source("R/_load_pkgs.R")
-source("_transportation/data-raw/global_warming_potential.R")
+source("_meta/data-raw/global_warming_potential.R")
 
 epa_moves <- tibble::tribble(
   ~vehicle_weight, ~CO2, ~CH4, ~N2O,
