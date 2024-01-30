@@ -2,6 +2,9 @@
 # Lets try to construct that from the VMT data we calculated
 
 source("R/_load_pkgs.R")
+cprg_population <- readRDS("_meta/data/cprg_population.RDS")
+
+sum(cprg_population$population)
 
 vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
 tbi_vehicle_fuel_age <- readRDS("_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS") %>% 
@@ -105,10 +108,26 @@ lggit_vmt_entries <- tbi_vehicle_fuel_age %>%
     avg_mpg = case_when(`Fuel Type` == "Gasoline" ~ `Gasoline & Other Fuels`,
                         TRUE ~ `Diesel & Biodiesel`),
     # gallons = miles * (miles/gallon)
-    `Fuel Consumption` = VMT * avg_mpg
+    `Fuel Consumption` = VMT * avg_mpg,
+    `Vehicle Year` = ifelse(is.na(`Vehicle Year`), 2014, `Vehicle Year`)
   ) %>%  
   select(names(lggit_structure))
 
 write.csv(lggit_vmt_entries,
-          "_transportation/data-raw/epa/community_ghg_inventorytool_11.28.23/lggit_vmt_entries.CSV",
+          "_transportation/data-raw/epa/lggit_vmt_entries.CSV",
           row.names = FALSE)
+
+
+# results from LGGIT tool -----
+# CH4 and N2O reported in terms of GWP
+# 28 and 265, respectively
+lggit_totals <- tibble::tribble(
+  ~Sector,  ~CO2,       ~CH4,        ~N2O,        
+  "Residential",                 4903592490.29, 4757.64, 29145.51,
+  "Commercial/Institutional",    203563127.83,   35.12,  1507.90
+) %>% 
+  clean_names() %>% 
+  rowwise() %>% 
+  mutate(total = sum(co2, ch4, n2o, na.rm = T))
+
+
