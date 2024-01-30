@@ -1,5 +1,6 @@
 # get data from the 2020 national emissions inventory
 source("R/_load_pkgs.R")
+source("_transportation/data-raw/global_warming_potential.R")
 library(httr2)
 cprg_county <- readRDS("R/data/cprg_county.RDS")
 
@@ -115,7 +116,7 @@ nei_county_emissisons <- nei_county %>%
   # n2o and ch4 to co2 equivalency
   mutate(
     co2_co2_equivalent =
-      sum(co2, (ch4 * 28), (n2o * 273)),
+      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o))
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
   )
 

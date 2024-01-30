@@ -2,14 +2,7 @@
 #
 # for now, use values from the last MOVES run
 source("R/_load_pkgs.R")
-
-# from QAPP and https://www.epa.gov/ghgemissions/understanding-global-warming-potentials
-gwp <- tibble::tribble(
-  ~ghg, ~co2_equiv,
-  "co2", 1,
-  "ch4", 28,
-  "n2o", 273
-)
+source("_transportation/data-raw/global_warming_potential.R")
 
 epa_moves <- tibble::tribble(
   ~vehicle_weight, ~CO2, ~CH4, ~N2O,
@@ -21,7 +14,7 @@ epa_moves <- tibble::tribble(
   rowwise() %>%
   mutate(
     co2_co2_equivalent =
-      sum(co2, (ch4 * 28), (n2o * 273))
+      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o))
   ) %>%
   mutate(
     moves_year = case_when(
