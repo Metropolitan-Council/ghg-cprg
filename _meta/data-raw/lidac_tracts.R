@@ -2,7 +2,7 @@ source("R/_load_pkgs.R")
 
 # read in data
 comm <- readr::read_csv("_meta/data-raw/1.0-communities.csv",
-                        name_repair = "universal"
+  name_repair = "universal"
 )
 
 # filter to our 11 counties
@@ -25,8 +25,8 @@ mn_tracts <- tigris::tracts(state = "MN", county = c("Hennepin", "Ramsey", "Anok
 wi_tracts <- tigris::tracts(state = "WI", county = c("St. Croix", "Pierce"), year = 2010)
 our_tracts <- dplyr::rows_append(mn_tracts, wi_tracts) %>%
   dplyr::left_join(., comm_11 %>%
-                     dplyr::select(Census.tract.2010.ID, Identified.as.disadvantaged),
-                   by = c("GEOID10" = "Census.tract.2010.ID")
+    dplyr::select(Census.tract.2010.ID, Identified.as.disadvantaged),
+  by = c("GEOID10" = "Census.tract.2010.ID")
   )
 ## basic map
 ggplot(our_tracts, aes(fill = Identified.as.disadvantaged)) +
@@ -36,7 +36,7 @@ ggplot(our_tracts, aes(fill = Identified.as.disadvantaged)) +
 #### save data needed for PCAP
 
 # row bind for output data
-lidac_out <- comm_lidac %>% 
+lidac_out <- comm_lidac %>%
   dplyr::select(Census.tract.2010.ID, County.Name, Identified.as.disadvantaged)
 
 names(lidac_out)
