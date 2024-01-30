@@ -253,6 +253,19 @@ plot_ly(
 
 ```
 
+#### Local Greenhouse Gas Inventory Tool (LGGIT)
+
+```{r}
+vmt_emissions_all %>% 
+  ungroup() %>% 
+  summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  magrittr::extract2("emissions_metric_tons_co2e") %>% 
+  scales::comma()
+
+
+(lggit_totals$total %>% sum()/1000000  * 1000) %>% scales::comma()
+```
+
 
 
 ```{r echo=FALSE}
