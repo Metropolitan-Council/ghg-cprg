@@ -129,7 +129,7 @@ ctu_co_crosswalk <- left_join(geogs_list_ctu, geogs_list_co,
 
 geogs_list <- bind_rows(select(geogs_list_ctu, GEOG_UNIT_ID, GEOG_LEVEL_ID, GEOG_UNIT_NAME, GEOG_UNIT_DESC, STATEFP),
                         select(geogs_list_co, GEOG_UNIT_ID, GEOG_LEVEL_ID, GEOG_UNIT_NAME, GEOG_UNIT_DESC, STATEFP)) 
-# different CRS for geometries between CTU/CO; removed geometries above
+# there are different CRS for geometries between CTU/CO; removed geometries above, geogs_list is a simple table
 
 # compile RDS
 saveRDS(cprg_county, "_meta/data/cprg_county.RDS")
@@ -137,3 +137,6 @@ saveRDS(cprg_county_meta, "_meta/data/cprg_county_meta.RDS")
 
 saveRDS(cprg_ctu, "_meta/data/cprg_ctu.RDS")
 saveRDS(cprg_ctu_meta, "_meta/data/cprg_ctu_meta.RDS")
+
+saveRDS(ctu_co_crosswalk, "_meta/data/geog_crosswalk.RDS")
+saveRDS(geogs_list, "_meta/data/geogs_list.RDS")
