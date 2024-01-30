@@ -7,6 +7,7 @@ cprg_population <- readRDS("_meta/data/cprg_population.RDS")
 sum(cprg_population$population)
 
 vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
+
 tbi_vehicle_fuel_age <- readRDS("_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS") %>% 
   mutate(`Fuel Type` = case_when(fuel == "Diesel" ~ "Diesel",
                                  TRUE ~ "Gasoline"),
@@ -53,8 +54,6 @@ lggit_avg_mpg <- tibble::tribble(
                                     `Vehicle Type` == "Heavy-Duty Vehicle" ~ "Heavy"),
          # we assume that most passenger vehicles are gasoline
          # most medium and heavy are diesel
-         # `Fuel Type` = case_when(vehicle_weight == "Passenger" ~ "Gasoline",
-         #                         TRUE ~ "Diesel"),
          avg_mpg = case_when(vehicle_weight == "Passenger" ~ `Gasoline & Other Fuels`,
                              TRUE ~ `Diesel & Biodiesel`),
          # all passenger cars are residential
@@ -107,8 +106,8 @@ lggit_vmt_entries <- tbi_vehicle_fuel_age %>%
     # discern which MPG to use from fuel type
     avg_mpg = case_when(`Fuel Type` == "Gasoline" ~ `Gasoline & Other Fuels`,
                         TRUE ~ `Diesel & Biodiesel`),
-    # gallons = miles * (miles/gallon)
-    `Fuel Consumption` = VMT * avg_mpg,
+    # gallons = miles / (miles/gallon)
+    `Fuel Consumption` = VMT / avg_mpg,
     `Vehicle Year` = ifelse(is.na(`Vehicle Year`), 2014, `Vehicle Year`)
   ) %>%  
   select(names(lggit_structure))
@@ -118,13 +117,15 @@ write.csv(lggit_vmt_entries,
           row.names = FALSE)
 
 
+sum(vmt_emissions$vmt_total) == sum(lggit_vmt_entries$VMT)
+
 # results from LGGIT tool -----
 # CH4 and N2O reported in terms of GWP
 # 28 and 265, respectively
 lggit_totals <- tibble::tribble(
-  ~Sector,  ~CO2,       ~CH4,        ~N2O,        
-  "Residential",                 4903592490.29, 4757.64, 29145.51,
-  "Commercial/Institutional",    203563127.83,   35.12,  1507.90
+  ~Sector,                          ~CO2,       ~CH4,        ~N2O,        
+  "Residential",                  8371025.25 , 4757.61, 29145.32,
+  "Commercial/Institutional",     485027.94 ,   35.12,  1507.90
 ) %>% 
   clean_names() %>% 
   rowwise() %>% 
