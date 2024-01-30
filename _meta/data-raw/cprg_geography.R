@@ -71,7 +71,7 @@ mn_ctu <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
   arrange(CTU_NAME)
 
 # downloaded from https://gis-ltsb.hub.arcgis.com/pages/download-data
-wi_ctu <- sf::read_sf("R/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_July_2023.shp") %>%
+wi_ctu <- sf::read_sf("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_July_2023.shp") %>%
   filter(CNTY_NAME %in% c("Pierce", "St. Croix")) %>%
   select(CNTY_NAME, CNTY_FIPS, GEOID, MCD_NAME, MCD_FIPS, CTV) %>%
   mutate(
