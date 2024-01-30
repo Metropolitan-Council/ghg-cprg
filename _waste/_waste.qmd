@@ -16,6 +16,8 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 hookaddcap()
+cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
+
 ```
 
 ## Introduction
@@ -26,28 +28,44 @@ hookaddcap()
 
 Wastewater data come from two sources - the Metropolitan Council Environmental Services Division and [xxx]. 
 
-Here is what we did
+Data here are categorized into Scope 1, emissions directly from wastewater activities, and Scope 2, emissions based on electrical purchases.
 
-```{r}
-metro_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metro_ww.RDS")) %>% 
+
+```{r fig-mn-county-ww-emissions}
+#| fig-cap: "County aggregated wastewater emissions by scope" 
+metc_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metc_wastewater.RDS")) %>% 
   filter(year == 2021)
 
-
-plot_ly(
-  data = metro_ww,
-  type = "histogram",
-  nbinsx = 50,
-  color = ~stringr::str_to_sentence(class),
-  x = ~log(emissions_metric_tons_co2e),
-  opacity = 0.6
-) %>% 
-  plotly_layout() %>% 
-  layout(barmode = "overlay")
-
+metc_ww %>% 
+  group_by(COUNTY_NAM, year, scope) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+            .groups = "keep") %>% 
+  plot_ly(
+    x = ~reorder(COUNTY_NAM, -emissions_metric_tons_co2e),
+    y = ~emissions_metric_tons_co2e,
+    color = ~scope,
+    type = "bar",
+    hovertemplate = ~ paste0(
+      COUNTY_NAM, " County", "<br>",
+      scope, "<br>",
+      round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+    
+  ) %>% 
+  plotly_layout(
+    main_title = "County wastewater emissions by scope",
+    x_title = "County",
+    y_title = "Emissions"
+  ) %>% 
+  layout(barmode = "stack",
+         legend = list(
+         traceorder = "normal"))
 ```
 
 
 ## Results
+
 
 
 
