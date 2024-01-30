@@ -255,6 +255,14 @@ plot_ly(
 
 #### Local Greenhouse Gas Inventory Tool (LGGIT)
 
+We used the LGGIT Excel workbook tool with the following inputs in the "Mobile-Data" sheet
+
+```{r}
+lggit_vmt_entries <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_vmt_entries.RDS"))
+
+kable(lggit_vmt_entries)
+```
+
 ```{r}
 vmt_emissions_all %>% 
   ungroup() %>% 
@@ -263,9 +271,18 @@ vmt_emissions_all %>%
   scales::comma()
 
 
-(lggit_totals$total %>% sum()/1000000  * 1000) %>% scales::comma()
+(lggit_totals$total %>% sum()) %>% scales::comma()
 ```
 
+We can test this by looking at the emissions factors for LGGIT and compare them with the EPA MOVES4 values
+
+```{r}
+epa_moves <- readRDS(file.path(here::here(), "_transportation/data/epa_moves.RDS"))
+lggit_kg_emissions_per_mile <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS"))
+
+epa_moves
+lggit_kg_emissions_per_mile
+```
 
 
 ```{r echo=FALSE}
