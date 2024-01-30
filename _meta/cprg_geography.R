@@ -113,15 +113,23 @@ geogs_list_ctu <- cprg_ctu %>%
   mutate(GEOG_LEVEL_ID = 'CTU',
          GEOG_UNIT_ID = if_else(is.na(GNIS_FEATU), GEOID, as.character(GNIS_FEATU)),  # pad with zeros on left til 8 chars
          GEOG_UNIT_NAME = CTU_NAME, GEOG_UNIT_DESC = CTU_NAME) %>% 
-  select(GEOG_UNIT_ID, GEOG_LEVEL_ID, GEOG_UNIT_NAME, GEOG_UNIT_DESC, STATEFP)
+  sf::st_drop_geometry()
   
-
 geogs_list_co <- cprg_county %>% mutate(GEOG_LEVEL_ID = 'CO', 
                                         GEOG_UNIT_ID = as.character(COUNTYFP), GEOG_UNIT_NAME = NAME,
                                         GEOG_UNIT_DESC = NAMELSAD) %>%
-  select(GEOG_UNIT_ID, GEOG_LEVEL_ID, GEOG_UNIT_NAME, GEOG_UNIT_DESC, STATEFP)
+  sf::st_drop_geometry()
 
-geogs_list <- bind_rows(geogs_list_ctu, geogs_list_co) # different CRS for geometries between these? remove geometries?
+ctu_co_crosswalk <- left_join(geogs_list_ctu, geogs_list_co, 
+                              by = c('COUNTY_NAM' = 'NAME', 'STATEFP' = 'STATEFP'),
+                              suffix = c('.CHILD', '.PARENT')) %>%
+  select(GEOG_LEVEL_ID.PARENT, GEOG_UNIT_ID.PARENT,
+         GEOG_LEVEL_ID.CHILD, GEOG_UNIT_ID.CHILD,
+         STATEFP) # problem because WI STATEFP is listed as 53 in CTU dataset and 55 in COs
+
+geogs_list <- bind_rows(select(geogs_list_ctu, GEOG_UNIT_ID, GEOG_LEVEL_ID, GEOG_UNIT_NAME, GEOG_UNIT_DESC, STATEFP),
+                        select(geogs_list_co, GEOG_UNIT_ID, GEOG_LEVEL_ID, GEOG_UNIT_NAME, GEOG_UNIT_DESC, STATEFP)) 
+# different CRS for geometries between CTU/CO; removed geometries above
 
 # compile RDS
 saveRDS(cprg_county, "_meta/data/cprg_county.RDS")
