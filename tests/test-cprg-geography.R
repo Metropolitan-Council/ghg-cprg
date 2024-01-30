@@ -29,3 +29,5 @@ testthat::test_that("CTU data is as expected", {
 
   testthat::expect_equal(cprg_ctu$STATE %>% unique(), c("Minnesota", "Wisconsin"))
 })
+
+testthat::expect_equal(nrow(filter(ctu_co_crosswalk, is.na(GEOG_UNIT_ID.PARENT))), 0)

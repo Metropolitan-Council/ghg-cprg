@@ -83,7 +83,7 @@ wi_ctu <- sf::read_sf("R/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_July_20
     COUNTY_NAM = CNTY_NAME,
     CTU_NAME = MCD_NAME,
     STATE = "Wisconsin",
-    STATEFP = "53"
+    STATEFP = "55"
   ) %>%
   select(
     CTU_NAME,
@@ -125,7 +125,7 @@ ctu_co_crosswalk <- left_join(geogs_list_ctu, geogs_list_co,
                               suffix = c('.CHILD', '.PARENT')) %>%
   select(GEOG_LEVEL_ID.PARENT, GEOG_UNIT_ID.PARENT,
          GEOG_LEVEL_ID.CHILD, GEOG_UNIT_ID.CHILD,
-         STATEFP) # problem because WI STATEFP is listed as 53 in CTU dataset and 55 in COs
+         STATEFP) 
 
 geogs_list <- bind_rows(select(geogs_list_ctu, GEOG_UNIT_ID, GEOG_LEVEL_ID, GEOG_UNIT_NAME, GEOG_UNIT_DESC, STATEFP),
                         select(geogs_list_co, GEOG_UNIT_ID, GEOG_LEVEL_ID, GEOG_UNIT_NAME, GEOG_UNIT_DESC, STATEFP)) 
