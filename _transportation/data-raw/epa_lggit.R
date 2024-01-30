@@ -2,6 +2,7 @@
 # Lets try to construct that from the VMT data we calculated
 
 source("R/_load_pkgs.R")
+source("_transportation/data-raw/epa_lggit_tables.R")
 cprg_population <- readRDS("_meta/data/cprg_population.RDS")
 
 sum(cprg_population$population)
@@ -116,6 +117,9 @@ write.csv(lggit_vmt_entries,
           "_transportation/data-raw/epa/lggit_vmt_entries.CSV",
           row.names = FALSE)
 
+saveRDS(lggit_vmt_entries,
+          "_transportation/data-raw/epa/lggit_vmt_entries.RDS")
+
 
 sum(vmt_emissions$vmt_total) == sum(lggit_vmt_entries$VMT)
 
@@ -124,7 +128,7 @@ sum(vmt_emissions$vmt_total) == sum(lggit_vmt_entries$VMT)
 # 28 and 265, respectively
 lggit_totals <- tibble::tribble(
   ~Sector,                          ~CO2,       ~CH4,        ~N2O,        
-  "Residential",                  8371025.25 , 4757.61, 29145.32,
+  "Residential",                  8371025.25 , 4757.64, 29145.51,
   "Commercial/Institutional",     485027.94 ,   35.12,  1507.90
 ) %>% 
   clean_names() %>% 
@@ -132,3 +136,22 @@ lggit_totals <- tibble::tribble(
   mutate(total = sum(co2, ch4, n2o, na.rm = T))
 
 
+# effective emissions per mile  -----
+
+lggit_kg_co2_per_mile <- lggit_avg_mpg %>% 
+  select(-avg_mpg) %>% 
+  pivot_longer(cols = c(`Gasoline & Other Fuels`,
+                        `Diesel & Biodiesel`),
+               names_to = "Fuel",
+               values_to = "Average miles per gallon") %>% 
+  mutate(`Fuel Type` = ifelse(Fuel == "Gasoline & Other Fuels", "Gasoline", "Diesel")) %>% 
+  left_join(lggit_co2) %>% 
+  mutate(`Kilograms CO2 per mile` = `Average miles per gallon`  * `kg CO2 per gallon`)
+
+
+
+lggit_kg_emissions_per_mile <-  lggit_kg_other_per_mile %>% 
+  filter(`Vehicle Year` %in% c(2013, 2014)) %>% 
+  left_join(lggit_kg_co2_per_mile)
+
+saveRDS(lggit_kg_emissions_per_mile, "_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS")

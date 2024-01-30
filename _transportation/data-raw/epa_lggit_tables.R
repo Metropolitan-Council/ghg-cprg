@@ -3,6 +3,7 @@
 # sourced from the "Factors" tab
 
 # co2 by fuel type ----
+# in kilograms
 lggit_co2 <- tibble::tribble(
   ~`Fuel Type`, ~Total, ~`Biogenic Portion`, ~`Fossil portion`, ~`MMBTU/unit`,
   "Gasoline",   8.78,                NA,            8.78,          0.13,
@@ -19,7 +20,11 @@ lggit_co2 <- tibble::tribble(
   "Residual Fuel",   11.8,                NA,            11.8,          0.15,
   "Jet Fuel",   9.57,                NA,            9.57,          0.14,
   "Aviation Gasoline",   8.31,                NA,            8.31,          0.12
-)
+) %>% 
+  select(`Fuel Type`,
+         `kg CO2 per gallon` = Total) %>% 
+  filter(`Fuel Type` %in% c("Gasoline",
+                             "Diesel"))
 
 
 # grams of other GHGs by vehicle year, vehicle type, and fuel source -----
@@ -176,15 +181,25 @@ n2o_veh_year <- cbind(year_column, tibble::tribble(
                               names = c("Vehicle Type",
                                         "Fuel Type")) %>% 
   mutate(`Vehicle Type` = stringr::str_trim(`Vehicle Type`, "both"),
-         `Fuel Typpe` = stringr::str_trim(`Fuel Type`, "both"))
+         `Fuel Type` = stringr::str_trim(`Fuel Type`, "both"))
 
 
-lggit_ch4_n2o_veh_year <- left_join(
+lggit_kg_other_per_mile <- left_join(
   ch4_by_veh_year,
   n2o_veh_year,
   by = join_by(year, `Vehicle Type`, `Fuel Type`)
-)
+) %>% 
+  mutate(ch4_kg_per_mile = ch4_grams_per_mile/1000,
+         n2o_kg_per_mile = n2o_grams_per_mile/1000) %>% 
+  select(`Vehicle Type`, `Fuel Type`,
+         `Vehicle Year` = year,
+         `Kilograms CH4 per mile` = ch4_kg_per_mile,
+         `Kilograms N2O per mile` = n2o_kg_per_mile) %>% 
+  mutate(`Vehicle Type` = case_when(`Vehicle Type` == "Light Truck (Vans, Pickup Trucks, SUVs)" ~ "Light Truck",
+                                    TRUE ~ `Vehicle Type`))
 
-
-
-
+# 
+# rm(year_column)
+# rm(n2o_veh_year)
+# rm(ch4_by_veh_year)
+# 
