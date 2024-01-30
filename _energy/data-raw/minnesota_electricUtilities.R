@@ -1,7 +1,7 @@
 source("R/_load_pkgs.R")
 library(readr)
 
-mn_counties <- read_rds("R/data/cprg_county.RDS") %>%
+mn_counties <- read_rds("_meta/data/cprg_county.RDS") %>%
   select(STATEFP,COUNTYFP,GEOID, NAME, NAMELSAD, geometry) %>%
   filter(STATEFP == 27)
 
@@ -25,6 +25,10 @@ MNutilities_in_scope <- st_intersection(mn_elecUtils, mn_counties) %>%
 
 distinct_util_type_MN <- MNutilities_in_scope %>%
   distinct(utility_name, utility_type)
+
+write_rds(mn_elecUtils, here("_energy", 
+                                     "data", 
+                                     "MN_elecUtils.RDS"))
 
 write_rds(MNutilities_in_scope, here("_energy", 
                                      "data", 
