@@ -158,6 +158,6 @@ mpca_score %>%
 ```
 
 
-```{r, echo = "FALSE"}
+```{r echo =FALSE}
 saveCap("mpca-score")
 ```

@@ -9,16 +9,18 @@ library(dplyr)
 # from https://widnr.widen.net/view/pdf/o9xmpot5x7/AM610.pdf?t.download=true
 # WI GHG Emissions Inventory from the DNR, 2018 data
 wi_total_emissions <- 2.2 * 10^6 # in mtco2e
-wi_pop_2021 <- 5893718 #NOTE this is not retrieved from same place as cprg_pop
-#check with Liz
+wi_pop_2021 <- 5893718 # NOTE this is not retrieved from same place as cprg_pop
+# check with Liz
 
 # population values from cprg_pop
 cprg_pop <- readRDS(file.path(here::here(), "R/data/cprg_population.RDS"))
 wi_pop <- cprg_pop %>%
   filter(STATE == "Wisconsin") %>%
-  select(County = NAME,
-         population)
-  
+  select(
+    County = NAME,
+    population
+  )
+
 wi_emissions <- wi_pop %>%
   dplyr::mutate(
     percent_pop = population / wi_pop_2021,
