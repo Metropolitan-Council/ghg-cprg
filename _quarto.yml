@@ -1,6 +1,8 @@
 project:
   type: book
   output-dir: docs
+  pre-render: 
+    - R/plot_county_emissions.R
   post-render: 
     - R/fix_style.R
     
