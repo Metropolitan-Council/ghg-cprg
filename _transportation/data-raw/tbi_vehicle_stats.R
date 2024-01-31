@@ -1,6 +1,6 @@
 # find average vehicle age in the region from the most recent Travel Behavior Inventory
 source("R/_load_pkgs.R")
-cprg_county <- readRDS("R/data/cprg_county.RDS")
+cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 library(srvyr)
 
@@ -51,6 +51,19 @@ veh21 %>%
   arrange(-est_n)
 
 
+# median vehicle year  -----
+tbi_vehicle_age <- veh21 %>%
+  select(hh_id, veh_id, fuel, year, hh_weight) %>%
+  droplevels() %>%
+  # get weights from households
+  # as survey
+  as_survey(ids = hh_id, weights = hh_weight) %>%
+  # get mean 
+  summarize(
+    year_median = survey_median(year, vartype = "se"))
+
+tbi_vehicle_age
+saveRDS(tbi_vehicle_age, "_transportation/data-raw/tbi/tbi_vehicle_age.RDS")
 
 # median vehicle year by fuel type -----
 tbi_vehicle_fuel_age <- veh21 %>%
@@ -63,7 +76,6 @@ tbi_vehicle_fuel_age <- veh21 %>%
   # get mean 
   summarize(
     year_median = survey_median(year, vartype = "se"),
-    year_mean = survey_mean(year, vartype = "se"),
     n = unweighted(n()),
     est_n = survey_total(),
     est_pct = survey_prop()
