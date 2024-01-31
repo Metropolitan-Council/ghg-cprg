@@ -267,12 +267,22 @@ All medium-duty VMT were classified as "Light Truck", while all heavy-duty VMT w
 
 Additionally, commercial trucks were assumed to be year 2007, based on a 2018 report that found the average age of trucks in the US to be 14.2 years [@brusseauAgingTrucksCreate2019] (`2021 - 14 = 2007`). 
 
+
 ```{r tbl-lggit-entries}
-#|  tbl-cap: "Mobile data entered into LGGIT"
+#| tbl-cap: "Mobile data entered into LGGIT"
+#| out-width: "95%"
 lggit_vmt_entries <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_vmt_entries.RDS"))
 
-kable(lggit_vmt_entries)
+(lggit_vmt_entries) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
+
 
 ```{r lggit-calculations}
 cprg_total_emiss <- vmt_emissions_all %>%

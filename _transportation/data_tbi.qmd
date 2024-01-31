@@ -1,4 +1,4 @@
-## Metropolitan Council Travel Behavior Inventory {#sec-tbi}
+## Travel Behavior Inventory {#sec-tbi}
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -14,6 +14,7 @@ Vehicles were classified into broad fuel categories - diesel and gas + all other
 
 ```{r tbl-vehicle-fuel-age}
 #| tbl-cap: "Median vehicle age and proportion of all regional vehicles by fuel type"
+#| out-width: "95%"
 
 tbi_vehicle_fuel_age <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS"))
 
@@ -31,7 +32,13 @@ tbi_vehicle_fuel_age %>%
   gt::gt() %>%
   gt::fmt_number(3:6, decimals = 0) %>%
   gt::fmt_number(8, decimals = 0) %>%
-  gt::fmt_percent(6:7)
+  gt::fmt_percent(6:7) %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
 
 Introduction text 

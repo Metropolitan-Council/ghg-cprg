@@ -119,7 +119,14 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 #| out-width: "95%"
 dot_vmt_meta <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt_meta.RDS"))
 
-kable(dot_vmt_meta)
+dot_vmt_meta %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
 
 Table with detailed description of columns and definitions for each data table.

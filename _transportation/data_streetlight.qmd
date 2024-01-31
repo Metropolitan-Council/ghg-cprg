@@ -467,6 +467,10 @@ gt::gt(vehicle_weight_comp,
       rows = 7
     )
   ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
   fmt_markdown() %>%
   as_raw_html()
 ```

@@ -2,7 +2,6 @@
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
-library(gt)
 epa_moves <- readRDS(file.path(here::here(), "_transportation/data/epa_moves.RDS"))
 epa_moves_meta <- readRDS(file.path(here::here(), "_transportation/data/epa_moves_meta.RDS"))
 hookaddcap()
@@ -31,18 +30,24 @@ epa_moves %>%
     `Grams CO2e per mile` = `Kilograms CO2e per mile` * 1000
   ) %>%
   select(
-    `MOVES Year` = moves_year,
     `Vehicle Weight` = vehicle_weight,
+    `MOVES Year` = moves_year,
     starts_with("grams")
   ) %>%
-  kable(
-    escape = FALSE
-  )
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
 
 
 ```{r tbl-lggit-emissions-per-mile}
 #| tbl-cap: "Grams of emissions per mile by vehicle type and fuel type"
+#| out-width: "95%"
+
 lggit_kg_emissions_per_mile <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS"))
 
 lggit_kg_emissions_per_mile %>%
@@ -67,7 +72,13 @@ lggit_kg_emissions_per_mile %>%
     starts_with("grams")
   ) %>%
   gt() %>%
-  fmt_number(4:7, decimals = 3)
+  fmt_number(4:7, decimals = 3) %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
 
 
@@ -105,11 +116,18 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 
 ### Data dictionary
 
-```{r tlb-epa-moves-meta}
+```{r tbl-epa-moves-meta}
 #| tbl-cap: "EPA MOVES metadata"
 #| out-width: "95%"
 epa_moves_meta %>%
-  kable()
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::fmt_markdown() %>%
+  gt::as_raw_html()
 ```
 
 
