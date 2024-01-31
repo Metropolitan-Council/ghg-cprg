@@ -1,7 +1,7 @@
 testthat::test_that("County data is as expected", {
   cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
   ctu_co_crosswalk <- readRDS(file.path(here::here(), "_meta/data/geog_crosswalk.RDS"))
-  
+
   testthat::expect_equal(nrow(cprg_county), 11)
   testthat::expect_equal(
     cprg_county$NAME,
@@ -29,9 +29,7 @@ testthat::test_that("CTU data is as expected", {
   ))
 
   testthat::expect_equal(cprg_ctu$STATE %>% unique(), c("Minnesota", "Wisconsin"))
-  
-  
-  testthat::expect_equal(nrow(filter(ctu_co_crosswalk, is.na(GEOG_UNIT_ID.PARENT))), 0)
-  
-})
 
+
+  testthat::expect_equal(nrow(filter(ctu_co_crosswalk, is.na(GEOG_UNIT_ID.PARENT))), 0)
+})
