@@ -23,16 +23,22 @@ source(file.path(here::here(), "R/_leaflet_helpers.R"))
 MN_inScopeUtilities<- read_rds(here(
   "_energy", "data", "MN_electricity_inScope_utilityCountyPairs.RDS")
   )
-MN_allUtilities_countrywide <- read_rds(here(
-  "_energy", "data", "MN_fed_natGasUtils.RDS")
+MN_allUtilities <- read_rds(here(
+  "_energy", "data", "MN_elecUtils.RDS")
 )
 
 #WI
 WI_inScopeUtilities<- read_rds(here(
-  "_energy", "data", "WI_natGas_inScope_utilityCountyPairs.RDS")
+  "_energy", "data", "WI_electricity_inScope_utilityCountyPairs.RDS")
   )
-WI_allUtilities <- read_rds(here(
-  "_energy", "data", "WI_natGasUtils.RDS")
+WI_elecMuni <- read_rds(here(
+  "_energy", "data", "WI_elecUtils_muni.RDS")
+)
+WI_elecIOU <- read_rds(here(
+  "_energy", "data", "WI_elecUtils_iou.RDS")
+)
+WI_elecCoop <- read_rds(here(
+  "_energy", "data", "WI_elecUtils_coop.RDS")
 )
 
 
@@ -41,37 +47,35 @@ hookaddcap()
 
 ## Utility Service Area Maps
 
-To identify the utilities operating within our 11-county study area, we utilized data sets published by state and federal sources. The outcome of our data collection, yielding a list of distinct utilities for which activity data should be collected, resides within distinct_natGas_util_WI.RDS (4 utilities, all investor-owned) and distinct_natGas_util_type_MN.RDS (7 utilities, six investor-owned and one municipally-owned)
+To identify the utilities operating within our 11-county study area, we utilized data sets published by state sources. The outcome of our data collection, yielding a list of distinct utilities for which activity data should be collected, resides within distinct_electricity_util_WI.RDS (7 utilities, with four co-op utilities, three municipality utilities, and one investor-owned utility) and distinct_electricity_util_type_MN.RDS (18 utilities, with eight co-op utilities, nine municipality utilities, and one investor-owned utility)
 
 ### Minnesota
 
-Since there is no state-maintained map of natural gas service territories in Minnesota [@PublicUtilitiesInfrastructure], we looked to the Homeland Infrastructure Foundation-Level Data (HIFLD) database, a product of the Department of Homeland Security's Geospatial Management Office (DHS GMO) that compiles "foundation-level geospatial data" for homeland security, homeland defense, and emergency preparedness purposes. This dataset was last updated in 2017 [@departmentofhomelandsecurityNaturalGasService2017]. Though this dataset is national in scope (see fig. X), it is clipped to only include utility service areas within the nine Minnesota counties included in the study area of this inventory (see fig. Y -- note that utilities operating across county lines have a polygon covering the extent of their service territory within each and every county they operate within).
+The Minnesota Public Utilities Commission publishes and maintains a map of electric utility service areas [@minnesotaitgeospatialinformationofficeElectricUtilityService2023]. Though this dataset is statewide(see fig. X), it is clipped to only include utility service areas within the nine Minnesota counties included in the study area of this inventory (see fig. Y -- note that utilities operating across county lines have a polygon covering the extent of their service territory within each and every county they operate within).
 
 ```{r minnesota-elec-servTerrs}
 
 # Create a color palette
-utilities <- unique(MN_allUtilities_countrywide$NAME)
+utilities <- unique(MN_allUtilities$mpuc_name)
 color_palette <- colorFactor(palette = "viridis", domain = utilities)
 
-#bounding box for continental United States
+#bounding box for Minnesota
 bound_box <- list(
-  lng1 = -125,  # Southwest longitude (approximate)
-  lat1 =  24,   # Southwest latitude (approximate)
-  lng2 = -66,   # Northeast longitude (approximate)
-  lat2 =  49    # Northeast latitude (approximate)
+  lng1 = -97,    # Southwest longitude (closer in)
+  lat1 =  43.5,  # Southwest latitude (closer in)
+  lng2 = -89.5,  # Northeast longitude (closer in)
+  lat2 =  49     # Northeast latitude (closer in)
 )
 
-# Test basic functionality of the custom function
-MN_ng_servTerrs <- council_leaflet() %>%
+MN_elec_servTerrs <- council_leaflet() %>%
   addPolygons(
-    data = MN_allUtilities_countrywide %>% sf::st_transform(4326),
+    data = MN_allUtilities %>% sf::st_transform(4326),
     fill = TRUE,
-    fillColor = ~color_palette(NAME),  # Use the color mapping
+    fillColor = ~color_palette(mpuc_name),  # Use the color mapping
     stroke = TRUE,
     color = "gray",
     weight = 2,
-    popup = MN_allUtilities_countrywide$NAME
-    # Temporarily comment out group for debugging
+    popup = MN_allUtilities$mpuc_name
   ) %>%
   fitBounds(
     lng1 = bound_box[[1]],
@@ -80,7 +84,7 @@ MN_ng_servTerrs <- council_leaflet() %>%
     lat2 = bound_box[[4]]
   )
 
-MN_ng_servTerrs
+MN_elec_servTerrs
 ```
 
 ```{r MN-elec-inScope-servTerrs}
@@ -91,14 +95,14 @@ color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
 
 #bounding box for MN study area counties
 MN_bound_box <- list(
-  lng1 = -94.3,  # Southwest longitude (more extended)
-  lat1 =  44.8,  # Southwest latitude (slightly lowered)
-  lng2 = -92.4,  # Northeast longitude (more extended)
-  lat2 =  45.4   # Northeast latitude (slightly raised)
+  lng1 = -94.5,  # Southwest longitude (further zoomed out)
+  lat1 =  44.7,  # Southwest latitude (further zoomed out)
+  lng2 = -92,    # Northeast longitude (further zoomed out)
+  lat2 =  45.5   # Northeast latitude (further zoomed out)
 )
 
 # Test basic functionality of the custom function
-MN_ng_inScope_servTerrs <- council_leaflet() %>%
+MN_elec_inScope_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = MN_inScopeUtilities %>% sf::st_transform(4326),
     fill = TRUE,
@@ -109,7 +113,7 @@ MN_ng_inScope_servTerrs <- council_leaflet() %>%
     popup = paste0(MN_inScopeUtilities$utility_name,
                    ", ",
                   MN_inScopeUtilities$county_name,
-                  " COUNTY")
+                  " County")
   ) %>%
   fitBounds(
     lng1 = MN_bound_box[[1]],
@@ -118,16 +122,12 @@ MN_ng_inScope_servTerrs <- council_leaflet() %>%
     lat2 = MN_bound_box[[4]]
   )
 
-MN_ng_inScope_servTerrs
+MN_elec_inScope_servTerrs
 ```
 
 ### Wisconsin
 
-The Public Service Commission of Wisconsin publishes and maintains maps of service territories for natural gas utilities operating within the state. This data set relies upon, and is accurate to, "the extent that various sources \[utilities\] supplied accurate data." [@wisconsinpublicservicecommissionNaturalGasService2024] This dataset spans the whole state of Wisconsin (see fig, X), and both clipped to the two Wisconsin counties included in the study area of this inventory (see fig. Y)
-
-for electric... as well as the full service territories beyond the two-county area to facilitate estimation and modeling of energy demand (see fig. Z)
-
-For electric..Because Wisconsin does not require utilities to report the amount of energy, both the extent of utilities' operations within our study area (St Croix and Pierce counties within Wisconsin) as well as their statewide service territories represent important inputs to our methodology for estimating both number of customer accounts and energy
+The Public Services Commission of Wisconsin publishes and maintains maps of service territories for electric utilities operating within the state. This data set relies upon, and is accurate to, "the extent that various sources \[utilities\] supplied accurate data." [@wisconsinpublicservicecommissionElectricServiceTerritories2024] This dataset spans the whole state of Wisconsin (see fig, X), and both clipped to the two Wisconsin counties included in the study area of this inventory (see fig. Y). However, because Wisconsin utilities do not report energy deliveries to the county level, we also generate a file with the entire service area of utilities that operate within Pierce and St. Croix County (see fig. Z), so that we can calculate population served by these utilities both within and without of our study area, as an input to estimated/modeled number of customer accounts and total energy deliveries to Pierce and St. Croix County.
 
 ```{r wisconsin-elec-servTerrs}
 
