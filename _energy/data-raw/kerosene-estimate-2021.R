@@ -1,12 +1,12 @@
 source("R/_load_pkgs.R")
-source("_meta/data-raw/global_warming_potential.R")
+source("R/global_warming_potential.R")
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 # read in efficiency factors
 eff_fac <- readxl::read_excel("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx")
 
 ### poor formatting but the co2e for kerosene is:
-kero_ef <- 
+kerosene_efficiency <- 
   # CO2 emissions per mmBtu of kerosene used PLUS
   as.numeric(eff_fac %>% filter(...2 == "Kerosene") %>% select(...4)) + 
   # methane emissions per mmBtu kerosene scale to CO2 equivalency PLUS
@@ -45,11 +45,12 @@ mn_kero_hh <- get_acs(
   year = 2021
 ) %>%
   filter(GEOID %in% cprg_county$GEOID) %>%
+  rowwise() %>% 
   mutate(
     # multiply average propane use by household be estimated number of households
     mmBtu = estimate * as.numeric(mn_kero_use),
-    # multiply mmBtu per county by emissions factor
-    CO2e = mmBtu * kero_ef * 0.001
+    # multiply mmBtu per county by emissions factor, convert to metric tons
+    CO2e = mmBtu * kerosene_efficiency * 0.001
   ) 
 
 # repeat for WI
@@ -60,11 +61,12 @@ wi_kero_hh <- get_acs(
   year = 2021
 ) %>%
   filter(GEOID %in% cprg_county$GEOID) %>%
+  rowwise() %>% 
   mutate(
     # multiply average propane use by household be estimated number of households
     mmBtu = estimate * as.numeric(wi_kero_use), 
     # multiply mmBtu per county by emissions factor and then convert to metric tonnes
-    CO2e = mmBtu * kero_ef * 0.001
+    CO2e = mmBtu * kerosene_efficiency * 0.001
   ) 
 # bind data
 kero_county <- rows_append(mn_kero_hh, wi_kero_hh)
