@@ -103,7 +103,7 @@ We would expect counties with higher population to have higher emissions and VMT
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 vmt_population <- left_join(vmt_emissions_all, cprg_population,
-                            by = c("zone" = "NAME")
+  by = c("zone" = "NAME")
 )
 plot_ly(
   data = vmt_population,
@@ -201,8 +201,8 @@ The National Emissions Inventory (NEI) is a comprehensive and detailed estimate 
 ```{r read-nei}
 epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei.RDS"))
 
-nei_emissions_all <- epa_nei %>% 
-  group_by(zone = county_name) %>% 
+nei_emissions_all <- epa_nei %>%
+  group_by(zone = county_name) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
   )
@@ -212,17 +212,17 @@ We expect that the NEI data will show higher emissions, because it is based on o
 
 ```{r fig-activity-vs-nei}
 #| fig-cap: "County estimated emissions, NEI and calculated "
-#| out-width: "95%" 
+#| out-width: "95%"
 plot_ly(
   data = vmt_emissions_all,
   source = opts_current$get()$label,
-  x = ~reorder(zone, -emissions_metric_tons_co2e),
+  x = ~ reorder(zone, -emissions_metric_tons_co2e),
   y = ~emissions_metric_tons_co2e,
   type = "scatter",
   mode = "markers",
   name = "2021 activity/origin-destination",
   hovertemplate = ~ paste0(
-     zone, " County<br>",
+    zone, " County<br>",
     "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
@@ -234,15 +234,16 @@ plot_ly(
       width = 2
     )
   )
-) %>% 
-  add_trace(data = nei_emissions_all,
-            name = "2020 NEI on-road emissions",
-            hovertemplate = ~ paste0(
-              zone, " County<br>",
-              "NEI Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
-              "<extra></extra>"
-            )
-  ) %>% 
+) %>%
+  add_trace(
+    data = nei_emissions_all,
+    name = "2020 NEI on-road emissions",
+    hovertemplate = ~ paste0(
+      zone, " County<br>",
+      "NEI Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
   plotly_layout(
     main_title = "County estimated vehicle emissions",
     subtitle = "2020 NEI, all on-road emissions",
@@ -250,7 +251,6 @@ plot_ly(
     y_title = "Greenhouse gases emitted (metric tons)",
     legend_title = "Emissions data source"
   )
-
 ```
 
 #### Local Greenhouse Gas Inventory Tool (LGGIT)
@@ -268,17 +268,17 @@ All medium-duty VMT were classified as "Light Truck", while all heavy-duty VMT w
 Additionally, commercial trucks were assumed to be year 2007, based on a 2018 report that found the average age of trucks in the US to be 14.2 years [@brusseauAgingTrucksCreate2019] (`2021 - 14 = 2007`). 
 
 ```{r tbl-lggit-entries}
-#|  tbl-cap: "Mobile data entered into LGGIT" 
+#|  tbl-cap: "Mobile data entered into LGGIT"
 lggit_vmt_entries <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_vmt_entries.RDS"))
 
 kable(lggit_vmt_entries)
 ```
 
 ```{r lggit-calculations}
-cprg_total_emiss <- vmt_emissions_all %>% 
-  ungroup() %>% 
-  summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
-  magrittr::extract2("emissions_metric_tons_co2e") %>% 
+cprg_total_emiss <- vmt_emissions_all %>%
+  ungroup() %>%
+  summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
+  magrittr::extract2("emissions_metric_tons_co2e") %>%
   scales::comma()
 
 lggit_totals <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_totals.RDS"))

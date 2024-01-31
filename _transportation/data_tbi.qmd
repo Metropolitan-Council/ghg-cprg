@@ -18,21 +18,20 @@ Vehicles were classified into broad fuel categories - diesel and gas + all other
 
 tbi_vehicle_fuel_age <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS"))
 
-tbi_vehicle_fuel_age %>% 
+tbi_vehicle_fuel_age %>%
   select(
-      "Fuel type" = fuel,
-      "Median vehicle year" = year_median,
-      "Median vehicle year standard error" = year_median_se,
-      "Estimated number of vehicles" = est_n,
-      "Estimated number of vehicles standard error" = est_n_se,
-      "Estimated percentage of all vehicles" = est_pct,
-      "Estimated percentage of all vehicles standard error" = est_pct_se,
-      "Sample size" = n
-
-    ) %>% 
-  gt::gt() %>% 
-  gt::fmt_number(3:6, decimals = 0) %>% 
-  gt::fmt_number(8, decimals = 0) %>% 
+    "Fuel type" = fuel,
+    "Median vehicle year" = year_median,
+    "Median vehicle year standard error" = year_median_se,
+    "Estimated number of vehicles" = est_n,
+    "Estimated number of vehicles standard error" = est_n_se,
+    "Estimated percentage of all vehicles" = est_pct,
+    "Estimated percentage of all vehicles standard error" = est_pct_se,
+    "Sample size" = n
+  ) %>%
+  gt::gt() %>%
+  gt::fmt_number(3:6, decimals = 0) %>%
+  gt::fmt_number(8, decimals = 0) %>%
   gt::fmt_percent(6:7)
 ```
 

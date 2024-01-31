@@ -9,27 +9,30 @@ load(url(paste0(
   "tbi21.rda"
 )))
 
-hh21 <- tbi21$household %>% 
+hh21 <- tbi21$household %>%
   # filter to households in the CPRG counties
   filter(home_county %in% cprg_county$NAME)
 
-veh21 <- tbi21$vehicle %>% 
-  filter(hh_id %in% hh21$hh_id) %>% 
+veh21 <- tbi21$vehicle %>%
+  filter(hh_id %in% hh21$hh_id) %>%
   mutate(
     # these entries are from cars that were entered by hand by the survey respondent
     fuel = recode_factor(fuel,
-                         "Missing: Skip logic" = "Other/Not Provided",
-                         "Missing: Non-response" = "Other/Not Provided",
-                         "Other" = "Other/Not Provided",
-                         "Hybrid (HEV)" = "Gas + all other fuels",
-                         "Electric (EV)" = "Gas + all other fuels",
-                         "Flex fuel (FFV)" = "Gas + all other fuels",
-                         "Plug-in hybrid (PHEV)" = "Gas + all other fuels",
-                         "Other (e.g., natural gas, bio-diesel)" = "Gas + all other fuels",
-                         "Gas" = "Gas + all other fuels")
+      "Missing: Skip logic" = "Other/Not Provided",
+      "Missing: Non-response" = "Other/Not Provided",
+      "Other" = "Other/Not Provided",
+      "Hybrid (HEV)" = "Gas + all other fuels",
+      "Electric (EV)" = "Gas + all other fuels",
+      "Flex fuel (FFV)" = "Gas + all other fuels",
+      "Plug-in hybrid (PHEV)" = "Gas + all other fuels",
+      "Other (e.g., natural gas, bio-diesel)" = "Gas + all other fuels",
+      "Gas" = "Gas + all other fuels"
+    )
   ) %>%
-  filter(!fuel == "Other/Not Provided",
-         !year == 1980) %>% # this is actually NA.
+  filter(
+    !fuel == "Other/Not Provided",
+    !year == 1980
+  ) %>% # this is actually NA.
   mutate(veh_year_bin = cut(year, breaks = c(1980, 1990, 2000, 2010, 2020, 2030)))
 
 
@@ -42,12 +45,12 @@ veh21 %>%
   # as survey
   as_survey(ids = hh_id, weights = hh_weight) %>%
   group_by(fuel, veh_year_bin) %>%
-  # get mean 
+  # get mean
   summarize(
     n = unweighted(n()),
     est_n = survey_total(),
     est_pct = survey_prop()
-  ) %>% 
+  ) %>%
   arrange(-est_n)
 
 
@@ -58,9 +61,10 @@ tbi_vehicle_age <- veh21 %>%
   # get weights from households
   # as survey
   as_survey(ids = hh_id, weights = hh_weight) %>%
-  # get mean 
+  # get mean
   summarize(
-    year_median = survey_median(year, vartype = "se"))
+    year_median = survey_median(year, vartype = "se")
+  )
 
 tbi_vehicle_age
 saveRDS(tbi_vehicle_age, "_transportation/data-raw/tbi/tbi_vehicle_age.RDS")
@@ -73,13 +77,13 @@ tbi_vehicle_fuel_age <- veh21 %>%
   # as survey
   as_survey(ids = hh_id, weights = hh_weight) %>%
   group_by(fuel) %>%
-  # get mean 
+  # get mean
   summarize(
     year_median = survey_median(year, vartype = "se"),
     n = unweighted(n()),
     est_n = survey_total(),
     est_pct = survey_prop()
-  ) %>% 
+  ) %>%
   arrange(-est_n)
 
 saveRDS(tbi_vehicle_fuel_age, "_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS")
