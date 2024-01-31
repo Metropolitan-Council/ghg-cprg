@@ -1,0 +1,291 @@
+# Natural gas data sources
+
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r, include=FALSE}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
+
+#MN
+MN_inScopeUtilities<- read_rds(here(
+  "_energy", "data", "MN_natGas_inScope_utilityCountyPairs.RDS")
+  )
+MN_allUtilities_countrywide <- read_rds(here(
+  "_energy", "data", "MN_fed_natGasUtils.RDS")
+)
+
+#WI
+WI_inScopeUtilities<- read_rds(here(
+  "_energy", "data", "WI_natGas_inScope_utilityCountyPairs.RDS")
+  )
+WI_allUtilities <- read_rds(here(
+  "_energy", "data", "WI_natGasUtils.RDS")
+)
+
+
+hookaddcap()
+```
+
+## Utility Service Area Maps
+
+To identify the utilities operating within our 11-county study area, we utilized data sets published by state and federal sources. The outcome of our data collection, yielding a list of distinct utilities for which activity data should be collected, resides within distinct_natGas_util_WI.RDS (4 utilities, all investor-owned) and distinct_natGas_util_type_MN.RDS (7 utilities, six investor-owned and one municipally-owned)
+
+### Minnesota
+
+Since there is no state-maintained map of natural gas service territories in Minnesota [@PublicUtilitiesInfrastructure], we looked to the Homeland Infrastructure Foundation-Level Data (HIFLD) database, a product of the Department of Homeland Security's Geospatial Management Office (DHS GMO) that compiles "foundation-level geospatial data" for homeland security, homeland defense, and emergency preparedness purposes. This dataset was last updated in 2017 [@departmentofhomelandsecurityNaturalGasService2017]. Though this dataset is national in scope (see fig. X), it is clipped to only include utility service areas within the nine Minnesota counties included in the study area of this inventory (see fig. Y -- note that utilities operating across county lines have a polygon covering the extent of their service territory within each and every county they operate within).
+
+```{r minnesota-ng-servTerrs}
+
+# Create a color palette
+utilities <- unique(MN_allUtilities_countrywide$NAME)
+color_palette <- colorFactor(palette = "viridis", domain = utilities)
+
+#bounding box for continental United States
+bound_box <- list(
+  lng1 = -125,  # Southwest longitude (approximate)
+  lat1 =  24,   # Southwest latitude (approximate)
+  lng2 = -66,   # Northeast longitude (approximate)
+  lat2 =  49    # Northeast latitude (approximate)
+)
+
+# Test basic functionality of the custom function
+MN_ng_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = MN_allUtilities_countrywide %>% sf::st_transform(4326),
+    fill = TRUE,
+    fillColor = ~color_palette(NAME),  # Use the color mapping
+    stroke = TRUE,
+    color = "gray",
+    weight = 2,
+    popup = MN_allUtilities_countrywide$NAME
+    # Temporarily comment out group for debugging
+  ) %>%
+  fitBounds(
+    lng1 = bound_box[[1]],
+    lng2 = bound_box[[3]],
+    lat1 = bound_box[[2]],
+    lat2 = bound_box[[4]]
+  )
+
+MN_ng_servTerrs
+```
+
+```{r MN-ng-inScope-servTerrs}
+
+# Create a color palette
+inScopeUtilities <- unique(MN_inScopeUtilities$utility_name)
+color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
+
+#bounding box for MN study area counties
+MN_bound_box <- list(
+  lng1 = -94.3,  # Southwest longitude (more extended)
+  lat1 =  44.8,  # Southwest latitude (slightly lowered)
+  lng2 = -92.4,  # Northeast longitude (more extended)
+  lat2 =  45.4   # Northeast latitude (slightly raised)
+)
+
+# Test basic functionality of the custom function
+MN_ng_inScope_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = MN_inScopeUtilities %>% sf::st_transform(4326),
+    fill = TRUE,
+    fillColor = ~color_palette(utility_name),  # Use the color mapping
+    stroke = TRUE,
+    color = "gray",
+    weight = 2,
+    popup = paste0(MN_inScopeUtilities$utility_name,
+                   ", ",
+                  MN_inScopeUtilities$county_name,
+                  " COUNTY")
+  ) %>%
+  fitBounds(
+    lng1 = MN_bound_box[[1]],
+    lng2 = MN_bound_box[[3]],
+    lat1 = MN_bound_box[[2]],
+    lat2 = MN_bound_box[[4]]
+  )
+
+MN_ng_inScope_servTerrs
+```
+
+### Wisconsin
+
+The Public Service Commission of Wisconsin publishes and maintains maps of service territories for natural gas utilities operating within the state. This data set relies upon, and is accurate to, "the extent that various sources \[utilities\] supplied accurate data." [@wisconsinpublicservicecommissionNaturalGasService2024] This dataset spans the whole state of Wisconsin (see fig, X), and both clipped to the two Wisconsin counties included in the study area of this inventory (see fig. Y)
+
+for electric... as well as the full service territories beyond the two-county area to facilitate estimation and modeling of energy demand (see fig. Z)
+
+For electric..Because Wisconsin does not require utilities to report the amount of energy, both the extent of utilities' operations within our study area (St Croix and Pierce counties within Wisconsin) as well as their statewide service territories represent important inputs to our methodology for estimating both number of customer accounts and energy
+
+```{r wisconsin-ng-servTerrs}
+
+# Create a color palette
+utilities <- unique(WI_allUtilities$Util_Name)
+color_palette <- colorFactor(palette = "viridis", domain = utilities)
+
+#bounding box for continental United States
+bound_box <- list(
+  lng1 = -92.888,  # Southwest longitude (approximate)
+  lat1 =  42.491,  # Southwest latitude (approximate)
+  lng2 = -86.805,  # Northeast longitude (approximate)
+  lat2 =  47.080   # Northeast latitude (approximate)
+)
+
+# Test basic functionality of the custom function
+WI_ng_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = WI_allUtilities %>% sf::st_transform(4326),
+    fill = TRUE,
+    fillColor = ~color_palette(Util_Name),  # Use the color mapping
+    stroke = TRUE,
+    color = "gray",
+    weight = 2,
+    popup = WI_allUtilities$Util_Name
+    # Temporarily comment out group for debugging
+  ) %>%
+  fitBounds(
+    lng1 = bound_box[[1]],
+    lng2 = bound_box[[3]],
+    lat1 = bound_box[[2]],
+    lat2 = bound_box[[4]]
+  )
+
+WI_ng_servTerrs
+```
+
+inscope
+
+```{r wisconsin-ng-inScope-servTerrs}
+
+# Create a color palette
+inScopeUtilities <- unique(WI_inScopeUtilities$utility_name)
+color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
+
+#bounding box for MN study area counties
+WI_bound_box <- list(
+  lng1 = -92.9,  # Southwest longitude (approximate for Pierce County)
+  lat1 =  44.5,  # Southwest latitude (approximate for Pierce County)
+  lng2 = -92.0,  # Northeast longitude (approximate for St. Croix County)
+  lat2 =  45.23   # Northeast latitude (approximate for St. Croix County)
+)
+
+# Test basic functionality of the custom function
+WI_ng_inScope_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = WI_inScopeUtilities %>% sf::st_transform(4326),
+    fill = TRUE,
+    fillColor = ~color_palette(utility_name),  # Use the color mapping
+    stroke = TRUE,
+    color = "gray",
+    weight = 2,
+    popup = paste0(WI_inScopeUtilities$utility_name,
+                   ", ",
+                  WI_inScopeUtilities$county_name,
+                  " County")
+  ) %>%
+  fitBounds(
+    lng1 = WI_bound_box[[1]],
+    lng2 = WI_bound_box[[3]],
+    lat1 = WI_bound_box[[2]],
+    lat2 = WI_bound_box[[4]]
+  )
+
+WI_ng_inScope_servTerrs
+```
+
+## Utility Activity Data
+
+### Minnesota
+
+Under Minnesota Administrative Rules Chapter 7610 [@minnesotadepartmentofcommerceCHAPTER7610ENERGY], utilities are required to file an annual data report that supports the identification of "emerging energy trends based on supply and demand, conservation and public health and safety factors, and to determine the level of statewide and service area needs." [@minnesotadepartmentofcommerceAnnualReportingForms2022] This includes a report of county-level energy deliveries (reported in thousand cubic feet, commonly written as mcf). Because the information is structured in this manner, natural gas emissions at the county-level can be estimated as a direct function of energy deliveries to counties reported by utilities, which isn't the case in Wisconsin (some modeling and estimation is required in WI).
+
+For electric... great river
+
+#bar graph with utility county data
+
+#some data exists for MN customer counts... could be worthwile to calculate account level average for comparison to WI
+
+### Wisconsin
+
+Under Wis. Stat. § 196.07, investor-owned natural gas utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of *therms*) and total number of customer accounts within each county [@wisconsinstatelegislatureChapter186Regulation]. Because all four "in-scope" natural gas utilities in Wisconsin are investor-owned, we were able to estimate county-wide emissions from natural gas in 2021 by first calculating the proportion of each utility customer's residing within Pierce and St. Croix counties, and allocating that proportion of the utility's total reported energy delivery to each county. This approach represents a divergence from our Minnesota process, which involves aggregating county-level numbers directly reported by utilities, and implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when in actuality this is likely impacted by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county (citation needed?)
+
+#histogram or other visualization of customer
+
+For electric... justifying modeling approach (reference to mean, use of a weighted average of per-account numbers for all utilities where we have actual and estimated per-account figures. All an estimation.
+
+For electric.. more detail on how population in service territories was used to 1) estimate customer/account counts, 2) allocate total utility numbers based on estimated accounts within the in-scope area, and 3) use estimated per-customer energy deliveries, alongside population figures and total customer counts within and without our study area for the two utilities that didn't energy activity to the state or federal government, to model energy delivery --\> customers/cus
+
+Data source description, type
+
+-   Quality rank (See @tbl-quality-rank)
+-   How, when, and why was the data collected?
+-   If this is a modeled dataset, what is the sample?
+-   What is the raw unit of measurement?
+-   How was this data accessed? Include any relevant links/citations, code, or downloads.
+-   What data cleaning or wrangling was completed? How did you test these processes and outputs?
+-   What is the geographic and temporal scope? Did you complete any aggregation?
+-   What version is the data? Were there other versions available? If so, why did you choose this version?
+-   What assumptions are made when we use this dataset?
+-   Which subject matter expert (SME) reviewed this data?
+-   Describe testing used to verify data
+
+Be sure to add a citation of this dataset to the Zotero shared library.
+
+##### Data characteristics
+
+-   Were there any missing data? How did you handle missing data?
+-   Plots, tables, and description of data distribution
+-   Variance, Z-Score, quantiles
+-   Facet views by categorical variables
+
+##### Limitations
+
+-   Usually only samples county and state roads, primary arterials
+-   Not every site is sampled every year
+
+Additionally, aggregating
+
+#### Vehicle distribution by weight
+
+Introduction text Data source description, type
+
+-   Quality rank (See @tbl-quality-rank)
+-   How, when, and why was the data collected?
+-   If this is a modeled dataset, what is the sample?
+-   What is the raw unit of measurement?
+-   How was this data accessed? Include any relevant links/citations, code, or downloads.
+-   What data cleaning or wrangling was completed? How did you test these processes and outputs?
+-   What is the geographic and temporal scope? Did you complete any aggregation?
+-   What version is the data? Were there other versions available? If so, why did you choose this version?
+-   What assumptions are made when we use this dataset?
+-   Which subject matter expert (SME) reviewed this data?
+-   Describe testing used to verify data
+
+Be sure to add a citation of this dataset to the Zotero shared library.
+
+##### Data characteristics
+
+-   Were there any missing data? How did you handle missing data?
+-   Plots, tables, and description of data distribution
+-   Variance, Z-Score, quantiles
+-   Facet views by categorical variables
+
+##### Limitations
+
+### Data dictionaries
+
+```{r echo=FALSE}
+saveCap("energy-data")
+```

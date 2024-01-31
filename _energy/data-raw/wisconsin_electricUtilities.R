@@ -12,24 +12,32 @@ wi_counties <- read_rds("_meta/data/cprg_county.RDS") %>%
 wi_muni <- st_read(here("_energy", 
                         "data-raw",
                         "EL_PSCW_ServTerr (1)", 
-                        "EL_PSCW_ServTerr_Muni_repaired.shp"))
+                        "EL_PSCW_ServTerr_Muni_repaired.shp")) %>%
+  select(LABEL, PSC_ID, Util_Type, geometry) %>%
+  rename(utility_name = LABEL, utility_type = Util_Type)
 
 wi_iou <- st_read(here("_energy", 
                        "data-raw",
                        "EL_PSCW_ServTerr (1)", 
-                       "EL_PSCW_ServTerr_IOU.shp")) 
+                       "EL_PSCW_ServTerr_IOU.shp")) %>%
+  select(LABEL, PSC_ID, UTIL_TYPE, geometry) %>%
+  rename(utility_name = LABEL, utility_type = UTIL_TYPE)
 
 
 wi_coop <- st_read(here("_energy", 
                         "data-raw",
                         "EL_PSCW_ServTerr (1)", 
-                        "EL_PSCW_ServTerr_Coop.shp"))
+                        "EL_PSCW_ServTerr_Coop.shp")) %>%
+  select(LABEL, PSC_ID, Util_Type, geometry) %>%
+  rename(utility_name = LABEL, utility_type = Util_Type)
 
 #ONLY FOR DOCUMENTATION/METADATA USE
 wi_muni_all <- st_read(here("_energy", 
                         "data-raw",
                         "EL_PSCW_ServTerr (1)", 
-                        "EL_PSCW_ServTerr_Muni.shp"))
+                        "EL_PSCW_ServTerr_Muni.shp")) %>%
+  select(LABEL, PSC_ID, Util_Type, geometry) %>%
+  rename(utility_name = LABEL, utility_type = Util_Type)
 
 #harmonize county data CRS to WI state-provided data
 wi_counties <- st_transform(wi_counties, st_crs(wi_iou))
@@ -113,15 +121,19 @@ fullServiceArea_inScopeUtilities_WI <- st_read(here("_energy",
 distinct_util_type_WI <- WIutilities_in_scope %>%
   distinct(utility_name, utility_type)
 
-write_rds(wi_muni_all, here("_energy", 
-                             "data", 
-                             "WI_elecUtils_muni.RDS"))
-write_rds(wi_iou, here("_energy", 
-                        "data", 
-                        "WI_elecUtils_iou.RDS"))
-write_rds(wi_muni, here("_energy", 
-                        "data", 
-                        "WI_elecUtils_coop.RDS"))
+wi_allElecUtilTypes <- rbind(wi_muni_all,wi_iou,wi_coop)
+
+inScope_WI_elecUtils_fullServTerr <- wi_allElecUtilTypes %>%
+  filter(utility_name %in% distinct_util_type_WI$utility_name)
+
+write_rds(wi_allElecUtilTypes, here("_energy", 
+                                    "data", 
+                                    "WI_elecUtils_allTypes.RDS"))
+
+write_rds(inScope_WI_elecUtils_fullServTerr, here("_energy", 
+                                                  "data",
+                                                  "WI_inScope_elecUtils_fullServTerr.RDS"))
+
 write_rds(WIutilities_in_scope, here("_energy", 
                                      "data", 
                                      "WI_electricity_inScope_utilityCountyPairs.RDS"))

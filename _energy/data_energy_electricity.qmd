@@ -18,6 +18,8 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
+library(readr)
+library(stringr) #add both to renv
 
 #MN
 MN_inScopeUtilities<- read_rds(here(
@@ -28,19 +30,17 @@ MN_allUtilities <- read_rds(here(
 )
 
 #WI
-WI_inScopeUtilities<- read_rds(here(
+WI_inScopeUtilities <- read_rds(here(
   "_energy", "data", "WI_electricity_inScope_utilityCountyPairs.RDS")
   )
-WI_elecMuni <- read_rds(here(
-  "_energy", "data", "WI_elecUtils_muni.RDS")
-)
-WI_elecIOU <- read_rds(here(
-  "_energy", "data", "WI_elecUtils_iou.RDS")
-)
-WI_elecCoop <- read_rds(here(
-  "_energy", "data", "WI_elecUtils_coop.RDS")
-)
 
+WI_elecUtils_allTypes <-  read_rds(here(
+  "_energy", "data", "WI_elecUtils_allTypes.RDS")
+  )
+
+WI_inScope_elecUtils_fullServTerr <-  read_rds(here(
+  "_energy", "data", "WI_inScope_elecUtils_fullServTerr.RDS")
+  )
 
 hookaddcap()
 ```
@@ -131,11 +131,13 @@ The Public Services Commission of Wisconsin publishes and maintains maps of serv
 
 ```{r wisconsin-elec-servTerrs}
 
-# Create a color palette
-utilities <- unique(WI_allUtilities$Util_Name)
+utilities <- unique(WI_inScopeUtilities$utility_name)
+color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
+                   
+                   
 color_palette <- colorFactor(palette = "viridis", domain = utilities)
 
-#bounding box for continental United States
+#bounding box for Wisconsin
 bound_box <- list(
   lng1 = -92.888,  # Southwest longitude (approximate)
   lat1 =  42.491,  # Southwest latitude (approximate)
@@ -144,15 +146,15 @@ bound_box <- list(
 )
 
 # Test basic functionality of the custom function
-WI_ng_servTerrs <- council_leaflet() %>%
+WI_elec_servTerrs <- council_leaflet() %>%
   addPolygons(
-    data = WI_allUtilities %>% sf::st_transform(4326),
+    data = WI_elecCoop %>% sf::st_transform(4326),
     fill = TRUE,
-    fillColor = ~color_palette(Util_Name),  # Use the color mapping
+    fillColor = ~color_palette(LABEL),  # Use the color mapping
     stroke = TRUE,
     color = "gray",
     weight = 2,
-    popup = WI_allUtilities$Util_Name
+    popup = WI_elecCoop$LABEL
     # Temporarily comment out group for debugging
   ) %>%
   fitBounds(
@@ -162,7 +164,7 @@ WI_ng_servTerrs <- council_leaflet() %>%
     lat2 = bound_box[[4]]
   )
 
-WI_ng_servTerrs
+WI_elec_servTerrs
 ```
 
 inscope
@@ -219,7 +221,23 @@ For electric... great river
 
 ### Wisconsin
 
-Under Wis. Stat. § 196.07, investor-owned natural gas utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of *therms*) and total number of customer accounts within each county [@wisconsinstatelegislatureChapter186Regulation]. Because all four "in-scope" natural gas utilities in Wisconsin are investor-owned, we were able to estimate county-wide emissions from natural gas in 2021 by first calculating the proportion of each utility customer's residing within Pierce and St. Croix counties, and allocating that proportion of the utility's total reported energy delivery to each county. This approach represents a divergence from our Minnesota process, which involves aggregating county-level numbers directly reported by utilities, and implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when in actuality this is likely impacted by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county (citation needed?)
+Under Wis. Stat. § 196.07, investor- and municipally owned electric utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of *kWh*) and total number of customer accounts within each county [@wisconsinstatelegislatureChapter186Regulation].
+
+Of the seven in-scope electric utilities, only three (the investor- and municipally-owned utilities) were required to make these reports to the State in 2021 (four of the in-scope electric utilities are cooperative utilities); state data was leveraged in this case. For the four utilities (all cooperative utilities) not making these reports, we relied upon the detailed data files provided by the EIA, recording the responses of utilities to the Annual Electric Power Energy Report (Form EIA-861). Two utilities (Dunn Energy Cooperative and Polk-Burnett Electric Cooperative) filled the long version of the form, and two (St. Croix Electric Cooperative and Pierce-Pepin Electric Cooperative Services) filled the short form. For our purposes, both the long and short form provided suitable activity information (total energy delivered, total customers) to allocate energy deliveries to counties in concert with Census population data, in the process outlined below.
+
+Because Wisconsin utilities do not report energy deliveries at the county level, it was necessary to estimate energy deliveries by a given utility *i* within a particular county *j.* For those three utilities who reported county-level customer counts and total customer counts to the state, we estimated mWh delivered by utility *i* in county *j* by multiplying their total statewide energy deliveries (as reported to the relevant state authorities) by the proportion of their customers residing in each of our two study area counties.
+
+$$mWhDelivered_iCounty_j =  (mWhEnergyDeliveries_i \times {ProportionOfTotalUtilityCustomers_j}) $$
+
+To calculate the estimated energy delivered by utility *i* in county *j* for the four utilities that did not report county-level customer counts, we used population figures to allocate energy deliveries to counties. We took the actual total energy delivered by utility *i* (as reported to the relevant federal authorities) and multiplied this by the proportion of population within each utility's entire service area residing within county *j* at the 2020 decennial Census.
+
+$$mWhDelivered_iCounty_j =  (mWhDelivered_i \times {ProportionOfTotalUtilityPopulation_j}) $$
+
+The factor *ProportionOfTotalUtilityPopulation*~j~ was calculated by first spatially joining the two.... (where each polygon represents a given utility's service terrirory within a given county) to a spatial file containing total population for Census blocks using the block centroids, and then summing This step was completed in ArcGIS Pro and brought back to R due to memory constraints in RStudio on the relevant Met Council staffer's work machine.
+
+*Inquiries have been made...*
+
+Because all four "in-scope" natural gas utilities in Wisconsin are investor-owned, we were able to estimate county-wide emissions from natural gas in 2021 by first calculating the proportion of each utility customer's residing within Pierce and St. Croix counties, and allocating that proportion of the utility's total reported energy delivery to each county. This approach represents a divergence from our Minnesota process, which involves aggregating county-level numbers directly reported by utilities, and implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when in actuality this is likely impacted by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county (citation needed?)
 
 #histogram or other visualization of customer
 

@@ -40,18 +40,20 @@ combined_wi_elecUtil_activityData <- st_drop_geometry(WIutilities_in_scope_Censu
   mutate(
     #input total mWh for the 5 out of 7 utilities we have this info for
     util_Total_mWh = case_when(
-      utility_name == "Dunn Energy Cooperative" ~ 220809,
-      utility_name == "Polk-Burnett Electric Cooperative" ~ 241590,
-      utility_name == "New Richmond Municipal Electric Utility" ~ 102201.827,
-      utility_name == "River Falls Municipal Utility" ~ 128159.282,
-      utility_name == "Northern States Power Company-Wisconsin" ~ 6788131
+      utility_name == "Dunn Energy Cooperative" ~ 220809, #EIA-861 long form
+      utility_name == "Polk-Burnett Electric Cooperative" ~ 241590, #EIA-861 long form
+      utility_name == "New Richmond Municipal Electric Utility" ~ 102201.827, #WI reporting
+      utility_name == "River Falls Municipal Utility" ~ 128159.282, #WI reporting
+      utility_name == "Northern States Power Company-Wisconsin" ~ 6788131, #WI reporting
+      utility_name == "St Croix Electric Cooperative" ~ 202641, #EIA-861 short form
+      utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 121060 #EIA-861 short form
     ),
     #input total customer count for the 7 utilities (we have info for all)
     utility_TotalCustomerCount = case_when(
       utility_name == "Dunn Energy Cooperative" ~ 10270,
       utility_name == "Polk-Burnett Electric Cooperative" ~ 21303,
-      utility_name == "St Croix Electric Cooperative" ~ 11637,
-      utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 7859,
+      utility_name == "St Croix Electric Cooperative" ~ 11386, #EIA-861 short form
+      utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 7795, #EIA-861 short form
       utility_name == "Northern States Power Company-Wisconsin" ~ 266071,
       utility_name == "River Falls Municipal Utility" ~ 7038,
       utility_name == "New Richmond Municipal Electric Utility" ~ 5333
@@ -104,7 +106,8 @@ combined_wi_elecUtil_activityData <- st_drop_geometry(WIutilities_in_scope_Censu
 
 
 # Calculate weights to generate modeled mWh per account and for the entire utility county, where this info is not reported
-# For St. Croix Electric Coop and Pierce Pepin Electric Cooperative Services
+# Originally written to estimate activity for St. Croix Electric Coop and Pierce Pepin Electric Cooperative Services
+# Modeled numbers no longer necessary, but code is being saved to retain coalesced_utilityCounty_mWh
 total_weighted_mWh <- sum(coalesce(combined_wi_elecUtil_activityData$mWh_perCustomerAccount, combined_wi_elecUtil_activityData$EST_mWh_perCustomerAccount) * coalesce(combined_wi_elecUtil_activityData$utilityCustomer_county, combined_wi_elecUtil_activityData$EST_CustomerAccountsInCounty), na.rm = TRUE)
 total_account_weight <- sum(coalesce(combined_wi_elecUtil_activityData$utilityCustomer_county, combined_wi_elecUtil_activityData$EST_CustomerAccountsInCounty), na.rm = TRUE)
 weighted_mWh_perAccount <- total_weighted_mWh / total_account_weight
