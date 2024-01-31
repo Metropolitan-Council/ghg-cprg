@@ -12,19 +12,27 @@ fuel_use <- readRDS(file.path(here::here(), "_energy/data/fuel_use.RDS"))
 Data source description, type
 
 - Data is sourced from federal governmental agencies, so is categorized as the highest rank of data quality
+
 - EIA data is estimated based on residential surveys of energy usage patterns and billing data. These estimates are provided every 5 years, most recently in 2020 [@useia2020ResidentialEnergy2023]. 
 
 ACS data is an annual survey of a subset of US households asking a large variety of questions including household fuel use.
 - EIA surveyed 32,882 households nationally for 2020 data. ACS conducted 62,778 household interviews in Minnesota in 2021.
+
 - We are reporting total county mmBtu (millions of British thermal units) generation from each of propane and kerosene and converting that to CO2 equivalency per the EPA's emission factors.
+
 - EIA RECS data was downloaded from their [data portal](https://www.eia.gov/consumption/residential/data/2020/). ACS data was accessed using the tidycensus package in R.
+
 -Data processing was fairly straight-forward. EIA provides estimated mmBtu generation from propane per household using that fuel at the state level and at the Midwest regional level for kerosene. County estimates are the estimated number of households using a given fuel within the county multiplied by the mmBtu generated per household using the fuel.
+
 - What is the geographic and temporal scope? Did you complete any aggregation? Answered above.
+
 - What version is the data? Were there other versions available? If so, why did you choose this version? EIA data is from 2020 which is the most recent estimate of mmBtu generated per household using a given fuel available. ACS data is from 2021 which matches the year of investigation for our current GHG inventory.
+
 - What assumptions are made when we use this dataset? We're assuming energy generation per fuel is equal across the state (for propane) and Midwest region (for kerosene).
 
 
 - Which subject matter expert (SME) reviewed this data?
+
 - Describe testing used to verify data
 
 Be sure to add a citation of this dataset to the Zotero shared library.
