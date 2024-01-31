@@ -1,5 +1,5 @@
 "ID","Unit Description","Sector","Vehicle Year","Vehicle Type","Vehicle Model (optional)","Fuel Type","Fuel Consumption","VMT"
 1,"Passenger Car Gasoline","Residential",2013,"Passenger Car","","Gasoline",943312919.862136,22733841368.6775
 2,"Passenger Car Diesel","Residential",2014,"Passenger Car","","Diesel",8691265.08711511,281596988.822529
-3,"Medium-duty","Commercial/Institutional",2014,"Light Truck","","Diesel",37318257.3303167,824733487
-4,"Heavy-duty","Commercial/Institutional",2014,"Heavy-Duty Vehicle","","Diesel",10186927.507716,132022580.5
+3,"Medium-duty","Commercial/Institutional",2007,"Light Truck","","Diesel",37318257.3303167,824733487
+4,"Heavy-duty","Commercial/Institutional",2007,"Heavy-Duty Vehicle","","Diesel",10186927.507716,132022580.5
