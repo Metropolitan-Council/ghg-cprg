@@ -201,8 +201,7 @@ lggit_kg_other_per_mile <- left_join(
   mutate(`Vehicle Type` = case_when(`Vehicle Type` == "Light Truck (Vans, Pickup Trucks, SUVs)" ~ "Light Truck",
                                     TRUE ~ `Vehicle Type`))
 
-# 
-# rm(year_column)
-# rm(n2o_veh_year)
-# rm(ch4_by_veh_year)
-# 
+
+rm(year_column)
+rm(n2o_veh_year)
+rm(ch4_by_veh_year)

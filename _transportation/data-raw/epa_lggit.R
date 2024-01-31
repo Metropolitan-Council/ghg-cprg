@@ -15,6 +15,7 @@ vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vm
 commercial_avg_age <- 2021-14  
 
 
+# get median vehicle age by fuel type from TBI
 tbi_vehicle_fuel_age <- readRDS("_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS") %>% 
   mutate(`Fuel Type` = case_when(fuel == "Diesel" ~ "Diesel",
                                  TRUE ~ "Gasoline"),
@@ -24,6 +25,7 @@ tbi_vehicle_fuel_age <- readRDS("_transportation/data-raw/tbi/tbi_vehicle_fuel_a
          `Vehicle Year` = year_median,
          `Vehicle Model (optional)` = "")
 
+# get total emissions for the entire region by vehicle weight
 vmt_emissions_weight <- vmt_emissions %>%
   group_by(vehicle_type, vehicle_weight, vehicle_weight_label) %>%
   summarise(
@@ -34,6 +36,7 @@ vmt_emissions_weight <- vmt_emissions %>%
   ) %>% 
   ungroup()
 
+# outline LGGIT structure needed
 lggit_structure <- tribble(
   ~`ID`, # Enter unique ascending integers for each ID#. Gaps between numbers are permitted. An ID is required for entry into the Module.
   ~`Unit Description`, # Use this field to describe or name the vehicle or vehicle group that you are entering. This field is for the user's reference only and does not impact the calculations. It can represent any number of vehicles.
@@ -47,6 +50,7 @@ lggit_structure <- tribble(
 )
 
 
+# fuel efficiency table from LGGIT
 lggit_avg_mpg <- tibble::tribble(
   ~ "Vehicle Type", ~"Gasoline & Other Fuels", ~"Diesel & Biodiesel",
   "Passenger Car",        24.1,  32.4,
@@ -68,7 +72,7 @@ lggit_avg_mpg <- tibble::tribble(
          Sector = case_when(`Vehicle Type` == "Passenger Car" ~ "Residential",
                             TRUE ~ "Commercial/Institutional"))
 
-
+# reformat our VMT data to match needed columns
 vmt_entry <- vmt_emissions_weight %>% 
   left_join(lggit_avg_mpg) %>% 
   arrange(vehicle_weight_label) %>% 
@@ -81,7 +85,7 @@ vmt_entry <- vmt_emissions_weight %>%
 
 
 
-# get passenger car VMT
+# get total passenger VMT
 passenger_vmt <- vmt_entry %>% 
   filter(`Vehicle Type` == "Passenger Car") %>% 
   magrittr::extract2("VMT")
@@ -90,6 +94,8 @@ passenger_vmt <- vmt_entry %>%
 lggit_vmt_entries <- tbi_vehicle_fuel_age %>%
   # split passenger car VMT between gasoline and diesel
   # based on regional distribution (est_pct)
+  # multiply est_pct by passenger_vmt to get 
+  # fuel-specifc passenger VMT
   mutate(VMT = passenger_vmt * est_pct) %>% 
   # select only needed cols
   select(`Fuel Type`, `Unit Description`, `Vehicle Type`,
@@ -98,7 +104,7 @@ lggit_vmt_entries <- tbi_vehicle_fuel_age %>%
   # bind medium and heavy duty table
   bind_rows(vmt_entry %>% 
               filter(vehicle_type != "passenger")) %>% 
-  # create ID
+  # create ID colun
   mutate(ID = row_number()) %>% 
   # select only needed columns
   select(c("ID", "Unit Description", "Sector", "Vehicle Year", "Vehicle Type", 
@@ -124,13 +130,14 @@ write.csv(lggit_vmt_entries,
           row.names = FALSE)
 
 saveRDS(lggit_vmt_entries,
-          "_transportation/data-raw/epa/lggit_vmt_entries.RDS")
+        "_transportation/data-raw/epa/lggit_vmt_entries.RDS")
 
 
 sum(vmt_emissions$vmt_total) == sum(lggit_vmt_entries$VMT)
 
 # results from LGGIT tool -----
-# CH4 and N2O reported in terms of GWP
+# CH4 and N2O reported in terms of GWP already, 
+# so do not apply GWPs again
 # 28 and 265, respectively
 
 lggit_totals <- tibble::tribble(
@@ -145,21 +152,25 @@ lggit_totals <- tibble::tribble(
 saveRDS(lggit_totals, "_transportation/data-raw/epa/lggit_totals.RDS")
 
 # effective emissions per mile  -----
-
 lggit_kg_co2_per_mile <- lggit_avg_mpg %>% 
   select(-avg_mpg) %>% 
+  # pivot longer to get Fuel and value columns
   pivot_longer(cols = c(`Gasoline & Other Fuels`,
                         `Diesel & Biodiesel`),
                names_to = "Fuel",
                values_to = "Average miles per gallon") %>% 
+  # fix fuel type 
   mutate(`Fuel Type` = ifelse(Fuel == "Gasoline & Other Fuels", "Gasoline", "Diesel")) %>% 
   left_join(lggit_co2) %>% 
+  # calculate KG co2 per mile 
+  # kg co2 per gallon  /  mpg
   mutate(`Kilograms CO2 per mile` = `kg CO2 per gallon` / `Average miles per gallon`  )
 
 
-
+# we only need specific fuel type/vehicle type/year combinations
 lggit_kg_emissions_per_mile <-  lggit_kg_other_per_mile %>% 
   mutate(fuel_type_weight = paste0(`Vehicle Type`, `Fuel Type`, `Vehicle Year`, sep = "_")) %>% 
+  # filter out other unneded fuel types and years
   filter(fuel_type_weight %in% c("Passenger CarDiesel2014_",
                                  "Passenger CarGasoline2013_",
                                  "Heavy-Duty VehicleDiesel2007_",
@@ -167,18 +178,22 @@ lggit_kg_emissions_per_mile <-  lggit_kg_other_per_mile %>%
   select(-fuel_type_weight) %>% 
   left_join(lggit_kg_co2_per_mile) %>% 
   rowwise() %>% 
-  mutate(`Kilograms CO2e per mile` = sum(`Kilograms CH4 per mile` * gwp$ch4,
-                                         `Kilograms N2O per mile` * gwp$n2o,
-                                         `Kilograms CO2 per mile`)) %>% 
-  mutate(`Vehicle Type` = factor(`Vehicle Type`,
-                                 levels= c("Passenger Car",
-                                           "Light Truck",
-                                           "Heavy-Duty Vehicle"),
-                                 ordered = TRUE)) %>% 
+  mutate(
+    # calculate kg co2e by multiplying with GWPs
+    `Kilograms CO2e per mile` = sum(`Kilograms CH4 per mile` * gwp$ch4,
+                                    `Kilograms N2O per mile` * gwp$n2o,
+                                    `Kilograms CO2 per mile`),
+    # make vehicle type a factor
+    `Vehicle Type` = factor(`Vehicle Type`,
+                            levels= c("Passenger Car",
+                                      "Light Truck",
+                                      "Heavy-Duty Vehicle"),
+                            ordered = TRUE)) %>% 
   arrange(`Vehicle Type`)
 
 
 
 lggit_kg_emissions_per_mile
 
+# save 
 saveRDS(lggit_kg_emissions_per_mile, "_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS")
