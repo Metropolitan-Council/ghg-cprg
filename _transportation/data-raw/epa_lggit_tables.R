@@ -184,17 +184,20 @@ n2o_veh_year <- cbind(year_column, tibble::tribble(
          `Fuel Type` = stringr::str_trim(`Fuel Type`, "both"))
 
 
+## compile ----
 lggit_kg_other_per_mile <- left_join(
   ch4_by_veh_year,
   n2o_veh_year,
   by = join_by(year, `Vehicle Type`, `Fuel Type`)
 ) %>% 
+  # convert grams to kilograms
   mutate(ch4_kg_per_mile = ch4_grams_per_mile/1000,
          n2o_kg_per_mile = n2o_grams_per_mile/1000) %>% 
   select(`Vehicle Type`, `Fuel Type`,
          `Vehicle Year` = year,
          `Kilograms CH4 per mile` = ch4_kg_per_mile,
          `Kilograms N2O per mile` = n2o_kg_per_mile) %>% 
+  # alter vehicle type to match other tables
   mutate(`Vehicle Type` = case_when(`Vehicle Type` == "Light Truck (Vans, Pickup Trucks, SUVs)" ~ "Light Truck",
                                     TRUE ~ `Vehicle Type`))
 

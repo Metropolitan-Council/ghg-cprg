@@ -3,11 +3,17 @@
 
 source("R/_load_pkgs.R")
 source("_transportation/data-raw/epa_lggit_tables.R")
+source("R/global_warming_potential.R")
 cprg_population <- readRDS("_meta/data/cprg_population.RDS")
 
 sum(cprg_population$population)
 
 vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
+
+
+# avg age for trucks [@brusseauAgingTrucksCreate2019]
+commercial_avg_age <- 2021-14  
+
 
 tbi_vehicle_fuel_age <- readRDS("_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS") %>% 
   mutate(`Fuel Type` = case_when(fuel == "Diesel" ~ "Diesel",
@@ -109,7 +115,7 @@ lggit_vmt_entries <- tbi_vehicle_fuel_age %>%
                         TRUE ~ `Diesel & Biodiesel`),
     # gallons = miles / (miles/gallon)
     `Fuel Consumption` = VMT / avg_mpg,
-    `Vehicle Year` = ifelse(is.na(`Vehicle Year`), 2014, `Vehicle Year`)
+    `Vehicle Year` = ifelse(is.na(`Vehicle Year`), commercial_avg_age, `Vehicle Year`)
   ) %>%  
   select(names(lggit_structure))
 
@@ -126,15 +132,17 @@ sum(vmt_emissions$vmt_total) == sum(lggit_vmt_entries$VMT)
 # results from LGGIT tool -----
 # CH4 and N2O reported in terms of GWP
 # 28 and 265, respectively
+
 lggit_totals <- tibble::tribble(
   ~Sector,                          ~CO2,       ~CH4,        ~N2O,        
-  "Residential",                  8371025.25 , 4757.64, 29145.51,
+  "Residential",                  8371025.25 , 4757.61, 29145.32,
   "Commercial/Institutional",     485027.94 ,   35.12,  1507.90
 ) %>% 
   clean_names() %>% 
   rowwise() %>% 
   mutate(total = sum(co2, ch4, n2o, na.rm = T))
 
+saveRDS(lggit_totals, "_transportation/data-raw/epa/lggit_totals.RDS")
 
 # effective emissions per mile  -----
 
@@ -146,12 +154,31 @@ lggit_kg_co2_per_mile <- lggit_avg_mpg %>%
                values_to = "Average miles per gallon") %>% 
   mutate(`Fuel Type` = ifelse(Fuel == "Gasoline & Other Fuels", "Gasoline", "Diesel")) %>% 
   left_join(lggit_co2) %>% 
-  mutate(`Kilograms CO2 per mile` = `Average miles per gallon`  * `kg CO2 per gallon`)
+  mutate(`Kilograms CO2 per mile` = `kg CO2 per gallon` / `Average miles per gallon`  )
 
 
 
 lggit_kg_emissions_per_mile <-  lggit_kg_other_per_mile %>% 
-  filter(`Vehicle Year` %in% c(2013, 2014)) %>% 
-  left_join(lggit_kg_co2_per_mile)
+  mutate(fuel_type_weight = paste0(`Vehicle Type`, `Fuel Type`, `Vehicle Year`, sep = "_")) %>% 
+  filter(fuel_type_weight %in% c("Passenger CarDiesel2014_",
+                                 "Passenger CarGasoline2013_",
+                                 "Heavy-Duty VehicleDiesel2007_",
+                                 "Light TruckDiesel2007_")) %>% 
+  select(-fuel_type_weight) %>% 
+  left_join(lggit_kg_co2_per_mile) %>% 
+  rowwise() %>% 
+  mutate(`Kilograms CO2e per mile` = sum(`Kilograms CH4 per mile` * gwp$ch4,
+                                         `Kilograms N2O per mile` * gwp$n2o,
+                                         `Kilograms CO2 per mile`)) %>% 
+  mutate(`Vehicle Type` = factor(`Vehicle Type`,
+                                 levels= c("Passenger Car",
+                                           "Light Truck",
+                                           "Heavy-Duty Vehicle"),
+                                 ordered = TRUE)) %>% 
+  arrange(`Vehicle Type`)
+
+
+
+lggit_kg_emissions_per_mile
 
 saveRDS(lggit_kg_emissions_per_mile, "_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS")
