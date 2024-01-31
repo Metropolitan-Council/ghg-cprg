@@ -21,7 +21,7 @@ testthat::test_that("County data is as expected", {
 testthat::test_that("CTU data is as expected", {
   cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
   ctu_co_crosswalk <- readRDS(file.path(here::here(), "_meta/data/geog_crosswalk.RDS"))
-  
+
   testthat::expect_equal(nrow(cprg_ctu), 288)
   testthat::expect_equal(names(cprg_ctu), c(
     "CTU_NAME", "CTU_CLASS", "COUNTY_NAM",
