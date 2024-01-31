@@ -35,21 +35,24 @@ transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.R
 ## natural gas ----
 ## propane and kerosene ----
 
-propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>% 
-  mutate(sector = "Energy",
-         geog_level = "county",
-         geog_name = NAME,
-         category = "Residential",
-         source = stringr::str_to_sentence(fuel_type),
-         data_source = "EIA RECS (2020)",
-         factor_source = "EPA GHG Emission Factors Hub (2021)"
-         ) %>% 
+propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
+  mutate(
+    sector = "Energy",
+    geog_level = "county",
+    geog_name = NAME,
+    category = "Residential",
+    source = stringr::str_to_sentence(fuel_type),
+    data_source = "EIA RECS (2020)",
+    factor_source = "EPA GHG Emission Factors Hub (2021)"
+  ) %>%
   select(names(transportation_emissions))
 
 # combine and write metadata----
 
-emissions_all <- bind_rows(transportation_emissions,
-                           propane_kerosene_emissions) %>%
+emissions_all <- bind_rows(
+  transportation_emissions,
+  propane_kerosene_emissions
+) %>%
   left_join(
     cprg_county %>%
       sf::st_drop_geometry() %>%

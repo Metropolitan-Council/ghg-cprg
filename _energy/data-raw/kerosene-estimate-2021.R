@@ -6,15 +6,15 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 eff_fac <- readxl::read_excel("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx")
 
 ### poor formatting but the co2e for kerosene is:
-kerosene_efficiency <- 
+kerosene_efficiency <-
   # CO2 emissions per mmBtu of kerosene used PLUS
-  as.numeric(eff_fac %>% filter(...2 == "Kerosene") %>% select(...4)) + 
+  as.numeric(eff_fac %>% filter(...2 == "Kerosene") %>% select(...4)) +
   # methane emissions per mmBtu kerosene scale to CO2 equivalency PLUS
-  as.numeric(eff_fac %>% filter(...2 == "Kerosene") %>% select(...5)) * gwp$ch4 + 
+  as.numeric(eff_fac %>% filter(...2 == "Kerosene") %>% select(...5)) * gwp$ch4 +
   # n20 emissions per mmBtu kerosene scale to CO2 equivalency
-  as.numeric(eff_fac %>% filter(...2 == "Kerosene") %>% select(...6)) * gwp$n2o 
+  as.numeric(eff_fac %>% filter(...2 == "Kerosene") %>% select(...6)) * gwp$n2o
 
-# kerosene mmBtu generation estimates are not provided at the state level for MN and WI due to inadequate sample size. 
+# kerosene mmBtu generation estimates are not provided at the state level for MN and WI due to inadequate sample size.
 # Best approximation I can see is regional usage rates, which may skew high
 # source: https://www.eia.gov/consumption/residential/data/2020/state/pdf/ce2.1.st.pdf
 eia2020 <- read.csv("_energy/data-raw/eia-recs-region-2020.csv")
@@ -45,13 +45,13 @@ mn_kero_hh <- get_acs(
   year = 2021
 ) %>%
   filter(GEOID %in% cprg_county$GEOID) %>%
-  rowwise() %>% 
+  rowwise() %>%
   mutate(
     # multiply average propane use by household be estimated number of households
     mmBtu = estimate * as.numeric(mn_kero_use),
     # multiply mmBtu per county by emissions factor, convert to metric tons
     CO2e = mmBtu * kerosene_efficiency * 0.001
-  ) 
+  )
 
 # repeat for WI
 wi_kero_hh <- get_acs(
@@ -61,13 +61,13 @@ wi_kero_hh <- get_acs(
   year = 2021
 ) %>%
   filter(GEOID %in% cprg_county$GEOID) %>%
-  rowwise() %>% 
+  rowwise() %>%
   mutate(
     # multiply average propane use by household be estimated number of households
-    mmBtu = estimate * as.numeric(wi_kero_use), 
+    mmBtu = estimate * as.numeric(wi_kero_use),
     # multiply mmBtu per county by emissions factor and then convert to metric tonnes
     CO2e = mmBtu * kerosene_efficiency * 0.001
-  ) 
+  )
 # bind data
 kero_county <- rows_append(mn_kero_hh, wi_kero_hh)
 kero_county

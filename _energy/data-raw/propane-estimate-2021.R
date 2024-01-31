@@ -8,9 +8,9 @@ eff_fac <- readxl::read_excel("_energy/data-raw/ghg-emission-factors-hub-2021.xl
 # source: https://www.epa.gov/climateleadership/ghg-emission-factors-hub
 
 ### poor formatting but the co2e for propane is:
-propane_efficiency <- 
+propane_efficiency <-
   # CO2 emissions per mmBtu of propane used
-  as.numeric(eff_fac %>% filter(...2 == "Propane") %>% select(...4)) + 
+  as.numeric(eff_fac %>% filter(...2 == "Propane") %>% select(...4)) +
   # methane emissions per mmBtu propane scale to CO2 equivalency
   as.numeric(eff_fac %>% filter(...2 == "Propane") %>% select(...5)) * gwp$ch4 +
   # n20 emissions per mmBtu propane scale to CO2 equivalency
@@ -45,13 +45,13 @@ mn_prop_hh <- get_acs(
   year = 2021
 ) %>%
   filter(GEOID %in% cprg_county$GEOID) %>%
-  rowwise() %>% 
+  rowwise() %>%
   mutate(
     # multiply average propane use per household by estimated number of households
     mmBtu = estimate * as.numeric(mn_prop_use),
     # multiply mmBtu per county by emissions factor
     CO2e = mmBtu * propane_efficiency * 0.001
-)
+  )
 
 # repeat for WI
 wi_prop_hh <- get_acs(
@@ -61,13 +61,13 @@ wi_prop_hh <- get_acs(
   year = 2021
 ) %>%
   filter(GEOID %in% cprg_county$GEOID) %>%
-  rowwise() %>% 
+  rowwise() %>%
   mutate(
     # multiply average propane use by household be estimated number of households
-    mmBtu = estimate * as.numeric(wi_prop_use), 
+    mmBtu = estimate * as.numeric(wi_prop_use),
     # multiply mmBtu per county by emissions factor, conver to metric tons
     CO2e = mmBtu * propane_efficiency * 0.001
-  ) 
+  )
 
 # bind data
 prop_county <- rows_append(mn_prop_hh, wi_prop_hh)

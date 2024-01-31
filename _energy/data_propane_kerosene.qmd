@@ -5,7 +5,6 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 hookaddcap()
 
 fuel_use <- readRDS(file.path(here::here(), "_energy/data/fuel_use.RDS"))
-
 ```
 
 [U.S Energy Information Administration](www.eia.gov) provides per household estimates of residential energy use from various energy sources, including propane and kerosene at regional and state scales. These estimates are provided every 5 years, most recently in 2020 [The American Community Survey](https://www.census.gov/programs-surveys/acs) curated by the US Census Bureau provides estimated number of households using each fuel type at more granular spatial and temporal scales. In combination, we are able to estimate energy generation and therefore GHG emissions from these fuels for each of the 11 counties in our 2021 inventory.

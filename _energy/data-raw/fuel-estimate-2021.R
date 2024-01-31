@@ -12,13 +12,15 @@ fuel_use <- bind_rows(
   kerosene_use
 ) %>%
   # select(NAME, mmBtu, CO2e, fuel_type) %>%
-  mutate(year = 2021) %>% 
-  left_join(cprg_county, by = "GEOID") %>% 
-  select(NAME = NAME.y,
-         year,
-         fuel_type,
-         mmBtu,
-         emissions_metric_tons_co2e = CO2e)
+  mutate(year = 2021) %>%
+  left_join(cprg_county, by = "GEOID") %>%
+  select(
+    NAME = NAME.y,
+    year,
+    fuel_type,
+    mmBtu,
+    emissions_metric_tons_co2e = CO2e
+  )
 
 names(fuel_use)
 
