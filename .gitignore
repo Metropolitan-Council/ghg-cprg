@@ -46,8 +46,15 @@ _transportation/data-raw/stl_raw_downloads/1599856_CPRG_County_OD_NP_Truck_SFCal
 _transportation/data-raw/stl_raw_downloads/1599856_CPRG_County_OD_NP_Truck_SFCalib_2021.zip
 
 _transportation/data-raw/mndot/~$Current_CC_StationList.xlsx
+_energy/data-raw/eia-recs-2020.csv
+_energy/data-raw/ghg-emission-factors-hub-2021.xlsx
+_energy/data-raw/eia-recs-region-2020.xlsx
 _meta/data-raw/1.0-communities.csv
 
 _meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023)/
 
 _meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023).zip
+
+_energy/data-raw/~$ghg-emission-factors-hub-2021.xlsx
+
+_energy/data-raw/eia-recs-region-2020.csv

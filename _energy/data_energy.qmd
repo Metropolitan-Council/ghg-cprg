@@ -19,6 +19,7 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 hookaddcap()
 ```
 
+{{< include data_propane_kerosene.qmd >}}
 
 
 

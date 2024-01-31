@@ -19,7 +19,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -270,7 +289,13 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#propane-and-kerosene" id="toc-propane-and-kerosene" class="nav-link active" data-scroll-target="#propane-and-kerosene"><span class="header-section-number">2.1</span> Propane and Kerosene</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -292,8 +317,55 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="propane-and-kerosene" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="propane-and-kerosene"><span class="header-section-number">2.1</span> Propane and Kerosene</h2>
+<p><a href="www.eia.gov">U.S Energy Information Administration</a> provides per household estimates of residential energy use from various energy sources, including propane and kerosene at regional and state scales. These estimates are provided every 5 years, most recently in 2020 <a href="https://www.census.gov/programs-surveys/acs">The American Community Survey</a> curated by the US Census Bureau provides estimated number of households using each fuel type at more granular spatial and temporal scales. In combination, we are able to estimate energy generation and therefore GHG emissions from these fuels for each of the 11 counties in our 2021 inventory.</p>
+<p>Data source description, type</p>
+<ul>
+<li><p>Data is sourced from federal governmental agencies, so is categorized as the highest rank of data quality</p></li>
+<li><p>EIA data is estimated based on residential surveys of energy usage patterns and billing data. These estimates are provided every 5 years, most recently in 2020 <span class="citation" data-cites="useia2020ResidentialEnergy2023">(<a href="../references.html#ref-useia2020ResidentialEnergy2023" role="doc-biblioref">US EIA 2023</a>)</span>.</p></li>
+</ul>
+<p>ACS data is an annual survey of a subset of US households asking a large variety of questions including household fuel use. - EIA surveyed 32,882 households nationally for 2020 data. ACS conducted 62,778 household interviews in Minnesota in 2021.</p>
+<ul>
+<li><p>We are reporting total county mmBtu (millions of British thermal units) generation from each of propane and kerosene and converting that to CO2 equivalency per the EPA’s emission factors.</p></li>
+<li><p>EIA RECS data was downloaded from their <a href="https://www.eia.gov/consumption/residential/data/2020/">data portal</a>. ACS data was accessed using the tidycensus package in R.</p></li>
+</ul>
+<p>-Data processing was fairly straight-forward. EIA provides estimated mmBtu generation from propane per household using that fuel at the state level and at the Midwest regional level for kerosene. County estimates are the estimated number of households using a given fuel within the county multiplied by the mmBtu generated per household using the fuel.</p>
+<ul>
+<li><p>What is the geographic and temporal scope? Did you complete any aggregation? Answered above.</p></li>
+<li><p>What version is the data? Were there other versions available? If so, why did you choose this version? EIA data is from 2020 which is the most recent estimate of mmBtu generated per household using a given fuel available. ACS data is from 2021 which matches the year of investigation for our current GHG inventory.</p></li>
+<li><p>What assumptions are made when we use this dataset? We’re assuming energy generation per fuel is equal across the state (for propane) and Midwest region (for kerosene).</p></li>
+<li><p>Which subject matter expert (SME) reviewed this data?</p></li>
+<li><p>Describe testing used to verify data</p></li>
+</ul>
+<p>Be sure to add a citation of this dataset to the Zotero shared library.</p>
+<section id="data-characteristics" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="data-characteristics"><span class="header-section-number">2.1.1</span> Data characteristics</h3>
+<ul>
+<li>Were there any missing data? How did you handle missing data?</li>
+<li>Plots, tables, and description of data distribution</li>
+<li>Variance, Z-Score, quantiles</li>
+<li>Facet views by categorical variables</li>
+</ul>
+</section>
+<section id="limitations" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="limitations"><span class="header-section-number">2.1.2</span> Limitations</h3>
+</section>
+<section id="comparison-with-similar-datasets" class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="comparison-with-similar-datasets"><span class="header-section-number">2.1.3</span> Comparison with similar datasets</h3>
+</section>
+<section id="data-dictionary" class="level3" data-number="2.1.4">
+<h3 data-number="2.1.4" class="anchored" data-anchor-id="data-dictionary"><span class="header-section-number">2.1.4</span> Data dictionary</h3>
+<p>Table with detailed description of columns and definitions for each data table.</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-useia2020ResidentialEnergy2023" class="csl-entry" role="listitem">
+US EIA. 2023. <span>“2020 <span>Residential Energy Consumption Survey</span>: <span>Consumption</span> and <span>Expenditures Technical Documentation Summary</span>.”</span> Government. <span>Washington, DC 20585</span>: <span>U.S. Department of Energy</span>. <a href="https://www.eia.gov/consumption/residential/data/2020/pdf/2020%20RECS%20CE%20Methodology_Final.pdf">https://www.eia.gov/consumption/residential/data/2020/pdf/2020%20RECS%20CE%20Methodology_Final.pdf</a>.
+</div>
+</div>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
