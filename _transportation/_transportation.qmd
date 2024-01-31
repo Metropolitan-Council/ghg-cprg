@@ -255,35 +255,38 @@ plot_ly(
 
 #### Local Greenhouse Gas Inventory Tool (LGGIT)
 
-We used the LGGIT Excel workbook tool with the following inputs in the "Mobile-Data" sheet
+EPA’s Local Greenhouse Gas Inventory Tool (LGGIT) was developed to help communities across the United States to evaluate their greenhouse gas emissions. We used the LGGIT to validate our calculations and datasets.
 
-```{r}
+We used the LGGIT Excel workbook tool with the following inputs in the "Mobile-Data" sheet. Several calculations were made
+
+- Passenger VMT was split between gasoline and diesel powered vehicles based on regional fleet composition in the TBI.
+- Passenger vehicle age was determined from the median vehicle model year in the TBI. 
+- Fuel consumption was calculated by dividing VMT by average vehicle miles per gallon (MPG), specific to vehicle type and fuel type. Fuel efficiency data were taken from the LGGIT tool. 
+
+All medium-duty VMT were classified as "Light Truck", while all heavy-duty VMT were classified as "Heavy-Duty Vehicle".
+
+Additionally, commercial trucks were assumed to be year 2007, based on a 2018 report that found the average age of trucks in the US to be 14.2 years [@brusseauAgingTrucksCreate2019] (`2021 - 14 = 2007`). 
+
+```{r tbl-lggit-entries}
+#|  tbl-cap: "Mobile data entered into LGGIT" 
 lggit_vmt_entries <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_vmt_entries.RDS"))
 
 kable(lggit_vmt_entries)
 ```
 
-```{r}
-vmt_emissions_all %>% 
+```{r lggit-calculations}
+cprg_total_emiss <- vmt_emissions_all %>% 
   ungroup() %>% 
   summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
   magrittr::extract2("emissions_metric_tons_co2e") %>% 
   scales::comma()
 
+lggit_totals <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_totals.RDS"))
 
-(lggit_totals$total %>% sum()) %>% scales::comma()
+lggit_total_emiss <- (lggit_totals$total %>% sum()) %>% scales::comma()
 ```
 
-We can test this by looking at the emissions factors for LGGIT and compare them with the EPA MOVES4 values
-
-```{r}
-epa_moves <- readRDS(file.path(here::here(), "_transportation/data/epa_moves.RDS"))
-lggit_kg_emissions_per_mile <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS"))
-
-epa_moves
-lggit_kg_emissions_per_mile
-```
-
+The results from the LGGIT tool indicate a regional total of `r lggit_total_emiss` metric tons CO~2~e, while our calculations indicate `r cprg_total_emiss` metric tons CO~2~e. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. See @sec-epa-moves for a more detailed comparison.
 
 ```{r echo=FALSE}
 saveCap("trans")
