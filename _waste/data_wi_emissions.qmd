@@ -39,33 +39,6 @@ not modeled - directly reported
 - Which subject matter expert (SME) reviewed this data?
 - Describe testing used to verify data
 
-## Population estimates
-
-Wisconsin population estimates were retrieved from the [US Census Bureau](https://www.census.gov/quickfacts/fact/table/piercecountywisconsin,stcroixcountywisconsin,WI/PST120223#PST120223). 
-
-- Quality rank (See @tbl-quality-rank)
-Highest quality - state-level source
-- How, when, and why was the data collected?
-- If this is a modeled dataset, what is the sample?
-not modeled - directly reported
-- What is the raw unit of measurement? 
-- How was this data accessed? Include any relevant links/citations, code, or downloads.
-- What data cleaning or wrangling was completed? How did you test these processes and outputs?
-- What is the geographic and temporal scope? Did you complete any aggregation?
-- What version is the data? Were there other versions available? If so, why did you choose this version?
-- What assumptions are made when we use this dataset?
-- Which subject matter expert (SME) reviewed this data?
-- Describe testing used to verify data
-
-### Data characteristics
-
-- Were there any missing data? How did you handle missing data?
-- Plots, tables, and description of data distribution
-- Variance, Z-Score, quantiles
-- Facet views by categorical variables
-
-### Data distribution
-
 
 ```{r echo=FALSE}
 saveCap("wi-data")
