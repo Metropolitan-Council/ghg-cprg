@@ -1,6 +1,6 @@
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
-# WI data is reported in therms delivered. to match MN and the EPA conversion factor, which are reported in mcf, we use the conversion factor supplied by the EIA -- 
+# WI data is reported in therms delivered. to match MN and the EPA conversion factor, which are reported in mcf, we use the conversion factor supplied by the EIA --
 # One thousand cubic feet (Mcf) of natural gas equals 1.038 MMBtu, or 10.38 therms.
 # https://www.eia.gov/tools/faqs/faq.php?id=45&t=8
 

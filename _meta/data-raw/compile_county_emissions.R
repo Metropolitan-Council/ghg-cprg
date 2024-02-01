@@ -63,7 +63,7 @@ natural_gas_emissions <- natgas_raw %>%
     sector = "Energy",
     geog_level = "county",
     geog_name = county,
-    category = "Residential",
+    category = "All",
     source = "Natural Gas",
     data_source = "Individual natural gas utilities",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
@@ -77,7 +77,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     sector = "Energy",
     geog_level = "county",
     geog_name = NAME,
-    category = "Residential",
+    category = "All",
     source = stringr::str_to_sentence(fuel_type),
     data_source = "EIA RECS (2020)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
