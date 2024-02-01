@@ -1,4 +1,4 @@
-# Stationary Energy -- Natural Gas
+## Natural Gas
 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
@@ -20,11 +20,11 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 hookaddcap()
 ```
 
-## Introduction
+### Introduction
 
 Greenhouse gas emissions from Minnesota homes and apartment buildings have increased 14% over the past 15 years, and natural gas use is the largest source of these emissions [@mpcaClimateChangeTrends2023].
 
-## Methods
+### Methods
 
 The general workflow for quantifying natural gas emissions is to identify all of the natural gas utilities that operate within our study area, collect/aggregate reporting they provide to the states of Minnesota and Wisconsin about the amount of energy delivered to all their customers (with reference to federal reporting sources where state-level reporting gaps exist), and apply EPA-provided emissions factor to the reported activity/energy deliveries to calculate emissions. Methodologies for allocating utility activity reports to counties varies across MN and WI, and between electricity and natural gas; please see.... for more details.
 
@@ -32,7 +32,7 @@ The general workflow for quantifying natural gas emissions is to identify all of
 
 $$Emissions = \Sigma (mcf \times {Emissions Factor}) $$
 
-### Identifying utilities in scope
+#### Identifying utilities in scope
 
 To identify the natural gas utilities that operate within our 11-county study area, we first referred to maps/geospatial datasets capturing utility service areas in Minnesota and Wisconsin. Where possible, state-maintained data sources were used, with federal sources referenced where state sources couldn't be accessed. To identify Wisconsin gas utilities, we downloaded the Natural Gas Service Territory map maintained by the Wisconsin Public Utilities Commission [@wisconsinpublicservicecommissionNaturalGasService2024] . Since Minnesota does not publish a state-maintained data set of natural gas service areas [@PublicUtilitiesInfrastructure], we used the Department of Homeland Security's Natural Gas Service Territories map from its Homeland Infrastructure Foundation-Level Data (HIFLD) portal is used to identify in-scope Minnesota gas utilities [@departmentofhomelandsecurityNaturalGasService2017].
 
@@ -40,21 +40,21 @@ For each state, we generated two .RDS files, entitled *stateAbbreviation*\_natGa
 
 *Insert table of unique utility-county pairs with state added, create a meta?*
 
-### Collecting activity data from utilities
+#### Collecting activity data from utilities
 
 Using distinct_natGas_util\_*stateAbbreviation*.RDS as a source for which utilities operate within our study area within each state,
 
-#### Minnesota
+##### Minnesota
 
 All natural gas utilities authorized to do business in Minnesota are required to file an annual data report pursuant to MN Rules Chapter 7610. The Minnesota Public Utilities Commission makes these reports searchable through an [eFiling Site](https://www.edockets.state.mn.us/EFiling/edockets/searchDocuments.do?method=eDocketsResult&docketYear=22&docketNumber=19) [@minnesotadepartmentofcommerceAnnualReportingForms2022]. For each utility identified in distinct_natGas_util_MN.RDS, we downloaded the relevant 2021 annual report from this site.
 
 We wrote code to extract the county-level data reported in report section "ANNUAL GAS DELIVERED TO ULTIMATE CONSUMERS BY COUNTY IN 2021" from all reports compiled into a folder directory and create a table with three columns county, utility, and mcf_delivered (thousand cubic feet of natural gas delivered). By compiling this data for all utilities found to operate within our study area, aggregating utility activity data (and thus, quantifying estimated emissions) to the county level becomes possible.
 
-#### Wisconsin
+##### Wisconsin
 
 sss
 
-### Emissions factors
+#### Emissions factors
 
 To transform natural gas energy deliveries (recorded in mcf -- ) into emissions in metric tons CO~2~e, we referenced 2021 EPA GHG Emissions Factor Hub figures [@usepaEmissionsFactorsGreenhouse2021]:
 
@@ -62,7 +62,7 @@ Table of emissions factors converted into CO~2~e??
 
 EPA originally reported these factors as kg (for CO~2~) and g (for CH~4~ and N~2~O) per standard cubic foot (scf), and we transformed these into units of lbs. per thousand cubic feet (commonly written as *mcf*) for our analysis, to 1) align with providing results in metric tons CO~2~e, and 2) to match the convention of Minnesota utilities, who reported their energy delivered in mcf. Wisconsin utilities reported their energy delivered in therms.
 
-## Results
+### Results
 
 ```{r fig-ng-county-emissions}
 #| fig-cap: "2021 natural gas emissions"
@@ -94,16 +94,13 @@ plot_ly(
 ) %>%
   plotly_layout(
     main_title = "2021 county-level annual CO2e natural gas emissions",
+    x_title = "Greenhouse gases emitted (metric tons)",
     subtitle = "",
     yaxis = list(
       ticklen = 5, # Adjust tick length if needed
       tickwidth = 2, # Adjust tick width if needed
       tickcolor = "#000", # Adjust tick color if needed
       tickfont = list(size = 14) # Adjust font size of ticks (labels) if needed
-    ),
-    xaxis = list(
-      title = "Greenhouse gases emitted (metric tons)"
-      # ... [any other x-axis settings] ...
     ),
     margin = list(l = 120)
   ) %>%
@@ -115,7 +112,7 @@ plot_ly(
   )
 ```
 
-### Correlation with related data
+#### Correlation with related data
 
 We would expect counties with higher population to have higher emissions.
 
@@ -156,7 +153,7 @@ plot_ly(
   )
 ```
 
-### Comparison with other inventories
+#### Comparison with other inventories
 
 -   2018 Met Council inventory
 

@@ -1,5 +1,4 @@
-# Natural gas data sources
-
+# Natural gas 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
