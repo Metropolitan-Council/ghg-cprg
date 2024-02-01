@@ -75,7 +75,7 @@ natGasEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
   mutate(geo = paste(county, state, sep = ", ")) %>%
   group_by(geo, county, state, year) %>%
   summarise(
-    emissions_metric_tons_co2e = sum(total_CO2e_emissions_tons),
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     .groups = "rowwise"
   )
 
