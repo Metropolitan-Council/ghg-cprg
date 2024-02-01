@@ -1,6 +1,5 @@
 if (exists("eGRID_MROW_emissionsFactor_CO2") == FALSE) {
-  
-  if(!exists("gwp")){
+  if (!exists("gwp")) {
     source("R/global_warming_potential.R")
   }
   # Load eGRID Total Output Emission Rates (lb/MWh) for the MROW subregion (
@@ -35,8 +34,6 @@ if (exists("eGRID_MROW_emissionsFactor_CO2") == FALSE) {
 
   # Global Warming Potential (GWP) is the multiplier from AR5 that converts emissions factors to CO2 equivalent
   GWP_N2O <- gwp$n2o
-  
-  
 } else {
   cli::cli_inform(
     c("v" = "Energy emission factors\n"),
