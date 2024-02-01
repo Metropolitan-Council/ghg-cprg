@@ -78,8 +78,8 @@ plot_ly(
   type = "bar",
   source = opts_current$get()$label,
   data = elecEmissions_all,
-  y = ~ reorder(geo, total_CO2_emissions_tons),
-  x = ~total_CO2_emissions_tons,
+  y = ~ reorder(geo, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
   hovertemplate = ~ paste0(
     geo, "<br>",
     "Emissions: %{x:,.2f} metric tons CO<sub>2</sub>e", "<br>",
@@ -124,7 +124,7 @@ plot_ly(
   data = emissions_population,
   source = opts_current$get()$label,
   x = ~population,
-  y = ~total_CO2_emissions_tons,
+  y = ~emissions_metric_tons_co2e,
   type = "scatter",
   mode = "markers",
   hovertemplate = ~ paste0(
