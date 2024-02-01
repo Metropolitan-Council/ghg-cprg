@@ -175,7 +175,11 @@ WIcounty_level_electricity_emissions <- processed_wi_elecUtil_activityData %>%
         N2O_emissions,
       na.rm = TRUE
     ),
-    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000
+    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
+    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>% 
+      units::as_units("pound") %>% 
+      units::set_units("metric_ton") %>% 
+      as.numeric()
   ) %>%
   mutate(
     state = "WI",
