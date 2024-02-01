@@ -53,6 +53,23 @@ electric_emissions <- electric_raw %>%
 rm(electric_raw)
 
 ## natural gas ----
+natgas_raw <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_GasEmissions.RDS")) %>% 
+  bind_rows(read_rds(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>%
+  rename(county = county_name))
+
+
+natural_gas_emissions <- natgas_raw %>% 
+  mutate(
+    sector = "Energy",
+    geog_level = "county",
+    geog_name = county,
+    category = "Residential",
+    source = "Natural Gas",
+    data_source = "Individual natural gas utilities",
+    factor_source = "EPA GHG Emission Factors Hub (2021)"
+  ) %>% 
+  select(names(transportation_emissions))
+  
 ## propane and kerosene ----
 
 propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
@@ -72,7 +89,8 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
 emissions_all <- bind_rows(
   transportation_emissions,
   propane_kerosene_emissions,
-  electric_emissions
+  electric_emissions,
+  natural_gas_emissions
 ) %>%
   left_join(
     cprg_county %>%
@@ -89,6 +107,7 @@ emissions_all <- bind_rows(
       # waste levels
       # energy levels
       "Electricity",
+      "Natural Gas",
       "Propane",
       "Kerosene"
     ),
