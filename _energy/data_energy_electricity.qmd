@@ -19,28 +19,28 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
 library(readr)
-library(stringr) #add both to renv
+library(stringr) # add both to renv
 
-#MN
-MN_inScopeUtilities<- read_rds(here(
-  "_energy", "data", "MN_electricity_inScope_utilityCountyPairs.RDS")
-  )
+# MN
+MN_inScopeUtilities <- read_rds(here(
+  "_energy", "data", "MN_electricity_inScope_utilityCountyPairs.RDS"
+))
 MN_allUtilities <- read_rds(here(
-  "_energy", "data", "MN_elecUtils.RDS")
-)
+  "_energy", "data", "MN_elecUtils.RDS"
+))
 
-#WI
+# WI
 WI_inScopeUtilities <- read_rds(here(
-  "_energy", "data", "WI_electricity_inScope_utilityCountyPairs.RDS")
-  )
+  "_energy", "data", "WI_electricity_inScope_utilityCountyPairs.RDS"
+))
 
-WI_elecUtils_allTypes <-  read_rds(here(
-  "_energy", "data", "WI_elecUtils_allTypes.RDS")
-  )
+WI_elecUtils_allTypes <- read_rds(here(
+  "_energy", "data", "WI_elecUtils_allTypes.RDS"
+))
 
-WI_inScope_elecUtils_fullServTerr <-  read_rds(here(
-  "_energy", "data", "WI_inScope_elecUtils_fullServTerr.RDS")
-  )
+WI_inScope_elecUtils_fullServTerr <- read_rds(here(
+  "_energy", "data", "WI_inScope_elecUtils_fullServTerr.RDS"
+))
 
 hookaddcap()
 ```
@@ -54,24 +54,23 @@ To identify the utilities operating within our 11-county study area, we utilized
 The Minnesota Public Utilities Commission publishes and maintains a map of electric utility service areas [@minnesotaitgeospatialinformationofficeElectricUtilityService2023]. Though this dataset is statewide(see fig. X), it is clipped to only include utility service areas within the nine Minnesota counties included in the study area of this inventory (see fig. Y -- note that utilities operating across county lines have a polygon covering the extent of their service territory within each and every county they operate within).
 
 ```{r minnesota-elec-servTerrs}
-
 # Create a color palette
 utilities <- unique(MN_allUtilities$mpuc_name)
 color_palette <- colorFactor(palette = "viridis", domain = utilities)
 
-#bounding box for Minnesota
+# bounding box for Minnesota
 bound_box <- list(
-  lng1 = -97,    # Southwest longitude (closer in)
-  lat1 =  43.5,  # Southwest latitude (closer in)
-  lng2 = -89.5,  # Northeast longitude (closer in)
-  lat2 =  49     # Northeast latitude (closer in)
+  lng1 = -97, # Southwest longitude (closer in)
+  lat1 =  43.5, # Southwest latitude (closer in)
+  lng2 = -89.5, # Northeast longitude (closer in)
+  lat2 =  49 # Northeast latitude (closer in)
 )
 
 MN_elec_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = MN_allUtilities %>% sf::st_transform(4326),
     fill = TRUE,
-    fillColor = ~color_palette(mpuc_name),  # Use the color mapping
+    fillColor = ~ color_palette(mpuc_name), # Use the color mapping
     stroke = TRUE,
     color = "gray",
     weight = 2,
@@ -88,17 +87,16 @@ MN_elec_servTerrs
 ```
 
 ```{r MN-elec-inScope-servTerrs}
-
 # Create a color palette
 inScopeUtilities <- unique(MN_inScopeUtilities$utility_name)
 color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
 
-#bounding box for MN study area counties
+# bounding box for MN study area counties
 MN_bound_box <- list(
-  lng1 = -94.5,  # Southwest longitude (further zoomed out)
-  lat1 =  44.7,  # Southwest latitude (further zoomed out)
-  lng2 = -92,    # Northeast longitude (further zoomed out)
-  lat2 =  45.5   # Northeast latitude (further zoomed out)
+  lng1 = -94.5, # Southwest longitude (further zoomed out)
+  lat1 =  44.7, # Southwest latitude (further zoomed out)
+  lng2 = -92, # Northeast longitude (further zoomed out)
+  lat2 =  45.5 # Northeast latitude (further zoomed out)
 )
 
 # Test basic functionality of the custom function
@@ -106,14 +104,16 @@ MN_elec_inScope_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = MN_inScopeUtilities %>% sf::st_transform(4326),
     fill = TRUE,
-    fillColor = ~color_palette(utility_name),  # Use the color mapping
+    fillColor = ~ color_palette(utility_name), # Use the color mapping
     stroke = TRUE,
     color = "gray",
     weight = 2,
-    popup = paste0(MN_inScopeUtilities$utility_name,
-                   ", ",
-                  MN_inScopeUtilities$county_name,
-                  " County")
+    popup = paste0(
+      MN_inScopeUtilities$utility_name,
+      ", ",
+      MN_inScopeUtilities$county_name,
+      " County"
+    )
   ) %>%
   fitBounds(
     lng1 = MN_bound_box[[1]],
@@ -130,31 +130,27 @@ MN_elec_inScope_servTerrs
 The Public Services Commission of Wisconsin publishes and maintains maps of service territories for electric utilities operating within the state. This data set relies upon, and is accurate to, "the extent that various sources \[utilities\] supplied accurate data." [@wisconsinpublicservicecommissionElectricServiceTerritories2024] This dataset spans the whole state of Wisconsin (see fig, X), and both clipped to the two Wisconsin counties included in the study area of this inventory (see fig. Y). However, because Wisconsin utilities do not report energy deliveries to the county level, we also generate a file with the entire service area of utilities that operate within Pierce and St. Croix County (see fig. Z), so that we can calculate population served by these utilities both within and without of our study area, as an input to estimated/modeled number of customer accounts and total energy deliveries to Pierce and St. Croix County.
 
 ```{r wisconsin-elec-servTerrs}
-
-utilities <- unique(WI_inScopeUtilities$utility_name)
-color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
-                   
-                   
+utilities <- unique(WI_elecUtils_allTypes$utility_name)
 color_palette <- colorFactor(palette = "viridis", domain = utilities)
 
-#bounding box for Wisconsin
+
+# bounding box for Wisconsin
 bound_box <- list(
-  lng1 = -92.888,  # Southwest longitude (approximate)
-  lat1 =  42.491,  # Southwest latitude (approximate)
-  lng2 = -86.805,  # Northeast longitude (approximate)
-  lat2 =  47.080   # Northeast latitude (approximate)
+  lng1 = -92.888, # Southwest longitude
+  lat1 =  42.491, # Southwest latitude
+  lng2 = -86.805, # Northeast longitude
+  lat2 =  47.080 # Northeast latitude
 )
 
-# Test basic functionality of the custom function
 WI_elec_servTerrs <- council_leaflet() %>%
   addPolygons(
-    data = WI_elecCoop %>% sf::st_transform(4326),
+    data = WI_elecUtils_allTypes %>% sf::st_transform(4326),
     fill = TRUE,
-    fillColor = ~color_palette(LABEL),  # Use the color mapping
+    fillColor = ~ color_palette(utility_name),
     stroke = TRUE,
     color = "gray",
     weight = 2,
-    popup = WI_elecCoop$LABEL
+    popup = WI_elecUtils_allTypes$utility_name
     # Temporarily comment out group for debugging
   ) %>%
   fitBounds(
@@ -170,32 +166,33 @@ WI_elec_servTerrs
 inscope
 
 ```{r wisconsin-elec-inScope-servTerrs}
-
 # Create a color palette
 inScopeUtilities <- unique(WI_inScopeUtilities$utility_name)
 color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
 
-#bounding box for MN study area counties
+
 WI_bound_box <- list(
-  lng1 = -92.9,  # Southwest longitude (approximate for Pierce County)
-  lat1 =  44.5,  # Southwest latitude (approximate for Pierce County)
-  lng2 = -92.0,  # Northeast longitude (approximate for St. Croix County)
-  lat2 =  45.23   # Northeast latitude (approximate for St. Croix County)
+  lng1 = -92.9, # Southwest longitude
+  lat1 =  44.5, # Southwest latitude
+  lng2 = -92.0, # Northeast longitude
+  lat2 =  45.23 # Northeast latitude
 )
 
-# Test basic functionality of the custom function
-WI_ng_inScope_servTerrs <- council_leaflet() %>%
+
+WI_elec_inScope_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = WI_inScopeUtilities %>% sf::st_transform(4326),
     fill = TRUE,
-    fillColor = ~color_palette(utility_name),  # Use the color mapping
+    fillColor = ~ color_palette(utility_name),
     stroke = TRUE,
     color = "gray",
     weight = 2,
-    popup = paste0(WI_inScopeUtilities$utility_name,
-                   ", ",
-                  WI_inScopeUtilities$county_name,
-                  " County")
+    popup = paste0(
+      WI_inScopeUtilities$utility_name,
+      ", ",
+      WI_inScopeUtilities$county_name,
+      " County"
+    )
   ) %>%
   fitBounds(
     lng1 = WI_bound_box[[1]],
@@ -204,7 +201,49 @@ WI_ng_inScope_servTerrs <- council_leaflet() %>%
     lat2 = WI_bound_box[[4]]
   )
 
-WI_ng_inScope_servTerrs
+WI_elec_inScope_servTerrs
+```
+
+InScope whole territory
+
+```{r wisconsin-elec-inScope-wholeServTerrs}
+# Create a color palette
+inScopeUtilities <- unique(WI_inScope_elecUtils_fullServTerr$utility_name)
+color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
+
+
+# bounding box for Wisconsin
+WI_bound_box <- list(
+  lng1 = -92.888, # Southwest longitude
+  lat1 =  42.491, # Southwest latitude
+  lng2 = -86.805, # Northeast longitude
+  lat2 =  47.080 # Northeast latitude
+)
+
+
+WI_elec_inScope_wholeServTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = WI_inScope_elecUtils_fullServTerr %>% sf::st_transform(4326),
+    fill = TRUE,
+    fillColor = ~ color_palette(utility_name),
+    stroke = TRUE,
+    color = "gray",
+    weight = 2,
+    popup = paste0(
+      WI_inScope_elecUtils_fullServTerr$utility_name,
+      ", ",
+      WI_inScope_elecUtils_fullServTerr$county_name,
+      " County"
+    )
+  ) %>%
+  fitBounds(
+    lng1 = WI_bound_box[[1]],
+    lng2 = WI_bound_box[[3]],
+    lat1 = WI_bound_box[[2]],
+    lat2 = WI_bound_box[[4]]
+  )
+
+WI_elec_inScope_wholeServTerrs
 ```
 
 ## Utility Activity Data

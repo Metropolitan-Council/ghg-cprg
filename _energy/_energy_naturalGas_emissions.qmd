@@ -65,12 +65,12 @@ EPA originally reported these factors as kg (for CO~2~) and g (for CH~4~ and N~2
 
 ## Results
 
-```{r fig-transportation-county-emissions}
-#| fig-cap: "2021 annual emissions by vehicle weight"
+```{r fig-ng-county-emissions}
+#| fig-cap: "2021 natural gas emissions"
 #| out-width: "95%"
 mn_emissions <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_GasEmissions.RDS"))
 wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>%
-  rename(county = county_name) 
+  rename(county = county_name)
 
 natGasEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
   mutate(geo = paste(county, state, sep = ", ")) %>%
@@ -86,7 +86,7 @@ plot_ly(
   data = natGasEmissions_all,
   y = ~ reorder(geo, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
-  #color = ~vehicle_weight_label,
+  # color = ~vehicle_weight_label,
   hovertemplate = ~ paste0(
     county, " County, ", state, "<br>",
     "Emissions: %{x:,.2f} metric tons CO<sub>2</sub>e", "<br>",
@@ -97,10 +97,10 @@ plot_ly(
     main_title = "2021 county-level annual CO2e natural gas emissions",
     subtitle = "",
     yaxis = list(
-      ticklen = 5,  # Adjust tick length if needed
-      tickwidth = 2,  # Adjust tick width if needed
-      tickcolor = '#000',  # Adjust tick color if needed
-      tickfont = list(size = 14)  # Adjust font size of ticks (labels) if needed
+      ticklen = 5, # Adjust tick length if needed
+      tickwidth = 2, # Adjust tick width if needed
+      tickcolor = "#000", # Adjust tick color if needed
+      tickfont = list(size = 14) # Adjust font size of ticks (labels) if needed
     ),
     xaxis = list(
       title = "Greenhouse gases emitted (metric tons)"
@@ -120,7 +120,7 @@ plot_ly(
 
 We would expect counties with higher population to have higher emissions.
 
-```{r fig-emissions-population}
+```{r fig-ng-emissions-population}
 #| fig-cap: "County population and emissions"
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
@@ -150,12 +150,11 @@ plot_ly(
   )
 ) %>%
   plotly_layout(
-    main_title = "County population and emissions",
+    main_title = "County population and natural gas emissions",
     subtitle = "2021 ACS 5-year population estimates",
     x_title = "Total population",
     y_title = "Emissions"
   )
-  
 ```
 
 ### Comparison with other inventories

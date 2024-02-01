@@ -19,21 +19,21 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
 
-#MN
-MN_inScopeUtilities<- read_rds(here(
-  "_energy", "data", "MN_natGas_inScope_utilityCountyPairs.RDS")
-  )
+# MN
+MN_inScopeUtilities <- read_rds(here(
+  "_energy", "data", "MN_natGas_inScope_utilityCountyPairs.RDS"
+))
 MN_allUtilities_countrywide <- read_rds(here(
-  "_energy", "data", "MN_fed_natGasUtils.RDS")
-)
+  "_energy", "data", "MN_fed_natGasUtils.RDS"
+))
 
-#WI
-WI_inScopeUtilities<- read_rds(here(
-  "_energy", "data", "WI_natGas_inScope_utilityCountyPairs.RDS")
-  )
+# WI
+WI_inScopeUtilities <- read_rds(here(
+  "_energy", "data", "WI_natGas_inScope_utilityCountyPairs.RDS"
+))
 WI_allUtilities <- read_rds(here(
-  "_energy", "data", "WI_natGasUtils.RDS")
-)
+  "_energy", "data", "WI_natGasUtils.RDS"
+))
 
 
 hookaddcap()
@@ -48,25 +48,24 @@ To identify the utilities operating within our 11-county study area, we utilized
 Since there is no state-maintained map of natural gas service territories in Minnesota [@PublicUtilitiesInfrastructure], we looked to the Homeland Infrastructure Foundation-Level Data (HIFLD) database, a product of the Department of Homeland Security's Geospatial Management Office (DHS GMO) that compiles "foundation-level geospatial data" for homeland security, homeland defense, and emergency preparedness purposes. This dataset was last updated in 2017 [@departmentofhomelandsecurityNaturalGasService2017]. Though this dataset is national in scope (see fig. X), it is clipped to only include utility service areas within the nine Minnesota counties included in the study area of this inventory (see fig. Y -- note that utilities operating across county lines have a polygon covering the extent of their service territory within each and every county they operate within).
 
 ```{r minnesota-ng-servTerrs}
-
 # Create a color palette
 utilities <- unique(MN_allUtilities_countrywide$NAME)
 color_palette <- colorFactor(palette = "viridis", domain = utilities)
 
-#bounding box for continental United States
+# bounding box for continental United States
 bound_box <- list(
-  lng1 = -125,  # Southwest longitude (approximate)
-  lat1 =  24,   # Southwest latitude (approximate)
-  lng2 = -66,   # Northeast longitude (approximate)
-  lat2 =  49    # Northeast latitude (approximate)
+  lng1 = -124.6, # Southwest longitude
+  lat1 =  24.5, # Southwest latitude
+  lng2 = -66.7, # Northeast longitude
+  lat2 =  49.5 # Northeast latitude
 )
 
-# Test basic functionality of the custom function
+
 MN_ng_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = MN_allUtilities_countrywide %>% sf::st_transform(4326),
     fill = TRUE,
-    fillColor = ~color_palette(NAME),  # Use the color mapping
+    fillColor = ~ color_palette(NAME),
     stroke = TRUE,
     color = "gray",
     weight = 2,
@@ -84,32 +83,27 @@ MN_ng_servTerrs
 ```
 
 ```{r MN-ng-inScope-servTerrs}
-
 # Create a color palette
 inScopeUtilities <- unique(MN_inScopeUtilities$utility_name)
 color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
 
-#bounding box for MN study area counties
+# bounding box for MN study area counties
 MN_bound_box <- list(
-  lng1 = -94.3,  # Southwest longitude (more extended)
-  lat1 =  44.8,  # Southwest latitude (slightly lowered)
-  lng2 = -92.4,  # Northeast longitude (more extended)
-  lat2 =  45.4   # Northeast latitude (slightly raised)
+  lng1 = -94.3, # Southwest longitude
+  lat1 =  44.8, # Southwest latitude
+  lng2 = -92.4, # Northeast longitude
+  lat2 =  45.4 # Northeast latitude
 )
 
-# Test basic functionality of the custom function
 MN_ng_inScope_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = MN_inScopeUtilities %>% sf::st_transform(4326),
     fill = TRUE,
-    fillColor = ~color_palette(utility_name),  # Use the color mapping
+    fillColor = ~ color_palette(utility_name),
     stroke = TRUE,
     color = "gray",
     weight = 2,
-    popup = paste0(MN_inScopeUtilities$utility_name,
-                   ", ",
-                  MN_inScopeUtilities$county_name,
-                  " COUNTY")
+    popup = MN_inScopeUtilities$utility_name
   ) %>%
   fitBounds(
     lng1 = MN_bound_box[[1]],
@@ -130,30 +124,27 @@ for electric... as well as the full service territories beyond the two-county ar
 For electric..Because Wisconsin does not require utilities to report the amount of energy, both the extent of utilities' operations within our study area (St Croix and Pierce counties within Wisconsin) as well as their statewide service territories represent important inputs to our methodology for estimating both number of customer accounts and energy
 
 ```{r wisconsin-ng-servTerrs}
-
 # Create a color palette
 utilities <- unique(WI_allUtilities$Util_Name)
 color_palette <- colorFactor(palette = "viridis", domain = utilities)
 
-#bounding box for continental United States
+# bounding box for continental United States
 bound_box <- list(
-  lng1 = -92.888,  # Southwest longitude (approximate)
-  lat1 =  42.491,  # Southwest latitude (approximate)
-  lng2 = -86.805,  # Northeast longitude (approximate)
-  lat2 =  47.080   # Northeast latitude (approximate)
+  lng1 = -92.888, # Southwest longitude
+  lat1 =  42.491, # Southwest latitude
+  lng2 = -86.805, # Northeast longitude
+  lat2 =  47.080 # Northeast latitude
 )
 
-# Test basic functionality of the custom function
 WI_ng_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = WI_allUtilities %>% sf::st_transform(4326),
     fill = TRUE,
-    fillColor = ~color_palette(Util_Name),  # Use the color mapping
+    fillColor = ~ color_palette(Util_Name),
     stroke = TRUE,
     color = "gray",
     weight = 2,
     popup = WI_allUtilities$Util_Name
-    # Temporarily comment out group for debugging
   ) %>%
   fitBounds(
     lng1 = bound_box[[1]],
@@ -168,32 +159,33 @@ WI_ng_servTerrs
 inscope
 
 ```{r wisconsin-ng-inScope-servTerrs}
-
 # Create a color palette
 inScopeUtilities <- unique(WI_inScopeUtilities$utility_name)
 color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
 
-#bounding box for MN study area counties
+# bounding box for MN study area counties
 WI_bound_box <- list(
-  lng1 = -92.9,  # Southwest longitude (approximate for Pierce County)
-  lat1 =  44.5,  # Southwest latitude (approximate for Pierce County)
-  lng2 = -92.0,  # Northeast longitude (approximate for St. Croix County)
-  lat2 =  45.23   # Northeast latitude (approximate for St. Croix County)
+  lng1 = -92.9, # Southwest longitude
+  lat1 =  44.5, # Southwest latitude
+  lng2 = -92.0, # Northeast longitude
+  lat2 =  45.23 # Northeast latitude
 )
 
-# Test basic functionality of the custom function
+
 WI_ng_inScope_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = WI_inScopeUtilities %>% sf::st_transform(4326),
     fill = TRUE,
-    fillColor = ~color_palette(utility_name),  # Use the color mapping
+    fillColor = ~ color_palette(utility_name),
     stroke = TRUE,
     color = "gray",
     weight = 2,
-    popup = paste0(WI_inScopeUtilities$utility_name,
-                   ", ",
-                  WI_inScopeUtilities$county_name,
-                  " County")
+    popup = paste0(
+      WI_inScopeUtilities$utility_name,
+      ", ",
+      WI_inScopeUtilities$county_name,
+      " County"
+    )
   ) %>%
   fitBounds(
     lng1 = WI_bound_box[[1]],
@@ -207,15 +199,15 @@ WI_ng_inScope_servTerrs
 
 ## Utility Activity Data
 
+In this section, we will describe the acquisition of utility activity data. Analysis process and results are described in the following chapter.
+
 ### Minnesota
 
 Under Minnesota Administrative Rules Chapter 7610 [@minnesotadepartmentofcommerceCHAPTER7610ENERGY], utilities are required to file an annual data report that supports the identification of "emerging energy trends based on supply and demand, conservation and public health and safety factors, and to determine the level of statewide and service area needs." [@minnesotadepartmentofcommerceAnnualReportingForms2022] This includes a report of county-level energy deliveries (reported in thousand cubic feet, commonly written as mcf). Because the information is structured in this manner, natural gas emissions at the county-level can be estimated as a direct function of energy deliveries to counties reported by utilities, which isn't the case in Wisconsin (some modeling and estimation is required in WI).
 
-For electric... great river
+#bar graph with utility county data?
 
-#bar graph with utility county data
-
-#some data exists for MN customer counts... could be worthwile to calculate account level average for comparison to WI
+#some data exists for MN customer counts... could be worthwhile to calculate account level average for comparison to WI
 
 ### Wisconsin
 

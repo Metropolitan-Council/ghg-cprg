@@ -66,14 +66,14 @@ Table of emissions factors converted into CO~2~e??
 ## Results
 
 ```{r fig-electricity-county-emissions}
-#| fig-cap: "2021 annual electricity emissions by county"
+#| fig-cap: "2021 electricity emissions by county"
 #| out-width: "95%"
 mn_emissions <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS"))
 wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
-  rename(county = county_name) 
+  rename(county = county_name)
 
 elecEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
-  mutate(geo = paste0(county, ", ", state)) 
+  mutate(geo = paste0(county, ", ", state))
 
 plot_ly(
   type = "bar",
@@ -88,12 +88,12 @@ plot_ly(
   )
 ) %>%
   plotly_layout(
-    main_title = "2021 county-level annual CO2e electricity emissions",
+    main_title = "2021 county-level CO2e electricity emissions",
     subtitle = "",
     yaxis = list(
-      ticklen = 5,  
+      ticklen = 5,
       tickwidth = 2,
-      tickcolor = '#000', 
+      tickcolor = "#000",
       tickfont = list(size = 14)
     ),
     xaxis = list(
@@ -115,7 +115,7 @@ plot_ly(
 We would expect counties with higher population to have higher emissions.
 
 ```{r fig-emissions-population}
-#| fig-cap: "County population and emissions"
+#| fig-cap: "County population and electricity emissions"
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 emissions_population <- left_join(elecEmissions_all, cprg_population,
@@ -149,7 +149,6 @@ plot_ly(
     x_title = "Total population",
     y_title = "Emissions"
   )
-  
 ```
 
 ### Comparison with other inventories
