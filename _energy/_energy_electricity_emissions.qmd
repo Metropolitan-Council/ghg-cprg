@@ -156,5 +156,5 @@ plot_ly(
 -   2018 Met Council inventory
 
 ```{r echo=FALSE}
-saveCap("trans")
+saveCap("electricity-emissions")
 ```
