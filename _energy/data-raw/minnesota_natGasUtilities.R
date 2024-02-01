@@ -1,5 +1,5 @@
+# Read in and save MN natural gas and electricity utility areas
 source("R/_load_pkgs.R")
-library(readr)
 
 mn_counties <- read_rds("_meta/data/cprg_county.RDS") %>%
   select(STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD, geometry) %>%

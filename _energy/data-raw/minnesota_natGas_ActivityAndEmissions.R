@@ -1,5 +1,5 @@
 source("R/_load_pkgs.R")
-library(readxl)
+source("_energy/data-raw/_energy_emissions_factors.R")
 
 # Directory where Excel files of utility reports should be placed
 dir_mn_gas <- here("_energy", "data-raw", "mn_natGas_utility_reporting")
@@ -39,36 +39,8 @@ process_file <- function(file_path) {
 # Process all files and combine the data
 combined_MNgasUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
 
-
-# Natural Gas emissions factor from https://www.epa.gov/system/files/documents/2023-04/emission-factors_sept2021.pdf
-
-# CO2
-# Emissions factor value provided by EPA (0.05444) is in terms of kg CO2 per scf
-# 1,000 scf = 1 mcf --> utilities report gas delivered to customers in Minnesota in mcf --> 54.44 kg CO2 per mcf
-# 1 kg = 2.20462262 lbs -->
-# EPA-provided emissions factor = 120.019655 lbs CO2 per mcf natural gas in 2021
-epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF <- 120.019655
-
-
-# CH4
-# 0.00103 g CH4 per scf --> 0.00000103 kg per scf ---> 0.00103 kg per mcf
-# 1 kg = 2.20462262 lbs --> 0.00227 lbs CH4 per mcf natural gas in 2021
-epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF <- 0.00227
-
-# Global Warming Potential (GWP) is the multiplier (provided by the EPA) that converts emissions factors to CO2 equivalent
-GWP_CH4 <- 25
-
-
-# N2O
-# 0.0001 g N2O per scf --> 0.0000001 kg per scf ---> 0.0001 kg per mcf
-# 1 kg = 2.20462262 lbs --> 0.0002 lbs N2O per mcf natural gas in 2021
-epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF <- 0.0002
-
-# Global Warming Potential (GWP) is the multiplier (provided by the EPA) that converts emissions factors to CO2 equivalent
-GWP_N2O <- 298
-
-
-# Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county, process and merge data -- this will be a separate data colelction process spanning excel reports submitted to state
+# Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county, 
+# process and merge data -- this will be a separate data collection process spanning excel reports submitted to state
 processed_mn_gasUtil_activityData <- combined_MNgasUtil_activityData %>%
   mutate(
     CO2_emissions = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF,

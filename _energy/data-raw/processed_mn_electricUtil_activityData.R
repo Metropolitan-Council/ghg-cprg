@@ -1,8 +1,15 @@
-source("R/_load_pkgs.R")
-library(readxl)
+# Process all Minnesota electric utility activity data
 
-# Directory containing Excel files with utility annual reports -- all reports were manually downloaded from https://mn.gov/commerce/energy/industry-government/utilities/annual-reporting.jsp based on the contents of MNutilities_in_scope$utility_name
-# NOTE: Great River Energy, which supplies energy to many MN electric co-ops, reports their sales to the state and their reporting stands in for.... FILL IN
+source("R/_load_pkgs.R")
+source("_energy/data-raw/_energy_emissions_factors.R")
+
+# Directory containing Excel files with utility annual reports -- 
+# all reports were manually downloaded from 
+# https://mn.gov/commerce/energy/industry-government/utilities/annual-reporting.jsp
+# based on the contents of MNutilities_in_scope$utility_name
+
+# NOTE: Great River Energy, which supplies energy to many MN electric co-ops,
+#  reports their sales to the state and their reporting stands in for.... FILL IN
 dir_mn_electricity <- here("_energy", "data-raw", "mn_utility_reporting")
 
 # Get list of Excel files in the directory
@@ -68,15 +75,6 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
     mWh_delivered = scottNewPragueMuni_mWh,
     utility = "NewPragueUtilitiesCommission"
   )
-
-
-
-# Load eGRID Total Output Emission Rates (lb/MWh) for the MROW subregion (which covers our study area) from https://www.epa.gov/egrid/summary-data
-# figures in lbs./mWh -- CO2: 995.8;	CH4: 0.107; N2O: 0.015 --> 1003.1 CO2e total
-eGRID_MROW_emissionsFactor_CO2 <- 995.8
-eGRID_MROW_emissionsFactor_CH4 <- 0.107
-eGRID_MROW_emissionsFactor_N2O <- 0.015
-
 
 # Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county, process and merge data -- this will be a separate data colelction process spanning excel reports submitted to state
 processed_mn_elecUtil_activityData <- combined_MNelectUtil_activityData %>%

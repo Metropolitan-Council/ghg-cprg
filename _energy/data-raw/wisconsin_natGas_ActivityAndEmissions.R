@@ -1,3 +1,5 @@
+source("R/_load_pkgs.R")
+source("_energy/data-raw/_energy_emissions_factors.R")
 # WI data is reported in therms delivered. to match MN and the EPA conversion factor, which are reported in mcf, we use the conversion factor supplied by the EIA -- One thousand cubic feet (Mcf) of natural gas equals 1.038 MMBtu, or 10.38 therms. https://www.eia.gov/tools/faqs/faq.php?id=45&t=8
 
 # maybe make an appendix with ALL report links of relevant utilities across NG and elec
@@ -13,8 +15,8 @@
 # Wisconsin Gas
 # https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_6650.pdf
 
+# TODO double check where this factor came from
 therms_to_MCF <- 1 / 10.38
-
 
 WIutilities_in_scope <- read_rds(here("_energy", "data", "WI_natGas_inScope_utilityCountyPairs.RDS"))
 
@@ -63,33 +65,6 @@ combined_WIgasUtil_activityData <- WIutilities_in_scope %>%
     # allocate activity data to in-scope counties based on proportion of customers
     mcf_delivered = util_total_mcf * propCustomerAccountsInCounty
   )
-
-# Natural Gas emissions factor from https://www.epa.gov/system/files/documents/2023-04/emission-factors_sept2021.pdf
-
-# CO2
-# Emissions factor value provided by EPA (0.05444) is in terms of kg CO2 per scf
-# 1,000 scf = 1 mcf --> utilities report gas delivered to customers in Minnesota in mcf --> 54.44 kg CO2 per mcf
-# 1 kg = 2.20462262 lbs -->
-# EPA-provided emissions factor = 120.019655 lbs CO2 per mcf natural gas in 2021
-epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF <- 120.019655
-
-
-# CH4
-# 0.00103 g CH4 per scf --> 0.00000103 kg per scf ---> 0.00103 kg per mcf
-# 1 kg = 2.20462262 lbs --> 0.00227 lbs CH4 per mcf natural gas in 2021
-epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF <- 0.00227
-
-# Global Warming Potential (GWP) is the multiplier (provided by the EPA) that converts emissions factors to CO2 equivalent
-GWP_CH4 <- 25
-
-
-# N2O
-# 0.0001 g N2O per scf --> 0.0000001 kg per scf ---> 0.0001 kg per mcf
-# 1 kg = 2.20462262 lbs --> 0.0002 lbs N2O per mcf natural gas in 2021
-epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF <- 0.0002
-
-# Global Warming Potential (GWP) is the multiplier (provided by the EPA) that converts emissions factors to CO2 equivalent
-GWP_N2O <- 298
 
 
 # Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county, process and merge data -- this will be a separate data colelction process spanning excel reports submitted to state

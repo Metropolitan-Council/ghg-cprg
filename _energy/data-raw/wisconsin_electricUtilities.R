@@ -1,5 +1,4 @@
 source("R/_load_pkgs.R")
-library(readr)
 
 wi_counties <- read_rds("_meta/data/cprg_county.RDS") %>%
   select(STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD, geometry) %>%
@@ -96,7 +95,8 @@ wi_utility_files <- c(
 # run function to create lists of in-scope utilities (utilities that operate within our study area)
 results <- identify_WIutilities_in_scope(wi_counties, wi_utility_files)
 
-# write outputs of function to separate environmental variables for inspection, trim to essential columns, and rename for consistency
+# write outputs of function to separate environmental variables for inspection,
+#  trim to essential columns, and rename for consistency
 wi_muni_utilitiesInScope <- results$Muni_repaired %>%
   select(
     LABEL, Util_Type, PSC_ID, ADDRESS_1, ADDRESS_2,
@@ -174,6 +174,7 @@ write_rds(WIutilities_in_scope, here(
   "data",
   "WI_electricity_inScope_utilityCountyPairs.RDS"
 ))
+
 write_rds(distinct_util_type_WI, here(
   "_energy",
   "data",

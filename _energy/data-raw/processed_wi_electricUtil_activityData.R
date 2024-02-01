@@ -1,6 +1,5 @@
 source("R/_load_pkgs.R")
-library(readxl)
-
+source("_energy/data-raw/_energy_emissions_factors.R")
 
 # Note about co-op utilities -- electric eco-ops don't report to the state of Wisconsin, and two of four are missing data in/for EIA-861 (The Annual Electric Power Industry Report). For these, we estimate activity based on customer/account numbers reported by the utilities.
 
@@ -143,13 +142,6 @@ combined_wi_elecUtil_activityData <- combined_wi_elecUtil_activityData %>%
       modeled_utilityCounty_mWh
     )
   )
-
-
-# Load eGRID Total Output Emission Rates (lb/MWh) for the MROW subregion (which covers our study area) from https://www.epa.gov/egrid/summary-data
-# figures in lbs./mWh -- CO2: 995.8;	CH4: 0.107; N2O: 0.015 --> 1003.1 CO2e total
-eGRID_MROW_emissionsFactor_CO2 <- 995.8
-eGRID_MROW_emissionsFactor_CH4 <- 0.107
-eGRID_MROW_emissionsFactor_N2O <- 0.015
 
 
 # Assuming each row in wi_electricity_data represents a utility's electricity delivery in a county, process and merge data

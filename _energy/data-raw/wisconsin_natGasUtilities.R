@@ -1,5 +1,5 @@
+# read and save Wisconsin natural gas utility areas
 source("R/_load_pkgs.R")
-library(readr)
 
 wi_counties <- read_rds("_meta/data/cprg_county.RDS") %>%
   select(STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD, geometry) %>%
