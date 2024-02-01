@@ -39,7 +39,7 @@ process_file <- function(file_path) {
 # Process all files and combine the data
 combined_MNgasUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
 
-# Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county, 
+# Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county,
 # process and merge data -- this will be a separate data collection process spanning excel reports submitted to state
 processed_mn_gasUtil_activityData <- combined_MNgasUtil_activityData %>%
   mutate(
@@ -66,9 +66,9 @@ MNcounty_level_gas_emissions <- processed_mn_gasUtil_activityData %>%
       na.rm = TRUE
     ),
     total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
-    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>% 
-      units::as_units("pound") %>% 
-      units::set_units("metric_ton") %>% 
+    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
       as.numeric()
   ) %>%
   mutate(

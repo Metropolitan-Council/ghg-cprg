@@ -3,8 +3,8 @@
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
-# Directory containing Excel files with utility annual reports -- 
-# all reports were manually downloaded from 
+# Directory containing Excel files with utility annual reports --
+# all reports were manually downloaded from
 # https://mn.gov/commerce/energy/industry-government/utilities/annual-reporting.jsp
 # based on the contents of MNutilities_in_scope$utility_name
 
@@ -100,9 +100,9 @@ MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
       na.rm = TRUE
     ),
     total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
-    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>% 
-      units::as_units("pound") %>% 
-      units::set_units("metric_ton") %>% 
+    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
       as.numeric()
   ) %>%
   mutate(

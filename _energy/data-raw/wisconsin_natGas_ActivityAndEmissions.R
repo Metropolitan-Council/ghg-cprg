@@ -93,9 +93,9 @@ WIcounty_level_gas_emissions <- processed_wi_gasUtil_activityData %>%
       na.rm = TRUE
     ),
     total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
-    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>% 
-      units::as_units("pound") %>% 
-      units::set_units("metric_ton") %>% 
+    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
       as.numeric()
   ) %>%
   mutate(
