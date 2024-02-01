@@ -2,6 +2,8 @@ if (exists("load_packages") == FALSE) {
   # Data Manipulation ------
   suppressMessages(library(dplyr, quietly = TRUE))
   suppressMessages(library(tidyr, quietly = TRUE))
+  suppressMessages(library(readr, quietly = TRUE))
+  suppressMessages(library(readxl, quietly = TRUE))
   suppressMessages(library(janitor, quietly = TRUE))
   suppressMessages(library(purrr, quietly = TRUE))
   suppressMessages(library(furrr, quietly = TRUE))
