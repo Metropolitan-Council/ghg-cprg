@@ -17,7 +17,6 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
-library(readr)
 hookaddcap()
 ```
 
@@ -162,5 +161,5 @@ plot_ly(
 -   2018 Met Council inventory
 
 ```{r echo=FALSE}
-saveCap("trans")
+saveCap("natural-gas-emissions")
 ```
