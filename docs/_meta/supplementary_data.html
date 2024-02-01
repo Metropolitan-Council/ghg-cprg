@@ -265,14 +265,20 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../_meta/additional_resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Additional resources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../figures.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">List of Figures</span></span></a>
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">List of Figures</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../tables.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">List of Tables</span></span></a>
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">List of Tables</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -293,7 +299,8 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#geographic-data" id="toc-geographic-data" class="nav-link active" data-scroll-target="#geographic-data"><span class="header-section-number">B.1</span> Geographic data</a></li>
+  <li><a href="#sec-gwp" id="toc-sec-gwp" class="nav-link active" data-scroll-target="#sec-gwp"><span class="header-section-number">B.1</span> Global Warming Potential (GWP)</a></li>
+  <li><a href="#geographic-data" id="toc-geographic-data" class="nav-link" data-scroll-target="#geographic-data"><span class="header-section-number">B.2</span> Geographic data</a></li>
   </ul>
 </nav>
     </div>
@@ -317,17 +324,105 @@ div.csl-indent {
 
 </header>
 
-<section id="geographic-data" class="level2" data-number="B.1">
-<h2 data-number="B.1" class="anchored" data-anchor-id="geographic-data"><span class="header-section-number">B.1</span> Geographic data</h2>
+<!-- ## Emissions factors {#sec-factors} -->
+<!-- ```{r tbl-emmissions-factors-all} -->
+<!-- #| tbl-cap: "Emissions factors grouped by sector" -->
+<!-- #| out-width: "95%" -->
+<!-- source(file.path(here::here(), "_energy/data-raw/_energy_emissions_factors.R")) -->
+<!-- epa_moves <- readRDS(file.path(here::here(), "_transportation/data/epa_moves.RDS")) -->
+<!-- elec_factors <- tribble( -->
+<!--   ~Units, ~Gas, ~Value, ~Source, -->
+<!--   "Pounds per megawatt hour", "CO₂", eGRID_MROW_emissionsFactor_CO2, "eGRID MROW", -->
+<!--   "Pounds per megawatt hour", "CH₄", eGRID_MROW_emissionsFactor_CH4, "eGRID MROW", -->
+<!--   "Pounds per megawatt hour", "N₂O", eGRID_MROW_emissionsFactor_N2O, "eGRID MROW" -->
+<!-- ) %>%  -->
+<!--   mutate(Sector = "Energy", Category = "Electricity") %>%  -->
+<!--   select(Sector, Category, everything()) -->
+<!-- moves_factors <- epa_moves %>%  -->
+<!--   pivot_longer(cols = 3:6, -->
+<!--                names_to = "Gas", -->
+<!--                values_to = "Value") %>%  -->
+<!--   mutate(Sector = "Transportation", -->
+<!--          Category = vehicle_weight, -->
+<!--          Units = "Grams per vehicle mile traveled", -->
+<!--          Source = paste0("EPA MOVES4 (", moves_year, ")"), -->
+<!--          Gas = case_when(Gas == "co2"~ "CO₂", -->
+<!--                          Gas == "ch4" ~ "CH₄", -->
+<!--                          Gas == "n2o" ~ "N₂O", -->
+<!--                          Gas == "cf4" ~ "CF₄", -->
+<!--                          Gas == "co2_co2_equivalent" ~ "CO₂e", -->
+<!--                          Gas == "HFC-152a" ~ Gas) -->
+<!-- ) %>%  -->
+<!--   select(names(elec_factors)) -->
+<!-- bind_rows(elec_factors, -->
+<!--           moves_factors) %>%  -->
+<!--   group_by(Sector, Units) %>%  -->
+<!--   gt() %>%  -->
+<!--   gt::opt_row_striping() %>% -->
+<!--   tab_style( -->
+<!--     style = cell_text(weight = "bold"), -->
+<!--     locations = cells_column_labels() -->
+<!--   ) -->
+<!-- ``` -->
+<section id="sec-gwp" class="level2" data-number="B.1">
+<h2 data-number="B.1" class="anchored" data-anchor-id="sec-gwp"><span class="header-section-number">B.1</span> Global Warming Potential (GWP)</h2>
+<p>The Global Warming Potential (GWP) was developed to allow comparisons of the global warming impacts of different gases. Specifically, it is a measure of how much energy the emissions of 1 ton of a gas will absorb over a given period of time, relative to the emissions of 1 ton of carbon dioxide (CO<sub>2</sub>). The larger the GWP, the more that a given gas warms the Earth compared to CO2 over that time period <span class="citation" data-cites="usepaUnderstandingGlobalWarming2023">(<a href="../references.html#ref-usepaUnderstandingGlobalWarming2023" role="doc-biblioref">USEPA 2023</a>)</span>.</p>
+<p>Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5), Box 3.2, Table 1 <span class="citation" data-cites="ipccClimateChange2014">(<a href="../references.html#ref-ipccClimateChange2014" role="doc-biblioref">IPCC and Core Writing Team 2014</a>)</span>. See <a href="R/global_warming_potential.R">R/global_warming_potential.R</a>.</p>
+<div class="cell" data-hash="supplementary_data_cache/html/tbl-gwp_6c4b497c5df3306e7c1ef8e5cb4d0a28">
+<div class="cell-output-display">
+<div id="tbl-gwp" class="anchored">
+
+<div id="njfimbihqz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+  
+  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;B.1:  <p>Global Warming Potential (GWP) values</p> </caption>
+  <thead style="border-style: none;">
+    
+    <tr class="gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left; font-weight: bold;" scope="col" id="Gas" bgcolor="#FFFFFF" valign="bottom" align="left">Gas</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums; font-weight: bold;" scope="col" id="100-year GWP value" bgcolor="#FFFFFF" valign="bottom" align="right">100-year GWP value</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left; font-weight: bold;" scope="col" id="Source" bgcolor="#FFFFFF" valign="bottom" align="left">Source</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3;">
+    <tr style="border-style: none;"><td headers="Gas" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">CO₂</td>
+<td headers="100-year GWP value" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">1</td>
+<td headers="Source" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">IPCC AR5 (2014)</td></tr>
+    <tr style="border-style: none;"><td headers="Gas" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">CH₄</td>
+<td headers="100-year GWP value" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">28</td>
+<td headers="Source" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">IPCC AR5 (2014)</td></tr>
+    <tr style="border-style: none;"><td headers="Gas" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">N₂O</td>
+<td headers="100-year GWP value" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">265</td>
+<td headers="Source" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">IPCC AR5 (2014)</td></tr>
+    <tr style="border-style: none;"><td headers="Gas" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">CF₄</td>
+<td headers="100-year GWP value" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">6630</td>
+<td headers="Source" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">IPCC AR5 (2014)</td></tr>
+    <tr style="border-style: none;"><td headers="Gas" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">HFC-152a<span class="gt_footnote_marks" style="font-size: 75%; vertical-align: 0.4em; position: initial; white-space: nowrap; font-style: italic; font-weight: normal;"><sup>1</sup></span></td>
+<td headers="100-year GWP value" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">138</td>
+<td headers="Source" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">IPCC AR5 (2014)</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes" style="border-style: none; color: #333333; background-color: #FFFFFF; border-bottom-style: none; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3;" bgcolor="#FFFFFF">
+    <tr style="border-style: none;">
+      <td class="gt_footnote" colspan="3" style="border-style: none; margin: 0px; font-size: 90%; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px;"><span class="gt_footnote_marks" style="font-size: 75%; vertical-align: 0.4em; position: initial; white-space: nowrap; font-style: italic; font-weight: normal;"><sup>1</sup></span> Hydrofluorocarbon-152a, Difluoroethane</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="geographic-data" class="level2" data-number="B.2">
+<h2 data-number="B.2" class="anchored" data-anchor-id="geographic-data"><span class="header-section-number">B.2</span> Geographic data</h2>
 <p>Geographic data were processed in <a href="../R/cprg_geography.R">cprg_geography.R</a>.</p>
-<section id="counties" class="level3" data-number="B.1.1">
-<h3 data-number="B.1.1" class="anchored" data-anchor-id="counties"><span class="header-section-number">B.1.1</span> Counties</h3>
+<section id="counties" class="level3" data-number="B.2.1">
+<h3 data-number="B.2.1" class="anchored" data-anchor-id="counties"><span class="header-section-number">B.2.1</span> Counties</h3>
 <p>County data was pulled using <code>{tigris}</code>, an R package that downloads TIGER/Line shapefiles from the US Census Bureau <span class="citation" data-cites="walkerTigrisLoadCensus2023">(<a href="../references.html#ref-walkerTigrisLoadCensus2023" role="doc-biblioref">Walker 2023</a>)</span>. 2021 geographies for Minnesota and Wisconsin were pulled, combined, and saved.</p>
 <div class="cell" data-hash="supplementary_data_cache/html/tbl-cprg-county_ec7811516ad20a856f4c758b0fb50ffb">
 <div class="cell-output-display">
 <div id="tbl-cprg-county" class="anchored">
 <table data-quarto-postprocess="true" class="table table-sm table-striped small">
-<caption>Table&nbsp;B.1: County geography metadata</caption>
+<caption>Table&nbsp;B.2: County geography metadata</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Column</th>
@@ -383,7 +478,7 @@ div.csl-indent {
 <div class="cell-output-display">
 <div id="tbl-cprg-population" class="anchored">
 <table data-quarto-postprocess="true" class="table table-sm table-striped small">
-<caption>Table&nbsp;B.2: County population metadata</caption>
+<caption>Table&nbsp;B.3: County population metadata</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Column</th>
@@ -440,8 +535,8 @@ div.csl-indent {
 </div>
 </div>
 </section>
-<section id="cities" class="level3" data-number="B.1.2">
-<h3 data-number="B.1.2" class="anchored" data-anchor-id="cities"><span class="header-section-number">B.1.2</span> Cities</h3>
+<section id="cities" class="level3" data-number="B.2.2">
+<h3 data-number="B.2.2" class="anchored" data-anchor-id="cities"><span class="header-section-number">B.2.2</span> Cities</h3>
 <p>Minnesota cities, townships, and unorganized territories were imported from <a href="https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg">Minnesota Geospatial Commons</a> <span class="citation" data-cites="mndotCityTownshipUnorganized2023">(<a href="../references.html#ref-mndotCityTownshipUnorganized2023" role="doc-biblioref">MnDOT 2023</a>)</span>.</p>
 <p>Wisconsin cities, towns, and villages were imported from Wisconsin’s Legislative Technology Services Bureau <span class="citation" data-cites="wisconsinlegislatureWisconsinCitiesTowns2023">(<a href="../references.html#ref-wisconsinlegislatureWisconsinCitiesTowns2023" role="doc-biblioref">Wisconsin Legislature 2023</a>)</span>.</p>
 <p>Data from both states was then combined and filtered to include only the workplan area counties.</p>
@@ -449,7 +544,7 @@ div.csl-indent {
 <div class="cell-output-display">
 <div id="tbl-cprg-ctu" class="anchored">
 <table data-quarto-postprocess="true" class="table table-sm table-striped small">
-<caption>Table&nbsp;B.3: City geography metadata</caption>
+<caption>Table&nbsp;B.4: City geography metadata</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Column</th>
@@ -508,11 +603,17 @@ div.csl-indent {
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-ipccClimateChange2014" class="csl-entry" role="listitem">
+IPCC, and Core Writing Team. 2014. <span>“Climate <span>Change</span> 2014: <span>Synthesis Report</span>. <span>Contribution</span> of <span>Working Groups I</span>, <span>II</span> and <span>III</span> to the <span>Fifth Assessment Report</span> of the <span>Intergovernmental Panel</span> on <span>Climate Change</span>.”</span> Edited by R.K. Pachauri and L.A. Meyer. <span>Geneva, Switzerland</span>: <span>Intergovernmental Panel on Climate Change</span>. <a href="https://www.ipcc.ch/assessment-report/ar5/">https://www.ipcc.ch/assessment-report/ar5/</a>.
+</div>
 <div id="ref-mndotCityTownshipUnorganized2023" class="csl-entry" role="listitem">
 MnDOT. 2023. <span>“City, <span>Township</span>, and <span>Unorganized Territory</span> in <span>Minnesota</span> - <span>Minnesota Geospatial Commons</span>.”</span> <span>Minnesota Geospatial Commons</span>. <a href="https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg">https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg</a>.
 </div>
 <div id="ref-Census2022ACSDP1Y2022.DP05" class="csl-entry" role="listitem">
 U.S. Census Bureau. 2021. <span>“<span>ACS</span> Demographic and Housing Estimates.”</span> U.S. Census Bureau. <a href="https://data.census.gov/table/ACSDP5Y2021.DP05?g=050XX00US27053_040XX00US27">https://data.census.gov/table/ACSDP5Y2021.DP05?g=050XX00US27053_040XX00US27</a>.
+</div>
+<div id="ref-usepaUnderstandingGlobalWarming2023" class="csl-entry" role="listitem">
+USEPA. 2023. <span>“Understanding <span>Global Warming Potentials</span>.”</span> Government. <a href="https://www.epa.gov/ghgemissions/understanding-global-warming-potentials">https://www.epa.gov/ghgemissions/understanding-global-warming-potentials</a>.
 </div>
 <div id="ref-walkerTigrisLoadCensus2023" class="csl-entry" role="listitem">
 Walker, Kyle. 2023. <em>Tigris: <span>Load</span> Census <span>TIGER</span>/<span>Line</span> Shapefiles</em>. Manual. <a href="https://CRAN.R-project.org/package=tigris">https://CRAN.R-project.org/package=tigris</a>.
