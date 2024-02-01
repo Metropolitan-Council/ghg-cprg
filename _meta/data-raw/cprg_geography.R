@@ -71,7 +71,7 @@ mn_ctu <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
   arrange(CTU_NAME)
 
 # downloaded from https://gis-ltsb.hub.arcgis.com/pages/download-data
-wi_ctu <- sf::read_sf("R/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_July_2023.shp") %>%
+wi_ctu <- sf::read_sf("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_July_2023.shp") %>%
   filter(CNTY_NAME %in% c("Pierce", "St. Croix")) %>%
   select(CNTY_NAME, CNTY_FIPS, GEOID, MCD_NAME, MCD_FIPS, CTV) %>%
   mutate(
@@ -83,7 +83,7 @@ wi_ctu <- sf::read_sf("R/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_July_20
     COUNTY_NAM = CNTY_NAME,
     CTU_NAME = MCD_NAME,
     STATE = "Wisconsin",
-    STATEFP = "53"
+    STATEFP = "55"
   ) %>%
   select(
     CTU_NAME,
@@ -108,9 +108,45 @@ cprg_ctu_meta <- tribble(
   "GEOID", class(cprg_ctu$GEOID), "Wisconsin geographic identifier"
 )
 
-#
+# create coherent geogs list
+geogs_list_ctu <- cprg_ctu %>%
+  mutate(
+    GEOG_LEVEL_ID = "CTU",
+    GEOG_UNIT_ID = if_else(is.na(GNIS_FEATU), GEOID, as.character(GNIS_FEATU)), # pad with zeros on left til 8 chars
+    GEOG_UNIT_NAME = CTU_NAME, GEOG_UNIT_DESC = CTU_NAME
+  ) %>%
+  sf::st_drop_geometry()
+
+geogs_list_co <- cprg_county %>%
+  mutate(
+    GEOG_LEVEL_ID = "CO",
+    GEOG_UNIT_ID = as.character(COUNTYFP), GEOG_UNIT_NAME = NAME,
+    GEOG_UNIT_DESC = NAMELSAD
+  ) %>%
+  sf::st_drop_geometry()
+
+ctu_co_crosswalk <- left_join(geogs_list_ctu, geogs_list_co,
+  by = c("COUNTY_NAM" = "NAME", "STATEFP" = "STATEFP"),
+  suffix = c(".CHILD", ".PARENT")
+) %>%
+  select(
+    GEOG_LEVEL_ID.PARENT, GEOG_UNIT_ID.PARENT,
+    GEOG_LEVEL_ID.CHILD, GEOG_UNIT_ID.CHILD,
+    STATEFP
+  )
+
+geogs_list <- bind_rows(
+  select(geogs_list_ctu, GEOG_UNIT_ID, GEOG_LEVEL_ID, GEOG_UNIT_NAME, GEOG_UNIT_DESC, STATEFP),
+  select(geogs_list_co, GEOG_UNIT_ID, GEOG_LEVEL_ID, GEOG_UNIT_NAME, GEOG_UNIT_DESC, STATEFP)
+)
+# there are different CRS for geometries between CTU/CO; removed geometries above, geogs_list is a simple table
+
+# compile RDS
 saveRDS(cprg_county, "_meta/data/cprg_county.RDS")
 saveRDS(cprg_county_meta, "_meta/data/cprg_county_meta.RDS")
 
 saveRDS(cprg_ctu, "_meta/data/cprg_ctu.RDS")
 saveRDS(cprg_ctu_meta, "_meta/data/cprg_ctu_meta.RDS")
+
+saveRDS(ctu_co_crosswalk, "_meta/data/geog_crosswalk.RDS")
+saveRDS(geogs_list, "_meta/data/geogs_list.RDS")
