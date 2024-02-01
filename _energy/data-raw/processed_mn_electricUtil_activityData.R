@@ -76,7 +76,8 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
     utility = "NewPragueUtilitiesCommission"
   )
 
-# Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county, process and merge data -- this will be a separate data colelction process spanning excel reports submitted to state
+# Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county,
+# process and merge data -- this will be a separate data collection process spanning excel reports submitted to state
 processed_mn_elecUtil_activityData <- combined_MNelectUtil_activityData %>%
   mutate(
     CO2_emissions = mWh_delivered * eGRID_MROW_emissionsFactor_CO2,
@@ -95,8 +96,8 @@ MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
     total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000,
     total_CO2e_emissions_lbs = sum(
       CO2_emissions +
-        CH4_emissions +
-        N2O_emissions,
+        (CH4_emissions * gwp$ch4) +
+        (N2O_emissions * gwp$n2o),
       na.rm = TRUE
     ),
     total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,

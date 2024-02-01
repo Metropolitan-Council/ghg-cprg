@@ -163,8 +163,8 @@ WIcounty_level_electricity_emissions <- processed_wi_elecUtil_activityData %>%
     total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000,
     total_CO2e_emissions_lbs = sum(
       CO2_emissions +
-        CH4_emissions +
-        N2O_emissions,
+        (CH4_emissions * gwp$ch4) +
+        (N2O_emissions * gwp$n2o),
       na.rm = TRUE
     ),
     total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
