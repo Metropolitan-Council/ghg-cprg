@@ -32,6 +32,26 @@ transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.R
 ## solid waste -----
 # energy -----
 ## electricity ----
+electric_raw <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS")) %>% 
+  bind_rows(read_rds(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
+  rename(county = county_name))
+
+
+electric_emissions <- electric_raw %>% 
+  mutate(
+    sector = "Energy",
+    geog_level = "county",
+    geog_name = county,
+    category = "Residential",
+    source = "Electricity",
+    data_source = "Individual electric utilities",
+    factor_source = "eGRID MROW"
+  ) %>% 
+  select(names(transportation_emissions))
+  
+
+rm(electric_raw)
+
 ## natural gas ----
 ## propane and kerosene ----
 
@@ -51,7 +71,8 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
 
 emissions_all <- bind_rows(
   transportation_emissions,
-  propane_kerosene_emissions
+  propane_kerosene_emissions,
+  electric_emissions
 ) %>%
   left_join(
     cprg_county %>%
@@ -67,6 +88,7 @@ emissions_all <- bind_rows(
       "Heavy-duty vehicles",
       # waste levels
       # energy levels
+      "Electricity",
       "Propane",
       "Kerosene"
     ),
