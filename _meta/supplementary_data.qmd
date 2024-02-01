@@ -15,8 +15,89 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/global_warming_potential.R"))
+
 hookaddcap()
 ```
+
+<!-- ## Emissions factors {#sec-factors} -->
+
+<!-- ```{r tbl-emmissions-factors-all} -->
+<!-- #| tbl-cap: "Emissions factors grouped by sector" -->
+<!-- #| out-width: "95%" -->
+
+<!-- source(file.path(here::here(), "_energy/data-raw/_energy_emissions_factors.R")) -->
+<!-- epa_moves <- readRDS(file.path(here::here(), "_transportation/data/epa_moves.RDS")) -->
+
+<!-- elec_factors <- tribble( -->
+<!--   ~Units, ~Gas, ~Value, ~Source, -->
+<!--   "Pounds per megawatt hour", "CO₂", eGRID_MROW_emissionsFactor_CO2, "eGRID MROW", -->
+<!--   "Pounds per megawatt hour", "CH₄", eGRID_MROW_emissionsFactor_CH4, "eGRID MROW", -->
+<!--   "Pounds per megawatt hour", "N₂O", eGRID_MROW_emissionsFactor_N2O, "eGRID MROW" -->
+<!-- ) %>%  -->
+<!--   mutate(Sector = "Energy", Category = "Electricity") %>%  -->
+<!--   select(Sector, Category, everything()) -->
+
+<!-- moves_factors <- epa_moves %>%  -->
+<!--   pivot_longer(cols = 3:6, -->
+<!--                names_to = "Gas", -->
+<!--                values_to = "Value") %>%  -->
+<!--   mutate(Sector = "Transportation", -->
+<!--          Category = vehicle_weight, -->
+<!--          Units = "Grams per vehicle mile traveled", -->
+<!--          Source = paste0("EPA MOVES4 (", moves_year, ")"), -->
+<!--          Gas = case_when(Gas == "co2"~ "CO₂", -->
+<!--                          Gas == "ch4" ~ "CH₄", -->
+<!--                          Gas == "n2o" ~ "N₂O", -->
+<!--                          Gas == "cf4" ~ "CF₄", -->
+<!--                          Gas == "co2_co2_equivalent" ~ "CO₂e", -->
+<!--                          Gas == "HFC-152a" ~ Gas) -->
+<!-- ) %>%  -->
+<!--   select(names(elec_factors)) -->
+
+
+<!-- bind_rows(elec_factors, -->
+<!--           moves_factors) %>%  -->
+<!--   group_by(Sector, Units) %>%  -->
+<!--   gt() %>%  -->
+<!--   gt::opt_row_striping() %>% -->
+<!--   tab_style( -->
+<!--     style = cell_text(weight = "bold"), -->
+<!--     locations = cells_column_labels() -->
+<!--   ) -->
+<!-- ``` -->
+
+
+## Global Warming Potential (GWP) {#sec-gwp}
+
+The Global Warming Potential (GWP) was developed to allow comparisons of the global warming impacts of different gases. Specifically, it is a measure of how much energy the emissions of 1 ton of a gas will absorb over a given period of time, relative to the emissions of 1 ton of carbon dioxide (CO~2~). The larger the GWP, the more that a given gas warms the Earth compared to CO2 over that time period [@usepaUnderstandingGlobalWarming2023]. 
+
+Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5), Box 3.2, Table 1 [@ipccClimateChange2014]. See [R/global_warming_potential.R](R/global_warming_potential.R). 
+
+```{r tbl-gwp}
+#| tbl-cap: "Global Warming Potential (GWP) values" 
+#| out-width: "95%"
+
+tibble("Gas" = names(gwp),
+       "100-year GWP value"= unlist(gwp),
+       "Source" = "IPCC AR5 (2014)") %>% 
+  mutate(Gas = case_when(Gas == "co2"~ "CO₂",
+                         Gas == "ch4" ~ "CH₄",
+                         Gas == "n2o" ~ "N₂O",
+                         Gas == "cf4" ~ "CF₄",
+                         Gas == "HFC-152a" ~ Gas)) %>% 
+  gt() %>% 
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::tab_footnote("Hydrofluorocarbon-152a, Difluoroethane",
+                   cells_body(1, 5)) %>% 
+  gt::as_raw_html()
+```
+
+
 
 ## Geographic data
 
