@@ -2,6 +2,7 @@
 # 100-year, accurate to AR5
 # * Following  revised reporting requirements under the UNFCCC, this tool presents CO2 equivalent values based on the IPCC Fifth Assessment Report (AR5) GWP values.
 # see Box 3.2, Table 1
+# Zotero: ipccClimateChange2014
 gwp <-
   list(
     "co2" = 1,
