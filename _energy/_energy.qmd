@@ -24,10 +24,6 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 
 ## Introduction
 
-## Methods
-
-## Results
-
 ```{r fig-energy-emissions-plot}
 #| fig-cap: "Energy county level emissions"
 #| out-width: "95%"
@@ -37,6 +33,13 @@ plot_county_emissions(
   .plotly_source = opts_current$get()$label
 )
 ```
+
+{{< include _energy_electricity_emissions.qmd >}}
+
+{{< include _energy_natural_gas_emissions.qmd >}}
+
+
+
 
 ```{r echo=FALSE}
 saveCap("energy")

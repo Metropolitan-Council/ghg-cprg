@@ -50,6 +50,7 @@ book:
     - _meta/data_request_template.qmd
     - _meta/supplementary_data.qmd
     - _meta/supplementary_tables.qmd
+    - _meta/additional_resources.qmd
     - figures.qmd
     - tables.qmd
     - references.qmd

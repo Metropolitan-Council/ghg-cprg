@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+_energy/data-raw/*/
 
 /.quarto/
 *_cache
