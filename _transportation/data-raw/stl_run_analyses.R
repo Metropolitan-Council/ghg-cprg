@@ -1,3 +1,4 @@
+# NOTE: this is a run-once script. It should not be regularly re-run
 # create StL analyses ------
 source("R/_load_pkgs.R")
 library(streetlightR)
