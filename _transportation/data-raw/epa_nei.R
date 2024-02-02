@@ -139,7 +139,8 @@ epa_nei <- nei_county_emissisons %>%
     total_ch4 = sum(ch4),
     total_n2o = sum(n2o),
     total_co2_w_equiv = sum(co2_co2_equivalent),
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
   )
 
 
