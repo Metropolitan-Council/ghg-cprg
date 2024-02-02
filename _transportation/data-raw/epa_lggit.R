@@ -86,7 +86,7 @@ lggit_avg_mpg <- tibble::tribble(
 
 # reformat our VMT data to match needed columns
 vmt_entry <- vmt_emissions_weight %>%
-  left_join(lggit_avg_mpg) %>%
+  left_join(lggit_avg_mpg, by = join_by(vehicle_weight)) %>%
   arrange(vehicle_weight_label) %>%
   mutate(
     VMT = vmt_total,
@@ -128,7 +128,7 @@ lggit_vmt_entries <- tbi_vehicle_fuel_age %>%
     "Vehicle Model (optional)", "Fuel Type",
     "VMT"
   )) %>%
-  left_join(lggit_avg_mpg) %>%
+  left_join(lggit_avg_mpg, by = join_by(Sector, `Vehicle Type`)) %>%
   rowwise() %>%
   mutate(
     # fix fuel type
@@ -147,6 +147,9 @@ lggit_vmt_entries <- tbi_vehicle_fuel_age %>%
   ) %>%
   select(names(lggit_structure))
 
+
+sum(vmt_emissions$vmt_total) == sum(lggit_vmt_entries$VMT)
+
 write.csv(lggit_vmt_entries,
   "_transportation/data-raw/epa/lggit_vmt_entries.CSV",
   row.names = FALSE
@@ -157,8 +160,6 @@ saveRDS(
   "_transportation/data-raw/epa/lggit_vmt_entries.RDS"
 )
 
-
-sum(vmt_emissions$vmt_total) == sum(lggit_vmt_entries$VMT)
 
 # results from LGGIT tool -----
 # CH4 and N2O reported in terms of GWP already,
@@ -190,7 +191,7 @@ lggit_kg_co2_per_mile <- lggit_avg_mpg %>%
   ) %>%
   # fix fuel type
   mutate(`Fuel Type` = ifelse(Fuel == "Gasoline & Other Fuels", "Gasoline", "Diesel")) %>%
-  left_join(lggit_co2) %>%
+  left_join(lggit_co2, by = join_by(`Fuel Type`)) %>%
   # calculate KG co2 per mile
   # kg co2 per gallon  /  mpg
   mutate(`Kilograms CO2 per mile` = `kg CO2 per gallon` / `Average miles per gallon`)
@@ -207,7 +208,7 @@ lggit_kg_emissions_per_mile <- lggit_kg_other_per_mile %>%
     "Light TruckDiesel2007_"
   )) %>%
   select(-fuel_type_weight) %>%
-  left_join(lggit_kg_co2_per_mile) %>%
+  left_join(lggit_kg_co2_per_mile, by = join_by(`Vehicle Type`, `Fuel Type`)) %>%
   rowwise() %>%
   mutate(
     # calculate kg co2e by multiplying with GWPs
@@ -230,7 +231,7 @@ lggit_kg_emissions_per_mile <- lggit_kg_other_per_mile %>%
 
 
 
-lggit_kg_emissions_per_mile
+# lggit_kg_emissions_per_mile
 
 # save
 saveRDS(lggit_kg_emissions_per_mile, "_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS")

@@ -1,8 +1,8 @@
 # find average vehicle age in the region from the most recent Travel Behavior Inventory
 source("R/_load_pkgs.R")
-cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+library(srvyr, warn.conflicts = FALSE)
 
-library(srvyr)
+cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 load(url(paste0(
   "https://github.com/Metropolitan-Council/metc.tbi.helper/raw/main/data/",
@@ -57,7 +57,7 @@ tbi_veh_age_orig_fuel_binned <- veh21 %>%
   arrange(-est_n)
 
 tbi_veh_age_orig_fuel_binned
-saveRDS(tbi_veh_age_fuel_binned, "_transportation/data-raw/tbi/tbi_veh_age_orig_fuel_binned.RDS")
+saveRDS(tbi_veh_age_orig_fuel_binned, "_transportation/data-raw/tbi/tbi_veh_age_orig_fuel_binned.RDS")
 
 
 # vehicle age binned by fuel type -----
