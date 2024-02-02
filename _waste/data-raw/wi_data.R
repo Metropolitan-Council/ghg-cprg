@@ -38,8 +38,3 @@ wi_emissions_meta <- tribble(
 
 saveRDS(wi_emissions, paste0("_waste/data/wi_emissions.RDS"))
 saveRDS(wi_emissions_meta, paste0("_waste/data/wi_emissions_meta.RDS"))
-
-# to do:
-# put both datasets in same format
-# (wi method = Landfill, include WTE in landfill)
-# combine to final emissions dataset

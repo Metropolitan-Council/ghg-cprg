@@ -67,8 +67,6 @@ emissions_factors_cleaned <- emissions_factors %>%
     Composted = CompostedD
   )
 
-# metadata
-
 saveRDS(emissions_factors_cleaned, paste0("_waste/data-raw/waste_emissions_factors.RDS"))
 
 ## Emissions ----
