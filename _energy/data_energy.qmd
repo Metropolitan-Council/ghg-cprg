@@ -20,8 +20,6 @@ hookaddcap()
 ```
 
 
-
-
 ```{r echo=FALSE}
 saveCap("energy-data")
 ```

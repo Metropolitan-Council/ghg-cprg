@@ -1,5 +1,7 @@
 # run once
 # Upload county and city geographies to StreetLight, using their API
+# NOTE: this is a run-once script. It should not be regularly re-run
+
 source("R/_load_pkgs.R")
 library(streetlightR)
 
@@ -11,7 +13,7 @@ streetlightR::streetlight_api_key(key = keyring::key_get("StreetLightAPI"))
 
 
 # counties -----
-cprg_counties <- readRDS("R/data/cprg_county.RDS")
+cprg_counties <- readRDS("_meta/data/cprg_county.RDS")
 
 # create zone name, passthrough = TRUE
 stl_counties <- cprg_counties %>%
@@ -31,7 +33,7 @@ upload_zone_set(
 
 
 # ctus -----
-cprg_ctu <- readRDS("R/data/cprg_ctu.RDS")
+cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 
 # create zone name, passthrough = TRUE
 stl_ctu <- cprg_ctu %>%

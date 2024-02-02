@@ -1,0 +1,70 @@
+## Wastewater
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+hookaddcap()
+```
+
+Wastewater emissions are estimated at the state level by the EPA. Additionally, the Minnesota Pollution Control Agency (MPCA) provides a statewide estimate which is notably lower than EPA estimates, largely due to lower estimated methane emissions. Each inventory only extends to 2020, currently. We used the EPA estimate for Wisconsin and MPCA estimate for Minnesota, and downscaled emission estimates to county levels by proportioning by 2020 population.
+
+- Data is the highest quality rank (federal and state agenc)
+- Data is modeled by the agencies based on multiple parameters, including population, aerobic vs anaerobic treatment use, and a variety of other factors.
+- If this is a modeled dataset, what is the sample? UNCLEAR
+- Output data is CO2 equivalencies in metric tonnes
+- EPA data is accessible [here](https://www.epa.gov/statelocalenergy/download-state-inventory-and-projection-tool)
+  MPCA data is accessible via the tool found [here](https://public.tableau.com/app/profile/mpca.data.services/viz/GHGemissioninventory/GHGsummarystory)
+- Data was downscaled to county levels for both EPA estimates and MPCA estimates (MN only). EPA and MPCA estimates were compared and MPCA estimates used due to a finer understanding of MN wastewater treatment practices.
+- Data is the 2020 statewide estimates downscaled to the county level by population percentage.
+- This is the latest data available for both datasets (accessed January 2024).
+- We are assuming MPCA data is more accurate than EPA data and that emissions are downscalable by population.
+- Which subject matter expert (SME) reviewed this data?
+- Describe testing used to verify data
+
+Be sure to add a citation of this dataset to the Zotero shared library.
+
+### Data characteristics
+
+- Were there any missing data? How did you handle missing data?
+- Plots, tables, and description of data distribution
+- Variance, Z-Score, quantiles
+- Facet views by categorical variables
+
+```{r fig-scatter}
+#| fig-cap: "A scatter plot"
+shinipsum::random_ggplotly(type = "point") %>%
+  councilR::plotly_layout(
+    main_title = "Scatter"
+  )
+```
+
+
+```{r fig-boxplot}
+#| fig-cap: "A boxplot"
+shinipsum::random_ggplotly(type = "boxplot") %>%
+  councilR::plotly_layout(
+    main_title = "Boxplot"
+  )
+```
+
+
+```{r fig-density}
+#| fig-cap: "A density plot"
+shinipsum::random_ggplotly(type = "density") %>%
+  councilR::plotly_layout(
+    main_title = "Density"
+  )
+```
+
+
+### Limitations
+
+### Comparison with similar datasets
+
+### Data dictionary
+
+Table with detailed description of columns and definitions for each data table.
+
+
+```{r echo=FALSE}
+saveCap("data-wastewater")
+```

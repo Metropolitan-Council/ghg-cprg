@@ -22,8 +22,14 @@ hookaddcap()
 ```{r tbl-acroynms}
 #| tbl-cap: "Acronyms"
 #| out-width: "95%"
-read.csv(file.path(here::here(), "/_meta/acronyms.csv")) %>%
-  knitr::kable()
+read.csv(file.path(here::here(), "_meta/data-raw/acronyms.csv")) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
 
 
@@ -40,7 +46,13 @@ tibble::tribble(
   "Fourth", "Conference proceedings and other trade literature: non-peer-reviewed",
   "Fifth", "Individual estimates (e.g., via personal communication with vendors)"
 ) %>%
-  knitr::kable(row.names = FALSE)
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
 ```{r echo=FALSE}
 saveCap("supp-tables")
