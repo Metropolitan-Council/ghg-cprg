@@ -85,6 +85,7 @@ format:
   html:
     theme: [cosmo, style/council.scss, style/font.scss] 
     toc: true
+    self-contained: false
     toc-depth: 2
     number-sections: true
     # number-depth: 4
