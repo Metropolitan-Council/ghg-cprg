@@ -1,4 +1,4 @@
-# Data sources and validation
+# Data sources
 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(

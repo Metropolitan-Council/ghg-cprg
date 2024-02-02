@@ -144,7 +144,7 @@
     "href": "_waste/_waste.html#methods",
     "title": "9  Waste and Wastewater",
     "section": "9.2 Methods",
-    "text": "9.2 Methods"
+    "text": "9.2 Methods\n\n9.2.1 Wastewater\n\n\n\nFigure 9.1: Waste and wastewater county level emissions\n\n\n\n\n\nWastewater data come from two sources - the Metropolitan Council Environmental Services Division and [xxx].\nData here are categorized into Scope 1, emissions directly from wastewater activities, and Scope 2, emissions based on electrical purchases.\n\n\n\nFigure 9.2: County aggregated wastewater emissions by scope"
   },
   {
     "objectID": "_waste/_waste.html#results",
@@ -152,6 +152,13 @@
     "title": "9  Waste and Wastewater",
     "section": "9.3 Results",
     "text": "9.3 Results"
+  },
+  {
+    "objectID": "_waste/data_waste.html#wastewater",
+    "href": "_waste/data_waste.html#wastewater",
+    "title": "10  Data sources",
+    "section": "10.1 Wastewater",
+    "text": "10.1 Wastewater\nWastewater emissions are estimated at the state level by the EPA. Additionally, the Minnesota Pollution Control Agency (MPCA) provides a statewide estimate which is notably lower than EPA estimates, largely due to lower estimated methane emissions. Each inventory only extends to 2020, currently. We used the EPA estimate for Wisconsin and MPCA estimate for Minnesota, and downscaled emission estimates to county levels by proportioning by 2020 population.\n\nData is the highest quality rank (federal and state agenc)\nData is modeled by the agencies based on multiple parameters, including population, aerobic vs anaerobic treatment use, and a variety of other factors.\nIf this is a modeled dataset, what is the sample? UNCLEAR\nOutput data is CO2 equivalencies in metric tonnes\nEPA data is accessible here MPCA data is accessible via the tool found here\nData was downscaled to county levels for both EPA estimates and MPCA estimates (MN only). EPA and MPCA estimates were compared and MPCA estimates used due to a finer understanding of MN wastewater treatment practices.\nData is the 2020 statewide estimates downscaled to the county level by population percentage.\nThis is the latest data available for both datasets (accessed January 2024).\nWe are assuming MPCA data is more accurate than EPA data and that emissions are downscalable by population.\nWhich subject matter expert (SME) reviewed this data?\nDescribe testing used to verify data\n\nBe sure to add a citation of this dataset to the Zotero shared library.\n\n10.1.1 Data characteristics\n\nWere there any missing data? How did you handle missing data?\nPlots, tables, and description of data distribution\nVariance, Z-Score, quantiles\nFacet views by categorical variables\n\n\n\n\nFigure 10.1: A scatter plot\n\n\n\n\n\n\n\n\nFigure 10.2: A boxplot\n\n\n\n\n\n\n\n\nFigure 10.3: A density plot\n\n\n\n\n\n\n\n10.1.2 Limitations\n\n\n10.1.3 Comparison with similar datasets\n\n\n10.1.4 Data dictionary\nTable with detailed description of columns and definitions for each data table."
   },
   {
     "objectID": "_waste/qc_waste.html#sec-waste-qc-procedure",
@@ -214,7 +221,7 @@
     "href": "figures.html",
     "title": "Appendix E — List of Figures",
     "section": "",
-    "text": "Figure\nShort Caption\n\n\n\n\nFigure 1.1\nEnergy county level emissions\n\n\nFigure 1.2\n2021 electricity emissions by county\n\n\nFigure 5.2\nCounty population and electricity emissions\n\n\nFigure 1.4\n2021 natural gas emissions\n\n\nFigure 1.5\nCounty population and emissions\n\n\nFigure 6.1\nAvg. trip distance and minimum distance between counties\n\n\nFigure 6.2\nAvg. distance for trips within county and county area\n\n\nFigure 6.3\nStreetLight calibration locations and values\n\n\nFigure 6.4\nVehicle weight distribution at calibration points\n\n\nFigure 6.5\nCounty vehicle miles traveled\n\n\nFigure 1\nCounty emissions by sector and category\n\n\nFigure 2\nTransportation county level emissions\n\n\nFigure 3\nEnergy county level emissions\n\n\nFigure 4\nWaste and wastewater county level emissions\n\n\nFigure 5.1\n2021 annual emissions by vehicle weight\n\n\nFigure 5.2\nCounty population and emissions\n\n\nFigure 5.3\nCounty vehicle miles traveled and StreetLight Volume"
+    "text": "Figure\nShort Caption\n\n\n\n\nFigure 10.1\nA scatter plot\n\n\nFigure 10.2\nA boxplot\n\n\nFigure 10.3\nA density plot\n\n\nFigure 1.1\nEnergy county level emissions\n\n\nFigure 1.2\n2021 electricity emissions by county\n\n\nFigure 5.2\nCounty population and electricity emissions\n\n\nFigure 1.4\n2021 natural gas emissions\n\n\nFigure 1.5\nCounty population and emissions\n\n\nFigure 6.1\nAvg. trip distance and minimum distance between counties\n\n\nFigure 6.2\nAvg. distance for trips within county and county area\n\n\nFigure 6.3\nStreetLight calibration locations and values\n\n\nFigure 6.4\nVehicle weight distribution at calibration points\n\n\nFigure 6.5\nCounty vehicle miles traveled\n\n\nFigure 1\nCounty emissions by sector and category\n\n\nFigure 2\nTransportation county level emissions\n\n\nFigure 3\nEnergy county level emissions\n\n\nFigure 4\nWaste and wastewater county level emissions\n\n\nFigure 5.1\n2021 annual emissions by vehicle weight\n\n\nFigure 5.2\nCounty population and emissions\n\n\nFigure 5.3\nCounty vehicle miles traveled and StreetLight Volume\n\n\nFigure 9.1\nCounty aggregated wastewater emissions by scope"
   },
   {
     "objectID": "tables.html",
