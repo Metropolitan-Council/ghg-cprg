@@ -17,24 +17,6 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
-
-# MN
-MN_inScopeUtilities <- read_rds(here(
-  "_energy", "data", "MN_natGas_inScope_utilityCountyPairs.RDS"
-))
-MN_allUtilities_countrywide <- read_rds(here(
-  "_energy", "data", "MN_fed_natGasUtils.RDS"
-))
-
-# WI
-WI_inScopeUtilities <- read_rds(here(
-  "_energy", "data", "WI_natGas_inScope_utilityCountyPairs.RDS"
-))
-WI_allUtilities <- read_rds(here(
-  "_energy", "data", "WI_natGasUtils.RDS"
-))
-
-
 hookaddcap()
 ```
 
