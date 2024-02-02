@@ -150,4 +150,4 @@ emissions_all_meta <- tibble::tribble(
 
 saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
-write.csv(emissions_all,  "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)
+write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)

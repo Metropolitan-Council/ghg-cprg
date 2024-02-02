@@ -119,7 +119,13 @@ County data was pulled using `{tigris}`, an R package that downloads TIGER/Line 
 cprg_county_meta <- readRDS(file.path(here::here(), "_meta/data/cprg_county_meta.RDS"))
 
 cprg_county_meta %>%
-  kable()
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
 
 Additionally, population estimates were obtained from the American Community Survey 5-Year estimates (2017-2021) using `{tidycensus}` [@Census2022ACSDP1Y2022.DP05].
@@ -130,7 +136,13 @@ Additionally, population estimates were obtained from the American Community Sur
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population_meta.RDS"))
 
 cprg_population %>%
-  kable()
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
 
 ### Cities
@@ -147,7 +159,13 @@ Data from both states was then combined and filtered to include only the workpla
 cprg_ctu_meta <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu_meta.RDS"))
 
 cprg_ctu_meta %>%
-  kable()
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
 
 

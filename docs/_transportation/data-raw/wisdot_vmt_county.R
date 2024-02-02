@@ -1,4 +1,5 @@
 source("R/_load_pkgs.R")
+# NOTE: this is a run-once script. It should not be regularly re-run
 
 # NOTE
 # you may need to install a Java binary to work with tabulizer

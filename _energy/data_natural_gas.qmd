@@ -116,7 +116,7 @@ MN_ng_inScope_servTerrs
 
 ### Wisconsin
 
-The Public Service Commission of Wisconsin publishes and maintains maps of service territories for natural gas utilities operating within the state. This data set relies upon, and is accurate to, "the extent that various sources \[utilities\] supplied accurate data." [@wisconsinpublicservicecommissionNaturalGasService2024] This dataset spans the whole state of Wisconsin (see fig, X), and both clipped to the two Wisconsin counties included in the study area of this inventory (see fig. Y)
+The Public Service Commission of Wisconsin publishes and maintains maps of service territories for natural gas utilities operating within the state. This data set relies upon, and is accurate to, "the extent that various sources \[utilities\] supplied accurate data." [@publicservicecommissionofwisconsinPSCInteractiveService2021] This dataset spans the whole state of Wisconsin (see fig, X), and both clipped to the two Wisconsin counties included in the study area of this inventory (see fig. Y)
 
 for electric... as well as the full service territories beyond the two-county area to facilitate estimation and modeling of energy demand (see fig. Z)
 

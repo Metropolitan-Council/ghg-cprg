@@ -1,9 +1,21 @@
 # Fetch Wisconsin station passenger/medium/heavy ratios and assign
 # to appropriate line segment
+# NOTE: this is a run-once script. It should not be regularly re-run
+
 source("R/_load_pkgs.R")
 source("R/_leaflet_helpers.R")
 library(osmdata)
 
+if (file.exists("_transportation/data-raw/wisdot/class.xlsx") == FALSE) {
+  cli::cli_abort(c(
+    "Required datasets unavailable",
+    "*" = "Download class data from the WisDOT website",
+    "*" = "{.url https://wisconsindot.gov/Documents/projects/data-plan/traf-fore/class.xlsx}"
+  ))
+}
+
+
+# https://wisconsindot.gov/Documents/projects/data-plan/traf-fore/class.xlsx
 wis_stations <- readxl::read_xlsx("_transportation/data-raw/wisdot/class.xlsx",
   sheet = 3
 )
@@ -51,6 +63,16 @@ wis_class_meta <- readxl::read_xlsx("_transportation/data-raw/wisdot/class.xlsx"
     "SINGLE_UNIT_TRUCKS", "COMBO_UNIT_TRUCKS",
     "TOTAL_TRUCKS"
   ))
+
+
+
+if (file.exists("_transportation/data-raw/wisdot/Traffic_Counts.geojson") == FALSE) {
+  cli::cli_abort(c(
+    "Required datasets unavailable",
+    "*" = "Download class data from the WisDOT website",
+    "*" = "{.url https://data-wisdot.opendata.arcgis.com/datasets/c99c497fae6c4d5d8f5453ea9237c679_0/explore}"
+  ))
+}
 
 
 # fetch station locations data

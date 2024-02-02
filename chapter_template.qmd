@@ -29,7 +29,14 @@ shinipsum::random_ggplotly(type = "histogram") %>%
 ```{r tbl-table}
 #| tbl-cap: "A table"
 shinipsum::random_table(nrow = 5, ncol = 3) %>%
-  knitr::kable(row.names = FALSE)
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::fmt_markdown() %>%
+  gt::as_raw_html()
 ```
 
 <!-- chapter content -->

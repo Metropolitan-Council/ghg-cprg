@@ -58,10 +58,14 @@ tibble::tribble(
   "Wastewater treatment", "", "",
   "Other", "", ""
 ) %>%
-  knitr::kable(
-    row.names = FALSE,
-    format = "markdown"
-  )
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::fmt_markdown() %>%
+  gt::as_raw_html()
 ```
 
 ```{r echo=FALSE}

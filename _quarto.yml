@@ -28,7 +28,10 @@ book:
     - part: "Energy"
       chapters:
        - _energy/_energy.qmd
-       - _energy/data_energy.qmd
+       - _energy/data_electricity.qmd
+       - _energy/data_natural_gas.qmd
+       - _energy/data_propane_kerosene.qmd
+       # - _energy/data_energy.qmd
        - _energy/pa_energy.qmd
        - _energy/qc_energy.qmd
 
