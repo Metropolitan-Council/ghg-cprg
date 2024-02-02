@@ -50,10 +50,11 @@ book:
        - _waste/qc_waste.qmd
        - _waste/qc_waste_other.qmd
   appendices:
-    - _meta/data_request_template.qmd
+    # - _meta/data_request_template.qmd
     - _meta/supplementary_data.qmd
     - _meta/supplementary_tables.qmd
     - _meta/additional_resources.qmd
+    - _energy/utility_service_area_maps.qmd
     - figures.qmd
     - tables.qmd
     - references.qmd
