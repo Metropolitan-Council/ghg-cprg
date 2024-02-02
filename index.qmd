@@ -44,7 +44,7 @@ plot_ly(
   ) %>%
   layout(barmode = "stack")
 ```
-
+## Emissions by sector
 
 ```{r fig-transportation-emissions}
 #| fig-cap: "Transportation county level emissions"
