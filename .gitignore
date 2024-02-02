@@ -59,3 +59,13 @@ _meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023).zip
 _energy/data-raw/~$ghg-emission-factors-hub-2021.xlsx
 
 _energy/data-raw/eia-recs-region-2020.csv
+
+_waste/data-raw/wastewater/epa/all-state-inventory-tools_0/
+
+_waste/data-raw/wastewater/epa/all-state-inventory-tools_0.zip
+
+_transportation/data-raw/epa/state_ghg/allstateghgdatapy2023readme_100323_0/
+
+_transportation/data-raw/epa/state_ghg/allstateghgdatapy2023readme_100323_0.zip
+
+_transportation/data-raw/epa/state_ghg/Methodology-Report-Full.pdf

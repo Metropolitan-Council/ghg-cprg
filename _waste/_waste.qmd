@@ -17,7 +17,6 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 hookaddcap()
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
-
 ```
 
 ## Introduction
@@ -32,16 +31,18 @@ Data here are categorized into Scope 1, emissions directly from wastewater activ
 
 
 ```{r fig-mn-county-ww-emissions}
-#| fig-cap: "County aggregated wastewater emissions by scope" 
-metc_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metc_wastewater.RDS")) %>% 
+#| fig-cap: "County aggregated wastewater emissions by scope"
+metc_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metc_wastewater.RDS")) %>%
   filter(year == 2021)
 
-metc_ww %>% 
-  group_by(COUNTY_NAM, year, scope) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
-            .groups = "keep") %>% 
+metc_ww %>%
+  group_by(COUNTY_NAM, year, scope) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  ) %>%
   plot_ly(
-    x = ~reorder(COUNTY_NAM, -emissions_metric_tons_co2e),
+    x = ~ reorder(COUNTY_NAM, -emissions_metric_tons_co2e),
     y = ~emissions_metric_tons_co2e,
     color = ~scope,
     type = "bar",
@@ -51,16 +52,18 @@ metc_ww %>%
       round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
     )
-    
-  ) %>% 
+  ) %>%
   plotly_layout(
     main_title = "County wastewater emissions by scope",
     x_title = "County",
     y_title = "Emissions"
-  ) %>% 
-  layout(barmode = "stack",
-         legend = list(
-         traceorder = "normal"))
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "normal"
+    )
+  )
 ```
 
 
