@@ -16,4 +16,6 @@ testthat::test_that("County data is as expected", {
       "source", "emissions_metric_tons_co2e", "data_source", "factor_source"
     )
   )
+
+  testthat::expect_false(any(is.na(cprg_county_emissions)))
 })

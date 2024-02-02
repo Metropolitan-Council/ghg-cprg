@@ -24,3 +24,8 @@ QC,Quality Control
 QCC,Quality Control Coordinator
 LGGIT,Community - GHG Inventory Tool (provided by the EPA)
 TL,Task Leader
+Btu,British thermal unit
+Ccf,volume of 100 cubic feet (cf)
+Mcf,"volume of 1,000 cubic feet (cf)"
+MMBtu,1 million British thermal units
+Therm,"One therm equals 100,000 Btu, or 0.10 MMBtu"

@@ -32,7 +32,44 @@ transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.R
 ## solid waste -----
 # energy -----
 ## electricity ----
+electric_raw <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS")) %>%
+  bind_rows(read_rds(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
+    rename(county = county_name))
+
+
+electric_emissions <- electric_raw %>%
+  mutate(
+    sector = "Energy",
+    geog_level = "county",
+    geog_name = county,
+    category = "Residential",
+    source = "Electricity",
+    data_source = "Individual electric utilities",
+    factor_source = "eGRID MROW"
+  ) %>%
+  select(names(transportation_emissions))
+
+
+rm(electric_raw)
+
 ## natural gas ----
+natgas_raw <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_GasEmissions.RDS")) %>%
+  bind_rows(read_rds(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>%
+    rename(county = county_name))
+
+
+natural_gas_emissions <- natgas_raw %>%
+  mutate(
+    sector = "Energy",
+    geog_level = "county",
+    geog_name = county,
+    category = "All",
+    source = "Natural Gas",
+    data_source = "Individual natural gas utilities",
+    factor_source = "EPA GHG Emission Factors Hub (2021)"
+  ) %>%
+  select(names(transportation_emissions))
+
 ## propane and kerosene ----
 
 propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
@@ -40,7 +77,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     sector = "Energy",
     geog_level = "county",
     geog_name = NAME,
-    category = "Residential",
+    category = "All",
     source = stringr::str_to_sentence(fuel_type),
     data_source = "EIA RECS (2020)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
@@ -51,7 +88,9 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
 
 emissions_all <- bind_rows(
   transportation_emissions,
-  propane_kerosene_emissions
+  propane_kerosene_emissions,
+  electric_emissions,
+  natural_gas_emissions
 ) %>%
   left_join(
     cprg_county %>%
@@ -67,6 +106,8 @@ emissions_all <- bind_rows(
       "Heavy-duty vehicles",
       # waste levels
       # energy levels
+      "Electricity",
+      "Natural Gas",
       "Propane",
       "Kerosene"
     ),
