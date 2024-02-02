@@ -19,7 +19,6 @@ hookaddcap()
 ```
 ## Introduction
 
-Transportation is consistently the highest source of emissions in the state (MPCA report). 
 
 ## Methods
 
@@ -192,7 +191,6 @@ plot_ly(
 
 - StreetLight GHG inventory method, if released in time.
 - 2018 Met Council inventory
-- LGGIT
 
 #### National Emissions Inventory 
 
