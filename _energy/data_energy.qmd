@@ -20,16 +20,6 @@ hookaddcap()
 ```
 
 
-{{< include data_electricity.qmd >}}
-
-{{< include data_natural_gas.qmd >}}
-
-{{< include data_propane_kerosene.qmd >}}
-
-
-
-
-
 ```{r echo=FALSE}
 saveCap("energy-data")
 ```
