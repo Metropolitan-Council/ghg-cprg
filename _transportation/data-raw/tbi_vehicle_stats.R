@@ -17,9 +17,10 @@ veh21 <- tbi21$vehicle %>%
   filter(hh_id %in% hh21$hh_id) %>%
   mutate(
     fuel_orig = recode_factor(fuel,
-                              "Missing: Skip logic" = "Other/Not Provided",
-                              "Missing: Non-response" = "Other/Not Provided",
-                              "Other" = "Other/Not Provided"),
+      "Missing: Skip logic" = "Other/Not Provided",
+      "Missing: Non-response" = "Other/Not Provided",
+      "Other" = "Other/Not Provided"
+    ),
     # these entries are from cars that were entered by hand by the survey respondent
     fuel = recode_factor(fuel,
       "Missing: Skip logic" = "Other/Not Provided",
@@ -136,7 +137,7 @@ tbi_vehicle_fuel_age <- veh21 %>%
 saveRDS(tbi_vehicle_fuel_age, "_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS")
 
 
-# remove these large datasets so they don't slow down 
+# remove these large datasets so they don't slow down
 # your session
 remove(veh21)
 remove(hh21)
