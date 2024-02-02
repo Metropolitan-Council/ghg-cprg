@@ -5,9 +5,10 @@ county_wastewater <- readRDS("_waste/data-raw/wastewater/county_wastewater.RDS")
 wastewater_out <- county_wastewater %>%
   mutate(
     co2e = if_else(substr(NAME, nchar(NAME) - 8, nchar(NAME)) == "Wisconsin", epa_co2e, state_co2e),
-    source = if_else(substr(NAME, nchar(NAME) - 8, nchar(NAME)) == "Wisconsin", 
-                     "Environmental Protection Agency",
-                     "Minnesota Pollution Control Agency")
+    source = if_else(substr(NAME, nchar(NAME) - 8, nchar(NAME)) == "Wisconsin",
+      "Environmental Protection Agency",
+      "Minnesota Pollution Control Agency"
+    )
   ) %>%
   mutate(COUNTY_NAME = gsub(" County, Wisconsin", "", gsub(" County, Minnesota", "", NAME))) %>%
   mutate(year = 2020) %>%
