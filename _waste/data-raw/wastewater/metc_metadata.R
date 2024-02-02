@@ -10,7 +10,7 @@ source("R/_load_pkgs.R")
 # write.csv(metro_emission_sources, "_waste/data-raw/wastewater/Table of Emission Sources_long.csv",
 #           row.names = FALSE)
 
-metc_sources <- read.csv("_waste/data-raw/wastewater/Table of Emission Sources_long.csv") %>% 
+metc_sources <- read.csv("_waste/data-raw/wastewater/Table of Emission Sources_long.csv") %>%
   clean_names()
 
 metc_sources
