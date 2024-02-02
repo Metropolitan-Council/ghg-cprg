@@ -51,7 +51,13 @@ tibble::tribble(
   "Passenger Truck (Diesel)", "", "",
   "Heavy-duty (Diesel)", "", ""
 ) %>%
-  knitr::kable()
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
 ```{r tbl-transport-qc-mpg}
 #| tbl-cap: "Transportation average miles per gallon, local and quality control comparison by vehicle and fuel types."
@@ -65,7 +71,13 @@ tibble::tribble(
   "Passenger Truck (Diesel)", "", 22.1,
   "Heavy-duty (Diesel)", "", 13.0
 ) %>%
-  knitr::kable()
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
 
 ```{r echo=FALSE}

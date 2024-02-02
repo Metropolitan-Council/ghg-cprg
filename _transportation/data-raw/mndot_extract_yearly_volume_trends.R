@@ -3,6 +3,7 @@
 ## traffic counters across the state. These are stored in HTML reports and
 ## downloaded from MnDOT's website. We will use {htmltab} to pull the
 ## relevant tables we need.
+## NOTE: this is a run-once script. It should not be regularly re-run
 
 source("R/_load_pkgs.R")
 library(htmltab)

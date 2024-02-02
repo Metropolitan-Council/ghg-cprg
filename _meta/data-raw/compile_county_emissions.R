@@ -42,7 +42,7 @@ electric_emissions <- electric_raw %>%
     sector = "Energy",
     geog_level = "county",
     geog_name = county,
-    category = "Residential",
+    category = "All",
     source = "Electricity",
     data_source = "Individual electric utilities",
     factor_source = "eGRID MROW"

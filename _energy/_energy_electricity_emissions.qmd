@@ -48,7 +48,7 @@ Using distinct_electricity_util_type\_*stateAbbreviation*.RDS as a source for wh
 
 ##### Minnesota
 
-All electric utilities authorized to do business in Minnesota are required to file an annual data report pursuant to MN Rules Chapter 7610. The Minnesota Public Utilities Commission makes these reports searchable through an [eFiling Site](https://www.edockets.state.mn.us/EFiling/edockets/searchDocuments.do?method=eDocketsResult&docketYear=22&docketNumber=19) [@minnesotadepartmentofcommerceAnnualReportingForms2022]. For each utility identified in distinct_electricity_util_type_MN.RDS, we downloaded the relevant 2021 annual reports from this site.
+All electric utilities authorized to do business in Minnesota are required to file an annual data report pursuant to MN Rules Chapter 7610. The Minnesota Public Utilities Commission makes these reports searchable through an [eFiling Site](https://www.edockets.state.mn.us/EFiling/edockets/searchDocuments.do?method=eDocketsResult&docketYear=22&docketNumber=19) [@minnesotadepartmentofcommerceCHAPTER7610ENERGY]. For each utility identified in distinct_electricity_util_type_MN.RDS, we downloaded the relevant 2021 annual reports from this site.
 
 We wrote code to extract the county-level data reported in report section "ITS DELIVERIES TO ULTIMATE CONSUMERS BY COUNTY FOR THE LAST CALENDAR YEAR" from all relevant utility annual reports compiled into a folder directory, and create a table with three columns county, utility, and mWh_delivered (megawatt-hours). By compiling this data for all utilities found to operate within our study area, aggregating utility activity data (and thus, quantifying estimated emissions) at the county level becomes possible.
 

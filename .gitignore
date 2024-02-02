@@ -56,6 +56,42 @@ _meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023)/
 
 _meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023).zip
 
+_transportation/data-raw/epa/nei2020/
+
+_transportation/data-raw/epa/community_ghg_inventorytool_11.28.23/
+
+_transportation/data-raw/epa/community_ghg_inventorytool_11.28.23.zip
+
+_transportation/data-raw/epa/community-ghg-data-collection-template_6.22.23_1.xlsx
+
+_transportation/data-raw/epa/metcouncil_community_ghg_inventorytool_11.28.23.xlsm
+
+_transportation/data-raw/epa/metcouncil2_community_ghg_inventorytool_11.28.23.xlsm
+
+_transportation/data-raw/epa/state_ghg/
+
+_transportation/data-raw/epa/~$community-ghg-data-collection-template_6.22.23_1.xlsx
+
+_transportation/data-raw/epa/~$metcouncil_community_ghg_inventorytool_11.28.23.xlsm
+
+_transportation/data-raw/epa/force_unlock_community-ghg-data-collection-template_6.22.23_1.xls
+
+_transportation/data-raw/epa/force_unlock_community-ghg-data-collection-template_6.22.23_1.xlsx
+
+_energy/data-raw/~$ghg-emission-factors-hub-2021.xlsx
+
+_energy/data-raw/eia-recs-2020.csv
+
+_energy/data-raw/eia-recs-region-2020.csv
+
+_energy/data-raw/ghg-emission-factors-hub-2021.xlsx
+
 _energy/data-raw/~$ghg-emission-factors-hub-2021.xlsx
 
 _energy/data-raw/eia-recs-region-2020.csv
+
+_energy/data-raw/eGRID2021_data.xlsx
+
+_energy/data-raw/eGRID2021_summary_tables.xlsx
+
+_energy/data-raw/egrid2022_summary_tables.xlsx
