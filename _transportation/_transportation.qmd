@@ -259,7 +259,7 @@ EPA’s Local Greenhouse Gas Inventory Tool (LGGIT) was developed to help commun
 
 We used the LGGIT Excel workbook tool with the following inputs in the "Mobile-Data" sheet. Several calculations were made
 
-- Passenger VMT was split between gasoline and diesel powered vehicles based on regional fleet composition in the TBI.
+- Passenger VMT was split between gasoline and diesel powered vehicles based on regional fleet composition in the Travel Behavior Inventory (TBI).
 - Passenger vehicle age was determined from the median vehicle model year in the TBI. 
 - Fuel consumption was calculated by dividing VMT by average vehicle miles per gallon (MPG), specific to vehicle type and fuel type. Fuel efficiency data were taken from the LGGIT tool. 
 
