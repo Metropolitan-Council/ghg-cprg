@@ -25,8 +25,8 @@ mn_2020 <- tidycensus::get_decennial("county",state = "MN",variables = "P1_001N"
   mutate(epa_co2e = pop_percent * mn_epa_est,
          state_co2e = pop_percent * mn_state_est)
 
-ww_epa <- rows_append(wi_2020 %>% dplyr::select(GEOID, NAME, epa_co2e,state_co2e),
-                      mn_2020 %>% dplyr::select(GEOID, NAME, epa_co2e,state_co2e))
+ww_epa <- rows_append(wi_2020 %>% dplyr::select(GEOID, NAME, epa_co2e),
+                      mn_2020 %>% dplyr::select(GEOID, NAME, epa_co2e))
 
 saveRDS(ww_epa, "_waste/data-raw/wastewater/epa_wastewater.RDS")
 
