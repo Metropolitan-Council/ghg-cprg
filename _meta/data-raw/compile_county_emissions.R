@@ -44,6 +44,21 @@ ww_emissions <- readRDS("_energy/data/wastewater.RDS") %>%
 
 
 ## solid waste -----
+solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>% 
+  ungroup() %>% 
+  mutate(
+    sector = "Waste",
+    geog_level = "county",
+    geog_name = county,
+    category = "Solid Waste",
+    source = source,
+    data_source,
+    factor_source = "EPA GHG Emission Factors Hub (2021)"
+  ) %>% 
+  select(names(transportation_emissions))
+
+  
+
 # energy -----
 ## electricity ----
 electric_raw <- readRDS(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS")) %>%
@@ -105,7 +120,8 @@ emissions_all <- bind_rows(
   propane_kerosene_emissions,
   electric_emissions,
   natural_gas_emissions,
-  ww_emissions
+  ww_emissions,
+  solid_waste
 ) %>%
   left_join(
     cprg_county %>%
@@ -120,6 +136,8 @@ emissions_all <- bind_rows(
       "Medium-duty vehicles",
       "Heavy-duty vehicles",
       # waste levels
+      "Landfill",
+      "Recycling",
       "Wastewater",
       # energy levels
       "Electricity",

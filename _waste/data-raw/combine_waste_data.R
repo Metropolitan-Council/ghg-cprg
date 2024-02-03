@@ -15,23 +15,26 @@ mn_cleaned <- mn_emissions %>%
   )%>%
   group_by(County, source) %>%
   mutate(
-    sectorized_emissions = sum(emissions_metric_tons_co2e)
+    sectorized_emissions = sum(emissions_metric_tons_co2e),
+    data_source = "MPCA SCORE"
   )%>%
   select(
     county = County,
     year = Year,
     emissions_metric_tons_co2e = sectorized_emissions,
-    source
+    source,
+    data_source
   )%>%
   distinct(.keep_all = TRUE)
 
 wi_cleaned <- wi_emissions %>%
   mutate(
     source = "Landfill",
-    year = 2021
+    year = 2021,
+    data_source = "Wisconsin DNR"
   )%>%
   select(
-    county = County,
+    county = NAME,
     emissions_metric_tons_co2e,
     source,
     year
@@ -50,5 +53,5 @@ emissions_total_meta <- tribble(
   "source", class(emissions_total$source), "Waste processing method (Landfill, Recycling, Organics)"
 )
 
-saveRDS(emissions_total, file.path(here::here(), "_waste/data/county_sw_emissions"))
-saveRDS(emissions_total_meta, file.path(here::here(), "_waste/data/county_sw_emissions_meta"))
+saveRDS(emissions_total, file.path(here::here(), "_waste/data/county_sw_emissions.RDS"))
+saveRDS(emissions_total_meta, file.path(here::here(), "_waste/data/county_sw_emissions_meta.RDS"))
