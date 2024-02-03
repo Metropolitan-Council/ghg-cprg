@@ -3,6 +3,7 @@ project:
   output-dir: docs
   pre-render: 
     - R/plot_county_emissions.R
+    - R/fix-captions.R
   post-render: 
     - R/fix_style.R
     

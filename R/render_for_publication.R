@@ -1,7 +1,8 @@
 source("R/_load_pkgs.R")
+source("R/remove_caches.R")
 source("_meta/data-raw/compile_county_emissions.R")
-# if necessary, remove all cache's and stray html files
-# source("R/remove_caches.R")
+saveRDS("00", file.path(here::here(), "caption_index.RDS"))
+
 styler::style_dir()
 
 testthat::test_dir("tests")

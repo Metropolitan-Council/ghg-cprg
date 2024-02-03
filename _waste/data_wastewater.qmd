@@ -7,7 +7,7 @@ hookaddcap()
 
 Wastewater emissions are estimated at the state level by the EPA. Additionally, the Minnesota Pollution Control Agency (MPCA) provides a statewide estimate which is notably lower than EPA estimates, largely due to lower estimated methane emissions. Each inventory only extends to 2020, currently. We used the EPA estimate for Wisconsin and MPCA estimate for Minnesota, and downscaled emission estimates to county levels by proportioning by 2020 population.
 
-- Data is the highest quality rank (federal and state agenc)
+- Data is the highest quality rank (federal and state agency)
 - Data is modeled by the agencies based on multiple parameters, including population, aerobic vs anaerobic treatment use, and a variety of other factors.
 - If this is a modeled dataset, what is the sample? UNCLEAR
 - Output data is CO2 equivalencies in metric tonnes
@@ -29,33 +29,6 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
 
-```{r fig-scatter}
-#| fig-cap: "A scatter plot"
-shinipsum::random_ggplotly(type = "point") %>%
-  councilR::plotly_layout(
-    main_title = "Scatter"
-  )
-```
-
-
-```{r fig-boxplot}
-#| fig-cap: "A boxplot"
-shinipsum::random_ggplotly(type = "boxplot") %>%
-  councilR::plotly_layout(
-    main_title = "Boxplot"
-  )
-```
-
-
-```{r fig-density}
-#| fig-cap: "A density plot"
-shinipsum::random_ggplotly(type = "density") %>%
-  councilR::plotly_layout(
-    main_title = "Density"
-  )
-```
-
-
 ### Limitations
 
 ### Comparison with similar datasets
@@ -64,7 +37,9 @@ shinipsum::random_ggplotly(type = "density") %>%
 
 Table with detailed description of columns and definitions for each data table.
 
-
 ```{r echo=FALSE}
-saveCap("data-wastewater")
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
