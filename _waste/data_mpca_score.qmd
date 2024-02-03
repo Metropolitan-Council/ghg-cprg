@@ -7,8 +7,8 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 mpca_score <- readRDS(file.path(here::here(), "_waste/data/mpca_score.RDS"))
 mpca_score_meta <- readRDS(file.path(here::here(), "_waste/data/mpca_score_meta.RDS"))
 # PULL IN DATA FROM TRANSPORTATION TO USE:
-cprg_county <- readRDS(file.path(here::here(), "R/data/cprg_county.RDS"))
-cprg_pop <- readRDS(file.path(here::here(), "R/data/cprg_population.RDS"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 hookaddcap()
 ```
 

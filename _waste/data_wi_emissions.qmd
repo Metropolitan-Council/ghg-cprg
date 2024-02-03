@@ -1,4 +1,4 @@
-## WI Waste Data
+## Wisconsin waste data
 
 ```{r}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -7,8 +7,8 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 wi_emissions <- readRDS(file.path(here::here(), "_waste/data/wi_emissions.RDS"))
 wi_emissions_meta <- readRDS(file.path(here::here(), "_waste/data/wi_emissions_meta.RDS"))
 # PULL IN DATA FROM TRANSPORTATION TO USE:
-cprg_county <- readRDS(file.path(here::here(), "R/data/cprg_county.RDS"))
-cprg_pop <- readRDS(file.path(here::here(), "R/data/cprg_population.RDS"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 hookaddcap()
 ```
 

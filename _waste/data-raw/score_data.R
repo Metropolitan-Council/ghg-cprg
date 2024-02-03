@@ -1,8 +1,5 @@
 # Import and clean MPCA waste allocation data
-
-
 source("R/_load_pkgs.R")
-library(readr)
 
 ## MPCA SCORE ----
 # Summary data collected from https://public.tableau.com/app/profile/mpca.data.services/viz/SCOREOverview/1991-2021SCORE
