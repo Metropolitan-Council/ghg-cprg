@@ -26,7 +26,7 @@ list.files(path = "_waste/", pattern = "*.html", full.names = TRUE) %>%
   fs::file_delete()
 
 list.files(path = "_meta/", pattern = "*.html", full.names = TRUE) %>%
-  fs::dir_delete()
+  fs::file_delete()
 
 # delete all captions
 list.files("assets/captions/", full.names = TRUE) %>%
