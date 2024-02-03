@@ -9,6 +9,8 @@ _energy/data-raw/*/
 .DS_Store
 
 _transportation/report_transportation_files/figure-html/
+_waste/data-raw/score_summary.csv
+_waste/data-raw/ghg-emission-factors-hub-2021.xlsx
 
 R/WI_Cities%2C_Towns_and_Villages_(July_2023)/
 
@@ -141,3 +143,33 @@ _energy/data-raw/eGRID2021_data.xlsx
 _energy/data-raw/eGRID2021_summary_tables.xlsx
 
 _energy/data-raw/egrid2022_summary_tables.xlsx
+
+_waste/pa_waste.html
+
+_waste/qc_waste_other.html
+
+_waste/qc_waste.html
+
+_waste/_waste.html
+
+tables.html
+
+figures.html
+
+references.html
+
+_meta/data_request_template.html
+
+_meta/supplementary_data.html
+
+_meta/supplementary_tables.html
+
+_transportation/_transportation.html
+
+_transportation/data_transportation.html
+
+_transportation/pa_transportation.html
+
+_transportation/qc_transportation.html
+
+caption_index.RDS

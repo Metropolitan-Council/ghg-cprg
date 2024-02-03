@@ -9,14 +9,17 @@ library(magrittr)
 printCap(book = TRUE) %>%
   dplyr::filter(stringr::str_detect(Figure, "fig")) %>%
   unique() %>%
-  # dplyr::mutate(Download = paste0("<a href='plotly_pdf/", stringr::str_sub(Figure, 2, -1), ".pdf' target='_blank'>PDF</a>")) %>%
-  # dplyr::mutate(Download = ifelse(stringr::str_detect(Figure, "map"), "", Download)) %>%
-  gt() %>%
-  gt::opt_row_striping() %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_labels()
-  ) %>%
-  gt::fmt_markdown() %>%
-  gt::as_raw_html()
+  kable(
+    row.names = FALSE,
+    format = "markdown"
+  )
+# dplyr::mutate(Download = paste0("<a href='plotly_pdf/", stringr::str_sub(Figure, 2, -1), ".pdf' target='_blank'>PDF</a>")) %>%
+# dplyr::mutate(Download = ifelse(stringr::str_detect(Figure, "map"), "", Download)) %>%
+# gt() %>%
+# gt::opt_row_striping() %>%
+# tab_style(
+#   style = cell_text(weight = "bold"),
+#   locations = cells_column_labels()
+# ) %>%
+# gt::fmt_markdown()
 ```

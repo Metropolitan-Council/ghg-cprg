@@ -117,7 +117,7 @@ plot_ly(
 We would expect counties with higher population to have higher emissions.
 
 ```{r fig-ng-emissions-population}
-#| fig-cap: "County population and emissions"
+#| fig-cap: "County population and natural gas emissions"
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 emissions_population <- left_join(natGasEmissions_all, cprg_population,
@@ -158,5 +158,8 @@ plot_ly(
 -   2018 Met Council inventory
 
 ```{r echo=FALSE}
-saveCap("natural-gas-emissions")
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```

@@ -97,8 +97,8 @@ plot_ly(
 
 We would expect counties with higher population to have higher emissions and VMT.
 
-```{r fig-emissions-population}
-#| fig-cap: "County population and emissions"
+```{r fig-emissions-population-transportation}
+#| fig-cap: "County population and transportation emissions"
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 vmt_population <- left_join(vmt_emissions_all, cprg_population,
@@ -295,7 +295,9 @@ lggit_total_emiss <- (lggit_totals$total %>% sum()) %>% scales::comma()
 ```
 
 The results from the LGGIT tool indicate a regional total of **`r lggit_total_emiss` metric tons CO~2~e**, while our calculations indicate **`r cprg_total_emiss` metric tons CO~2~e**. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. See @sec-epa-moves for a more detailed comparison.
-
 ```{r echo=FALSE}
-saveCap("trans")
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
