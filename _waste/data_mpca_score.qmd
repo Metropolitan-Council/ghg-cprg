@@ -63,6 +63,7 @@ mpca_score %>%
   plot_ly(
     x = ~ reorder(County, -Tons),
     y = ~Tons,
+    source = opts_current$get()$label,
     type = "bar",
     hoverinfo = "text",
     color = ~Method,
@@ -94,7 +95,7 @@ mpca_score %>%
 # Ignored exploration of area vs. total waste - little correlation, compare to area vs. pop
 cprg_area_mn <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-    as.numeric()) %>%
+           as.numeric()) %>%
   filter(STATE == "Minnesota")
 
 mpca_score %>%
@@ -105,6 +106,7 @@ mpca_score %>%
   plot_ly(
     x = ~area_sq_mi,
     y = ~Total,
+    source = opts_current$get()$label,
     type = "scatter",
     mode = "markers",
     hoverinfo = "text",
@@ -113,6 +115,13 @@ mpca_score %>%
       "Waste generated: ", round(Total / 1000), " thousand tons", "<br>",
       "Area: ", round(area_sq_mi), " sq mi",
       "<extra></extra>"
+    ),
+    marker = list(
+      size = 18,
+      line = list(
+        color = "lightgray",
+        width = 2
+      )
     )
   ) %>%
   plotly_layout(
@@ -140,6 +149,7 @@ mpca_score %>%
   plot_ly(
     x = ~population,
     y = ~Total,
+    source = opts_current$get()$label,
     type = "scatter",
     mode = "markers",
     hoverinfo = "text",
@@ -148,6 +158,13 @@ mpca_score %>%
       "Waste generated: ", round(Total / 1000), " thousand tons", "<br>",
       "Population: ", round(population),
       "<extra></extra>"
+    ),
+    marker = list(
+      size = 18,
+      line = list(
+        color = "lightgray",
+        width = 2
+      )
     )
   ) %>%
   plotly_layout(

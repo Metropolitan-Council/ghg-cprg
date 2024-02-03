@@ -58,6 +58,7 @@ metc_ww %>%
   plot_ly(
     x = ~ reorder(COUNTY_NAM, -emissions_metric_tons_co2e),
     y = ~emissions_metric_tons_co2e,
+    source = opts_current$get()$label,
     color = ~scope,
     type = "bar",
     hovertemplate = ~ paste0(
