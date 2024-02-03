@@ -10,22 +10,26 @@ wi_pop_2021 <- 5893718 # NOTE this is not retrieved from same place as cprg_pop
 
 # population values from cprg_pop
 cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
+
 wi_pop <- tidycensus::get_decennial("county",
-                                    state = "WI",
-                                    variables = "P1_001N",
-                                    year = 2020
+  state = "WI",
+  variables = "P1_001N",
+  year = 2020
 ) %>%
-  mutate(population = sum(value),
-    pop_percent = value / sum(value)) %>%
+  mutate(
+    population = sum(value),
+    pop_percent = value / sum(value)
+  ) %>%
   filter(GEOID %in% cprg_county$GEOID)
 
 
 wi_emissions <- wi_pop %>%
+  rowwise() %>%
   dplyr::mutate(
     emissions_metric_tons_co2e = pop_percent * wi_total_emissions
-  ) %>% 
-  left_join(cprg_county) %>% 
-  select(NAME, population, pop_percent, emissions_metric_tons_co2e)
+  ) %>%
+  left_join(cprg_county, by = "GEOID") %>%
+  select(NAME = NAME.y, population, pop_percent, emissions_metric_tons_co2e)
 
 wi_emissions_meta <- tribble(
   ~Column, ~Class, ~Description,

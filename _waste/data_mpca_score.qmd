@@ -95,7 +95,7 @@ mpca_score %>%
 # Ignored exploration of area vs. total waste - little correlation, compare to area vs. pop
 cprg_area_mn <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-           as.numeric()) %>%
+    as.numeric()) %>%
   filter(STATE == "Minnesota")
 
 mpca_score %>%

@@ -3,7 +3,7 @@ mn_emissions <- readRDS(file.path(here::here(), "_waste/data/mn_emissions.RDS"))
 wi_emissions <- readRDS(file.path(here::here(), "_waste/data/wi_emissions.RDS"))
 
 # cleaning emissions data: make sure each has county, year, emissions, source
-mn_cleaned <- mn_emissions %>%  
+mn_cleaned <- mn_emissions %>%
   mutate(
     source = case_when(
       Method == "Landfill" ~ "Landfill",
@@ -12,19 +12,19 @@ mn_cleaned <- mn_emissions %>%
       Method == "Organics" ~ "Organics",
       Method == "Recycling" ~ "Recycling"
     )
-  )%>%
+  ) %>%
   group_by(County, source) %>%
   mutate(
     sectorized_emissions = sum(emissions_metric_tons_co2e),
     data_source = "MPCA SCORE"
-  )%>%
+  ) %>%
   select(
     county = County,
     year = Year,
     emissions_metric_tons_co2e = sectorized_emissions,
     source,
     data_source
-  )%>%
+  ) %>%
   distinct(.keep_all = TRUE)
 
 wi_cleaned <- wi_emissions %>%
@@ -32,12 +32,13 @@ wi_cleaned <- wi_emissions %>%
     source = "Landfill",
     year = 2021,
     data_source = "Wisconsin DNR"
-  )%>%
+  ) %>%
   select(
     county = NAME,
     emissions_metric_tons_co2e,
     source,
-    year
+    year,
+    data_source
   )
 
 # combine data
@@ -48,7 +49,7 @@ emissions_total_meta <- tribble(
   ~Column, ~Class, ~Description,
   "county", class(emissions_total$county), "County of waste origin",
   "year", class(emissions_total$year), "Year for which emissions were calculated",
-  "emissions_metric_tons_co2e", class(emissions_total$emissions_metric_tons_co2e), 
+  "emissions_metric_tons_co2e", class(emissions_total$emissions_metric_tons_co2e),
   "Emissions estimate in metric tons co2e",
   "source", class(emissions_total$source), "Waste processing method (Landfill, Recycling, Organics)"
 )

@@ -44,8 +44,8 @@ ww_emissions <- readRDS("_energy/data/wastewater.RDS") %>%
 
 
 ## solid waste -----
-solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>% 
-  ungroup() %>% 
+solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
+  ungroup() %>%
   mutate(
     sector = "Waste",
     geog_level = "county",
@@ -54,10 +54,10 @@ solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
     source = source,
     data_source,
     factor_source = "EPA GHG Emission Factors Hub (2021)"
-  ) %>% 
+  ) %>%
   select(names(transportation_emissions))
 
-  
+
 
 # energy -----
 ## electricity ----
@@ -138,6 +138,7 @@ emissions_all <- bind_rows(
       # waste levels
       "Landfill",
       "Recycling",
+      "Organics",
       "Wastewater",
       # energy levels
       "Electricity",
