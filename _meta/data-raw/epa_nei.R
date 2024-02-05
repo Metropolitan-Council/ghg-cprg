@@ -55,25 +55,29 @@ sectors <- req_base %>%
 
 
 # state aggregation
-nei_state <- bind_rows(mn_county, 
-                       wi_county) %>% 
-  group_by(state_name, inventory_year,
-           state_fips, pollutant_type, uom, emissions, 
-           sector_code, pollutant_code, st_abbrv) %>% 
-  summarise(emissions = sum(emissions), .groups = "keep") %>% 
-  filter(pollutant_type == "GHG") %>% 
-  left_join(sectors, by = c("sector_code")) %>% 
+nei_state <- bind_rows(
+  mn_county,
+  wi_county
+) %>%
+  group_by(
+    state_name, inventory_year,
+    state_fips, pollutant_type, uom, emissions,
+    sector_code, pollutant_code, st_abbrv
+  ) %>%
+  summarise(emissions = sum(emissions), .groups = "keep") %>%
+  filter(pollutant_type == "GHG") %>%
+  left_join(sectors, by = c("sector_code")) %>%
   mutate(emissions_grams = emissions %>%
-           units::as_units("ton") %>% # short tons/US tons
-           units::set_units("metric_ton") %>% # convert to grams
-           as.numeric())
-  
-  
-  
-  
+    units::as_units("ton") %>% # short tons/US tons
+    units::set_units("metric_ton") %>% # convert to grams
+    as.numeric())
+
+
+
+
 # combine MN and WI, counties
 # filter to only CPRG counties
-# filter to only needed 
+# filter to only needed
 nei_county <- bind_rows(
   mn_county,
   wi_county
@@ -83,9 +87,5 @@ nei_county <- bind_rows(
     GEOID %in% cprg_county$GEOID,
     pollutant_type == "GHG"
   ) %>%
-  left_join(sectors, by = c("sector_code")) %>% 
+  left_join(sectors, by = c("sector_code")) %>%
   rowwise()
-
-
-
-

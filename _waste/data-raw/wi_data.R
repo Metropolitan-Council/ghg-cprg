@@ -11,10 +11,12 @@ wi_pop_2021 <- 5893718 # NOTE this is not retrieved from same place as cprg_pop
 cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
 
-wi_pop <- cprg_county_proportions %>% 
-  filter(STATE == "Wisconsin",
-         year == "2020")
-  
+wi_pop <- cprg_county_proportions %>%
+  filter(
+    STATE == "Wisconsin",
+    year == "2020"
+  )
+
 wi_emissions <- wi_pop %>%
   rowwise() %>%
   dplyr::mutate(

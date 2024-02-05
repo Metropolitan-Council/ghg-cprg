@@ -14,7 +14,7 @@ acs_proportions <- tidycensus::get_acs(
   geography = "county",
   variables = c(total_pop = "DP05_0001E")
 ) %>%
-  mutate(STATE = "Minnesota") %>% 
+  mutate(STATE = "Minnesota") %>%
   bind_rows(
     # wisconsin
     tidycensus::get_acs(
@@ -23,79 +23,82 @@ acs_proportions <- tidycensus::get_acs(
       state = "WI",
       geography = "county",
       variables = c(total_pop = "DP05_0001E")
-    ) %>% 
+    ) %>%
       mutate(STATE = "Wisconsin")
-  ) %>% 
-  mutate(year = "2021") %>% 
-  group_by(STATE, variable, year) %>% 
-  mutate(state_population = sum(estimate)) %>% 
-  group_by(GEOID, NAME, STATE, variable, year) %>% 
-  mutate(county_population = estimate) %>% 
-  ungroup() %>% 
-  select(-NAME, -moe) %>% 
+  ) %>%
+  mutate(year = "2021") %>%
+  group_by(STATE, variable, year) %>%
+  mutate(state_population = sum(estimate)) %>%
+  group_by(GEOID, NAME, STATE, variable, year) %>%
+  mutate(county_population = estimate) %>%
+  ungroup() %>%
+  select(-NAME, -moe) %>%
   right_join(
-    cprg_county %>% 
+    cprg_county %>%
       sf::st_drop_geometry(),
     by = c("GEOID", "STATE")
-  ) %>% 
-  rowwise() %>% 
-  mutate(county_proportion_of_state_pop = county_population/state_population,
-         population_data_source = "ACS 5-Year Estimates 2021, Table DP05"
-  ) %>% 
-  
+  ) %>%
+  rowwise() %>%
+  mutate(
+    county_proportion_of_state_pop = county_population / state_population,
+    population_data_source = "ACS 5-Year Estimates 2021, Table DP05"
+  ) %>%
   select(
     names(cprg_county)[1:6],
     year,
-    state_population, 
-    county_population, 
+    state_population,
+    county_population,
     county_proportion_of_state_pop,
     population_data_source
-  ) 
+  )
 
 
 # use decennial census -----
 
 
 decennial_proportions <- tidycensus::get_decennial("county",
-                          state = "MN",
-                          variables = "P1_001N",
-                          year = 2020
+  state = "MN",
+  variables = "P1_001N",
+  year = 2020
 ) %>%
-  mutate(STATE = "Minnesota") %>% 
+  mutate(STATE = "Minnesota") %>%
   bind_rows(tidycensus::get_decennial("county",
-                                      state = "WI",
-                                      variables = "P1_001N",
-                                      year = 2020
-  ) %>% mutate(STATE =  "Wisconsin")) %>% 
-  mutate(year = "2020") %>% 
-  group_by(STATE, variable, year) %>% 
-  mutate(state_population = sum(value)) %>% 
-  group_by(GEOID, NAME, STATE, variable, year) %>% 
-  mutate(county_population = value) %>% 
-  ungroup() %>% 
-  select(-NAME) %>% 
+    state = "WI",
+    variables = "P1_001N",
+    year = 2020
+  ) %>% mutate(STATE = "Wisconsin")) %>%
+  mutate(year = "2020") %>%
+  group_by(STATE, variable, year) %>%
+  mutate(state_population = sum(value)) %>%
+  group_by(GEOID, NAME, STATE, variable, year) %>%
+  mutate(county_population = value) %>%
+  ungroup() %>%
+  select(-NAME) %>%
   right_join(
-    cprg_county %>% 
+    cprg_county %>%
       sf::st_drop_geometry(),
     by = c("GEOID", "STATE")
-  ) %>% 
-  rowwise() %>% 
-  mutate(county_proportion_of_state_pop = county_population/state_population,
-         population_data_source = "Decennial Census PL 94-171 Redistricting Data Summary File"
-  ) %>% 
+  ) %>%
+  rowwise() %>%
+  mutate(
+    county_proportion_of_state_pop = county_population / state_population,
+    population_data_source = "Decennial Census PL 94-171 Redistricting Data Summary File"
+  ) %>%
   select(
     names(cprg_county)[1:6],
     year,
-    state_population, 
-    county_population, 
+    state_population,
+    county_population,
     county_proportion_of_state_pop,
     population_data_source
-  ) 
+  )
 
 
-cprg_county_proportions <- 
-  bind_rows(acs_proportions,
-            decennial_proportions)
+cprg_county_proportions <-
+  bind_rows(
+    acs_proportions,
+    decennial_proportions
+  )
 
 
 

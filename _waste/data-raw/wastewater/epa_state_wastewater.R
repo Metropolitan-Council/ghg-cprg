@@ -37,16 +37,20 @@ cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
 
 wi_2020 <- cprg_county_proportions %>%
-  filter(STATE == "Wisconsin",
-         year == "2020") %>% 
+  filter(
+    STATE == "Wisconsin",
+    year == "2020"
+  ) %>%
   mutate(
     epa_co2e = county_proportion_of_state_pop * wi_epa_est,
     state_co2e = county_proportion_of_state_pop * wi_state_est
   )
 
 mn_2020 <- cprg_county_proportions %>%
-  filter(STATE == "Minnesota",
-         year == "2020") %>% 
+  filter(
+    STATE == "Minnesota",
+    year == "2020"
+  ) %>%
   mutate(
     epa_co2e = county_proportion_of_state_pop * mn_epa_est,
     state_co2e = county_proportion_of_state_pop * mn_state_est
