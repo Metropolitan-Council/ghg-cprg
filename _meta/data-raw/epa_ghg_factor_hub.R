@@ -474,7 +474,8 @@ epa_ghg_factor_hub <- list(
   "egrid" = egrid,
   "stationary_combustion" = stationary_combustion,
   "mobile_combustion" = kg_co2_per_unit,
-  "mobile_combustion_other" = transportation_tbl345
+  "mobile_combustion_other" = transportation_tbl345,
+  "waste" = scope3_cat5_cat12_waste
 )
 
 saveRDS(epa_ghg_factor_hub, "_meta/data/epa_ghg_factor_hub.RDS")
