@@ -3,15 +3,22 @@ source("R/global_warming_potential.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 epa_ghg_factor_hub <- readRDS("_meta/data/epa_ghg_factor_hub.RDS")
 
-kerosene_factors <- epa_ghg_factor_hub$stationary_combustion %>% 
-  filter(`Fuel type` == "Kerosene",
-         per_unit == "mmBtu")
+kerosene_factors <- epa_ghg_factor_hub$stationary_combustion %>%
+  filter(
+    `Fuel type` == "Kerosene",
+    per_unit == "mmBtu"
+  )
 
 
 
 kerosene_efficiency_grams <-
   # CO2 emissions per mmBtu of propane used, converted from kg to g
-  kerosene_factors %>% filter(emission == "kg CO2") %>% magrittr::extract2("value") %>% units::as_units("kilogram") %>% units::set_units("gram") %>% as.numeric() +
+  kerosene_factors %>%
+  filter(emission == "kg CO2") %>%
+  magrittr::extract2("value") %>%
+  units::as_units("kilogram") %>%
+  units::set_units("gram") %>%
+  as.numeric() +
   # methane emissions per mmBtu propane scale to CO2 equivalency
   (kerosene_factors %>% filter(emission == "g CH4") %>% magrittr::extract2("value") * gwp$ch4) +
   # n20 emissions per mmBtu propane scale to CO2 equivalency
@@ -21,9 +28,9 @@ kerosene_efficiency_grams <-
 # convert grams to kilograms
 # this value rougly tracks with another source https://www.carbonsolutions.com/clients/CalculatorTALxAbout.html
 kerosene_efficiency_kg <-
-  kerosene_efficiency_grams %>% 
-  units::as_units("grams") %>% 
-  units::set_units("kilograms") %>% 
+  kerosene_efficiency_grams %>%
+  units::as_units("grams") %>%
+  units::set_units("kilograms") %>%
   as.numeric()
 
 # read in efficiency factors
@@ -54,7 +61,7 @@ wi_kero_use <- as.numeric(eia2020[6, 12])
 #   mutate(concept_short = substr(concept, 1, 10)) %>%
 #   distinct(concept_short) %>%
 #   print(n = 10000)
-# 
+#
 # #### house heating fuel
 # v_heat <- load_variables(year = 2021, dataset = "acs5") %>%
 #   mutate(concept_short = substr(concept, 1, 10)) %>%
@@ -74,7 +81,7 @@ mn_kero_hh <- get_acs(
     # multiply average propane use by household be estimated number of households
     mmBtu = estimate * as.numeric(mn_kero_use),
     # multiply mmBtu per county by emissions factor, convert to metric tons
-    CO2e = mmBtu * kerosene_efficiency_kg /1000
+    CO2e = mmBtu * kerosene_efficiency_kg / 1000
   )
 
 # repeat for WI

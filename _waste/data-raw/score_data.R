@@ -16,10 +16,10 @@ score_filtered <- score_summary %>%
     Year == "2021"
   ) %>%
   select(County,
-         "Management Category" = "Mangement Method",
-         Method,
-         Year,
-         Tons
+    "Management Category" = "Mangement Method",
+    Method,
+    Year,
+    Tons
   )
 
 # add score metadata
@@ -50,30 +50,36 @@ epa_ghg_factor_hub <- readRDS("_meta/data/epa_ghg_factor_hub.RDS")
 # WTE = Mixed MSW: Combusted
 # MSW Compost removed because it is empty - remember to test this
 
-waste_factors <- epa_ghg_factor_hub$waste %>% 
-  filter(name %in% c("Landfilled",
-                     "Composted",
-                     "Combusted",
-                     "Recycled"),
-         Material %in% c("Mixed MSW",
-                         "Mixed Organics",
-                         "Mixed Recyclables")) 
+waste_factors <- epa_ghg_factor_hub$waste %>%
+  filter(
+    name %in% c(
+      "Landfilled",
+      "Composted",
+      "Combusted",
+      "Recycled"
+    ),
+    Material %in% c(
+      "Mixed MSW",
+      "Mixed Organics",
+      "Mixed Recyclables"
+    )
+  )
 score_final <- score_filtered %>%
   mutate( # emissions factor in metric tons co2/short tons waste
     emissions_factor =
       case_when(
         Method == "Landfill" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Landfilled") %>%
-                                            magrittr::extract2("value")),
+          magrittr::extract2("value")),
         Method == "MSW Compost" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Composted") %>%
-                                               magrittr::extract2("value")),
+          magrittr::extract2("value")),
         Method == "Onsite" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Landfilled") %>%
-                                          magrittr::extract2("value")),
+          magrittr::extract2("value")),
         Method == "Organics" ~ as.numeric(filter(waste_factors, Material == "Mixed Organics", name == "Composted") %>%
-                                            magrittr::extract2("value")),
+          magrittr::extract2("value")),
         Method == "Recycling" ~ as.numeric(filter(waste_factors, Material == "Mixed Recyclables", name == "Recycled") %>%
-                                             magrittr::extract2("value")),
+          magrittr::extract2("value")),
         Method == "WTE" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Combusted") %>%
-                                       magrittr::extract2("value")),
+          magrittr::extract2("value")),
       ),
     # emissions in metric tons co2e
     emissions_metric_tons_co2e = Tons * emissions_factor
