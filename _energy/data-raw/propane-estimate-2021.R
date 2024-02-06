@@ -8,7 +8,7 @@ propane_factors <- epa_ghg_factor_hub$stationary_combustion %>%
          per_unit == "mmBtu")
 
 # read in efficiency factors
-eff_fac <- readxl::read_excel("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx")
+eff_fac <- readxl::read_excel("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx")
 # source: https://www.epa.gov/climateleadership/ghg-emission-factors-hub
 
 # CO2e emissions per mmBtu of propane used

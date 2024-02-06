@@ -10,7 +10,7 @@ source("R/_load_pkgs.R")
 # If not, default heat contents are provided.								
 # solid
 
-coal_coke <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+coal_coke <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                range = "C17:J25",
                                col_names = c("Fuel type",
                                              "mmBtu per short ton",
@@ -22,7 +22,7 @@ coal_coke <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.x
                                              "g N2O per short ton")) %>% 
   mutate(fuel_category = "Coal and Coke")
 
-other_solid <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+other_solid <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                  range = "C27:J30",
                                  col_names = c("Fuel type",
                                                "mmBtu per short ton",
@@ -34,7 +34,7 @@ other_solid <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021
                                                "g N2O per short ton")) %>% 
   mutate(fuel_category = "Other Fuels - Solid")
 
-biomass_solid <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+biomass_solid <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                    range = "C32:J35",
                                    col_names = c("Fuel type",
                                                  "mmBtu per short ton",
@@ -47,7 +47,7 @@ biomass_solid <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-20
   mutate(fuel_category = "Biomass Fuels - Solid")
 
 # gases
-natural_gas <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+natural_gas <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                  range = "C38:J38",
                                  col_names = c("Fuel type",
                                                "mmBtu per scf",
@@ -59,7 +59,7 @@ natural_gas <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021
                                                "g N2O per scf")) %>% 
   mutate(fuel_category = "Natural Gas")
 
-other_fuel_gas <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+other_fuel_gas <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                     range = "C40:J43",
                                     col_names = c("Fuel type",
                                                   "mmBtu per scf",
@@ -71,7 +71,7 @@ other_fuel_gas <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2
                                                   "g N2O per scf")) %>% 
   mutate(fuel_category = "Other Fuels - Gaseous")
 
-biomass_gas <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+biomass_gas <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                  range = "C45:J46",
                                  col_names = c("Fuel type",
                                                "mmBtu per scf",
@@ -85,7 +85,7 @@ biomass_gas <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021
 
 
 # liquid 
-petroleum <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+petroleum <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                range = "C49:J78",
                                col_names = c("Fuel type",
                                              "mmBtu per gallon",
@@ -98,7 +98,7 @@ petroleum <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.x
   mutate(fuel_category = "Petroleum Products")
 
 
-biomass_liquid <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+biomass_liquid <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                     range = "C80:J83",
                                     col_names = c("Fuel type",
                                                   "mmBtu per gallon",
@@ -111,7 +111,7 @@ biomass_liquid <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2
   mutate(fuel_category = "Biomass Fuels - Liquid")
 
 
-biomass_fuels_pulp <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+biomass_fuels_pulp <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                         range = "C85:J89",
                                         col_names = c("Fuel type",
                                                       "mmBtu per gallon",
@@ -162,14 +162,14 @@ stationary_combustion <- bind_rows(
 # LNG:  The factor was developed based on the CO2 factor for Natural Gas factor and LNG fuel density from GREET1_2020.xlsx Model, Argonne National Laboratory.								
 
 
-kg_co2_per_unit <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+kg_co2_per_unit <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                      range = "C97:E107"
 )
 
 # Table 3: Mobile Combustion CH4 and N2O for On-Road Gasoline Vehicles -----
 # Source: EPA (2020) Inventory of U.S. Greenhouse Gas Emissions and Sinks: 1990-2018. All values are calculated from Tables A-106 through A-110.
 
-passenger_gas <- read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+passenger_gas <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                            range = "D116:F149",
                            col_names = c("Vehicle Year",
                                          "g CH4 per mile",
@@ -177,7 +177,7 @@ passenger_gas <- read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx"
   mutate(vehicle_type = "Passenger Car",
          fuel_type = "Gasoline")
 
-light_duty_gas <- read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+light_duty_gas <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                             range = "D150:F186",
                             col_names = c("Vehicle Year",
                                           "g CH4 per mile",
@@ -186,7 +186,7 @@ light_duty_gas <- read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx
          fuel_type = "Gasoline")
 
 
-heavy_duty_gas <- read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+heavy_duty_gas <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                             range = "D187:F215",
                             col_names = c("Vehicle Year",
                                           "g CH4 per mile",
@@ -194,7 +194,7 @@ heavy_duty_gas <- read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx
   mutate(vehicle_type = "Heavy-Duty Vehicle",
          fuel_type = "Gasoline")
 
-moto_gas <- read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+moto_gas <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                       range = "D216:F217",
                       col_names = c("Vehicle Year",
                                     "g CH4 per mile",
@@ -211,7 +211,7 @@ onroad_gas <- bind_rows(passenger_gas,
 # Table 4: Mobile Combustion CH4 and N2O for On-Road Diesel and Alternative Fuel Vehicles -----
 # Source: EPA (2020) Inventory of U.S. Greenhouse Gas Emissions and Sinks: 1990-2018. All values are calculated from Tables A-109 through A-112.
 
-onroad_alt <- read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+onroad_alt <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                         range = "E223:G232",
                         col_names = c("Vehicle Year",
                                       "g CH4 per mile",
@@ -221,7 +221,7 @@ onroad_alt <- read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
                           rep("Medium and Heavy-Duty Vehciles", 2)),
          fuel_type = "Diesel") %>% 
   bind_rows(
-    read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+    read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
               range = "D233:G258",
               col_names = c("fuel_type",
                             "Vehicle Year",
@@ -241,7 +241,7 @@ onroad_alt <- read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
 # B Includes equipment, such as cranes, dumpers, and excavators, as well as fuel consumption from trucks that are used off-road in construction. "									
 
 
-nonroad_alt <- read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+nonroad_alt <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                          range = "D264:F303",
                          col_names = c("fuel_type",
                                        "g CH4 per mile",
@@ -294,7 +294,7 @@ transportation_tbl345 <- onroad_gas %>%
 # but can be used to estimate GHG emissions reductions from reductions in electricity use.						
 
 
-egrid <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+egrid <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                            range = "C312:I339",
                            col_names = c("eGrid Subregion",
                                          "Total output:lb CO2 per MWh",
@@ -319,7 +319,7 @@ egrid <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx"
 # Table: 7	Steam and Heat ----
 # Note: Emission factors are per mmBtu of steam or heat purchased. 
 # These factors assume natural gas fuel is used to generate steam or heat at 80 percent thermal efficiency.  
-steam_heat <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+steam_heat <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                 range  = "C377:F377",
                                 col_names = c("steam_heat",
                                               "kg CO2 per mmBtu",
@@ -356,7 +356,7 @@ steam_heat <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.
 # C Aircraft: updates due to a methodology change."									
 
 
-scope3_cat4_transportation <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+scope3_cat4_transportation <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                                 range = "D386:G392",
                                                 col_names = c(
                                                   "kg CO2 per unit",
@@ -385,7 +385,7 @@ scope3_cat4_transportation <- readxl::read_xlsx("_energy/data-raw/ghg-emission-f
 
 ## Table 9: Scope 3 Category 5: Waste Generated in Operations and Category 12: End-of-Life Treatment of Sold Products----
 
-scope3_cat5_cat12_waste <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+scope3_cat5_cat12_waste <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                              range = "C400:I459",
                                              col_names = c("Material",
                                                            "Recycled",
@@ -412,7 +412,7 @@ scope3_cat5_cat12_waste <- readxl::read_xlsx("_energy/data-raw/ghg-emission-fact
 # D Commuter rail: rail service between a central city and adjacent suburbs (also called regional rail or suburban rail).  
 # E Transit rail: rail typically within an urban center, such as subways, elevated railways, metropolitan railways (metro), streetcars, trolley cars, and tramways. "									
 
-scope3_cat6_commuting <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+scope3_cat6_commuting <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                                            range = "D466:G477",
                                            col_names = c("kg CO2 per unit",
                                                          "g CH4 per unit",
@@ -454,7 +454,7 @@ scope3_cat6_commuting <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factor
 # 100-year GWPs from IPCC Fourth Assessment Report (AR4), 2007.  IPCC AR4 was published in 2007 and is among the most current and comprehensive peer-reviewed assessments of climate change. AR4 provides revised GWPs of several GHGs relative to the values provided in previous assessment reports, following advances in scientific knowledge on the radiative efficiencies and atmospheric lifetimes of these GHGs and of CO2. Because the GWPs provided in AR4 reflect an improved scientific understanding of the radiative effects of these gases in the atmosphere, the values provided are more appropriate for supporting the overall goal of organizational GHG reporting than the Second Assessment Report (SAR) GWP values previously used in the Emission Factors Hub. 
 # While EPA recognizes that Fifth Assessment Report (AR5) GWPs have been published, in an effort to ensure consistency and comparability of GHG data between EPA’s voluntary and non-voluntary GHG reporting programs (e.g. GHG Reporting Program and National Inventory), EPA recommends the use of AR4 GWPs. The United States and other developed countries to the UNFCCC have agreed to submit annual inventories in 2015 and future years to the UNFCCC using GWP values from AR4, which will replace the current use of SAR GWP values.  Utilizing AR4 GWPs improves EPA’s ability to analyze corporate, national, and sub-national GHG data consistently, enhances communication of GHG information between programs, and gives outside stakeholders a consistent, predictable set of GWPs to avoid confusion and additional burden."									
 
-# glob_warm_pot <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+# glob_warm_pot <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
 #                   range = "C485:D517")
 
 # Table 12: Global Warming Potentials (GWPs) for Blended Refrigerants
@@ -463,7 +463,7 @@ scope3_cat6_commuting <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factor
 # GWPs of blended refrigerants are based on their HFC and PFC constituents, which are based on data
 #  from http://www.epa.gov/ozone/snap/refrigerants/refblend.html."								
 
-# glob_warm_pot_refrig <- readxl::read_xlsx("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx",
+# glob_warm_pot_refrig <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
 #                                    range = "C522:E558")
 
 

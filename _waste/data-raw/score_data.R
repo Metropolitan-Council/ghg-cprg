@@ -51,7 +51,7 @@ saveRDS(mpca_score_meta, paste0("_waste/data/mpca_score_meta.RDS"))
 
 # emissions factors from https://www.epa.gov/climateleadership/ghg-emission-factors-hub
 # cleaning to fix formatting
-emissions_factors <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/ghg-emission-factors-hub-2021.xlsx"))
+emissions_factors <- readxl::read_xlsx(file.path(here::here(), "_meta/data-raw/ghg-emission-factors-hub-2021.xlsx"))
 
 emissions_factors_cleaned <- emissions_factors %>%
   select(2:8) %>%

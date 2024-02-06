@@ -27,7 +27,7 @@ kerosene_efficiency_kg <-
   as.numeric()
 
 # read in efficiency factors
-eff_fac <- readxl::read_excel("_energy/data-raw/ghg-emission-factors-hub-2021.xlsx")
+eff_fac <- readxl::read_excel("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx")
 
 ### poor formatting but the co2e for kerosene is:
 kerosene_efficiency_prev <-
