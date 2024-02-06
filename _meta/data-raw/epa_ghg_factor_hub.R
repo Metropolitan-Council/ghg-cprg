@@ -173,7 +173,7 @@ passenger_gas <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                            range = "D116:F149",
                            col_names = c("Vehicle Year",
                                          "g CH4 per mile",
-                                         "g N20 per mile")) %>% 
+                                         "g N2O per mile")) %>% 
   mutate(vehicle_type = "Passenger Car",
          fuel_type = "Gasoline")
 
@@ -181,7 +181,7 @@ light_duty_gas <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                             range = "D150:F186",
                             col_names = c("Vehicle Year",
                                           "g CH4 per mile",
-                                          "g N20 per mile")) %>% 
+                                          "g N2O per mile")) %>% 
   mutate(vehicle_type = "Light-Duty Truck",
          fuel_type = "Gasoline")
 
@@ -190,7 +190,7 @@ heavy_duty_gas <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                             range = "D187:F215",
                             col_names = c("Vehicle Year",
                                           "g CH4 per mile",
-                                          "g N20 per mile")) %>% 
+                                          "g N2O per mile")) %>% 
   mutate(vehicle_type = "Heavy-Duty Vehicle",
          fuel_type = "Gasoline")
 
@@ -198,7 +198,7 @@ moto_gas <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                       range = "D216:F217",
                       col_names = c("Vehicle Year",
                                     "g CH4 per mile",
-                                    "g N20 per mile")) %>% 
+                                    "g N2O per mile")) %>% 
   mutate(vehicle_type = "Motorcycle",
          fuel_type = "Gasoline")
 
@@ -215,7 +215,7 @@ onroad_alt <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                         range = "E223:G232",
                         col_names = c("Vehicle Year",
                                       "g CH4 per mile",
-                                      "g N20 per mile")) %>% 
+                                      "g N2O per mile")) %>% 
   mutate(vehicle_type = c(rep("Passenger Car", 4),
                           rep("Light-Duty Truck",4),
                           rep("Medium and Heavy-Duty Vehciles", 2)),
@@ -226,7 +226,7 @@ onroad_alt <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
               col_names = c("fuel_type",
                             "Vehicle Year",
                             "g CH4 per mile",
-                            "g N20 per mile")) %>% 
+                            "g N2O per mile")) %>% 
       mutate(vehicle_type = c(rep("Light-Duty Car", 5),
                               rep("Light-Duty Truck", 5),
                               rep("Medium-Duty Truck", 4),
@@ -245,7 +245,7 @@ nonroad_alt <- read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                          range = "D264:F303",
                          col_names = c("fuel_type",
                                        "g CH4 per mile",
-                                       "g N20 per mile")) %>% 
+                                       "g N2O per mile")) %>% 
   mutate(vehicle_type = 
            c(
              rep("Ships and Boats", 4 ),
@@ -299,10 +299,10 @@ egrid <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
                            col_names = c("eGrid Subregion",
                                          "Total output:lb CO2 per MWh",
                                          "Total output:lb CH4 per MWh",
-                                         "Total output:lb N20 per MWh",
+                                         "Total output:lb N2O per MWh",
                                          "Non-baseload:lb CO2 per MWh",
                                          "Non-baseload:lb CH4 per MWh",
-                                         "Non-baseload:lb N20 per MWh")) %>% 
+                                         "Non-baseload:lb N2O per MWh")) %>% 
   pivot_longer(2:7) %>% 
   tidyr::separate_wider_delim(name,
                               delim = ":",
@@ -324,7 +324,7 @@ steam_heat <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xl
                                 col_names = c("steam_heat",
                                               "kg CO2 per mmBtu",
                                               "g CH4 per mmBtu",
-                                              "g N20 per mmBtu")) %>% 
+                                              "g N2O per mmBtu")) %>% 
   pivot_longer(2:4) %>% 
   tidyr::separate_wider_delim(name,
                               delim = "per",
