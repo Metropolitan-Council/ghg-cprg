@@ -1,5 +1,10 @@
-# run all electricity and natural gas processing
+# run all energy processing
 # in specific order
+
+# kerosene and propane
+source("_energy/data-raw/propane-estimate-2021.R")
+source("_energy/data-raw/kerosene-estimate-2021.R")
+source("_energy/data-raw/fuel-estimate-2021.R")
 
 # create spatial data with utility areas
 source("_energy/data-raw/minnesota_natGasUtilities.R")
