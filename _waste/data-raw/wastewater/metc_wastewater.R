@@ -2,7 +2,7 @@ source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 
-ww_raw <- readxl::read_xlsx("_waste/data-raw/wastewater/GHGEmissions_2019-2021_CorrectedWSCA.xlsx") %>%
+ww_raw <- readxl::read_xlsx("_waste/data-raw/wastewater/metc/GHGEmissions_2019-2021_CorrectedWSCA.xlsx") %>%
   clean_names()
 
 metc_ww <- ww_raw %>%
