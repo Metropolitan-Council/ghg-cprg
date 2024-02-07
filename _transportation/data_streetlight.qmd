@@ -10,7 +10,7 @@ hookaddcap()
 
 [StreetLight Data](https://www.streetlightdata.com/) is a transportation analytics platform that uses aggregated location-based services (LBS) data from cell phones and navigation/GPS data to deliver insights on travel patterns. For this project, we used StreetLight to find the volume of traffic going from each county and city or township unit (CTU) to each CTU for personal and commercial traffic during 2021.
 
-For ease of access, we used `{streetlightR}`, an R package, to interact directly with the StreetLight API. `{streetlightR}` is open-source and maintained by Council staff ^[Maintainer: Liz Roten]. 
+For ease of access, we used [`{streetlightR}`](https://github.com/Metropolitan-Council/streetlightR), an R package, to interact directly with the StreetLight API. `{streetlightR}` is open-source and maintained by Council staff. 
 
 Data source description, type
 

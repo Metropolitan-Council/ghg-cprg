@@ -106,5 +106,4 @@ format:
 filters:
   - assets/include-files.lua
   - quarto
-  - nameref
 
