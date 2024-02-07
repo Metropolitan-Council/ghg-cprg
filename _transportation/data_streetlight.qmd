@@ -47,8 +47,6 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 
 For passenger data, we used StreetLight Volume - an estimate of the number of vehicles. The models that make up StreetLight Volume predict vehicle volumes by combining Location-Based Services (LBS) trips with contextual features that represent the street network, demographics, climate, and other geographic characteristics [@streetlightdataStreetLightAllVehicles2023]. 
 
-LBS trips: Our processing algorithms link pings from LBS devices into trips, then classify these trips into certain travel modes. The Volume models use trips that we have identified to be from vehicles. • U.S. Census data: We use demographic data, such as number of housing units and whether or not a location is in an urban area. • Population factor: Using Census data, this feature scales the number of LBS trips to our best guess of the total number of trips based on the population. • OpenStreetMap (OSM) data: OSM provides information on road classification, number of lanes, speed limit, and other figures. • Weather data: Temperature, precipitation, and visibility affect travel and help us better predict seasonal changes.
-
 
 ```{r tbl-passenger-stl-sample-size}
 #| tbl-cap: "StreetLight passenger travel analysis sample size" 
