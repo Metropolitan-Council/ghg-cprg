@@ -631,6 +631,3 @@ epa_ghg_factor_hub <- list(
 )
 
 saveRDS(epa_ghg_factor_hub, "_meta/data/epa_ghg_factor_hub.RDS")
-
-
-epa_ghg_factor_hub$egrid
