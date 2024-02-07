@@ -173,3 +173,7 @@ _transportation/pa_transportation.html
 _transportation/qc_transportation.html
 
 caption_index.RDS
+
+_waste/data-raw/epa/
+
+_meta/data-raw/~$ghg-emission-factors-hub-2021.xlsx
