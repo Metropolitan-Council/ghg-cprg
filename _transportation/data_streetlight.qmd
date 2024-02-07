@@ -5,12 +5,20 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
 
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+county21_data <- readRDS(file.path(here::here(), "_transportation/data-raw/analysis_runs/county21_data.RDS"))
+county21_truck_data <- readRDS(file.path(here::here(), "_transportation/data-raw/analysis_runs/county21_truck_calib_data.rds"))
+wi_osm_meta <- readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wi_osm_meta.RDS"))
+
 hookaddcap()
 ```
 
-[StreetLight Data](https://www.streetlightdata.com/) is a transportation analytics platform that uses aggregated location-based services (LBS) data from cell phones and navigation/GPS data to deliver insights on travel patterns. For this project, we used StreetLight to find the volume of traffic going from each county and city or township unit (CTU) to each CTU for personal and commercial traffic during 2021.
+[StreetLight Data](https://www.streetlightdata.com/) is a transportation analytics platform that uses aggregated location-based services (LBS) data from cell phones and navigation/GPS data to deliver insights on travel patterns. For this project, we used StreetLight to find the volume of traffic going from each county and city or township unit (CTU) to each CTU for passenger and commercial traffic during 2021. 
 
-For ease of access, we used [`{streetlightR}`](https://github.com/Metropolitan-Council/streetlightR), an R package, to interact directly with the StreetLight API. `{streetlightR}` is open-source and maintained by Council staff. 
+For ease of access, we used [`{streetlightR}`](https://github.com/Metropolitan-Council/streetlightR) to interact directly with the StreetLight API. `{streetlightR}` is an open-source R package maintained by Council staff. 
+
+
+
+
 
 Data source description, type
 
@@ -36,6 +44,28 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 - Facet views by categorical variables
 
 ### Passenger 
+
+For passenger data, we used StreetLight Volume - an estimate of the number of vehicles. The models that make up StreetLight Volume predict vehicle volumes by combining Location-Based Services (LBS) trips with contextual features that represent the street network, demographics, climate, and other geographic characteristics [@streetlightdataStreetLightAllVehicles2023]. 
+
+LBS trips: Our processing algorithms link pings from LBS devices into trips, then classify these trips into certain travel modes. The Volume models use trips that we have identified to be from vehicles. • U.S. Census data: We use demographic data, such as number of housing units and whether or not a location is in an urban area. • Population factor: Using Census data, this feature scales the number of LBS trips to our best guess of the total number of trips based on the population. • OpenStreetMap (OSM) data: OSM provides information on road classification, number of lanes, speed limit, and other figures. • Weather data: Temperature, precipitation, and visibility affect travel and help us better predict seasonal changes.
+
+
+```{r tbl-passenger-stl-sample-size}
+#| tbl-cap: "StreetLight passenger travel analysis sample size" 
+#| out-width: "95%"
+county21_data$sample_size %>% 
+  select(`Data periods` = data_periods,
+         `Mode of travel` = mode_of_travel,
+         `Approximate device count` = approximate_device_count,
+         `Approximate trip count` = approximate_trip_count) %>% 
+  gt() %>%
+  gt::opt_row_striping() %>%
+  gt::fmt_number(columns = 3:4, decimals = 0) %>% 
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) 
+```
 
 #### Trip length validation 
 
@@ -66,8 +96,6 @@ cprg_distances <- purrr::map_dfr(
 
 ```{r stl-pass-county-run}
 # read in county passenger 2021 StL run
-county21_data <- readRDS(file.path(here::here(), "_transportation/data-raw/analysis_runs/county21_data.RDS"))
-
 passenger_od <- county21_data$od_all %>%
   filter(
     day_type == "0: All Days (M-Su)",
@@ -181,7 +209,7 @@ Comparing trip distance and county area, we see a general positive correlation (
 #| out-width: "95%"
 cprg_area <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-    as.numeric())
+           as.numeric())
 
 passenger_dist_area <- left_join(
   passenger_od_trip %>%
@@ -226,161 +254,42 @@ plot_ly(
 ```
 
 
-### Freight 
-```{r}
-wi_osm_meta <- readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wi_osm_meta.RDS"))
+### Commercial  
+
+
+```{r tbl-commercial-stl-sample-size}
+#| tbl-cap: "StreetLight commercial travel analysis sample size" 
+#| out-width: "95%"
+county21_truck_data$sample_size %>% 
+  select(
+    `Data periods` = data_periods,
+    `Mode of travel` = mode_of_travel,
+    `Vehicle weight` = vehicle_weight,
+    `Approximate device count` = approximate_device_count,
+    `Approximate trip count` = approximate_trip_count) %>% 
+  gt() %>%
+  gt::opt_row_striping() %>%
+  gt::fmt_number(columns = 5, decimals = 0) %>% 
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) 
 ```
+
 
 StreetLight does not provide StreetLight Volume for 2021 commercial vehicle analyses. To measure volume for commercial traffic, we used the StreetLight Index, a relative measure of traffic volume, calibrated using AADT values to result in traffic volume [@streetlightdataStreetLightIndex2023]. 
 
-StreetLight compares the AADT calibration values for a given zone with StreetLight’s sample size for the same zone, and creates a calibration factor to apply to the entire analysis [@streetlightdataWhatSingleFactor2023]. We generated a calibration zone set for commercial traffic by selecting road segments with both AADT and vehicle classification data in both MN and WI.
+StreetLight compares the AADT calibration values for a given zone with StreetLight’s sample size for the same zone, and creates a calibration factor to apply to the entire analysis [@streetlightdataWhatSingleFactor2023]. We generated a calibration zone set for commercial traffic by selecting road segments with both AADT and vehicle classification data in both MN and WI counties within the CPRG study area. Read more about state DOT vehicle weight distriubtion data in @sec-vehicle-weight-dist.  
 
-State DOT's operates vehicle classification stations across the state, which provide both the volume of traffic on a given road segment and the breakdown of volume by vehicle type. We obtained this breakdown using data from MnDOT [@mndotYearlyVolumeTrends2021] and WisDOT [@wisdotWisconsinVehicleClassification2020]. 
-
-
-<!-- Add table comparing vehicle classification definitions -->
-
-Then, we selected only the stations within the study area with observations in the last five years (2017-2021). Finally, we joined this data with Average Annual Daily Traffic (AADT) [@mndotVMTRouteSystem2021, @wisdotWisconsinVehicleMiles2021] road segments by station ID. The road segments sampled include multiple road functional classes and segments in all seven metro counties. All traffic sensor stations pulled were permanent, continuous monitoring sites.
-
-```{r fig-map-calibration-set}
-#| fig-cap: "StreetLight calibration locations and values"
-#| out-width: "95%"
-#| out-height: "500px"
-commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_lines.RDS")) %>%
-  mutate(hover_info = paste0(
-    "Name: ", name, "<br>"
-  ))
-
-commercial_points <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_points.RDS")) %>%
-  mutate(hover_info = paste0(
-    "Name: ", name, "<br>",
-    "AADT: ", scales::comma(current_volume), "<br>",
-    "Year: ", year, "<br>",
-    "Passenger traffic: ", scales::percent(personal_traffic_ratio, accuracy = 1), "<br>",
-    "Medium-duty traffic: ", scales::percent(medium_commercial_ratio, accuracy = 1), "<br>",
-    "Heavy-duty traffic: ", scales::percent(heavy_commercial_ratio, accuracy = 1), "<br>"
-  ))
-
-
-bound_box <- st_bbox(commercial_lines) %>%
-  unlist()
-
-council_leaflet() %>%
-  addPolygons(
-    data = cprg_county %>%
-      sf::st_transform(4326),
-    fill = FALSE,
-    color = "gray",
-    popup = cprg_county$NAMELSAD,
-    group = "County outlines"
-  ) %>%
-  addPolylines(
-    data = commercial_lines,
-    weight = 6,
-    color = "black",
-    popup = commercial_lines$hover_info,
-    group = "Road segments"
-  ) %>%
-  addCircleMarkers(
-    data = commercial_points,
-    popup = commercial_points$hover_info,
-    fillColor = colors$councilBlue,
-    radius = 10,
-    group = "Stations"
-  ) %>%
-  leaflet::addLayersControl(
-    overlayGroups = c(
-      "County outlines",
-      "Stations",
-      "Road segments"
-    )
-  ) %>%
-  fitBounds(
-    lng1 = bound_box[[1]],
-    lng2 = bound_box[[3]],
-    lat1 = bound_box[[2]],
-    lat2 = bound_box[[4]]
-  )
-```
-
-
-```{r fig-vehicle-weight-distribution}
-#| fig-cap: "Vehicle weight distribution at calibration points"
-#| out-width: "95%"
-calibration_long <- commercial_points %>%
-  arrange(-heavy_commercial_ratio) %>%
-  select(
-    name,
-    year,
-    personal_traffic_ratio,
-    medium_commercial_ratio,
-    heavy_commercial_ratio
-  ) %>%
-  sf::st_drop_geometry() %>%
-  tidyr::pivot_longer(
-    cols = c(
-      personal_traffic_ratio,
-      medium_commercial_ratio,
-      heavy_commercial_ratio
-    ),
-    names_to = "vehicle_weight"
-  ) %>%
-  mutate(
-    vehicle_weight =
-      case_when(
-        vehicle_weight == "personal_traffic_ratio" ~ "Passenger",
-        vehicle_weight == "medium_commercial_ratio" ~ "Medium-duty",
-        vehicle_weight == "heavy_commercial_ratio" ~ "Heavy-duty",
-      ),
-    hovertext = paste0(
-      "Name: ", name, "<br>",
-      "Year: ", year, "<br>",
-      scales::percent(value, accuracy = 1), " ", vehicle_weight, "<br>",
-      "<extra></extra>"
-    )
-  )
-
-plot_ly(
-  data = calibration_long,
-  source = opts_current$get()$label,
-  type = "bar",
-  x = ~name,
-  y = ~value,
-  color = ~vehicle_weight,
-  hoverinfo = "text",
-  hovertemplate = ~hovertext
-) %>%
-  plotly_layout(
-    main_title = "Vehicle weight distribution",
-    y_title = "Proportion of all traffic",
-    x_title = "Calibration zone",
-    legend_title = "Vehicle weight"
-  ) %>%
-  layout(
-    barmode = "stack",
-    xaxis = list(
-      rangemode = "normal",
-      ticktext = ""
-    ),
-    yaxis = list(
-      tickformat = "1%"
-    )
-  )
-```
-
-#### Vehicle classification and calibration
+#### Vehicle classification  
 
 StreetLight classifies commercial vehicles by Federal Highway Administration (FHWA) gross vehicle weight range (GWVR) classes: where vehicles between 14,000 lbs and 26,000 lbs (Class 4 to Class 6) are considered medium-duty, and vehicles greater than 26,000 lbs (Class 7+) are heavy-duty [@streetlightdataTruckTravelMode2023]. 
 
-
-MnDOT classifies and reports vehicles weight distributions using FHWA standards, as compared with their visual vehicle classification guide [@]
-
-
-EPA's Motor Vehicle Emissions Simulator (MOVES4) has their own, slightly different vehicle classification system [@usepaPopulationActivityOnroad2023].  
+EPA's Motor Vehicle Emissions Simulator (MOVES4) has their own, slightly different vehicle classification system [@usepaPopulationActivityOnroad2023].
 
 After reviewing MnDOT's [visual definitions of commercial vehicles](https://www.dot.state.mn.us/traffic/data/reports/wim/Definitions_of_Visual_Classifications_of_Heavy_Commercial_Vehicles.pdf), we defined MnDOT vehicle types 4-7 as medium-duty and types 8-13 as heavy-duty. We believe this configuration aligns most closely with both StreetLight's and MOVES4's vehicle classifications schemes.
 
-However, vehicles falling in FHWA class 7 (> 26,000 lbs, < 33,000 lbs) are classified as medium duty by state DOTs, and heavy duty by StreetLight. This discrepancy is relatively small, 
+However, vehicles falling in FHWA class 7 (> 26,000 lbs, < 33,000 lbs) are classified as medium duty by state DOTs, and heavy duty by StreetLight. This discrepancy is relatively small, and is unlikely to heavily influence emisssions reported.
 
 
 ```{r tbl-vehicle-weight-classifications}
@@ -400,7 +309,7 @@ vehicle_weight_comp <-
   )
 
 gt::gt(vehicle_weight_comp,
-  row_group_as_column = FALSE
+       row_group_as_column = FALSE
 ) %>%
   tab_style(
     style = list(
@@ -471,34 +380,26 @@ gt::gt(vehicle_weight_comp,
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
   ) %>%
-  fmt_markdown() %>%
+  # fmt_markdown() %>%
   as_raw_html()
 ```
 
-<!-- ::: {#fig-vehicle-weight-afdc} -->
-<!-- <iframe style="width: 900px; height: 1073.15px;" src="https://afdc.energy.gov/data/widgets/10380" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe> -->
-<!-- ::: -->
+To create the calibration dataset, we found the ratio of passenger/medium/heavy-duty vehicles for at traffic count stations within our study area. 
 
-
-
-<!-- plot of passenger/medium/heavy percentages for each calibration zone -->
-
-#### Calibration 
-
-For calibration, we found the ratio of passenger/medium/heavy-duty vehicles for traffic sensors within our study areas. 
-
-MnDOT provides AADT road segments, which align with station identification numbers. Wisconsin does not readily supply road segment data - as suggested by the Wisconsin cartographers office [@statecartographersofficeWisconsinRoadData2021], we pulled OpenStreetMaps road data (OSM version `r wi_osm_meta$OSM_version`). 
+MnDOT provides AADT road segments, which align with station identification numbers. Wisconsin does not readily supply AADT road segment data - as suggested by the Wisconsin cartographers office [@statecartographersofficeWisconsinRoadData2021], we pulled OpenStreetMaps road data (OSM version `r wi_osm_meta$OSM_version`). 
 
 To maximize data availability, we used the most recent data available, up to 2021 for both states. 
 
 ### Limitations
 
+- The data used for passenger traffic contains "all vehicles", not just passenger vehicles, meaning that commercial vehicles may be double counted
+- Vehicle classification discrepancy
+- 
+
 ### Comparison with similar datasets
 
-
-### Data dictionary
-
-Table with detailed description of columns and definitions for each data table.
+<!-- ### Data dictionary -->
+<!-- Table with detailed description of columns and definitions for each data table. -->
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
