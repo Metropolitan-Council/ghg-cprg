@@ -76,6 +76,7 @@ resources:
 
 crossref: 
   ref-hyperlink: true
+  chapters: true
   appendix-title: "Appendix"
       
 execute:
@@ -105,4 +106,5 @@ format:
 filters:
   - assets/include-files.lua
   - quarto
+  - nameref
 
