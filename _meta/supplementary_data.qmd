@@ -29,107 +29,127 @@ Note for solid waste, the global warming potentials used to calculate CO~2~e are
 
 ```{r tbl-egrid}
 #| tbl-cap: "Electricity emission factors. 2021 EPA GHG Emission Factor Hub, EPA eGRID2019, February 2021."
-#| out-width: "95%" 
-epa_ghg_factor_hub$egrid %>% 
-  mutate(GHG = str_remove(emission, "lb ")) %>% 
+#| out-width: "95%"
+epa_ghg_factor_hub$egrid %>%
+  mutate(GHG = str_remove(emission, "lb ")) %>%
   select(
-    `eGrid Subregion`, 
+    `eGrid Subregion`,
     `Grid Output` = factor_type,
     GHG,
-    `lb GHG per MWh` = value,
-    Source
-  ) %>% 
-  mutate(GHG = case_when(GHG == "CO2"~ "CO₂",
-                         GHG == "CH4" ~ "CH₄",
-                         GHG == "N2O" ~ "N₂O",
-                         GHG == "cf4" ~ "CF₄",
-                         GHG == "co2_co2_equivalent" ~ "CO₂e",
-                         GHG == "HFC-152a" ~ GHG)) %>%  
+    `lb GHG per MWh` = value
+  ) %>%
+  mutate(GHG = case_when(
+    GHG == "CO2" ~ "CO₂",
+    GHG == "CH4" ~ "CH₄",
+    GHG == "N2O" ~ "N₂O",
+    GHG == "cf4" ~ "CF₄",
+    GHG == "co2_co2_equivalent" ~ "CO₂e",
+    GHG == "HFC-152a" ~ GHG
+  )) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
-  ) 
-
+  )
 ```
 
 ```{r tbl-stationary-combustion}
 #| tbl-cap: "Stationary combustion emission factors. 2021 EPA GHG Emission Factor Hub, Federal Register EPA; 40 CFR Part 98."
 #| out-width: "95%"
-epa_ghg_factor_hub$stationary_combustion %>% 
-  filter(per_unit %in% c("scf",
-                         "mmBtu"),
-         emission != "mmBtu") %>% 
-  tidyr::separate_wider_delim(emission, delim = " ",
-                  names = c("Quantity",
-                            "GHG")) %>% 
-  mutate(Quantity = ifelse(Quantity == "g", "Grams", "Kilograms"),
-         GHG = stringr::str_trim(GHG),
-         GHG = 
-           case_when(GHG == "CO2"~ "CO₂",
-                     GHG == "CH4" ~ "CH₄",
-                     GHG == "N2O" ~ "N₂O",
-                     GHG == "cf4" ~ "CF₄",
-                     GHG == "co2_co2_equivalent" ~ "CO₂e",
-                     GHG == "HFC-152a" ~ GHG)
-  ) %>% 
+epa_ghg_factor_hub$stationary_combustion %>%
+  filter(
+    per_unit %in% c(
+      "scf",
+      "mmBtu"
+    ),
+    emission != "mmBtu"
+  ) %>%
+  tidyr::separate_wider_delim(emission,
+    delim = " ",
+    names = c(
+      "Quantity",
+      "GHG"
+    )
+  ) %>%
+  mutate(
+    Quantity = ifelse(Quantity == "g", "Grams", "Kilograms"),
+    GHG = stringr::str_trim(GHG),
+    GHG =
+      case_when(
+        GHG == "CO2" ~ "CO₂",
+        GHG == "CH4" ~ "CH₄",
+        GHG == "N2O" ~ "N₂O",
+        GHG == "cf4" ~ "CF₄",
+        GHG == "co2_co2_equivalent" ~ "CO₂e",
+        GHG == "HFC-152a" ~ GHG
+      )
+  ) %>%
   select(`Fuel type`,
-         `Fuel category` = fuel_category,
-         GHG,
-         `GHG Quantity` = Quantity,
-         `Unit`= per_unit,
-         Value = value) %>% 
-  group_by(`Fuel category`) %>% 
+    `Fuel category` = fuel_category,
+    GHG,
+    `GHG Quantity` = Quantity,
+    `Unit` = per_unit,
+    Value = value
+  ) %>%
+  group_by(`Fuel category`) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
-  ) 
+  )
 ```
 
 ```{r tbl-waste-factors}
 #| tbl-cap: "Solid waste emission factors. 2021 EPA GHG Emission Factor Hub, EPA WARM version 15, November 2020."
 #| out-width: "95%"
-epa_ghg_factor_hub$waste %>% 
+epa_ghg_factor_hub$waste %>%
   select(Material,
-         Method = name,
-         `Metric tons CO₂e per short ton material` = value) %>% 
-  group_by(Method) %>% 
+    Method = name,
+    `Metric tons CO₂e per short ton material` = value
+  ) %>%
+  group_by(Method) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
-  ) 
+  )
 ```
 ```{r tbl-moves-factors}
-#| tbl-cap: "Transportation emissions factors. Source: EPA MOVES4" 
+#| tbl-cap: "Transportation emissions factors. Source: EPA MOVES4"
 #| out-width: "95%"
 epa_moves %>%
-  pivot_longer(cols = 3:6,
-               names_to = "GHG",
-               values_to = "Value") %>%
+  pivot_longer(
+    cols = 3:6,
+    names_to = "GHG",
+    values_to = "Value"
+  ) %>%
   mutate(
     `Grams per vehicle mile traveled` = Value,
     Source = paste0("EPA MOVES4 (", moves_year, ")"),
-    GHG = case_when(GHG == "co2"~ "CO₂",
-                    GHG == "ch4" ~ "CH₄",
-                    GHG == "n2o" ~ "N₂O",
-                    GHG == "cf4" ~ "CF₄",
-                    GHG == "co2_co2_equivalent" ~ "CO₂e",
-                    GHG == "HFC-152a" ~ GHG)) %>% 
-      select(`Vehicle weight` = vehicle_weight,
-             GHG,
-             `Grams per vehicle mile traveled`) %>% 
-  group_by(`Vehicle weight`) %>% 
+    GHG = case_when(
+      GHG == "co2" ~ "CO₂",
+      GHG == "ch4" ~ "CH₄",
+      GHG == "n2o" ~ "N₂O",
+      GHG == "cf4" ~ "CF₄",
+      GHG == "co2_co2_equivalent" ~ "CO₂e",
+      GHG == "HFC-152a" ~ GHG
+    )
+  ) %>%
+  select(
+    `Vehicle weight` = vehicle_weight,
+    GHG,
+    `Grams per vehicle mile traveled`
+  ) %>%
+  group_by(`Vehicle weight`) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
-  ) 
+  )
 ```
 
 ## Global Warming Potential (GWP) {#sec-gwp}

@@ -408,7 +408,7 @@ egrid <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
       "per_unit"
     )
   ) %>%
-  mutate(across(1:4, stringr::str_trim)) %>% 
+  mutate(across(1:4, stringr::str_trim)) %>%
   mutate(Source = "EPA eGRID2019, February 2021")
 
 
@@ -496,13 +496,13 @@ scope3_cat4_transportation <- readxl::read_xlsx("_meta/data-raw/ghg-emission-fac
 
 
 ## Table 9: Scope 3 Category 5: Waste Generated in Operations and Category 12: End-of-Life Treatment of Sold Products----
-# Source: EPA, Office of Resource Conservation and Recovery (February 2016) Documentation for Greenhouse Gas Emission and Energy Factors used in the Waste Reduction Model (WARM). Factors from tables provided in the Management Practices Chapters and Background Chapters. WARM Version 15, November 2020 Update. Additional data provided  by EPA, WARM-15 Background Data. 	
-# "Notes: These factors do not include any avoided emissions impact from any of the disposal methods. All the factors presented here include transportation emissions, which are optional in the Scope 3 Calculation Guidance, with an assumed average distance traveled to the processing facility. AR4 GWPs are used to convert all waste emission factors into CO2e.   
+# Source: EPA, Office of Resource Conservation and Recovery (February 2016) Documentation for Greenhouse Gas Emission and Energy Factors used in the Waste Reduction Model (WARM). Factors from tables provided in the Management Practices Chapters and Background Chapters. WARM Version 15, November 2020 Update. Additional data provided  by EPA, WARM-15 Background Data.
+# "Notes: These factors do not include any avoided emissions impact from any of the disposal methods. All the factors presented here include transportation emissions, which are optional in the Scope 3 Calculation Guidance, with an assumed average distance traveled to the processing facility. AR4 GWPs are used to convert all waste emission factors into CO2e.
 
-# A Recycling emissions include transport to recycling facility and sorting of recycled materials at material recovery facility.  
+# A Recycling emissions include transport to recycling facility and sorting of recycled materials at material recovery facility.
 # B Landfilling emissions include transport to landfill, equipment use at landfill and fugitive landfill CH4 emissions.  Landfill CH4 is based on typical landfill gas collection practices and average landfill moisture conditions.
-# C Combustion emissions include transport to combustion facility and combustion-related non-biogenic CO2 and N2O  
-# D Composting emissions include transport to composting facility, equipment use at composting facility and CH4 and N2O emissions during composting. "									
+# C Combustion emissions include transport to combustion facility and combustion-related non-biogenic CO2 and N2O
+# D Composting emissions include transport to composting facility, equipment use at composting facility and CH4 and N2O emissions during composting. "
 
 scope3_cat5_cat12_waste <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
   range = "C400:I459",
@@ -518,8 +518,10 @@ scope3_cat5_cat12_waste <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factor
 ) %>%
   mutate(across(2:7, as.numeric)) %>%
   pivot_longer(2:7) %>%
-  mutate(units = "metric tons CO2e per short ton material",
-         Source = "EPA WARM version 15, November 2020")
+  mutate(
+    units = "metric tons CO2e per short ton material",
+    Source = "EPA WARM version 15, November 2020"
+  )
 
 ## Table 10: Scope 3 Category 6: Business Travel and Category 7: Employee Commuting 				----
 # "Source:
@@ -603,18 +605,20 @@ scope3_cat6_commuting <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-
 
 
 epa_ghg_factor_hub <- list(
-  "egrid" = egrid %>% 
+  "egrid" = egrid %>%
     filter(
       `eGrid Subregion` == "MROW (MRO West)",
       factor_type == "Total output"
     ),
-  "stationary_combustion" = stationary_combustion %>% 
-    filter(`Fuel type` %in% c("Propane",
-                                "Kerosene",
-                                "Natural Gas")),
+  "stationary_combustion" = stationary_combustion %>%
+    filter(`Fuel type` %in% c(
+      "Propane",
+      "Kerosene",
+      "Natural Gas"
+    )),
   "mobile_combustion" = kg_co2_per_unit,
   "mobile_combustion_other" = transportation_tbl345,
-  "waste" = scope3_cat5_cat12_waste %>% 
+  "waste" = scope3_cat5_cat12_waste %>%
     filter(
       name %in% c(
         "Landfilled",
