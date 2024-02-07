@@ -254,6 +254,9 @@ plot_ly(
 
 ### Commercial  
 
+StreetLight does not provide StreetLight Volume for 2021 commercial vehicle analyses. To measure volume for commercial traffic, we used the StreetLight Index, a relative measure of traffic volume, calibrated using AADT values to result in traffic volume [@streetlightdataStreetLightIndex2023]. 
+
+StreetLight compares the AADT calibration values for a given zone with StreetLight’s sample size for the same zone, and creates a calibration factor to apply to the entire analysis [@streetlightdataWhatSingleFactor2023]. We generated a calibration zone set for commercial traffic by selecting road segments with both AADT and vehicle classification data in both MN and WI counties within the CPRG study area. Read more about state DOT vehicle weight distribution data in @sec-vehicle-weight-dist.  
 
 ```{r tbl-commercial-stl-sample-size}
 #| tbl-cap: "StreetLight commercial travel analysis sample size" 
@@ -273,11 +276,6 @@ county21_truck_data$sample_size %>%
     locations = cells_column_labels()
   ) 
 ```
-
-
-StreetLight does not provide StreetLight Volume for 2021 commercial vehicle analyses. To measure volume for commercial traffic, we used the StreetLight Index, a relative measure of traffic volume, calibrated using AADT values to result in traffic volume [@streetlightdataStreetLightIndex2023]. 
-
-StreetLight compares the AADT calibration values for a given zone with StreetLight’s sample size for the same zone, and creates a calibration factor to apply to the entire analysis [@streetlightdataWhatSingleFactor2023]. We generated a calibration zone set for commercial traffic by selecting road segments with both AADT and vehicle classification data in both MN and WI counties within the CPRG study area. Read more about state DOT vehicle weight distriubtion data in @sec-vehicle-weight-dist.  
 
 #### Vehicle classification  
 
