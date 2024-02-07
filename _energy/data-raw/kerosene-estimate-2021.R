@@ -33,18 +33,6 @@ kerosene_efficiency_kg <-
   units::set_units("kilograms") %>%
   as.numeric()
 
-# read in efficiency factors
-eff_fac <- readxl::read_excel("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx")
-
-### poor formatting but the co2e for kerosene is:
-kerosene_efficiency_prev <-
-  # CO2 emissions per mmBtu of kerosene used PLUS
-  as.numeric(eff_fac %>% filter(...2 == "Kerosene") %>% select(...4)) +
-  # methane emissions per mmBtu kerosene scale to CO2 equivalency PLUS
-  as.numeric(eff_fac %>% filter(...2 == "Kerosene") %>% select(...5)) * gwp$ch4 +
-  # n20 emissions per mmBtu kerosene scale to CO2 equivalency
-  as.numeric(eff_fac %>% filter(...2 == "Kerosene") %>% select(...6)) * gwp$n2o
-
 # kerosene mmBtu generation estimates are not provided at the state level for MN and WI due to inadequate sample size.
 # Best approximation I can see is regional usage rates, which may skew high
 # source: https://www.eia.gov/consumption/residential/data/2020/state/pdf/ce2.1.st.pdf

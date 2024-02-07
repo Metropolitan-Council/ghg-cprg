@@ -9,10 +9,6 @@ propane_factors <- epa_ghg_factor_hub$stationary_combustion %>%
     per_unit == "mmBtu"
   )
 
-# read in efficiency factors
-eff_fac <- readxl::read_excel("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx")
-# source: https://www.epa.gov/climateleadership/ghg-emission-factors-hub
-
 # CO2e emissions per mmBtu of propane used
 propane_efficiency_grams <-
   # CO2 emissions per mmBtu of propane used, converted from kg to g
@@ -34,16 +30,6 @@ propane_efficiency_kg <-
   units::as_units("grams") %>%
   units::set_units("kilograms") %>%
   as.numeric()
-
-
-### incorrect, uses kg of CO2 but grams of other emissions
-propane_efficiency_prev <-
-  as.numeric(eff_fac %>% filter(...2 == "Propane") %>% select(...4)) +
-  # methane emissions per mmBtu propane scale to CO2 equivalency
-  as.numeric(eff_fac %>% filter(...2 == "Propane") %>% select(...5)) * gwp$ch4 +
-  # n20 emissions per mmBtu propane scale to CO2 equivalency
-  as.numeric(eff_fac %>% filter(...2 == "Propane") %>% select(...6)) * gwp$n2o
-
 
 # source: https://www.eia.gov/consumption/residential/data/2020/state/pdf/ce2.1.st.pdf
 eia2020 <- read.csv("_energy/data-raw/eia-recs-2020.csv")
