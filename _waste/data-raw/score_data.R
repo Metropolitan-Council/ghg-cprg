@@ -50,20 +50,8 @@ epa_ghg_factor_hub <- readRDS("_meta/data/epa_ghg_factor_hub.RDS")
 # WTE = Mixed MSW: Combusted
 # MSW Compost removed because it is empty - remember to test this
 
-waste_factors <- epa_ghg_factor_hub$waste %>%
-  filter(
-    name %in% c(
-      "Landfilled",
-      "Composted",
-      "Combusted",
-      "Recycled"
-    ),
-    Material %in% c(
-      "Mixed MSW",
-      "Mixed Organics",
-      "Mixed Recyclables"
-    )
-  )
+waste_factors <- epa_ghg_factor_hub$waste 
+
 score_final <- score_filtered %>%
   mutate( # emissions factor in metric tons co2/short tons waste
     emissions_factor =
