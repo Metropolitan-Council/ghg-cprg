@@ -17,14 +17,16 @@ mn_counties <- tigris::counties(state = "MN") %>%
     "Sherburne",
     "Chisago",
     "Washington"
-  ))
+  )) %>% 
+  mutate(STATE_ABB = "MN")
 
 # fetch WI counties
 wi_counties <- tigris::counties(state = "WI") %>%
   filter(NAME %in% c(
     "St. Croix",
     "Pierce"
-  ))
+  )) %>% 
+  mutate(STATE_ABB = "WI")
 
 
 # Combine to get cprg_counties
@@ -36,13 +38,14 @@ cprg_county <- bind_rows(mn_counties, wi_counties) %>%
       unique(),
     by = c("STATEFP" = "state_code")
   ) %>%
-  select(STATE = state_name, STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD)
+  select(STATE = state_name, STATE_ABB, STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD)
 
 
 cprg_county_meta <- tribble(
   ~Column, ~Class, ~Description,
   "STATE", class(cprg_county$STATE), "Full state name",
   "STATEFP", class(cprg_county$STATEFP), "State FIPS code",
+  "STATE_ABB", class(cprg_county$STATE_ABB), "Abbreviated state name",
   "COUNTYFP", class(cprg_county$COUNTYFP), "County FIPS code",
   "GEOID", class(cprg_county$GEOID), "County GEOID",
   "NAME", class(cprg_county$NAME), "County name",
@@ -57,7 +60,8 @@ mn_ctu <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
   filter(COUNTY_NAM %in% c(cprg_county$NAME)) %>%
   mutate(
     STATEFP = "27",
-    STATE = "Minnesota"
+    STATE = "Minnesota",
+    STATE_ABB = "MN"
   ) %>%
   select(
     CTU_NAME = FEATURE_NA,
@@ -65,13 +69,14 @@ mn_ctu <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
     COUNTY_NAM,
     STATEFP,
     STATE,
+    STATE_ABB,
     GNIS_FEATU,
     geometry = geom
   ) %>%
   arrange(CTU_NAME)
 
 
-if (file.exists("R/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_July_2023.shp") == FALSE) {
+if (file.exists("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_July_2023.shp") == FALSE) {
   cli::cli_abort(c(
     "Required datasets unavailable",
     "*" = "Download CTU data from the Wisconsin Legislative Technology site",
@@ -92,7 +97,8 @@ wi_ctu <- sf::read_sf("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023
     COUNTY_NAM = CNTY_NAME,
     CTU_NAME = MCD_NAME,
     STATE = "Wisconsin",
-    STATEFP = "55"
+    STATEFP = "55",
+    STATE_ABB = "WI"
   ) %>%
   select(
     CTU_NAME,
@@ -100,6 +106,7 @@ wi_ctu <- sf::read_sf("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023
     COUNTY_NAM,
     STATEFP,
     STATE,
+    STATE_ABB,
     GEOID
   )
 
@@ -112,6 +119,7 @@ cprg_ctu_meta <- tribble(
   "COUNTY_NAM", class(cprg_ctu$COUNTY_NAM), "County name",
   "STATEFP", class(cprg_ctu$STATEFP), "State FIPS code",
   "STATE", class(cprg_ctu$STATE), "Full state name",
+  "STATE_ABB", class(cprg_ctu$STATE_ABB), "Abbreviated state name",
   "GNIS_FEATU", class(cprg_ctu$GNIS_FEATU), "Minnesota geographic identifier",
   "geometry", class(cprg_ctu$geometry)[1], "Simple feature geometry",
   "GEOID", class(cprg_ctu$GEOID), "Wisconsin geographic identifier"
