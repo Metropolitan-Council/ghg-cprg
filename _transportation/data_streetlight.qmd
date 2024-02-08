@@ -16,10 +16,6 @@ hookaddcap()
 
 For ease of access, we used [`{streetlightR}`](https://github.com/Metropolitan-Council/streetlightR) to interact directly with the StreetLight API. `{streetlightR}` is an open-source R package maintained by Council staff. 
 
-
-
-
-
 Data source description, type
 
 - StreetLight Data, falls in second rank. Quality rank (See @tbl-quality-rank)
@@ -45,8 +41,7 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 
 ### Passenger 
 
-For passenger data, we used StreetLight Volume - an estimate of the number of vehicles. The models that make up StreetLight Volume predict vehicle volumes by combining Location-Based Services (LBS) trips with contextual features that represent the street network, demographics, climate, and other geographic characteristics [@streetlightdataStreetLightAllVehicles2023]. 
-
+For passenger data, we used StreetLight Volume - an estimate of the number of vehicles. The models that make up StreetLight Volume predict vehicle volumes by combining Location-Based Services (LBS) trips with contextual features that represent the street network, demographics, climate, and other geographic characteristics [@streetlightdataStreetLightAllVehicles2023]. The models are validated against data permanent traffic counters across the country, including in the study area. 
 
 ```{r tbl-passenger-stl-sample-size}
 #| tbl-cap: "StreetLight passenger travel analysis sample size" 
@@ -277,7 +272,7 @@ county21_truck_data$sample_size %>%
   ) 
 ```
 
-#### Vehicle classification  
+#### Calibration
 
 StreetLight classifies commercial vehicles by Federal Highway Administration (FHWA) gross vehicle weight range (GWVR) classes: where vehicles between 14,000 lbs and 26,000 lbs (Class 4 to Class 6) are considered medium-duty, and vehicles greater than 26,000 lbs (Class 7+) are heavy-duty [@streetlightdataTruckTravelMode2023]. 
 
@@ -380,16 +375,12 @@ gt::gt(vehicle_weight_comp,
   as_raw_html()
 ```
 
-To create the calibration dataset, we found the ratio of passenger/medium/heavy-duty vehicles for at traffic count stations within our study area. 
-
-MnDOT provides AADT road segments, which align with station identification numbers. Wisconsin does not readily supply AADT road segment data - as suggested by the Wisconsin cartographers office [@statecartographersofficeWisconsinRoadData2021], we pulled OpenStreetMaps road data (OSM version `r wi_osm_meta$OSM_version`). 
-
-To maximize data availability, we used the most recent data available, up to 2021 for both states. 
+To create the calibration dataset, we found the ratio of passenger/medium/heavy-duty vehicles for at traffic count stations within our study area using state DOT data. You can read more about vehicle classification data in @sec-vehicle-weight-dist. 
 
 ### Limitations
 
-- The data used for passenger traffic contains "all vehicles", not just passenger vehicles, meaning that commercial vehicles may be double counted
-- Vehicle classification discrepancy
+- The data used for passenger traffic contains "all vehicles", not just passenger vehicles, meaning that commercial vehicles may be double counted. As a default, StreetLight suggests that users use a ratio of 96/2/2 (95% passenger, 2% medium, 2% heavy). We could apply a scaling factor of 0.96 to the passenger data to account for this.
+- Commercial vehicle classifications schemes differ across data sources. 
 - 
 
 ### Comparison with similar datasets

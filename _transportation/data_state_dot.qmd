@@ -81,7 +81,11 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 
 #### Vehicle distribution by weight {#sec-vehicle-weight-dist}
 
+To calibrate the generalized StreetLight Index to get vehicle counts, we created a set of spatial lines (roads) to calibrate StreetLight's metrics. For each calibration road, we found the proportion of passenger, medium-, and heavy-duty vehicles in the most recent available year, up to 2021. 
+
 State DOTs operate vehicle classification stations, which provide both the volume of traffic on a given road segment and, for some locations, the breakdown of volume by vehicle type. We obtained this breakdown using data from MnDOT [@mndotYearlyVolumeTrends2021] and WisDOT [@wisdotWisconsinVehicleClassification2020] reporting websites. 
+
+MnDOT provides AADT road segments, which align with station identification numbers. Wisconsin does not readily supply AADT road segment data - as suggested by the Wisconsin cartographers office [@statecartographersofficeWisconsinRoadData2021], we pulled OpenStreetMaps road data (OSM version `r wi_osm_meta$OSM_version`). 
 
 Then, we selected only the stations within the study area with observations in the last five years (2017-2021). Finally, we joined this data with Average Annual Daily Traffic (AADT) [@mndotVMTRouteSystem2021, @wisdotWisconsinVehicleMiles2021] road segments by station ID. The road segments sampled include multiple road functional classes and segments in all counties. All traffic sensor stations pulled were permanent, continuous monitoring sites.
 
