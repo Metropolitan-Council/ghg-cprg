@@ -19,6 +19,9 @@ hookaddcap()
 ```
 ## Introduction
 
+This is the transportation section, where we estimate on-road emissions. 
+
+Note that this does not include buses, trains, freight rail, light rail, and other transportation emissions.
 
 ## Methods
 
@@ -28,25 +31,29 @@ $$Emmissions = miles \times \frac{\text{GHG grams}}{mile}$$
 
 ### Vehicle Miles Traveled      
 
-To find the estimate number of vehicle miles traveled (VMT), we used the estimated number of vehicles and the average trip length in miles for all origin - destination pairs. VMT is calculated as follows:
+To find the estimate number of vehicle miles traveled (VMT), we used the estimated number of vehicles and the average trip length in miles for all origin - destination pairs and vehicle types (passenger, medium-duy, and heavy-duty). VMT is calculated as follows:
 
-$$VMT{_v} = trips{_v} \times length{_v}$$
-
+$$VMT = trips \times length$$
 where 
 
 $$trips = \text{number of trips}$$
 $$length = \text{average trip length in miles}$$
-$$v = \text{vehicle type}$$
 
 ### Emissions factors
 
-$$Emissions=\frac{1}{2}T_{o} + \frac{1}{2}T_{d}  + T{_d}$$
+You can read more about emissions factors we used in @sec-epa-moves. 
+
+$$Emissions=\frac{1}{2}T_{o} + \frac{1}{2}T_{d}  + T{_s}$$
 
 where
 
 $$T_o=\textrm{grams of emissions for each GHG from all trips originating in the county}$$
 
 $$T_d=\textrm{grams of emissions for each GHG from all trips ending in the county}$$ 
+
+and 
+
+$$T_s=\textrm{grams of emissions for each GHG for trips originating and ending within the county}$$ 
 
 ## Results
 
@@ -136,60 +143,8 @@ plot_ly(
   )
 ```
 
-
-To validate our county origin-destination VMT data, we can compare the county totals to the DOT reported values from MnDOT [@mndotVMTRouteSystem2021] and WisDOT [@wisdotWisconsinVehicleMiles2021]. Note that these data include all vehicles, passenger and commercial. 
-
-```{r hpms-vmt}
-dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
-  filter(year == 2021)
-
-dot_streetlight <- left_join(
-  vmt_emissions_all,
-  dot_vmt,
-  by = c("zone" = "county")
-) %>%
-  unique()
-```
-
-
-```{r fig-streetlight-hpms}
-#| fig-cap: "County vehicle miles traveled and StreetLight Volume"
-#| out-width: "95%"
-plot_ly(
-  data = dot_streetlight,
-  source = opts_current$get()$label,
-  x = ~annual_vmt,
-  y = ~vmt_total,
-  type = "scatter",
-  mode = "markers",
-  hovertemplate = ~ paste0(
-    "County: ", zone, "<br>",
-    "Annual VMT: ", round(annual_vmt * 1e-9, digits = 2), " billion<br>",
-    "StreetLight VMT: ", round(vmt_total * 1e-9, digits = 2), " billion<br>",
-    "<extra></extra>"
-  ),
-  opacity = 0.7,
-  marker = list(
-    size = 18,
-    line = list(
-      color = "lightgray",
-      width = 2
-    )
-  )
-) %>%
-  plotly_layout(
-    main_title = "County vehicle miles traveled and StreetLight Volume",
-    subtitle = "Strong positive correlation",
-    x_title = "Annual VMT (HPMS)",
-    y_title = "StreetLight VMT",
-    legend_title = "",
-    legend = list(orientation = "h")
-  )
-```
-
 ### Comparison with other inventories
 
-- StreetLight GHG inventory method, if released in time.
 - 2018 Met Council inventory
 
 #### National Emissions Inventory 
@@ -253,17 +208,16 @@ plot_ly(
 
 #### Local Greenhouse Gas Inventory Tool (LGGIT)
 
-EPA’s Local Greenhouse Gas Inventory Tool (LGGIT) was developed to help communities across the United States to evaluate their greenhouse gas emissions. We used the LGGIT to validate our calculations and datasets.
+EPA’s Local Greenhouse Gas Inventory Tool (LGGIT) was developed to help communities across the United States to evaluate their greenhouse gas emissions. We used the LGGIT to validate our calculations and datasets [@usepaLocalGreenhouseGas2017].
 
-We used the LGGIT Excel workbook tool with the following inputs in the "Mobile-Data" sheet. Several calculations were made
+We used the LGGIT Excel workbook tool with the following inputs in the "Mobile-Data" sheet. Several calculations and assumptions were made
 
 - Passenger VMT was split between gasoline and diesel powered vehicles based on regional fleet composition in the Travel Behavior Inventory (TBI).
-- Passenger vehicle age was determined from the median vehicle model year in the TBI. 
-- Fuel consumption was calculated by dividing VMT by average vehicle miles per gallon (MPG), specific to vehicle type and fuel type. Fuel efficiency data were taken from the LGGIT tool. 
-
-All medium-duty VMT were classified as "Light Truck", while all heavy-duty VMT were classified as "Heavy-Duty Vehicle".
-
-Additionally, commercial trucks were assumed to be year 2007, based on a 2018 report that found the average age of trucks in the US to be 14.2 years [@brusseauAgingTrucksCreate2019] (`2021 - 14 = 2007`). 
+- Passenger vehicle age was determined from the median vehicle model year in the TBI. See @sec-regional-fleet for more detail.
+- Fuel consumption was calculated by dividing VMT by average vehicle miles per gallon (MPG), specific to vehicle type and fuel type.
+- Fuel efficiency data were taken from the LGGIT tool and verified with the EPA Emission Factors Hub (2021 edition) [@usepaGHGEmissionFactors2021].  
+- All medium-duty VMT were classified as "Light Truck", while all heavy-duty VMT were classified as "Heavy-Duty Vehicle".  
+- Commercial trucks were assumed to be year 2007, based on a 2018 report that found the average age of trucks in the US to be 14.2 years [@brusseauAgingTrucksCreate2019] (`2021 - 14 = 2007`).   
 
 
 ```{r tbl-lggit-entries}
@@ -295,6 +249,7 @@ lggit_total_emiss <- (lggit_totals$total %>% sum()) %>% scales::comma()
 ```
 
 The results from the LGGIT tool indicate a regional total of **`r lggit_total_emiss` metric tons CO~2~e**, while our calculations indicate **`r cprg_total_emiss` metric tons CO~2~e**. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. See @sec-epa-moves for a more detailed comparison.
+
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
 caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")

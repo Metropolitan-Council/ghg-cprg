@@ -33,8 +33,19 @@ plot_ly(
   x = ~year,
   y = ~annual_vmt,
   color = ~data_source,
+  opacity = 0.8,
   type = "scatter",
   mode = "lines+markers",
+    marker = list(
+    size = 16,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  ),
+  line = list(
+    width = 3
+  ),
   hovertemplate = ~ paste0(
     county, " County", "<br>",
     year, "<br>",
@@ -81,7 +92,7 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 
 #### Vehicle distribution by weight {#sec-vehicle-weight-dist}
 
-To calibrate the generalized StreetLight Index to get vehicle counts, we created a set of spatial lines (roads) to calibrate StreetLight's metrics. For each calibration road, we found the proportion of passenger, medium-, and heavy-duty vehicles in the most recent available year, up to 2021. 
+To calibrate the generalized StreetLight Index to get commercial vehicle counts, we created a set of spatial lines (roads) to calibrate StreetLight's metrics. For each calibration road, we found the proportion of passenger, medium-, and heavy-duty vehicles in the most recent available year, up to 2021. 
 
 State DOTs operate vehicle classification stations, which provide both the volume of traffic on a given road segment and, for some locations, the breakdown of volume by vehicle type. We obtained this breakdown using data from MnDOT [@mndotYearlyVolumeTrends2021] and WisDOT [@wisdotWisconsinVehicleClassification2020] reporting websites. 
 
