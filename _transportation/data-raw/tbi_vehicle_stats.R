@@ -135,7 +135,7 @@ tbi_vehicle_fuel_age <- veh21 %>%
   arrange(-est_n)
 
 saveRDS(tbi_vehicle_fuel_age, "_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS")
-
+saveRDS(veh21, "_transportation/data-raw/tbi/veh21.RDS")
 
 # remove these large datasets so they don't slow down
 # your session
