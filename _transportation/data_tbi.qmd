@@ -56,10 +56,10 @@ tbi_vehicle_fuel_age %>%
 ```{r fig-regional-fuel-veh-age}
 #| fig-cap: "Regional vehicle fleet model year by fuel type"
 #| out-width: "95%"
+
 fuel_dist_pl <- plot_ly(
   type = "box",
   data = veh21,
-  # x = ~fuel_orig,
   x = ~year,
   y = ~fuel_orig,
   name = "Original fuel types"
@@ -81,8 +81,7 @@ subplot(
   fuel_dist_pl,
   shareX = TRUE,
   heights = c(0.2, 0.8),
-  nrows = 2,
-  source = opts_current$get()$label
+  nrows = 2
 ) %>%
   plotly_layout(
     main_title = "Regional fleet vehicle year by fuel type",
@@ -138,8 +137,7 @@ plot_ly(
   y = ~trip_o_county,
   boxpoints = "outliers"
 ) %>%
-  plotly_layout(x_title = "Trip length (miles)") %>%
-  layout(yaxis = list(traceorder = "reversed"))
+  plotly_layout(x_title = "Trip length (miles)")
 ```
 
 Introduction text 
