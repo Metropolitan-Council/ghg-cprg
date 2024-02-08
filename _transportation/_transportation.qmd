@@ -15,6 +15,14 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
+vmt_emissions_all <- vmt_emissions %>%
+  group_by(zone) %>%
+  summarise(
+    vmt_total = sum(vmt_total),
+    vmt_same = sum(vmt_same),
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  )
 hookaddcap()
 ```
 ## Introduction
@@ -60,15 +68,6 @@ $$T_s=\textrm{grams of emissions for each GHG for trips originating and ending w
 ```{r fig-transportation-county-emissions}
 #| fig-cap: "2021 annual emissions by vehicle weight"
 #| out-width: "95%"
-vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
-
-vmt_emissions_all <- vmt_emissions %>%
-  group_by(zone) %>%
-  summarise(
-    vmt_total = sum(vmt_total),
-    vmt_same = sum(vmt_same),
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
-  )
 
 plot_ly(
   type = "bar",
