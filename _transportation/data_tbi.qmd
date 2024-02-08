@@ -19,7 +19,7 @@ hookaddcap()
 The Metropolitan Council Travel Behavior Inventory (TBI) is a bi-annual household survey around 7,500 families in the 7-county Twin Cities metro and three neighboring Wisconsin counties. Information on people, households, trips, and vehicles are collected. 
 
 
-## Regional fleet characteristics {#sec-regional-fleet}
+### Regional fleet characteristics {#sec-regional-fleet}
 
 We used 2021 TBI data to determine the regional average vehicle age and distribution of diesel and gasoline passenger vehicles.
 
@@ -94,14 +94,13 @@ subplot(
   )
 ```
 
-## Average trip distance between counties
+### Average trip distance between counties
 
 The average trip distance for the entire region is `r round(regional_trip_length_avg$mean_trip_dist, 2)` miles (standard error `r round(regional_trip_length_avg$mean_trip_dist_se, 2)`), based on a sample of `r scales::comma(regional_trip_length_avg$n)`  trips.   
 
 ```{r tbl-od-trip-length}
 #| tbl-cap: "Mean trip distance by origin-destination county"
 #| out-width: "95%"
-#| output-location: "column"
 tbi_od_ordered_trip_length %>%
   select(
     "Origin-Destination pair" = origin_dest_county_pair,
