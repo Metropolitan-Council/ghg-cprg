@@ -36,7 +36,7 @@ plot_ly(
   opacity = 0.8,
   type = "scatter",
   mode = "lines+markers",
-    marker = list(
+  marker = list(
     size = 16,
     line = list(
       color = "lightgray",

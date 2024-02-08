@@ -17,7 +17,7 @@ mn_counties <- tigris::counties(state = "MN") %>%
     "Sherburne",
     "Chisago",
     "Washington"
-  )) %>% 
+  )) %>%
   mutate(STATE_ABB = "MN")
 
 # fetch WI counties
@@ -25,7 +25,7 @@ wi_counties <- tigris::counties(state = "WI") %>%
   filter(NAME %in% c(
     "St. Croix",
     "Pierce"
-  )) %>% 
+  )) %>%
   mutate(STATE_ABB = "WI")
 
 

@@ -46,20 +46,22 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 For passenger data, we used StreetLight Volume - an estimate of the number of vehicles. The models that make up StreetLight Volume predict vehicle volumes by combining Location-Based Services (LBS) trips with contextual features that represent the street network, demographics, climate, and other geographic characteristics [@streetlightdataStreetLightAllVehicles2023]. The models are validated against data permanent traffic counters across the country, including in the study area. 
 
 ```{r tbl-passenger-stl-sample-size}
-#| tbl-cap: "StreetLight passenger travel analysis sample size" 
+#| tbl-cap: "StreetLight passenger travel analysis sample size"
 #| out-width: "95%"
-county21_data$sample_size %>% 
-  select(`Data periods` = data_periods,
-         `Mode of travel` = mode_of_travel,
-         `Approximate device count` = approximate_device_count,
-         `Approximate trip count` = approximate_trip_count) %>% 
+county21_data$sample_size %>%
+  select(
+    `Data periods` = data_periods,
+    `Mode of travel` = mode_of_travel,
+    `Approximate device count` = approximate_device_count,
+    `Approximate trip count` = approximate_trip_count
+  ) %>%
   gt() %>%
   gt::opt_row_striping() %>%
-  gt::fmt_number(columns = 3:4, decimals = 0) %>% 
+  gt::fmt_number(columns = 3:4, decimals = 0) %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
-  ) 
+  )
 ```
 
 
@@ -200,20 +202,22 @@ We can also compare these distances with the observed average trip distance from
 
 ```{r passenger-od-tbi-distance}
 passenger_od_tbi_distance <- passenger_od_trip %>%
-  left_join(tbi_od_ordered_trip_length, by =c("origin_zone_name" = "trip_o_county",
-                                              "destination_zone_name" = "trip_d_county")) %>% 
+  left_join(tbi_od_ordered_trip_length, by = c(
+    "origin_zone_name" = "trip_o_county",
+    "destination_zone_name" = "trip_d_county"
+  )) %>%
   rowwise() %>%
   mutate(
     pair_type = case_when(
       origin_zone_name == destination_zone_name ~ "Same county",
       TRUE ~ "Different county"
     )
-  ) %>% 
+  ) %>%
   filter(!is.na(mean_trip_dist))
 ```
 
 ```{r fig-trip-dist-tbi}
-#| fig-cap:  "Avg. trip distance, Travel Behavior Inventory and StreetLight" 
+#| fig-cap:  "Avg. trip distance, Travel Behavior Inventory and StreetLight"
 #| out-width: "95%"
 
 one_slope <- tibble(
@@ -231,11 +235,11 @@ plot_ly(
   type = "scatter",
   mode = "markers",
   hoverinfo = "text",
-  hovertemplate = ~paste0(
+  hovertemplate = ~ paste0(
     "Origin county: ", origin_zone_name, "<br>",
     "Destination county: ", destination_zone_name, "<br>",
-    "StL avg. trip length: ", round(avg_all_trip_length_mi, digits = 1), " miles","<br>",
-    "TBI avg. trip length: ", round(mean_trip_dist, digits = 1), " miles","<br>",
+    "StL avg. trip length: ", round(avg_all_trip_length_mi, digits = 1), " miles", "<br>",
+    "TBI avg. trip length: ", round(mean_trip_dist, digits = 1), " miles", "<br>",
     "<extra></extra>"
   ),
   opacity = 0.6,
@@ -283,7 +287,7 @@ Comparing trip distance and county area, we see a general positive correlation (
 #| out-width: "95%"
 cprg_area <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-           as.numeric())
+    as.numeric())
 
 passenger_dist_area <- left_join(
   passenger_od_trip %>%
@@ -335,22 +339,23 @@ StreetLight does not provide StreetLight Volume for 2021 commercial vehicle anal
 StreetLight compares the AADT calibration values for a given zone with StreetLight’s sample size for the same zone, and creates a calibration factor to apply to the entire analysis [@streetlightdataWhatSingleFactor2023]. We generated a calibration zone set for commercial traffic by selecting road segments with both AADT and vehicle classification data in both MN and WI counties within the CPRG study area. Read more about state DOT vehicle weight distribution data in @sec-vehicle-weight-dist.  
 
 ```{r tbl-commercial-stl-sample-size}
-#| tbl-cap: "StreetLight commercial travel analysis sample size" 
+#| tbl-cap: "StreetLight commercial travel analysis sample size"
 #| out-width: "95%"
-county21_truck_data$sample_size %>% 
+county21_truck_data$sample_size %>%
   select(
     `Data periods` = data_periods,
     `Mode of travel` = mode_of_travel,
     `Vehicle weight` = vehicle_weight,
     `Approximate device count` = approximate_device_count,
-    `Approximate trip count` = approximate_trip_count) %>% 
+    `Approximate trip count` = approximate_trip_count
+  ) %>%
   gt() %>%
   gt::opt_row_striping() %>%
-  gt::fmt_number(columns = 5, decimals = 0) %>% 
+  gt::fmt_number(columns = 5, decimals = 0) %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
-  ) 
+  )
 ```
 
 #### Calibration
@@ -381,7 +386,7 @@ vehicle_weight_comp <-
   )
 
 gt::gt(vehicle_weight_comp,
-       row_group_as_column = FALSE
+  row_group_as_column = FALSE
 ) %>%
   tab_style(
     style = list(
