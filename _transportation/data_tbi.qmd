@@ -2,22 +2,34 @@
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
+veh21 <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/veh21.RDS")) %>% 
+  mutate(fuel_orig = forcats::fct_rev(fuel_orig),
+         fuel = forcats::fct_rev(fuel))
+trip21 <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/trip21.RDS")) 
+regional_trip_length_avg <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_regional_trip_length_avg.RDS"))
+
+
+
+tbi_vehicle_fuel_age <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS"))
+
 hookaddcap()
 ```
 
 
 The Metropolitan Council Travel Behavior Inventory (TBI) is a bi-annual household survey around 7,500 families in the 7-county Twin Cities metro and three neighboring Wisconsin counties. Information on people, households, trips, and vehicles are collected. 
 
+
+## Regional fleet characteristics 
+
 We used 2021 TBI data to determine the regional average vehicle age and distribution of diesel and gasoline passenger vehicles.
 
 Vehicles were classified into broad fuel categories - diesel and gas + all other fuels (including gasoline, electric, flex-fuel, hybrid, and plug-in hybrid) to best match the average miles per gallon table specifications in the EPA Local Greenhouse Gas Inventory Tool. The resulting value is on par with recent statistics from the Bureau of Transportation Statistics (BTS), which calculates the average passenger vehicle age in 2021 to be 12.1 years [@btsAverageAgeAutomobiles2023]. 
 
+TBI data were cleaned to only include vehicles with complete data and model year 1980 or later. 
+
 ```{r tbl-vehicle-fuel-age}
 #| tbl-cap: "Median vehicle age and proportion of all regional vehicles by fuel type"
 #| out-width: "95%"
-
-tbi_vehicle_fuel_age <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS"))
-
 tbi_vehicle_fuel_age %>%
   select(
     "Fuel type" = fuel,
@@ -39,6 +51,95 @@ tbi_vehicle_fuel_age %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+```
+
+```{r fig-regional-fuel-veh-age}
+#| fig-cap: "Regional vehicle fleet model year by fuel type"
+#| out-width: "95%" 
+fuel_dist_pl <- plot_ly(
+  type = "box",
+  data = veh21,
+  # x = ~fuel_orig,
+  x = ~year,
+  y = ~fuel_orig,
+  name = "Original fuel types"
+) %>% 
+  plotly_layout()
+
+
+fuel_grp <- plot_ly(
+  type = "box",
+  data = veh21,
+  x = ~year,
+  y = ~fuel,
+  name = "Grouped fuels"
+) %>% 
+  plotly_layout() 
+
+subplot(
+  fuel_grp,
+  fuel_dist_pl,
+  shareX = TRUE,
+  heights = c(0.2, 0.8),
+  nrows = 2,
+  source = opts_current$get()$label
+) %>% 
+  plotly_layout(
+    main_title = "Regional fleet vehicle year by fuel type",
+    subtitle = "2021 Travel Behavior Inventory",
+    x_title = "Vehicle model year",
+    y_title = ""
+  ) %>% 
+  layout(
+    legend = list(orientation = "h"))
+
+```
+
+## Average trip distance between counties
+
+The average trip distance for the entire region is `r round(regional_trip_length_avg$mean_trip_dist, 2)` miles (standard error `r round(regional_trip_length_avg$mean_trip_dist_se, 2)`), based on a sample of `r scales::comma(regional_trip_length_avg$n)` vehicles. 
+
+```{r tbl-od-trip-length}
+#| tbl-cap: "Mean trip distance by origin-destination county"
+#| out-width: "95%"
+#| output-location: "column" 
+tbi_od_ordered_trip_length %>% 
+    select(
+    "Origin-Destination pair" = origin_dest_county_pair,
+    "Sample size" = n,
+    "Mean trip distance (miles)" = mean_trip_dist,
+    "Mean trip distance standard error" = mean_trip_dist_se,
+    "Estimated number of vehicles" = estimate_n,
+    "Estimated number of vehicles standard error" = estimate_n_se,
+  ) %>%
+  gt() %>% 
+  fmt_number(c(2,5,6),
+             decimals = 0) %>% 
+  fmt_number(3:4,
+             decimals = 2) %>% 
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+  
+```
+
+
+Trips with distance over 720 miles (the equivalent of 12 hours of driving at 60 miles per hour) were removed. 
+
+```{r}
+plot_ly(
+  data= trip21,
+  type = "box",
+  x = ~distance,
+  y = ~trip_o_county,
+  boxpoints = "outliers"
+) %>% 
+  plotly_layout(x_title = "Trip length (miles)") %>% 
+  layout(yaxis = list(traceorder = "reversed"))
+
 ```
 
 Introduction text 
