@@ -189,13 +189,7 @@ calibration_long <- commercial_points %>%
         vehicle_weight == "personal_traffic_ratio" ~ "Passenger",
         vehicle_weight == "medium_commercial_ratio" ~ "Medium-duty",
         vehicle_weight == "heavy_commercial_ratio" ~ "Heavy-duty",
-      ),
-    hovertext = paste0(
-      "Name: ", name, "<br>",
-      "Year: ", year, "<br>",
-      scales::percent(value, accuracy = 1), " ", vehicle_weight, "<br>",
-      "<extra></extra>"
-    )
+      )
   )
 
 plot_ly(
@@ -206,10 +200,16 @@ plot_ly(
   y = ~value,
   color = ~vehicle_weight,
   hoverinfo = "text",
-  hovertemplate = ~hovertext
+  hovertemplate = ~paste0(
+      "Name: ", name, "<br>",
+      "Year: ", year, "<br>",
+      scales::percent(value, accuracy = 1), " ", vehicle_weight, "<br>",
+      "<extra></extra>"
+    )
 ) %>%
   plotly_layout(
     main_title = "Vehicle weight distribution",
+    subtitle = "Select locations used for calibration",
     y_title = "Proportion of all traffic",
     x_title = "Calibration zone",
     legend_title = "Vehicle weight"

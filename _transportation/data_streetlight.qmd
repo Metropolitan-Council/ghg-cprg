@@ -72,7 +72,7 @@ county21_data$sample_size %>%
 ```
 
 
-#### Trip length validation 
+#### Trip length validation {#sec-trip-length-validation}
 
 StreetLight returns not only vehicle volume, but also trip attributes, like trip length. We then use this to estimate vehicle miles traveled, by multiplying volume by average trip length for each origin-destination pair. 
 
@@ -150,8 +150,7 @@ In cases where the origin and destination counties are not adjacent, the average
 #| out-width: "95%"
 one_slope <- tibble(
   x = 0:max(passenger_od_distance$distance_miles + 10),
-  y = 0:max(passenger_od_distance$distance_miles + 10),
-  hovertext = "1-1 slope <extra></extra>"
+  y = 0:max(passenger_od_distance$distance_miles + 10)
 )
 
 plot_ly(
@@ -192,7 +191,7 @@ plot_ly(
     x = ~x,
     y = ~y,
     hoverinfo = "text",
-    hovertemplate = one_slope$hovertext,
+    hovertemplate = "1-1 slope <extra></extra>",
     line = list(color = "gray")
   ) %>%
   plotly_layout(
@@ -229,8 +228,7 @@ passenger_od_tbi_distance <- passenger_od_trip %>%
 
 one_slope <- tibble(
   x = 0:max(passenger_od_tbi_distance$mean_trip_dist + 10),
-  y = 0:max(passenger_od_tbi_distance$mean_trip_dist + 10),
-  hovertext = "1-1 slope <extra></extra>"
+  y = 0:max(passenger_od_tbi_distance$mean_trip_dist + 10)
 )
 
 plot_ly(
@@ -271,7 +269,7 @@ plot_ly(
     x = ~x,
     y = ~y,
     hoverinfo = "text",
-    hovertemplate = one_slope$hovertext,
+    hovertemplate = "1-1 slope <extra></extra>",
     line = list(color = "gray")
   ) %>%
   plotly_layout(
@@ -301,13 +299,7 @@ passenger_dist_area <- left_join(
     filter(origin_zone_name == destination_zone_name),
   cprg_area,
   by = c("origin_zone_name" = "NAME")
-) %>%
-  mutate(hovertext = paste0(
-    "County: ", origin_zone_name, "<br>",
-    "County area: ", round(area_sq_mi), " sq. miles", "<br>",
-    "Average trip length: ", round(avg_all_trip_length_mi, digits = 2), " miles",
-    "<extra></extra>"
-  ))
+)
 
 
 plot_ly(
@@ -318,7 +310,12 @@ plot_ly(
   type = "scatter",
   mode = "markers",
   hoverinfo = "text",
-  hovertemplate = passenger_dist_area$hovertext,
+  hovertemplate = ~paste0(
+    "County: ", origin_zone_name, "<br>",
+    "County area: ", round(area_sq_mi), " sq. miles", "<br>",
+    "Average trip length: ", round(avg_all_trip_length_mi, digits = 2), " miles",
+    "<extra></extra>"
+  ),
   opacity = 0.7,
   marker = list(
     size = 18,
