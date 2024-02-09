@@ -19,8 +19,14 @@ hh21 <- tbi21$household %>%
   # filter to households in the CPRG counties
   filter(hh_county %in% cprg_tbi_hh_counties)
 
+valid_fuels <- tbi21$vehicle %>% 
+  group_by(fuel) %>% 
+  count() %>% 
+  filter(n > 30)
+
 veh21 <- tbi21$vehicle %>%
-  filter(hh_id %in% hh21$hh_id) %>%
+  filter(hh_id %in% hh21$hh_id,
+         fuel %in% valid_fuels$fuel) %>%
   mutate(
     fuel_orig = recode_factor(fuel,
       "Missing: Skip logic" = "Other/Not Provided",
