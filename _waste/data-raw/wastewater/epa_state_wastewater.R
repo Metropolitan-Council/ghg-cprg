@@ -32,28 +32,28 @@ wi_state_est <- 0.6 * 10^6
 # taken from WI state inventory document (https://widnr.widen.net/view/pdf/o9xmpot5x7/AM610.pdf?t.download=true)
 # wisconsindnrWisconsinGreenhouseGas2021
 
-wi_2020 <- tidycensus::get_decennial("county",
-  state = "WI",
-  variables = "P1_001N",
-  year = 2020
-) %>%
-  mutate(pop_percent = value / sum(value)) %>%
-  filter(GEOID %in% cprg_county$GEOID) %>%
+
+cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
+cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
+
+wi_2020 <- cprg_county_proportions %>%
+  filter(
+    STATE == "Wisconsin",
+    year == "2020"
+  ) %>%
   mutate(
-    epa_co2e = pop_percent * wi_epa_est,
-    state_co2e = pop_percent * wi_state_est
+    epa_co2e = county_proportion_of_state_pop * wi_epa_est,
+    state_co2e = county_proportion_of_state_pop * wi_state_est
   )
 
-mn_2020 <- tidycensus::get_decennial("county",
-  state = "MN",
-  variables = "P1_001N",
-  year = 2020
-) %>%
-  mutate(pop_percent = value / sum(value)) %>%
-  filter(GEOID %in% cprg_county$GEOID) %>%
+mn_2020 <- cprg_county_proportions %>%
+  filter(
+    STATE == "Minnesota",
+    year == "2020"
+  ) %>%
   mutate(
-    epa_co2e = pop_percent * mn_epa_est,
-    state_co2e = pop_percent * mn_state_est
+    epa_co2e = county_proportion_of_state_pop * mn_epa_est,
+    state_co2e = county_proportion_of_state_pop * mn_state_est
   )
 
 ww_epa <- rows_append(
