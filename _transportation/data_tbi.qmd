@@ -98,6 +98,9 @@ subplot(
 
 The average trip distance for the entire region is `r round(regional_trip_length_avg$mean_trip_dist, 2)` miles (standard error `r round(regional_trip_length_avg$mean_trip_dist_se, 2)`), based on a sample of `r scales::comma(regional_trip_length_avg$n)`  trips.   
 
+
+:::{.scrolling}
+
 ```{r tbl-od-trip-length}
 #| tbl-cap: "Mean trip distance by origin-destination county"
 #| out-width: "95%"
@@ -125,6 +128,7 @@ tbi_od_ordered_trip_length %>%
   gt::as_raw_html()
 ```
 
+:::
 
 Trips with distance over 720 miles (the equivalent of 12 hours of driving at 60 miles per hour) were removed. 
 
