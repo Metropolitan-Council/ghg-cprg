@@ -3,8 +3,15 @@ library(srvyr, warn.conflicts = FALSE)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
-cprg_tbi_counties <- cprg_county %>%
-  mutate(tbi_county = paste0(NAME, " ", STATE_ABB)) %>%
+cprg_tbi_hh_counties <- c("Anoka MN", "Carver MN",
+                       "Chisago MN", "Dakota MN", "Hennepin MN",
+                       "PIERCE WI", "Ramsey MN",
+                       "Scott MN", "Sherburne MN",  "ST. CROIX WI",
+                       "Washington MN")
+
+
+cprg_tbi_counties <- cprg_county %>% 
+  mutate(tbi_county = paste0(NAME, " ", STATE_ABB)) %>% 
   magrittr::extract2("tbi_county")
 
 load(url(paste0(
@@ -14,9 +21,10 @@ load(url(paste0(
 
 hh21 <- tbi21$household %>%
   # filter to households in the CPRG counties
-  filter(home_county %in% cprg_county$NAME)
+  filter(hh_county %in% cprg_tbi_hh_counties)
 
-summary(tbi21$trip$distance)
+nrow(hh21 == 7475)
+# summary(tbi21$trip$distance)
 
 trip21 <- tbi21$trip %>%
   filter(
@@ -26,8 +34,8 @@ trip21 <- tbi21$trip %>%
       "Other Vehicle",
       "For-Hire Vehicle"
     ),
-    trip_o_county %in% cprg_tbi_counties,
-    trip_d_county %in% cprg_tbi_counties,
+    as.character(trip_o_county) %in% cprg_tbi_counties,
+    as.character(trip_d_county) %in% cprg_tbi_counties,
     !is.na(distance),
     distance < 720,
     distance > 0
