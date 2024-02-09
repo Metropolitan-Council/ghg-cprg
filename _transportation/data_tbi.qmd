@@ -56,6 +56,7 @@ tbi_vehicle_fuel_age %>%
 ```{r fig-regional-fuel-veh-age}
 #| fig-cap: "Regional vehicle fleet model year by fuel type"
 #| out-width: "95%"
+#| out-height: "400px"
 
 fuel_dist_pl <- plot_ly(
   type = "box",

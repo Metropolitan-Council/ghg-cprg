@@ -20,7 +20,6 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 hookaddcap()
 ```
 
-
 {{< include data_streetlight.qmd >}}
 
 {{< include data_state_dot.qmd >}}
@@ -28,7 +27,6 @@ hookaddcap()
 {{< include data_epa_moves.qmd >}}
 
 {{< include data_tbi.qmd >}}
-
 
 
 ```{r echo=FALSE}
