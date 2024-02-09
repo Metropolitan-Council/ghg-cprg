@@ -1,7 +1,7 @@
 # get data from state GHG emissions and removals
 # https://www.epa.gov/ghgemissions/state-ghg-emissions-and-removals
 source("R/_load_pkgs.R")
-cprg_county <- readRDS("R/data/cprg_county.RDS")
+cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 
 # ipcc sectors -----
