@@ -54,7 +54,8 @@ trip21 <- tbi21$trip %>%
     trip_o_county = stringr::str_remove(trip_o_county, " MN"),
     trip_d_county = stringr::str_remove(trip_d_county, " MN")
   ) %>%
-  mutate(origin_dest_county_pair = paste0(trip_o_county, "-", trip_d_county))
+  mutate(origin_dest_county_pair = paste0(trip_o_county, "-", trip_d_county),
+         distance_zscore = (distance - mean(distance)/sd(distance)))
 
 
 regional_trip_length_avg <-
@@ -66,21 +67,28 @@ regional_trip_length_avg <-
   summarize(
     mean_trip_dist = survey_mean(distance, vartype = "se"),
     estimate_n = survey_total(),
-    n = unweighted(n())
+    n = unweighted(n()),
+    var = survey_var(distance, vartype = "var")
   )
 
 
 # find unique, unordered origin-destination pairs
-v1 <- do.call(paste, as.data.frame(t(apply(trip21[, 6:7], 1, sort))))
-trip21$od_pair <- match(v1, unique(v1))
+od_pairs <- do.call(paste, as.data.frame(t(apply(trip21[, 6:7], 1, sort))))
+trip21$od_pair <- match(od_pairs, unique(od_pairs))
 
 od_pair_index <- trip21 %>%
   select(od_pair, trip_o_county, trip_d_county, origin_dest_county_pair) %>%
   unique() %>%
   mutate(pair_type = ifelse(trip_o_county == trip_d_county, "Same county", "Different county"))
 
+low_od_pairs <- trip21 %>% 
+  group_by(od_pair) %>% 
+  count() %>% 
+  filter(n < 30)
+
 
 tbi_mean_trip_length <- trip21 %>%
+  filter(!od_pair %in% low_od_pairs$od_pair) %>% 
   as_survey(
     ids = trip_id,
     weights = trip_weight
@@ -96,6 +104,7 @@ tbi_mean_trip_length <- trip21 %>%
 
 
 tbi_od_ordered_trip_length <- trip21 %>%
+  filter(!od_pair %in% low_od_pairs$od_pair) %>% 
   as_survey(
     ids = trip_id,
     weights = trip_weight
@@ -116,8 +125,8 @@ tbi_od_ordered_trip_length <- trip21 %>%
 saveRDS(tbi_mean_trip_length, "_transportation/data-raw/tbi/tbi_mean_trip_length.RDS")
 saveRDS(tbi_od_ordered_trip_length, "_transportation/data-raw/tbi/tbi_od_ordered_trip_length.RDS")
 saveRDS(regional_trip_length_avg, "_transportation/data-raw/tbi/tbi_regional_trip_length_avg.RDS")
-
 saveRDS(trip21, "_transportation/data-raw/tbi/trip21.RDS")
+
 # remove these large datasets so they don't slow down
 # your session
 remove(hh21)
