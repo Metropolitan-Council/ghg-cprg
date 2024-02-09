@@ -3,6 +3,7 @@
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
 hookaddcap()
 ```
 
@@ -87,8 +88,8 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 
 ##### Limitations
 
-- Usually only samples county and state roads, primary arterials
-- Not every site is sampled every year
+- Usually only samples county and state roads, primary arterials. Local roads are not sampled.
+- Not every site is sampled every year.
 
 #### Vehicle distribution by weight {#sec-vehicle-weight-dist}
 
@@ -111,12 +112,12 @@ commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commer
 
 commercial_points <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_points.RDS")) %>%
   mutate(hover_info = paste0(
-    "Name: ", name, "<br>",
-    "AADT: ", scales::comma(current_volume), "<br>",
-    "Year: ", year, "<br>",
-    "Passenger traffic: ", scales::percent(personal_traffic_ratio, accuracy = 1), "<br>",
-    "Medium-duty traffic: ", scales::percent(medium_commercial_ratio, accuracy = 1), "<br>",
-    "Heavy-duty traffic: ", scales::percent(heavy_commercial_ratio, accuracy = 1), "<br>"
+    "<b>", "Name ","</b>", name, "<br>",
+    "<b>","AADT ", "</b>",scales::comma(current_volume), "<br>",
+    "<b>","Year ","</b>", year, "<br>",
+    "<b>","Passenger traffic ","</b>", scales::percent(personal_traffic_ratio, accuracy = 1), "<br>",
+    "<b>","Medium-duty traffic ","</b>", scales::percent(medium_commercial_ratio, accuracy = 1), "<br>",
+    "<b>","Heavy-duty traffic ","</b>", scales::percent(heavy_commercial_ratio, accuracy = 1), "<br>"
   ))
 
 
