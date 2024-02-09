@@ -311,8 +311,9 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#sec-gwp" id="toc-sec-gwp" class="nav-link active" data-scroll-target="#sec-gwp"><span class="header-section-number">A.1</span> Global Warming Potential (GWP)</a></li>
-  <li><a href="#geographic-data" id="toc-geographic-data" class="nav-link" data-scroll-target="#geographic-data"><span class="header-section-number">A.2</span> Geographic data</a></li>
+  <li><a href="#sec-factors" id="toc-sec-factors" class="nav-link active" data-scroll-target="#sec-factors"><span class="header-section-number">A.1</span> Emissions factors</a></li>
+  <li><a href="#sec-gwp" id="toc-sec-gwp" class="nav-link" data-scroll-target="#sec-gwp"><span class="header-section-number">A.2</span> Global Warming Potential (GWP)</a></li>
+  <li><a href="#geographic-data" id="toc-geographic-data" class="nav-link" data-scroll-target="#geographic-data"><span class="header-section-number">A.3</span> Geographic data</a></li>
   </ul>
 </nav>
     </div>
@@ -336,57 +337,2020 @@ div.csl-indent {
 
 </header>
 
-<!-- ## Emissions factors {#sec-factors} -->
-<!-- ```{r tbl-emmissions-factors-all} -->
-<!-- #| tbl-cap: "Emissions factors grouped by sector" -->
-<!-- #| out-width: "95%" -->
-<!-- source(file.path(here::here(), "_energy/data-raw/_energy_emissions_factors.R")) -->
-<!-- epa_moves <- readRDS(file.path(here::here(), "_transportation/data/epa_moves.RDS")) -->
-<!-- elec_factors <- tribble( -->
-<!--   ~Units, ~Gas, ~Value, ~Source, -->
-<!--   "Pounds per megawatt hour", "CO₂", eGRID_MROW_emissionsFactor_CO2, "eGRID MROW", -->
-<!--   "Pounds per megawatt hour", "CH₄", eGRID_MROW_emissionsFactor_CH4, "eGRID MROW", -->
-<!--   "Pounds per megawatt hour", "N₂O", eGRID_MROW_emissionsFactor_N2O, "eGRID MROW" -->
-<!-- ) %>%  -->
-<!--   mutate(Sector = "Energy", Category = "Electricity") %>%  -->
-<!--   select(Sector, Category, everything()) -->
-<!-- moves_factors <- epa_moves %>%  -->
-<!--   pivot_longer(cols = 3:6, -->
-<!--                names_to = "Gas", -->
-<!--                values_to = "Value") %>%  -->
-<!--   mutate(Sector = "Transportation", -->
-<!--          Category = vehicle_weight, -->
-<!--          Units = "Grams per vehicle mile traveled", -->
-<!--          Source = paste0("EPA MOVES4 (", moves_year, ")"), -->
-<!--          Gas = case_when(Gas == "co2"~ "CO₂", -->
-<!--                          Gas == "ch4" ~ "CH₄", -->
-<!--                          Gas == "n2o" ~ "N₂O", -->
-<!--                          Gas == "cf4" ~ "CF₄", -->
-<!--                          Gas == "co2_co2_equivalent" ~ "CO₂e", -->
-<!--                          Gas == "HFC-152a" ~ Gas) -->
-<!-- ) %>%  -->
-<!--   select(names(elec_factors)) -->
-<!-- bind_rows(elec_factors, -->
-<!--           moves_factors) %>%  -->
-<!--   group_by(Sector, Units) %>%  -->
-<!--   gt() %>%  -->
-<!--   gt::opt_row_striping() %>% -->
-<!--   tab_style( -->
-<!--     style = cell_text(weight = "bold"), -->
-<!--     locations = cells_column_labels() -->
-<!--   ) -->
-<!-- ``` -->
-<section id="sec-gwp" class="level2" data-number="A.1">
-<h2 data-number="A.1" class="anchored" data-anchor-id="sec-gwp"><span class="header-section-number">A.1</span> Global Warming Potential (GWP)</h2>
+<section id="sec-factors" class="level2" data-number="A.1">
+<h2 data-number="A.1" class="anchored" data-anchor-id="sec-factors"><span class="header-section-number">A.1</span> Emissions factors</h2>
+<p>Note for solid waste, the global warming potentials used to calculate CO<sub>2</sub>e are sourced AR4, not AR5, like the rest of our inventory. However, when we dug into documentation for the EPA WARM tool <span class="citation" data-cites="usepaWARMManagementPractices2019">(<a href="../references.html#ref-usepaWARMManagementPractices2019" role="doc-biblioref">USEPA 2019</a>)</span>, we found that the differences in total CO<sub>2</sub>e emissions were negligible.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-egrid" class="anchored">
+
+<div id="ubfngtcmef" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ubfngtcmef table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#ubfngtcmef thead, #ubfngtcmef tbody, #ubfngtcmef tfoot, #ubfngtcmef tr, #ubfngtcmef td, #ubfngtcmef th {
+  border-style: none;
+}
+
+#ubfngtcmef p {
+  margin: 0;
+  padding: 0;
+}
+
+#ubfngtcmef .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ubfngtcmef .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#ubfngtcmef .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ubfngtcmef .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ubfngtcmef .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ubfngtcmef .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ubfngtcmef .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ubfngtcmef .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ubfngtcmef .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ubfngtcmef .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ubfngtcmef .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ubfngtcmef .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ubfngtcmef .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ubfngtcmef .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#ubfngtcmef .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ubfngtcmef .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ubfngtcmef .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ubfngtcmef .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ubfngtcmef .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ubfngtcmef .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ubfngtcmef .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ubfngtcmef .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ubfngtcmef .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ubfngtcmef .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ubfngtcmef .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ubfngtcmef .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ubfngtcmef .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ubfngtcmef .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ubfngtcmef .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ubfngtcmef .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ubfngtcmef .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ubfngtcmef .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ubfngtcmef .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ubfngtcmef .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ubfngtcmef .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ubfngtcmef .gt_left {
+  text-align: left;
+}
+
+#ubfngtcmef .gt_center {
+  text-align: center;
+}
+
+#ubfngtcmef .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ubfngtcmef .gt_font_normal {
+  font-weight: normal;
+}
+
+#ubfngtcmef .gt_font_bold {
+  font-weight: bold;
+}
+
+#ubfngtcmef .gt_font_italic {
+  font-style: italic;
+}
+
+#ubfngtcmef .gt_super {
+  font-size: 65%;
+}
+
+#ubfngtcmef .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#ubfngtcmef .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ubfngtcmef .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ubfngtcmef .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ubfngtcmef .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ubfngtcmef .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ubfngtcmef .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false"><caption>Table&nbsp;A.1:  <p>Electricity emission factors. 2021 EPA GHG Emission Factor Hub, EPA
+eGRID2019, February 2021.</p> </caption>
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="eGrid Subregion">eGrid Subregion</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="Grid Output">Grid Output</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="GHG">GHG</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="lb GHG per MWh">lb GHG per MWh</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="eGrid Subregion" class="gt_row gt_left">MROW (MRO West)</td>
+<td headers="Grid Output" class="gt_row gt_left">Total output</td>
+<td headers="GHG" class="gt_row gt_left">CO₂</td>
+<td headers="lb GHG per MWh" class="gt_row gt_right">1098.400</td></tr>
+    <tr><td headers="eGrid Subregion" class="gt_row gt_left gt_striped">MROW (MRO West)</td>
+<td headers="Grid Output" class="gt_row gt_left gt_striped">Total output</td>
+<td headers="GHG" class="gt_row gt_left gt_striped">CH₄</td>
+<td headers="lb GHG per MWh" class="gt_row gt_right gt_striped">0.119</td></tr>
+    <tr><td headers="eGrid Subregion" class="gt_row gt_left">MROW (MRO West)</td>
+<td headers="Grid Output" class="gt_row gt_left">Total output</td>
+<td headers="GHG" class="gt_row gt_left">N₂O</td>
+<td headers="lb GHG per MWh" class="gt_row gt_right">0.017</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-stationary-combustion" class="anchored">
+
+<div id="qzsdqnwwyv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#qzsdqnwwyv table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#qzsdqnwwyv thead, #qzsdqnwwyv tbody, #qzsdqnwwyv tfoot, #qzsdqnwwyv tr, #qzsdqnwwyv td, #qzsdqnwwyv th {
+  border-style: none;
+}
+
+#qzsdqnwwyv p {
+  margin: 0;
+  padding: 0;
+}
+
+#qzsdqnwwyv .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#qzsdqnwwyv .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#qzsdqnwwyv .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#qzsdqnwwyv .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#qzsdqnwwyv .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qzsdqnwwyv .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qzsdqnwwyv .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qzsdqnwwyv .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#qzsdqnwwyv .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#qzsdqnwwyv .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#qzsdqnwwyv .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#qzsdqnwwyv .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#qzsdqnwwyv .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#qzsdqnwwyv .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#qzsdqnwwyv .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qzsdqnwwyv .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#qzsdqnwwyv .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#qzsdqnwwyv .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#qzsdqnwwyv .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qzsdqnwwyv .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#qzsdqnwwyv .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#qzsdqnwwyv .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#qzsdqnwwyv .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qzsdqnwwyv .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#qzsdqnwwyv .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#qzsdqnwwyv .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qzsdqnwwyv .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qzsdqnwwyv .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#qzsdqnwwyv .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qzsdqnwwyv .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#qzsdqnwwyv .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qzsdqnwwyv .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qzsdqnwwyv .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qzsdqnwwyv .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qzsdqnwwyv .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qzsdqnwwyv .gt_left {
+  text-align: left;
+}
+
+#qzsdqnwwyv .gt_center {
+  text-align: center;
+}
+
+#qzsdqnwwyv .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#qzsdqnwwyv .gt_font_normal {
+  font-weight: normal;
+}
+
+#qzsdqnwwyv .gt_font_bold {
+  font-weight: bold;
+}
+
+#qzsdqnwwyv .gt_font_italic {
+  font-style: italic;
+}
+
+#qzsdqnwwyv .gt_super {
+  font-size: 65%;
+}
+
+#qzsdqnwwyv .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#qzsdqnwwyv .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#qzsdqnwwyv .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#qzsdqnwwyv .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#qzsdqnwwyv .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#qzsdqnwwyv .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#qzsdqnwwyv .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false"><caption>Table&nbsp;A.2:  <p>Stationary combustion emission factors. 2021 EPA GHG Emission Factor
+Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="Fuel type">Fuel type</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="GHG">GHG</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="GHG Quantity">GHG Quantity</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="Unit">Unit</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="Value">Value</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_group_heading_row">
+      <th colspan="5" class="gt_group_heading" scope="colgroup" id="Natural Gas">Natural Gas</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Natural Gas  Fuel type" class="gt_row gt_left">Natural Gas</td>
+<td headers="Natural Gas  GHG" class="gt_row gt_left">CO₂</td>
+<td headers="Natural Gas  GHG Quantity" class="gt_row gt_left">Kilograms</td>
+<td headers="Natural Gas  Unit" class="gt_row gt_left">mmBtu</td>
+<td headers="Natural Gas  Value" class="gt_row gt_right">53.06000</td></tr>
+    <tr><td headers="Natural Gas  Fuel type" class="gt_row gt_left gt_striped">Natural Gas</td>
+<td headers="Natural Gas  GHG" class="gt_row gt_left gt_striped">CH₄</td>
+<td headers="Natural Gas  GHG Quantity" class="gt_row gt_left gt_striped">Grams</td>
+<td headers="Natural Gas  Unit" class="gt_row gt_left gt_striped">mmBtu</td>
+<td headers="Natural Gas  Value" class="gt_row gt_right gt_striped">1.00000</td></tr>
+    <tr><td headers="Natural Gas  Fuel type" class="gt_row gt_left">Natural Gas</td>
+<td headers="Natural Gas  GHG" class="gt_row gt_left">N₂O</td>
+<td headers="Natural Gas  GHG Quantity" class="gt_row gt_left">Grams</td>
+<td headers="Natural Gas  Unit" class="gt_row gt_left">mmBtu</td>
+<td headers="Natural Gas  Value" class="gt_row gt_right">0.10000</td></tr>
+    <tr><td headers="Natural Gas  Fuel type" class="gt_row gt_left gt_striped">Natural Gas</td>
+<td headers="Natural Gas  GHG" class="gt_row gt_left gt_striped">CO₂</td>
+<td headers="Natural Gas  GHG Quantity" class="gt_row gt_left gt_striped">Kilograms</td>
+<td headers="Natural Gas  Unit" class="gt_row gt_left gt_striped">scf</td>
+<td headers="Natural Gas  Value" class="gt_row gt_right gt_striped">0.05444</td></tr>
+    <tr><td headers="Natural Gas  Fuel type" class="gt_row gt_left">Natural Gas</td>
+<td headers="Natural Gas  GHG" class="gt_row gt_left">CH₄</td>
+<td headers="Natural Gas  GHG Quantity" class="gt_row gt_left">Grams</td>
+<td headers="Natural Gas  Unit" class="gt_row gt_left">scf</td>
+<td headers="Natural Gas  Value" class="gt_row gt_right">0.00103</td></tr>
+    <tr><td headers="Natural Gas  Fuel type" class="gt_row gt_left gt_striped">Natural Gas</td>
+<td headers="Natural Gas  GHG" class="gt_row gt_left gt_striped">N₂O</td>
+<td headers="Natural Gas  GHG Quantity" class="gt_row gt_left gt_striped">Grams</td>
+<td headers="Natural Gas  Unit" class="gt_row gt_left gt_striped">scf</td>
+<td headers="Natural Gas  Value" class="gt_row gt_right gt_striped">0.00010</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="5" class="gt_group_heading" scope="colgroup" id="Petroleum Products">Petroleum Products</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Petroleum Products  Fuel type" class="gt_row gt_left">Kerosene</td>
+<td headers="Petroleum Products  GHG" class="gt_row gt_left">CO₂</td>
+<td headers="Petroleum Products  GHG Quantity" class="gt_row gt_left">Kilograms</td>
+<td headers="Petroleum Products  Unit" class="gt_row gt_left">mmBtu</td>
+<td headers="Petroleum Products  Value" class="gt_row gt_right">75.20000</td></tr>
+    <tr><td headers="Petroleum Products  Fuel type" class="gt_row gt_left gt_striped">Kerosene</td>
+<td headers="Petroleum Products  GHG" class="gt_row gt_left gt_striped">CH₄</td>
+<td headers="Petroleum Products  GHG Quantity" class="gt_row gt_left gt_striped">Grams</td>
+<td headers="Petroleum Products  Unit" class="gt_row gt_left gt_striped">mmBtu</td>
+<td headers="Petroleum Products  Value" class="gt_row gt_right gt_striped">3.00000</td></tr>
+    <tr><td headers="Petroleum Products  Fuel type" class="gt_row gt_left">Kerosene</td>
+<td headers="Petroleum Products  GHG" class="gt_row gt_left">N₂O</td>
+<td headers="Petroleum Products  GHG Quantity" class="gt_row gt_left">Grams</td>
+<td headers="Petroleum Products  Unit" class="gt_row gt_left">mmBtu</td>
+<td headers="Petroleum Products  Value" class="gt_row gt_right">0.60000</td></tr>
+    <tr><td headers="Petroleum Products  Fuel type" class="gt_row gt_left gt_striped">Propane</td>
+<td headers="Petroleum Products  GHG" class="gt_row gt_left gt_striped">CO₂</td>
+<td headers="Petroleum Products  GHG Quantity" class="gt_row gt_left gt_striped">Kilograms</td>
+<td headers="Petroleum Products  Unit" class="gt_row gt_left gt_striped">mmBtu</td>
+<td headers="Petroleum Products  Value" class="gt_row gt_right gt_striped">62.87000</td></tr>
+    <tr><td headers="Petroleum Products  Fuel type" class="gt_row gt_left">Propane</td>
+<td headers="Petroleum Products  GHG" class="gt_row gt_left">CH₄</td>
+<td headers="Petroleum Products  GHG Quantity" class="gt_row gt_left">Grams</td>
+<td headers="Petroleum Products  Unit" class="gt_row gt_left">mmBtu</td>
+<td headers="Petroleum Products  Value" class="gt_row gt_right">3.00000</td></tr>
+    <tr><td headers="Petroleum Products  Fuel type" class="gt_row gt_left gt_striped">Propane</td>
+<td headers="Petroleum Products  GHG" class="gt_row gt_left gt_striped">N₂O</td>
+<td headers="Petroleum Products  GHG Quantity" class="gt_row gt_left gt_striped">Grams</td>
+<td headers="Petroleum Products  Unit" class="gt_row gt_left gt_striped">mmBtu</td>
+<td headers="Petroleum Products  Value" class="gt_row gt_right gt_striped">0.60000</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-waste-factors" class="anchored">
+
+<div id="ayscuiqwns" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ayscuiqwns table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#ayscuiqwns thead, #ayscuiqwns tbody, #ayscuiqwns tfoot, #ayscuiqwns tr, #ayscuiqwns td, #ayscuiqwns th {
+  border-style: none;
+}
+
+#ayscuiqwns p {
+  margin: 0;
+  padding: 0;
+}
+
+#ayscuiqwns .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ayscuiqwns .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#ayscuiqwns .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ayscuiqwns .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ayscuiqwns .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ayscuiqwns .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ayscuiqwns .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ayscuiqwns .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ayscuiqwns .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ayscuiqwns .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ayscuiqwns .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ayscuiqwns .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ayscuiqwns .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ayscuiqwns .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#ayscuiqwns .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ayscuiqwns .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ayscuiqwns .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ayscuiqwns .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ayscuiqwns .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ayscuiqwns .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ayscuiqwns .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ayscuiqwns .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ayscuiqwns .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ayscuiqwns .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ayscuiqwns .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ayscuiqwns .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ayscuiqwns .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ayscuiqwns .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ayscuiqwns .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ayscuiqwns .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ayscuiqwns .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ayscuiqwns .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ayscuiqwns .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ayscuiqwns .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ayscuiqwns .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ayscuiqwns .gt_left {
+  text-align: left;
+}
+
+#ayscuiqwns .gt_center {
+  text-align: center;
+}
+
+#ayscuiqwns .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ayscuiqwns .gt_font_normal {
+  font-weight: normal;
+}
+
+#ayscuiqwns .gt_font_bold {
+  font-weight: bold;
+}
+
+#ayscuiqwns .gt_font_italic {
+  font-style: italic;
+}
+
+#ayscuiqwns .gt_super {
+  font-size: 65%;
+}
+
+#ayscuiqwns .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#ayscuiqwns .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ayscuiqwns .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ayscuiqwns .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ayscuiqwns .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ayscuiqwns .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ayscuiqwns .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false"><caption>Table&nbsp;A.3:  <p>Solid waste emission factors. 2021 EPA GHG Emission Factor Hub, EPA
+WARM version 15, November 2020.</p> </caption>
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="Material">Material</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="Metric tons CO₂e per short ton material">Metric tons CO₂e per short ton material</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_group_heading_row">
+      <th colspan="2" class="gt_group_heading" scope="colgroup" id="Recycled">Recycled</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Recycled  Material" class="gt_row gt_left">Mixed Recyclables</td>
+<td headers="Recycled  Metric tons CO₂e per short ton material" class="gt_row gt_right">0.09</td></tr>
+    <tr><td headers="Recycled  Material" class="gt_row gt_left gt_striped">Mixed Organics</td>
+<td headers="Recycled  Metric tons CO₂e per short ton material" class="gt_row gt_right gt_striped">NA</td></tr>
+    <tr><td headers="Recycled  Material" class="gt_row gt_left">Mixed MSW</td>
+<td headers="Recycled  Metric tons CO₂e per short ton material" class="gt_row gt_right">NA</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="2" class="gt_group_heading" scope="colgroup" id="Landfilled">Landfilled</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Landfilled  Material" class="gt_row gt_left gt_striped">Mixed Recyclables</td>
+<td headers="Landfilled  Metric tons CO₂e per short ton material" class="gt_row gt_right gt_striped">0.68</td></tr>
+    <tr><td headers="Landfilled  Material" class="gt_row gt_left">Mixed Organics</td>
+<td headers="Landfilled  Metric tons CO₂e per short ton material" class="gt_row gt_right">0.48</td></tr>
+    <tr><td headers="Landfilled  Material" class="gt_row gt_left gt_striped">Mixed MSW</td>
+<td headers="Landfilled  Metric tons CO₂e per short ton material" class="gt_row gt_right gt_striped">0.52</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="2" class="gt_group_heading" scope="colgroup" id="Combusted">Combusted</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Combusted  Material" class="gt_row gt_left">Mixed Recyclables</td>
+<td headers="Combusted  Metric tons CO₂e per short ton material" class="gt_row gt_right">0.11</td></tr>
+    <tr><td headers="Combusted  Material" class="gt_row gt_left gt_striped">Mixed Organics</td>
+<td headers="Combusted  Metric tons CO₂e per short ton material" class="gt_row gt_right gt_striped">0.05</td></tr>
+    <tr><td headers="Combusted  Material" class="gt_row gt_left">Mixed MSW</td>
+<td headers="Combusted  Metric tons CO₂e per short ton material" class="gt_row gt_right">0.43</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="2" class="gt_group_heading" scope="colgroup" id="Composted">Composted</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Composted  Material" class="gt_row gt_left gt_striped">Mixed Recyclables</td>
+<td headers="Composted  Metric tons CO₂e per short ton material" class="gt_row gt_right gt_striped">NA</td></tr>
+    <tr><td headers="Composted  Material" class="gt_row gt_left">Mixed Organics</td>
+<td headers="Composted  Metric tons CO₂e per short ton material" class="gt_row gt_right">0.17</td></tr>
+    <tr><td headers="Composted  Material" class="gt_row gt_left gt_striped">Mixed MSW</td>
+<td headers="Composted  Metric tons CO₂e per short ton material" class="gt_row gt_right gt_striped">NA</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-moves-factors" class="anchored">
+
+<div id="nuskyrskut" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#nuskyrskut table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#nuskyrskut thead, #nuskyrskut tbody, #nuskyrskut tfoot, #nuskyrskut tr, #nuskyrskut td, #nuskyrskut th {
+  border-style: none;
+}
+
+#nuskyrskut p {
+  margin: 0;
+  padding: 0;
+}
+
+#nuskyrskut .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#nuskyrskut .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#nuskyrskut .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#nuskyrskut .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#nuskyrskut .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nuskyrskut .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nuskyrskut .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nuskyrskut .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#nuskyrskut .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#nuskyrskut .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#nuskyrskut .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#nuskyrskut .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#nuskyrskut .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#nuskyrskut .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#nuskyrskut .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#nuskyrskut .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#nuskyrskut .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#nuskyrskut .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#nuskyrskut .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nuskyrskut .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#nuskyrskut .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#nuskyrskut .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#nuskyrskut .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nuskyrskut .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#nuskyrskut .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#nuskyrskut .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nuskyrskut .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nuskyrskut .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#nuskyrskut .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nuskyrskut .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#nuskyrskut .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nuskyrskut .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nuskyrskut .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nuskyrskut .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nuskyrskut .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nuskyrskut .gt_left {
+  text-align: left;
+}
+
+#nuskyrskut .gt_center {
+  text-align: center;
+}
+
+#nuskyrskut .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#nuskyrskut .gt_font_normal {
+  font-weight: normal;
+}
+
+#nuskyrskut .gt_font_bold {
+  font-weight: bold;
+}
+
+#nuskyrskut .gt_font_italic {
+  font-style: italic;
+}
+
+#nuskyrskut .gt_super {
+  font-size: 65%;
+}
+
+#nuskyrskut .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#nuskyrskut .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#nuskyrskut .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#nuskyrskut .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#nuskyrskut .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#nuskyrskut .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#nuskyrskut .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false"><caption>Table&nbsp;A.4:  <p>Transportation emissions factors. Source: EPA MOVES4</p> </caption>
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="GHG">GHG</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="Grams per vehicle mile traveled">Grams per vehicle mile traveled</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_group_heading_row">
+      <th colspan="2" class="gt_group_heading" scope="colgroup" id="Passenger">Passenger</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Passenger  GHG" class="gt_row gt_left">CO₂</td>
+<td headers="Passenger  Grams per vehicle mile traveled" class="gt_row gt_right">353.4300</td></tr>
+    <tr><td headers="Passenger  GHG" class="gt_row gt_left gt_striped">CO₂e</td>
+<td headers="Passenger  Grams per vehicle mile traveled" class="gt_row gt_right gt_striped">356.3600</td></tr>
+    <tr><td headers="Passenger  GHG" class="gt_row gt_left">CH₄</td>
+<td headers="Passenger  Grams per vehicle mile traveled" class="gt_row gt_right">0.0100</td></tr>
+    <tr><td headers="Passenger  GHG" class="gt_row gt_left gt_striped">N₂O</td>
+<td headers="Passenger  Grams per vehicle mile traveled" class="gt_row gt_right gt_striped">0.0100</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="2" class="gt_group_heading" scope="colgroup" id="Medium">Medium</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Medium  GHG" class="gt_row gt_left">CO₂</td>
+<td headers="Medium  Grams per vehicle mile traveled" class="gt_row gt_right">473.2400</td></tr>
+    <tr><td headers="Medium  GHG" class="gt_row gt_left gt_striped">CO₂e</td>
+<td headers="Medium  Grams per vehicle mile traveled" class="gt_row gt_right gt_striped">476.1700</td></tr>
+    <tr><td headers="Medium  GHG" class="gt_row gt_left">CH₄</td>
+<td headers="Medium  Grams per vehicle mile traveled" class="gt_row gt_right">0.0100</td></tr>
+    <tr><td headers="Medium  GHG" class="gt_row gt_left gt_striped">N₂O</td>
+<td headers="Medium  Grams per vehicle mile traveled" class="gt_row gt_right gt_striped">0.0100</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="2" class="gt_group_heading" scope="colgroup" id="Heavy">Heavy</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="Heavy  GHG" class="gt_row gt_left">CO₂</td>
+<td headers="Heavy  Grams per vehicle mile traveled" class="gt_row gt_right">1212.3600</td></tr>
+    <tr><td headers="Heavy  GHG" class="gt_row gt_left gt_striped">CO₂e</td>
+<td headers="Heavy  Grams per vehicle mile traveled" class="gt_row gt_right gt_striped">1223.5898</td></tr>
+    <tr><td headers="Heavy  GHG" class="gt_row gt_left">CH₄</td>
+<td headers="Heavy  Grams per vehicle mile traveled" class="gt_row gt_right">0.0206</td></tr>
+    <tr><td headers="Heavy  GHG" class="gt_row gt_left gt_striped">N₂O</td>
+<td headers="Heavy  Grams per vehicle mile traveled" class="gt_row gt_right gt_striped">0.0402</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-gwp" class="level2" data-number="A.2">
+<h2 data-number="A.2" class="anchored" data-anchor-id="sec-gwp"><span class="header-section-number">A.2</span> Global Warming Potential (GWP)</h2>
 <p>The Global Warming Potential (GWP) was developed to allow comparisons of the global warming impacts of different gases. Specifically, it is a measure of how much energy the emissions of 1 ton of a gas will absorb over a given period of time, relative to the emissions of 1 ton of carbon dioxide (CO<sub>2</sub>). The larger the GWP, the more that a given gas warms the Earth compared to CO2 over that time period <span class="citation" data-cites="usepaUnderstandingGlobalWarming2023">(<a href="../references.html#ref-usepaUnderstandingGlobalWarming2023" role="doc-biblioref">USEPA 2023</a>)</span>.</p>
 <p>Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5), Box 3.2, Table 1 <span class="citation" data-cites="ipccClimateChange2014">(<a href="../references.html#ref-ipccClimateChange2014" role="doc-biblioref">IPCC and Core Writing Team 2014</a>)</span>. See <a href="R/global_warming_potential.R">R/global_warming_potential.R</a>.</p>
-<div class="cell" data-hash="supplementary_data_cache/html/tbl-gwp_6c4b497c5df3306e7c1ef8e5cb4d0a28">
+<div class="cell">
 <div class="cell-output-display">
 <div id="tbl-gwp" class="anchored">
 
-<div id="jrozgffjdn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="vvemgmjepp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
-  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.1:  <p>Global Warming Potential (GWP) values</p> </caption>
+  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.5:  <p>Global Warming Potential (GWP) values</p> </caption>
   <thead style="border-style: none;">
     
     <tr class="gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
@@ -424,19 +2388,19 @@ div.csl-indent {
 </div>
 </div>
 </section>
-<section id="geographic-data" class="level2" data-number="A.2">
-<h2 data-number="A.2" class="anchored" data-anchor-id="geographic-data"><span class="header-section-number">A.2</span> Geographic data</h2>
+<section id="geographic-data" class="level2" data-number="A.3">
+<h2 data-number="A.3" class="anchored" data-anchor-id="geographic-data"><span class="header-section-number">A.3</span> Geographic data</h2>
 <p>Geographic data were processed in <a href="../R/cprg_geography.R">cprg_geography.R</a>.</p>
-<section id="counties" class="level3" data-number="A.2.1">
-<h3 data-number="A.2.1" class="anchored" data-anchor-id="counties"><span class="header-section-number">A.2.1</span> Counties</h3>
+<section id="counties" class="level3" data-number="A.3.1">
+<h3 data-number="A.3.1" class="anchored" data-anchor-id="counties"><span class="header-section-number">A.3.1</span> Counties</h3>
 <p>County data was pulled using <code>{tigris}</code>, an R package that downloads TIGER/Line shapefiles from the US Census Bureau <span class="citation" data-cites="walkerTigrisLoadCensus2023">(<a href="../references.html#ref-walkerTigrisLoadCensus2023" role="doc-biblioref">Walker 2023</a>)</span>. 2021 geographies for Minnesota and Wisconsin were pulled, combined, and saved.</p>
-<div class="cell" data-hash="supplementary_data_cache/html/tbl-cprg-county_ef0bcc5f39009c63174536676b5ae560">
+<div class="cell">
 <div class="cell-output-display">
 <div id="tbl-cprg-county" class="anchored">
 
-<div id="ynfbbhymxk" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="vgeuirnviu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
-  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.2:  <p>County geography metadata</p> </caption>
+  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.6:  <p>County geography metadata</p> </caption>
   <thead style="border-style: none;">
     
     <tr class="gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
@@ -476,13 +2440,13 @@ div.csl-indent {
 </div>
 </div>
 <p>Additionally, population estimates were obtained from the American Community Survey 5-Year estimates (2017-2021) using <code>{tidycensus}</code> <span class="citation" data-cites="Census2022ACSDP1Y2022.DP05">(<a href="../references.html#ref-Census2022ACSDP1Y2022.DP05" role="doc-biblioref">U.S. Census Bureau 2021</a>)</span>.</p>
-<div class="cell" data-hash="supplementary_data_cache/html/tbl-cprg-population_4e869d753e09563bf3033584306fabb4">
+<div class="cell">
 <div class="cell-output-display">
 <div id="tbl-cprg-population" class="anchored">
 
-<div id="miusbdlfmu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="wbofvucabr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
-  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.3:  <p>County population metadata</p> </caption>
+  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.7:  <p>County population metadata</p> </caption>
   <thead style="border-style: none;">
     
     <tr class="gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
@@ -525,18 +2489,18 @@ div.csl-indent {
 </div>
 </div>
 </section>
-<section id="cities" class="level3" data-number="A.2.2">
-<h3 data-number="A.2.2" class="anchored" data-anchor-id="cities"><span class="header-section-number">A.2.2</span> Cities</h3>
+<section id="cities" class="level3" data-number="A.3.2">
+<h3 data-number="A.3.2" class="anchored" data-anchor-id="cities"><span class="header-section-number">A.3.2</span> Cities</h3>
 <p>Minnesota cities, townships, and unorganized territories were imported from <a href="https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg">Minnesota Geospatial Commons</a> <span class="citation" data-cites="mndotCityTownshipUnorganized2023">(<a href="../references.html#ref-mndotCityTownshipUnorganized2023" role="doc-biblioref">MnDOT 2023</a>)</span>.</p>
 <p>Wisconsin cities, towns, and villages were imported from Wisconsin’s Legislative Technology Services Bureau <span class="citation" data-cites="wisconsinlegislatureWisconsinCitiesTowns2023">(<a href="../references.html#ref-wisconsinlegislatureWisconsinCitiesTowns2023" role="doc-biblioref">Wisconsin Legislature 2023</a>)</span>.</p>
 <p>Data from both states was then combined and filtered to include only the workplan area counties.</p>
-<div class="cell" data-hash="supplementary_data_cache/html/tbl-cprg-ctu_b8db9902b8a72a928043d80baa313772">
+<div class="cell">
 <div class="cell-output-display">
 <div id="tbl-cprg-ctu" class="anchored">
 
-<div id="xmyrrnfnrw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="pvcpffhmjn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
-  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.4:  <p>City geography metadata</p> </caption>
+  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.8:  <p>City geography metadata</p> </caption>
   <thead style="border-style: none;">
     
     <tr class="gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
@@ -590,8 +2554,11 @@ MnDOT. 2023. <span>“City, <span>Township</span>, and <span>Unorganized Territo
 <div id="ref-Census2022ACSDP1Y2022.DP05" class="csl-entry" role="listitem">
 U.S. Census Bureau. 2021. <span>“<span>ACS</span> Demographic and Housing Estimates.”</span> U.S. Census Bureau. <a href="https://data.census.gov/table/ACSDP5Y2021.DP05?g=050XX00US27053_040XX00US27">https://data.census.gov/table/ACSDP5Y2021.DP05?g=050XX00US27053_040XX00US27</a>.
 </div>
+<div id="ref-usepaWARMManagementPractices2019" class="csl-entry" role="listitem">
+USEPA. 2019. <span>“<span>WARM</span> - <span>Management Practices Chapters</span> (Version 15).”</span> Government. <span>US EPA Office of Resource Conservation and Recovery, Prepared by ICF</span>. <a href="https://www.epa.gov/sites/default/files/2019-10/documents/warm_v15_management_practices_updated_10-08-2019.pdf">https://www.epa.gov/sites/default/files/2019-10/documents/warm_v15_management_practices_updated_10-08-2019.pdf</a>.
+</div>
 <div id="ref-usepaUnderstandingGlobalWarming2023" class="csl-entry" role="listitem">
-USEPA. 2023. <span>“Understanding <span>Global Warming Potentials</span>.”</span> Government. <a href="https://www.epa.gov/ghgemissions/understanding-global-warming-potentials">https://www.epa.gov/ghgemissions/understanding-global-warming-potentials</a>.
+———. 2023. <span>“Understanding <span>Global Warming Potentials</span>.”</span> Government. <a href="https://www.epa.gov/ghgemissions/understanding-global-warming-potentials">https://www.epa.gov/ghgemissions/understanding-global-warming-potentials</a>.
 </div>
 <div id="ref-walkerTigrisLoadCensus2023" class="csl-entry" role="listitem">
 Walker, Kyle. 2023. <em>Tigris: <span>Load</span> Census <span>TIGER</span>/<span>Line</span> Shapefiles</em>. Manual. <a href="https://CRAN.R-project.org/package=tigris">https://CRAN.R-project.org/package=tigris</a>.
