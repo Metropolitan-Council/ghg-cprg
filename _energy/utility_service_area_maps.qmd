@@ -18,7 +18,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
-cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS")) %>% 
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS")) %>%
   st_union()
 
 # MN
@@ -50,7 +50,7 @@ Since there is no state-maintained map of natural gas service territories in Min
 
 ```{r fig-minnesota-ng-servTerrs}
 #| fig-cap: "Nationwide utility service service territories"
-#| out-width: "95%" 
+#| out-width: "95%"
 #| out-height: "500px"
 
 # Create a color palette
@@ -75,7 +75,6 @@ MN_ng_servTerrs <- council_leaflet() %>%
     popup = cprg_county$NAMELSAD,
     group = "County outlines"
   ) %>%
-  
   addPolygons(
     data = MN_allUtilities_countrywide %>% sf::st_transform(4326),
     fill = TRUE,
@@ -98,7 +97,7 @@ MN_ng_servTerrs
 
 ```{r fig-MN-ng-inScope-servTerrs}
 #| fig-cap: "Minnesota utility service service territories in scope"
-#| out-width: "95%" 
+#| out-width: "95%"
 #| out-height: "600px"
 
 # Create a color palette
@@ -122,7 +121,6 @@ MN_ng_inScope_servTerrs <- council_leaflet() %>%
     popup = cprg_county$NAMELSAD,
     group = "County outlines"
   ) %>%
-  
   addPolygons(
     data = MN_inScopeUtilities %>% sf::st_transform(4326),
     fill = TRUE,
@@ -199,7 +197,7 @@ Wisconsin utilities in scope
 
 ```{r fig-wisconsin-ng-inScope-servTerrs}
 #| fig-cap: "Wisconsin utility service service territories in scope"
-#| out-width: "95%" 
+#| out-width: "95%"
 #| out-height: "500px"
 # Create a color palette
 inScopeUtilities <- unique(WI_inScopeUtilities$utility_name)
