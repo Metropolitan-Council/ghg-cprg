@@ -21,9 +21,9 @@ hookaddcap()
 
 {{< include data_mpca_score.qmd >}}
 
-{{< include data_wastewater.qmd >}}
-
 {{< include data_wi_emissions.qmd >}}
+
+{{< include data_wastewater.qmd >}}
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
