@@ -18,6 +18,8 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS")) %>% 
+  st_union()
 
 # MN
 MN_inScopeUtilities <- read_rds(here(
@@ -40,13 +42,17 @@ hookaddcap()
 ```
 
 
-To identify the utilities operating within our 11-county study area, we utilized data sets published by state and federal sources. The outcome of our data collection, yielding a list of distinct utilities for which activity data should be collected, resides within distinct_natGas_util_WI.RDS (4 utilities, all investor-owned) and distinct_natGas_util_type_MN.RDS (7 utilities, six investor-owned and one municipally-owned)
+To identify the utilities operating within our 11-county study area, we utilized data sets published by state and federal sources. The outcome of our data collection, yielding a list of distinct utilities for which activity data should be collected, resides within `distinct_natGas_util_WI.RDS` (4 utilities, all investor-owned) and `distinct_natGas_util_type_MN.RDS` (7 utilities, six investor-owned and one municipally-owned)
 
 ### Minnesota
 
-Since there is no state-maintained map of natural gas service territories in Minnesota [@PublicUtilitiesInfrastructure], we looked to the Homeland Infrastructure Foundation-Level Data (HIFLD) database, a product of the Department of Homeland Security's Geospatial Management Office (DHS GMO) that compiles "foundation-level geospatial data" for homeland security, homeland defense, and emergency preparedness purposes. This dataset was last updated in 2017 [@departmentofhomelandsecurityNaturalGasService2017]. Though this dataset is national in scope (see fig. X), it is clipped to only include utility service areas within the nine Minnesota counties included in the study area of this inventory (see fig. Y -- note that utilities operating across county lines have a polygon covering the extent of their service territory within each and every county they operate within).
+Since there is no state-maintained map of natural gas service territories in Minnesota [@mnPublicUtilitiesInfrastructure2021], we looked to the Homeland Infrastructure Foundation-Level Data (HIFLD) database, a product of the Department of Homeland Security's Geospatial Management Office (DHS GMO) that compiles "foundation-level geospatial data" for homeland security, homeland defense, and emergency preparedness purposes. This dataset was last updated in 2017 [@departmentofhomelandsecurityNaturalGasService2017]. Though this dataset is national in scope (see @fig-minnesota-ng-servTerrs), it is clipped to only include utility service areas within the nine Minnesota counties included in the study area of this inventory (see @fig-MN-ng-inScope-servTerrs). Note that utilities operating across county lines have a polygon covering the extent of their service territory within each and every county they operate within.
 
-```{r minnesota-ng-servTerrs}
+```{r fig-minnesota-ng-servTerrs}
+#| fig-cap: "Nationwide utility service service territories"
+#| out-width: "95%" 
+#| out-height: "500px"
+
 # Create a color palette
 utilities <- unique(MN_allUtilities_countrywide$NAME)
 color_palette <- colorFactor(palette = "viridis", domain = utilities)
@@ -61,6 +67,15 @@ bound_box <- list(
 
 
 MN_ng_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = cprg_county %>%
+      sf::st_transform(4326),
+    fill = FALSE,
+    color = "gray",
+    popup = cprg_county$NAMELSAD,
+    group = "County outlines"
+  ) %>%
+  
   addPolygons(
     data = MN_allUtilities_countrywide %>% sf::st_transform(4326),
     fill = TRUE,
@@ -81,7 +96,11 @@ MN_ng_servTerrs <- council_leaflet() %>%
 MN_ng_servTerrs
 ```
 
-```{r MN-ng-inScope-servTerrs}
+```{r fig-MN-ng-inScope-servTerrs}
+#| fig-cap: "Minnesota utility service service territories in scope"
+#| out-width: "95%" 
+#| out-height: "600px"
+
 # Create a color palette
 inScopeUtilities <- unique(MN_inScopeUtilities$utility_name)
 color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
@@ -95,6 +114,15 @@ MN_bound_box <- list(
 )
 
 MN_ng_inScope_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = cprg_county %>%
+      sf::st_transform(4326),
+    fill = FALSE,
+    color = "gray",
+    popup = cprg_county$NAMELSAD,
+    group = "County outlines"
+  ) %>%
+  
   addPolygons(
     data = MN_inScopeUtilities %>% sf::st_transform(4326),
     fill = TRUE,
@@ -116,13 +144,17 @@ MN_ng_inScope_servTerrs
 
 ### Wisconsin
 
-The Public Service Commission of Wisconsin publishes and maintains maps of service territories for natural gas utilities operating within the state. This data set relies upon, and is accurate to, "the extent that various sources \[utilities\] supplied accurate data." [@publicservicecommissionofwisconsinPSCInteractiveService2021] This dataset spans the whole state of Wisconsin (see fig, X), and both clipped to the two Wisconsin counties included in the study area of this inventory (see fig. Y)
+The Public Service Commission of Wisconsin publishes and maintains maps of service territories for natural gas utilities operating within the state. This data set relies upon, and is accurate to, "the extent that various sources \[utilities\] supplied accurate data." [@publicservicecommissionofwisconsinPSCInteractiveService2021]. This dataset spans the whole state of Wisconsin (see @fig-wisconsin-ng-servTerrs), and both clipped to the two Wisconsin counties included in the study area of this inventory (see @fig-wisconsin-ng-inScope-servTerrs)
 
 for electric... as well as the full service territories beyond the two-county area to facilitate estimation and modeling of energy demand (see fig. Z)
 
-For electric..Because Wisconsin does not require utilities to report the amount of energy, both the extent of utilities' operations within our study area (St Croix and Pierce counties within Wisconsin) as well as their statewide service territories represent important inputs to our methodology for estimating both number of customer accounts and energy
+For electric.. Because Wisconsin does not require utilities to report the amount of energy, both the extent of utilities' operations within our study area (St. Croix and Pierce counties within Wisconsin) as well as their statewide service territories represent important inputs to our methodology for estimating both number of customer accounts and energy
 
-```{r wisconsin-ng-servTerrs}
+```{r fig-wisconsin-ng-servTerrs}
+#| fig-cap: "Wisconsin utility service service territories"
+#| out-width: "95%"
+#| out-height: "500px"
+
 # Create a color palette
 utilities <- unique(WI_allUtilities$Util_Name)
 color_palette <- colorFactor(palette = "viridis", domain = utilities)
@@ -136,6 +168,14 @@ bound_box <- list(
 )
 
 WI_ng_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = cprg_county %>%
+      sf::st_transform(4326),
+    fill = FALSE,
+    color = "gray",
+    popup = cprg_county$NAMELSAD,
+    group = "County outlines"
+  ) %>%
   addPolygons(
     data = WI_allUtilities %>% sf::st_transform(4326),
     fill = TRUE,
@@ -155,9 +195,12 @@ WI_ng_servTerrs <- council_leaflet() %>%
 WI_ng_servTerrs
 ```
 
-inscope
+Wisconsin utilities in scope
 
-```{r wisconsin-ng-inScope-servTerrs}
+```{r fig-wisconsin-ng-inScope-servTerrs}
+#| fig-cap: "Wisconsin utility service service territories in scope"
+#| out-width: "95%" 
+#| out-height: "500px"
 # Create a color palette
 inScopeUtilities <- unique(WI_inScopeUtilities$utility_name)
 color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
@@ -172,6 +215,14 @@ WI_bound_box <- list(
 
 
 WI_ng_inScope_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = cprg_county %>%
+      sf::st_transform(4326),
+    fill = FALSE,
+    color = "gray",
+    popup = cprg_county$NAMELSAD,
+    group = "County outlines"
+  ) %>%
   addPolygons(
     data = WI_inScopeUtilities %>% sf::st_transform(4326),
     fill = TRUE,
