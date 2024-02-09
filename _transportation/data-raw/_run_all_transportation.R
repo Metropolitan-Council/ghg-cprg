@@ -25,5 +25,8 @@ source("_transportation/data-raw/vmt_emissions.R")
 
 # corresponding datasets
 source("_transportation/data-raw/tbi_vehicle_stats.R")
+source("_transportation/data-raw/tbi_survey_stats.R")
+source("_transportation/data-raw/tbi_trip_length.R")
+
 source("_transportation/data-raw/epa_lggit.R")
 source("_transportation/data-raw/epa_nei.R")
