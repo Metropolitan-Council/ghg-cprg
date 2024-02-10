@@ -168,7 +168,7 @@ saveRDS(
 
 lggit_totals <- tibble::tribble(
   ~Sector, ~CO2, ~CH4, ~N2O,
-  "Residential",  8371304.18 , 4753.94, 29123.38,
+  "Residential", 8371304.18, 4753.94, 29123.38,
   "Commercial/Institutional", 485027.94, 35.12, 1507.90
 ) %>%
   clean_names() %>%

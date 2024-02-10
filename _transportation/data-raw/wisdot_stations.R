@@ -74,22 +74,23 @@ if (file.exists("_transportation/data-raw/wisdot/Traffic_Counts.geojson") == FAL
   ))
 }
 
-# get historic AADT 
+# get historic AADT
 # https://arcg.is/0408b1
-historic_aadt <- sf::read_sf("_transportation/data-raw/wisdot/Historical_Traffic_Count_(Table).gdb.zip") %>% 
-  filter(TRADS_ID %in% wis_station_ratios$traf_siteid) %>% 
-  mutate(traf_siteid = as.character(TRADS_ID)) %>% 
+historic_aadt <- sf::read_sf("_transportation/data-raw/wisdot/Historical_Traffic_Count_(Table).gdb.zip") %>%
+  filter(TRADS_ID %in% wis_station_ratios$traf_siteid) %>%
+  mutate(traf_siteid = as.character(TRADS_ID)) %>%
   select(traf_siteid,
-         year = AADT_RPTG_YR,
-         RDWY_AADT)
+    year = AADT_RPTG_YR,
+    RDWY_AADT
+  )
 
 
-# it seems like the AADT from the class.xlsx is 
+# it seems like the AADT from the class.xlsx is
 # a "raw" number, since the AADT from the historic_aadt table
 # is a rounded value of the class.xlsx table
-historic_aadt %>% 
-  right_join(wis_station_ratios) %>% 
-  filter(round(current_volume, -2) != RDWY_AADT) %>% 
+historic_aadt %>%
+  right_join(wis_station_ratios) %>%
+  filter(round(current_volume, -2) != RDWY_AADT) %>%
   nrow()
 
 # fetch station locations data

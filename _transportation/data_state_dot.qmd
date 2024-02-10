@@ -83,12 +83,12 @@ commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commer
 
 commercial_points <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_points.RDS")) %>%
   mutate(hover_info = paste0(
-    "<b>", "Name ","</b>", name, "<br>",
-    "<b>","AADT ", "</b>",scales::comma(current_volume), "<br>",
-    "<b>","Year ","</b>", year, "<br>",
-    "<b>","Passenger traffic ","</b>", scales::percent(personal_traffic_ratio, accuracy = 1), "<br>",
-    "<b>","Medium-duty traffic ","</b>", scales::percent(medium_commercial_ratio, accuracy = 1), "<br>",
-    "<b>","Heavy-duty traffic ","</b>", scales::percent(heavy_commercial_ratio, accuracy = 1), "<br>"
+    "<b>", "Name ", "</b>", name, "<br>",
+    "<b>", "AADT ", "</b>", scales::comma(current_volume), "<br>",
+    "<b>", "Year ", "</b>", year, "<br>",
+    "<b>", "Passenger traffic ", "</b>", scales::percent(personal_traffic_ratio, accuracy = 1), "<br>",
+    "<b>", "Medium-duty traffic ", "</b>", scales::percent(medium_commercial_ratio, accuracy = 1), "<br>",
+    "<b>", "Heavy-duty traffic ", "</b>", scales::percent(heavy_commercial_ratio, accuracy = 1), "<br>"
   ))
 
 
@@ -173,12 +173,12 @@ plot_ly(
   y = ~value,
   color = ~vehicle_weight,
   hoverinfo = "text",
-  hovertemplate = ~paste0(
-      "Name: ", name, "<br>",
-      "Year: ", year, "<br>",
-      scales::percent(value, accuracy = 1), " ", vehicle_weight, "<br>",
-      "<extra></extra>"
-    )
+  hovertemplate = ~ paste0(
+    "Name: ", name, "<br>",
+    "Year: ", year, "<br>",
+    scales::percent(value, accuracy = 1), " ", vehicle_weight, "<br>",
+    "<extra></extra>"
+  )
 ) %>%
   plotly_layout(
     main_title = "Vehicle weight distribution",

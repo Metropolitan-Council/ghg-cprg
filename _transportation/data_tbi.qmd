@@ -27,8 +27,8 @@ Data were imported directly from a Council-maintained [public GitHub repository]
 #| tbl-cap: "2021 TBI household survey geographic distribution"
 #| out-width: "95%"
 
-tbi_home_county %>% 
-    select(
+tbi_home_county %>%
+  select(
     "Household county" = cprg_hh_county,
     "Estimated number of households" = est_n,
     "Estimated number of households standard error" = est_n_se,
@@ -46,7 +46,6 @@ tbi_home_county %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
-
 ```
 
 
@@ -138,7 +137,7 @@ We used the TBI to validate StreetLight's average trip length. See @sec-trip-len
 #| tbl-cap: "Regional mean trip distance. 2021 TBI."
 #| out-width: "95%"
 
-regional_trip_length_avg %>%     
+regional_trip_length_avg %>%
   select(
     "Mean trip distance (miles)" = mean_trip_dist,
     "Mean trip distance standard error" = mean_trip_dist_se,
@@ -146,13 +145,13 @@ regional_trip_length_avg %>%
     "Estimated number of trips standard error" = estimate_n_se,
     "Variance" = var,
     "Sample size" = n
-  ) %>% 
-  gt() %>% 
+  ) %>%
+  gt() %>%
   fmt_number(c(3, 4, 5, 6),
-             decimals = 0
+    decimals = 0
   ) %>%
   fmt_number(1:2,
-             decimals = 2
+    decimals = 2
   ) %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -160,7 +159,6 @@ regional_trip_length_avg %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
-
 ```
 
 Origin-destination pairs with fewer than 30 observed trips were removed. 
@@ -171,7 +169,7 @@ Origin-destination pairs with fewer than 30 observed trips were removed.
 #| tbl-cap: "Mean trip distance by origin-destination county"
 #| out-width: "95%"
 tbi_od_ordered_trip_length %>%
-  arrange(-estimate_n) %>% 
+  arrange(-estimate_n) %>%
   select(
     "Origin-Destination pair" = origin_dest_county_pair,
     "Sample size" = n,
@@ -182,10 +180,10 @@ tbi_od_ordered_trip_length %>%
   ) %>%
   gt() %>%
   fmt_number(c(2, 5, 6),
-             decimals = 0
+    decimals = 0
   ) %>%
   fmt_number(3:4,
-             decimals = 2
+    decimals = 2
   ) %>%
   gt::opt_row_striping() %>%
   tab_style(

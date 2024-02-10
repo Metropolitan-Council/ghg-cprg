@@ -311,7 +311,7 @@ plot_ly(
   type = "scatter",
   mode = "markers",
   hoverinfo = "text",
-  hovertemplate = ~paste0(
+  hovertemplate = ~ paste0(
     "County: ", origin_zone_name, "<br>",
     "County area: ", round(area_sq_mi), " sq. miles", "<br>",
     "Average trip length: ", round(avg_all_trip_length_mi, digits = 2), " miles",

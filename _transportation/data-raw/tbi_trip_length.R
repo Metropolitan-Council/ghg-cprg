@@ -3,15 +3,17 @@ library(srvyr, warn.conflicts = FALSE)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
-cprg_tbi_hh_counties <- c("Anoka MN", "Carver MN",
-                       "Chisago MN", "Dakota MN", "Hennepin MN",
-                       "PIERCE WI", "Ramsey MN",
-                       "Scott MN", "Sherburne MN",  "ST. CROIX WI",
-                       "Washington MN")
+cprg_tbi_hh_counties <- c(
+  "Anoka MN", "Carver MN",
+  "Chisago MN", "Dakota MN", "Hennepin MN",
+  "PIERCE WI", "Ramsey MN",
+  "Scott MN", "Sherburne MN", "ST. CROIX WI",
+  "Washington MN"
+)
 
 
-cprg_tbi_counties <- cprg_county %>% 
-  mutate(tbi_county = paste0(NAME, " ", STATE_ABB)) %>% 
+cprg_tbi_counties <- cprg_county %>%
+  mutate(tbi_county = paste0(NAME, " ", STATE_ABB)) %>%
   magrittr::extract2("tbi_county")
 
 load(url(paste0(
@@ -23,7 +25,7 @@ hh21 <- tbi21$household %>%
   # filter to households in the CPRG counties
   filter(hh_county %in% cprg_tbi_hh_counties)
 
-unique(tbi21$household$hh_id) %>% length
+unique(tbi21$household$hh_id) %>% length()
 
 nrow(hh21 == 7475)
 # summary(tbi21$trip$distance)
@@ -56,8 +58,10 @@ trip21 <- tbi21$trip %>%
     trip_o_county = stringr::str_remove(trip_o_county, " MN"),
     trip_d_county = stringr::str_remove(trip_d_county, " MN")
   ) %>%
-  mutate(origin_dest_county_pair = paste0(trip_o_county, "-", trip_d_county),
-         distance_zscore = (distance - mean(distance)/sd(distance)))
+  mutate(
+    origin_dest_county_pair = paste0(trip_o_county, "-", trip_d_county),
+    distance_zscore = (distance - mean(distance) / sd(distance))
+  )
 
 
 regional_trip_length_avg <-
@@ -83,14 +87,14 @@ od_pair_index <- trip21 %>%
   unique() %>%
   mutate(pair_type = ifelse(trip_o_county == trip_d_county, "Same county", "Different county"))
 
-low_od_pairs <- trip21 %>% 
-  group_by(od_pair) %>% 
-  count() %>% 
+low_od_pairs <- trip21 %>%
+  group_by(od_pair) %>%
+  count() %>%
   filter(n < 30)
 
 
 tbi_mean_trip_length <- trip21 %>%
-  filter(!od_pair %in% low_od_pairs$od_pair) %>% 
+  filter(!od_pair %in% low_od_pairs$od_pair) %>%
   as_survey(
     ids = trip_id,
     weights = trip_weight
@@ -106,7 +110,7 @@ tbi_mean_trip_length <- trip21 %>%
 
 
 tbi_od_ordered_trip_length <- trip21 %>%
-  filter(!od_pair %in% low_od_pairs$od_pair) %>% 
+  filter(!od_pair %in% low_od_pairs$od_pair) %>%
   as_survey(
     ids = trip_id,
     weights = trip_weight
