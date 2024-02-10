@@ -18,12 +18,13 @@ hookaddcap()
 ```
 
 
-The Metropolitan Council Travel Behavior Inventory (TBI) is a bi-annual household survey around 7,500 families in the 7-county Twin Cities metro and three neighboring Wisconsin counties. Information on people, households, trips, and vehicles are collected. 
+The Metropolitan Council Travel Behavior Inventory (TBI) is a bi-annual household survey around 7,500 families in the 7-county Twin Cities metro and three neighboring Wisconsin counties. Information on people, households, trips, and vehicles are collected [@metcTravelBehaviorInventory2021]. This survey was active in the field from May 22, 2021 to February 5, 2023.  
 
-Data were imported directly from a Council-maintained [public GitHub repository](https://github.com/Metropolitan-Council/metc.tbi.helper). The calculations below were verified from other Council analysis projects using the same dataset. 
+Data were imported directly from a Council-maintained [public GitHub repository](https://github.com/Metropolitan-Council/metc.tbi.helper). The calculations below were verified from other Council analysis projects using the same dataset. Exactly 7,745 households with homes in any of the 11 CPRG counties were included in this subset of the TBI dataset.
+
 
 ```{r tbl-tbi-hh-county-dist}
-#| tbl-cap: "TBI household survey geographic distribution"
+#| tbl-cap: "2021 TBI household survey geographic distribution"
 #| out-width: "95%"
 
 tbi_home_county %>% 
@@ -53,7 +54,7 @@ tbi_home_county %>%
 
 We used 2021 TBI data to determine the regional average vehicle age and distribution of diesel and gasoline passenger vehicles of households in the CPRG study area. 
 
-Vehicles were classified into broad fuel categories - diesel and gas + all other fuels (including gasoline, electric, flex-fuel, hybrid, and plug-in hybrid) to best match the average miles per gallon table specifications in the EPA Local Greenhouse Gas Inventory Tool. The resulting value is on par with recent statistics from the Bureau of Transportation Statistics (BTS), which calculates the average passenger vehicle age in 2021 to be 12.1 years [@btsAverageAgeAutomobiles2023]. 
+Vehicles were classified into broad fuel categories - diesel and gas + all other fuels (including gasoline, electric, flex-fuel, hybrid, and plug-in hybrid) to best match the average miles per gallon table specifications in the EPA Local Greenhouse Gas Inventory Tool (LGGIT). The resulting value is on par with recent statistics from the Bureau of Transportation Statistics (BTS), which calculates the average passenger vehicle age in 2021 to be 12.1 years [@btsAverageAgeAutomobiles2023]. 
 
 TBI data were cleaned to only include vehicles with complete data and model year 1980 or later. Vehicles with a fuel type "Other (e.g., natural gas, bio-diesel)" were removed due to low sample size. 
 
@@ -195,39 +196,6 @@ tbi_od_ordered_trip_length %>%
 ```
 
 :::
-
-Introduction text 
-Data source description, type
-
-- Quality rank (See @tbl-quality-rank)
-- How, when, and why was the data collected?
-- If this is a modeled dataset, what is the sample?
-- What is the raw unit of measurement? 
-- How was this data accessed? Include any relevant links/citations, code, or downloads.
-- What data cleaning or wrangling was completed? How did you test these processes and outputs?
-- What is the geographic and temporal scope? Did you complete any aggregation?
-- What version is the data? Were there other versions available? If so, why did you choose this version?
-- What assumptions are made when we use this dataset?
-- Which subject matter expert (SME) reviewed this data?
-- Describe testing used to verify data
-
-Be sure to add a citation of this dataset to the Zotero shared library.
-
-### Data characteristics
-
-- Were there any missing data? How did you handle missing data?
-- Plots, tables, and description of data distribution
-- Variance, Z-Score, quantiles
-- Facet views by categorical variables
-
-
-### Limitations
-
-### Comparison with similar datasets
-
-### Data dictionary
-
-Table with detailed description of columns and definitions for each data table.
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
