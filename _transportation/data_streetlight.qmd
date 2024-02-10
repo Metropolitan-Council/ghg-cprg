@@ -521,15 +521,12 @@ plot_ly(
 ```
 
 
-
-
 ### Limitations
 
 - The data used for passenger traffic contains "all vehicles", not just passenger vehicles, meaning that commercial vehicles may be double counted. As a default, StreetLight suggests that users use a ratio of 96/2/2 (95% passenger, 2% medium, 2% heavy). We could apply a scaling factor of 0.96 to the passenger data to account for this.
-- Commercial vehicle classifications schemes differ across data sources. 
-- 
+- Commercial vehicle classifications schemes differ across data sources, though the scale of this effect is unknown.
 
-### Comparison with similar datasets
+Subject matter expert reviewer: ________
 
 <!-- ### Data dictionary -->
 <!-- Table with detailed description of columns and definitions for each data table. -->
