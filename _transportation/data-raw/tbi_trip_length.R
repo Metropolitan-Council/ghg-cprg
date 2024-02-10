@@ -103,9 +103,11 @@ tbi_mean_trip_length <- trip21 %>%
   summarize(
     n = unweighted(n()),
     mean_trip_dist = survey_mean(distance, vartype = "se"),
-    estimate_n = survey_total()
+    estimate_n = survey_total(),
+    var = survey_var(distance)
   ) %>%
-  left_join(od_pair_index)
+  left_join(od_pair_index,
+            by = join_by(od_pair))
 
 
 
@@ -119,14 +121,16 @@ tbi_od_ordered_trip_length <- trip21 %>%
   summarize(
     n = unweighted(n()),
     mean_trip_dist = survey_mean(distance, vartype = "se"),
-    estimate_n = survey_total()
+    estimate_n = survey_total(),
+    var = survey_var(distance)
   ) %>%
   left_join(od_pair_index %>%
     select(
       trip_o_county, trip_d_county,
       origin_dest_county_pair
     ) %>%
-    unique())
+    unique(),
+    by = join_by(origin_dest_county_pair))
 
 saveRDS(tbi_mean_trip_length, "_transportation/data-raw/tbi/tbi_mean_trip_length.RDS")
 saveRDS(tbi_od_ordered_trip_length, "_transportation/data-raw/tbi/tbi_od_ordered_trip_length.RDS")

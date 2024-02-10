@@ -9,6 +9,7 @@ hookaddcap()
 
 Emissions rates for our region were calculated using the EPA's [Motor Vehicle Emissions Simulator (MOVES4)](https://www.epa.gov/moves) [@usepaMotorVehicleEmission2023]. MOVES4 calculates emissions factors using Council's regional travel demand model, Minnesota Department of Vehicle Services county vehicle registration data, and the Minnesota Pollution Control Agency vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle's age and size, as well as its fuel intake (diesel or gasoline). The results are specific to the conditions of our region, and so are more accurate than national averages. 
 
+MOVES is a high-quality government modeling system with strong data inputs and outputs.  
 
 CO~2~ equivalence (CO~2~e) values are derived from global warming potential (GWP) values. See @sec-gwp for more details.
 
@@ -30,8 +31,8 @@ epa_moves %>%
     `Grams CO2e per mile` = `Kilograms CO2e per mile` * 1000
   ) %>%
   select(
-    `Vehicle Weight` = vehicle_weight,
-    `MOVES Year` = moves_year,
+    `Vehicle weight` = vehicle_weight,
+    `MOVES year` = moves_year,
     starts_with("grams")
   ) %>%
   gt() %>%
@@ -52,8 +53,9 @@ lggit_kg_emissions_per_mile <- readRDS(file.path(here::here(), "_transportation/
 
 lggit_kg_emissions_per_mile %>%
   select(
-    `Vehicle Type`, `Vehicle Year`,
-    `Fuel Type`,
+    `Vehicle type` = `Vehicle Type`,
+    `Vehicle model year` = `Vehicle Year`,
+    `Fuel type` = `Fuel Type`,
     `Average miles per gallon`,
     `Kilograms CH4 per mile`,
     `Kilograms N2O per mile`,
@@ -67,8 +69,9 @@ lggit_kg_emissions_per_mile %>%
     `Grams CO2e per mile` = `Kilograms CO2e per mile` * 1000
   ) %>%
   select(
-    `Vehicle Type`, `Vehicle Year`,
-    `Fuel Type`,
+    `Vehicle type`,
+    `Vehicle model year`,
+    `Fuel type`,
     starts_with("grams")
   ) %>%
   gt() %>%
@@ -85,7 +88,6 @@ lggit_kg_emissions_per_mile %>%
 
 Data source description, type
 
-- Quality rank (See @tbl-quality-rank)
 - How, when, and why was the data collected?
 - If this is a modeled dataset, what is the sample?
 - What is the raw unit of measurement? 
@@ -129,7 +131,6 @@ epa_moves_meta %>%
 ```
 
 
-Table with detailed description of columns and definitions for each data table.
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
