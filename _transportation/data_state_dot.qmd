@@ -4,6 +4,20 @@
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
+commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_lines.RDS")) %>%
+  mutate(hover_info = paste0(
+    "Name: ", name, "<br>"
+  ))
+
+commercial_points <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_points.RDS")) %>%
+  mutate(hover_info = paste0(
+    "<b>", "Name ", "</b>", name, "<br>",
+    "<b>", "AADT ", "</b>", scales::comma(current_volume), "<br>",
+    "<b>", "Year ", "</b>", year, "<br>",
+    "<b>", "Passenger traffic ", "</b>", scales::percent(personal_traffic_ratio, accuracy = 1), "<br>",
+    "<b>", "Medium-duty traffic ", "</b>", scales::percent(medium_commercial_ratio, accuracy = 1), "<br>",
+    "<b>", "Heavy-duty traffic ", "</b>", scales::percent(heavy_commercial_ratio, accuracy = 1), "<br>"
+  ))
 hookaddcap()
 ```
 
@@ -76,22 +90,6 @@ Then, we selected only the stations within the study area with observations in t
 #| fig-cap: "StreetLight calibration locations and values"
 #| out-width: "95%"
 #| out-height: "500px"
-commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_lines.RDS")) %>%
-  mutate(hover_info = paste0(
-    "Name: ", name, "<br>"
-  ))
-
-commercial_points <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_points.RDS")) %>%
-  mutate(hover_info = paste0(
-    "<b>", "Name ", "</b>", name, "<br>",
-    "<b>", "AADT ", "</b>", scales::comma(current_volume), "<br>",
-    "<b>", "Year ", "</b>", year, "<br>",
-    "<b>", "Passenger traffic ", "</b>", scales::percent(personal_traffic_ratio, accuracy = 1), "<br>",
-    "<b>", "Medium-duty traffic ", "</b>", scales::percent(medium_commercial_ratio, accuracy = 1), "<br>",
-    "<b>", "Heavy-duty traffic ", "</b>", scales::percent(heavy_commercial_ratio, accuracy = 1), "<br>"
-  ))
-
-
 bound_box <- st_bbox(commercial_lines) %>%
   unlist()
 
@@ -133,7 +131,7 @@ council_leaflet() %>%
   )
 ```
 
-Only `r nrow(commercial_calibration_points)` calibration roads were used for this inventory due to data availability constraints. 
+Only `r nrow(commercial_points)` calibration roads were used for this inventory due to data availability constraints. 
 
 ```{r fig-vehicle-weight-distribution}
 #| fig-cap: "Vehicle weight distribution at calibration points"

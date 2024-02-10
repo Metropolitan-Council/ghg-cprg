@@ -468,7 +468,7 @@ gt::gt(vehicle_weight_comp,
 
 To create the calibration dataset, we found the ratio of passenger/medium/heavy-duty vehicles for at traffic count stations within our study area using state DOT data. You can read more about vehicle classification data in @sec-vehicle-weight-dist. 
 
-## Total vehicle volume validation
+### Total vehicle volume validation
 
 To validate our county origin-destination VMT data, we can compare the county totals to the DOT reported values from MnDOT [@mndotVMTRouteSystem2021] and WisDOT [@wisdotWisconsinVehicleMiles2021]. Note that these data include all vehicle types, both passenger and commercial. 
 
