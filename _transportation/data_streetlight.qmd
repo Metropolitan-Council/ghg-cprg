@@ -132,7 +132,6 @@ passenger_od_trip <- county21_data$od_trip_all %>%
 passenger_od_distance <- passenger_od_trip %>%
   left_join(cprg_distances, join_by(origin_zone_name, destination_zone_name)) %>%
   rowwise() %>%
-  # create tooltip text
   mutate(
     pair_type = case_when(
       distance_miles == 0 ~ "Adjacent or same county",
@@ -222,6 +221,8 @@ passenger_od_tbi_distance <- passenger_od_trip %>%
   filter(!is.na(mean_trip_dist))
 ```
 
+@fig-trip-dist-tbi shows a strong positive correlation when comparing origin-destination pairs. Note that TBI origin-destination pairs with fewer than 30 observed trips were removed due to low sample size. 
+
 ```{r fig-trip-dist-tbi}
 #| fig-cap:  "Avg. trip distance, Travel Behavior Inventory and StreetLight"
 #| out-width: "95%"
@@ -249,8 +250,8 @@ plot_ly(
   ),
   opacity = 0.6,
   colors = c(
-    colors$councilBlue,
-    colors$metrostatsDaPurp
+    "Same county" = colors$councilBlue,
+    "Different county" = colors$metrostatsDaPurp
   ),
   marker = list(
     size = 18,
@@ -285,7 +286,7 @@ plot_ly(
 
 We would also expect that large counties will have longer trip lengths and smaller counties will have shorter trip lengths. 
 
-Comparing trip distance and county area, we see a general positive correlation (the larger the county, the longer the average trip). 
+Comparing trip distance and county area, we see a general, but weak, positive correlation (the larger the county, the longer the average trip). 
 
 ```{r fig-trip-county-area}
 #| fig-cap: "Avg. distance for trips within county and county area"

@@ -23,6 +23,8 @@ hh21 <- tbi21$household %>%
   # filter to households in the CPRG counties
   filter(hh_county %in% cprg_tbi_hh_counties)
 
+unique(tbi21$household$hh_id) %>% length
+
 nrow(hh21 == 7475)
 # summary(tbi21$trip$distance)
 
