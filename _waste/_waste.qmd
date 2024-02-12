@@ -26,6 +26,14 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 
 ## Methods
 
+The process for calculating solid waste emissions slightly differs between Minnesota and Wisconsin counties, due to a difference in data availability.
+
+For Minnesota counties, waste generation totals are allocated by sector from MPCA SCORE data, according to the sector breakdown featured in [data chapter]. Totals for each sector are multiplied by the appropriate EPA-provided emissions factor to provide an estimate of emissions from that source and county.
+
+For Wisconsin counties, state-level emissions data as calculated by the Wisconsin DNR is allocated to the relevant counties by population. The emissions for each county $c$ are proportional to its fractional share of Wisconsin's population.
+
+$$Emissions_c = Emissions_{total} \times \frac{Pop_c}{Pop_{total}}$$
+
 ### Wastewater
 
 ```{r fig-waste-emissions-2}
@@ -84,9 +92,135 @@ metc_ww %>%
 
 ## Results
 
+```{r fig-sw-total-emissions}
+#| fig-cap: "2021 solid waste emissions"
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+waste_data <- county_emissions %>%
+  dplyr::filter(category == "Solid Waste")
+
+plot_ly(
+  data = waste_data,
+  type = "bar",
+  source = opts_current$get()$label,
+  x = ~geog_name,
+  y = ~emissions_metric_tons_co2e,
+  color = ~source,
+  split = ~source,
+  hovertemplate = ~ paste0(
+    geog_name, " County", "<br>",
+    sector, " - ", category, ", ", source, "<br>",
+    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  councilR::plotly_layout(
+    main_title = "Solid Waste emissions",
+    subtitle = "",
+    x_title = stringr::str_to_title(unique(waste_data$geog_level)),
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Category"
+  ) %>%
+  plotly::layout(barmode = "stack")
+```
 
 
+```{r fig-emissions-side-by-side}
+#| fig-cap: "2021 annual emissions by waste management category"
 
+plot_ly(
+  type = "bar",
+  source = opts_current$get()$label,
+  data = waste_data,
+  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
+  color = ~source,
+  hovertemplate = ~ paste0(
+    geog_name, " County", "<br>",
+    source, "<br>",
+    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county-level CO2e solid waste emissions",
+    subtitle = "",
+    yaxis = list(
+      ticklen = 5,
+      tickwidth = 2,
+      tickcolor = "#000",
+      tickfont = list(size = 14)
+    ),
+    xaxis = list(
+      title = "Greenhouse gases emitted (metric tons)"
+      # ... [any other x-axis settings] ...
+    ),
+    margin = list(l = 120)
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    ),
+    yaxis = list(categoryorder = "total ascending")
+    # note: ask how we want to lay out these plots. should it be the same as others or ascending
+  )
+```
+
+### Correlation with related data
+
+We would expect counties with a higher population to have high solid waste emissions.
+
+```{r fig-emissions-population-solidwaste}
+#| fig-cap: "County population and solid waste emissions"
+#| out-width: "95%"
+cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
+
+waste_totals <- waste_data %>%
+  group_by(geog_name) %>%
+  summarise(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  )
+
+waste_population <- left_join(waste_totals, cprg_population,
+  by = c("geog_name" = "NAME")
+)
+
+plot_ly(
+  data = waste_population,
+  source = opts_current$get()$label,
+  x = ~population,
+  y = ~emissions_metric_tons_co2e,
+  type = "scatter",
+  mode = "markers",
+  hovertemplate = ~ paste0(
+    geog_name, " County", "<br>",
+    "Population: ", scales::comma(population), "<br>",
+    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  opacity = 0.7,
+  marker = list(
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "County population and emissions",
+    subtitle = "2021 ACS 5-year population estimates. Strong positive correlation",
+    x_title = "Total population",
+    y_title = "Emissions",
+    legend_title = "",
+    legend = list(orientation = "h")
+  )
+```
+
+### Comparison with other inventories
+
+- NEI - issue: based on point sources not generation
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))

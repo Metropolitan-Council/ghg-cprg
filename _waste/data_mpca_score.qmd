@@ -198,7 +198,7 @@ waste_management_comp <-
     ~`MPCA Management Method`, ~`MPCA Method`, ~`Our Category`, ~`Emissions Factor Name`, ~`Emissions Factor`,
     "MMSW", "Landfill", "Landfill", "Mixed MSW Landfilled", "0.52",
     "MMSW", "Onsite", "Landfill", "Mixed MSW Landfilled", "0.52",
-    "MMSW", "WTE", "Landfill", "Mixed MSW Combusted", "0.43",
+    "MMSW", "WTE", "Waste to Energy", "Mixed MSW Combusted", "0.43",
     "MMSW", "MSW Compost", "Organics", "N/A", "N/A",
     "Combined Recycling and Organics", "Organics", "Organics", "Mixed Organics Composted", "0.17",
     "Combined Recycling and Organics", "Recycling", "Recycling", "Mixed Recyclables Recycled", "0.09"
@@ -281,7 +281,7 @@ gt::gt(waste_management_comp,
       cell_borders(sides = "top")
     ),
     locations = cells_body(
-      columns = 2,
+      columns = 2:3,
       rows = 3
     )
   ) %>%
