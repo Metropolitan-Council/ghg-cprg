@@ -82,17 +82,34 @@ trip_length_bin <- county21_data$od_trip_all %>%
     average_daily_o_d_traffic_st_l_volume,
     starts_with("trip_length")) %>% 
   pivot_longer(9:22)  %>% 
+  rowwise() %>% 
   mutate(length_bin = stringr::str_remove(name, "trip_length_") %>% 
            str_remove("_mi_percent") %>% 
            stringr::str_replace("_", "-") %>% 
-           paste0(" miles"))
+           paste0(" miles"),
+         length_num = name %>% 
+           str_split("_") %>% 
+           magrittr::extract(-3),
+         pair_type = case_when(
+           origin_zone_name == destination_zone_name ~ "Same county",
+           TRUE ~ "Different county"
+         )) %>% 
+  mutate(length_num = length_num[3] %>% 
+           as.numeric() + 1
+         )
+         
 
+
+  
 
 plot_ly(
-  data = trip_length_bin %>% 
-    filter(origin_zone_name == "Anoka"),
-  x = ~length_bin,
-  y  = ~value
+  data = trip_length_bin,
+  x = ~jitter(length_num, factor = 10),
+  y  = ~value,
+  type = "scatter",
+  mode = "markers",
+  color = ~pair_type,
+  opacity = 0.7
 ) %>% 
   layout(barmode = "overlay")
 ```
