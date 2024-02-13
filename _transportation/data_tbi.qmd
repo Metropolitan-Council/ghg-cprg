@@ -163,6 +163,47 @@ regional_trip_length_avg %>%
 
 Origin-destination pairs with fewer than 30 observed trips were removed. 
 
+
+```{r fig-tbi-trip-distance-matrix}
+#| fig-cap: "TBI origin-destination trip length matrix"
+#| out-width: "95%"
+
+plot_ly(
+  data = tbi_od_ordered_trip_length,
+  source = opts_current$get()$label,
+  y = ~trip_o_county,
+  x = ~trip_d_county,
+  z = ~round(mean_trip_dist,1),
+  type = "heatmap",
+  colors = "PuBuGn",
+  colorbar = list(
+    len = 1,
+    outlinecolor = "white",
+    title = list(
+      text = "Average trip<br>length (miles)",
+      font = list(
+            family = "Arial Narrow",
+            size = 16
+      )),
+      tickfont = list(
+        family = "Arial Narrow",
+        size = 14)
+  ),
+  hovertemplate = paste0(
+    "Origin county: %{y}<br>", 
+    "Destination county: %{x}<br>", 
+    "Mean trip length: %{z} miles",
+    "<extra></extra>")) %>% 
+  plotly_layout(
+    main_title = "TBI county origin-destination trip length",
+    subtitle = "Origin-destination pairs with less than 30 trips removed",
+    x_title = "Destination county",
+    y_title = "Origin county",
+    legend_title = "Average trip length"
+  ) 
+```
+
+
 :::{.scrolling}
 
 ```{r tbl-od-trip-length}
