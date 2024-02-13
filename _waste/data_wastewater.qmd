@@ -5,12 +5,12 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 # pull data here
 epa_ww <- readRDS(file.path(here::here(), "_waste/data/epa_county_wastewater.RDS"))
 mpca_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/epa_wastewater.RDS"))
-mc_ww <- readRDS(file.path(here::here(),"_waste/data-raw/wastewater/metc_wastewater.RDS"))
+mc_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metc_wastewater.RDS"))
 
 
 mc_ww_cty <- mc_ww %>%
   group_by(year, COUNTY_NAM, scope) %>%
-  summarize(co2e = sum(emissions_metric_tons_co2e)) %>% 
+  summarize(co2e = sum(emissions_metric_tons_co2e)) %>%
   filter(year == 2021 & scope == "Scope 1")
 
 hookaddcap()
@@ -53,21 +53,21 @@ The Metropolitan Council, MPCA, and EPA source data leads to different estimates
 
 comp_2021 <- bind_rows(
   mc_ww_cty %>%
-  mutate(county_name = COUNTY_NAM, source = "Met Council") %>% 
-    ungroup() %>% 
-    select(-c(year,scope,COUNTY_NAM)),
+    mutate(county_name = COUNTY_NAM, source = "Met Council") %>%
+    ungroup() %>%
+    select(-c(year, scope, COUNTY_NAM)),
   mpca_ww %>%
-    mutate(county_name = NAME, source = "MPCA",co2e = state_co2e) %>% 
-    ungroup() %>% 
-    select(-c(GEOID,NAME,state_co2e,epa_co2e)),
+    mutate(county_name = NAME, source = "MPCA", co2e = state_co2e) %>%
+    ungroup() %>%
+    select(-c(GEOID, NAME, state_co2e, epa_co2e)),
   epa_ww %>%
-    mutate(county_name = NAME, source = "EPA",co2e = epa_co2e) %>% 
-    ungroup() %>% 
-    select(-c(GEOID,NAME,epa_co2e))
-) 
+    mutate(county_name = NAME, source = "EPA", co2e = epa_co2e) %>%
+    ungroup() %>%
+    select(-c(GEOID, NAME, epa_co2e))
+)
 
 comp_2021 %>%
-  filter(county_name %in% mc_ww_cty$COUNTY_NAM) %>% 
+  filter(county_name %in% mc_ww_cty$COUNTY_NAM) %>%
   plot_ly(
     x = ~ reorder(county_name, -co2e),
     y = ~co2e,
