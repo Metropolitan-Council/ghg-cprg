@@ -5,20 +5,20 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 hookaddcap()
 ```
 
-Wastewater emissions are estimated at the state level by the EPA. Additionally, the Minnesota Pollution Control Agency (MPCA) provides a statewide estimate which is notably lower than EPA estimates, largely due to lower estimated methane emissions. Each inventory only extends to 2020, currently. We used the EPA estimate for Wisconsin and MPCA estimate for Minnesota, and downscaled emission estimates to county levels by proportioning by 2020 population.
+We currently have three sources for wastewater emissions: the EPA's state inventory tool, the MPCA's emissions inventory, and the Met Council's Environmental Services emission estimates. Because only the EPA's estimate extends to Wisconsin and Minnesota we are reporting those data for consistency, but explore all three below where they have geographic overlap. The EPA estimate uses state population, biochemical oxygen demand, fraction of wastewater anaerobically digested, fraction of population on septic, estimated protein content, and biosolids used as fertilizer to estimate CH4 and N2O emissions. These inputs are modifiable and should be explored further in the CCAP. We down-scaled the state level emission estimates to county levels by population percentage.
 
-- Data is the highest quality rank (federal and state agency)
+- Data is the highest quality rank (federal agency)
 - Data is modeled by the agencies based on multiple parameters, including population, aerobic vs anaerobic treatment use, and a variety of other factors.
 - If this is a modeled dataset, what is the sample? UNCLEAR
 - Output data is CO2 equivalencies in metric tonnes
 - EPA data is accessible [here](https://www.epa.gov/statelocalenergy/download-state-inventory-and-projection-tool)
   MPCA data is accessible via the tool found [here](https://public.tableau.com/app/profile/mpca.data.services/viz/GHGemissioninventory/GHGsummarystory)
-- Data was downscaled to county levels for both EPA estimates and MPCA estimates (MN only). EPA and MPCA estimates were compared and MPCA estimates used due to a finer understanding of MN wastewater treatment practices.
+- We are currently using the default input values provided by the EPA, though will refine these based on our knowledge of local wastewater treatment in the future.
 - Data is the 2020 statewide estimates downscaled to the county level by population percentage.
 - This is the latest data available for both datasets (accessed January 2024).
-- We are assuming MPCA data is more accurate than EPA data and that emissions are downscalable by population.
+- We are assuming EPA default input values are appropriate representations of the 11 county MSA region and that we can scale to county levels by population given that we are estimating municipal wastewater treatment.
 - Which subject matter expert (SME) reviewed this data?
-- Describe testing used to verify data
+- We compare estimates from the MPCA and Met Council at the county level.
 
 Be sure to add a citation of this dataset to the Zotero shared library.
 
