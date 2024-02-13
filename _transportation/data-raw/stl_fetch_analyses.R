@@ -152,17 +152,3 @@ saveRDS(
   county21_truck_calib_data,
   "_transportation/data-raw/analysis_runs/county21_truck_calib_data.rds"
 )
-
-
-# aadt---
-# created and downloaded from StL platform
-
-county_aadt <- read.csv("_transportation/data-raw/stl_raw_downloads/1689255_CPRG_County_AADT_motor_trunk_primary/1689255_CPRG_County_AADT_motor_trunk_primary_estimated_aadt_all.csv") %>% 
-  clean_names() %>% 
-  mutate(analysis_name = "CPRG_County_AADT_motor_trunk_primary") %>% 
-  bind_rows(read.csv("_transportation/data-raw/stl_raw_downloads/1689256_CPRG_County_AADT_secondary_tertiary/1689256_CPRG_County_AADT_secondary_tertiary_estimated_aadt_all.csv") %>% 
-              clean_names() %>% 
-              mutate(analysis_name = "CPRG_County_AADT_secondary_tertiary")) %>% 
-  mutate(metric_group = "estimated_aadt_all")
-
-saveRDS(county_aadt, "_transportation/data-raw/analysis_runs/county_aadt.RDS")
