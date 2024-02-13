@@ -97,7 +97,7 @@ StreetLight returns not only vehicle volume, but also trip attributes, like trip
 ```{r fig-stl-trip-distance-matrix-passenger}
 #| fig-cap: "StreetLight origin-destination passenger trip length matrix"
 #| out-width: "95%"
-  
+
 plot_ly(
   data = passenger_od_trip,
   source = opts_current$get()$label,
@@ -112,18 +112,22 @@ plot_ly(
     title = list(
       text = "Average trip<br>length (miles)",
       font = list(
-            family = "Arial Narrow",
-            size = 16
-      )),
-      tickfont = list(
         family = "Arial Narrow",
-        size = 14)
+        size = 16
+      )
+    ),
+    tickfont = list(
+      family = "Arial Narrow",
+      size = 14
+    )
   ),
   hovertemplate = paste0(
-    "Origin county: %{y}<br>", 
-    "Destination county: %{x}<br>", 
+    "Origin county: %{y}<br>",
+    "Destination county: %{x}<br>",
     "Average trip length: %{z} miles",
-    "<extra></extra>")) %>% 
+    "<extra></extra>"
+  )
+) %>%
   plotly_layout(
     main_title = "StreetLight county origin-destination trip length",
     subtitle = "Passenger vehicles",
@@ -147,34 +151,42 @@ trip_length_bin <- county21_data$od_trip_all %>%
     destination_zone_name, day_type, day_part,
     avg_all_trip_length_mi,
     average_daily_o_d_traffic_st_l_volume,
-    starts_with("trip_length")) %>%
+    starts_with("trip_length")
+  ) %>%
   pivot_longer(10:23,
-               values_to = "percent_of_trips")  %>%
+    values_to = "percent_of_trips"
+  ) %>%
   rowwise() %>%
-  mutate(length_bin = stringr::str_remove(name, "trip_length_") %>%
-           str_remove("_mi_percent") %>%
-           stringr::str_replace("_", "-") %>%
-           paste0(" miles"),
-         length_num = name %>%
-           str_split("_") %>%
-           magrittr::extract(-3),
-         pair_type = case_when(
-           origin_zone_name == destination_zone_name ~ "Same county",
-           TRUE ~ "Different county"
-         )) %>%
-  mutate(length_num = length_num[3] %>%
-           as.numeric() + 1,
-         od_pair_name = paste0(origin_zone_name, "-", destination_zone_name),
-         length_bin = factor(length_bin,
-                             levels = c("0-1 miles", "1-2 miles", "2-5 miles",
-                                        "5-10 miles", "10-20 miles", 
-                                        "20-30 miles", "30-40 miles", "40-50 miles", 
-                                        "50-60 miles", "60-70 miles", 
-                                        "70-80 miles", "80-90 miles", "90-100 miles",
-                                        "100 miles"),
-                             ordered = TRUE),
-         origin_zone_name = as.factor(origin_zone_name),
-         destination_zone_name = as.factor(destination_zone_name)
+  mutate(
+    length_bin = stringr::str_remove(name, "trip_length_") %>%
+      str_remove("_mi_percent") %>%
+      stringr::str_replace("_", "-") %>%
+      paste0(" miles"),
+    length_num = name %>%
+      str_split("_") %>%
+      magrittr::extract(-3),
+    pair_type = case_when(
+      origin_zone_name == destination_zone_name ~ "Same county",
+      TRUE ~ "Different county"
+    )
+  ) %>%
+  mutate(
+    length_num = length_num[3] %>%
+      as.numeric() + 1,
+    od_pair_name = paste0(origin_zone_name, "-", destination_zone_name),
+    length_bin = factor(length_bin,
+      levels = c(
+        "0-1 miles", "1-2 miles", "2-5 miles",
+        "5-10 miles", "10-20 miles",
+        "20-30 miles", "30-40 miles", "40-50 miles",
+        "50-60 miles", "60-70 miles",
+        "70-80 miles", "80-90 miles", "90-100 miles",
+        "100 miles"
+      ),
+      ordered = TRUE
+    ),
+    origin_zone_name = as.factor(origin_zone_name),
+    destination_zone_name = as.factor(destination_zone_name)
   )
 
 od_pairs <- do.call(paste, as.data.frame(t(apply(trip_length_bin[, 4:5], 1, sort))))
@@ -183,12 +195,13 @@ trip_length_bin$od_pair <- match(od_pairs, unique(od_pairs))
 od_pair_index <- trip_length_bin %>%
   select(od_pair, origin_zone_name, destination_zone_name, od_pair_name, pair_type) %>%
   unique()
-
 ```
 
+StreetLight also provides a rough estimation of the overall trip distance distribution. Use the widget below to find the distributions of various origin-destination pairs. 
+
 ```{r fig-stl-trip-length-dist-widget}
-#| fig-cap: "StreetLight trip length distribution widget"
-#| out-width: "95%" 
+#| fig-cap: "StreetLight passenger trip length distribution widget"
+#| out-width: "95%"
 
 shared_trip_length_bin <- SharedData$new(trip_length_bin)
 
@@ -196,22 +209,26 @@ bscols(
   widths = c(3, 9),
   list(
     htmltools::h5("Select an origin and destination county to visualize"),
-    filter_select(id = "origin_zone_name", 
-                  label = "Origin county",
-                  sharedData = shared_trip_length_bin,
-                  ~origin_zone_name,
-                  multiple = FALSE),
-    filter_select(id = "destination_zone_name", 
-                  label = "Destination county",
-                  sharedData = shared_trip_length_bin,
-                  ~destination_zone_name,
-                  multiple = FALSE)
+    filter_select(
+      id = "origin_zone_name",
+      label = "Origin county",
+      sharedData = shared_trip_length_bin,
+      ~origin_zone_name,
+      multiple = FALSE
+    ),
+    filter_select(
+      id = "destination_zone_name",
+      label = "Destination county",
+      sharedData = shared_trip_length_bin,
+      ~destination_zone_name,
+      multiple = FALSE
+    )
   ),
   plot_ly(
     data = shared_trip_length_bin,
     source = opts_current$get()$label,
-    x = ~factor(length_bin),
-    y = ~percent_of_trips * 100,
+    x = ~ factor(length_bin),
+    y = ~percent_of_trips,
     type = "bar",
     hovertemplate = ~ paste0(
       "Origin county: ", origin_zone_name, "<br>",
@@ -219,33 +236,29 @@ bscols(
       scales::percent(percent_of_trips, accuracy = 0.1), " of all trips were ", length_bin,
       "<extra></extra>"
     )
-  ) %>% 
+  ) %>%
     plotly_layout(
       main_title = paste0("Origin-destination trip length distribution"),
+      subtitle = "StreetLight Data, passenger vehicles",
       x_title = "Trip length",
       y_title = "% of trips"
-    ) %>% 
-    layout(yaxis = list(format = "%"))
+    ) %>%
+    layout(yaxis = list(tickformat = "1%"))
 )
 ```
 
-```{js}
+```{js crosstalk-helpers}
+// helpers for crosstalk widgets
 function remove_all_option() {
     document.getElementById("origin_zone_name")[0].selectize.removeOption("");
     document.getElementById("destination_zone_name")[0].selectize.removeOption("");
 
+
+    document.getElementById("origin_zone_name").getElementsByClassName("selectized")[0].selectize.setValue("Anoka", false);
+    document.getElementById("destination_zone_name").getElementsByClassName("selectized")[0].selectize.setValue("Anoka", false);
+
 }
 window.onload = remove_all_option;
-
-function filter_default() {
-    document.getElementById("origin_zone_name").getElementsByClassName("selectized") 
-[0].selectize.setValue("Anoka", false);
-
-document.getElementById("destination_zone_name").getElementsByClassName("selectized") 
-[0].selectize.setValue("Anoka", false);
- }
-window.onload = filter_default;
-
 
 ```
 
@@ -440,7 +453,7 @@ Comparing trip distance and county area, we see a general, but weak, positive co
 #| out-width: "95%"
 cprg_area <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-           as.numeric())
+    as.numeric())
 
 passenger_dist_area <- left_join(
   passenger_od_trip %>%
@@ -527,34 +540,42 @@ comm_trip_length_bin <- county21_truck_data$od_trip_comm %>%
     destination_zone_name, day_type, day_part,
     avg_all_trip_length_mi,
     average_daily_o_d_traffic_st_l_calibrated_index,
-    starts_with("trip_length")) %>%
+    starts_with("trip_length")
+  ) %>%
   pivot_longer(11:24,
-               values_to = "percent_of_trips")  %>%
+    values_to = "percent_of_trips"
+  ) %>%
   rowwise() %>%
-  mutate(length_bin = stringr::str_remove(name, "trip_length_") %>%
-           str_remove("_mi_percent") %>%
-           stringr::str_replace("_", "-") %>%
-           paste0(" miles"),
-         length_num = name %>%
-           str_split("_") %>%
-           magrittr::extract(-3),
-         pair_type = case_when(
-           origin_zone_name == destination_zone_name ~ "Same county",
-           TRUE ~ "Different county"
-         )) %>%
-  mutate(length_num = length_num[3] %>%
-           as.numeric() + 1,
-         od_pair_name = paste0(origin_zone_name, "-", destination_zone_name),
-         length_bin = factor(length_bin,
-                             levels = c("0-1 miles", "1-2 miles", "2-5 miles",
-                                        "5-10 miles", "10-20 miles", 
-                                        "20-30 miles", "30-40 miles", "40-50 miles", 
-                                        "50-60 miles", "60-70 miles", 
-                                        "70-80 miles", "80-90 miles", "90-100 miles",
-                                        "100 miles"),
-                             ordered = TRUE),
-         origin_zone_name = as.factor(origin_zone_name),
-         destination_zone_name = as.factor(destination_zone_name)
+  mutate(
+    length_bin = stringr::str_remove(name, "trip_length_") %>%
+      str_remove("_mi_percent") %>%
+      stringr::str_replace("_", "-") %>%
+      paste0(" miles"),
+    length_num = name %>%
+      str_split("_") %>%
+      magrittr::extract(-3),
+    pair_type = case_when(
+      origin_zone_name == destination_zone_name ~ "Same county",
+      TRUE ~ "Different county"
+    )
+  ) %>%
+  mutate(
+    length_num = length_num[3] %>%
+      as.numeric() + 1,
+    od_pair_name = paste0(origin_zone_name, "-", destination_zone_name),
+    length_bin = factor(length_bin,
+      levels = c(
+        "0-1 miles", "1-2 miles", "2-5 miles",
+        "5-10 miles", "10-20 miles",
+        "20-30 miles", "30-40 miles", "40-50 miles",
+        "50-60 miles", "60-70 miles",
+        "70-80 miles", "80-90 miles", "90-100 miles",
+        "100 miles"
+      ),
+      ordered = TRUE
+    ),
+    origin_zone_name = as.factor(origin_zone_name),
+    destination_zone_name = as.factor(destination_zone_name)
   )
 
 comm_od_pairs <- do.call(paste, as.data.frame(t(apply(comm_trip_length_bin[, 5:6], 1, sort))))
@@ -563,15 +584,14 @@ comm_trip_length_bin$od_pair <- match(comm_od_pairs, unique(comm_od_pairs))
 comm_od_pair_index <- comm_trip_length_bin %>%
   select(od_pair, origin_zone_name, destination_zone_name, od_pair_name, pair_type, vehicle_weight) %>%
   unique()
-
 ```
 
 ```{r fig-stl-trip-distance-matrix-medium}
 #| fig-cap: "StreetLight origin-destination medium-duty trip length matrix"
 #| out-width: "95%"
-  
+
 plot_ly(
-  data = comm_trip_length_bin %>% 
+  data = comm_trip_length_bin %>%
     filter(vehicle_weight == "Medium"),
   source = opts_current$get()$label,
   y = ~origin_zone_name,
@@ -585,18 +605,22 @@ plot_ly(
     title = list(
       text = "Average trip<br>length (miles)",
       font = list(
-            family = "Arial Narrow",
-            size = 16
-      )),
-      tickfont = list(
         family = "Arial Narrow",
-        size = 14)
+        size = 16
+      )
+    ),
+    tickfont = list(
+      family = "Arial Narrow",
+      size = 14
+    )
   ),
   hovertemplate = paste0(
-    "Origin county: %{y}<br>", 
-    "Destination county: %{x}<br>", 
+    "Origin county: %{y}<br>",
+    "Destination county: %{x}<br>",
     "Average trip length: %{z} miles",
-    "<extra></extra>")) %>% 
+    "<extra></extra>"
+  )
+) %>%
   plotly_layout(
     main_title = "StreetLight county origin-destination trip length",
     subtitle = "Medium-duty vehicles",
@@ -609,9 +633,9 @@ plot_ly(
 ```{r fig-stl-trip-distance-matrix-heavy}
 #| fig-cap: "StreetLight origin-destination heavy-duty trip length matrix"
 #| out-width: "95%"
-  
+
 plot_ly(
-  data = comm_trip_length_bin %>% 
+  data = comm_trip_length_bin %>%
     filter(vehicle_weight == "Heavy"),
   source = opts_current$get()$label,
   y = ~origin_zone_name,
@@ -625,18 +649,22 @@ plot_ly(
     title = list(
       text = "Average trip<br>length (miles)",
       font = list(
-            family = "Arial Narrow",
-            size = 16
-      )),
-      tickfont = list(
         family = "Arial Narrow",
-        size = 14)
+        size = 16
+      )
+    ),
+    tickfont = list(
+      family = "Arial Narrow",
+      size = 14
+    )
   ),
   hovertemplate = paste0(
-    "Origin county: %{y}<br>", 
-    "Destination county: %{x}<br>", 
+    "Origin county: %{y}<br>",
+    "Destination county: %{x}<br>",
     "Average trip length: %{z} miles",
-    "<extra></extra>")) %>% 
+    "<extra></extra>"
+  )
+) %>%
   plotly_layout(
     main_title = "StreetLight county origin-destination trip length",
     subtitle = "Heavy-duty vehicles",
@@ -645,6 +673,72 @@ plot_ly(
     legend_title = "Average trip length"
   )
 ```
+
+```{r fig-stl-trip-length-dist-widget-comm}
+#| fig-cap: "StreetLight commercial trip length distribution widget"
+#| out-width: "95%"
+
+shared_comm_trip_length_bin <- SharedData$new(comm_trip_length_bin)
+
+bscols(
+  widths = c(3, 9),
+  list(
+    htmltools::h5("Select an origin and destination county to visualize"),
+    filter_select(
+      id = "origin_zone_name_comm",
+      label = "Origin county",
+      sharedData = shared_comm_trip_length_bin,
+      ~origin_zone_name,
+      multiple = FALSE
+    ),
+    filter_select(
+      id = "destination_zone_name_comm",
+      label = "Destination county",
+      sharedData = shared_comm_trip_length_bin,
+      ~destination_zone_name,
+      multiple = FALSE
+    )
+  ),
+  plot_ly(
+    data = shared_comm_trip_length_bin,
+    source = opts_current$get()$label,
+    x = ~ factor(length_bin),
+    y = ~percent_of_trips,
+    color = ~vehicle_weight,
+    type = "bar",
+    hovertemplate = ~ paste0(
+      "Origin county: ", origin_zone_name, "<br>",
+      "Destination county: ", destination_zone_name, "<br>",
+      vehicle_weight, "-duty", "<br>",
+      scales::percent(percent_of_trips, accuracy = 0.1), " of all trips were ", length_bin,
+      "<extra></extra>"
+    )
+  ) %>%
+    plotly_layout(
+      main_title = paste0("Origin-destination trip length distribution"),
+      subtitle = "StreetLight Data, commercial vehicles",
+      x_title = "Trip length",
+      y_title = "% of trips",
+      legend_title = "Vehicle weight"
+    ) %>%
+    layout(yaxis = list(tickformat = "1%"))
+)
+```
+```{js crosstalk-helpers-2}
+// helpers for crosstalk widgets
+
+function filter_default_comm() {
+
+document.getElementById("origin_zone_name_comm").getElementsByClassName("selectized")[0].selectize.setValue("Anoka", false);
+document.getElementById("destination_zone_name_comm").getElementsByClassName("selectized")[0].selectize.setValue("Anoka", false);
+
+document.getElementById("origin_zone_name").getElementsByClassName("selectized")[0].selectize.setValue("Anoka", false);
+document.getElementById("destination_zone_name").getElementsByClassName("selectized")[0].selectize.setValue("Anoka", false);
+}
+window.onload = filter_default_comm;
+
+```
+
 
 #### Calibration
 
@@ -674,7 +768,7 @@ vehicle_weight_comp <-
   )
 
 gt::gt(vehicle_weight_comp,
-       row_group_as_column = FALSE
+  row_group_as_column = FALSE
 ) %>%
   tab_style(
     style = list(
@@ -814,7 +908,7 @@ Subject matter expert reviewer: ________
 <!-- ### Data dictionary -->
 <!-- Table with detailed description of columns and definitions for each data table. -->
 
-```{r echo=FALSE, eval=FALSE}
+```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
 caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
 saveCap(paste0("cap-", caption_index))

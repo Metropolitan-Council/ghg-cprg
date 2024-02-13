@@ -173,7 +173,7 @@ plot_ly(
   source = opts_current$get()$label,
   y = ~trip_o_county,
   x = ~trip_d_county,
-  z = ~round(mean_trip_dist,1),
+  z = ~ round(mean_trip_dist, 1),
   type = "heatmap",
   colors = "PuBuGn",
   colorbar = list(
@@ -182,25 +182,29 @@ plot_ly(
     title = list(
       text = "Average trip<br>length (miles)",
       font = list(
-            family = "Arial Narrow",
-            size = 16
-      )),
-      tickfont = list(
         family = "Arial Narrow",
-        size = 14)
+        size = 16
+      )
+    ),
+    tickfont = list(
+      family = "Arial Narrow",
+      size = 14
+    )
   ),
   hovertemplate = paste0(
-    "Origin county: %{y}<br>", 
-    "Destination county: %{x}<br>", 
+    "Origin county: %{y}<br>",
+    "Destination county: %{x}<br>",
     "Mean trip length: %{z} miles",
-    "<extra></extra>")) %>% 
+    "<extra></extra>"
+  )
+) %>%
   plotly_layout(
     main_title = "TBI county origin-destination trip length",
     subtitle = "Origin-destination pairs with less than 30 trips removed",
     x_title = "Destination county",
     y_title = "Origin county",
     legend_title = "Average trip length"
-  ) 
+  )
 ```
 
 
