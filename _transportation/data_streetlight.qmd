@@ -21,28 +21,16 @@ vmt_emissions_all <- vmt_emissions %>%
 hookaddcap()
 ```
 
-[StreetLight Data](https://www.streetlightdata.com/) is a transportation analytics platform that uses aggregated location-based services (LBS) data from cell phones and navigation/GPS data to deliver insights on travel patterns. For this project, we used StreetLight to find the volume of traffic (number of vehicles) and average trip length for passenger and commercial vehicles. 
+[StreetLight Data](https://www.streetlightdata.com/) is a transportation analytics platform that uses aggregated location-based services (LBS) data from cell phones, GPS data, and connected vehicle data to deliver insights on travel patterns. For this project, we used StreetLight to find the volume of traffic (number of vehicles) and average trip length for passenger and commercial vehicles.
 
-For ease of access, we used [`{streetlightR}`](https://github.com/Metropolitan-Council/streetlightR) to interact directly with the StreetLight API. `{streetlightR}` is an open-source R package maintained by Council staff. 
+The Metropolitan Council used StreetLight for our [2018 inventory](https://rpubs.com/lizroten/metroclimate_method_on_road). 
+
+For ease of access, we used [`{streetlightR}`](https://github.com/Metropolitan-Council/streetlightR) to interact directly with the StreetLight API. `{streetlightR}` is an open-source R package maintained by Council staff.  We also used StreetLight InSight®, an online interface for running StreetLight analyses. Our subscription to StreetLight is part of MnDOT's transportation analysis with regional data for informed strategies [program](https://www.dot.state.mn.us/tda/tardis.html). StreetLight falls second, only behind government data sources, in the data quality table (@tbl-quality-rank).
+
+Using the API, we uploaded the CPRG county geography and then performed an origin-destination analysis, in which all counties were both an origin and destination. This resulted in detailed vehicle counts for traffic between and within each of the counties. The data were then pulled and cleaned for estimating passenger and commercial VMT. The data were filtered to ensure all day types and day parts were included in the VMT calculations. Analyses were configured to include all months in 2021 and the most recent metric version (R131-M129) available was used. 
 
 Data source description, type
-
-- StreetLight Data, falls in second rank. Quality rank (See @tbl-quality-rank)
-- How, when, and why was the data collected?
-- If this is a modeled dataset, what is the sample?
-- What is the raw unit of measurement? 
-- How was this data accessed? Include any relevant links/citations, code, or downloads.
-- What data cleaning or wrangling was completed? How did you test these processes and outputs?
-- What is the geographic and temporal scope? Did you complete any aggregation?
-- What version is the data? Were there other versions available? If so, why did you choose this version?
 - What assumptions are made when we use this dataset?
-- Which subject matter expert (SME) reviewed this data?
-- Describe testing used to verify data
-
-Be sure to add a citation of this dataset to the Zotero shared library.
-
-### Data characteristics
-
 - Were there any missing data? How did you handle missing data?
 - Plots, tables, and description of data distribution
 - Variance, Z-Score, quantiles
@@ -50,7 +38,11 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 
 ### Passenger 
 
-For passenger data, we used StreetLight Volume - an estimate of the number of vehicles. The models that make up StreetLight Volume predict vehicle volumes by combining Location-Based Services (LBS) trips with contextual features that represent the street network, demographics, climate, and other geographic characteristics [@streetlightdataStreetLightAllVehicles2023]. The models are validated against data permanent traffic counters across the country, including in the study area. 
+For passenger data, we used StreetLight Volume - an estimate of the number of vehicles. StreetLight uses a sample of devices with location-based services (LBS) and vehicles with location technology (connected vehicle data) to model number of vehicles [@streetlightdataAllVehiclesTravel2024].  
+
+The models that make up StreetLight Volume predict vehicle volumes by combining location-based services (LBS) and connected vehicle trips with contextual features that represent the street network, demographics, climate, and other geographic characteristics [@streetlightdataStreetLightAllVehicles2023]. The models are validated against data permanent traffic counters across the country, including in the study area. 
+
+StreetLight provides a rough sample size for the entire analysis, as shown in @tbl-passenger-stl-sample-size. 
 
 ```{r tbl-passenger-stl-sample-size}
 #| tbl-cap: "StreetLight passenger travel analysis sample size"
@@ -75,6 +67,36 @@ county21_data$sample_size %>%
 #### Trip length validation {#sec-trip-length-validation}
 
 StreetLight returns not only vehicle volume, but also trip attributes, like trip length. We then use this to estimate vehicle miles traveled, by multiplying volume by average trip length for each origin-destination pair. 
+
+```{r}
+# trip length long
+trip_length_bin <- county21_data$od_trip_all %>%
+    filter(
+    day_type == "0: All Days (M-Su)",
+    day_part == "0: All Day (12am-12am)"
+  ) %>% 
+  select(
+    analysis_name, metric_group,
+    mode_of_travel, origin_zone_name,
+    destination_zone_name, day_type, day_part,
+    average_daily_o_d_traffic_st_l_volume,
+    starts_with("trip_length")) %>% 
+  pivot_longer(9:22)  %>% 
+  mutate(length_bin = stringr::str_remove(name, "trip_length_") %>% 
+           str_remove("_mi_percent") %>% 
+           stringr::str_replace("_", "-") %>% 
+           paste0(" miles"))
+
+
+plot_ly(
+  data = trip_length_bin %>% 
+    filter(origin_zone_name == "Anoka"),
+  x = ~length_bin,
+  y  = ~value
+) %>% 
+  layout(barmode = "overlay")
+```
+
 
 To test logical validity of average trip lengths, we will compare the minimum distance between each origin and destination with the average trip length. These should correlate.
 
