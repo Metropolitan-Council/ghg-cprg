@@ -59,7 +59,9 @@ wi_2021 <- cprg_county_proportions %>%
   ) %>%
   mutate(
     epa_co2e = county_proportion_of_state_pop *
-      as.numeric(wastewater_epa %>% filter(Year == 2021 & State == "WI") %>% summarize(value = sum(CO2e))) ### combine CH4 and N2O emissions
+      as.numeric(wastewater_epa %>%
+                   filter(Year == 2021 & State == "WI") %>%
+                   summarize(value = sum(CO2e))) ### combine CH4 and N2O emissions
   )
 
 ### using county population percentages, apportion state CO2e estimates to each county
@@ -70,7 +72,9 @@ mn_2021 <- cprg_county_proportions %>%
   ) %>%
   mutate(
     epa_co2e = county_proportion_of_state_pop *
-      as.numeric(wastewater_epa %>% filter(Year == 2021 & State == "WI") %>% summarize(value = sum(CO2e))) ### combine CH4 and N2O emissions
+      as.numeric(wastewater_epa %>%
+                   filter(Year == 2021 & State == "WI") %>%
+                   summarize(value = sum(CO2e))) ### combine CH4 and N2O emissions
   )
 
 # bind WI and MN
