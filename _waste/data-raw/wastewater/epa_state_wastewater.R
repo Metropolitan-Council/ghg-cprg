@@ -38,8 +38,6 @@ wi_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-wi-wastewater.csv"
   select(-1) %>%
   rename(Emission_type = `Emissions (MMTCO2E)`) %>%
   mutate(State = "WI")
-# taken from WI state inventory document (https://widnr.widen.net/view/pdf/o9xmpot5x7/AM610.pdf?t.download=true)
-# wisconsindnrWisconsinGreenhouseGas2021
 
 # bind files and convert CO2e from MMTCO2e to metric tonnes CO2e
 wastewater_epa <- bind_rows(mn_epa, wi_epa) %>%
