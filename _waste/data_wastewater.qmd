@@ -28,7 +28,7 @@ The EPA tool provides outputs in metric tons CO~2~e. We confirmed that the globa
 
 We are currently using all and only default input values provided by the EPA, though will refine these based on our knowledge of local wastewater treatment in the future.
 
-You can access the EPA tool on the [EPA website](https://www.epa.gov/statelocalenergy/download-state-inventory-and-projection-tool) and the MPCA tool through their [Tableau Dashboard](https://public.tableau.com/app/profile/mpca.data.services/viz/GHGemissioninventory/GHGsummarystory).
+You can access the EPA tool on the [EPA website](https://www.epa.gov/statelocalenergy/download-state-inventory-and-projection-tool) and the MPCA data through their [Tableau Dashboard](https://public.tableau.com/app/profile/mpca.data.services/viz/GHGemissioninventory/GHGsummarystory). You can also read full methodologies for MPCA [@claflinGreenhouseGasEmissions2023] and EPA [@claflinGreenhouseGasEmissions2023] in their respective documents. 
 
 ### Data characteristics
 
@@ -44,20 +44,20 @@ There are many sources of uncertainty in these estimates due to multiple activit
 The Metropolitan Council, MPCA, and EPA source data leads to different estimates of emissions in the common seven county region. The Metropolitan Council does not process all wastewater in the seven county region. Additionally, they report CO~2~ emissions from combustion of stationary fuels for infrastructure used in directly processing wastewater, unlike EPA estimates which are CH~4~ and N~2~O emissions from municipal wastewater treatment of organic matter. 
 
 ```{r tbl-ww-comparison-scope}
-#| tbl-cap: "Wastewater data sources and geographic scopes" 
+#| tbl-cap: "Wastewater data sources and geographic scopes"
 #| out-width: "95%"
 tribble(
-  ~`Data source`, ~`Geographic scope`, ~`Citation`,
-  "EPA GHG Inventory and Projection Tool", "Minnesota and Wisconsin, scaled to county population", "@usepaStateGreenhouseGas2024a",
-  "MPCA GHG Inventory", "Minnesota, scaled to county population", "@claflinGreenhouseGasEmissions2023",
-  "Metropolitan Council Wastewater Emissions Estimate", "7-county Minnesota metro area",  "@"
-) %>% 
+  ~`Data source`, ~`Geographic scope`, # ~`Citation`,
+  "EPA GHG Inventory and Projection Tool", "Minnesota and Wisconsin, scaled to county population", # "@usepaStateGreenhouseGas2024a",
+  "MPCA GHG Inventory", "Minnesota, scaled to county population", # "@claflinGreenhouseGasEmissions2023",
+  "Metropolitan Council Wastewater Emissions Estimate", "7-county Minnesota metro area" #"@"
+) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
-  ) %>% 
+  ) %>%
   gt::fmt_markdown()
 ```
 
@@ -71,10 +71,10 @@ The Metropolitan Council area covers most of the 7-county Twin Cities area, but 
 #| out-width: "95%"
 #| out-height: "500px"
 
-council_leaflet() %>% 
+council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
-      sf::st_transform(4326) %>% 
+      sf::st_transform(4326) %>%
       sf::st_union(),
     fill = FALSE,
     color = "gray",
@@ -85,7 +85,8 @@ council_leaflet() %>%
     data = metc_service_area,
     group = "MetC wastewater service area",
     weight = 1,
-    popup =  "MetC wastewater service area") %>% 
+    popup = "MetC wastewater service area"
+  ) %>%
   leaflet::addLayersControl(
     overlayGroups = c(
       "CPRG area",
