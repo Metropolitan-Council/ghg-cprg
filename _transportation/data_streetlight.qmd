@@ -240,20 +240,6 @@ bscols(
 )
 ```
 
-```{js crosstalk-helpers}
-// helpers for crosstalk widgets
-function remove_all_option() {
-    document.getElementById("origin_zone_name")[0].selectize.removeOption("");
-    document.getElementById("destination_zone_name")[0].selectize.removeOption("");
-
-
-    document.getElementById("origin_zone_name").getElementsByClassName("selectized")[0].selectize.setValue("Anoka", false);
-    document.getElementById("destination_zone_name").getElementsByClassName("selectized")[0].selectize.setValue("Anoka", false);
-
-}
-window.onload = remove_all_option;
-
-```
 
 To test logical validity of average trip lengths, we will compare the minimum distance between each origin and destination with the average trip length. These should correlate.
 
