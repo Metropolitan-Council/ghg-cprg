@@ -12,8 +12,10 @@ mn_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-mn-wastewater.csv"
   pivot_longer(cols = 3:38, names_to = "Year", values_to = "CO2e") %>%
   select(-1) %>%
   rename(Emission_type = `Emissions (MMTCO2E)`) %>%
-  mutate(State = "MN",
-         STATE = "Minnesota")
+  mutate(
+    State = "MN",
+    STATE = "Minnesota"
+  )
 
 # wi epa -----
 # summary page from the
@@ -26,8 +28,10 @@ wi_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-wi-wastewater.csv"
   pivot_longer(cols = 3:38, names_to = "Year", values_to = "CO2e") %>%
   select(-1) %>%
   rename(Emission_type = `Emissions (MMTCO2E)`) %>%
-  mutate(State = "WI",
-         STATE = "Wisconsin")
+  mutate(
+    State = "WI",
+    STATE = "Wisconsin"
+  )
 
 # bind files and convert CO2e from MMTCO2e to metric tonnes CO2e
 wastewater_epa <- bind_rows(mn_epa, wi_epa) %>%
@@ -48,8 +52,8 @@ wi_2021 <- cprg_county_proportions %>%
   mutate(
     epa_co2e = county_proportion_of_state_pop *
       as.numeric(wastewater_epa %>%
-                   filter(Year == 2021 & State == "WI") %>%
-                   summarize(value = sum(CO2e))) ### combine CH4 and N2O emissions
+        filter(Year == 2021 & State == "WI") %>%
+        summarize(value = sum(CO2e))) ### combine CH4 and N2O emissions
   )
 
 ### using county population percentages, apportion state CO2e estimates to each county
@@ -61,8 +65,8 @@ mn_2021 <- cprg_county_proportions %>%
   mutate(
     epa_co2e = county_proportion_of_state_pop *
       as.numeric(wastewater_epa %>%
-                   filter(Year == 2021 & State == "MN") %>%
-                   summarize(value = sum(CO2e))) ### combine CH4 and N2O emissions
+        filter(Year == 2021 & State == "MN") %>%
+        summarize(value = sum(CO2e))) ### combine CH4 and N2O emissions
   )
 
 # bind WI and MN
