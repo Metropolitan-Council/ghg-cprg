@@ -36,7 +36,7 @@ ww_emissions <- readRDS("_waste/data/epa_county_wastewater.RDS") %>%
     geog_name = NAME,
     category = "Wastewater",
     source = "Wastewater",
-    data_source = "EPA State Inventory and Projection Tool",
+    data_source = "EPA State GHG Inventory and Projection Tool",
     factor_source = data_source,
     emissions_metric_tons_co2e = epa_co2e,
     year = 2021
