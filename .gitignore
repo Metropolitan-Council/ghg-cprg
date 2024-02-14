@@ -201,3 +201,7 @@ _transportation/data-raw/stl_raw_downloads/1600439_CPRG_County_OD_NP_Truck_Calib
 _transportation/data_streetlight_files/
 
 _transportation/data_streetlight.html
+
+_waste/data_wastewater_files/
+
+_waste/data-raw/wastewater/epa/wastewater-module.xlsm
