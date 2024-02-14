@@ -149,15 +149,20 @@ emissions_all <- bind_rows(
     ),
     ordered = TRUE
   )) %>%
-  left_join(cprg_county_pop %>% 
-              select(geog_id = COUNTYFP,
-                     county_total_population = population,
-                     population_data_source),
-            by = "geog_id") %>% 
-  rowwise() %>% 
-  mutate(emissions_per_capita = round(emissions_metric_tons_co2e/county_total_population, digits = 2)) %>% 
-  select(year, geog_level, geog_id, geog_name, everything()) 
-  
+  # join county population and calculate per capita emissions
+  left_join(
+    cprg_county_pop %>%
+      select(
+        geog_id = COUNTYFP,
+        county_total_population = population,
+        population_data_source
+      ),
+    by = "geog_id"
+  ) %>%
+  rowwise() %>%
+  mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
+  select(year, geog_level, geog_id, geog_name, everything())
+
 
 
 mean(emissions_all$emissions_per_capita)
