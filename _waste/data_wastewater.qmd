@@ -50,7 +50,7 @@ tribble(
   ~`Data source`, ~`Geographic scope`, # ~`Citation`,
   "EPA GHG Inventory and Projection Tool", "Minnesota and Wisconsin, scaled to county population", # "@usepaStateGreenhouseGas2024a",
   "MPCA GHG Inventory", "Minnesota, scaled to county population", # "@claflinGreenhouseGasEmissions2023",
-  "Metropolitan Council Wastewater Emissions Estimate", "7-county Minnesota metro area" #"@"
+  "Metropolitan Council Wastewater Emissions Estimate", "7-county Minnesota metro area" # "@"
 ) %>%
   gt() %>%
   gt::opt_row_striping() %>%
