@@ -28,7 +28,7 @@ The EPA tool provides outputs in metric tons CO~2~e. We confirmed that the globa
 
 We are currently using all and only default input values provided by the EPA, though will refine these based on our knowledge of local wastewater treatment in the future.
 
-You can access the EPA tool on the [EPA website](https://www.epa.gov/statelocalenergy/download-state-inventory-and-projection-tool) and the MPCA data through their [Tableau Dashboard](https://public.tableau.com/app/profile/mpca.data.services/viz/GHGemissioninventory/GHGsummarystory). You can also read full methodologies for MPCA [@claflinGreenhouseGasEmissions2023] and EPA [@claflinGreenhouseGasEmissions2023] in their respective documents. 
+You can access the EPA tool on the [EPA website](https://www.epa.gov/statelocalenergy/download-state-inventory-and-projection-tool) and the MPCA data through their [Tableau Dashboard](https://public.tableau.com/app/profile/mpca.data.services/viz/GHGemissioninventory/GHGsummarystory). You can also read full methodologies for MPCA [@claflinGreenhouseGasEmissions2023] and EPA [@usepaStateGreenhouseGas2024a] in their respective documents. 
 
 ### Data characteristics
 
