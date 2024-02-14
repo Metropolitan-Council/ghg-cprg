@@ -22,7 +22,7 @@ hookaddcap()
 
 ### Introduction
 
-Greenhouse gas emissions from Minnesota homes and apartment buildings have increased 14% over the past 15 years, and natural gas use is the largest source of these emissions [@mpcaClimateChangeTrends2023].
+Emissions from the electricity generation sector have declined by 54% in Minnesota since 2005, largely as a result of transitions in the grid towards energy sources such as wind and solar [@mpcaClimateChangeTrends2023]. In 2023, MN Governor Walz signed a bill mandating a statewide carbon-free electricity standard by 2040. The law "establishes a standard for utilities to supply Minnesota customers with electricity generated or procured from carbon-free resources, beginning at an amount equal to 80% of retail sales for public utility customers in Minnesota in 2030 and increasing every 5 years to reach 100% for all electric utilities by 2040. The bill also requires that, by 2035, an amount equal to at least 55% of an electric utility’s total retail electric sales to customers in Minnesota must be generated or procured from eligible energy technologies." Wisconsin has not adopted a similar carbon-free electricity standard, but a Wisconsin DNR report noted both the economic gains from such to the renewable energy economy in the state, as well as the opportunities for decarbonization.
 
 ### Methods
 
