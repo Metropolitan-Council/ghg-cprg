@@ -11,12 +11,9 @@ Emissions rates for our region were calculated using the EPA's [Motor Vehicle Em
 
 MOVES is a high-quality government modeling system with strong data inputs and outputs.  
 
-CO~2~ equivalence (CO~2~e) values are derived from global warming potential (GWP) values. See @sec-gwp for more details.
-
-```{r tbl-epa-moves-values}
-#| tbl-cap: "Emissions in grams per vehicle mile traveled by vehicle weight in the Twin Cities region. EPA MOVES4"
-#| out-width: "95%"
-epa_moves %>%
+CO~2~ equivalence (CO~2~e) values are derived using global warming potential (GWP) values. See @sec-gwp for more details.
+```{r clean-emiss-rates}
+epa_moves_clean <- epa_moves %>%
   rowwise() %>%
   mutate(
     `Kilograms CH4 per mile` = ch4 / 1000,
@@ -25,33 +22,20 @@ epa_moves %>%
     `Kilograms CO2e per mile` = co2_co2_equivalent / 1000
   ) %>%
   mutate(
-    `Grams CH4 per mile` = `Kilograms CH4 per mile` * 1000,
-    `Grams N2O per mile` = `Kilograms N2O per mile` * 1000,
-    `Grams CO2 per mile` = `Kilograms CO2 per mile` * 1000,
-    `Grams CO2e per mile` = `Kilograms CO2e per mile` * 1000
+    `Grams CH₄ per mile` = `Kilograms CH4 per mile` * 1000,
+    `Grams N₂O per mile` = `Kilograms N2O per mile` * 1000,
+    `Grams CO₂ per mile` = `Kilograms CO2 per mile` * 1000,
+    `Grams CO₂e per mile` = `Kilograms CO2e per mile` * 1000
   ) %>%
   select(
     `Vehicle weight` = vehicle_weight,
     `MOVES year` = moves_year,
     starts_with("grams")
-  ) %>%
-  gt() %>%
-  gt::opt_row_striping() %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_labels()
-  ) %>%
-  gt::as_raw_html()
-```
-
-
-```{r tbl-lggit-emissions-per-mile}
-#| tbl-cap: "Grams of emissions per mile by vehicle type and fuel type. EPA GHG Emission Hub (2021)"
-#| out-width: "95%"
+  ) 
 
 lggit_kg_emissions_per_mile <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS"))
 
-lggit_kg_emissions_per_mile %>%
+lggit_clean <- lggit_kg_emissions_per_mile %>%
   select(
     `Vehicle type` = `Vehicle Type`,
     `Vehicle model year` = `Vehicle Year`,
@@ -63,19 +47,42 @@ lggit_kg_emissions_per_mile %>%
     `Kilograms CO2e per mile`
   ) %>%
   mutate(
-    `Grams CH4 per mile` = `Kilograms CH4 per mile` * 1000,
-    `Grams N2O per mile` = `Kilograms N2O per mile` * 1000,
-    `Grams CO2 per mile` = `Kilograms CO2 per mile` * 1000,
-    `Grams CO2e per mile` = `Kilograms CO2e per mile` * 1000
+    `Grams CH₄ per mile` = `Kilograms CH4 per mile` * 1000,
+    `Grams N₂O per mile` = `Kilograms N2O per mile` * 1000,
+    `Grams CO₂ per mile` = `Kilograms CO2 per mile` * 1000,
+    `Grams CO₂e per mile` = `Kilograms CO2e per mile` * 1000
   ) %>%
   select(
     `Vehicle type`,
     `Vehicle model year`,
     `Fuel type`,
     starts_with("grams")
-  ) %>%
+  ) 
+```
+
+
+```{r tbl-epa-moves-values}
+#| tbl-cap: "Emissions in grams per vehicle mile traveled by vehicle weight in the Twin Cities region. EPA MOVES4"
+#| out-width: "95%"
+epa_moves_clean %>% 
   gt() %>%
-  fmt_number(4:7, decimals = 3) %>%
+  gt::opt_row_striping() %>%
+  fmt_number(3:6, decimals = 2) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
+
+For comparison, we pulled the emissions per mile rates from the Local Greenhouse Gas Inventory Tool (LGGIT), which align with the 2021 EPA GHG Emission Hub [@usepaGHGEmissionFactors2021]. 
+
+```{r tbl-lggit-emissions-per-mile}
+#| tbl-cap: "Grams of emissions per mile by vehicle type and fuel type. EPA GHG Emission Hub (2021)"
+#| out-width: "95%"
+lggit_clean %>%
+  gt() %>%
+  fmt_number(4:7, decimals = 2) %>%
   gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
@@ -85,11 +92,34 @@ lggit_kg_emissions_per_mile %>%
 ```
 
 
+```{r}
+epa_plus_moves <- bind_rows(epa_moves_clean %>% 
+            mutate(data_source = "MOVES"),
+          lggit_clean %>% 
+            mutate(data_source = "EPA GHG Hub",
+                   `Vehicle weight` = case_when(`Vehicle type` == "Passenger Car" ~ "Passenger",
+                                                `Vehicle type` == "Light Truck" ~ "Medium",
+                                                `Vehicle type` == "Heavy-Duty Vehicle" ~ "Heavy"))) %>% 
+  select(-`Grams CH₄ per mile`, -`Grams N₂O per mile`,
+         -`Grams CO₂ per mile`) %>% 
+  pivot_longer(cols = 3, 
+               names_to = "ghg_factor")
+
+plot_ly(
+  data = epa_plus_moves,
+  x = ~`Vehicle weight`,
+  y = ~value,
+  color = ~data_source,
+  type = "bar"
+) %>% 
+  plotly_layout() %>% 
+  layout(barmode = "identity")
+```
+
+
 
 Data source description, type
 
-- How, when, and why was the data collected?
-- If this is a modeled dataset, what is the sample?
 - What is the raw unit of measurement? 
 - How was this data accessed? Include any relevant links/citations, code, or downloads.
 - What data cleaning or wrangling was completed? How did you test these processes and outputs?
@@ -99,36 +129,29 @@ Data source description, type
 - Which subject matter expert (SME) reviewed this data?
 - Describe testing used to verify data
 
-Be sure to add a citation of this dataset to the Zotero shared library.
-
-### Data characteristics
-
-- Were there any missing data? How did you handle missing data?
-- Plots, tables, and description of data distribution
-- Variance, Z-Score, quantiles
-- Facet views by categorical variables
-
 ### Limitations
 
-### Comparison with similar datasets
+- This edition of MOVES is fairly old relative to our estimation year (2021).
+- We are not breaking out vehicles by fuel type; instead, we are aggregating based on the regional fleet. This may result in more inaccuracies.
+- This only accounts for vehicles that are registered in the 7-county metro area, so may not be precisely representative of vehicles on our roads, but registered elsewhere. 
+- 
 
-- [GHG Emission Factors Hub](https://www.epa.gov/climateleadership/ghg-emission-factors-hub)
 
-### Data dictionary
+<!-- ### Data dictionary -->
 
-```{r tbl-epa-moves-meta}
-#| tbl-cap: "EPA MOVES metadata"
-#| out-width: "95%"
-epa_moves_meta %>%
-  gt() %>%
-  gt::opt_row_striping() %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_labels()
-  ) %>%
-  gt::fmt_markdown() %>%
-  gt::as_raw_html()
-```
+<!-- ```{r tbl-epa-moves-meta} -->
+<!-- #| tbl-cap: "EPA MOVES metadata" -->
+<!-- #| out-width: "95%" -->
+<!-- epa_moves_meta %>% -->
+<!--   gt() %>% -->
+<!--   gt::opt_row_striping() %>% -->
+<!--   tab_style( -->
+<!--     style = cell_text(weight = "bold"), -->
+<!--     locations = cells_column_labels() -->
+<!--   ) %>% -->
+<!--   gt::fmt_markdown() %>% -->
+<!--   gt::as_raw_html() -->
+<!-- ``` -->
 
 
 
