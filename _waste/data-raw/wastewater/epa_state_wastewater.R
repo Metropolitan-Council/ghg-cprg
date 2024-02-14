@@ -12,7 +12,8 @@ mn_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-mn-wastewater.csv"
   pivot_longer(cols = 3:38, names_to = "Year", values_to = "CO2e") %>%
   select(-1) %>%
   rename(Emission_type = `Emissions (MMTCO2E)`) %>%
-  mutate(State = "MN")
+  mutate(State = "MN",
+         STATE = "Minnesota")
 
 # wi epa -----
 # summary page from the
@@ -25,7 +26,8 @@ wi_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-wi-wastewater.csv"
   pivot_longer(cols = 3:38, names_to = "Year", values_to = "CO2e") %>%
   select(-1) %>%
   rename(Emission_type = `Emissions (MMTCO2E)`) %>%
-  mutate(State = "WI")
+  mutate(State = "WI",
+         STATE = "Wisconsin")
 
 # bind files and convert CO2e from MMTCO2e to metric tonnes CO2e
 wastewater_epa <- bind_rows(mn_epa, wi_epa) %>%
@@ -77,7 +79,7 @@ wastewater_meta <-
     ~"Column", ~"Class", ~"Description",
     "GEOID ", class(ww_epa_2021$GEOID), "County ID",
     "NAME", class(ww_epa_2021$NAME), "Name of county",
-    "epa_co2e", class(ww_epa_2021$epa_co2e), "Metric tonnes of CO2 equivalency generated from wastewater treatment"
+    "epa_co2e", class(ww_epa_2021$epa_co2e), "Metric tons of CO2 equivalency generated from municipal wastewater treatment"
   )
 
 saveRDS(wastewater_meta, "_waste/data/epa_county_wastewater_meta.RDS")
