@@ -12,7 +12,7 @@ Emissions rates for our region were calculated using the EPA's [Motor Vehicle Em
 <!-- TODO fill in these values -->
 MOVES is a high-quality government modeling system with strong data inputs and outputs. We requested this data from our MOVES coordinator, Dennis Farmer, who ran the model and shared the resulting table with us. The model run covers [exact geographic scope here] for years [exact years here], using MOVES version [exact version here]. 
 
-The resulting table provides grams of CO~2~, CH~4~, and N~2~O per vehicle mile traveled. We imported, processed, and saved the data in an R script, [epa_moves.R](_transportation/data-raw/epa_moves.R). CO~2~ equivalence (CO~2~e) values are derived using global warming potential (GWP) values. See @sec-gwp for more details.
+The resulting table provides grams of CO~2~, CH~4~, and N~2~O per vehicle mile traveled. We imported, processed, and saved the data in an R script, [epa_moves.R](data-raw/epa_moves.R). CO~2~ equivalence (CO~2~e) values are derived using global warming potential (GWP) values. See @sec-gwp for more details.
 
 ```{r clean-emiss-rates}
 epa_moves_clean <- epa_moves %>%

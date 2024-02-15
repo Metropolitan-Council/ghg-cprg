@@ -63,6 +63,8 @@ and
 
 $$T_s=\textrm{grams of emissions for each GHG for trips originating and ending within the county}$$ 
 
+Transportation VMT and emissions were calculated in [vmt_emissions.R](data-raw/vmt_emissions.R), using functions [`calculate_emissions()`](data-raw/_calculate_emissions.R) and [`calculate_vmt()`](data-raw/_calculate_vmt.R).  
+
 ## Results
 
 ```{r fig-transportation-county-emissions}
@@ -150,6 +152,8 @@ plot_ly(
 
 The National Emissions Inventory (NEI) is a comprehensive and detailed estimate of air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants from air emissions sources. The county-level GHG emissions included in the NEI for this category are calculated by running the MOVES model with State-, Local-, and Tribal-submitted activity data and EPA-developed activity inputs based on data from FHWA and other sources [@usepa2020NationalEmissions2023]. 
 
+NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and processed in R scripts: [epa_nei.R](../_meta/data-raw/epa_nei.R) and [epa_nei_transportation.R](data-raw/epa_nei_transportation.R)
+
 ```{r read-nei}
 epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei.RDS"))
 
@@ -217,6 +221,9 @@ We used the LGGIT Excel workbook tool with the following inputs in the "Mobile-D
 - Fuel efficiency data were taken from the LGGIT tool and verified with the EPA Emission Factors Hub (2021 edition) [@usepaGHGEmissionFactors2021].  
 - All medium-duty VMT were classified as "Light Truck", while all heavy-duty VMT were classified as "Heavy-Duty Vehicle".  
 - Commercial trucks were assumed to be year 2007, based on a 2018 report that found the average age of trucks in the US to be 14.2 years [@brusseauAgingTrucksCreate2019] (`2021 - 14 = 2007`).   
+
+
+LGGIT entries and resulting output tables were generated and processed in [epa_lggit.R](data-raw/epa_lggit.R). 
 
 
 ```{r tbl-lggit-entries}

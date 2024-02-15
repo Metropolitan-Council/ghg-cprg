@@ -22,6 +22,7 @@ The Metropolitan Council Travel Behavior Inventory (TBI) is a bi-annual househol
 
 Data were imported directly from a Council-maintained [public GitHub repository](https://github.com/Metropolitan-Council/metc.tbi.helper). The calculations below were verified from other Council analysis projects using the same dataset. Exactly 7,745 households with homes in any of the 11 CPRG counties were included in this subset of the TBI dataset.
 
+TBI survey statistics were processed in [tbi_survey_stats.R](data-raw/tbi_survey_stats.R).
 
 ```{r tbl-tbi-hh-county-dist}
 #| tbl-cap: "2021 TBI household survey geographic distribution"
@@ -56,6 +57,8 @@ We used 2021 TBI data to determine the regional average vehicle age and distribu
 Vehicles were classified into broad fuel categories - diesel and gas + all other fuels (including gasoline, electric, flex-fuel, hybrid, and plug-in hybrid) to best match the average miles per gallon table specifications in the EPA Local Greenhouse Gas Inventory Tool (LGGIT). The resulting value is on par with recent statistics from the Bureau of Transportation Statistics (BTS), which calculates the average passenger vehicle age in 2021 to be 12.1 years [@btsAverageAgeAutomobiles2023]. 
 
 TBI data were cleaned to only include vehicles with complete data and model year 1980 or later. Vehicles with a fuel type "Other (e.g., natural gas, bio-diesel)" were removed due to low sample size. 
+
+Regional fleet statistics were processed in [tbi_vehicle_stats.R](data-raw/tbi_vehicle_stats.R). 
 
 ```{r tbl-vehicle-fuel-age}
 #| tbl-cap: "Median vehicle age and proportion of all regional vehicles by grouped fuel type"
@@ -132,6 +135,8 @@ The average trip distance for the entire region is `r round(regional_trip_length
 Trips with distance over 720 miles (the equivalent of 12 hours of driving at 60 miles per hour) were removed. Only Minnesota CPRG counties were available for analysis.
 
 We used the TBI to validate StreetLight's average trip length. See @sec-trip-length-validation for more detail. 
+
+TBI trip distances were processed in [tbi_trip_length.R](data-raw/tbi_trip_length.R).  
 
 ```{r tbl-reg-avg-trip-length}
 #| tbl-cap: "Regional mean trip distance. 2021 TBI."

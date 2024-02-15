@@ -55,6 +55,9 @@ For ease of access, we used [`{streetlightR}`](https://github.com/Metropolitan-C
 
 Using the API, we uploaded the CPRG county geography and then performed an origin-destination analysis, in which all counties were both an origin and destination. This resulted in detailed vehicle counts for traffic between and within each of the counties. The data were then pulled and cleaned for estimating passenger and commercial VMT. The data were filtered to ensure all day types and day parts were included in the VMT calculations. Analyses were configured to include all months in 2021 and the most recent metric version (R131-M129) available was used. 
 
+
+All StreetLight API operations are recorded in R scripts: [stl_upload_zone_sets.R](data-raw/stl_upload_zone_sets.R), [stl_run_analyses.R](data-raw/stl_run_analyses.R), and [stl_fetch_analyses.R](data-raw/stl_fetch_analyses.R). 
+
 ### Passenger 
 
 For passenger data, we used StreetLight Volume - an estimate of the number of vehicles. StreetLight uses a sample of devices with location-based services (LBS) and vehicles with location technology (connected vehicle data) to model number of vehicles [@streetlightdataAllVehiclesTravel2024].  
