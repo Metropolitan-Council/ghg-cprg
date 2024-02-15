@@ -2,7 +2,7 @@ project:
   type: book
   output-dir: docs
   pre-render: 
-    - R/plot_county_emissions.R
+    - R/start_caption_index.R
   post-render: 
     - R/fix_style.R
     

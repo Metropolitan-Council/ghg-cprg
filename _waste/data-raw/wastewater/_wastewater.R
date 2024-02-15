@@ -23,5 +23,5 @@ wastewater_meta <-
     "source", class(wastewater_out$source), "Data source",
   )
 
-saveRDS(wastewater_out, "_energy/data/wastewater.RDS")
-saveRDS(wastewater_meta, "_energy/data/wastewater_meta.RDS")
+saveRDS(wastewater_out, "_waste/data/wastewater.RDS")
+saveRDS(wastewater_meta, "_waste/data/wastewater_meta.RDS")
