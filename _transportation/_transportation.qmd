@@ -234,7 +234,7 @@ lggit_vmt_entries <- readRDS(file.path(here::here(), "_transportation/data-raw/e
 lggit_vmt_entries %>%
   gt() %>%
   gt::opt_row_striping() %>%
-  fmt_number(8:9, decimals = 0) %>% 
+  fmt_number(8:9, decimals = 0) %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
