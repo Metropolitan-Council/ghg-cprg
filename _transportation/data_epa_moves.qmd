@@ -173,26 +173,13 @@ plot_ly(
   layout(barmode = "identity")
 ```
 
-
-
-Data source description, type
-
-- What is the raw unit of measurement? 
-- How was this data accessed? Include any relevant links/citations, code, or downloads.
-- What data cleaning or wrangling was completed? How did you test these processes and outputs?
-- What is the geographic and temporal scope? Did you complete any aggregation?
-- What version is the data? Were there other versions available? If so, why did you choose this version?
-- What assumptions are made when we use this dataset?
-- Which subject matter expert (SME) reviewed this data?
-- Describe testing used to verify data
-
 ### Limitations
 
 - This edition of MOVES is fairly old relative to our estimation year (2021).
 - We are not breaking out vehicles by fuel type; instead, we are aggregating based on the regional fleet. This may result in more inaccuracies.
 - MOVES4 only accounts for vehicles that are registered in the 7-county metro area, so does not account for vehicles on regional roads, but registered elsewhere. However, the traffic generated from those vehicles is detected in the regional travel demand model. 
-- 
 
+Subject matter expert reviewer: ________
 
 <!-- ### Data dictionary -->
 
