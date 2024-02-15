@@ -88,7 +88,10 @@ format:
     theme: [cosmo, style/council.scss, style/font.scss] 
     toc: true
     self-contained: false
-    toc-depth: 2
+    grid: 
+      content-mode: full
+      margin-width: 100px
+    toc-depth: 3
     number-sections: true
     # number-depth: 4
     copyright: "Metropolitan Council"
