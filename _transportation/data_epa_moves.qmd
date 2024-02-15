@@ -33,7 +33,7 @@ epa_moves_clean <- epa_moves %>%
     `Vehicle weight` = vehicle_weight,
     `MOVES year` = moves_year,
     starts_with("grams")
-  ) 
+  )
 
 lggit_kg_emissions_per_mile <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS"))
 
@@ -59,14 +59,14 @@ lggit_clean <- lggit_kg_emissions_per_mile %>%
     `Vehicle model year`,
     `Fuel type`,
     starts_with("grams")
-  ) 
+  )
 ```
 
 
 ```{r tbl-epa-moves-values}
 #| tbl-cap: "Emissions in grams per mile traveled by vehicle weight in the Twin Cities region. EPA MOVES4."
 #| out-width: "95%"
-epa_moves_clean %>% 
+epa_moves_clean %>%
   gt() %>%
   gt::opt_row_striping() %>%
   fmt_number(3:6, decimals = 2) %>%
@@ -95,45 +95,65 @@ lggit_clean %>%
 ```
 
 ```{r lggit-mean-passenger}
-# find weighted mean LGGIT based on 
+# find weighted mean LGGIT based on
 # the proportion of Gasoline/Diesel vehicles in the region
-lggit_pass <- lggit_clean %>% 
-  mutate(data_source = "EPA GHG Hub",
-         `Vehicle weight` = case_when(`Vehicle type` == "Passenger Car" ~ "Passenger",
-                                      `Vehicle type` == "Light Truck" ~ "Medium",
-                                      `Vehicle type` == "Heavy-Duty Vehicle" ~ "Heavy")) %>% 
-  select(-`Grams CH₄ per mile`, -`Grams N₂O per mile`,
-         -`Grams CO₂ per mile`) %>% 
-  pivot_longer(cols = 4, 
-               names_to = "ghg_factor") %>% 
-  filter(`Vehicle weight` == "Passenger") %>% 
-  mutate(weight_value = c(0.98, 0.02)) %>% 
-  group_by(`Vehicle weight`, data_source, ghg_factor) %>% 
+lggit_pass <- lggit_clean %>%
+  mutate(
+    data_source = "EPA GHG Hub",
+    `Vehicle weight` = case_when(
+      `Vehicle type` == "Passenger Car" ~ "Passenger",
+      `Vehicle type` == "Light Truck" ~ "Medium",
+      `Vehicle type` == "Heavy-Duty Vehicle" ~ "Heavy"
+    )
+  ) %>%
+  select(
+    -`Grams CH₄ per mile`, -`Grams N₂O per mile`,
+    -`Grams CO₂ per mile`
+  ) %>%
+  pivot_longer(
+    cols = 4,
+    names_to = "ghg_factor"
+  ) %>%
+  filter(`Vehicle weight` == "Passenger") %>%
+  mutate(weight_value = c(0.98, 0.02)) %>%
+  group_by(`Vehicle weight`, data_source, ghg_factor) %>%
   summarize(value = weighted.mean(value, weight_value), .groups = "keep")
 
 # combine MOVES and GHG hub tables
 epa_plus_moves <- bind_rows(
-  epa_moves_clean %>% 
+  epa_moves_clean %>%
     mutate(data_source = "MOVES"),
-  lggit_clean %>% 
-    filter(`Vehicle type` != "Passenger Car") %>% 
-    mutate(data_source = "EPA GHG Hub",
-           `Vehicle weight` = case_when(
-             `Vehicle type` == "Passenger Car" ~ "Passenger",
-             `Vehicle type` == "Light Truck" ~ "Medium",
-             `Vehicle type` == "Heavy-Duty Vehicle" ~ "Heavy"))) %>% 
-  select(-`Grams CH₄ per mile`, -`Grams N₂O per mile`,
-         -`Grams CO₂ per mile`) %>% 
-  pivot_longer(cols = 3, 
-               names_to = "ghg_factor") %>% 
+  lggit_clean %>%
+    filter(`Vehicle type` != "Passenger Car") %>%
+    mutate(
+      data_source = "EPA GHG Hub",
+      `Vehicle weight` = case_when(
+        `Vehicle type` == "Passenger Car" ~ "Passenger",
+        `Vehicle type` == "Light Truck" ~ "Medium",
+        `Vehicle type` == "Heavy-Duty Vehicle" ~ "Heavy"
+      )
+    )
+) %>%
+  select(
+    -`Grams CH₄ per mile`, -`Grams N₂O per mile`,
+    -`Grams CO₂ per mile`
+  ) %>%
+  pivot_longer(
+    cols = 3,
+    names_to = "ghg_factor"
+  ) %>%
   bind_rows(lggit_pass)
 
 # create wide version for segments
-epa_moves_wide <- epa_plus_moves %>% 
-  select(-ghg_factor, -`Vehicle model year`, 
-         -`Vehicle type`, -`MOVES year`, -`Fuel type`) %>% 
-  pivot_wider(names_from = data_source,
-              values_from = value)
+epa_moves_wide <- epa_plus_moves %>%
+  select(
+    -ghg_factor, -`Vehicle model year`,
+    -`Vehicle type`, -`MOVES year`, -`Fuel type`
+  ) %>%
+  pivot_wider(
+    names_from = data_source,
+    values_from = value
+  )
 ```
 
 To directly compare overall passenger emissions rates, we applied a weighted average to the EPA GHG Hub emissions rates for passenger vehicles according to the regional fleet gasoline/diesel distribution (98% gasoline, 2% diesel). Learn more about the regional fleet in @sec-regional-fleet.  
@@ -143,7 +163,7 @@ To directly compare overall passenger emissions rates, we applied a weighted ave
 #| out-width: "95%"
 #| out-height: "300px"
 plot_ly(
-  data = epa_plus_moves %>% 
+  data = epa_plus_moves %>%
     group_by(`Vehicle weight`),
   source = opts_current$get()$label,
   y = ~`Vehicle weight`,
@@ -154,24 +174,26 @@ plot_ly(
   marker = list(
     size = 10
   ),
-  hovertemplate = ~paste0(
-    "Vehicle weight: ", `Vehicle weight` ,"<br>",
+  hovertemplate = ~ paste0(
+    "Vehicle weight: ", `Vehicle weight`, "<br>",
     "Data source: ", data_source, "<br>",
     scales::comma(value), " grams CO<sub>2</sub>e per mile",
     "<extra></extra>"
   )
-) %>% 
-  add_segments(inherit = FALSE,
-               data = epa_moves_wide,
-               y = ~`Vehicle weight`,
-               yend = ~`Vehicle weight`,
-               x = ~MOVES,
-               xend = ~`EPA GHG Hub`,
-               showlegend = FALSE
-  ) %>% 
+) %>%
+  add_segments(
+    inherit = FALSE,
+    data = epa_moves_wide,
+    y = ~`Vehicle weight`,
+    yend = ~`Vehicle weight`,
+    x = ~MOVES,
+    xend = ~`EPA GHG Hub`,
+    showlegend = FALSE
+  ) %>%
   plotly_layout(
     main_title = "MOVES4 and GHG Emissions Hub per mile emission rates",
-    x_title = "Grams CO<sub>2</sub>e per mile") %>% 
+    x_title = "Grams CO<sub>2</sub>e per mile"
+  ) %>%
   layout(barmode = "identity")
 ```
 
