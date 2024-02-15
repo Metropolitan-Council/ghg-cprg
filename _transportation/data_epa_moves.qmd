@@ -91,28 +91,83 @@ lggit_clean %>%
   gt::as_raw_html()
 ```
 
+```{r lggit-mean-passenger}
+# find weighted mean LGGIT based on 
+# the proportion of Gasoline/Diesel vehicles in the region
+lggit_pass <- lggit_clean %>% 
+  mutate(data_source = "EPA GHG Hub",
+         `Vehicle weight` = case_when(`Vehicle type` == "Passenger Car" ~ "Passenger",
+                                      `Vehicle type` == "Light Truck" ~ "Medium",
+                                      `Vehicle type` == "Heavy-Duty Vehicle" ~ "Heavy")) %>% 
+  select(-`Grams CH₄ per mile`, -`Grams N₂O per mile`,
+         -`Grams CO₂ per mile`) %>% 
+  pivot_longer(cols = 4, 
+               names_to = "ghg_factor") %>% 
+  filter(`Vehicle weight` == "Passenger") %>% 
+  mutate(weight_value = c(0.98, 0.02)) %>% 
+  group_by(`Vehicle weight`, data_source, ghg_factor) %>% 
+  summarize(value = weighted.mean(value, weight_value))
 
-```{r}
-epa_plus_moves <- bind_rows(epa_moves_clean %>% 
-            mutate(data_source = "MOVES"),
-          lggit_clean %>% 
-            mutate(data_source = "EPA GHG Hub",
-                   `Vehicle weight` = case_when(`Vehicle type` == "Passenger Car" ~ "Passenger",
-                                                `Vehicle type` == "Light Truck" ~ "Medium",
-                                                `Vehicle type` == "Heavy-Duty Vehicle" ~ "Heavy"))) %>% 
+# combine MOVES and GHG hub tables
+epa_plus_moves <- bind_rows(
+  epa_moves_clean %>% 
+    mutate(data_source = "MOVES"),
+  lggit_clean %>% 
+    filter(`Vehicle type` != "Passenger Car") %>% 
+    mutate(data_source = "EPA GHG Hub",
+           `Vehicle weight` = case_when(
+             `Vehicle type` == "Passenger Car" ~ "Passenger",
+             `Vehicle type` == "Light Truck" ~ "Medium",
+             `Vehicle type` == "Heavy-Duty Vehicle" ~ "Heavy"))) %>% 
   select(-`Grams CH₄ per mile`, -`Grams N₂O per mile`,
          -`Grams CO₂ per mile`) %>% 
   pivot_longer(cols = 3, 
-               names_to = "ghg_factor")
+               names_to = "ghg_factor") %>% 
+  bind_rows(lggit_pass)
 
+# create wide version for segments
+epa_moves_wide <- epa_plus_moves %>% 
+  select(-ghg_factor, -`Vehicle model year`, 
+         -`Vehicle type`, -`MOVES year`, -`Fuel type`) %>% 
+  pivot_wider(names_from = data_source,
+              values_from = value)
+```
+
+To directly compare overall passenger emissions rates, we applied a weighted average to the EPA GHG Hub emissions rates for passenger vehicles according to the regional fleet gasoline/diesel distribution (98% gasoline, 2% diesel). Learn more about the regional fleet in @sec-regional-fleet.  
+
+```{r fig-moves-ghg-hub-comparison}
+#| fig-cap: "EPA MOVES4 and GHG Emissions Hub per mile emission rates by vehicle weight"
+#| out-width: "95%"
+#| out-height: "250px"
 plot_ly(
-  data = epa_plus_moves,
-  x = ~`Vehicle weight`,
-  y = ~value,
+  data = epa_plus_moves %>% 
+    group_by(`Vehicle weight`),
+  y = ~`Vehicle weight`,
+  x = ~value,
   color = ~data_source,
-  type = "bar"
+  type = "scatter",
+  mode = "markers",
+  marker = list(
+    size = 10
+  ),
+  hovertemplate = ~paste0(
+    "Vehicle weight: ", `Vehicle weight` ,"<br>",
+    "Data source: ", data_source, "<br>",
+    scales::comma(value), " grams CO<sub>2</sub>e per mile",
+    "<extra></extra>"
+  )
 ) %>% 
-  plotly_layout() %>% 
+  add_segments(inherit = FALSE,
+               data = epa_moves_wide,
+               y = ~`Vehicle weight`,
+               yend = ~`Vehicle weight`,
+               x = ~MOVES,
+               xend = ~`EPA GHG Hub`,
+               showlegend = FALSE
+  ) %>% 
+  plotly_layout(
+    main_title = "EPA MOVES4 and GHG Emissions Hub per mile emission rates",
+    x_title = "Grams CO<sub>2</sub>e per mile") %>% 
   layout(barmode = "identity")
 ```
 
@@ -133,7 +188,7 @@ Data source description, type
 
 - This edition of MOVES is fairly old relative to our estimation year (2021).
 - We are not breaking out vehicles by fuel type; instead, we are aggregating based on the regional fleet. This may result in more inaccuracies.
-- This only accounts for vehicles that are registered in the 7-county metro area, so may not be precisely representative of vehicles on our roads, but registered elsewhere. 
+- MOVES4 only accounts for vehicles that are registered in the 7-county metro area, so does not account for vehicles on regional roads, but registered elsewhere. However, the traffic generated from those vehicles is detected in the regional travel demand model. 
 - 
 
 
