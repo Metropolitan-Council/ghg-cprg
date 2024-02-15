@@ -24,8 +24,10 @@ hookaddcap()
 
 ## Emissions factors {#sec-factors}
 
-
 Note for solid waste, the global warming potentials used to calculate CO~2~e are sourced AR4, not AR5, like the rest of our inventory. However, when we dug into documentation for the EPA WARM tool [@usepaWARMManagementPractices2019], we found that the differences in total CO~2~e emissions were negligible. 
+
+All EPA Emission Factor Hub values were pulled from an Excel workbook downloaded from the EPA website. Values were processed in [epa_ghg_factor_hub](_meta/data-raw/epa_ghg_factor_hub.R)
+
 
 ```{r tbl-egrid}
 #| tbl-cap: "Electricity emission factors. 2021 EPA GHG Emission Factor Hub, EPA eGRID2019, February 2021."
@@ -117,6 +119,9 @@ epa_ghg_factor_hub$waste %>%
     locations = cells_column_labels()
   )
 ```
+
+Transportation emissions factors were processed in [epa_moves.R](_transportation/data-raw/epa_moves.R). Read more about these emission factors in @sec-epa-moves. 
+
 ```{r tbl-moves-factors}
 #| tbl-cap: "Transportation emissions factors. Source: EPA MOVES4"
 #| out-width: "95%"
@@ -156,7 +161,7 @@ epa_moves %>%
 
 The Global Warming Potential (GWP) was developed to allow comparisons of the global warming impacts of different gases. Specifically, it is a measure of how much energy the emissions of 1 ton of a gas will absorb over a given period of time, relative to the emissions of 1 ton of carbon dioxide (CO~2~). The larger the GWP, the more that a given gas warms the Earth compared to CO2 over that time period [@usepaUnderstandingGlobalWarming2023]. 
 
-Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5), Box 3.2, Table 1 [@ipccClimateChange2014]. See [R/global_warming_potential.R](R/global_warming_potential.R). 
+Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5), Box 3.2, Table 1 [@ipccClimateChange2014]. We processed these values in  [global_warming_potential.R](R/global_warming_potential.R). 
 
 ```{r tbl-gwp}
 #| tbl-cap: "Global Warming Potential (GWP) values"
