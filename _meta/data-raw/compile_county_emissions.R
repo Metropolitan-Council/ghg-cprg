@@ -1,6 +1,7 @@
 # compile emissions from all sectors into a single data table
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+cprg_county_pop <- readRDS("_meta/data/cprg_population.RDS")
 
 # transportation -----
 transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
@@ -149,7 +150,25 @@ emissions_all <- bind_rows(
     ),
     ordered = TRUE
   )) %>%
+  # join county population and calculate per capita emissions
+  left_join(
+    cprg_county_pop %>%
+      select(
+        geog_id = COUNTYFP,
+        county_total_population = population,
+        population_data_source
+      ),
+    by = "geog_id"
+  ) %>%
+  rowwise() %>%
+  mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
   select(year, geog_level, geog_id, geog_name, everything())
+
+
+
+mean(emissions_all$emissions_per_capita)
+
+sum(emissions_all$emissions_metric_tons_co2e) / sum(cprg_county_pop$population)
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
@@ -165,7 +184,10 @@ emissions_all_meta <- tibble::tribble(
   "source", class(emissions_all$source), "Source of emissions. Most detailed sub-category in this table",
   "emissions_metric_tons_co2e", class(emissions_all$emissions_metric_tons_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given geography for given year",
   "data_source", class(emissions_all$data_source), "Activity data source",
-  "factor_source", class(emissions_all$factor_source), "Emissions factor data source"
+  "factor_source", class(emissions_all$factor_source), "Emissions factor data source",
+  "county_total_population", class(emissions_all$county_total_population), "Total geography population",
+  "population_data_source", class(emissions_all$population_data_source), "Population data source",
+  "emissions_per_capita", class(emissions_all$emissions_per_capita), "Metric tons CO~2~e per person living in given county for given sector and category"
 )
 
 saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")

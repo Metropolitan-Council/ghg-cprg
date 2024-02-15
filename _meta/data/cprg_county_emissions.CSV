@@ -1,118 +1,118 @@
-"year","geog_level","geog_id","geog_name","sector","category","source","emissions_metric_tons_co2e","data_source","factor_source"
-2021,"county","003","Anoka","Transportation","Passenger","Light-duty vehicles",955538.47904968,"StreetLight Data","EPA MOVES (2019)"
-2021,"county","019","Carver","Transportation","Passenger","Light-duty vehicles",277524.47531052,"StreetLight Data","EPA MOVES (2019)"
-2021,"county","025","Chisago","Transportation","Passenger","Light-duty vehicles",184596.97318365,"StreetLight Data","EPA MOVES (2019)"
-2021,"county","037","Dakota","Transportation","Passenger","Light-duty vehicles",1077479.50604988,"StreetLight Data","EPA MOVES (2019)"
-2021,"county","053","Hennepin","Transportation","Passenger","Light-duty vehicles",2577633.86970518,"StreetLight Data","EPA MOVES (2019)"
-2021,"county","093","Pierce","Transportation","Passenger","Light-duty vehicles",104227.74115895,"StreetLight Data","EPA MOVES (2019)"
-2021,"county","123","Ramsey","Transportation","Passenger","Light-duty vehicles",1186559.08602522,"StreetLight Data","EPA MOVES (2019)"
-2021,"county","139","Scott","Transportation","Passenger","Light-duty vehicles",439221.94928855,"StreetLight Data","EPA MOVES (2019)"
-2021,"county","141","Sherburne","Transportation","Passenger","Light-duty vehicles",260368.77304322,"StreetLight Data","EPA MOVES (2019)"
-2021,"county","109","St. Croix","Transportation","Passenger","Light-duty vehicles",315305.85961862,"StreetLight Data","EPA MOVES (2019)"
-2021,"county","163","Washington","Transportation","Passenger","Light-duty vehicles",823324.90064523,"StreetLight Data","EPA MOVES (2019)"
-2021,"county","003","Anoka","Transportation","Commercial","Medium-duty vehicles",41389.6460020225,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","019","Carver","Transportation","Commercial","Medium-duty vehicles",9897.7573543225,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","025","Chisago","Transportation","Commercial","Medium-duty vehicles",8982.6721808675,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","037","Dakota","Transportation","Commercial","Medium-duty vehicles",57571.181713685,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","053","Hennepin","Transportation","Commercial","Medium-duty vehicles",142692.551932607,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","093","Pierce","Transportation","Commercial","Medium-duty vehicles",3078.573091855,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","123","Ramsey","Transportation","Commercial","Medium-duty vehicles",60892.7213813375,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","139","Scott","Transportation","Commercial","Medium-duty vehicles",18781.1624943325,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","141","Sherburne","Transportation","Commercial","Medium-duty vehicles",12335.80906121,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","109","St. Croix","Transportation","Commercial","Medium-duty vehicles",10823.887648055,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","163","Washington","Transportation","Commercial","Medium-duty vehicles",26267.381644495,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","003","Anoka","Transportation","Commercial","Heavy-duty vehicles",11637.323987789,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","019","Carver","Transportation","Commercial","Heavy-duty vehicles",1305.5311617264,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","025","Chisago","Transportation","Commercial","Heavy-duty vehicles",1394.2279627386,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","037","Dakota","Transportation","Commercial","Heavy-duty vehicles",62489.3526696184,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","053","Hennepin","Transportation","Commercial","Heavy-duty vehicles",43482.7358061909,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","093","Pierce","Transportation","Commercial","Heavy-duty vehicles",832.6155394111,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","123","Ramsey","Transportation","Commercial","Heavy-duty vehicles",10264.1760301248,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","139","Scott","Transportation","Commercial","Heavy-duty vehicles",5547.7035388386,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","141","Sherburne","Transportation","Commercial","Heavy-duty vehicles",3005.5978421546,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","109","St. Croix","Transportation","Commercial","Heavy-duty vehicles",10597.7492460161,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","163","Washington","Transportation","Commercial","Heavy-duty vehicles",10984.4690848704,"StreetLight Data","EPA MOVES (2018)"
-2021,"county","003","Anoka","Energy","Propane","Propane",11723.2334387,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","019","Carver","Energy","Propane","Propane",11031.4076666,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","025","Chisago","Energy","Propane","Propane",13061.5193585,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","037","Dakota","Energy","Propane","Propane",17877.8364823,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","053","Hennepin","Energy","Propane","Propane",36451.2792054,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","123","Ramsey","Energy","Propane","Propane",12536.0342092,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","139","Scott","Energy","Propane","Propane",7103.5006873,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","141","Sherburne","Energy","Propane","Propane",12403.7178047,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","163","Washington","Energy","Propane","Propane",7284.9631849,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","093","Pierce","Energy","Propane","Propane",19919.030817,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","109","St. Croix","Energy","Propane","Propane",24472.7915495,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","003","Anoka","Energy","Kerosene","Kerosene",2268.5483771,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","019","Carver","Energy","Kerosene","Kerosene",1615.3930603,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","025","Chisago","Energy","Kerosene","Kerosene",1545.4121335,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","037","Dakota","Energy","Kerosene","Kerosene",2373.5197673,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","053","Hennepin","Energy","Kerosene","Kerosene",7791.2098504,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","123","Ramsey","Energy","Kerosene","Kerosene",4747.0395346,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","139","Scott","Energy","Kerosene","Kerosene",530.6886949,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","141","Sherburne","Energy","Kerosene","Kerosene",1428.7772555,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","163","Washington","Energy","Kerosene","Kerosene",2478.4911575,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","093","Pierce","Energy","Kerosene","Kerosene",1294.7980318,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","109","St. Croix","Energy","Kerosene","Kerosene",1574.5104986,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)"
-2021,"county","003","Anoka","Energy","Electricity","Electricity",2226795.81221131,"Individual electric utilities","eGRID MROW"
-2021,"county","019","Carver","Energy","Electricity","Electricity",612463.796726799,"Individual electric utilities","eGRID MROW"
-2021,"county","025","Chisago","Energy","Electricity","Electricity",301762.317946352,"Individual electric utilities","eGRID MROW"
-2021,"county","037","Dakota","Energy","Electricity","Electricity",2487035.85329296,"Individual electric utilities","eGRID MROW"
-2021,"county","053","Hennepin","Energy","Electricity","Electricity",5920248.28613147,"Individual electric utilities","eGRID MROW"
-2021,"county","123","Ramsey","Energy","Electricity","Electricity",2381042.5601095,"Individual electric utilities","eGRID MROW"
-2021,"county","139","Scott","Energy","Electricity","Electricity",961812.260019028,"Individual electric utilities","eGRID MROW"
-2021,"county","141","Sherburne","Energy","Electricity","Electricity",697475.096507651,"Individual electric utilities","eGRID MROW"
-2021,"county","163","Washington","Energy","Electricity","Electricity",1296013.4961147,"Individual electric utilities","eGRID MROW"
-2021,"county","093","Pierce","Energy","Electricity","Electricity",195674.018468883,"Individual electric utilities","eGRID MROW"
-2021,"county","109","St. Croix","Energy","Electricity","Electricity",499802.746671147,"Individual electric utilities","eGRID MROW"
-2021,"county","003","Anoka","Energy","Natural Gas","Natural Gas",845907.609308446,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)"
-2021,"county","019","Carver","Energy","Natural Gas","Natural Gas",282247.886472153,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)"
-2021,"county","025","Chisago","Energy","Natural Gas","Natural Gas",201185.557333755,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)"
-2021,"county","037","Dakota","Energy","Natural Gas","Natural Gas",892287.173341881,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)"
-2021,"county","053","Hennepin","Energy","Natural Gas","Natural Gas",4583457.73051084,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)"
-2021,"county","123","Ramsey","Energy","Natural Gas","Natural Gas",3000413.19802021,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)"
-2021,"county","139","Scott","Energy","Natural Gas","Natural Gas",548165.300887626,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)"
-2021,"county","141","Sherburne","Energy","Natural Gas","Natural Gas",204328.806653071,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)"
-2021,"county","163","Washington","Energy","Natural Gas","Natural Gas",1416453.94728521,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)"
-2021,"county","093","Pierce","Energy","Natural Gas","Natural Gas",92653.4947594406,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)"
-2021,"county","109","St. Croix","Energy","Natural Gas","Natural Gas",282489.548107462,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)"
-2021,"county","093","Pierce","Waste","Wastewater","Wastewater",4097.01445638636,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool"
-2021,"county","109","St. Croix","Waste","Wastewater","Wastewater",8979.0861563704,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool"
-2021,"county","003","Anoka","Waste","Wastewater","Wastewater",34992.7043110344,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool"
-2021,"county","019","Carver","Waste","Wastewater","Wastewater",10251.651008946,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool"
-2021,"county","025","Chisago","Waste","Wastewater","Wastewater",5463.46053732388,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool"
-2021,"county","037","Dakota","Waste","Wastewater","Wastewater",42275.9604491478,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool"
-2021,"county","053","Hennepin","Waste","Wastewater","Wastewater",123209.434770157,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool"
-2021,"county","123","Ramsey","Waste","Wastewater","Wastewater",53286.1021093129,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool"
-2021,"county","139","Scott","Waste","Wastewater","Wastewater",14507.1521383052,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool"
-2021,"county","141","Sherburne","Waste","Wastewater","Wastewater",9340.00732214179,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool"
-2021,"county","163","Washington","Waste","Wastewater","Wastewater",25685.6748432935,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool"
-2021,"county","003","Anoka","Waste","Solid Waste","Landfill",105380.3326,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","019","Carver","Waste","Solid Waste","Landfill",29200.5112,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","025","Chisago","Waste","Solid Waste","Landfill",20457.7412,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","037","Dakota","Waste","Solid Waste","Landfill",122239.8536,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","053","Hennepin","Waste","Solid Waste","Landfill",382775.54,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","123","Ramsey","Waste","Solid Waste","Landfill",143967.037,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","139","Scott","Waste","Solid Waste","Landfill",40439.6237,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","141","Sherburne","Waste","Solid Waste","Landfill",21909.34764,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","163","Washington","Waste","Solid Waste","Landfill",53248.0403,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","003","Anoka","Waste","Solid Waste","Organics",7561.6646,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","019","Carver","Waste","Solid Waste","Organics",4809.3374,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","025","Chisago","Waste","Solid Waste","Organics",1224.4369,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","037","Dakota","Waste","Solid Waste","Organics",23737.4043,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","053","Hennepin","Waste","Solid Waste","Organics",27869.9224,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","123","Ramsey","Waste","Solid Waste","Organics",18024.8127,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","139","Scott","Waste","Solid Waste","Organics",5100.1071,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","141","Sherburne","Waste","Solid Waste","Organics",1133.0398,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","163","Washington","Waste","Solid Waste","Organics",6045.0725,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","003","Anoka","Waste","Solid Waste","Recycling",17823.2724,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","019","Carver","Waste","Solid Waste","Recycling",3919.4181,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","025","Chisago","Waste","Solid Waste","Recycling",756.6354,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","037","Dakota","Waste","Solid Waste","Recycling",12578.5404,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","053","Hennepin","Waste","Solid Waste","Recycling",30815.2845,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","123","Ramsey","Waste","Solid Waste","Recycling",7134.6672,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","139","Scott","Waste","Solid Waste","Recycling",5246.8938,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","141","Sherburne","Waste","Solid Waste","Recycling",3057.6681,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","163","Washington","Waste","Solid Waste","Recycling",7529.0319,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)"
-2021,"county","093","Pierce","Waste","Solid Waste","Landfill",15756.844830377,"Wisconsin DNR","EPA GHG Emission Factors Hub (2021)"
-2021,"county","109","St. Croix","Waste","Solid Waste","Landfill",34915.0061132888,"Wisconsin DNR","EPA GHG Emission Factors Hub (2021)"
+"year","geog_level","geog_id","geog_name","sector","category","source","emissions_metric_tons_co2e","data_source","factor_source","county_total_population","population_data_source","emissions_per_capita"
+2021,"county","003","Anoka","Transportation","Passenger","Light-duty vehicles",955538.47904968,"StreetLight Data","EPA MOVES (2019)",360773,"ACS 5-Year Estimates 2021, Table DP05",2.65
+2021,"county","019","Carver","Transportation","Passenger","Light-duty vehicles",277524.47531052,"StreetLight Data","EPA MOVES (2019)",105694,"ACS 5-Year Estimates 2021, Table DP05",2.63
+2021,"county","025","Chisago","Transportation","Passenger","Light-duty vehicles",184596.97318365,"StreetLight Data","EPA MOVES (2019)",56328,"ACS 5-Year Estimates 2021, Table DP05",3.28
+2021,"county","037","Dakota","Transportation","Passenger","Light-duty vehicles",1077479.50604988,"StreetLight Data","EPA MOVES (2019)",435863,"ACS 5-Year Estimates 2021, Table DP05",2.47
+2021,"county","053","Hennepin","Transportation","Passenger","Light-duty vehicles",2577633.86970518,"StreetLight Data","EPA MOVES (2019)",1270283,"ACS 5-Year Estimates 2021, Table DP05",2.03
+2021,"county","093","Pierce","Transportation","Passenger","Light-duty vehicles",104227.74115895,"StreetLight Data","EPA MOVES (2019)",42204,"ACS 5-Year Estimates 2021, Table DP05",2.47
+2021,"county","123","Ramsey","Transportation","Passenger","Light-duty vehicles",1186559.08602522,"StreetLight Data","EPA MOVES (2019)",549377,"ACS 5-Year Estimates 2021, Table DP05",2.16
+2021,"county","139","Scott","Transportation","Passenger","Light-duty vehicles",439221.94928855,"StreetLight Data","EPA MOVES (2019)",149568,"ACS 5-Year Estimates 2021, Table DP05",2.94
+2021,"county","141","Sherburne","Transportation","Passenger","Light-duty vehicles",260368.77304322,"StreetLight Data","EPA MOVES (2019)",96295,"ACS 5-Year Estimates 2021, Table DP05",2.7
+2021,"county","109","St. Croix","Transportation","Passenger","Light-duty vehicles",315305.85961862,"StreetLight Data","EPA MOVES (2019)",92495,"ACS 5-Year Estimates 2021, Table DP05",3.41
+2021,"county","163","Washington","Transportation","Passenger","Light-duty vehicles",823324.90064523,"StreetLight Data","EPA MOVES (2019)",264818,"ACS 5-Year Estimates 2021, Table DP05",3.11
+2021,"county","003","Anoka","Transportation","Commercial","Medium-duty vehicles",41389.6460020225,"StreetLight Data","EPA MOVES (2018)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.11
+2021,"county","019","Carver","Transportation","Commercial","Medium-duty vehicles",9897.7573543225,"StreetLight Data","EPA MOVES (2018)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.09
+2021,"county","025","Chisago","Transportation","Commercial","Medium-duty vehicles",8982.6721808675,"StreetLight Data","EPA MOVES (2018)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.16
+2021,"county","037","Dakota","Transportation","Commercial","Medium-duty vehicles",57571.181713685,"StreetLight Data","EPA MOVES (2018)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.13
+2021,"county","053","Hennepin","Transportation","Commercial","Medium-duty vehicles",142692.551932607,"StreetLight Data","EPA MOVES (2018)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.11
+2021,"county","093","Pierce","Transportation","Commercial","Medium-duty vehicles",3078.573091855,"StreetLight Data","EPA MOVES (2018)",42204,"ACS 5-Year Estimates 2021, Table DP05",0.07
+2021,"county","123","Ramsey","Transportation","Commercial","Medium-duty vehicles",60892.7213813375,"StreetLight Data","EPA MOVES (2018)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.11
+2021,"county","139","Scott","Transportation","Commercial","Medium-duty vehicles",18781.1624943325,"StreetLight Data","EPA MOVES (2018)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.13
+2021,"county","141","Sherburne","Transportation","Commercial","Medium-duty vehicles",12335.80906121,"StreetLight Data","EPA MOVES (2018)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.13
+2021,"county","109","St. Croix","Transportation","Commercial","Medium-duty vehicles",10823.887648055,"StreetLight Data","EPA MOVES (2018)",92495,"ACS 5-Year Estimates 2021, Table DP05",0.12
+2021,"county","163","Washington","Transportation","Commercial","Medium-duty vehicles",26267.381644495,"StreetLight Data","EPA MOVES (2018)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","003","Anoka","Transportation","Commercial","Heavy-duty vehicles",11637.323987789,"StreetLight Data","EPA MOVES (2018)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","019","Carver","Transportation","Commercial","Heavy-duty vehicles",1305.5311617264,"StreetLight Data","EPA MOVES (2018)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.01
+2021,"county","025","Chisago","Transportation","Commercial","Heavy-duty vehicles",1394.2279627386,"StreetLight Data","EPA MOVES (2018)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","037","Dakota","Transportation","Commercial","Heavy-duty vehicles",62489.3526696184,"StreetLight Data","EPA MOVES (2018)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.14
+2021,"county","053","Hennepin","Transportation","Commercial","Heavy-duty vehicles",43482.7358061909,"StreetLight Data","EPA MOVES (2018)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","093","Pierce","Transportation","Commercial","Heavy-duty vehicles",832.6155394111,"StreetLight Data","EPA MOVES (2018)",42204,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","123","Ramsey","Transportation","Commercial","Heavy-duty vehicles",10264.1760301248,"StreetLight Data","EPA MOVES (2018)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","139","Scott","Transportation","Commercial","Heavy-duty vehicles",5547.7035388386,"StreetLight Data","EPA MOVES (2018)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.04
+2021,"county","141","Sherburne","Transportation","Commercial","Heavy-duty vehicles",3005.5978421546,"StreetLight Data","EPA MOVES (2018)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","109","St. Croix","Transportation","Commercial","Heavy-duty vehicles",10597.7492460161,"StreetLight Data","EPA MOVES (2018)",92495,"ACS 5-Year Estimates 2021, Table DP05",0.11
+2021,"county","163","Washington","Transportation","Commercial","Heavy-duty vehicles",10984.4690848704,"StreetLight Data","EPA MOVES (2018)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.04
+2021,"county","003","Anoka","Energy","Propane","Propane",11723.2334387,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","019","Carver","Energy","Propane","Propane",11031.4076666,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","025","Chisago","Energy","Propane","Propane",13061.5193585,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.23
+2021,"county","037","Dakota","Energy","Propane","Propane",17877.8364823,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.04
+2021,"county","053","Hennepin","Energy","Propane","Propane",36451.2792054,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","123","Ramsey","Energy","Propane","Propane",12536.0342092,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","139","Scott","Energy","Propane","Propane",7103.5006873,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.05
+2021,"county","141","Sherburne","Energy","Propane","Propane",12403.7178047,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.13
+2021,"county","163","Washington","Energy","Propane","Propane",7284.9631849,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","093","Pierce","Energy","Propane","Propane",19919.030817,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",42204,"ACS 5-Year Estimates 2021, Table DP05",0.47
+2021,"county","109","St. Croix","Energy","Propane","Propane",24472.7915495,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",92495,"ACS 5-Year Estimates 2021, Table DP05",0.26
+2021,"county","003","Anoka","Energy","Kerosene","Kerosene",2268.5483771,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.01
+2021,"county","019","Carver","Energy","Kerosene","Kerosene",1615.3930603,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","025","Chisago","Energy","Kerosene","Kerosene",1545.4121335,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","037","Dakota","Energy","Kerosene","Kerosene",2373.5197673,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.01
+2021,"county","053","Hennepin","Energy","Kerosene","Kerosene",7791.2098504,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.01
+2021,"county","123","Ramsey","Energy","Kerosene","Kerosene",4747.0395346,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.01
+2021,"county","139","Scott","Energy","Kerosene","Kerosene",530.6886949,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0
+2021,"county","141","Sherburne","Energy","Kerosene","Kerosene",1428.7772555,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.01
+2021,"county","163","Washington","Energy","Kerosene","Kerosene",2478.4911575,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.01
+2021,"county","093","Pierce","Energy","Kerosene","Kerosene",1294.7980318,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",42204,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","109","St. Croix","Energy","Kerosene","Kerosene",1574.5104986,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",92495,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","003","Anoka","Energy","Electricity","Electricity",2226795.81221131,"Individual electric utilities","eGRID MROW",360773,"ACS 5-Year Estimates 2021, Table DP05",6.17
+2021,"county","019","Carver","Energy","Electricity","Electricity",612463.796726799,"Individual electric utilities","eGRID MROW",105694,"ACS 5-Year Estimates 2021, Table DP05",5.79
+2021,"county","025","Chisago","Energy","Electricity","Electricity",301762.317946352,"Individual electric utilities","eGRID MROW",56328,"ACS 5-Year Estimates 2021, Table DP05",5.36
+2021,"county","037","Dakota","Energy","Electricity","Electricity",2487035.85329296,"Individual electric utilities","eGRID MROW",435863,"ACS 5-Year Estimates 2021, Table DP05",5.71
+2021,"county","053","Hennepin","Energy","Electricity","Electricity",5920248.28613147,"Individual electric utilities","eGRID MROW",1270283,"ACS 5-Year Estimates 2021, Table DP05",4.66
+2021,"county","123","Ramsey","Energy","Electricity","Electricity",2381042.5601095,"Individual electric utilities","eGRID MROW",549377,"ACS 5-Year Estimates 2021, Table DP05",4.33
+2021,"county","139","Scott","Energy","Electricity","Electricity",961812.260019028,"Individual electric utilities","eGRID MROW",149568,"ACS 5-Year Estimates 2021, Table DP05",6.43
+2021,"county","141","Sherburne","Energy","Electricity","Electricity",697475.096507651,"Individual electric utilities","eGRID MROW",96295,"ACS 5-Year Estimates 2021, Table DP05",7.24
+2021,"county","163","Washington","Energy","Electricity","Electricity",1296013.4961147,"Individual electric utilities","eGRID MROW",264818,"ACS 5-Year Estimates 2021, Table DP05",4.89
+2021,"county","093","Pierce","Energy","Electricity","Electricity",195674.018468883,"Individual electric utilities","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",4.64
+2021,"county","109","St. Croix","Energy","Electricity","Electricity",499802.746671147,"Individual electric utilities","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",5.4
+2021,"county","003","Anoka","Energy","Natural Gas","Natural Gas",845907.609308446,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",2.34
+2021,"county","019","Carver","Energy","Natural Gas","Natural Gas",282247.886472153,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",2.67
+2021,"county","025","Chisago","Energy","Natural Gas","Natural Gas",201185.557333755,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",3.57
+2021,"county","037","Dakota","Energy","Natural Gas","Natural Gas",892287.173341881,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",2.05
+2021,"county","053","Hennepin","Energy","Natural Gas","Natural Gas",4583457.73051084,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",3.61
+2021,"county","123","Ramsey","Energy","Natural Gas","Natural Gas",3000413.19802021,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",5.46
+2021,"county","139","Scott","Energy","Natural Gas","Natural Gas",548165.300887626,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",3.66
+2021,"county","141","Sherburne","Energy","Natural Gas","Natural Gas",204328.806653071,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",2.12
+2021,"county","163","Washington","Energy","Natural Gas","Natural Gas",1416453.94728521,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",5.35
+2021,"county","093","Pierce","Energy","Natural Gas","Natural Gas",92653.4947594406,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)",42204,"ACS 5-Year Estimates 2021, Table DP05",2.2
+2021,"county","109","St. Croix","Energy","Natural Gas","Natural Gas",282489.548107462,"Individual natural gas utilities","EPA GHG Emission Factors Hub (2021)",92495,"ACS 5-Year Estimates 2021, Table DP05",3.05
+2021,"county","093","Pierce","Waste","Wastewater","Wastewater",4097.01445638636,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",42204,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","109","St. Croix","Waste","Wastewater","Wastewater",8979.0861563704,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",92495,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","003","Anoka","Waste","Wastewater","Wastewater",34992.7043110344,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",360773,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","019","Carver","Waste","Wastewater","Wastewater",10251.651008946,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",105694,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","025","Chisago","Waste","Wastewater","Wastewater",5463.46053732388,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",56328,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","037","Dakota","Waste","Wastewater","Wastewater",42275.9604491478,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",435863,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","053","Hennepin","Waste","Wastewater","Wastewater",123209.434770157,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","123","Ramsey","Waste","Wastewater","Wastewater",53286.1021093129,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",549377,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","139","Scott","Waste","Wastewater","Wastewater",14507.1521383052,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",149568,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","141","Sherburne","Waste","Wastewater","Wastewater",9340.00732214179,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",96295,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","163","Washington","Waste","Wastewater","Wastewater",25685.6748432935,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",264818,"ACS 5-Year Estimates 2021, Table DP05",0.1
+2021,"county","003","Anoka","Waste","Solid Waste","Landfill",105380.3326,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.29
+2021,"county","019","Carver","Waste","Solid Waste","Landfill",29200.5112,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.28
+2021,"county","025","Chisago","Waste","Solid Waste","Landfill",20457.7412,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.36
+2021,"county","037","Dakota","Waste","Solid Waste","Landfill",122239.8536,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.28
+2021,"county","053","Hennepin","Waste","Solid Waste","Landfill",382775.54,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.3
+2021,"county","123","Ramsey","Waste","Solid Waste","Landfill",143967.037,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.26
+2021,"county","139","Scott","Waste","Solid Waste","Landfill",40439.6237,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.27
+2021,"county","141","Sherburne","Waste","Solid Waste","Landfill",21909.34764,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.23
+2021,"county","163","Washington","Waste","Solid Waste","Landfill",53248.0403,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.2
+2021,"county","003","Anoka","Waste","Solid Waste","Organics",7561.6646,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","019","Carver","Waste","Solid Waste","Organics",4809.3374,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.05
+2021,"county","025","Chisago","Waste","Solid Waste","Organics",1224.4369,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","037","Dakota","Waste","Solid Waste","Organics",23737.4043,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.05
+2021,"county","053","Hennepin","Waste","Solid Waste","Organics",27869.9224,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","123","Ramsey","Waste","Solid Waste","Organics",18024.8127,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","139","Scott","Waste","Solid Waste","Organics",5100.1071,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","141","Sherburne","Waste","Solid Waste","Organics",1133.0398,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.01
+2021,"county","163","Washington","Waste","Solid Waste","Organics",6045.0725,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","003","Anoka","Waste","Solid Waste","Recycling",17823.2724,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.05
+2021,"county","019","Carver","Waste","Solid Waste","Recycling",3919.4181,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.04
+2021,"county","025","Chisago","Waste","Solid Waste","Recycling",756.6354,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.01
+2021,"county","037","Dakota","Waste","Solid Waste","Recycling",12578.5404,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","053","Hennepin","Waste","Solid Waste","Recycling",30815.2845,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","123","Ramsey","Waste","Solid Waste","Recycling",7134.6672,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.01
+2021,"county","139","Scott","Waste","Solid Waste","Recycling",5246.8938,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.04
+2021,"county","141","Sherburne","Waste","Solid Waste","Recycling",3057.6681,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","163","Washington","Waste","Solid Waste","Recycling",7529.0319,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.03
+2021,"county","093","Pierce","Waste","Solid Waste","Landfill",15756.844830377,"Wisconsin DNR","EPA GHG Emission Factors Hub (2021)",42204,"ACS 5-Year Estimates 2021, Table DP05",0.37
+2021,"county","109","St. Croix","Waste","Solid Waste","Landfill",34915.0061132888,"Wisconsin DNR","EPA GHG Emission Factors Hub (2021)",92495,"ACS 5-Year Estimates 2021, Table DP05",0.38
