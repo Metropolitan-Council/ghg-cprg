@@ -224,9 +224,10 @@ We used the LGGIT Excel workbook tool with the following inputs in the "Mobile-D
 #| out-width: "95%"
 lggit_vmt_entries <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_vmt_entries.RDS"))
 
-(lggit_vmt_entries) %>%
+lggit_vmt_entries %>%
   gt() %>%
   gt::opt_row_striping() %>%
+  fmt_number(8:9, decimals = 0) %>% 
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
