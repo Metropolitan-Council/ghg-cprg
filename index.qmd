@@ -77,11 +77,24 @@ plot_county_emissions(
 ```
 
 
+## About this document
+
+This is a Quarto book. Code, data, and documentation are all stored in the same place. We primarily use R. 
+
+- To navigate from chapter to chapter, click on the chapter name in the left sidebar or click the arrow button at the end of the page.
+- Citations can be previewed by hovering your mouse over the citation.
+- Links to R scripts are available throughout the document. Click on the link to open the relevant R script and peruse the code behind this inventory.
+- All plots are interactive. Hover your mouse over any bar or dot, and detailed information will appear. If you want to take a static screenshot of a plot, hover your mouse over the plot and find the camera icon in the upper right tool bar.
+- Sections are cross-referenced throughout the document. Click on a "Section x.xx.xx" link to navigate to the appropriate section
+- All headings, tables, and figures are permalinked, meaning that you can share specific sections of the document through a URL. Hover your mouse over a heading and click on the link icon. Then, copy the URL in your browser and share with colleagues. 
+
+
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
 caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
 saveCap(paste0("cap-", caption_index))
 saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
+
 {{< pagebreak >}}
-Í
+
