@@ -9,9 +9,11 @@ hookaddcap()
 
 Emissions rates for our region were calculated using the EPA's [Motor Vehicle Emissions Simulator (MOVES4)](https://www.epa.gov/moves) [@usepaMotorVehicleEmission2023]. MOVES4 calculates emissions factors using Council's regional travel demand model, Minnesota Department of Vehicle Services county vehicle registration data, and the Minnesota Pollution Control Agency (MPCA) vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle's age and size, as well as its fuel intake (diesel or gasoline). The results are specific to the conditions of our region, and so are more accurate than national averages. 
 
-MOVES is a high-quality government modeling system with strong data inputs and outputs.  
+<!-- TODO fill in these values -->
+MOVES is a high-quality government modeling system with strong data inputs and outputs. We requested this data from our MOVES coordinator, Dennis Farmer, who ran the model and shared the resulting table with us. The model run covers [exact geographic scope here] for years [exact years here], using MOVES version [exact version here]. 
 
-CO~2~ equivalence (CO~2~e) values are derived using global warming potential (GWP) values. See @sec-gwp for more details.
+The resulting table provides grams of CO~2~, CH~4~, and N~2~O per vehicle mile traveled. We imported, processed, and saved the data in an R script, [epa_moves.R](_transportation/data-raw/epa_moves.R). CO~2~ equivalence (CO~2~e) values are derived using global warming potential (GWP) values. See @sec-gwp for more details.
+
 ```{r clean-emiss-rates}
 epa_moves_clean <- epa_moves %>%
   rowwise() %>%
