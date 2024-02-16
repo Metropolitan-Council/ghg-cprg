@@ -21,9 +21,6 @@ The SCORE data is submitted annually by solid waste staff in each county of Minn
 
 The data was accessed through the SCORE tool's Tableau dashboard [ask Sam], then filtered to include only the 9-county Minnesota portion of the region studied in this report.
 
-
-
-
 - What data cleaning or wrangling was completed? How did you test these processes and outputs?
 - What version is the data? Were there other versions available? If so, why did you choose this version?
 - What assumptions are made when we use this dataset?
@@ -301,7 +298,7 @@ gt::gt(waste_management_comp,
 ### Data Dictionary
 
 
-```{r echo=FALSE}
+```{r echo=FALSE, eval=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
 caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
 saveCap(paste0("cap-", caption_index))

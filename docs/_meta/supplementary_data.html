@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.3.450">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -337,52 +337,6 @@ div.csl-indent {
 
 </header>
 
-<<<<<<< HEAD
-<!-- ## Emissions factors {#sec-factors} -->
-<!-- ```{r tbl-emmissions-factors-all} -->
-<!-- #| tbl-cap: "Emissions factors grouped by sector" -->
-<!-- #| out-width: "95%" -->
-<!-- source(file.path(here::here(), "_energy/data-raw/_energy_emissions_factors.R")) -->
-<!-- epa_moves <- readRDS(file.path(here::here(), "_transportation/data/epa_moves.RDS")) -->
-<!-- elec_factors <- tribble( -->
-<!--   ~Units, ~Gas, ~Value, ~Source, -->
-<!--   "Pounds per megawatt hour", "CO₂", eGRID_MROW_emissionsFactor_CO2, "eGRID MROW", -->
-<!--   "Pounds per megawatt hour", "CH₄", eGRID_MROW_emissionsFactor_CH4, "eGRID MROW", -->
-<!--   "Pounds per megawatt hour", "N₂O", eGRID_MROW_emissionsFactor_N2O, "eGRID MROW" -->
-<!-- ) %>%  -->
-<!--   mutate(Sector = "Energy", Category = "Electricity") %>%  -->
-<!--   select(Sector, Category, everything()) -->
-<!-- moves_factors <- epa_moves %>%  -->
-<!--   pivot_longer(cols = 3:6, -->
-<!--                names_to = "Gas", -->
-<!--                values_to = "Value") %>%  -->
-<!--   mutate(Sector = "Transportation", -->
-<!--          Category = vehicle_weight, -->
-<!--          Units = "Grams per vehicle mile traveled", -->
-<!--          Source = paste0("EPA MOVES4 (", moves_year, ")"), -->
-<!--          Gas = case_when(Gas == "co2"~ "CO₂", -->
-<!--                          Gas == "ch4" ~ "CH₄", -->
-<!--                          Gas == "n2o" ~ "N₂O", -->
-<!--                          Gas == "cf4" ~ "CF₄", -->
-<!--                          Gas == "co2_co2_equivalent" ~ "CO₂e", -->
-<!--                          Gas == "HFC-152a" ~ Gas) -->
-<!-- ) %>%  -->
-<!--   select(names(elec_factors)) -->
-<!-- bind_rows(elec_factors, -->
-<!--           moves_factors) %>%  -->
-<!--   group_by(Sector, Units) %>%  -->
-<!--   gt() %>%  -->
-<!--   gt::opt_row_striping() %>% -->
-<!--   tab_style( -->
-<!--     style = cell_text(weight = "bold"), -->
-<!--     locations = cells_column_labels() -->
-<!--   ) -->
-<!-- ``` -->
-<section id="sec-gwp" class="level2" data-number="A.1">
-<h2 data-number="A.1" class="anchored" data-anchor-id="sec-gwp"><span class="header-section-number">A.1</span> Global Warming Potential (GWP)</h2>
-<p>The Global Warming Potential (GWP) was developed to allow comparisons of the global warming impacts of different gases. Specifically, it is a measure of how much energy the emissions of 1 ton of a gas will absorb over a given period of time, relative to the emissions of 1 ton of carbon dioxide (CO<sub>2</sub>). The larger the GWP, the more that a given gas warms the Earth compared to CO2 over that time period <span class="citation" data-cites="usepaUnderstandingGlobalWarming2023">(<a href="#ref-usepaUnderstandingGlobalWarming2023" role="doc-biblioref">USEPA 2023</a>)</span>.</p>
-<p>Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5), Box 3.2, Table 1 <span class="citation" data-cites="ipccClimateChange2014">(<a href="#ref-ipccClimateChange2014" role="doc-biblioref">IPCC and Core Writing Team 2014</a>)</span>. See <a href="R/global_warming_potential.R">R/global_warming_potential.R</a>.</p>
-=======
 <section id="sec-factors" class="level2" data-number="A.1">
 <h2 data-number="A.1" class="anchored" data-anchor-id="sec-factors"><span class="header-section-number">A.1</span> Emissions factors</h2>
 <p>Note for solid waste, the global warming potentials used to calculate CO<sub>2</sub>e are sourced AR4, not AR5, like the rest of our inventory. However, when we dug into documentation for the EPA WARM tool <span class="citation" data-cites="usepaWARMManagementPractices2019">(<a href="../references.html#ref-usepaWARMManagementPractices2019" role="doc-biblioref">USEPA 2019</a>)</span>, we found that the differences in total CO<sub>2</sub>e emissions were negligible.</p>
@@ -390,23 +344,23 @@ div.csl-indent {
 <div class="cell-output-display">
 <div id="tbl-egrid" class="anchored">
 
-<div id="pizbubbgzj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#pizbubbgzj table {
+<div id="vxtykikcxq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vxtykikcxq table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#pizbubbgzj thead, #pizbubbgzj tbody, #pizbubbgzj tfoot, #pizbubbgzj tr, #pizbubbgzj td, #pizbubbgzj th {
+#vxtykikcxq thead, #vxtykikcxq tbody, #vxtykikcxq tfoot, #vxtykikcxq tr, #vxtykikcxq td, #vxtykikcxq th {
   border-style: none;
 }
 
-#pizbubbgzj p {
+#vxtykikcxq p {
   margin: 0;
   padding: 0;
 }
 
-#pizbubbgzj .gt_table {
+#vxtykikcxq .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -432,12 +386,12 @@ div.csl-indent {
   border-left-color: #D3D3D3;
 }
 
-#pizbubbgzj .gt_caption {
+#vxtykikcxq .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#pizbubbgzj .gt_title {
+#vxtykikcxq .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -449,7 +403,7 @@ div.csl-indent {
   border-bottom-width: 0;
 }
 
-#pizbubbgzj .gt_subtitle {
+#vxtykikcxq .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -461,7 +415,7 @@ div.csl-indent {
   border-top-width: 0;
 }
 
-#pizbubbgzj .gt_heading {
+#vxtykikcxq .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -473,13 +427,13 @@ div.csl-indent {
   border-right-color: #D3D3D3;
 }
 
-#pizbubbgzj .gt_bottom_border {
+#vxtykikcxq .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#pizbubbgzj .gt_col_headings {
+#vxtykikcxq .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -494,7 +448,7 @@ div.csl-indent {
   border-right-color: #D3D3D3;
 }
 
-#pizbubbgzj .gt_col_heading {
+#vxtykikcxq .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -514,7 +468,7 @@ div.csl-indent {
   overflow-x: hidden;
 }
 
-#pizbubbgzj .gt_column_spanner_outer {
+#vxtykikcxq .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -526,15 +480,15 @@ div.csl-indent {
   padding-right: 4px;
 }
 
-#pizbubbgzj .gt_column_spanner_outer:first-child {
+#vxtykikcxq .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#pizbubbgzj .gt_column_spanner_outer:last-child {
+#vxtykikcxq .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#pizbubbgzj .gt_column_spanner {
+#vxtykikcxq .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -546,11 +500,11 @@ div.csl-indent {
   width: 100%;
 }
 
-#pizbubbgzj .gt_spanner_row {
+#vxtykikcxq .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#pizbubbgzj .gt_group_heading {
+#vxtykikcxq .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -576,7 +530,7 @@ div.csl-indent {
   text-align: left;
 }
 
-#pizbubbgzj .gt_empty_group_heading {
+#vxtykikcxq .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -591,15 +545,15 @@ div.csl-indent {
   vertical-align: middle;
 }
 
-#pizbubbgzj .gt_from_md > :first-child {
+#vxtykikcxq .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#pizbubbgzj .gt_from_md > :last-child {
+#vxtykikcxq .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#pizbubbgzj .gt_row {
+#vxtykikcxq .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -618,7 +572,7 @@ div.csl-indent {
   overflow-x: hidden;
 }
 
-#pizbubbgzj .gt_stub {
+#vxtykikcxq .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -631,7 +585,7 @@ div.csl-indent {
   padding-right: 5px;
 }
 
-#pizbubbgzj .gt_stub_row_group {
+#vxtykikcxq .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -645,15 +599,15 @@ div.csl-indent {
   vertical-align: top;
 }
 
-#pizbubbgzj .gt_row_group_first td {
+#vxtykikcxq .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#pizbubbgzj .gt_row_group_first th {
+#vxtykikcxq .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#pizbubbgzj .gt_summary_row {
+#vxtykikcxq .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -663,16 +617,16 @@ div.csl-indent {
   padding-right: 5px;
 }
 
-#pizbubbgzj .gt_first_summary_row {
+#vxtykikcxq .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#pizbubbgzj .gt_first_summary_row.thick {
+#vxtykikcxq .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#pizbubbgzj .gt_last_summary_row {
+#vxtykikcxq .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -682,7 +636,7 @@ div.csl-indent {
   border-bottom-color: #D3D3D3;
 }
 
-#pizbubbgzj .gt_grand_summary_row {
+#vxtykikcxq .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -692,7 +646,7 @@ div.csl-indent {
   padding-right: 5px;
 }
 
-#pizbubbgzj .gt_first_grand_summary_row {
+#vxtykikcxq .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -702,7 +656,7 @@ div.csl-indent {
   border-top-color: #D3D3D3;
 }
 
-#pizbubbgzj .gt_last_grand_summary_row_top {
+#vxtykikcxq .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -712,11 +666,11 @@ div.csl-indent {
   border-bottom-color: #D3D3D3;
 }
 
-#pizbubbgzj .gt_striped {
+#vxtykikcxq .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#pizbubbgzj .gt_table_body {
+#vxtykikcxq .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -725,7 +679,7 @@ div.csl-indent {
   border-bottom-color: #D3D3D3;
 }
 
-#pizbubbgzj .gt_footnotes {
+#vxtykikcxq .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -739,7 +693,7 @@ div.csl-indent {
   border-right-color: #D3D3D3;
 }
 
-#pizbubbgzj .gt_footnote {
+#vxtykikcxq .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -748,7 +702,7 @@ div.csl-indent {
   padding-right: 5px;
 }
 
-#pizbubbgzj .gt_sourcenotes {
+#vxtykikcxq .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -762,7 +716,7 @@ div.csl-indent {
   border-right-color: #D3D3D3;
 }
 
-#pizbubbgzj .gt_sourcenote {
+#vxtykikcxq .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -770,63 +724,63 @@ div.csl-indent {
   padding-right: 5px;
 }
 
-#pizbubbgzj .gt_left {
+#vxtykikcxq .gt_left {
   text-align: left;
 }
 
-#pizbubbgzj .gt_center {
+#vxtykikcxq .gt_center {
   text-align: center;
 }
 
-#pizbubbgzj .gt_right {
+#vxtykikcxq .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#pizbubbgzj .gt_font_normal {
+#vxtykikcxq .gt_font_normal {
   font-weight: normal;
 }
 
-#pizbubbgzj .gt_font_bold {
+#vxtykikcxq .gt_font_bold {
   font-weight: bold;
 }
 
-#pizbubbgzj .gt_font_italic {
+#vxtykikcxq .gt_font_italic {
   font-style: italic;
 }
 
-#pizbubbgzj .gt_super {
+#vxtykikcxq .gt_super {
   font-size: 65%;
 }
 
-#pizbubbgzj .gt_footnote_marks {
+#vxtykikcxq .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#pizbubbgzj .gt_asterisk {
+#vxtykikcxq .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#pizbubbgzj .gt_indent_1 {
+#vxtykikcxq .gt_indent_1 {
   text-indent: 5px;
 }
 
-#pizbubbgzj .gt_indent_2 {
+#vxtykikcxq .gt_indent_2 {
   text-indent: 10px;
 }
 
-#pizbubbgzj .gt_indent_3 {
+#vxtykikcxq .gt_indent_3 {
   text-indent: 15px;
 }
 
-#pizbubbgzj .gt_indent_4 {
+#vxtykikcxq .gt_indent_4 {
   text-indent: 20px;
 }
 
-#pizbubbgzj .gt_indent_5 {
+#vxtykikcxq .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -865,23 +819,23 @@ eGRID2019, February 2021.</p> </caption>
 <div class="cell-output-display">
 <div id="tbl-stationary-combustion" class="anchored">
 
-<div id="vosbvghqgf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#vosbvghqgf table {
+<div id="srjukrttst" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#srjukrttst table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#vosbvghqgf thead, #vosbvghqgf tbody, #vosbvghqgf tfoot, #vosbvghqgf tr, #vosbvghqgf td, #vosbvghqgf th {
+#srjukrttst thead, #srjukrttst tbody, #srjukrttst tfoot, #srjukrttst tr, #srjukrttst td, #srjukrttst th {
   border-style: none;
 }
 
-#vosbvghqgf p {
+#srjukrttst p {
   margin: 0;
   padding: 0;
 }
 
-#vosbvghqgf .gt_table {
+#srjukrttst .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -907,12 +861,12 @@ eGRID2019, February 2021.</p> </caption>
   border-left-color: #D3D3D3;
 }
 
-#vosbvghqgf .gt_caption {
+#srjukrttst .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#vosbvghqgf .gt_title {
+#srjukrttst .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -924,7 +878,7 @@ eGRID2019, February 2021.</p> </caption>
   border-bottom-width: 0;
 }
 
-#vosbvghqgf .gt_subtitle {
+#srjukrttst .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -936,7 +890,7 @@ eGRID2019, February 2021.</p> </caption>
   border-top-width: 0;
 }
 
-#vosbvghqgf .gt_heading {
+#srjukrttst .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -948,13 +902,13 @@ eGRID2019, February 2021.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#vosbvghqgf .gt_bottom_border {
+#srjukrttst .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#vosbvghqgf .gt_col_headings {
+#srjukrttst .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -969,7 +923,7 @@ eGRID2019, February 2021.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#vosbvghqgf .gt_col_heading {
+#srjukrttst .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -989,7 +943,7 @@ eGRID2019, February 2021.</p> </caption>
   overflow-x: hidden;
 }
 
-#vosbvghqgf .gt_column_spanner_outer {
+#srjukrttst .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1001,15 +955,15 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 4px;
 }
 
-#vosbvghqgf .gt_column_spanner_outer:first-child {
+#srjukrttst .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#vosbvghqgf .gt_column_spanner_outer:last-child {
+#srjukrttst .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#vosbvghqgf .gt_column_spanner {
+#srjukrttst .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1021,11 +975,11 @@ eGRID2019, February 2021.</p> </caption>
   width: 100%;
 }
 
-#vosbvghqgf .gt_spanner_row {
+#srjukrttst .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#vosbvghqgf .gt_group_heading {
+#srjukrttst .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1051,7 +1005,7 @@ eGRID2019, February 2021.</p> </caption>
   text-align: left;
 }
 
-#vosbvghqgf .gt_empty_group_heading {
+#srjukrttst .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1066,15 +1020,15 @@ eGRID2019, February 2021.</p> </caption>
   vertical-align: middle;
 }
 
-#vosbvghqgf .gt_from_md > :first-child {
+#srjukrttst .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#vosbvghqgf .gt_from_md > :last-child {
+#srjukrttst .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#vosbvghqgf .gt_row {
+#srjukrttst .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1093,7 +1047,7 @@ eGRID2019, February 2021.</p> </caption>
   overflow-x: hidden;
 }
 
-#vosbvghqgf .gt_stub {
+#srjukrttst .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1106,7 +1060,7 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 5px;
 }
 
-#vosbvghqgf .gt_stub_row_group {
+#srjukrttst .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1120,15 +1074,15 @@ eGRID2019, February 2021.</p> </caption>
   vertical-align: top;
 }
 
-#vosbvghqgf .gt_row_group_first td {
+#srjukrttst .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#vosbvghqgf .gt_row_group_first th {
+#srjukrttst .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#vosbvghqgf .gt_summary_row {
+#srjukrttst .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1138,16 +1092,16 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 5px;
 }
 
-#vosbvghqgf .gt_first_summary_row {
+#srjukrttst .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#vosbvghqgf .gt_first_summary_row.thick {
+#srjukrttst .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#vosbvghqgf .gt_last_summary_row {
+#srjukrttst .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1157,7 +1111,7 @@ eGRID2019, February 2021.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
-#vosbvghqgf .gt_grand_summary_row {
+#srjukrttst .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1167,7 +1121,7 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 5px;
 }
 
-#vosbvghqgf .gt_first_grand_summary_row {
+#srjukrttst .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1177,7 +1131,7 @@ eGRID2019, February 2021.</p> </caption>
   border-top-color: #D3D3D3;
 }
 
-#vosbvghqgf .gt_last_grand_summary_row_top {
+#srjukrttst .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1187,11 +1141,11 @@ eGRID2019, February 2021.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
-#vosbvghqgf .gt_striped {
+#srjukrttst .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#vosbvghqgf .gt_table_body {
+#srjukrttst .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1200,7 +1154,7 @@ eGRID2019, February 2021.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
-#vosbvghqgf .gt_footnotes {
+#srjukrttst .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1214,7 +1168,7 @@ eGRID2019, February 2021.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#vosbvghqgf .gt_footnote {
+#srjukrttst .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1223,7 +1177,7 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 5px;
 }
 
-#vosbvghqgf .gt_sourcenotes {
+#srjukrttst .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1237,7 +1191,7 @@ eGRID2019, February 2021.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#vosbvghqgf .gt_sourcenote {
+#srjukrttst .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1245,63 +1199,63 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 5px;
 }
 
-#vosbvghqgf .gt_left {
+#srjukrttst .gt_left {
   text-align: left;
 }
 
-#vosbvghqgf .gt_center {
+#srjukrttst .gt_center {
   text-align: center;
 }
 
-#vosbvghqgf .gt_right {
+#srjukrttst .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#vosbvghqgf .gt_font_normal {
+#srjukrttst .gt_font_normal {
   font-weight: normal;
 }
 
-#vosbvghqgf .gt_font_bold {
+#srjukrttst .gt_font_bold {
   font-weight: bold;
 }
 
-#vosbvghqgf .gt_font_italic {
+#srjukrttst .gt_font_italic {
   font-style: italic;
 }
 
-#vosbvghqgf .gt_super {
+#srjukrttst .gt_super {
   font-size: 65%;
 }
 
-#vosbvghqgf .gt_footnote_marks {
+#srjukrttst .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#vosbvghqgf .gt_asterisk {
+#srjukrttst .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#vosbvghqgf .gt_indent_1 {
+#srjukrttst .gt_indent_1 {
   text-indent: 5px;
 }
 
-#vosbvghqgf .gt_indent_2 {
+#srjukrttst .gt_indent_2 {
   text-indent: 10px;
 }
 
-#vosbvghqgf .gt_indent_3 {
+#srjukrttst .gt_indent_3 {
   text-indent: 15px;
 }
 
-#vosbvghqgf .gt_indent_4 {
+#srjukrttst .gt_indent_4 {
   text-indent: 20px;
 }
 
-#vosbvghqgf .gt_indent_5 {
+#srjukrttst .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1395,23 +1349,23 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
 <div class="cell-output-display">
 <div id="tbl-waste-factors" class="anchored">
 
-<div id="xhzsnwvocx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#xhzsnwvocx table {
+<div id="omxnzniesm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#omxnzniesm table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#xhzsnwvocx thead, #xhzsnwvocx tbody, #xhzsnwvocx tfoot, #xhzsnwvocx tr, #xhzsnwvocx td, #xhzsnwvocx th {
+#omxnzniesm thead, #omxnzniesm tbody, #omxnzniesm tfoot, #omxnzniesm tr, #omxnzniesm td, #omxnzniesm th {
   border-style: none;
 }
 
-#xhzsnwvocx p {
+#omxnzniesm p {
   margin: 0;
   padding: 0;
 }
 
-#xhzsnwvocx .gt_table {
+#omxnzniesm .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1437,12 +1391,12 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-left-color: #D3D3D3;
 }
 
-#xhzsnwvocx .gt_caption {
+#omxnzniesm .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#xhzsnwvocx .gt_title {
+#omxnzniesm .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1454,7 +1408,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-bottom-width: 0;
 }
 
-#xhzsnwvocx .gt_subtitle {
+#omxnzniesm .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1466,7 +1420,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-top-width: 0;
 }
 
-#xhzsnwvocx .gt_heading {
+#omxnzniesm .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1478,13 +1432,13 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#xhzsnwvocx .gt_bottom_border {
+#omxnzniesm .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#xhzsnwvocx .gt_col_headings {
+#omxnzniesm .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1499,7 +1453,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#xhzsnwvocx .gt_col_heading {
+#omxnzniesm .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1519,7 +1473,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   overflow-x: hidden;
 }
 
-#xhzsnwvocx .gt_column_spanner_outer {
+#omxnzniesm .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1531,15 +1485,15 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 4px;
 }
 
-#xhzsnwvocx .gt_column_spanner_outer:first-child {
+#omxnzniesm .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#xhzsnwvocx .gt_column_spanner_outer:last-child {
+#omxnzniesm .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#xhzsnwvocx .gt_column_spanner {
+#omxnzniesm .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1551,11 +1505,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   width: 100%;
 }
 
-#xhzsnwvocx .gt_spanner_row {
+#omxnzniesm .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#xhzsnwvocx .gt_group_heading {
+#omxnzniesm .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1581,7 +1535,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   text-align: left;
 }
 
-#xhzsnwvocx .gt_empty_group_heading {
+#omxnzniesm .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1596,15 +1550,15 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   vertical-align: middle;
 }
 
-#xhzsnwvocx .gt_from_md > :first-child {
+#omxnzniesm .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#xhzsnwvocx .gt_from_md > :last-child {
+#omxnzniesm .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#xhzsnwvocx .gt_row {
+#omxnzniesm .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1623,7 +1577,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   overflow-x: hidden;
 }
 
-#xhzsnwvocx .gt_stub {
+#omxnzniesm .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1636,7 +1590,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 5px;
 }
 
-#xhzsnwvocx .gt_stub_row_group {
+#omxnzniesm .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1650,15 +1604,15 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   vertical-align: top;
 }
 
-#xhzsnwvocx .gt_row_group_first td {
+#omxnzniesm .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#xhzsnwvocx .gt_row_group_first th {
+#omxnzniesm .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#xhzsnwvocx .gt_summary_row {
+#omxnzniesm .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1668,16 +1622,16 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 5px;
 }
 
-#xhzsnwvocx .gt_first_summary_row {
+#omxnzniesm .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#xhzsnwvocx .gt_first_summary_row.thick {
+#omxnzniesm .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#xhzsnwvocx .gt_last_summary_row {
+#omxnzniesm .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1687,7 +1641,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
-#xhzsnwvocx .gt_grand_summary_row {
+#omxnzniesm .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1697,7 +1651,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 5px;
 }
 
-#xhzsnwvocx .gt_first_grand_summary_row {
+#omxnzniesm .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1707,7 +1661,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-top-color: #D3D3D3;
 }
 
-#xhzsnwvocx .gt_last_grand_summary_row_top {
+#omxnzniesm .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1717,11 +1671,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
-#xhzsnwvocx .gt_striped {
+#omxnzniesm .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#xhzsnwvocx .gt_table_body {
+#omxnzniesm .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1730,7 +1684,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
-#xhzsnwvocx .gt_footnotes {
+#omxnzniesm .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1744,7 +1698,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#xhzsnwvocx .gt_footnote {
+#omxnzniesm .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1753,7 +1707,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 5px;
 }
 
-#xhzsnwvocx .gt_sourcenotes {
+#omxnzniesm .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1767,7 +1721,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#xhzsnwvocx .gt_sourcenote {
+#omxnzniesm .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1775,63 +1729,63 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 5px;
 }
 
-#xhzsnwvocx .gt_left {
+#omxnzniesm .gt_left {
   text-align: left;
 }
 
-#xhzsnwvocx .gt_center {
+#omxnzniesm .gt_center {
   text-align: center;
 }
 
-#xhzsnwvocx .gt_right {
+#omxnzniesm .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#xhzsnwvocx .gt_font_normal {
+#omxnzniesm .gt_font_normal {
   font-weight: normal;
 }
 
-#xhzsnwvocx .gt_font_bold {
+#omxnzniesm .gt_font_bold {
   font-weight: bold;
 }
 
-#xhzsnwvocx .gt_font_italic {
+#omxnzniesm .gt_font_italic {
   font-style: italic;
 }
 
-#xhzsnwvocx .gt_super {
+#omxnzniesm .gt_super {
   font-size: 65%;
 }
 
-#xhzsnwvocx .gt_footnote_marks {
+#omxnzniesm .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#xhzsnwvocx .gt_asterisk {
+#omxnzniesm .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#xhzsnwvocx .gt_indent_1 {
+#omxnzniesm .gt_indent_1 {
   text-indent: 5px;
 }
 
-#xhzsnwvocx .gt_indent_2 {
+#omxnzniesm .gt_indent_2 {
   text-indent: 10px;
 }
 
-#xhzsnwvocx .gt_indent_3 {
+#omxnzniesm .gt_indent_3 {
   text-indent: 15px;
 }
 
-#xhzsnwvocx .gt_indent_4 {
+#omxnzniesm .gt_indent_4 {
   text-indent: 20px;
 }
 
-#xhzsnwvocx .gt_indent_5 {
+#omxnzniesm .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1892,23 +1846,23 @@ WARM version 15, November 2020.</p> </caption>
 <div class="cell-output-display">
 <div id="tbl-moves-factors" class="anchored">
 
-<div id="cynqzbrlta" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#cynqzbrlta table {
+<div id="kzwdppgagm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kzwdppgagm table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#cynqzbrlta thead, #cynqzbrlta tbody, #cynqzbrlta tfoot, #cynqzbrlta tr, #cynqzbrlta td, #cynqzbrlta th {
+#kzwdppgagm thead, #kzwdppgagm tbody, #kzwdppgagm tfoot, #kzwdppgagm tr, #kzwdppgagm td, #kzwdppgagm th {
   border-style: none;
 }
 
-#cynqzbrlta p {
+#kzwdppgagm p {
   margin: 0;
   padding: 0;
 }
 
-#cynqzbrlta .gt_table {
+#kzwdppgagm .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1934,12 +1888,12 @@ WARM version 15, November 2020.</p> </caption>
   border-left-color: #D3D3D3;
 }
 
-#cynqzbrlta .gt_caption {
+#kzwdppgagm .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#cynqzbrlta .gt_title {
+#kzwdppgagm .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1951,7 +1905,7 @@ WARM version 15, November 2020.</p> </caption>
   border-bottom-width: 0;
 }
 
-#cynqzbrlta .gt_subtitle {
+#kzwdppgagm .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1963,7 +1917,7 @@ WARM version 15, November 2020.</p> </caption>
   border-top-width: 0;
 }
 
-#cynqzbrlta .gt_heading {
+#kzwdppgagm .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1975,13 +1929,13 @@ WARM version 15, November 2020.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#cynqzbrlta .gt_bottom_border {
+#kzwdppgagm .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#cynqzbrlta .gt_col_headings {
+#kzwdppgagm .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1996,7 +1950,7 @@ WARM version 15, November 2020.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#cynqzbrlta .gt_col_heading {
+#kzwdppgagm .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2016,7 +1970,7 @@ WARM version 15, November 2020.</p> </caption>
   overflow-x: hidden;
 }
 
-#cynqzbrlta .gt_column_spanner_outer {
+#kzwdppgagm .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2028,15 +1982,15 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 4px;
 }
 
-#cynqzbrlta .gt_column_spanner_outer:first-child {
+#kzwdppgagm .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#cynqzbrlta .gt_column_spanner_outer:last-child {
+#kzwdppgagm .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#cynqzbrlta .gt_column_spanner {
+#kzwdppgagm .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2048,11 +2002,11 @@ WARM version 15, November 2020.</p> </caption>
   width: 100%;
 }
 
-#cynqzbrlta .gt_spanner_row {
+#kzwdppgagm .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#cynqzbrlta .gt_group_heading {
+#kzwdppgagm .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2078,7 +2032,7 @@ WARM version 15, November 2020.</p> </caption>
   text-align: left;
 }
 
-#cynqzbrlta .gt_empty_group_heading {
+#kzwdppgagm .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2093,15 +2047,15 @@ WARM version 15, November 2020.</p> </caption>
   vertical-align: middle;
 }
 
-#cynqzbrlta .gt_from_md > :first-child {
+#kzwdppgagm .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#cynqzbrlta .gt_from_md > :last-child {
+#kzwdppgagm .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#cynqzbrlta .gt_row {
+#kzwdppgagm .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2120,7 +2074,7 @@ WARM version 15, November 2020.</p> </caption>
   overflow-x: hidden;
 }
 
-#cynqzbrlta .gt_stub {
+#kzwdppgagm .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2133,7 +2087,7 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 5px;
 }
 
-#cynqzbrlta .gt_stub_row_group {
+#kzwdppgagm .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2147,15 +2101,15 @@ WARM version 15, November 2020.</p> </caption>
   vertical-align: top;
 }
 
-#cynqzbrlta .gt_row_group_first td {
+#kzwdppgagm .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#cynqzbrlta .gt_row_group_first th {
+#kzwdppgagm .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#cynqzbrlta .gt_summary_row {
+#kzwdppgagm .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2165,16 +2119,16 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 5px;
 }
 
-#cynqzbrlta .gt_first_summary_row {
+#kzwdppgagm .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#cynqzbrlta .gt_first_summary_row.thick {
+#kzwdppgagm .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#cynqzbrlta .gt_last_summary_row {
+#kzwdppgagm .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2184,7 +2138,7 @@ WARM version 15, November 2020.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
-#cynqzbrlta .gt_grand_summary_row {
+#kzwdppgagm .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2194,7 +2148,7 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 5px;
 }
 
-#cynqzbrlta .gt_first_grand_summary_row {
+#kzwdppgagm .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2204,7 +2158,7 @@ WARM version 15, November 2020.</p> </caption>
   border-top-color: #D3D3D3;
 }
 
-#cynqzbrlta .gt_last_grand_summary_row_top {
+#kzwdppgagm .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2214,11 +2168,11 @@ WARM version 15, November 2020.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
-#cynqzbrlta .gt_striped {
+#kzwdppgagm .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#cynqzbrlta .gt_table_body {
+#kzwdppgagm .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2227,7 +2181,7 @@ WARM version 15, November 2020.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
-#cynqzbrlta .gt_footnotes {
+#kzwdppgagm .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2241,7 +2195,7 @@ WARM version 15, November 2020.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#cynqzbrlta .gt_footnote {
+#kzwdppgagm .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2250,7 +2204,7 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 5px;
 }
 
-#cynqzbrlta .gt_sourcenotes {
+#kzwdppgagm .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2264,7 +2218,7 @@ WARM version 15, November 2020.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
-#cynqzbrlta .gt_sourcenote {
+#kzwdppgagm .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2272,63 +2226,63 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 5px;
 }
 
-#cynqzbrlta .gt_left {
+#kzwdppgagm .gt_left {
   text-align: left;
 }
 
-#cynqzbrlta .gt_center {
+#kzwdppgagm .gt_center {
   text-align: center;
 }
 
-#cynqzbrlta .gt_right {
+#kzwdppgagm .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#cynqzbrlta .gt_font_normal {
+#kzwdppgagm .gt_font_normal {
   font-weight: normal;
 }
 
-#cynqzbrlta .gt_font_bold {
+#kzwdppgagm .gt_font_bold {
   font-weight: bold;
 }
 
-#cynqzbrlta .gt_font_italic {
+#kzwdppgagm .gt_font_italic {
   font-style: italic;
 }
 
-#cynqzbrlta .gt_super {
+#kzwdppgagm .gt_super {
   font-size: 65%;
 }
 
-#cynqzbrlta .gt_footnote_marks {
+#kzwdppgagm .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#cynqzbrlta .gt_asterisk {
+#kzwdppgagm .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#cynqzbrlta .gt_indent_1 {
+#kzwdppgagm .gt_indent_1 {
   text-indent: 5px;
 }
 
-#cynqzbrlta .gt_indent_2 {
+#kzwdppgagm .gt_indent_2 {
   text-indent: 10px;
 }
 
-#cynqzbrlta .gt_indent_3 {
+#kzwdppgagm .gt_indent_3 {
   text-indent: 15px;
 }
 
-#cynqzbrlta .gt_indent_4 {
+#kzwdppgagm .gt_indent_4 {
   text-indent: 20px;
 }
 
-#cynqzbrlta .gt_indent_5 {
+#kzwdppgagm .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -2386,16 +2340,11 @@ WARM version 15, November 2020.</p> </caption>
 <h2 data-number="A.2" class="anchored" data-anchor-id="sec-gwp"><span class="header-section-number">A.2</span> Global Warming Potential (GWP)</h2>
 <p>The Global Warming Potential (GWP) was developed to allow comparisons of the global warming impacts of different gases. Specifically, it is a measure of how much energy the emissions of 1 ton of a gas will absorb over a given period of time, relative to the emissions of 1 ton of carbon dioxide (CO<sub>2</sub>). The larger the GWP, the more that a given gas warms the Earth compared to CO2 over that time period <span class="citation" data-cites="usepaUnderstandingGlobalWarming2023">(<a href="../references.html#ref-usepaUnderstandingGlobalWarming2023" role="doc-biblioref">USEPA 2023</a>)</span>.</p>
 <p>Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5), Box 3.2, Table 1 <span class="citation" data-cites="ipccClimateChange2014">(<a href="../references.html#ref-ipccClimateChange2014" role="doc-biblioref">IPCC and Core Writing Team 2014</a>)</span>. See <a href="R/global_warming_potential.R">R/global_warming_potential.R</a>.</p>
->>>>>>> main
 <div class="cell" data-hash="supplementary_data_cache/html/tbl-gwp_6c4b497c5df3306e7c1ef8e5cb4d0a28">
 <div class="cell-output-display">
 <div id="tbl-gwp" class="anchored">
 
-<<<<<<< HEAD
-<div id="xltmpcmdor" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-=======
-<div id="dfkqhfefwc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
->>>>>>> main
+<div id="sjdqzvifft" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.5:  <p>Global Warming Potential (GWP) values</p> </caption>
   <thead style="border-style: none;">
@@ -2437,24 +2386,14 @@ WARM version 15, November 2020.</p> </caption>
 <section id="geographic-data" class="level2" data-number="A.3">
 <h2 data-number="A.3" class="anchored" data-anchor-id="geographic-data"><span class="header-section-number">A.3</span> Geographic data</h2>
 <p>Geographic data were processed in <a href="../R/cprg_geography.R">cprg_geography.R</a>.</p>
-<<<<<<< HEAD
-<section id="counties" class="level3" data-number="A.2.1">
-<h3 data-number="A.2.1" class="anchored" data-anchor-id="counties"><span class="header-section-number">A.2.1</span> Counties</h3>
-<p>County data was pulled using <code>{tigris}</code>, an R package that downloads TIGER/Line shapefiles from the US Census Bureau <span class="citation" data-cites="walkerTigrisLoadCensus2023">(<a href="#ref-walkerTigrisLoadCensus2023" role="doc-biblioref">Walker 2023</a>)</span>. 2021 geographies for Minnesota and Wisconsin were pulled, combined, and saved.</p>
-=======
 <section id="counties" class="level3" data-number="A.3.1">
 <h3 data-number="A.3.1" class="anchored" data-anchor-id="counties"><span class="header-section-number">A.3.1</span> Counties</h3>
 <p>County data was pulled using <code>{tigris}</code>, an R package that downloads TIGER/Line shapefiles from the US Census Bureau <span class="citation" data-cites="walkerTigrisLoadCensus2023">(<a href="../references.html#ref-walkerTigrisLoadCensus2023" role="doc-biblioref">Walker 2023</a>)</span>. 2021 geographies for Minnesota and Wisconsin were pulled, combined, and saved.</p>
->>>>>>> main
 <div class="cell" data-hash="supplementary_data_cache/html/tbl-cprg-county_ef0bcc5f39009c63174536676b5ae560">
 <div class="cell-output-display">
 <div id="tbl-cprg-county" class="anchored">
 
-<<<<<<< HEAD
-<div id="ihhfdedcnh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-=======
-<div id="uckotwrjbz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
->>>>>>> main
+<div id="sxqikpimgh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.6:  <p>County geography metadata</p> </caption>
   <thead style="border-style: none;">
@@ -2494,16 +2433,12 @@ WARM version 15, November 2020.</p> </caption>
 </div>
 </div>
 </div>
-<p>Additionally, population estimates were obtained from the American Community Survey 5-Year estimates (2017-2021) using <code>{tidycensus}</code> <span class="citation" data-cites="Census2022ACSDP1Y2022.DP05">(<a href="#ref-Census2022ACSDP1Y2022.DP05" role="doc-biblioref">U.S. Census Bureau 2021</a>)</span>.</p>
+<p>Additionally, population estimates were obtained from the American Community Survey 5-Year estimates (2017-2021) using <code>{tidycensus}</code> <span class="citation" data-cites="Census2022ACSDP1Y2022.DP05">(<a href="../references.html#ref-Census2022ACSDP1Y2022.DP05" role="doc-biblioref">U.S. Census Bureau 2021</a>)</span>.</p>
 <div class="cell" data-hash="supplementary_data_cache/html/tbl-cprg-population_4e869d753e09563bf3033584306fabb4">
 <div class="cell-output-display">
 <div id="tbl-cprg-population" class="anchored">
 
-<<<<<<< HEAD
-<div id="rxtkmvwhbu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-=======
-<div id="fjtfieshgs" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
->>>>>>> main
+<div id="adlxhhcupo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.7:  <p>County population metadata</p> </caption>
   <thead style="border-style: none;">
@@ -2547,27 +2482,16 @@ WARM version 15, November 2020.</p> </caption>
 </div>
 </div>
 </section>
-<<<<<<< HEAD
-<section id="cities" class="level3" data-number="A.2.2">
-<h3 data-number="A.2.2" class="anchored" data-anchor-id="cities"><span class="header-section-number">A.2.2</span> Cities</h3>
-<p>Minnesota cities, townships, and unorganized territories were imported from <a href="https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg">Minnesota Geospatial Commons</a> <span class="citation" data-cites="mndotCityTownshipUnorganized2023">(<a href="#ref-mndotCityTownshipUnorganized2023" role="doc-biblioref">MnDOT 2023</a>)</span>.</p>
-<p>Wisconsin cities, towns, and villages were imported from Wisconsin’s Legislative Technology Services Bureau <span class="citation" data-cites="wisconsinlegislatureWisconsinCitiesTowns2023">(<a href="#ref-wisconsinlegislatureWisconsinCitiesTowns2023" role="doc-biblioref">Wisconsin Legislature 2023</a>)</span>.</p>
-=======
 <section id="cities" class="level3" data-number="A.3.2">
 <h3 data-number="A.3.2" class="anchored" data-anchor-id="cities"><span class="header-section-number">A.3.2</span> Cities</h3>
 <p>Minnesota cities, townships, and unorganized territories were imported from <a href="https://gisdata.mn.gov/dataset/bdry-mn-city-township-unorg">Minnesota Geospatial Commons</a> <span class="citation" data-cites="mndotCityTownshipUnorganized2023">(<a href="../references.html#ref-mndotCityTownshipUnorganized2023" role="doc-biblioref">MnDOT 2023</a>)</span>.</p>
 <p>Wisconsin cities, towns, and villages were imported from Wisconsin’s Legislative Technology Services Bureau <span class="citation" data-cites="wisconsinlegislatureWisconsinCitiesTowns2023">(<a href="../references.html#ref-wisconsinlegislatureWisconsinCitiesTowns2023" role="doc-biblioref">Wisconsin Legislature 2023</a>)</span>.</p>
->>>>>>> main
 <p>Data from both states was then combined and filtered to include only the workplan area counties.</p>
 <div class="cell" data-hash="supplementary_data_cache/html/tbl-cprg-ctu_b8db9902b8a72a928043d80baa313772">
 <div class="cell-output-display">
 <div id="tbl-cprg-ctu" class="anchored">
 
-<<<<<<< HEAD
-<div id="vsrwtwfcnc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-=======
-<div id="kwbwkypitc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
->>>>>>> main
+<div id="sgsicppyyd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.8:  <p>City geography metadata</p> </caption>
   <thead style="border-style: none;">
@@ -2612,7 +2536,7 @@ WARM version 15, November 2020.</p> </caption>
 </div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-ipccClimateChange2014" class="csl-entry" role="listitem">
 IPCC, and Core Writing Team. 2014. <span>“Climate <span>Change</span> 2014: <span>Synthesis Report</span>. <span>Contribution</span> of <span>Working Groups I</span>, <span>II</span> and <span>III</span> to the <span>Fifth Assessment Report</span> of the <span>Intergovernmental Panel</span> on <span>Climate Change</span>.”</span> Edited by R.K. Pachauri and L.A. Meyer. <span>Geneva, Switzerland</span>: <span>Intergovernmental Panel on Climate Change</span>. <a href="https://www.ipcc.ch/assessment-report/ar5/">https://www.ipcc.ch/assessment-report/ar5/</a>.
 </div>

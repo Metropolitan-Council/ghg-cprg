@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.3.450">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -341,14 +341,14 @@ div.csl-indent {
 <h2 data-number="2.1" class="anchored" data-anchor-id="utility-activity-data"><span class="header-section-number">2.1</span> Utility Activity Data</h2>
 <section id="minnesota" class="level3" data-number="2.1.1">
 <h3 data-number="2.1.1" class="anchored" data-anchor-id="minnesota"><span class="header-section-number">2.1.1</span> Minnesota</h3>
-<p>Under Minnesota Administrative Rules Chapter 7610 <span class="citation" data-cites="minnesotadepartmentofcommerceCHAPTER7610ENERGY">(<a href="#ref-minnesotadepartmentofcommerceCHAPTER7610ENERGY" role="doc-biblioref">Minnesota Department of Commerce, n.d.</a>)</span>, utilities are required to file an annual data report that supports the identification of “emerging energy trends based on supply and demand, conservation and public health and safety factors, and to determine the level of statewide and service area needs.” <span class="citation" data-cites="minnesotadepartmentofcommerceAnnualReportingForms2022">(<a href="#ref-minnesotadepartmentofcommerceAnnualReportingForms2022" role="doc-biblioref">Minnesota Department of Commerce 2022</a>)</span> This includes a report of county-level energy deliveries (reported in thousand cubic feet, commonly written as mcf). Because the information is structured in this manner, natural gas emissions at the county-level can be estimated as a direct function of energy deliveries to counties reported by utilities, which isn’t the case in Wisconsin (some modeling and estimation is required in WI).</p>
+<p>Under Minnesota Administrative Rules Chapter 7610 <span class="citation" data-cites="minnesotadepartmentofcommerceCHAPTER7610ENERGY">(<a href="../references.html#ref-minnesotadepartmentofcommerceCHAPTER7610ENERGY" role="doc-biblioref">Minnesota Department of Commerce, n.d.</a>)</span>, utilities are required to file an annual data report that supports the identification of “emerging energy trends based on supply and demand, conservation and public health and safety factors, and to determine the level of statewide and service area needs.” <span class="citation" data-cites="minnesotadepartmentofcommerceAnnualReportingForms2022">(<a href="../references.html#ref-minnesotadepartmentofcommerceAnnualReportingForms2022" role="doc-biblioref">Minnesota Department of Commerce 2022</a>)</span> This includes a report of county-level energy deliveries (reported in thousand cubic feet, commonly written as mcf). Because the information is structured in this manner, natural gas emissions at the county-level can be estimated as a direct function of energy deliveries to counties reported by utilities, which isn’t the case in Wisconsin (some modeling and estimation is required in WI).</p>
 <p>For electric… great river</p>
 <p>#bar graph with utility county data</p>
 <p>#some data exists for MN customer counts… could be worthwile to calculate account level average for comparison to WI</p>
 </section>
 <section id="wisconsin" class="level3" data-number="2.1.2">
 <h3 data-number="2.1.2" class="anchored" data-anchor-id="wisconsin"><span class="header-section-number">2.1.2</span> Wisconsin</h3>
-<p>Under Wis. Stat. § 196.07, investor- and municipally owned electric utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of <em>kWh</em>) and total number of customer accounts within each county <span class="citation" data-cites="wisconsinstatelegislatureChapter186Regulation">(<a href="#ref-wisconsinstatelegislatureChapter186Regulation" role="doc-biblioref">Legislature, n.d.</a>)</span>.</p>
+<p>Under Wis. Stat. § 196.07, investor- and municipally owned electric utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of <em>kWh</em>) and total number of customer accounts within each county <span class="citation" data-cites="wisconsinstatelegislatureChapter186Regulation">(<a href="../references.html#ref-wisconsinstatelegislatureChapter186Regulation" role="doc-biblioref">Legislature, n.d.</a>)</span>.</p>
 <p>Of the seven in-scope electric utilities, only three (the investor- and municipally-owned utilities) were required to make these reports to the State in 2021 (four of the in-scope electric utilities are cooperative utilities); state data was leveraged in this case. For the four utilities (all cooperative utilities) not making these reports, we relied upon the detailed data files provided by the EIA, recording the responses of utilities to the Annual Electric Power Energy Report (Form EIA-861). Two utilities (Dunn Energy Cooperative and Polk-Burnett Electric Cooperative) filled the long version of the form, and two (St.&nbsp;Croix Electric Cooperative and Pierce-Pepin Electric Cooperative Services) filled the short form. For our purposes, both the long and short form provided suitable activity information (total energy delivered, total customers) to allocate energy deliveries to counties in concert with Census population data, in the process outlined below.</p>
 <p>Because Wisconsin utilities do not report energy deliveries at the county level, it was necessary to estimate energy deliveries by a given utility <em>i</em> within a particular county <em>j.</em> For those three utilities who reported county-level customer counts and total customer counts to the state, we estimated mWh delivered by utility <em>i</em> in county <em>j</em> by multiplying their total statewide energy deliveries (as reported to the relevant state authorities) by the proportion of their customers residing in each of our two study area counties.</p>
 <p><span class="math display">\[mWhDelivered_iCounty_j =  (mWhEnergyDeliveries_i \times {ProportionOfTotalUtilityCustomers_j}) \]</span></p>
@@ -362,7 +362,7 @@ div.csl-indent {
 <p>For electric.. more detail on how population in service territories was used to 1) estimate customer/account counts, 2) allocate total utility numbers based on estimated accounts within the in-scope area, and 3) use estimated per-customer energy deliveries, alongside population figures and total customer counts within and without our study area for the two utilities that didn’t energy activity to the state or federal government, to model energy delivery –&gt; customers/cus</p>
 <p>Data source description, type</p>
 <ul>
-<li>Quality rank (See <a href="#tbl-quality-rank">Table&nbsp;<span class="quarto-unresolved-ref">tbl-quality-rank</span></a>)</li>
+<li>Quality rank (See <a href="../_meta/supplementary_tables.html#tbl-quality-rank">Table&nbsp;<span>B.2</span></a>)</li>
 <li>How, when, and why was the data collected?</li>
 <li>If this is a modeled dataset, what is the sample?</li>
 <li>What is the raw unit of measurement?</li>
@@ -396,7 +396,7 @@ div.csl-indent {
 <h4 data-number="2.1.2.1" class="anchored" data-anchor-id="vehicle-distribution-by-weight"><span class="header-section-number">2.1.2.1</span> Vehicle distribution by weight</h4>
 <p>Introduction text Data source description, type</p>
 <ul>
-<li>Quality rank (See <a href="#tbl-quality-rank">Table&nbsp;<span class="quarto-unresolved-ref">tbl-quality-rank</span></a>)</li>
+<li>Quality rank (See <a href="../_meta/supplementary_tables.html#tbl-quality-rank">Table&nbsp;<span>B.2</span></a>)</li>
 <li>How, when, and why was the data collected?</li>
 <li>If this is a modeled dataset, what is the sample?</li>
 <li>What is the raw unit of measurement?</li>
@@ -427,7 +427,7 @@ div.csl-indent {
 <h3 data-number="2.1.3" class="anchored" data-anchor-id="data-dictionaries"><span class="header-section-number">2.1.3</span> Data dictionaries</h3>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-wisconsinstatelegislatureChapter186Regulation" class="csl-entry" role="listitem">
 Legislature, Wisconsin State. n.d. <span>“Chapter 186, <span>Regulation</span> of <span>Public Utilities</span>.”</span> <a href="https://docs.legis.wisconsin.gov/statutes/statutes/196">https://docs.legis.wisconsin.gov/statutes/statutes/196</a>.
 </div>
