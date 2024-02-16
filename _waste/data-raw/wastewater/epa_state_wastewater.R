@@ -1,96 +1,89 @@
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
-### MPCA provides waste water emission estimates
-mn_mpca <- readxl::read_xlsx("_waste/data-raw/wastewater/mpca-mn-wastewater.xlsx")
-
-mpca_state_ghg <- mn_mpca %>%
-  pivot_longer(7:37,
-    names_to = "year"
-  ) %>%
-  filter(year == 2020) %>%
-  select(GHGs, year, value)
-
-mn_state_est <- as.numeric(mn_mpca[mn_mpca$Sector == "Grand Total", "2020"])
-
 # mn epa -----
 # summary page from the
 # State Inventory and Projection Tool
 # saved as a CSV
-mn_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-mn-wastewater.csv")
-mn_epa_est <- as.numeric(mn_epa[12, 33]) * 10^6
-mn_epa_ch4_est <- as.numeric(mn_epa[5, 33]) * 10^6
-mn_epa_n2o_est <- as.numeric(mn_epa[6, 33]) * 10^6
+mn_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-mn-wastewater.csv",
+  skip = 4,
+  n_max = 3
+) %>%
+  pivot_longer(cols = 3:38, names_to = "Year", values_to = "CO2e") %>%
+  select(-1) %>%
+  rename(Emission_type = `Emissions (MMTCO2E)`) %>%
+  mutate(
+    State = "MN",
+    STATE = "Minnesota"
+  )
 
 # wi epa -----
-# summary page from
-wi_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-wi-wastewater.csv")
-wi_epa_est <- as.numeric(wi_epa[12, 33]) * 10^6
-wi_epa_ch4_est <- as.numeric(wi_epa[5, 33]) * 10e6
-wi_epa_n2o_est <- as.numeric(wi_epa[6, 33]) * 10e6
-wi_state_est <- 0.6 * 10^6
-# taken from WI state inventory document (https://widnr.widen.net/view/pdf/o9xmpot5x7/AM610.pdf?t.download=true)
-# wisconsindnrWisconsinGreenhouseGas2021
-
-wi_2020 <- tidycensus::get_decennial("county",
-  state = "WI",
-  variables = "P1_001N",
-  year = 2020
+# summary page from the
+# State Inventory and Projection Tool
+# saved as a CSV
+wi_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-wi-wastewater.csv",
+  skip = 4,
+  n_max = 3
 ) %>%
-  mutate(pop_percent = value / sum(value)) %>%
-  filter(GEOID %in% cprg_county$GEOID) %>%
+  pivot_longer(cols = 3:38, names_to = "Year", values_to = "CO2e") %>%
+  select(-1) %>%
+  rename(Emission_type = `Emissions (MMTCO2E)`) %>%
   mutate(
-    epa_co2e = pop_percent * wi_epa_est,
-    state_co2e = pop_percent * wi_state_est
+    State = "WI",
+    STATE = "Wisconsin"
   )
 
-mn_2020 <- tidycensus::get_decennial("county",
-  state = "MN",
-  variables = "P1_001N",
-  year = 2020
-) %>%
-  mutate(pop_percent = value / sum(value)) %>%
-  filter(GEOID %in% cprg_county$GEOID) %>%
+# bind files and convert CO2e from MMTCO2e to metric tonnes CO2e
+wastewater_epa <- bind_rows(mn_epa, wi_epa) %>%
+  filter(!CO2e == "-") %>%
+  mutate(CO2e = as.numeric(CO2e) * 10^6)
+
+saveRDS(wastewater_epa, "_waste/data-raw/wastewater/epa_state_wastewater_by_year.RDS")
+
+cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
+cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
+
+### using county population percentages, apportion state CO2e estimates to each county
+wi_2021 <- cprg_county_proportions %>%
+  filter(
+    STATE == "Wisconsin",
+    year == "2021"
+  ) %>%
   mutate(
-    epa_co2e = pop_percent * mn_epa_est,
-    state_co2e = pop_percent * mn_state_est
+    epa_co2e = county_proportion_of_state_pop *
+      as.numeric(wastewater_epa %>%
+        filter(Year == 2021 & State == "WI") %>%
+        summarize(value = sum(CO2e))) ### combine CH4 and N2O emissions
   )
 
-ww_epa <- rows_append(
-  wi_2020 %>% dplyr::select(GEOID, NAME, epa_co2e, state_co2e),
-  mn_2020 %>% dplyr::select(GEOID, NAME, epa_co2e, state_co2e)
+### using county population percentages, apportion state CO2e estimates to each county
+mn_2021 <- cprg_county_proportions %>%
+  filter(
+    STATE == "Minnesota",
+    year == "2021"
+  ) %>%
+  mutate(
+    epa_co2e = county_proportion_of_state_pop *
+      as.numeric(wastewater_epa %>%
+        filter(Year == 2021 & State == "MN") %>%
+        summarize(value = sum(CO2e))) ### combine CH4 and N2O emissions
+  )
+
+# bind WI and MN
+ww_epa_2021 <- rows_append(
+  wi_2021 %>% dplyr::select(GEOID, NAME, epa_co2e),
+  mn_2021 %>% dplyr::select(GEOID, NAME, epa_co2e)
 )
 
-saveRDS(ww_epa, "_waste/data-raw/wastewater/epa_wastewater.RDS")
+# and save
+saveRDS(ww_epa_2021, "_waste/data/epa_county_wastewater.RDS")
 
-# compare MN numbers to met council estimates
+wastewater_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "GEOID ", class(ww_epa_2021$GEOID), "County ID",
+    "NAME", class(ww_epa_2021$NAME), "Name of county",
+    "epa_co2e", class(ww_epa_2021$epa_co2e), "Metric tons of CO2 equivalency generated from municipal wastewater treatment"
+  )
 
-metc_wastewater <- readRDS("_waste/data-raw/wastewater/metc_wastewater.RDS")
-
-
-cty_wastewater <- metc_wastewater %>%
-  group_by(year, COUNTY_NAM, class) %>%
-  summarize(co2e = sum(emissions_metric_tons_co2e))
-
-county_ww_bio_2020 <- metc_wastewater %>%
-  filter(year == 2020 & class == "biogenic") %>%
-  group_by(COUNTY_NAM) %>%
-  summarize(co2e = sum(emissions_metric_tons_co2e))
-
-comp_2020 <- rows_append(
-  cty_wastewater %>%
-    filter(year == 2020) %>%
-    ungroup() %>%
-    select(-year),
-  mn_2020 %>%
-    mutate(COUNTY_NAM = gsub(" County, Minnesota", "", NAME)) %>%
-    select(COUNTY_NAM, epa_co2e, state_co2e) %>%
-    pivot_longer(!COUNTY_NAM, names_to = "class", values_to = "co2e")
-)
-
-ggplot(
-  comp_2020 %>% filter(!COUNTY_NAM %in% c("Chisago", "Sherburne")),
-  aes(x = COUNTY_NAM, y = co2e, fill = class)
-) +
-  geom_bar(stat = "identity", position = position_dodge()) +
-  scale_fill_brewer(palette = "Paired")
+saveRDS(wastewater_meta, "_waste/data/epa_county_wastewater_meta.RDS")

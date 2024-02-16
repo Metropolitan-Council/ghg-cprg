@@ -36,14 +36,13 @@ If you are writing a data source report, use [data_source_template.qmd](data_sou
 
 ## Building the Quarto book/site
 
-Open this project in RStudio. Navigate to your terminal and run the following commands
+Open this project in RStudio. Open [R/render_for_publication.R](R/render_for_publication.R) and run the last two lines, previewed below.
 
-```sh
-quarto render --cache-refresh --to html
-quarto preview
+```r
+rstudioapi::terminalExecute("quarto render --cache-refresh --to html")
+rstudioapi::terminalExecute("quarto preview")
 ```
 
-To run additional cleaning steps, run [R/render_for_publication.R](R/render_for_publication.R).
 
 ### File structure
 
@@ -55,6 +54,35 @@ This is a Quarto book project. Top level Quarto files include
 #> ├── metcouncil-cprg-ghg    # references auto-imported from Zotero
 #> ├── style/                 # Quarto template, CSS styling, font files
 #> ├── assets/                # chapter numbering, captions, and filtering helpers
+```
+
+All scripts in `R/` are ready to run at will. 
+```
+#> R/
+#> ├── _export_plotly.R
+#> ├── _leaflet_helpers.R
+#> ├── _load_pkgs.R
+#> ├── _quarto_helpers.R
+#> ├── cprg_colors.R
+#> ├── global_warming_potential.R
+#> ├── plot_county_emissions.R
+#> ├── remove_caches.R
+#> ├── ...
+```
+
+Common datasets, like shapefiles, population, county population proportions, GHG emission factors, and other data, live in _meta/data/. Each usually as associated metadata, noted with `[dataset_name]_meta.RDS`
+
+```
+#>_meta/data/
+#> ├── cprg_county.RDS
+#> ├── cprg_county_emissions.CSV
+#> ├── cprg_county_emissions.RDS
+#> ├── cprg_county_emissions_meta.RDS
+#> ├── cprg_county_meta.RDS
+#> ├── cprg_county_proportions.RDS
+#> ├── cprg_county_proportions_meta.RDS
+#> ├── cprg_population.RDS
+#> ├── ...
 ```
 
 Documents are organized by sector and document purpose. 
@@ -72,21 +100,22 @@ Documents are organized by sector and document purpose.
 
 Several prefixes are used to mark document purpose
 
-- `qc_{sector}` indicates a quality control report
-- `pa_{sector}` indicates priority actions for a given sector.
-- `data_{sector}` indicates a combined data report for given sector
-- `data_{source}` indicates an individual data source report. These are added as child documents in the `data_{sector}` document.
+- `qc_{sector}.qmd` indicates a quality control report
+- `pa_{sector}.qmd` indicates priority actions for a given sector.
+- `data_{sector}.qmd` indicates a combined data report for given sector
+- `data_{source}.qmd` indicates an individual data source report. These are added as child documents in the `data_{sector}` document.
 
+`data-raw/` is present in each sector and is where you should put any processing/calculation code for items in `data/`. Generally, only .RDS data should be saved in `data/`
 
 When rendered, the output Quarto book/website lives in `docs/`. 
 
 ### Citation management
 
-Create a [Zotero](https://www.zotero.org/) account and install Zotero on your machine. Once your account is created, message/email Liz and ask to be added to our [group library](https://www.zotero.org/groups/5318360/metcouncil-cprg-ghg/library). In Zotero on your machine, ensure you have installed the BetterBibTex and changed your settings to omit the "file" field (Settings > Better BibTex > Export > Fields > Fields to omit).
+Create a [Zotero](https://www.zotero.org/) account and install Zotero on your machine. Once your account is created, message/email Liz and ask to be added to our [group library](https://www.zotero.org/groups/5318360/metcouncil-cprg-ghg/library). In Zotero on your machine, ensure you have installed the [BetterBibTex](https://retorque.re/zotero-better-bibtex/installation/index.html) extension. Then, change your settings to omit the "file" field (Settings > Better BibTex > Export > Fields > Fields to omit) on export; otherwise, it will include the file path where the item lives on your machine. 
 
 Alternatively, you can use the [Zotero Web API](https://quarto.org/docs/visual-editor/technical.html#zotero-web-api). 
 
-To add a citation to the document you are writing, go to "Addins" and select "Insert a citation". Enable the Zotero connection. Ensure the citation is added to our Zotero group library. Alternatively, you can set up automatic exports from Zotero to the root directory of this project.  
+To add a citation to the document you are writing in RStudio, go to "Addins" and select "Insert a citation". Enable the Zotero connection. Ensure the citation is added to our Zotero group library. Alternatively, you can set up automatic exports from Zotero to the root directory of this project. Ask Liz how to set this up.
 
 ## Data and project files
 

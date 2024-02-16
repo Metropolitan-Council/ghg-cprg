@@ -106,5 +106,5 @@ WIcounty_level_gas_emissions <- processed_wi_gasUtil_activityData %>%
   )
 
 
-write_rds(processed_wi_gasUtil_activityData, here("_energy", "data", "wisconsin_gasUtils_ActivityAndEmissions"))
+write_rds(processed_wi_gasUtil_activityData, here("_energy", "data", "wisconsin_gasUtils_ActivityAndEmissions.RDS"))
 write_rds(WIcounty_level_gas_emissions, here("_energy", "data", "wisconsin_county_GasEmissions.RDS"))
