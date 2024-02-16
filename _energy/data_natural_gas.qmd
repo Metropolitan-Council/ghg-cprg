@@ -1,4 +1,5 @@
-# Natural gas 
+# Natural gas
+
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -21,8 +22,6 @@ hookaddcap()
 ```
 
 ## Utility Activity Data
-
-In this section, we will describe the acquisition of utility activity data. Analysis process and results are described in the following chapter.
 
 ### Minnesota
 

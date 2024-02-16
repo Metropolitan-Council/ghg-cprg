@@ -22,45 +22,41 @@ hookaddcap()
 
 ### Introduction
 
-Greenhouse gas emissions from Minnesota homes and apartment buildings have increased 14% over the past 15 years, and natural gas use is the largest source of these emissions [@mpcaClimateChangeTrends2023].
+Greenhouse gas emissions from Minnesota homes and apartment buildings have increased 14% over the past 15 years, and natural gas use is the largest source of these emissions [@mpcaClimateChangeTrends2023]. Many local and state governments are evaluating policies to reduce natural gas usage, such as building electrification (when paired with decarbonization of the electric grid) and banning natural gas hookups in new construction. ...Note about high gas use in MN/WI relative to rest of country due to heating needs during winter?
 
 ### Methods
 
-The general workflow for quantifying natural gas emissions is to identify all of the natural gas utilities that operate within our study area, collect/aggregate reporting they provide to the states of Minnesota and Wisconsin about the amount of energy delivered to all their customers (with reference to federal reporting sources where state-level reporting gaps exist), and apply EPA-provided emissions factor to the reported activity/energy deliveries to calculate emissions. Methodologies for allocating utility activity reports to counties varies across MN and WI, and between electricity and natural gas; please see.... for more details.
+The general workflow for quantifying natural gas emissions is to identify all of the natural gas utilities that operate within our study area, collect/aggregate reporting they provide to the states of Minnesota and Wisconsin about the amount of energy delivered to all their customers (with reference to federal reporting sources where state-level reporting gaps exist), and apply EPA-provided emissions factor to the reported activity/energy deliveries to calculate emissions. Methodologies for allocating utility activity reports to counties varies across MN and WI and are further described in the following section. All inputs we use in the construction of our natural gas emissions data set are of the highest quality rank, as they are either direct government-created data (e.g., emissions factors) or data reported to state/federal authorities (e.g., regulatory filings)
 
-*Note: Our inventory takes a "demand-side" approach to emissions quantification and seeks to aggregate all confirmed/reported delivery of energy to ALL customers served by utilities. This means that energy loss/use experienced by utilities in the process of energy generation, transmission, and delivery and resale to utilities operating outside of our study area are not reflected in the numbers attributed to counties...*
+Total regional emissions (Emissions~r~) represents the sum of all recorded energy deliveries by utility *i* within county *j*, where *i* refers to each of the electric utilities operating across our region, and *j* refers to the eleven counties included in this inventory. Our regional total therefore represents an aggregation of electricity deliveries for all distinct utility-county records (i.e., a row for every utility's operation within each county they operate in) within our 11 counties. Our inventory takes a "demand-side" approach to emissions quantification and seeks to aggregate all confirmed/reported delivery of energy to ALL customers served by utilities (meaning all customer types, inclusive of residential, commercial, industrial, and government accounts).
 
-$$Emissions = \Sigma (mcf \times {Emissions Factor}) $$
+$$Emissions_r = \Sigma (mcfDelivered_iCounty_j \times {Emissions Factor}) $$
 
 #### Identifying utilities in scope
 
-To identify the natural gas utilities that operate within our 11-county study area, we first referred to maps/geospatial datasets capturing utility service areas in Minnesota and Wisconsin. Where possible, state-maintained data sources were used, with federal sources referenced where state sources couldn't be accessed. To identify Wisconsin gas utilities, we downloaded the Natural Gas Service Territory map maintained by the Wisconsin Public Utilities Commission [@publicservicecommissionofwisconsinPSCInteractiveService2021]. Since Minnesota does not publish a state-maintained data set of natural gas service areas [@PublicUtilitiesInfrastructure], we used the Department of Homeland Security's Natural Gas Service Territories map from its Homeland Infrastructure Foundation-Level Data (HIFLD) portal is used to identify in-scope Minnesota gas utilities [@departmentofhomelandsecurityNaturalGasService2017].
+To identify the natural gas utilities that operate within our 11-county study area, we first referred to maps/geospatial datasets capturing utility service areas in Minnesota and Wisconsin. Where possible, state-maintained data sources were used, with federal sources referenced where state sources couldn't be accessed. To identify Wisconsin gas utilities, we downloaded the Natural Gas Service Territory map maintained by the Wisconsin Public Utilities Commission [@publicservicecommissionofwisconsinPSCInteractiveService2021]. Since Minnesota does not publish a state-maintained data set of natural gas service areas [@PublicUtilitiesInfrastructure], we used the Department of Homeland Security's Natural Gas Service Territories map from its Homeland Infrastructure Foundation-Level Data (HIFLD) portal to identify in-scope Minnesota gas utilities [@departmentofhomelandsecurityNaturalGasService2017].
 
-For each state, we generated two .RDS files, entitled *stateAbbreviation*\_natGas_inScope_utilityCountyPairs.RDS (listing out the unique county-utility records for which activity data is required to complete our inventory) and distinct_natGas_util\_*stateAbbreviation*.RDS (listing out the distinct utilities for whom information retrieval is necessary, to simplify data collection).
+#### Collecting and aggregating activity data from utilities
 
-*Insert table of unique utility-county pairs with state added, create a meta?*
-
-#### Collecting activity data from utilities
-
-Using distinct_natGas_util\_*stateAbbreviation*.RDS as a source for which utilities operate within our study area within each state,
+After identifying which utilities operate within our study area within each state, we collected the reporting submitted by these utilities to the relevant state and federal authorities, and followed a distinct process to accumulate data in each state and allocate utility activity/energy deliveries to specific counties therein.
 
 ##### Minnesota
 
-All natural gas utilities authorized to do business in Minnesota are required to file an annual data report pursuant to MN Rules Chapter 7610. The Minnesota Public Utilities Commission makes these reports searchable through an [eFiling Site](https://www.edockets.state.mn.us/EFiling/edockets/searchDocuments.do?method=eDocketsResult&docketYear=22&docketNumber=19) [@minnesotadepartmentofcommerceAnnualReportingForms2022]. For each utility identified in distinct_natGas_util_MN.RDS, we downloaded the relevant 2021 annual report from this site.
+All natural gas utilities authorized to do business in Minnesota are required to file an annual data report pursuant to MN Rules Chapter 7610. The Minnesota Public Utilities Commission makes these reports searchable through an [eFiling Site](https://www.edockets.state.mn.us/EFiling/edockets/searchDocuments.do?method=eDocketsResult&docketYear=22&docketNumber=19) [@minnesotadepartmentofcommerceAnnualReportingForms2022]. For each utility identified in distinct_natGas_util_MN.RDS (a data product of minnesota_natGasUtilities.R, a script that looks for intersections between electric utility service areas and our Minnesota counties), we downloaded the relevant annual reports from this site in their Excel workbook form.
 
-We wrote code to extract the county-level data reported in report section "ANNUAL GAS DELIVERED TO ULTIMATE CONSUMERS BY COUNTY IN 2021" from all reports compiled into a folder directory and create a table with three columns county, utility, and mcf_delivered (thousand cubic feet of natural gas delivered). By compiling this data for all utilities found to operate within our study area, aggregating utility activity data (and thus, quantifying estimated emissions) to the county level becomes possible.
+We wrote code to extract the county-level data reported in report section "ANNUAL GAS DELIVERED TO ULTIMATE CONSUMERS BY COUNTY IN 2021" from these reports (which were compiled into a distinct folder directory for file processing), and created a table with three columns county, utility, and mcf_delivered (thousand cubic feet of natural gas delivered). By compiling this data for all utilities found to operate within our study area, aggregating all natural gas deliveries at the county level becomes possible.
 
 ##### Wisconsin
 
-sss
+All municipal and investor-owned natural gas utilities authorized to do business in Wisconsin are required to file an annual report with financial and operational information pursuant to Wis. Stat. § 196.07. The Public Services Commission of Wisconsin makes these reports searchable through an [E-Services Portal](https://apps.psc.wi.gov/ARS/annualReports/default.aspx), and downloadable as either PDFs or Excel workbooks, with options to export only specific portions of the reports as spreadsheets [@publicservicecommissionofwisconsin2022]. For each utility identified in distinct_natGas_util_WI.RDS (a data product of wisconsin_natGasUtilities.R, a script that looks for intersections between electric utility service areas and our Wisconsin counties), we downloaded the relevant 2021 annual reports from this site.
+
+Because of the small amount of data, we hard-coded observed information into data frames rather than extracting data through a web scraper or document analyzer (see *processed_wi_electricUtil_activityData.R* on the GitHub repository). All four
 
 #### Emissions factors
 
-To transform natural gas energy deliveries (recorded in mcf -- ) into emissions in metric tons CO~2~e, we referenced 2021 EPA GHG Emissions Factor Hub figures [@usepaEmissionsFactorsGreenhouse2021]:
+To transform natural gas energy deliveries into emissions in metric tons CO~2~e, we referenced 2021 EPA GHG Emissions Factor Hub figures [@usepaEmissionsFactorsGreenhouse2021]:
 
-Table of emissions factors converted into CO~2~e??
-
-EPA originally reported these factors as kg (for CO~2~) and g (for CH~4~ and N~2~O) per standard cubic foot (scf), and we transformed these into units of lbs. per thousand cubic feet (commonly written as *mcf*) for our analysis, to 1) align with providing results in metric tons CO~2~e, and 2) to match the convention of Minnesota utilities, who reported their energy delivered in mcf. Wisconsin utilities reported their energy delivered in therms.
+EPA originally reported these factors as kg (for CO~2~) and g (for CH~4~ and N~2~O) per standard cubic foot (scf), and we transformed these into units of lbs. per thousand cubic feet (commonly written as *mcf*) for our analysis, to 1) align with providing results in metric tons CO~2~e, and 2) to match the convention of Minnesota utilities, who reported their energy delivered in mcf. Wisconsin utilities reported their energy delivered in therms; we converted these to mcf during aggregation as well.
 
 ### Results
 
