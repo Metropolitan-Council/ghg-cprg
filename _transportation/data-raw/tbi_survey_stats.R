@@ -41,4 +41,3 @@ tbi_home_county <- tbi21$household %>%
 
 
 saveRDS(tbi_home_county, "_transportation/data-raw/tbi/tbi_home_county.RDS")
-saveRDS(hh21, "_transportation/data-raw/tbi/hh21.RDS")
