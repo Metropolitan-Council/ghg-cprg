@@ -193,3 +193,9 @@ emissions_all_meta <- tibble::tribble(
 saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
 write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)
+
+source("R/fetch_path.R")
+
+if(fs::dir_exists(fetch_path())){
+  write.csv(emissions_all, paste0(fetch_path(), "/cprg_county_emissions.CSV"))
+}
