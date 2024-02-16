@@ -196,6 +196,6 @@ write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FAL
 
 source("R/fetch_path.R")
 
-if(fs::dir_exists(fetch_path())){
+if (fs::dir_exists(fetch_path())) {
   write.csv(emissions_all, paste0(fetch_path(), "/cprg_county_emissions.CSV"))
 }
