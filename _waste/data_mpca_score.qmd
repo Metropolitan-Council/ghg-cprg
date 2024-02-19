@@ -15,7 +15,7 @@ hookaddcap()
 
 The Minnesota Pollution Control Agency collects an annual inventory, [SCORE](https://public.tableau.com/app/profile/mpca.data.services/viz/SCOREOverview/1991-2021SCORE), of solid waste, recycling and organics as reported by counties across the state. For this project, we used MPCA data for the nine Minnesota counties for the year 2021.
 
-The SCORE data is submitted annually by solid waste staff in each county of Minnesota, as a part of Minnesota's SCORE laws to support waste reduction and calculate the cost of managing waste and recycling. The data provided includes the total short tons of waste generated in each county within each "Method" category, described below.
+The SCORE data is a high-quality government dataset submitted annually by solid waste staff in each county of Minnesota, as a part of Minnesota's SCORE laws to support waste reduction and calculate the cost of managing waste and recycling. The data provided includes the total short tons of waste generated in each county within each "Method" category, described below.
 
 [state-level data, highest quality]
 
@@ -164,9 +164,10 @@ mpca_score %>%
 
 ### Data characteristics
 
-- Were there any missing data? How did you handle missing data?
-Missing WI data
-Removed MSW Compost as empty category
+This data includes MSW Compost as a category, but since all values for this category in the area and year needed were 0, we excluded it from our analysis.
+
+Uncertainty was not included in the dataset given, nor does the EPA offer guidance for estimating uncertainty of solid waste emissions factors.
+
 - Plots, tables, and description of data distribution
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
@@ -293,9 +294,17 @@ gt::gt(waste_management_comp,
 
 ### Limitations
 
-### Comparison with similar datasets
+- As mentioned above, EPA emissions factors do not account for emissions saved through Waste to Energy conversions.
+- There is wide variation between emissions factors for waste of various kinds within the same category. Because we do not have a detailed breakdown of the makeup of every category, we have assumed each one is adequately represented by the "Mixed MSW", "Mixed Organics", and "Mixed Recyclables" factors respectively.
 
-### Data Dictionary
+Subject matter expert reviewer: ___
+
+<!-- ### Comparison with similar datasets -->
+
+<!-- Many other datasets estimating solid waste emissions allocate emissions by landfill or calculate emissions for a county using all emissions from within that county's area. Since we are instead calculating emissions from waste generated within each county, -->
+
+<!-- ### Data Dictionary -->
+<!-- Table with detailed description of columns and definitions for each data table. -->
 
 
 ```{r echo=FALSE, eval=FALSE}
