@@ -33,8 +33,8 @@ tbi_home_county %>%
     "Household county" = cprg_hh_county,
     "Estimated number of households" = est_n,
     "Estimated number of households standard error" = est_n_se,
-    "Estimated percentage of households" = est_pct,
-    "Estimated percentage of all households standard error" = est_pct_se,
+    "Estimated percentage of households in county" = est_pct,
+    "Estimated percentage of all households in county standard error" = est_pct_se,
     "Sample size" = n
   ) %>%
   gt::gt() %>%
