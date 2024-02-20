@@ -78,7 +78,7 @@ plot_ly(
 
 ### Vehicle distribution by weight {#sec-vehicle-weight-dist}
 
-To calibrate the generalized StreetLight Index to get commercial vehicle counts, we created a set of spatial lines (roads) to calibrate StreetLight's metrics. For each calibration road, we found the proportion of passenger, medium-, and heavy-duty vehicles in the most recent available year, up to 2021. 
+To calibrate the generalized StreetLight Index to get commercial vehicle counts, we created a set of spatial lines (roads) to calibrate StreetLight's metrics. For each calibration road, we found the proportion of passenger, medium-, and heavy-duty vehicles in the most recently available year, up to 2021. 
 
 State DOTs operate vehicle classification stations, which provide both the volume of traffic on a given road segment and, for some locations, the breakdown of volume by vehicle type. We obtained this breakdown using data from MnDOT [@mndotYearlyVolumeTrends2021] and WisDOT [@wisdotWisconsinVehicleClassification2020] reporting websites. 
 
@@ -92,6 +92,9 @@ Data were processed in R scripts: [wisdot_stations.R](data-raw/wisdot_stations.R
 #| fig-cap: "StreetLight calibration locations and values"
 #| out-width: "95%"
 #| out-height: "500px"
+
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+
 bound_box <- st_bbox(commercial_lines) %>%
   unlist()
 
