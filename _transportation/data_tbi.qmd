@@ -2,22 +2,67 @@
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
+veh21 <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/veh21.RDS")) %>%
+  mutate(
+    fuel_orig = forcats::fct_rev(fuel_orig),
+    fuel = forcats::fct_rev(fuel)
+  )
+trip21 <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/trip21.RDS"))
+regional_trip_length_avg <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_regional_trip_length_avg.RDS"))
+tbi_od_ordered_trip_length <- readRDS(file.path(here(), "_transportation/data-raw/tbi/tbi_od_ordered_trip_length.RDS"))
+tbi_vehicle_fuel_age <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS"))
+tbi_home_county <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_home_county.RDS"))
+
+
 hookaddcap()
 ```
 
 
-The Metropolitan Council Travel Behavior Inventory (TBI) is a bi-annual household survey around 7,500 families in the 7-county Twin Cities metro and three neighboring Wisconsin counties. Information on people, households, trips, and vehicles are collected. 
+The Metropolitan Council Travel Behavior Inventory (TBI) is a bi-annual household survey around 7,500 families in the 7-county Twin Cities metro and three neighboring Wisconsin counties. Information on people, households, trips, and vehicles are collected [@metcTravelBehaviorInventory2021]. This survey was active in the field from May 22, 2021 to February 5, 2023.  
 
-We used 2021 TBI data to determine the regional average vehicle age and distribution of diesel and gasoline passenger vehicles.
+Data were imported directly from a Council-maintained [public GitHub repository](https://github.com/Metropolitan-Council/metc.tbi.helper). The calculations below were verified from other Council analysis projects using the same dataset. Exactly 7,745 households with homes in any of the 11 CPRG counties were included in this subset of the TBI dataset.
 
-Vehicles were classified into broad fuel categories - diesel and gas + all other fuels (including gasoline, electric, flex-fuel, hybrid, and plug-in hybrid) to best match the average miles per gallon table specifications in the EPA Local Greenhouse Gas Inventory Tool. The resulting value is on par with recent statistics from the Bureau of Transportation Statistics (BTS), which calculates the average passenger vehicle age in 2021 to be 12.1 years [@btsAverageAgeAutomobiles2023]. 
+TBI survey statistics were processed in [tbi_survey_stats.R](data-raw/tbi_survey_stats.R).
 
-```{r tbl-vehicle-fuel-age}
-#| tbl-cap: "Median vehicle age and proportion of all regional vehicles by fuel type"
+```{r tbl-tbi-hh-county-dist}
+#| tbl-cap: "2021 TBI household survey geographic distribution"
 #| out-width: "95%"
 
-tbi_vehicle_fuel_age <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS"))
+tbi_home_county %>%
+  select(
+    "Household county" = cprg_hh_county,
+    "Estimated number of households" = est_n,
+    "Estimated number of households standard error" = est_n_se,
+    "Estimated percentage of households in county" = est_pct,
+    "Estimated percentage of all households in county standard error" = est_pct_se,
+    "Sample size" = n
+  ) %>%
+  gt::gt() %>%
+  gt::fmt_number(2:3, decimals = 0) %>%
+  gt::fmt_percent(4:5) %>%
+  gt::fmt_number(6, decimals = 0) %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
 
+
+### Regional fleet characteristics {#sec-regional-fleet}
+
+We used 2021 TBI data to determine the regional average vehicle age and distribution of diesel and gasoline passenger vehicles of households in the CPRG study area. 
+
+Vehicles were classified into broad fuel categories - diesel and gas + all other fuels (including gasoline, electric, flex-fuel, hybrid, and plug-in hybrid) to best match the average miles per gallon table specifications in the EPA Local Greenhouse Gas Inventory Tool (LGGIT). The resulting value is on par with recent statistics from the Bureau of Transportation Statistics (BTS), which calculates the average passenger vehicle age in 2021 to be 12.1 years [@btsAverageAgeAutomobiles2023]. 
+
+TBI data were cleaned to only include vehicles with complete data and model year 1980 or later. Vehicles with a fuel type "Other (e.g., natural gas, bio-diesel)" were removed due to low sample size. 
+
+Regional fleet statistics were processed in [tbi_vehicle_stats.R](data-raw/tbi_vehicle_stats.R). 
+
+```{r tbl-vehicle-fuel-age}
+#| tbl-cap: "Median vehicle age and proportion of all regional vehicles by grouped fuel type"
+#| out-width: "95%"
 tbi_vehicle_fuel_age %>%
   select(
     "Fuel type" = fuel,
@@ -41,38 +86,167 @@ tbi_vehicle_fuel_age %>%
   gt::as_raw_html()
 ```
 
-Introduction text 
-Data source description, type
+```{r fig-regional-fuel-veh-age}
+#| fig-cap: "Regional vehicle fleet model year by fuel type"
+#| out-width: "95%"
+#| out-height: "500px"
 
-- Quality rank (See @tbl-quality-rank)
-- How, when, and why was the data collected?
-- If this is a modeled dataset, what is the sample?
-- What is the raw unit of measurement? 
-- How was this data accessed? Include any relevant links/citations, code, or downloads.
-- What data cleaning or wrangling was completed? How did you test these processes and outputs?
-- What is the geographic and temporal scope? Did you complete any aggregation?
-- What version is the data? Were there other versions available? If so, why did you choose this version?
-- What assumptions are made when we use this dataset?
-- Which subject matter expert (SME) reviewed this data?
-- Describe testing used to verify data
-
-Be sure to add a citation of this dataset to the Zotero shared library.
-
-### Data characteristics
-
-- Were there any missing data? How did you handle missing data?
-- Plots, tables, and description of data distribution
-- Variance, Z-Score, quantiles
-- Facet views by categorical variables
+fuel_dist_pl <- plot_ly(
+  type = "box",
+  data = veh21,
+  x = ~year,
+  y = ~fuel_orig,
+  name = "Original fuel types"
+) %>%
+  plotly_layout()
 
 
-### Limitations
+fuel_grp <- plot_ly(
+  type = "box",
+  data = veh21,
+  x = ~year,
+  y = ~fuel,
+  name = "Grouped fuels"
+) %>%
+  plotly_layout()
 
-### Comparison with similar datasets
+subplot(
+  fuel_grp,
+  fuel_dist_pl,
+  shareX = TRUE,
+  heights = c(0.2, 0.8),
+  nrows = 2
+) %>%
+  plotly_layout(
+    main_title = "Regional fleet vehicle year by fuel type",
+    subtitle = "2021 Travel Behavior Inventory",
+    x_title = "Vehicle model year",
+    y_title = ""
+  ) %>%
+  layout(
+    legend = list(orientation = "h")
+  )
+```
 
-### Data dictionary
+### Average trip distance between counties
 
-Table with detailed description of columns and definitions for each data table.
+The average trip distance for the entire region is `r round(regional_trip_length_avg$mean_trip_dist, 2)` miles (standard error `r round(regional_trip_length_avg$mean_trip_dist_se, 2)`), based on a sample of `r scales::comma(regional_trip_length_avg$n)`  trips.   
+
+Trips with distance over 720 miles (the equivalent of 12 hours of driving at 60 miles per hour) were removed. Only Minnesota CPRG counties were available for analysis.
+
+We used the TBI to validate StreetLight's average trip length. See @sec-trip-length-validation for more detail. 
+
+TBI trip distances were processed in [tbi_trip_length.R](data-raw/tbi_trip_length.R).  
+
+```{r tbl-reg-avg-trip-length}
+#| tbl-cap: "Regional mean trip distance. 2021 TBI."
+#| out-width: "95%"
+
+regional_trip_length_avg %>%
+  select(
+    "Mean trip distance (miles)" = mean_trip_dist,
+    "Mean trip distance standard error" = mean_trip_dist_se,
+    "Estimated number of trips" = estimate_n,
+    "Estimated number of trips standard error" = estimate_n_se,
+    "Distance variance" = var,
+    "Sample size" = n
+  ) %>%
+  gt() %>%
+  fmt_number(c(3, 4, 5, 6),
+    decimals = 0
+  ) %>%
+  fmt_number(1:2,
+    decimals = 2
+  ) %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
+
+Origin-destination pairs with fewer than 30 observed trips were removed. 
+
+
+```{r fig-tbi-trip-distance-matrix}
+#| fig-cap: "TBI origin-destination trip length matrix"
+#| out-width: "95%"
+
+plot_ly(
+  data = tbi_od_ordered_trip_length,
+  source = opts_current$get()$label,
+  y = ~trip_o_county,
+  x = ~trip_d_county,
+  z = ~ round(mean_trip_dist, 1),
+  type = "heatmap",
+  colors = "PuBuGn",
+  colorbar = list(
+    len = 1,
+    outlinecolor = "white",
+    title = list(
+      text = "Average trip<br>length (miles)",
+      font = list(
+        family = "Arial Narrow",
+        size = 16
+      )
+    ),
+    tickfont = list(
+      family = "Arial Narrow",
+      size = 14
+    )
+  ),
+  hovertemplate = paste0(
+    "Origin county: %{y}<br>",
+    "Destination county: %{x}<br>",
+    "Mean trip length: %{z} miles",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "TBI county origin-destination trip length",
+    subtitle = "Origin-destination pairs with less than 30 trips removed",
+    x_title = "Destination county",
+    y_title = "Origin county",
+    legend_title = "Average trip length"
+  )
+```
+
+
+:::{.scrolling}
+
+```{r tbl-od-trip-length}
+#| tbl-cap: "Mean trip distance by origin-destination county"
+#| out-width: "95%"
+tbi_od_ordered_trip_length %>%
+  arrange(-estimate_n) %>%
+  select(
+    "Origin-Destination pair" = origin_dest_county_pair,
+    "Sample size" = n,
+    "Mean trip distance (miles)" = mean_trip_dist,
+    "Mean trip distance standard error" = mean_trip_dist_se,
+    "Estimated number of trips" = estimate_n,
+    "Estimated number of trips standard error" = estimate_n_se,
+    "Distance variance" = var
+  ) %>%
+  gt() %>%
+  fmt_number(c(2, 5, 6),
+    decimals = 0
+  ) %>%
+  fmt_number(c(3:4, 7),
+    decimals = 2
+  ) %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
+
+:::
+
+Subject matter expert reviewer: ________
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
@@ -80,3 +254,4 @@ caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pa
 saveCap(paste0("cap-", caption_index))
 saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
+{{< pagebreak >}}
