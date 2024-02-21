@@ -81,7 +81,7 @@ div.csl-indent {
 
 
 </head>
-<body class="nav-sidebar docked"><section id="navigation" class="navigation standalone-navigation">
+<body class="nav-sidebar docked fullcontent"><section id="navigation" class="navigation standalone-navigation">
   	<link href="style/standalone_header_footer.css" type="text/css" rel="stylesheet">
 </section>
 
@@ -310,10 +310,14 @@ div.csl-indent {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
-  <ul class="collapse">
+  <ul>
   <li><a href="#sec-factors" id="toc-sec-factors" class="nav-link active" data-scroll-target="#sec-factors"><span class="header-section-number">A.1</span> Emissions factors</a></li>
   <li><a href="#sec-gwp" id="toc-sec-gwp" class="nav-link" data-scroll-target="#sec-gwp"><span class="header-section-number">A.2</span> Global Warming Potential (GWP)</a></li>
-  <li><a href="#geographic-data" id="toc-geographic-data" class="nav-link" data-scroll-target="#geographic-data"><span class="header-section-number">A.3</span> Geographic data</a></li>
+  <li><a href="#geographic-data" id="toc-geographic-data" class="nav-link" data-scroll-target="#geographic-data"><span class="header-section-number">A.3</span> Geographic data</a>
+  <ul class="collapse">
+  <li><a href="#counties" id="toc-counties" class="nav-link" data-scroll-target="#counties"><span class="header-section-number">A.3.1</span> Counties</a></li>
+  <li><a href="#cities" id="toc-cities" class="nav-link" data-scroll-target="#cities"><span class="header-section-number">A.3.2</span> Cities</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -340,27 +344,49 @@ div.csl-indent {
 <section id="sec-factors" class="level2" data-number="A.1">
 <h2 data-number="A.1" class="anchored" data-anchor-id="sec-factors"><span class="header-section-number">A.1</span> Emissions factors</h2>
 <p>Note for solid waste, the global warming potentials used to calculate CO<sub>2</sub>e are sourced AR4, not AR5, like the rest of our inventory. However, when we dug into documentation for the EPA WARM tool <span class="citation" data-cites="usepaWARMManagementPractices2019">(<a href="../references.html#ref-usepaWARMManagementPractices2019" role="doc-biblioref">USEPA 2019</a>)</span>, we found that the differences in total CO<sub>2</sub>e emissions were negligible.</p>
+<<<<<<< HEAD
 <div class="cell">
 <div class="cell-output-display">
 <div id="tbl-egrid" class="anchored">
 
 <div id="sigsgsbwxu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#sigsgsbwxu table {
+=======
+<p>All EPA Emission Factor Hub values were pulled from an Excel workbook downloaded from the EPA website. Values were processed in <a href="data-raw/epa_ghg_factor_hub.R">epa_ghg_factor_hub.R</a>.</p>
+<div class="cell" data-hash="supplementary_data_cache/html/tbl-egrid_f5708347fd075fb69b216e3d53b76d99">
+<div class="cell-output-display">
+<div id="tbl-egrid" class="anchored">
+
+<div id="eagjcwhoeq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#eagjcwhoeq table {
+>>>>>>> main
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu thead, #sigsgsbwxu tbody, #sigsgsbwxu tfoot, #sigsgsbwxu tr, #sigsgsbwxu td, #sigsgsbwxu th {
   border-style: none;
 }
 
 #sigsgsbwxu p {
+=======
+#eagjcwhoeq thead, #eagjcwhoeq tbody, #eagjcwhoeq tfoot, #eagjcwhoeq tr, #eagjcwhoeq td, #eagjcwhoeq th {
+  border-style: none;
+}
+
+#eagjcwhoeq p {
+>>>>>>> main
   margin: 0;
   padding: 0;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_table {
+=======
+#eagjcwhoeq .gt_table {
+>>>>>>> main
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -386,12 +412,20 @@ div.csl-indent {
   border-left-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_caption {
+=======
+#eagjcwhoeq .gt_caption {
+>>>>>>> main
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_title {
+=======
+#eagjcwhoeq .gt_title {
+>>>>>>> main
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -403,7 +437,11 @@ div.csl-indent {
   border-bottom-width: 0;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_subtitle {
+=======
+#eagjcwhoeq .gt_subtitle {
+>>>>>>> main
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -415,7 +453,11 @@ div.csl-indent {
   border-top-width: 0;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_heading {
+=======
+#eagjcwhoeq .gt_heading {
+>>>>>>> main
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -427,13 +469,21 @@ div.csl-indent {
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_bottom_border {
+=======
+#eagjcwhoeq .gt_bottom_border {
+>>>>>>> main
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_col_headings {
+=======
+#eagjcwhoeq .gt_col_headings {
+>>>>>>> main
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -448,7 +498,11 @@ div.csl-indent {
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_col_heading {
+=======
+#eagjcwhoeq .gt_col_heading {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -468,7 +522,11 @@ div.csl-indent {
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_column_spanner_outer {
+=======
+#eagjcwhoeq .gt_column_spanner_outer {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -480,6 +538,7 @@ div.csl-indent {
   padding-right: 4px;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
@@ -489,6 +548,17 @@ div.csl-indent {
 }
 
 #sigsgsbwxu .gt_column_spanner {
+=======
+#eagjcwhoeq .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#eagjcwhoeq .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#eagjcwhoeq .gt_column_spanner {
+>>>>>>> main
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -500,11 +570,19 @@ div.csl-indent {
   width: 100%;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
 #sigsgsbwxu .gt_group_heading {
+=======
+#eagjcwhoeq .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#eagjcwhoeq .gt_group_heading {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -530,7 +608,11 @@ div.csl-indent {
   text-align: left;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_empty_group_heading {
+=======
+#eagjcwhoeq .gt_empty_group_heading {
+>>>>>>> main
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -545,6 +627,7 @@ div.csl-indent {
   vertical-align: middle;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_from_md > :first-child {
   margin-top: 0;
 }
@@ -554,6 +637,17 @@ div.csl-indent {
 }
 
 #sigsgsbwxu .gt_row {
+=======
+#eagjcwhoeq .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#eagjcwhoeq .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#eagjcwhoeq .gt_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -572,7 +666,11 @@ div.csl-indent {
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_stub {
+=======
+#eagjcwhoeq .gt_stub {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -585,7 +683,11 @@ div.csl-indent {
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_stub_row_group {
+=======
+#eagjcwhoeq .gt_stub_row_group {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -599,6 +701,7 @@ div.csl-indent {
   vertical-align: top;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_row_group_first td {
   border-top-width: 2px;
 }
@@ -608,6 +711,17 @@ div.csl-indent {
 }
 
 #sigsgsbwxu .gt_summary_row {
+=======
+#eagjcwhoeq .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#eagjcwhoeq .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#eagjcwhoeq .gt_summary_row {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -617,16 +731,28 @@ div.csl-indent {
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_first_summary_row {
+=======
+#eagjcwhoeq .gt_first_summary_row {
+>>>>>>> main
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
 #sigsgsbwxu .gt_last_summary_row {
+=======
+#eagjcwhoeq .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#eagjcwhoeq .gt_last_summary_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -636,7 +762,11 @@ div.csl-indent {
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_grand_summary_row {
+=======
+#eagjcwhoeq .gt_grand_summary_row {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -646,7 +776,11 @@ div.csl-indent {
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_first_grand_summary_row {
+=======
+#eagjcwhoeq .gt_first_grand_summary_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -656,7 +790,11 @@ div.csl-indent {
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_last_grand_summary_row_top {
+=======
+#eagjcwhoeq .gt_last_grand_summary_row_top {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -666,11 +804,19 @@ div.csl-indent {
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
 #sigsgsbwxu .gt_table_body {
+=======
+#eagjcwhoeq .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#eagjcwhoeq .gt_table_body {
+>>>>>>> main
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -679,7 +825,11 @@ div.csl-indent {
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_footnotes {
+=======
+#eagjcwhoeq .gt_footnotes {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -693,7 +843,11 @@ div.csl-indent {
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_footnote {
+=======
+#eagjcwhoeq .gt_footnote {
+>>>>>>> main
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -702,7 +856,11 @@ div.csl-indent {
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_sourcenotes {
+=======
+#eagjcwhoeq .gt_sourcenotes {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -716,7 +874,11 @@ div.csl-indent {
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_sourcenote {
+=======
+#eagjcwhoeq .gt_sourcenote {
+>>>>>>> main
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -724,6 +886,7 @@ div.csl-indent {
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_left {
   text-align: left;
 }
@@ -733,10 +896,22 @@ div.csl-indent {
 }
 
 #sigsgsbwxu .gt_right {
+=======
+#eagjcwhoeq .gt_left {
+  text-align: left;
+}
+
+#eagjcwhoeq .gt_center {
+  text-align: center;
+}
+
+#eagjcwhoeq .gt_right {
+>>>>>>> main
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_font_normal {
   font-weight: normal;
 }
@@ -754,16 +929,40 @@ div.csl-indent {
 }
 
 #sigsgsbwxu .gt_footnote_marks {
+=======
+#eagjcwhoeq .gt_font_normal {
+  font-weight: normal;
+}
+
+#eagjcwhoeq .gt_font_bold {
+  font-weight: bold;
+}
+
+#eagjcwhoeq .gt_font_italic {
+  font-style: italic;
+}
+
+#eagjcwhoeq .gt_super {
+  font-size: 65%;
+}
+
+#eagjcwhoeq .gt_footnote_marks {
+>>>>>>> main
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_asterisk {
+=======
+#eagjcwhoeq .gt_asterisk {
+>>>>>>> main
   font-size: 100%;
   vertical-align: 0;
 }
 
+<<<<<<< HEAD
 #sigsgsbwxu .gt_indent_1 {
   text-indent: 5px;
 }
@@ -781,6 +980,25 @@ div.csl-indent {
 }
 
 #sigsgsbwxu .gt_indent_5 {
+=======
+#eagjcwhoeq .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#eagjcwhoeq .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#eagjcwhoeq .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#eagjcwhoeq .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#eagjcwhoeq .gt_indent_5 {
+>>>>>>> main
   text-indent: 25px;
 }
 </style>
@@ -820,23 +1038,40 @@ eGRID2019, February 2021.</p> </caption>
 <div class="cell-output-display">
 <div id="tbl-stationary-combustion" class="anchored">
 
+<<<<<<< HEAD
 <div id="bmmwdnumhi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#bmmwdnumhi table {
+=======
+<div id="ppjrlukekj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ppjrlukekj table {
+>>>>>>> main
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi thead, #bmmwdnumhi tbody, #bmmwdnumhi tfoot, #bmmwdnumhi tr, #bmmwdnumhi td, #bmmwdnumhi th {
   border-style: none;
 }
 
 #bmmwdnumhi p {
+=======
+#ppjrlukekj thead, #ppjrlukekj tbody, #ppjrlukekj tfoot, #ppjrlukekj tr, #ppjrlukekj td, #ppjrlukekj th {
+  border-style: none;
+}
+
+#ppjrlukekj p {
+>>>>>>> main
   margin: 0;
   padding: 0;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_table {
+=======
+#ppjrlukekj .gt_table {
+>>>>>>> main
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -862,12 +1097,20 @@ eGRID2019, February 2021.</p> </caption>
   border-left-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_caption {
+=======
+#ppjrlukekj .gt_caption {
+>>>>>>> main
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_title {
+=======
+#ppjrlukekj .gt_title {
+>>>>>>> main
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -879,7 +1122,11 @@ eGRID2019, February 2021.</p> </caption>
   border-bottom-width: 0;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_subtitle {
+=======
+#ppjrlukekj .gt_subtitle {
+>>>>>>> main
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -891,7 +1138,11 @@ eGRID2019, February 2021.</p> </caption>
   border-top-width: 0;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_heading {
+=======
+#ppjrlukekj .gt_heading {
+>>>>>>> main
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -903,13 +1154,21 @@ eGRID2019, February 2021.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_bottom_border {
+=======
+#ppjrlukekj .gt_bottom_border {
+>>>>>>> main
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_col_headings {
+=======
+#ppjrlukekj .gt_col_headings {
+>>>>>>> main
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -924,7 +1183,11 @@ eGRID2019, February 2021.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_col_heading {
+=======
+#ppjrlukekj .gt_col_heading {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -944,7 +1207,11 @@ eGRID2019, February 2021.</p> </caption>
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_column_spanner_outer {
+=======
+#ppjrlukekj .gt_column_spanner_outer {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -956,6 +1223,7 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 4px;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
@@ -965,6 +1233,17 @@ eGRID2019, February 2021.</p> </caption>
 }
 
 #bmmwdnumhi .gt_column_spanner {
+=======
+#ppjrlukekj .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ppjrlukekj .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ppjrlukekj .gt_column_spanner {
+>>>>>>> main
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -976,11 +1255,19 @@ eGRID2019, February 2021.</p> </caption>
   width: 100%;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
 #bmmwdnumhi .gt_group_heading {
+=======
+#ppjrlukekj .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ppjrlukekj .gt_group_heading {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1006,7 +1293,11 @@ eGRID2019, February 2021.</p> </caption>
   text-align: left;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_empty_group_heading {
+=======
+#ppjrlukekj .gt_empty_group_heading {
+>>>>>>> main
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1021,6 +1312,7 @@ eGRID2019, February 2021.</p> </caption>
   vertical-align: middle;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_from_md > :first-child {
   margin-top: 0;
 }
@@ -1030,6 +1322,17 @@ eGRID2019, February 2021.</p> </caption>
 }
 
 #bmmwdnumhi .gt_row {
+=======
+#ppjrlukekj .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ppjrlukekj .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ppjrlukekj .gt_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1048,7 +1351,11 @@ eGRID2019, February 2021.</p> </caption>
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_stub {
+=======
+#ppjrlukekj .gt_stub {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1061,7 +1368,11 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_stub_row_group {
+=======
+#ppjrlukekj .gt_stub_row_group {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1075,6 +1386,7 @@ eGRID2019, February 2021.</p> </caption>
   vertical-align: top;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_row_group_first td {
   border-top-width: 2px;
 }
@@ -1084,6 +1396,17 @@ eGRID2019, February 2021.</p> </caption>
 }
 
 #bmmwdnumhi .gt_summary_row {
+=======
+#ppjrlukekj .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ppjrlukekj .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ppjrlukekj .gt_summary_row {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1093,16 +1416,28 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_first_summary_row {
+=======
+#ppjrlukekj .gt_first_summary_row {
+>>>>>>> main
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
 #bmmwdnumhi .gt_last_summary_row {
+=======
+#ppjrlukekj .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ppjrlukekj .gt_last_summary_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1112,7 +1447,11 @@ eGRID2019, February 2021.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_grand_summary_row {
+=======
+#ppjrlukekj .gt_grand_summary_row {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1122,7 +1461,11 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_first_grand_summary_row {
+=======
+#ppjrlukekj .gt_first_grand_summary_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1132,7 +1475,11 @@ eGRID2019, February 2021.</p> </caption>
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_last_grand_summary_row_top {
+=======
+#ppjrlukekj .gt_last_grand_summary_row_top {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1142,11 +1489,19 @@ eGRID2019, February 2021.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
 #bmmwdnumhi .gt_table_body {
+=======
+#ppjrlukekj .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ppjrlukekj .gt_table_body {
+>>>>>>> main
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1155,7 +1510,11 @@ eGRID2019, February 2021.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_footnotes {
+=======
+#ppjrlukekj .gt_footnotes {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1169,7 +1528,11 @@ eGRID2019, February 2021.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_footnote {
+=======
+#ppjrlukekj .gt_footnote {
+>>>>>>> main
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1178,7 +1541,11 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_sourcenotes {
+=======
+#ppjrlukekj .gt_sourcenotes {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1192,7 +1559,11 @@ eGRID2019, February 2021.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_sourcenote {
+=======
+#ppjrlukekj .gt_sourcenote {
+>>>>>>> main
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1200,6 +1571,7 @@ eGRID2019, February 2021.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_left {
   text-align: left;
 }
@@ -1209,10 +1581,22 @@ eGRID2019, February 2021.</p> </caption>
 }
 
 #bmmwdnumhi .gt_right {
+=======
+#ppjrlukekj .gt_left {
+  text-align: left;
+}
+
+#ppjrlukekj .gt_center {
+  text-align: center;
+}
+
+#ppjrlukekj .gt_right {
+>>>>>>> main
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_font_normal {
   font-weight: normal;
 }
@@ -1230,16 +1614,40 @@ eGRID2019, February 2021.</p> </caption>
 }
 
 #bmmwdnumhi .gt_footnote_marks {
+=======
+#ppjrlukekj .gt_font_normal {
+  font-weight: normal;
+}
+
+#ppjrlukekj .gt_font_bold {
+  font-weight: bold;
+}
+
+#ppjrlukekj .gt_font_italic {
+  font-style: italic;
+}
+
+#ppjrlukekj .gt_super {
+  font-size: 65%;
+}
+
+#ppjrlukekj .gt_footnote_marks {
+>>>>>>> main
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_asterisk {
+=======
+#ppjrlukekj .gt_asterisk {
+>>>>>>> main
   font-size: 100%;
   vertical-align: 0;
 }
 
+<<<<<<< HEAD
 #bmmwdnumhi .gt_indent_1 {
   text-indent: 5px;
 }
@@ -1257,6 +1665,25 @@ eGRID2019, February 2021.</p> </caption>
 }
 
 #bmmwdnumhi .gt_indent_5 {
+=======
+#ppjrlukekj .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ppjrlukekj .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ppjrlukekj .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ppjrlukekj .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ppjrlukekj .gt_indent_5 {
+>>>>>>> main
   text-indent: 25px;
 }
 </style>
@@ -1351,23 +1778,40 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
 <div class="cell-output-display">
 <div id="tbl-waste-factors" class="anchored">
 
+<<<<<<< HEAD
 <div id="upijmdejgh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#upijmdejgh table {
+=======
+<div id="yvefcpywgx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yvefcpywgx table {
+>>>>>>> main
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+<<<<<<< HEAD
 #upijmdejgh thead, #upijmdejgh tbody, #upijmdejgh tfoot, #upijmdejgh tr, #upijmdejgh td, #upijmdejgh th {
   border-style: none;
 }
 
 #upijmdejgh p {
+=======
+#yvefcpywgx thead, #yvefcpywgx tbody, #yvefcpywgx tfoot, #yvefcpywgx tr, #yvefcpywgx td, #yvefcpywgx th {
+  border-style: none;
+}
+
+#yvefcpywgx p {
+>>>>>>> main
   margin: 0;
   padding: 0;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_table {
+=======
+#yvefcpywgx .gt_table {
+>>>>>>> main
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1393,12 +1837,20 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-left-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_caption {
+=======
+#yvefcpywgx .gt_caption {
+>>>>>>> main
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_title {
+=======
+#yvefcpywgx .gt_title {
+>>>>>>> main
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1410,7 +1862,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-bottom-width: 0;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_subtitle {
+=======
+#yvefcpywgx .gt_subtitle {
+>>>>>>> main
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1422,7 +1878,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-top-width: 0;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_heading {
+=======
+#yvefcpywgx .gt_heading {
+>>>>>>> main
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1434,13 +1894,21 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_bottom_border {
+=======
+#yvefcpywgx .gt_bottom_border {
+>>>>>>> main
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_col_headings {
+=======
+#yvefcpywgx .gt_col_headings {
+>>>>>>> main
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1455,7 +1923,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_col_heading {
+=======
+#yvefcpywgx .gt_col_heading {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1475,7 +1947,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_column_spanner_outer {
+=======
+#yvefcpywgx .gt_column_spanner_outer {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1487,6 +1963,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 4px;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
@@ -1496,6 +1973,17 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
 }
 
 #upijmdejgh .gt_column_spanner {
+=======
+#yvefcpywgx .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#yvefcpywgx .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#yvefcpywgx .gt_column_spanner {
+>>>>>>> main
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1507,11 +1995,19 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   width: 100%;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
 #upijmdejgh .gt_group_heading {
+=======
+#yvefcpywgx .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#yvefcpywgx .gt_group_heading {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1537,7 +2033,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   text-align: left;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_empty_group_heading {
+=======
+#yvefcpywgx .gt_empty_group_heading {
+>>>>>>> main
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1552,6 +2052,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   vertical-align: middle;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_from_md > :first-child {
   margin-top: 0;
 }
@@ -1561,6 +2062,17 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
 }
 
 #upijmdejgh .gt_row {
+=======
+#yvefcpywgx .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#yvefcpywgx .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#yvefcpywgx .gt_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1579,7 +2091,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_stub {
+=======
+#yvefcpywgx .gt_stub {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1592,7 +2108,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_stub_row_group {
+=======
+#yvefcpywgx .gt_stub_row_group {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1606,6 +2126,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   vertical-align: top;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_row_group_first td {
   border-top-width: 2px;
 }
@@ -1615,6 +2136,17 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
 }
 
 #upijmdejgh .gt_summary_row {
+=======
+#yvefcpywgx .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#yvefcpywgx .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#yvefcpywgx .gt_summary_row {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1624,16 +2156,28 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_first_summary_row {
+=======
+#yvefcpywgx .gt_first_summary_row {
+>>>>>>> main
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
 #upijmdejgh .gt_last_summary_row {
+=======
+#yvefcpywgx .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#yvefcpywgx .gt_last_summary_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1643,7 +2187,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_grand_summary_row {
+=======
+#yvefcpywgx .gt_grand_summary_row {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1653,7 +2201,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_first_grand_summary_row {
+=======
+#yvefcpywgx .gt_first_grand_summary_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1663,7 +2215,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_last_grand_summary_row_top {
+=======
+#yvefcpywgx .gt_last_grand_summary_row_top {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1673,11 +2229,19 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
 #upijmdejgh .gt_table_body {
+=======
+#yvefcpywgx .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#yvefcpywgx .gt_table_body {
+>>>>>>> main
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1686,7 +2250,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_footnotes {
+=======
+#yvefcpywgx .gt_footnotes {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1700,7 +2268,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_footnote {
+=======
+#yvefcpywgx .gt_footnote {
+>>>>>>> main
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1709,7 +2281,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_sourcenotes {
+=======
+#yvefcpywgx .gt_sourcenotes {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1723,7 +2299,11 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_sourcenote {
+=======
+#yvefcpywgx .gt_sourcenote {
+>>>>>>> main
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1731,6 +2311,7 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_left {
   text-align: left;
 }
@@ -1740,10 +2321,22 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
 }
 
 #upijmdejgh .gt_right {
+=======
+#yvefcpywgx .gt_left {
+  text-align: left;
+}
+
+#yvefcpywgx .gt_center {
+  text-align: center;
+}
+
+#yvefcpywgx .gt_right {
+>>>>>>> main
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_font_normal {
   font-weight: normal;
 }
@@ -1761,16 +2354,40 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
 }
 
 #upijmdejgh .gt_footnote_marks {
+=======
+#yvefcpywgx .gt_font_normal {
+  font-weight: normal;
+}
+
+#yvefcpywgx .gt_font_bold {
+  font-weight: bold;
+}
+
+#yvefcpywgx .gt_font_italic {
+  font-style: italic;
+}
+
+#yvefcpywgx .gt_super {
+  font-size: 65%;
+}
+
+#yvefcpywgx .gt_footnote_marks {
+>>>>>>> main
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_asterisk {
+=======
+#yvefcpywgx .gt_asterisk {
+>>>>>>> main
   font-size: 100%;
   vertical-align: 0;
 }
 
+<<<<<<< HEAD
 #upijmdejgh .gt_indent_1 {
   text-indent: 5px;
 }
@@ -1788,6 +2405,25 @@ Hub, Federal Register EPA; 40 CFR Part 98.</p> </caption>
 }
 
 #upijmdejgh .gt_indent_5 {
+=======
+#yvefcpywgx .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#yvefcpywgx .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#yvefcpywgx .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#yvefcpywgx .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#yvefcpywgx .gt_indent_5 {
+>>>>>>> main
   text-indent: 25px;
 }
 </style>
@@ -1845,27 +2481,49 @@ WARM version 15, November 2020.</p> </caption>
 </div>
 </div>
 </div>
+<<<<<<< HEAD
 <div class="cell">
 <div class="cell-output-display">
 <div id="tbl-moves-factors" class="anchored">
 
 <div id="hacvkyauda" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#hacvkyauda table {
+=======
+<p>Transportation emissions factors were processed in <a href="../_transportation/data-raw/epa_moves.R">epa_moves.R</a>. Read more about these emission factors in <a href="../_transportation/data_transportation.html#sec-epa-moves"><span>Section&nbsp;8.3</span></a>.</p>
+<div class="cell" data-hash="supplementary_data_cache/html/tbl-moves-factors_cc8a8d885cee1530cd86489edb1c2b15">
+<div class="cell-output-display">
+<div id="tbl-moves-factors" class="anchored">
+
+<div id="xrfhvrnaah" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#xrfhvrnaah table {
+>>>>>>> main
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+<<<<<<< HEAD
 #hacvkyauda thead, #hacvkyauda tbody, #hacvkyauda tfoot, #hacvkyauda tr, #hacvkyauda td, #hacvkyauda th {
   border-style: none;
 }
 
 #hacvkyauda p {
+=======
+#xrfhvrnaah thead, #xrfhvrnaah tbody, #xrfhvrnaah tfoot, #xrfhvrnaah tr, #xrfhvrnaah td, #xrfhvrnaah th {
+  border-style: none;
+}
+
+#xrfhvrnaah p {
+>>>>>>> main
   margin: 0;
   padding: 0;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_table {
+=======
+#xrfhvrnaah .gt_table {
+>>>>>>> main
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1891,12 +2549,20 @@ WARM version 15, November 2020.</p> </caption>
   border-left-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_caption {
+=======
+#xrfhvrnaah .gt_caption {
+>>>>>>> main
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_title {
+=======
+#xrfhvrnaah .gt_title {
+>>>>>>> main
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1908,7 +2574,11 @@ WARM version 15, November 2020.</p> </caption>
   border-bottom-width: 0;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_subtitle {
+=======
+#xrfhvrnaah .gt_subtitle {
+>>>>>>> main
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1920,7 +2590,11 @@ WARM version 15, November 2020.</p> </caption>
   border-top-width: 0;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_heading {
+=======
+#xrfhvrnaah .gt_heading {
+>>>>>>> main
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1932,13 +2606,21 @@ WARM version 15, November 2020.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_bottom_border {
+=======
+#xrfhvrnaah .gt_bottom_border {
+>>>>>>> main
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_col_headings {
+=======
+#xrfhvrnaah .gt_col_headings {
+>>>>>>> main
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1953,7 +2635,11 @@ WARM version 15, November 2020.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_col_heading {
+=======
+#xrfhvrnaah .gt_col_heading {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1973,7 +2659,11 @@ WARM version 15, November 2020.</p> </caption>
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_column_spanner_outer {
+=======
+#xrfhvrnaah .gt_column_spanner_outer {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1985,6 +2675,7 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 4px;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
@@ -1994,6 +2685,17 @@ WARM version 15, November 2020.</p> </caption>
 }
 
 #hacvkyauda .gt_column_spanner {
+=======
+#xrfhvrnaah .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#xrfhvrnaah .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#xrfhvrnaah .gt_column_spanner {
+>>>>>>> main
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2005,11 +2707,19 @@ WARM version 15, November 2020.</p> </caption>
   width: 100%;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
 #hacvkyauda .gt_group_heading {
+=======
+#xrfhvrnaah .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#xrfhvrnaah .gt_group_heading {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2035,7 +2745,11 @@ WARM version 15, November 2020.</p> </caption>
   text-align: left;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_empty_group_heading {
+=======
+#xrfhvrnaah .gt_empty_group_heading {
+>>>>>>> main
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2050,6 +2764,7 @@ WARM version 15, November 2020.</p> </caption>
   vertical-align: middle;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_from_md > :first-child {
   margin-top: 0;
 }
@@ -2059,6 +2774,17 @@ WARM version 15, November 2020.</p> </caption>
 }
 
 #hacvkyauda .gt_row {
+=======
+#xrfhvrnaah .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#xrfhvrnaah .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#xrfhvrnaah .gt_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2077,7 +2803,11 @@ WARM version 15, November 2020.</p> </caption>
   overflow-x: hidden;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_stub {
+=======
+#xrfhvrnaah .gt_stub {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2090,7 +2820,11 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_stub_row_group {
+=======
+#xrfhvrnaah .gt_stub_row_group {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2104,6 +2838,7 @@ WARM version 15, November 2020.</p> </caption>
   vertical-align: top;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_row_group_first td {
   border-top-width: 2px;
 }
@@ -2113,6 +2848,17 @@ WARM version 15, November 2020.</p> </caption>
 }
 
 #hacvkyauda .gt_summary_row {
+=======
+#xrfhvrnaah .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#xrfhvrnaah .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#xrfhvrnaah .gt_summary_row {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2122,16 +2868,28 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_first_summary_row {
+=======
+#xrfhvrnaah .gt_first_summary_row {
+>>>>>>> main
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
 #hacvkyauda .gt_last_summary_row {
+=======
+#xrfhvrnaah .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#xrfhvrnaah .gt_last_summary_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2141,7 +2899,11 @@ WARM version 15, November 2020.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_grand_summary_row {
+=======
+#xrfhvrnaah .gt_grand_summary_row {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2151,7 +2913,11 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_first_grand_summary_row {
+=======
+#xrfhvrnaah .gt_first_grand_summary_row {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2161,7 +2927,11 @@ WARM version 15, November 2020.</p> </caption>
   border-top-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_last_grand_summary_row_top {
+=======
+#xrfhvrnaah .gt_last_grand_summary_row_top {
+>>>>>>> main
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2171,11 +2941,19 @@ WARM version 15, November 2020.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
 #hacvkyauda .gt_table_body {
+=======
+#xrfhvrnaah .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#xrfhvrnaah .gt_table_body {
+>>>>>>> main
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2184,7 +2962,11 @@ WARM version 15, November 2020.</p> </caption>
   border-bottom-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_footnotes {
+=======
+#xrfhvrnaah .gt_footnotes {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2198,7 +2980,11 @@ WARM version 15, November 2020.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_footnote {
+=======
+#xrfhvrnaah .gt_footnote {
+>>>>>>> main
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2207,7 +2993,11 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_sourcenotes {
+=======
+#xrfhvrnaah .gt_sourcenotes {
+>>>>>>> main
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2221,7 +3011,11 @@ WARM version 15, November 2020.</p> </caption>
   border-right-color: #D3D3D3;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_sourcenote {
+=======
+#xrfhvrnaah .gt_sourcenote {
+>>>>>>> main
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2229,6 +3023,7 @@ WARM version 15, November 2020.</p> </caption>
   padding-right: 5px;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_left {
   text-align: left;
 }
@@ -2238,10 +3033,22 @@ WARM version 15, November 2020.</p> </caption>
 }
 
 #hacvkyauda .gt_right {
+=======
+#xrfhvrnaah .gt_left {
+  text-align: left;
+}
+
+#xrfhvrnaah .gt_center {
+  text-align: center;
+}
+
+#xrfhvrnaah .gt_right {
+>>>>>>> main
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_font_normal {
   font-weight: normal;
 }
@@ -2259,16 +3066,40 @@ WARM version 15, November 2020.</p> </caption>
 }
 
 #hacvkyauda .gt_footnote_marks {
+=======
+#xrfhvrnaah .gt_font_normal {
+  font-weight: normal;
+}
+
+#xrfhvrnaah .gt_font_bold {
+  font-weight: bold;
+}
+
+#xrfhvrnaah .gt_font_italic {
+  font-style: italic;
+}
+
+#xrfhvrnaah .gt_super {
+  font-size: 65%;
+}
+
+#xrfhvrnaah .gt_footnote_marks {
+>>>>>>> main
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_asterisk {
+=======
+#xrfhvrnaah .gt_asterisk {
+>>>>>>> main
   font-size: 100%;
   vertical-align: 0;
 }
 
+<<<<<<< HEAD
 #hacvkyauda .gt_indent_1 {
   text-indent: 5px;
 }
@@ -2286,6 +3117,25 @@ WARM version 15, November 2020.</p> </caption>
 }
 
 #hacvkyauda .gt_indent_5 {
+=======
+#xrfhvrnaah .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#xrfhvrnaah .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#xrfhvrnaah .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#xrfhvrnaah .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#xrfhvrnaah .gt_indent_5 {
+>>>>>>> main
   text-indent: 25px;
 }
 </style>
@@ -2343,12 +3193,21 @@ WARM version 15, November 2020.</p> </caption>
 <section id="sec-gwp" class="level2" data-number="A.2">
 <h2 data-number="A.2" class="anchored" data-anchor-id="sec-gwp"><span class="header-section-number">A.2</span> Global Warming Potential (GWP)</h2>
 <p>The Global Warming Potential (GWP) was developed to allow comparisons of the global warming impacts of different gases. Specifically, it is a measure of how much energy the emissions of 1 ton of a gas will absorb over a given period of time, relative to the emissions of 1 ton of carbon dioxide (CO<sub>2</sub>). The larger the GWP, the more that a given gas warms the Earth compared to CO2 over that time period <span class="citation" data-cites="usepaUnderstandingGlobalWarming2023">(<a href="../references.html#ref-usepaUnderstandingGlobalWarming2023" role="doc-biblioref">USEPA 2023</a>)</span>.</p>
+<<<<<<< HEAD
 <p>Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5), Box 3.2, Table 1 <span class="citation" data-cites="ipccClimateChange2014">(<a href="../references.html#ref-ipccClimateChange2014" role="doc-biblioref">IPCC and Core Writing Team 2014</a>)</span>. See <a href="R/global_warming_potential.R">R/global_warming_potential.R</a>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="tbl-gwp" class="anchored">
 
 <div id="neslispzvr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+=======
+<p>Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5), Box 3.2, Table 1 <span class="citation" data-cites="ipccClimateChange2014">(<a href="../references.html#ref-ipccClimateChange2014" role="doc-biblioref">IPCC and Core Writing Team 2014</a>)</span>. We processed these values in <a href="../R/global_warming_potential.R">global_warming_potential.R</a>.</p>
+<div class="cell" data-hash="supplementary_data_cache/html/tbl-gwp_6c4b497c5df3306e7c1ef8e5cb4d0a28">
+<div class="cell-output-display">
+<div id="tbl-gwp" class="anchored">
+
+<div id="jzzqieqzzk" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+>>>>>>> main
   
   <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.5:  <p>Global Warming Potential (GWP) values</p> </caption>
   <thead style="border-style: none;">
@@ -2398,7 +3257,11 @@ WARM version 15, November 2020.</p> </caption>
 <div class="cell-output-display">
 <div id="tbl-cprg-county" class="anchored">
 
+<<<<<<< HEAD
 <div id="dmwlhwcmaq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+=======
+<div id="pqjvdmxfsq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+>>>>>>> main
   
   <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.6:  <p>County geography metadata</p> </caption>
   <thead style="border-style: none;">
@@ -2416,21 +3279,24 @@ WARM version 15, November 2020.</p> </caption>
     <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">STATEFP</td>
 <td headers="Class" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">character</td>
 <td headers="Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">State FIPS code</td></tr>
-    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">COUNTYFP</td>
+    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">STATE_ABB</td>
 <td headers="Class" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">character</td>
-<td headers="Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">County FIPS code</td></tr>
-    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">GEOID</td>
+<td headers="Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Abbreviated state name</td></tr>
+    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">COUNTYFP</td>
 <td headers="Class" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">character</td>
-<td headers="Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">County GEOID</td></tr>
-    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">NAME</td>
+<td headers="Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">County FIPS code</td></tr>
+    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">GEOID</td>
 <td headers="Class" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">character</td>
-<td headers="Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">County name</td></tr>
-    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">NAMELSAD</td>
+<td headers="Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">County GEOID</td></tr>
+    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">NAME</td>
 <td headers="Class" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">character</td>
-<td headers="Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Full county name</td></tr>
-    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">geometry</td>
-<td headers="Class" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">sfc_MULTIPOLYGON</td>
-<td headers="Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Simple feature geometry</td></tr>
+<td headers="Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">County name</td></tr>
+    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">NAMELSAD</td>
+<td headers="Class" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">character</td>
+<td headers="Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Full county name</td></tr>
+    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">geometry</td>
+<td headers="Class" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">sfc_MULTIPOLYGON</td>
+<td headers="Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Simple feature geometry</td></tr>
   </tbody>
   
   
@@ -2444,7 +3310,11 @@ WARM version 15, November 2020.</p> </caption>
 <div class="cell-output-display">
 <div id="tbl-cprg-population" class="anchored">
 
+<<<<<<< HEAD
 <div id="zfnjngxker" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+=======
+<div id="avkomrlxio" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+>>>>>>> main
   
   <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.7:  <p>County population metadata</p> </caption>
   <thead style="border-style: none;">
@@ -2498,7 +3368,11 @@ WARM version 15, November 2020.</p> </caption>
 <div class="cell-output-display">
 <div id="tbl-cprg-ctu" class="anchored">
 
+<<<<<<< HEAD
 <div id="vbinwrvowi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+=======
+<div id="mdndmjwoyv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+>>>>>>> main
   
   <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;A.8:  <p>City geography metadata</p> </caption>
   <thead style="border-style: none;">
@@ -2525,15 +3399,18 @@ WARM version 15, November 2020.</p> </caption>
     <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">STATE</td>
 <td headers="Class" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">character</td>
 <td headers="Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Full state name</td></tr>
-    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">GNIS_FEATU</td>
-<td headers="Class" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">numeric</td>
-<td headers="Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Minnesota geographic identifier</td></tr>
-    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">geometry</td>
-<td headers="Class" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">sfc_MULTIPOLYGON</td>
-<td headers="Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Simple feature geometry</td></tr>
-    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">GEOID</td>
+    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">STATE_ABB</td>
 <td headers="Class" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">character</td>
-<td headers="Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Wisconsin geographic identifier</td></tr>
+<td headers="Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Abbreviated state name</td></tr>
+    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">GNIS_FEATU</td>
+<td headers="Class" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">numeric</td>
+<td headers="Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Minnesota geographic identifier</td></tr>
+    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">geometry</td>
+<td headers="Class" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">sfc_MULTIPOLYGON</td>
+<td headers="Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Simple feature geometry</td></tr>
+    <tr style="border-style: none;"><td headers="Column" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">GEOID</td>
+<td headers="Class" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">character</td>
+<td headers="Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Wisconsin geographic identifier</td></tr>
   </tbody>
   
   
@@ -2542,6 +3419,7 @@ WARM version 15, November 2020.</p> </caption>
 </div>
 </div>
 </div>
+<div style="page-break-after: always;"></div>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
