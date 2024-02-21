@@ -1,11 +1,15 @@
 source("R/_load_pkgs.R")
-cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 source("_energy/data-raw/_energy_emissions_factors.R")
+source("R/plot_county_emissions.R")
+cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+# NREL SLOPE data download, cleaning, and light viz
 
 # 1 Mmbtu is 0.293071 MWH
 mmbtu_to_mwh <- 0.293071 
 
 # 1000 cubic feet is 1.038 MMBtu
+# https://www.naturalgasintel.com/natural-gas-converter/
+# 1 mmbtu is 1 mcf
 mmbtu_to_mcf <- 1
 
 # download from NREL directly
@@ -25,16 +29,18 @@ nrel_slope_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_ex
 nrel_slope_cprg <- nrel_slope_county %>% 
   filter(state_name %in% cprg_county$STATE,
          county_name %in% cprg_county$NAME,
-         year < 2025) 
+         year < 2025) %>% 
+  mutate(source = ifelse(source == "ng", "Natural gas", "Electricity"))
 
 nrel_emissions <- bind_rows(
   # electricity emissions
   nrel_slope_cprg %>% 
-    filter(source == "elec") %>% 
+    filter(source == "Electricity") %>% 
     rowwise() %>% 
     mutate(
       # convert mmbtu to Mwh
       consumption_mwh = consumption_mm_btu * mmbtu_to_mwh,
+      # apply emission factor and convert to metric tons
       co2 = (consumption_mwh * eGRID_MROW_emissionsFactor_CO2) %>% 
         units::as_units("lb") %>% 
         units::set_units("ton") %>% 
@@ -55,11 +61,12 @@ nrel_emissions <- bind_rows(
   ,
   # natural gas emissions
   nrel_slope_cprg %>% 
-    filter(source == "ng") %>% 
+    filter(source == "Natural gas") %>% 
     rowwise() %>% 
     mutate(
       # convert mmbtu to mcf
       consumption_mcf = consumption_mm_btu * mmbtu_to_mcf,
+      # apply emission factor and convert to metric tons
       co2 = (consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF) %>% 
         units::as_units("lb") %>% 
         units::set_units("ton") %>% 
@@ -77,29 +84,32 @@ nrel_emissions <- bind_rows(
         (ch4 * gwp$n2o) +
         (n2o * gwp$n2o)
     )
-)
-
-nrel_emissions %>% 
-  filter(year == 2021) %>% 
-  mutate(geog_name = county_name,
-         emissions_metric_tons_co2e = co2e,
-         sector = "Energy",
-         category = source) %>% 
-  plot_county_emissions(.sector = "Energy",
-                        .plotly_source = "")
+) %>% 
+  mutate(category = ifelse(sector == "residential", "Residential", "Non-residential"),
+         sector_raw = sector,
+         sector = "Energy")
 
 nrel_emissions_region <- nrel_emissions %>% 
-  group_by(year, sector, source) %>% 
+  group_by(year, sector, sector_raw, category, source) %>% 
   summarize(consumption_mm_btu = sum(consumption_mm_btu),
             expenditure_us_dollars = sum(expenditure_us_dollars),
             co2e = sum(co2e))
 
 plot_ly(
   data = nrel_emissions_region %>% 
-    filter(source == "elec"),
+    filter(year == 2021),
+  x = ~sector_raw,
+  y = ~co2e,
+  color = ~source
+)
+
+
+plot_ly(
+  data = nrel_emissions_region %>% 
+    filter(source == "Electricity"),
   x = ~year,
   y = ~co2e,
-  color = ~str_to_sentence(sector),
+  color = ~str_to_sentence(category),
   type = "bar"
 ) %>% 
   plotly_layout(
@@ -107,17 +117,16 @@ plot_ly(
     subtitle = "",
     x_title = "Year",
     y_title = "Metric tones CO<sub>2</sub>e",
-    legend_title = "Sector",
-    barmode = "stack"
+    legend_title = "Sector"
   ) 
 
 
 plot_ly(
   data = nrel_emissions_region %>% 
-    filter(source == "ng"),
+    filter(source == "Natural gas"),
   x = ~year,
   y = ~co2e,
-  color = ~str_to_sentence(sector),
+  color = ~str_to_sentence(category),
   type = "bar"
 ) %>% 
   plotly_layout(
@@ -125,6 +134,5 @@ plot_ly(
     subtitle = "",
     x_title = "Year",
     y_title = "Metric tones CO<sub>2</sub>e",
-    legend_title = "Sector",
-    barmode = "stack"
+    legend_title = "Sector"
   ) 
