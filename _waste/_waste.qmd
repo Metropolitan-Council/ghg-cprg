@@ -24,6 +24,10 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 
 ## Introduction
 
+Solid waste and wastewater account for about _% of United States greenhouse gas emissions, making them the third largest sector accounted for in this inventory. Solid waste emissions primarily consist of $CH_4$, emitted in large part by landfills and organics composting, but also include $CO_2$ and $N_2O$ generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. This inventory also includes emissions generated in the management of recyclables.
+
+Wastewater emissions are emissions generated during the wastewater treatment process, [???]
+
 ## Methods
 
 The process for calculating solid waste emissions slightly differs between Minnesota and Wisconsin counties, due to a difference in data availability.
@@ -221,6 +225,7 @@ plot_ly(
 ### Comparison with other inventories
 
 - NEI - issue: based on point sources not generation
+- MPCA emissions inventory
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
