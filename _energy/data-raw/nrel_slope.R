@@ -95,6 +95,13 @@ nrel_emissions_region <- nrel_emissions %>%
             expenditure_us_dollars = sum(expenditure_us_dollars),
             co2e = sum(co2e))
 
+nrel_emissions_region %>% 
+  filter(year == 2021,
+         source == "Electricity") %>% 
+  group_by(year, source, sector_raw) %>% 
+  summarize(co2e= sum(co2e)) %>% 
+  janitor::adorn_percentages(denominator = "col")
+
 plot_ly(
   data = nrel_emissions_region %>% 
     filter(year == 2021),
@@ -136,3 +143,6 @@ plot_ly(
     y_title = "Metric tones CO<sub>2</sub>e",
     legend_title = "Sector"
   ) 
+
+# electricity - use commercial/industrial/residential proportions and apply to our electricity
+# 
