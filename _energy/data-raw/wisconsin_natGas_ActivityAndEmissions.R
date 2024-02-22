@@ -101,7 +101,7 @@ WIcounty_level_gas_emissions <- processed_wi_gasUtil_activityData %>%
   ) %>%
   mutate(
     state = "WI",
-    sector = "Natural Gas",
+    sector = "Natural gas",
     year = 2021
   )
 
