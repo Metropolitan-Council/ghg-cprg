@@ -35,7 +35,7 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 fig_waste_emissions_2 <- plot_county_emissions(
   county_emissions = county_emissions,
   .sector = "Waste",
-  .plotly_source = opts_current$get()$label
+  .plotly_source = "fig-waste-emissions-2"
 )
 fig_waste_emissions_2
 ```
@@ -63,7 +63,7 @@ fig_mn_county_ww_emissions <- plot_ly(
   data = metc_ww_summary,
   x = ~ reorder(COUNTY_NAM, -emissions_metric_tons_co2e),
   y = ~emissions_metric_tons_co2e,
-  source = opts_current$get()$label,
+  source = "fig-mn-county-ww-emissions",
   color = ~scope,
   type = "bar",
   hovertemplate = ~ paste0(

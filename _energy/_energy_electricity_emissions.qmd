@@ -77,7 +77,7 @@ elecEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
 
 fig_electricity_county_emissions <- plot_ly(
   type = "bar",
-  source = opts_current$get()$label,
+  source = "fig-electricity-county-emissions",
   data = elecEmissions_all,
   y = ~ reorder(geo, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
@@ -125,7 +125,7 @@ emissions_population <- left_join(elecEmissions_all, cprg_population,
 )
 fig_emissions_population <- plot_ly(
   data = emissions_population,
-  source = opts_current$get()$label,
+  source = "fig-emissions-population",
   x = ~population,
   y = ~emissions_metric_tons_co2e,
   type = "scatter",

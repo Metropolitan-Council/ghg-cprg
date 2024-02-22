@@ -73,7 +73,7 @@ Transportation VMT and emissions were calculated in [vmt_emissions.R](data-raw/v
 
 fig_transportation_county_emissions <- plot_ly(
   type = "bar",
-  source = opts_current$get()$label,
+  source = "fig-transportation-county-emissions",
   data = vmt_emissions,
   y = ~ reorder(zone, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
@@ -116,7 +116,7 @@ vmt_population <- left_join(vmt_emissions_all, cprg_population,
 
 fig_emissions_pop_transportation <- plot_ly(
   data = vmt_population,
-  source = opts_current$get()$label,
+  source = "fig-emissions-population-transportation",
   x = ~population,
   y = ~emissions_metric_tons_co2e,
   type = "scatter",
@@ -176,7 +176,7 @@ We expect that the NEI data will show higher emissions, because it is based on o
 
 fig_activity_vs_nei <- plot_ly(
   data = vmt_emissions_all,
-  source = opts_current$get()$label,
+  source = "fig-activity-vs-nei",
   x = ~ reorder(zone, -emissions_metric_tons_co2e),
   y = ~emissions_metric_tons_co2e,
   type = "scatter",

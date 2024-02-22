@@ -43,7 +43,7 @@ dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) 
 
 fig_dot_vmt <- plot_ly(
   data = dot_vmt,
-  source = knitr::opts_current$get()$label,
+  source = "fig-dot-vmt",
   x = ~year,
   y = ~annual_vmt,
   color = ~data_source,
@@ -175,7 +175,7 @@ calibration_long <- commercial_points %>%
 
 fig_vehicle_weight_distribution <- plot_ly(
   data = calibration_long,
-  source = opts_current$get()$label,
+  source = "fig-vehicle-weight-distribution",
   type = "bar",
   x = ~name,
   y = ~value,

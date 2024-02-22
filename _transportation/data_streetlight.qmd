@@ -98,7 +98,7 @@ StreetLight returns not only vehicle volume, but also trip attributes, like trip
 
 fig_stl_trip_distance_matrix_passenger <- plot_ly(
   data = passenger_od_trip,
-  source = opts_current$get()$label,
+  source = "fig-stl-trip-distance-matrix-passenger",
   y = ~origin_zone_name,
   x = ~destination_zone_name,
   z = ~avg_all_trip_length_mi,
@@ -226,7 +226,7 @@ bscols(
   ),
   plot_ly( # do not save as fig
     data = shared_trip_length_bin,
-    source = opts_current$get()$label,
+    source = "fig-stl-trip-length-dist-widget",
     x = ~ factor(length_bin),
     y = ~percent_of_trips,
     type = "bar",
@@ -300,7 +300,7 @@ one_slope <- tibble(
 
 fig_stl_trip_dist_min_dist <- plot_ly(
   data = passenger_od_distance,
-  source = opts_current$get()$label,
+  source = "fig-trip-dist-min-dist",
   x = ~distance_miles,
   y = ~avg_all_trip_length_mi,
   color = ~pair_type,
@@ -382,7 +382,7 @@ one_slope <- tibble(
 
 fig_stl_trip_dist_tbi <- plot_ly(
   data = passenger_od_tbi_distance,
-  source = opts_current$get()$label,
+  source = "fig-stl-trip-dist-tbi",
   x = ~mean_trip_dist,
   y = ~avg_all_trip_length_mi,
   color = ~pair_type,
@@ -455,7 +455,7 @@ passenger_dist_area <- left_join(
 
 fig_trip_county_area <- plot_ly(
   data = passenger_dist_area,
-  source = opts_current$get()$label,
+  source = "fig-trip-county-area",
   x = ~area_sq_mi,
   y = ~avg_all_trip_length_mi,
   type = "scatter",
@@ -588,7 +588,7 @@ comm_od_pair_index <- comm_trip_length_bin %>%
 fig_stl_trip_distance_matrix_medium <- plot_ly(
   data = comm_trip_length_bin %>%
     filter(vehicle_weight == "Medium"),
-  source = opts_current$get()$label,
+  source = "fig-stl-trip-distance-matrix-medium",
   y = ~origin_zone_name,
   x = ~destination_zone_name,
   z = ~avg_all_trip_length_mi,
@@ -634,7 +634,7 @@ fig_stl_trip_distance_matrix_medium
 fig_stl_trip_distance_matrix_heavy <- plot_ly(
   data = comm_trip_length_bin %>%
     filter(vehicle_weight == "Heavy"),
-  source = opts_current$get()$label,
+  source = "fig-stl-trip-distance-matrix-heavy",
   y = ~origin_zone_name,
   x = ~destination_zone_name,
   z = ~avg_all_trip_length_mi,
@@ -700,7 +700,7 @@ bscols(
   ),
   plot_ly( # do not save as fig
     data = shared_comm_trip_length_bin,
-    source = opts_current$get()$label,
+    source = "fig-stl-trip-length-dist-widget-comm",
     x = ~ factor(length_bin),
     y = ~percent_of_trips,
     color = ~vehicle_weight,
@@ -870,7 +870,7 @@ dot_streetlight <- left_join(
 
 fig_streetlight_hpms_vmt <- plot_ly(
   data = dot_streetlight,
-  source = opts_current$get()$label,
+  source = "fig-streetlight-hpms-vmt",
   x = ~annual_vmt,
   y = ~vmt_total,
   type = "scatter",

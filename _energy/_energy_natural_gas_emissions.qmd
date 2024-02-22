@@ -81,7 +81,7 @@ natGasEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
 
 fig_ng_county_emissions <- plot_ly(
   type = "bar",
-  source = opts_current$get()$label,
+  source = "fig-ng-county-emissions",
   data = natGasEmissions_all,
   y = ~ reorder(geo, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
@@ -127,7 +127,7 @@ emissions_population <- left_join(natGasEmissions_all, cprg_population,
 )
 fig_ng_emissions_population <- plot_ly(
   data = emissions_population,
-  source = opts_current$get()$label,
+  source = "fig-ng-emissions-population",
   x = ~population,
   y = ~emissions_metric_tons_co2e,
   type = "scatter",

@@ -30,7 +30,7 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 fig_energy_emissions_plot <- plot_county_emissions(
   county_emissions = county_emissions,
   .sector = "Energy",
-  .plotly_source = opts_current$get()$label
+  .plotly_source = "fig-energy-emissions-plot"
 )
 fig_energy_emissions_plot
 ```
