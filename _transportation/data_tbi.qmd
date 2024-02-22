@@ -173,7 +173,7 @@ Origin-destination pairs with fewer than 30 observed trips were removed.
 #| fig-cap: "TBI origin-destination trip length matrix"
 #| out-width: "95%"
 
-plot_ly(
+fig_tbi_trip_dist_matrix <- plot_ly(
   data = tbi_od_ordered_trip_length,
   source = opts_current$get()$label,
   y = ~trip_o_county,
@@ -210,6 +210,8 @@ plot_ly(
     y_title = "Origin county",
     legend_title = "Average trip length"
   )
+
+fig_tbi_trip_dist_matrix
 ```
 
 

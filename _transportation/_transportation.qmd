@@ -71,7 +71,7 @@ Transportation VMT and emissions were calculated in [vmt_emissions.R](data-raw/v
 #| fig-cap: "2021 annual emissions by vehicle weight"
 #| out-width: "95%"
 
-plot_ly(
+fig_transportation_county_emissions <- plot_ly(
   type = "bar",
   source = opts_current$get()$label,
   data = vmt_emissions,
@@ -98,6 +98,7 @@ plot_ly(
       traceorder = "reversed"
     )
   )
+fig_transportation_county_emissions
 ```
 
 
@@ -112,7 +113,8 @@ cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.R
 vmt_population <- left_join(vmt_emissions_all, cprg_population,
   by = c("zone" = "NAME")
 )
-plot_ly(
+
+fig_emissions_pop_transportation <- plot_ly(
   data = vmt_population,
   source = opts_current$get()$label,
   x = ~population,
@@ -142,6 +144,8 @@ plot_ly(
     legend_title = "",
     legend = list(orientation = "h")
   )
+
+fig_emissions_pop_transportation
 ```
 
 ### Comparison with other inventories
@@ -169,7 +173,8 @@ We expect that the NEI data will show higher emissions, because it is based on o
 ```{r fig-activity-vs-nei}
 #| fig-cap: "County estimated emissions, NEI and calculated "
 #| out-width: "95%"
-plot_ly(
+
+fig_activity_vs_nei <- plot_ly(
   data = vmt_emissions_all,
   source = opts_current$get()$label,
   x = ~ reorder(zone, -emissions_metric_tons_co2e),
@@ -207,6 +212,8 @@ plot_ly(
     y_title = "Greenhouse gases emitted (metric tons)",
     legend_title = "Emissions data source"
   )
+
+fig_activity_vs_nei
 ```
 
 #### Local Greenhouse Gas Inventory Tool (LGGIT)

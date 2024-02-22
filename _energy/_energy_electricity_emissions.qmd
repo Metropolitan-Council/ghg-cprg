@@ -74,7 +74,7 @@ wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_
 elecEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
   mutate(geo = paste0(county, ", ", state))
 
-plot_ly(
+fig_electricity_county_emissions <- plot_ly(
   type = "bar",
   source = opts_current$get()$label,
   data = elecEmissions_all,
@@ -107,6 +107,8 @@ plot_ly(
       traceorder = "reversed"
     )
   )
+
+fig_electricity_county_emissions
 ```
 
 #### Correlation with related data
@@ -120,7 +122,7 @@ cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.R
 emissions_population <- left_join(elecEmissions_all, cprg_population,
   by = c("county" = "NAME")
 )
-plot_ly(
+fig_emissions_population <- plot_ly(
   data = emissions_population,
   source = opts_current$get()$label,
   x = ~population,
@@ -148,6 +150,8 @@ plot_ly(
     x_title = "Total population",
     y_title = "Emissions"
   )
+
+fig_emissions_population
 ```
 
 #### Comparison with other inventories

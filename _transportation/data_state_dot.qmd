@@ -41,7 +41,7 @@ dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) 
   group_by(county)
 
 
-plot_ly(
+fig_dot_vmt <- plot_ly(
   data = dot_vmt,
   source = knitr::opts_current$get()$label,
   x = ~year,
@@ -73,6 +73,8 @@ plot_ly(
     y_title = "VMT",
     legend_title = "Data source"
   )
+
+fig_dot_vmt
 ```
 
 
@@ -168,7 +170,7 @@ calibration_long <- commercial_points %>%
       )
   )
 
-plot_ly(
+fig_veh_weight_dist <- plot_ly(
   data = calibration_long,
   source = opts_current$get()$label,
   type = "bar",
@@ -200,6 +202,8 @@ plot_ly(
       tickformat = "1%"
     )
   )
+
+fig_veh_weight_dist
 ```
 
 ### Limitations

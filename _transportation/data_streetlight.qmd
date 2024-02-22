@@ -94,7 +94,7 @@ StreetLight returns not only vehicle volume, but also trip attributes, like trip
 #| fig-cap: "StreetLight origin-destination passenger trip length matrix"
 #| out-width: "95%"
 
-plot_ly(
+fig_stl_trip_dist_matrix_pass <- plot_ly(
   data = passenger_od_trip,
   source = opts_current$get()$label,
   y = ~origin_zone_name,
@@ -131,6 +131,8 @@ plot_ly(
     y_title = "Origin county",
     legend_title = "Average trip length"
   )
+
+fig_stl_trip_dist_matrix_pass
 ```
 
 
@@ -220,7 +222,7 @@ bscols(
       multiple = FALSE
     )
   ),
-  plot_ly(
+  plot_ly( # do not save as fig
     data = shared_trip_length_bin,
     source = opts_current$get()$label,
     x = ~ factor(length_bin),
@@ -294,7 +296,7 @@ one_slope <- tibble(
   y = 0:max(passenger_od_distance$distance_miles + 10)
 )
 
-plot_ly(
+fig_stl_trip_dist_min_dist <- plot_ly(
   data = passenger_od_distance,
   source = opts_current$get()$label,
   x = ~distance_miles,
@@ -343,6 +345,8 @@ plot_ly(
     legend_title = "",
     legend = list(orientation = "h")
   )
+
+fig_stl_trip_dist_min_dist
 ```
 
 We can also compare these distances with the observed average trip distance from the Met Council Travel Behavior Inventory (TBI). Read more about the TBI in @sec-tbi. 
@@ -374,7 +378,7 @@ one_slope <- tibble(
   y = 0:max(passenger_od_tbi_distance$mean_trip_dist + 10)
 )
 
-plot_ly(
+fig_stl_trip_dist_tbi <- plot_ly(
   data = passenger_od_tbi_distance,
   source = opts_current$get()$label,
   x = ~mean_trip_dist,
@@ -423,6 +427,8 @@ plot_ly(
     legend_title = "",
     legend = list(orientation = "h")
   )
+
+fig_stl_trip_dist_tbi
 ```
 
 
@@ -445,7 +451,7 @@ passenger_dist_area <- left_join(
 )
 
 
-plot_ly(
+fig_trip_county_area <- plot_ly(
   data = passenger_dist_area,
   source = opts_current$get()$label,
   x = ~area_sq_mi,
@@ -476,6 +482,8 @@ plot_ly(
     legend_title = "",
     legend = list(orientation = "h")
   )
+
+fig_trip_county_area
 ```
 
 
@@ -572,7 +580,7 @@ comm_od_pair_index <- comm_trip_length_bin %>%
 #| fig-cap: "StreetLight origin-destination medium-duty trip length matrix"
 #| out-width: "95%"
 
-plot_ly(
+fig_stl_trip_dist_matrix_med <- plot_ly(
   data = comm_trip_length_bin %>%
     filter(vehicle_weight == "Medium"),
   source = opts_current$get()$label,
@@ -610,13 +618,15 @@ plot_ly(
     y_title = "Origin county",
     legend_title = "Average trip length"
   )
+
+fig_stl_trip_dist_matrix_med
 ```
 
 ```{r fig-stl-trip-distance-matrix-heavy}
 #| fig-cap: "StreetLight origin-destination heavy-duty trip length matrix"
 #| out-width: "95%"
 
-plot_ly(
+fig_stl_trip_dist_matrix_heavy <- plot_ly(
   data = comm_trip_length_bin %>%
     filter(vehicle_weight == "Heavy"),
   source = opts_current$get()$label,
@@ -654,6 +664,8 @@ plot_ly(
     y_title = "Origin county",
     legend_title = "Average trip length"
   )
+
+fig_stl_trip_dist_matrix_heavy
 ```
 
 ```{r fig-stl-trip-length-dist-widget-comm}
@@ -681,7 +693,7 @@ bscols(
       multiple = FALSE
     )
   ),
-  plot_ly(
+  plot_ly( # do not save as fig
     data = shared_comm_trip_length_bin,
     source = opts_current$get()$label,
     x = ~ factor(length_bin),
@@ -847,7 +859,8 @@ dot_streetlight <- left_join(
 ```{r fig-streetlight-hpms}
 #| fig-cap: "County vehicle miles traveled and StreetLight Volume"
 #| out-width: "95%"
-plot_ly(
+
+fig_dot_vmt_stl <- plot_ly(
   data = dot_streetlight,
   source = opts_current$get()$label,
   x = ~annual_vmt,
@@ -877,6 +890,8 @@ plot_ly(
     legend_title = "",
     legend = list(orientation = "h")
   )
+
+fig_dot_vmt_stl
 ```
 
 

@@ -79,7 +79,7 @@ natGasEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
     .groups = "rowwise"
   )
 
-plot_ly(
+fig_ng_county_emissions <- plot_ly(
   type = "bar",
   source = opts_current$get()$label,
   data = natGasEmissions_all,
@@ -110,6 +110,8 @@ plot_ly(
       traceorder = "reversed"
     )
   )
+
+fig_ng_county_emissions
 ```
 
 #### Correlation with related data
@@ -123,7 +125,7 @@ cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.R
 emissions_population <- left_join(natGasEmissions_all, cprg_population,
   by = c("county" = "NAME")
 )
-plot_ly(
+fig_ng_emissions_population <- plot_ly(
   data = emissions_population,
   source = opts_current$get()$label,
   x = ~population,
@@ -151,6 +153,7 @@ plot_ly(
     x_title = "Total population",
     y_title = "Emissions"
   )
+fig_ng_emissions_population
 ```
 
 #### Comparison with other inventories
