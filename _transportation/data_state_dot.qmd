@@ -100,8 +100,8 @@ cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 bound_box <- st_bbox(commercial_lines) %>%
   unlist()
 
-fig_map_calibration_set <- 
-council_leaflet() %>%
+fig_map_calibration_set <-
+  council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
       sf::st_transform(4326),

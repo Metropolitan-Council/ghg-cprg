@@ -115,7 +115,7 @@ fuel_grp <- plot_ly(
 ) %>%
   plotly_layout()
 
-fig_regional_fuel_veh_age <- 
+fig_regional_fuel_veh_age <-
   subplot(
     fuel_grp,
     fuel_dist_pl,
@@ -160,10 +160,10 @@ tbl_reg_avg_trip_length <-
   ) %>%
   gt() %>%
   fmt_number(c(3, 4, 5, 6),
-             decimals = 0
+    decimals = 0
   ) %>%
   fmt_number(1:2,
-             decimals = 2
+    decimals = 2
   ) %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -243,10 +243,10 @@ tbl_od_trip_length <-
   ) %>%
   gt() %>%
   fmt_number(c(2, 5, 6),
-             decimals = 0
+    decimals = 0
   ) %>%
   fmt_number(c(3:4, 7),
-             decimals = 2
+    decimals = 2
   ) %>%
   gt::opt_row_striping() %>%
   tab_style(
