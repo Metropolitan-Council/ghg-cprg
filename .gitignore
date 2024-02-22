@@ -177,3 +177,5 @@ caption_index.RDS
 _meta/data-raw/~$ghg-emission-factors-hub-2021.xlsx
 
 _waste/data-raw/epa/
+_meta/data-raw/EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.csv
+R/fetch_path.R
