@@ -22,6 +22,7 @@ Overall emissions
 ```{r fig-county-emissions-sector}
 #| fig-cap: "County emissions by sector and category"
 #| out-width: "95%"
+
 fig_county_emissions_sector <- plot_ly(
   data = county_emissions_summary,
   source = opts_current$get()$label,
@@ -51,31 +52,34 @@ fig_county_emissions_sector
 ```{r fig-transportation-emissions}
 #| fig-cap: "Transportation county level emissions"
 #| out-width: "95%"
-plot_county_emissions(
+fig_transportation_emissions <- plot_county_emissions(
   county_emissions = county_emissions,
   .sector = "Transportation",
   .plotly_source = opts_current$get()$label
 )
+fig_transportation_emissions
 ```
 
 ```{r fig-energy-emissions}
 #| fig-cap: "Energy county level emissions"
 #| out-width: "95%"
-plot_county_emissions(
+fig_energy_emissions <- plot_county_emissions(
   county_emissions = county_emissions,
   .sector = "Energy",
   .plotly_source = opts_current$get()$label
 )
+fig_energy_emissions
 ```
 
 ```{r fig-waste-emissions}
 #| fig-cap: "Waste and wastewater county level emissions"
 #| out-width: "95%"
-plot_county_emissions(
+fig_waste_emissions <- plot_county_emissions(
   county_emissions = county_emissions,
   .sector = "Waste",
   .plotly_source = opts_current$get()$label
 )
+fig_waste_emissions
 ```
 
 

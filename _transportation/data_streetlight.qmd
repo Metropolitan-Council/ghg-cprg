@@ -96,7 +96,7 @@ StreetLight returns not only vehicle volume, but also trip attributes, like trip
 #| fig-cap: "StreetLight origin-destination passenger trip length matrix"
 #| out-width: "95%"
 
-fig_stl_trip_dist_matrix_pass <- plot_ly(
+fig_stl_trip_distance_matrix_passenger <- plot_ly(
   data = passenger_od_trip,
   source = opts_current$get()$label,
   y = ~origin_zone_name,
@@ -134,7 +134,7 @@ fig_stl_trip_dist_matrix_pass <- plot_ly(
     legend_title = "Average trip length"
   )
 
-fig_stl_trip_dist_matrix_pass
+fig_stl_trip_distance_matrix_passenger
 ```
 
 
@@ -371,8 +371,8 @@ passenger_od_tbi_distance <- passenger_od_trip %>%
 
 @fig-trip-dist-tbi shows a strong positive correlation when comparing origin-destination pairs. Note that TBI origin-destination pairs with fewer than 30 observed trips were removed due to low sample size. 
 
-```{r fig-trip-dist-tbi}
-#| fig-cap:  "Avg. trip distance, Travel Behavior Inventory and StreetLight"
+```{r fig-stl-trip-dist-tbi}
+#| fig-cap: "Avg. trip distance, Travel Behavior Inventory and StreetLight"
 #| out-width: "95%"
 
 one_slope <- tibble(
@@ -585,7 +585,7 @@ comm_od_pair_index <- comm_trip_length_bin %>%
 #| fig-cap: "StreetLight origin-destination medium-duty trip length matrix"
 #| out-width: "95%"
 
-fig_stl_trip_dist_matrix_med <- plot_ly(
+fig_stl_trip_distance_matrix_medium <- plot_ly(
   data = comm_trip_length_bin %>%
     filter(vehicle_weight == "Medium"),
   source = opts_current$get()$label,
@@ -624,14 +624,14 @@ fig_stl_trip_dist_matrix_med <- plot_ly(
     legend_title = "Average trip length"
   )
 
-fig_stl_trip_dist_matrix_med
+fig_stl_trip_distance_matrix_medium
 ```
 
 ```{r fig-stl-trip-distance-matrix-heavy}
 #| fig-cap: "StreetLight origin-destination heavy-duty trip length matrix"
 #| out-width: "95%"
 
-fig_stl_trip_dist_matrix_heavy <- plot_ly(
+fig_stl_trip_distance_matrix_heavy <- plot_ly(
   data = comm_trip_length_bin %>%
     filter(vehicle_weight == "Heavy"),
   source = opts_current$get()$label,
@@ -670,7 +670,7 @@ fig_stl_trip_dist_matrix_heavy <- plot_ly(
     legend_title = "Average trip length"
   )
 
-fig_stl_trip_dist_matrix_heavy
+fig_stl_trip_distance_matrix_heavy
 ```
 
 ```{r fig-stl-trip-length-dist-widget-comm}
@@ -766,7 +766,7 @@ vehicle_weight_comp <-
     ">33,000", "Class 8+: >33,001 lbs", "Heavy-duty", "Heavy-duty"
   )
 
-tbl_vehicle_weight_class <-
+tbl_vehicle_weight_classifications <-
   gt::gt(vehicle_weight_comp,
     row_group_as_column = FALSE
   ) %>%
@@ -842,7 +842,7 @@ tbl_vehicle_weight_class <-
   # fmt_markdown() %>%
   as_raw_html()
 
-tbl_vehicle_weight_class
+tbl_vehicle_weight_classifications
 ```
 
 To create the calibration dataset, we found the ratio of passenger/medium/heavy-duty vehicles for at traffic count stations within our study area using state DOT data. You can read more about vehicle classification data in @sec-vehicle-weight-dist. 
@@ -864,11 +864,11 @@ dot_streetlight <- left_join(
 ```
 
 
-```{r fig-streetlight-hpms}
+```{r fig-streetlight-hpms-vmt}
 #| fig-cap: "County vehicle miles traveled and StreetLight Volume"
 #| out-width: "95%"
 
-fig_dot_vmt_stl <- plot_ly(
+fig_streetlight_hpms_vmt <- plot_ly(
   data = dot_streetlight,
   source = opts_current$get()$label,
   x = ~annual_vmt,
@@ -899,7 +899,7 @@ fig_dot_vmt_stl <- plot_ly(
     legend = list(orientation = "h")
   )
 
-fig_dot_vmt_stl
+fig_streetlight_hpms_vmt
 ```
 
 

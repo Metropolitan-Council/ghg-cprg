@@ -66,7 +66,7 @@ bound_box <- list(
 )
 
 
-MN_ng_servTerrs <- council_leaflet() %>%
+fig_mninnesota_ng_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
       sf::st_transform(4326),
@@ -92,7 +92,7 @@ MN_ng_servTerrs <- council_leaflet() %>%
     lat2 = bound_box[[4]]
   )
 
-MN_ng_servTerrs
+fig_mninnesota_ng_servTerrs
 ```
 
 ```{r fig-MN-ng-inScope-servTerrs}
@@ -112,7 +112,7 @@ MN_bound_box <- list(
   lat2 =  45.4 # Northeast latitude
 )
 
-MN_ng_inScope_servTerrs <- council_leaflet() %>%
+fig_MN_ng_inScope_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
       sf::st_transform(4326),
@@ -137,7 +137,7 @@ MN_ng_inScope_servTerrs <- council_leaflet() %>%
     lat2 = MN_bound_box[[4]]
   )
 
-MN_ng_inScope_servTerrs
+fig_MN_ng_inScope_servTerrs
 ```
 
 ### Wisconsin
@@ -165,7 +165,7 @@ bound_box <- list(
   lat2 =  47.080 # Northeast latitude
 )
 
-WI_ng_servTerrs <- council_leaflet() %>%
+fig_wisconsin_ng_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
       sf::st_transform(4326),
@@ -190,7 +190,7 @@ WI_ng_servTerrs <- council_leaflet() %>%
     lat2 = bound_box[[4]]
   )
 
-WI_ng_servTerrs
+fig_wisconsin_ng_servTerrs
 ```
 
 Wisconsin utilities in scope
@@ -212,7 +212,7 @@ WI_bound_box <- list(
 )
 
 
-WI_ng_inScope_servTerrs <- council_leaflet() %>%
+fig_wisconsin_ng_inScope_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
       sf::st_transform(4326),
@@ -242,7 +242,7 @@ WI_ng_inScope_servTerrs <- council_leaflet() %>%
     lat2 = WI_bound_box[[4]]
   )
 
-WI_ng_inScope_servTerrs
+fig_wisconsin_ng_inScope_servTerrs
 ```
 
 ```{r echo=FALSE}

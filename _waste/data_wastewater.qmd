@@ -69,12 +69,12 @@ The Metropolitan Council area covers most of the 7-county Twin Cities area, but 
 
 <!-- We may want to move this map to the appendix? -->
 
-```{r fig-map-calibration-set}
+```{r fig-map-ww-service-area}
 #| fig-cap: "Metropoilitan Council wastewater service area"
 #| out-width: "95%"
 #| out-height: "500px"
 
-council_leaflet() %>%
+fig_map_ww_service_area <- council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
       sf::st_transform(4326) %>%

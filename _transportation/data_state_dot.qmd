@@ -100,6 +100,7 @@ cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 bound_box <- st_bbox(commercial_lines) %>%
   unlist()
 
+fig_map_calibration_set <- 
 council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
@@ -136,6 +137,8 @@ council_leaflet() %>%
     lat1 = bound_box[[2]],
     lat2 = bound_box[[4]]
   )
+
+fig_map_calibration_set
 ```
 
 Only `r nrow(commercial_points)` calibration roads were used for this inventory due to data availability constraints. 
@@ -170,7 +173,7 @@ calibration_long <- commercial_points %>%
       )
   )
 
-fig_veh_weight_dist <- plot_ly(
+fig_vehicle_weight_distribution <- plot_ly(
   data = calibration_long,
   source = opts_current$get()$label,
   type = "bar",
@@ -203,7 +206,7 @@ fig_veh_weight_dist <- plot_ly(
     )
   )
 
-fig_veh_weight_dist
+fig_vehicle_weight_distribution
 ```
 
 ### Limitations

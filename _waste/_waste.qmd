@@ -32,11 +32,12 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 #| fig-cap: "Waste and wastewater county level emissions"
 #| out-width: "95%"
 
-plot_county_emissions(
+fig_waste_emissions_2 <- plot_county_emissions(
   county_emissions = county_emissions,
   .sector = "Waste",
   .plotly_source = opts_current$get()$label
 )
+fig_waste_emissions_2
 ```
 
 Wastewater data come from two sources - the Metropolitan Council Environmental Services Division and [xxx]. 
@@ -46,6 +47,8 @@ Data here are categorized into Scope 1, emissions directly from wastewater activ
 
 ```{r fig-mn-county-ww-emissions}
 #| fig-cap: "County aggregated wastewater emissions by scope"
+#| out-width: "95%"
+
 metc_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metc_wastewater.RDS")) %>%
   filter(year == 2021)
 
@@ -87,8 +90,6 @@ fig_mn_county_ww_emissions
 
 
 ## Results
-
-
 
 
 

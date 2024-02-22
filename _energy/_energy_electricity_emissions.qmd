@@ -67,6 +67,7 @@ Table of emissions factors converted into CO~2~e??
 ```{r fig-electricity-county-emissions}
 #| fig-cap: "2021 electricity emissions by county"
 #| out-width: "95%"
+
 mn_emissions <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS"))
 wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
   rename(county = county_name)

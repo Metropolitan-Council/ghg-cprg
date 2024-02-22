@@ -167,7 +167,7 @@ To directly compare overall passenger emissions rates, we applied a weighted ave
 #| out-width: "95%"
 #| out-height: "300px"
 
-fig_moves_ghg_hub_comp <- plot_ly(
+fig_moves_ghg_hub_comparison <- plot_ly(
   data = epa_plus_moves %>%
     group_by(`Vehicle weight`),
   source = opts_current$get()$label,
@@ -201,7 +201,7 @@ fig_moves_ghg_hub_comp <- plot_ly(
   ) %>%
   layout(barmode = "identity")
 
-fig_moves_ghg_hub_comp
+fig_moves_ghg_hub_comparison
 ```
 
 ### Limitations
