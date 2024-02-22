@@ -133,6 +133,13 @@ fig_regional_fuel_veh_age <-
     legend = list(orientation = "h")
   )
 fig_regional_fuel_veh_age
+
+# add source to combined plot
+fig_regional_fuel_veh_age$x$source <- "fig-regional-fuel-veh-age"
+
+# remove subplots
+rm(fuel_dist_pl)
+rm(fuel_grp)
 ```
 
 ### Average trip distance between counties
