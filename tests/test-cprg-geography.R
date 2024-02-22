@@ -11,7 +11,7 @@ testthat::test_that("County data is as expected", {
     )
   )
   testthat::expect_equal(names(cprg_county), c(
-    "STATE", "STATEFP", "COUNTYFP", "GEOID",
+    "STATE", "STATE_ABB", "STATEFP", "COUNTYFP", "GEOID",
     "NAME", "NAMELSAD",
     "geometry"
   ))
@@ -25,7 +25,7 @@ testthat::test_that("CTU data is as expected", {
   testthat::expect_equal(nrow(cprg_ctu), 288)
   testthat::expect_equal(names(cprg_ctu), c(
     "CTU_NAME", "CTU_CLASS", "COUNTY_NAM",
-    "STATEFP", "STATE",
+    "STATEFP", "STATE", "STATE_ABB",
     "GNIS_FEATU", "geometry", "GEOID"
   ))
 

@@ -18,6 +18,9 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(keyring, quietly = TRUE))
   suppressMessages(library(here, quietly = TRUE))
   suppressMessages(library(fs, quietly = TRUE))
+  suppressMessages(library(testthat, quietly = TRUE))
+  suppressMessages(library(magrittr, quietly = TRUE))
+
 
 
   # Plotting, Mapping ----

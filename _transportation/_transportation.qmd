@@ -15,10 +15,21 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
+vmt_emissions_all <- vmt_emissions %>%
+  group_by(zone) %>%
+  summarise(
+    vmt_total = sum(vmt_total),
+    vmt_same = sum(vmt_same),
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  )
 hookaddcap()
 ```
 ## Introduction
 
+This is the transportation section, where we estimate on-road emissions. 
+
+Note that this does not include buses, trains, freight rail, light rail, and other transportation emissions.
 
 ## Methods
 
@@ -28,19 +39,19 @@ $$Emmissions = miles \times \frac{\text{GHG grams}}{mile}$$
 
 ### Vehicle Miles Traveled      
 
-To find the estimate number of vehicle miles traveled (VMT), we used the estimated number of vehicles and the average trip length in miles for all origin - destination pairs. VMT is calculated as follows:
+To find the estimate number of vehicle miles traveled (VMT), we used the estimated number of vehicles and the average trip length in miles for all origin - destination pairs and vehicle types (passenger, medium-duy, and heavy-duty). VMT is calculated as follows:
 
-$$VMT{_v} = trips{_v} \times length{_v}$$
-
+$$VMT = trips \times length$$
 where 
 
 $$trips = \text{number of trips}$$
 $$length = \text{average trip length in miles}$$
-$$v = \text{vehicle type}$$
 
 ### Emissions factors
 
-$$Emissions=\frac{1}{2}T_{o} + \frac{1}{2}T_{d}  + T{_d}$$
+You can read more about emissions factors we used in @sec-epa-moves. 
+
+$$Emissions=\frac{1}{2}T_{o} + \frac{1}{2}T_{d}  + T{_s}$$
 
 where
 
@@ -48,20 +59,17 @@ $$T_o=\textrm{grams of emissions for each GHG from all trips originating in the 
 
 $$T_d=\textrm{grams of emissions for each GHG from all trips ending in the county}$$ 
 
+and 
+
+$$T_s=\textrm{grams of emissions for each GHG for trips originating and ending within the county}$$ 
+
+Transportation VMT and emissions were calculated in [vmt_emissions.R](data-raw/vmt_emissions.R), using functions [`calculate_emissions()`](data-raw/_calculate_emissions.R) and [`calculate_vmt()`](data-raw/_calculate_vmt.R).  
+
 ## Results
 
 ```{r fig-transportation-county-emissions}
 #| fig-cap: "2021 annual emissions by vehicle weight"
 #| out-width: "95%"
-vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
-
-vmt_emissions_all <- vmt_emissions %>%
-  group_by(zone) %>%
-  summarise(
-    vmt_total = sum(vmt_total),
-    vmt_same = sum(vmt_same),
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
-  )
 
 plot_ly(
   type = "bar",
@@ -136,65 +144,15 @@ plot_ly(
   )
 ```
 
-
-To validate our county origin-destination VMT data, we can compare the county totals to the DOT reported values from MnDOT [@mndotVMTRouteSystem2021] and WisDOT [@wisdotWisconsinVehicleMiles2021]. Note that these data include all vehicles, passenger and commercial. 
-
-```{r hpms-vmt}
-dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
-  filter(year == 2021)
-
-dot_streetlight <- left_join(
-  vmt_emissions_all,
-  dot_vmt,
-  by = c("zone" = "county")
-) %>%
-  unique()
-```
-
-
-```{r fig-streetlight-hpms}
-#| fig-cap: "County vehicle miles traveled and StreetLight Volume"
-#| out-width: "95%"
-plot_ly(
-  data = dot_streetlight,
-  source = opts_current$get()$label,
-  x = ~annual_vmt,
-  y = ~vmt_total,
-  type = "scatter",
-  mode = "markers",
-  hovertemplate = ~ paste0(
-    "County: ", zone, "<br>",
-    "Annual VMT: ", round(annual_vmt * 1e-9, digits = 2), " billion<br>",
-    "StreetLight VMT: ", round(vmt_total * 1e-9, digits = 2), " billion<br>",
-    "<extra></extra>"
-  ),
-  opacity = 0.7,
-  marker = list(
-    size = 18,
-    line = list(
-      color = "lightgray",
-      width = 2
-    )
-  )
-) %>%
-  plotly_layout(
-    main_title = "County vehicle miles traveled and StreetLight Volume",
-    subtitle = "Strong positive correlation",
-    x_title = "Annual VMT (HPMS)",
-    y_title = "StreetLight VMT",
-    legend_title = "",
-    legend = list(orientation = "h")
-  )
-```
-
 ### Comparison with other inventories
 
-- StreetLight GHG inventory method, if released in time.
 - 2018 Met Council inventory
 
 #### National Emissions Inventory 
 
 The National Emissions Inventory (NEI) is a comprehensive and detailed estimate of air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants from air emissions sources. The county-level GHG emissions included in the NEI for this category are calculated by running the MOVES model with State-, Local-, and Tribal-submitted activity data and EPA-developed activity inputs based on data from FHWA and other sources [@usepa2020NationalEmissions2023]. 
+
+NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and processed in R scripts: [epa_nei.R](../_meta/data-raw/epa_nei.R) and [epa_nei_transportation.R](data-raw/epa_nei_transportation.R)
 
 ```{r read-nei}
 epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei.RDS"))
@@ -253,17 +211,19 @@ plot_ly(
 
 #### Local Greenhouse Gas Inventory Tool (LGGIT)
 
-EPA’s Local Greenhouse Gas Inventory Tool (LGGIT) was developed to help communities across the United States to evaluate their greenhouse gas emissions. We used the LGGIT to validate our calculations and datasets.
+EPA’s Local Greenhouse Gas Inventory Tool (LGGIT) was developed to help communities across the United States to evaluate their greenhouse gas emissions. We used the LGGIT to validate our calculations and datasets [@usepaLocalGreenhouseGas2017].
 
-We used the LGGIT Excel workbook tool with the following inputs in the "Mobile-Data" sheet. Several calculations were made
+We used the LGGIT Excel workbook tool with the following inputs in the "Mobile-Data" sheet. Several calculations and assumptions were made
 
 - Passenger VMT was split between gasoline and diesel powered vehicles based on regional fleet composition in the Travel Behavior Inventory (TBI).
-- Passenger vehicle age was determined from the median vehicle model year in the TBI. 
-- Fuel consumption was calculated by dividing VMT by average vehicle miles per gallon (MPG), specific to vehicle type and fuel type. Fuel efficiency data were taken from the LGGIT tool. 
+- Passenger vehicle age was determined from the median vehicle model year in the TBI. See @sec-regional-fleet for more detail.
+- Fuel consumption was calculated by dividing VMT by average vehicle miles per gallon (MPG), specific to vehicle type and fuel type.
+- Fuel efficiency data were taken from the LGGIT tool and verified with the EPA Emission Factors Hub (2021 edition) [@usepaGHGEmissionFactors2021].  
+- All medium-duty VMT were classified as "Light Truck", while all heavy-duty VMT were classified as "Heavy-Duty Vehicle".  
+- Commercial trucks were assumed to be year 2007, based on a 2018 report that found the average age of trucks in the US to be 14.2 years [@brusseauAgingTrucksCreate2019] (`2021 - 14 = 2007`).   
 
-All medium-duty VMT were classified as "Light Truck", while all heavy-duty VMT were classified as "Heavy-Duty Vehicle".
 
-Additionally, commercial trucks were assumed to be year 2007, based on a 2018 report that found the average age of trucks in the US to be 14.2 years [@brusseauAgingTrucksCreate2019] (`2021 - 14 = 2007`). 
+LGGIT entries and resulting output tables were generated and processed in [epa_lggit.R](data-raw/epa_lggit.R). 
 
 
 ```{r tbl-lggit-entries}
@@ -271,9 +231,10 @@ Additionally, commercial trucks were assumed to be year 2007, based on a 2018 re
 #| out-width: "95%"
 lggit_vmt_entries <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_vmt_entries.RDS"))
 
-(lggit_vmt_entries) %>%
+lggit_vmt_entries %>%
   gt() %>%
   gt::opt_row_striping() %>%
+  fmt_number(8:9, decimals = 0) %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
@@ -295,9 +256,14 @@ lggit_total_emiss <- (lggit_totals$total %>% sum()) %>% scales::comma()
 ```
 
 The results from the LGGIT tool indicate a regional total of **`r lggit_total_emiss` metric tons CO~2~e**, while our calculations indicate **`r cprg_total_emiss` metric tons CO~2~e**. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. See @sec-epa-moves for a more detailed comparison.
+
+
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
 caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
 saveCap(paste0("cap-", caption_index))
 saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
+
+{{< pagebreak >}}
+

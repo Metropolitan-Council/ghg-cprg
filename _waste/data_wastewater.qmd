@@ -2,40 +2,152 @@
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
+
+# pull data here
+epa_ww <- readRDS(file.path(here::here(), "_waste/data/epa_county_wastewater.RDS"))
+mpca_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/epa_wastewater.RDS"))
+mc_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metc_wastewater.RDS"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+metc_service_area <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metc_service_area.RDS"))
+
+
+mc_ww_cty <- mc_ww %>%
+  group_by(year, COUNTY_NAM, scope) %>%
+  summarize(co2e = sum(emissions_metric_tons_co2e), .groups = "keep") %>%
+  filter(year == 2021 & scope == "Scope 1")
+
 hookaddcap()
 ```
 
-Wastewater emissions are estimated at the state level by the EPA. Additionally, the Minnesota Pollution Control Agency (MPCA) provides a statewide estimate which is notably lower than EPA estimates, largely due to lower estimated methane emissions. Each inventory only extends to 2020, currently. We used the EPA estimate for Wisconsin and MPCA estimate for Minnesota, and downscaled emission estimates to county levels by proportioning by 2020 population.
+We currently have three sources for wastewater emissions: the EPA state inventory and projection tool, the Minnesota Pollution Control Agency (MPCA) emissions inventory, and Metropolitan Council Environmental Services emission estimates. Because only the EPA's estimate extends to Wisconsin and Minnesota we are reporting those data for consistency, but explore all three below where they have geographic overlap.
 
-- Data is the highest quality rank (federal and state agency)
-- Data is modeled by the agencies based on multiple parameters, including population, aerobic vs anaerobic treatment use, and a variety of other factors.
-- If this is a modeled dataset, what is the sample? UNCLEAR
-- Output data is CO2 equivalencies in metric tonnes
-- EPA data is accessible [here](https://www.epa.gov/statelocalenergy/download-state-inventory-and-projection-tool)
-  MPCA data is accessible via the tool found [here](https://public.tableau.com/app/profile/mpca.data.services/viz/GHGemissioninventory/GHGsummarystory)
-- Data was downscaled to county levels for both EPA estimates and MPCA estimates (MN only). EPA and MPCA estimates were compared and MPCA estimates used due to a finer understanding of MN wastewater treatment practices.
-- Data is the 2020 statewide estimates downscaled to the county level by population percentage.
-- This is the latest data available for both datasets (accessed January 2024).
-- We are assuming MPCA data is more accurate than EPA data and that emissions are downscalable by population.
-- Which subject matter expert (SME) reviewed this data?
-- Describe testing used to verify data
+The EPA estimate is a high-quality government dataset that models emissions using state population, biochemical oxygen demand, fraction of wastewater anaerobically digested, fraction of population on septic, estimated protein content, and biosolids used as fertilizer to estimate CH~4~ and N~2~O emissions [@usepaStateGreenhouseGas2024]. These inputs are modifiable and should be explored further in the CCAP. We down-scaled the state level emission estimates to county levels by population percentage. The actual sample os unclear. 
 
-Be sure to add a citation of this dataset to the Zotero shared library.
+The EPA tool provides outputs in metric tons CO~2~e. We confirmed that the global warming potentials (GWP) used are from AR5 [@ipccClimateChange2014]. We used the most recent version of the tool released in January 2024, version 2024.1. 
+
+We are currently using all and only default input values provided by the EPA, though will refine these based on our knowledge of local wastewater treatment in the future.
+
+You can access the EPA tool on the [EPA website](https://www.epa.gov/statelocalenergy/download-state-inventory-and-projection-tool) and the MPCA data through their [Tableau Dashboard](https://public.tableau.com/app/profile/mpca.data.services/viz/GHGemissioninventory/GHGsummarystory). You can also read full methodologies for MPCA [@claflinGreenhouseGasEmissions2023] and EPA [@usepaStateGreenhouseGas2024a] in their respective documents. 
 
 ### Data characteristics
 
-- Were there any missing data? How did you handle missing data?
-- Plots, tables, and description of data distribution
-- Variance, Z-Score, quantiles
-- Facet views by categorical variables
+There are many sources of uncertainty in these estimates due to multiple activity data inputs required for CH~4~ and N~2~O emission estimates. The EPA wastewater module does not offer guidance on quantifying these sources of uncertainty, only describing the potential sources themselves. We have not included any uncertainty estimates in our final values. 
 
 ### Limitations
 
+- In order to have homogeneous comparisons among counties, we are relying on default EPA State Inventory Tool data which may miss particularities about how wastewater is processed in our narrower county scope.
+- We are assuming EPA default input values are appropriate representations of the 11 county MSA region and that we can scale to county levels by population given that we are estimating municipal wastewater treatment.
+
 ### Comparison with similar datasets
 
-### Data dictionary
+The Metropolitan Council, MPCA, and EPA source data leads to different estimates of emissions in the common seven county region. The Metropolitan Council does not process all wastewater in the seven county region. Additionally, they report CO~2~ emissions from combustion of stationary fuels for infrastructure used in directly processing wastewater, unlike EPA estimates which are CH~4~ and N~2~O emissions from municipal wastewater treatment of organic matter. 
 
-Table with detailed description of columns and definitions for each data table.
+```{r tbl-ww-comparison-scope}
+#| tbl-cap: "Wastewater data sources and geographic scopes"
+#| out-width: "95%"
+tribble(
+  ~`Data source`, ~`Geographic scope`, # ~`Citation`,
+  "EPA GHG Inventory and Projection Tool", "Minnesota and Wisconsin, scaled to county population", # "@usepaStateGreenhouseGas2024a",
+  "MPCA GHG Inventory", "Minnesota, scaled to county population", # "@claflinGreenhouseGasEmissions2023",
+  "Metropolitan Council Wastewater Emissions Estimate", "7-county Minnesota metro area" # "@"
+) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::fmt_markdown()
+```
+
+
+The Metropolitan Council area covers most of the 7-county Twin Cities area, but no areas in Wisconsin [@metcSewershedsMetershedsWWTP2020]. The Met Council environmental services division provided us with a city and county breakdown of wastewater emissions for their service area. 
+
+<!-- We may want to move this map to the appendix? -->
+
+```{r fig-map-calibration-set}
+#| fig-cap: "Metropoilitan Council wastewater service area"
+#| out-width: "95%"
+#| out-height: "500px"
+
+council_leaflet() %>%
+  addPolygons(
+    data = cprg_county %>%
+      sf::st_transform(4326) %>%
+      sf::st_union(),
+    fill = FALSE,
+    color = "gray",
+    group = "CPRG area",
+    popup = "CPRG county area"
+  ) %>%
+  addPolygons(
+    data = metc_service_area,
+    group = "MetC wastewater service area",
+    weight = 1,
+    popup = "MetC wastewater service area"
+  ) %>%
+  leaflet::addLayersControl(
+    overlayGroups = c(
+      "CPRG area",
+      "MetC wastewater service area"
+    )
+  )
+```
+
+Overall, the EPA estimate for each county proved highest, followed by the MPCA estimate and then Met Council estimate. We used the EPA estimate in our overall emissions estimate. 
+
+```{r fig-wastewater-source-comparison}
+#| fig-cap: "Total waste generated by county"
+#| out-width: "95%"
+
+comp_2021 <- bind_rows(
+  mc_ww_cty %>%
+    mutate(county_name = COUNTY_NAM, source = "Met Council") %>%
+    ungroup() %>%
+    select(-c(year, scope, COUNTY_NAM)),
+  mpca_ww %>%
+    mutate(county_name = NAME, source = "MPCA", co2e = state_co2e) %>%
+    ungroup() %>%
+    select(-c(GEOID, NAME, state_co2e, epa_co2e)),
+  epa_ww %>%
+    mutate(county_name = NAME, source = "EPA", co2e = epa_co2e) %>%
+    ungroup() %>%
+    select(-c(GEOID, NAME, epa_co2e))
+)
+
+comp_2021 %>%
+  filter(county_name %in% mc_ww_cty$COUNTY_NAM) %>%
+  plot_ly(
+    x = ~ reorder(county_name, -co2e),
+    y = ~co2e,
+    source = opts_current$get()$label,
+    type = "bar",
+    hoverinfo = "text",
+    color = ~source,
+    hovertemplate = ~ paste0(
+      "County: ", county_name, "<br>",
+      "Data source: ", source, "<br>",
+      "Emissions: ", scales::comma(round(co2e)), " metric tons CO<sub>2</sub>e",
+      "<extra></extra>"
+    )
+  ) %>%
+  plotly_layout(
+    main_title = "County wastewater emissions by data source",
+    x_title = "County",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Data source",
+    barmode = "identity"
+  ) %>%
+  layout(
+    barmode = "identity"
+  )
+```
+
+<!-- ### Data dictionary -->
+<!-- Table with detailed description of columns and definitions for each data table. -->
+
+Code reviewer: Liz Roten
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
@@ -43,3 +155,4 @@ caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pa
 saveCap(paste0("cap-", caption_index))
 saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
+{{< pagebreak >}}
