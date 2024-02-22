@@ -139,7 +139,7 @@ emissions_all <- bind_rows(
       "Wastewater",
       # energy levels
       "Electricity",
-      "Natural Gas",
+      "Natural gas",
       "Propane",
       "Kerosene"
     ),
