@@ -27,8 +27,8 @@ TBI survey statistics were processed in [tbi_survey_stats.R](data-raw/tbi_survey
 ```{r tbl-tbi-hh-county-dist}
 #| tbl-cap: "2021 TBI household survey geographic distribution"
 #| out-width: "95%"
-
-tbi_home_county %>%
+tbl_tbi_hh_county_dist <-
+  tbi_home_county %>%
   select(
     "Household county" = cprg_hh_county,
     "Estimated number of households" = est_n,
@@ -47,6 +47,8 @@ tbi_home_county %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_tbi_hh_county_dist
 ```
 
 
@@ -63,7 +65,8 @@ Regional fleet statistics were processed in [tbi_vehicle_stats.R](data-raw/tbi_v
 ```{r tbl-vehicle-fuel-age}
 #| tbl-cap: "Median vehicle age and proportion of all regional vehicles by grouped fuel type"
 #| out-width: "95%"
-tbi_vehicle_fuel_age %>%
+tbl_vehicle_fuel_age <-
+  tbi_vehicle_fuel_age %>%
   select(
     "Fuel type" = fuel,
     "Median vehicle year" = year_median,
@@ -84,6 +87,8 @@ tbi_vehicle_fuel_age %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_vehicle_fuel_age
 ```
 
 ```{r fig-regional-fuel-veh-age}
@@ -141,8 +146,8 @@ TBI trip distances were processed in [tbi_trip_length.R](data-raw/tbi_trip_lengt
 ```{r tbl-reg-avg-trip-length}
 #| tbl-cap: "Regional mean trip distance. 2021 TBI."
 #| out-width: "95%"
-
-regional_trip_length_avg %>%
+tbl_reg_avg_trip_length <-
+  regional_trip_length_avg %>%
   select(
     "Mean trip distance (miles)" = mean_trip_dist,
     "Mean trip distance standard error" = mean_trip_dist_se,
@@ -164,6 +169,8 @@ regional_trip_length_avg %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_reg_avg_trip_length
 ```
 
 Origin-destination pairs with fewer than 30 observed trips were removed. 
@@ -220,7 +227,8 @@ fig_tbi_trip_dist_matrix
 ```{r tbl-od-trip-length}
 #| tbl-cap: "Mean trip distance by origin-destination county"
 #| out-width: "95%"
-tbi_od_ordered_trip_length %>%
+tbl_od_trip_length <-
+  tbi_od_ordered_trip_length %>%
   arrange(-estimate_n) %>%
   select(
     "Origin-Destination pair" = origin_dest_county_pair,
@@ -244,6 +252,8 @@ tbi_od_ordered_trip_length %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_od_trip_length
 ```
 
 :::

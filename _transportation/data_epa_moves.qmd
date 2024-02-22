@@ -66,7 +66,7 @@ lggit_clean <- lggit_kg_emissions_per_mile %>%
 ```{r tbl-epa-moves-values}
 #| tbl-cap: "Emissions in grams per mile traveled by vehicle weight in the Twin Cities region. EPA MOVES4."
 #| out-width: "95%"
-epa_moves_clean %>%
+tbl_epa_moves_values <- epa_moves_clean %>%
   gt() %>%
   gt::opt_row_striping() %>%
   fmt_number(3:6, decimals = 2) %>%
@@ -75,6 +75,7 @@ epa_moves_clean %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+tbl_epa_moves_values
 ```
 ### Comparsion with EPA GHG Emissions Hub (2021)
 
@@ -83,7 +84,8 @@ For comparison, we pulled the emissions per mile rates from the Local Greenhouse
 ```{r tbl-lggit-emissions-per-mile}
 #| tbl-cap: "Grams of emissions per mile by vehicle type and fuel type. EPA GHG Emission Hub (2021)"
 #| out-width: "95%"
-lggit_clean %>%
+
+tbl_lggit_emissions_per_mile <- lggit_clean %>%
   gt() %>%
   fmt_number(4:7, decimals = 2) %>%
   gt::opt_row_striping() %>%
@@ -92,6 +94,8 @@ lggit_clean %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_lggit_emissions_per_mile
 ```
 
 ```{r lggit-mean-passenger}

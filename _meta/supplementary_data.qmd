@@ -32,7 +32,8 @@ All EPA Emission Factor Hub values were pulled from an Excel workbook downloaded
 ```{r tbl-egrid}
 #| tbl-cap: "Electricity emission factors. 2021 EPA GHG Emission Factor Hub, EPA eGRID2019, February 2021."
 #| out-width: "95%"
-epa_ghg_factor_hub$egrid %>%
+
+tbl_egrid <- epa_ghg_factor_hub$egrid %>%
   mutate(GHG = str_remove(emission, "lb ")) %>%
   select(
     `eGrid Subregion`,
@@ -54,12 +55,16 @@ epa_ghg_factor_hub$egrid %>%
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
   )
+
+tbl_egrid
 ```
 
 ```{r tbl-stationary-combustion}
 #| tbl-cap: "Stationary combustion emission factors. 2021 EPA GHG Emission Factor Hub, Federal Register EPA; 40 CFR Part 98."
 #| out-width: "95%"
-epa_ghg_factor_hub$stationary_combustion %>%
+
+tbl_stationary_combustion <-
+  epa_ghg_factor_hub$stationary_combustion %>%
   filter(
     per_unit %in% c(
       "scf",
@@ -101,12 +106,16 @@ epa_ghg_factor_hub$stationary_combustion %>%
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
   )
+
+tbl_stationary_combustion
 ```
 
 ```{r tbl-waste-factors}
 #| tbl-cap: "Solid waste emission factors. 2021 EPA GHG Emission Factor Hub, EPA WARM version 15, November 2020."
 #| out-width: "95%"
-epa_ghg_factor_hub$waste %>%
+
+tbl_waste_factors <-
+  epa_ghg_factor_hub$waste %>%
   select(Material,
     Method = name,
     `Metric tons CO₂e per short ton material` = value
@@ -118,6 +127,8 @@ epa_ghg_factor_hub$waste %>%
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
   )
+
+tbl_waste_factors
 ```
 
 Transportation emissions factors were processed in [epa_moves.R](../_transportation/data-raw/epa_moves.R). Read more about these emission factors in @sec-epa-moves. 
@@ -125,7 +136,7 @@ Transportation emissions factors were processed in [epa_moves.R](../_transportat
 ```{r tbl-moves-factors}
 #| tbl-cap: "Transportation emissions factors. Source: EPA MOVES4"
 #| out-width: "95%"
-epa_moves %>%
+tbl_moves_factors <- epa_moves %>%
   pivot_longer(
     cols = 3:6,
     names_to = "GHG",
@@ -155,6 +166,8 @@ epa_moves %>%
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
   )
+
+tbl_moves_factors
 ```
 
 ## Global Warming Potential (GWP) {#sec-gwp}
@@ -166,8 +179,7 @@ Across all sectors, we used the GWP values established in the Intergovernmental 
 ```{r tbl-gwp}
 #| tbl-cap: "Global Warming Potential (GWP) values"
 #| out-width: "95%"
-
-tibble(
+tbl_gwp <- tibble(
   "Gas" = names(gwp),
   "100-year GWP value" = unlist(gwp),
   "Source" = "IPCC AR5 (2014)"
@@ -190,6 +202,8 @@ tibble(
     cells_body(1, 5)
   ) %>%
   gt::as_raw_html()
+
+tbl_gwp
 ```
 
 
@@ -207,7 +221,7 @@ County data was pulled using `{tigris}`, an R package that downloads TIGER/Line 
 #| out-width: "95%"
 cprg_county_meta <- readRDS(file.path(here::here(), "_meta/data/cprg_county_meta.RDS"))
 
-cprg_county_meta %>%
+tbl_cprg_county <- cprg_county_meta %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -215,6 +229,8 @@ cprg_county_meta %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_cprg_county
 ```
 
 Additionally, population estimates were obtained from the American Community Survey 5-Year estimates (2017-2021) using `{tidycensus}` [@Census2022ACSDP1Y2022.DP05].
@@ -224,7 +240,7 @@ Additionally, population estimates were obtained from the American Community Sur
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population_meta.RDS"))
 
-cprg_population %>%
+tbl_cprg_pop <- cprg_population %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -232,6 +248,8 @@ cprg_population %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_cprg_pop
 ```
 
 ### Cities
@@ -247,7 +265,7 @@ Data from both states was then combined and filtered to include only the workpla
 #| out-width: "95%"
 cprg_ctu_meta <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu_meta.RDS"))
 
-cprg_ctu_meta %>%
+tbl_cprg_ctu <- cprg_ctu_meta %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -255,6 +273,8 @@ cprg_ctu_meta %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_cprg_ctu
 ```
 
 

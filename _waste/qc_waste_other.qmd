@@ -49,15 +49,18 @@ Local inventory of GHG emissions from the community’s other sources with docum
 
 ```{r tbl-waste-other-qc, results='markup'}
 #| tbl-cap: "Local estimate comparison with control estimate"
-tibble::tribble(
-  ~"Other Sectors", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"QC Estimate based on SLOPE (Metric Tons CO~2~e)",
-  "Stationary Combustion", "", "",
-  "Agriculture & land management", "", "",
-  "Waste generation", "", "",
-  "Water", "", "",
-  "Wastewater treatment", "", "",
-  "Other", "", ""
-) %>%
+#| out-width: "95%"
+
+tbl_waste_other_qc <-
+  tibble::tribble(
+    ~"Other Sectors", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"QC Estimate based on SLOPE (Metric Tons CO~2~e)",
+    "Stationary Combustion", "", "",
+    "Agriculture & land management", "", "",
+    "Waste generation", "", "",
+    "Water", "", "",
+    "Wastewater treatment", "", "",
+    "Other", "", ""
+  ) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -66,6 +69,8 @@ tibble::tribble(
   ) %>%
   gt::fmt_markdown() %>%
   gt::as_raw_html()
+
+tbl_waste_other_qc
 ```
 
 ```{r echo=FALSE}

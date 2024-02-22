@@ -238,7 +238,7 @@ LGGIT entries and resulting output tables were generated and processed in [epa_l
 #| out-width: "95%"
 lggit_vmt_entries <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_vmt_entries.RDS"))
 
-lggit_vmt_entries %>%
+tbl_lggit_entries <- lggit_vmt_entries %>%
   gt() %>%
   gt::opt_row_striping() %>%
   fmt_number(8:9, decimals = 0) %>%
@@ -247,6 +247,8 @@ lggit_vmt_entries %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_lggit_entries
 ```
 
 

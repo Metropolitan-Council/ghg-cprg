@@ -46,7 +46,8 @@ The Metropolitan Council, MPCA, and EPA source data leads to different estimates
 ```{r tbl-ww-comparison-scope}
 #| tbl-cap: "Wastewater data sources and geographic scopes"
 #| out-width: "95%"
-tribble(
+
+tbl_ww_comparison_scope <- tribble(
   ~`Data source`, ~`Geographic scope`, # ~`Citation`,
   "EPA GHG Inventory and Projection Tool", "Minnesota and Wisconsin, scaled to county population", # "@usepaStateGreenhouseGas2024a",
   "MPCA GHG Inventory", "Minnesota, scaled to county population", # "@claflinGreenhouseGasEmissions2023",
@@ -59,6 +60,8 @@ tribble(
     locations = cells_column_labels()
   ) %>%
   gt::fmt_markdown()
+
+tbl_ww_comparison_scope
 ```
 
 

@@ -69,7 +69,7 @@ StreetLight provides a rough sample size for the entire analysis, as shown in @t
 ```{r tbl-passenger-stl-sample-size}
 #| tbl-cap: "StreetLight passenger travel analysis sample size"
 #| out-width: "95%"
-county21_data$sample_size %>%
+tbl_passenger_stl_sample_size <- county21_data$sample_size %>%
   select(
     `Data periods` = data_periods,
     `Mode of travel` = mode_of_travel,
@@ -83,6 +83,8 @@ county21_data$sample_size %>%
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
   )
+
+tbl_passenger_stl_sample_size
 ```
 
 
@@ -496,7 +498,8 @@ StreetLight compares the AADT calibration values for a given zone with StreetLig
 ```{r tbl-commercial-stl-sample-size}
 #| tbl-cap: "StreetLight commercial travel analysis sample size"
 #| out-width: "95%"
-county21_truck_data$sample_size %>%
+
+tbl_commercial_stl_sample_size <- county21_truck_data$sample_size %>%
   select(
     `Data periods` = data_periods,
     `Mode of travel` = mode_of_travel,
@@ -511,6 +514,8 @@ county21_truck_data$sample_size %>%
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
   )
+
+tbl_commercial_stl_sample_size
 ```
 
 #### Trip length
@@ -761,9 +766,10 @@ vehicle_weight_comp <-
     ">33,000", "Class 8+: >33,001 lbs", "Heavy-duty", "Heavy-duty"
   )
 
-gt::gt(vehicle_weight_comp,
-  row_group_as_column = FALSE
-) %>%
+tbl_vehicle_weight_class <-
+  gt::gt(vehicle_weight_comp,
+    row_group_as_column = FALSE
+  ) %>%
   tab_style(
     style = list(
       cell_fill(
@@ -835,6 +841,8 @@ gt::gt(vehicle_weight_comp,
   ) %>%
   # fmt_markdown() %>%
   as_raw_html()
+
+tbl_vehicle_weight_class
 ```
 
 To create the calibration dataset, we found the ratio of passenger/medium/heavy-duty vehicles for at traffic count stations within our study area using state DOT data. You can read more about vehicle classification data in @sec-vehicle-weight-dist. 

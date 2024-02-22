@@ -41,7 +41,9 @@ Local inventory of GHG emissions from mobile sources with documentation of the f
 
 ```{r tbl-transport-qc-mpy}
 #| tbl-cap: "Transportation average miles per year, local and quality control comparison by vehicle and fuel types."
-tibble::tribble(
+#| out-width: "95%"
+
+tbl_transport_qc_mpy <- tibble::tribble(
   ~"Vehicle Type", ~"Local Avg Miles/yr", ~"QC Avg Miles/yr",
   "Passenger Car (Gasoline)", "", "",
   "Passenger Truck (Gasoline)", "", "",
@@ -58,19 +60,24 @@ tibble::tribble(
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_transport_qc_mpy
 ```
+
 ```{r tbl-transport-qc-mpg}
 #| tbl-cap: "Transportation average miles per gallon, local and quality control comparison by vehicle and fuel types."
-tibble::tribble(
-  ~"Vehicle Type", ~"Local Avg Miles/gal", ~"QC Avg Miles/gal",
-  "Passenger Car (Gasoline)", "", 24.1,
-  "Passenger Truck (Gasoline)", "", 18.5,
-  "Heavy-duty (Gasoline)", "", 10.1,
-  "Motorcycle (Gasoline)", "", 50,
-  "Passenger Car (Diesel)", "", 32.4,
-  "Passenger Truck (Diesel)", "", 22.1,
-  "Heavy-duty (Diesel)", "", 13.0
-) %>%
+#| out-width: "95%"
+tbl_transport_qc_mpg <-
+  tibble::tribble(
+    ~"Vehicle Type", ~"Local Avg Miles/gal", ~"QC Avg Miles/gal",
+    "Passenger Car (Gasoline)", "", 24.1,
+    "Passenger Truck (Gasoline)", "", 18.5,
+    "Heavy-duty (Gasoline)", "", 10.1,
+    "Motorcycle (Gasoline)", "", 50,
+    "Passenger Car (Diesel)", "", 32.4,
+    "Passenger Truck (Diesel)", "", 22.1,
+    "Heavy-duty (Diesel)", "", 13.0
+  ) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -78,6 +85,8 @@ tibble::tribble(
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_transport_qc_mpg
 ```
 
 ```{r echo=FALSE}
