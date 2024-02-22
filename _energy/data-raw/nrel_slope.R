@@ -27,9 +27,10 @@ nrel_slope_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_ex
 #   clean_names()
 
 nrel_slope_cprg <- nrel_slope_county %>% 
-  filter(state_name %in% cprg_county$STATE,
-         county_name %in% cprg_county$NAME,
-         year < 2025) %>% 
+  inner_join(cprg_county, 
+             by = c("state_name" = "STATE",
+                    "county_name" = "NAME")) %>% 
+  filter(year  < 2025) %>% 
   mutate(source = ifelse(source == "ng", "Natural gas", "Electricity"))
 
 nrel_emissions <- bind_rows(
@@ -89,6 +90,18 @@ nrel_emissions <- bind_rows(
          sector_raw = sector,
          sector = "Energy")
 
+nrel_emissions %>% 
+  group_by(county_name, year, source) %>% 
+  select(county_name, year, source, sector_raw, co2e) %>% 
+  pivot_wider(names_from = sector_raw,
+              values_from = co2e) %>% 
+  rowwise() %>% 
+  summarize( total = commercial + residential + industrial,
+    commercial = commercial/total,
+            industrial = industrial/total,
+            residential = residential/total)
+
+# find county proportions by year and source
 nrel_emissions_region <- nrel_emissions %>% 
   group_by(year, sector, sector_raw, category, source) %>% 
   summarize(consumption_mm_btu = sum(consumption_mm_btu),
@@ -99,7 +112,7 @@ nrel_emissions_region %>%
   filter(year == 2021,
          source == "Electricity") %>% 
   group_by(year, source, sector_raw) %>% 
-  summarize(co2e= sum(co2e)) %>% 
+  summarize(co2e= sum(co2e))
   janitor::adorn_percentages(denominator = "col")
 
 plot_ly(
