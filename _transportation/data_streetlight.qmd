@@ -369,7 +369,7 @@ passenger_od_tbi_distance <- passenger_od_trip %>%
   filter(!is.na(mean_trip_dist))
 ```
 
-@fig-trip-dist-tbi shows a strong positive correlation when comparing origin-destination pairs. Note that TBI origin-destination pairs with fewer than 30 observed trips were removed due to low sample size. 
+@fig-stl-trip-dist-tbi shows a strong positive correlation when comparing origin-destination pairs. Note that TBI origin-destination pairs with fewer than 30 observed trips were removed due to low sample size. 
 
 ```{r fig-stl-trip-dist-tbi}
 #| fig-cap: "Avg. trip distance, Travel Behavior Inventory and StreetLight"

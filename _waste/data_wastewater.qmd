@@ -96,6 +96,8 @@ fig_map_ww_service_area <- council_leaflet() %>%
       "MetC wastewater service area"
     )
   )
+
+fig_map_ww_service_area
 ```
 
 Overall, the EPA estimate for each county proved highest, followed by the MPCA estimate and then Met Council estimate. We used the EPA estimate in our overall emissions estimate. 
