@@ -19,6 +19,8 @@ hookaddcap()
 
 ```{r fig-figure}
 #| fig-cap: "A figure"
+#| out-width: "95%"
+#| include: false
 # all figure chunks should be named "fig-{plot-desc}"
 shinipsum::random_ggplotly(type = "histogram") %>%
   councilR::plotly_layout(
@@ -28,6 +30,8 @@ shinipsum::random_ggplotly(type = "histogram") %>%
 
 ```{r tbl-table}
 #| tbl-cap: "A table"
+#| out-width: "95%"
+#| include: false
 shinipsum::random_table(nrow = 5, ncol = 3) %>%
   gt() %>%
   gt::opt_row_striping() %>%
