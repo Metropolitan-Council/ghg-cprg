@@ -49,6 +49,7 @@ fig_county_emissions_sector <- plot_ly(
 
 fig_county_emissions_sector
 ```
+
 ## Emissions by sector
 
 ```{r fig-transportation-emissions}
