@@ -17,8 +17,16 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
-hookaddcap()
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+county_emissions_summary <- county_emissions %>%
+  group_by(sector, category, source, data_source, factor_source) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  )
+
+hookaddcap()
 ```
 
 ## Introduction
@@ -29,8 +37,9 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 #| fig-cap: "Energy county emissions"
 #| out-width: "95%"
 fig_energy_county_emissions <- plot_county_sector_emissions(county_emissions,
-                             .sector = "Energy",
-                             .plotly_source ="fig-energy-county-emissions")
+  .sector = "Energy",
+  .plotly_source = "fig-energy-county-emissions"
+)
 fig_energy_county_emissions
 ```
 

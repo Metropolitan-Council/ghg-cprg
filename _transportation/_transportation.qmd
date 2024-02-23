@@ -25,6 +25,16 @@ vmt_emissions_all <- vmt_emissions %>%
     vmt_same = sum(vmt_same),
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
   )
+
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+county_emissions_summary <- county_emissions %>%
+  group_by(sector, category, source, data_source, factor_source) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  )
+
 hookaddcap()
 ```
 ## Introduction
@@ -73,8 +83,9 @@ Transportation VMT and emissions were calculated in [vmt_emissions.R](data-raw/v
 #| fig-cap: "Transportation county emissions"
 #| out-width: "95%"
 fig_transportation_county_emissions <- plot_county_sector_emissions(county_emissions,
-                             .sector = "Transportation",
-                             .plotly_source ="fig-transportation-county-emissions")
+  .sector = "Transportation",
+  .plotly_source = "fig-transportation-county-emissions"
+)
 fig_transportation_county_emissions
 ```
 
@@ -89,7 +100,7 @@ fig_transportation_county_emissions_by_weight <- plot_ly(
   type = "bar",
   source = "fig-transportation-county-emissions-by-weight",
   data = vmt_emissions,
-  y = ~reorder(zone, emissions_metric_tons_co2e),
+  y = ~ reorder(zone, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   color = ~vehicle_weight_label,
   colors = unlist(vehicle_weight_colors),
