@@ -177,13 +177,14 @@ fig_moves_ghg_hub_comparison <- plot_ly(
   x = ~value,
   color = ~data_source,
   colors = c(
-    "EPA GHG Hub" = colors$metrostatsDaPurp,
+    "EPA GHG Hub" = cprg_colors$cprg_da_yellow,
     "MOVES" = colors$councilBlue
   ),
   type = "scatter",
   mode = "markers",
+  opacity = 0.7,
   marker = list(
-    size = 10
+    size = 15
   ),
   hovertemplate = ~ paste0(
     "Vehicle weight: ", `Vehicle weight`, "<br>",
@@ -199,7 +200,10 @@ fig_moves_ghg_hub_comparison <- plot_ly(
     yend = ~`Vehicle weight`,
     x = ~MOVES,
     xend = ~`EPA GHG Hub`,
-    showlegend = FALSE
+    showlegend = FALSE,
+    line = list(
+      color = "darkgray"
+    )
   ) %>%
   plotly_layout(
     main_title = "MOVES4 and GHG Emissions Hub per mile emission rates",

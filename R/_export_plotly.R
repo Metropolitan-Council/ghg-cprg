@@ -16,8 +16,7 @@ if (!reticulate::virtualenv_exists("save-plotly")) {
 reticulate::use_virtualenv("save-plotly")
 reticulate::py_run_string("import sys")
 
-fs::dir_create("purl")
-fs::dir_create("purl/_energy")
+fs::dir_create("purl/_energy", recurse = TRUE)
 fs::dir_create("purl/_meta")
 fs::dir_create("purl/_transportation")
 fs::dir_create("purl/_waste")

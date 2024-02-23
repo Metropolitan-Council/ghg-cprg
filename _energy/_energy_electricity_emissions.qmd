@@ -139,6 +139,7 @@ fig_emissions_population <- plot_ly(
   ),
   opacity = 0.7,
   marker = list(
+    color = colors$councilBlue,
     size = 18,
     line = list(
       color = "lightgray",

@@ -28,16 +28,16 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 
 ### Wastewater
 
-```{r fig-waste-emissions-2}
+```{r fig-waste-emissions}
 #| fig-cap: "Waste and wastewater county level emissions"
 #| out-width: "95%"
 
-fig_waste_emissions_2 <- plot_county_emissions(
+fig_waste_emissions <- plot_county_emissions(
   county_emissions = county_emissions,
   .sector = "Waste",
-  .plotly_source = "fig-waste-emissions-2"
+  .plotly_source = "fig-waste-emissions"
 )
-fig_waste_emissions_2
+fig_waste_emissions
 ```
 
 Wastewater data come from two sources - the Metropolitan Council Environmental Services Division and [xxx]. 

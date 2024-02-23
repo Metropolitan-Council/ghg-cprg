@@ -79,15 +79,15 @@ fig_energy_emissions <- plot_county_emissions(
 fig_energy_emissions
 ```
 
-```{r fig-waste-emissions}
+```{r fig-waste-emissions-index}
 #| fig-cap: "Waste and wastewater county level emissions"
 #| out-width: "95%"
-fig_waste_emissions <- plot_county_emissions(
+fig_waste_emissions_index <- plot_county_emissions(
   county_emissions = county_emissions,
   .sector = "Waste",
-  .plotly_source = "fig-waste-emissions"
+  .plotly_source = "fig-waste-emissions-index"
 )
-fig_waste_emissions
+fig_waste_emissions_index
 ```
 
 
