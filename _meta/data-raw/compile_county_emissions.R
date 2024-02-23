@@ -62,41 +62,36 @@ solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
 
 
 # energy -----
+
+electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_proportioned.RDS")
+
 ## electricity ----
-electric_raw <- readRDS(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS")) %>%
-  bind_rows(readRDS(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
-    rename(county = county_name))
 
-
-electric_emissions <- electric_raw %>%
+electric_emissions <- electric_natgas_nrel_proportioned %>%
+  filter(source == "Electricity") %>%
   mutate(
     sector = "Energy",
     geog_level = "county",
     geog_name = county,
-    category = "Electricity",
-    source = "Electricity",
-    data_source = "Individual electric utilities",
+    category = category,
+    source = source,
+    data_source = "Individual electric utilities, NREL SLOPE",
     factor_source = "eGRID MROW"
   ) %>%
   select(names(transportation_emissions))
 
 
-rm(electric_raw)
-
 ## natural gas ----
-natgas_raw <- readRDS(file.path(here::here(), "_energy/data/minnesota_county_GasEmissions.RDS")) %>%
-  bind_rows(readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>%
-    rename(county = county_name))
 
-
-natural_gas_emissions <- natgas_raw %>%
+natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
+  filter(source == "Natural gas") %>%
   mutate(
     sector = "Energy",
     geog_level = "county",
     geog_name = county,
-    category = "Natural Gas",
-    source = "Natural Gas",
-    data_source = "Individual natural gas utilities",
+    category = category,
+    source = source,
+    data_source = "Individual natural gas utilities, NREL SLOPE",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
   select(names(transportation_emissions))
@@ -108,7 +103,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     sector = "Energy",
     geog_level = "county",
     geog_name = NAME,
-    category = stringr::str_to_sentence(fuel_type),
+    category = "Liquid stationary fuels",
     source = stringr::str_to_sentence(fuel_type),
     data_source = "EIA RECS (2020)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
@@ -144,7 +139,7 @@ emissions_all <- bind_rows(
       "Wastewater",
       # energy levels
       "Electricity",
-      "Natural Gas",
+      "Natural gas",
       "Propane",
       "Kerosene"
     ),
