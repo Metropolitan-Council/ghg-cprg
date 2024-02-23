@@ -124,9 +124,8 @@ EIA_MN_elecRetailEst_mWh <- 66589168
 
 MN_currentCounty_deliveries <- read_rds(here("_energy", 
                                              "data", 
-                                             "minnesota_county_ElecEmissions.RDS")) %>%
-  select(county, OURS_total_CO2e_emissions_lbs = total_CO2e_emissions_lbs) %>%
-  mutate(EIA_MN_stateTotal = EIA_MN_elecRetailEst_mWh)
+                                             "Minnesota_county_ElecEmissions.RDS")) %>%
+  select(county, OURS_total_CO2e_emissions_lbs = total_CO2e_emissions_lbs)
 
 downscaleEIA_MN_electricRetail <- read_rds(here("_meta", 
                                                 "data", 
@@ -135,10 +134,12 @@ downscaleEIA_MN_electricRetail <- read_rds(here("_meta",
            population_data_source == "Decennial Census PL 94-171 Redistricting Data Summary File") %>%
   select(GEOID, county = NAME, county_proportion_of_state_pop) %>%
   mutate(downscaled_EIA_total_CO2e_emissions_lbs = 
-           EIA_MN_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1) %>%
+           EIA_MN_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1,
+         state = "MN") %>%
   left_join(MN_currentCounty_deliveries,
-            by = "county")
+            by = "county") %>%
+  rename(county_name = county)
 
-write_rds(downscaleEIA_MN_electricRetail, here("_energy", 
-                                               "data", 
+write_rds(downscaleEIA_MN_electricRetail, here("_energy",
+                                               "data",
                                                "minnesota_QA_versusEIAStateProfile.RDS"))
