@@ -135,6 +135,7 @@ emissions_all <- bind_rows(
         "Heavy-duty vehicles",
         # waste levels
         "Landfill",
+        "Waste to energy",
         "Recycling",
         "Organics",
         "Wastewater",
