@@ -18,6 +18,22 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+mn_emissions <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS"))
+wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
+  rename(county = county_name)
+
+elecEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
+  mutate(geo = paste0(county, ", ", state))
+
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+county_emissions_summary <- county_emissions %>%
+  group_by(sector, category, source, data_source, factor_source) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  )
 hookaddcap()
 ```
 
@@ -66,33 +82,28 @@ Table of emissions factors converted into CO~2~e??
 ### Results
 
 ```{r fig-electricity-county-emissions}
-#| fig-cap: "2021 electricity emissions by county"
+#| fig-cap: "2021 county electricity emissions"
 #| out-width: "95%"
-
-mn_emissions <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS"))
-wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
-  rename(county = county_name)
-
-elecEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
-  mutate(geo = paste0(county, ", ", state))
 
 fig_electricity_county_emissions <- plot_ly(
   type = "bar",
   source = "fig-electricity-county-emissions",
-  data = elecEmissions_all,
-  y = ~ reorder(geo, emissions_metric_tons_co2e),
+  data = county_emissions %>% 
+    filter(source == "Electricity"),
+  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   marker = list(
     color = colors$councilBlue
   ),
   hovertemplate = ~ paste0(
-    geo, "<br>",
+    geog_name, "<br>",
+    "Electricity", "<br>",
     "Emissions: %{x:,.0f} metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
   plotly_layout(
-    main_title = "2021 county-level CO2e electricity emissions",
+    main_title = "2021 county electricity emissions",
     x_title = "Metric tons CO<sub>2</sub>e",
     subtitle = "",
     yaxis = list(
@@ -112,6 +123,46 @@ fig_electricity_county_emissions <- plot_ly(
 
 fig_electricity_county_emissions
 ```
+
+
+```{r fig-energy-electricity-sector-emissions}
+#| fig-cap: "2021 electricity emissions by sector"
+#| out-width: "95%"
+
+
+fig_energy_electricity_sector_emissions <- 
+ plot_ly(
+  type = "bar",
+  source = "fig-energy-electricity-sector-emissions",
+  data = county_emissions %>% 
+    filter(source == "Electricity"),
+  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
+  color = ~category,
+  colors = unlist(category_colors),
+  hovertemplate = ~ paste0(
+    geog_name, " County", "<br>",
+    source, ", ", category, "<br>",
+    round(emissions_metric_tons_co2e/1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 electricity emissions by sector",
+    subtitle = "",
+    y_title = "County",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Energy sector"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+fig_energy_electricity_sector_emissions
+```
+
 
 #### Correlation with related data
 

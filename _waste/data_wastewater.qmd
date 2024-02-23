@@ -44,6 +44,56 @@ There are many sources of uncertainty in these estimates due to multiple activit
 
 The Metropolitan Council, MPCA, and EPA source data leads to different estimates of emissions in the common seven county region. The Metropolitan Council does not process all wastewater in the seven county region. Additionally, they report CO~2~ emissions from combustion of stationary fuels for infrastructure used in directly processing wastewater, unlike EPA estimates which are CH~4~ and N~2~O emissions from municipal wastewater treatment of organic matter. 
 
+```{r fig-mn-county-ww-emissions}
+#| fig-cap: "County aggregated wastewater emissions by scope"
+#| out-width: "95%"
+
+metc_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metc_wastewater.RDS")) %>%
+  filter(year == 2021)
+
+metc_ww_summary <- metc_ww %>%
+  group_by(COUNTY_NAM, year, scope) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  )
+
+fig_mn_county_ww_emissions <- plot_ly(
+  data = metc_ww_summary,
+  x = ~ reorder(COUNTY_NAM, -emissions_metric_tons_co2e),
+  y = ~emissions_metric_tons_co2e,
+  source = "fig-mn-county-ww-emissions",
+  color = ~scope,
+  colors = c(
+    "Scope 1" = colors$cdGreen,
+    "Scope 2" = colors$councilBlue
+  ),
+  type = "bar",
+  hovertemplate = ~ paste0(
+    COUNTY_NAM, " County", "<br>",
+    scope, "<br>",
+    round(emissions_metric_tons_co2e/1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "County wastewater emissions by scope",
+    subtitle = "Metropolitan Council Environmental Services estimate",
+    x_title = "County",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Scope"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "normal"
+    )
+  )
+
+fig_mn_county_ww_emissions
+```
+
+
 ```{r tbl-ww-comparison-scope}
 #| tbl-cap: "Wastewater data sources and geographic scopes"
 #| out-width: "95%"

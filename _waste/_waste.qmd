@@ -33,17 +33,17 @@ hookaddcap()
 
 ## Methods
 
-### Wastewater
+## Results
 
-
-```{r fig-waste-county-emissions}
-#| fig-cap: "Waste county emissions"
+```{r fig-waste-wastewater-county-emissions}
+#| fig-cap: "Waste and wastewater county emissions"
 #| out-width: "95%"
-fig_waste_county_emissions <- plot_county_sector_emissions(county_emissions,
-  .sector = "Waste",
-  .plotly_source = "fig-waste-county-emissions"
-)
-fig_waste_county_emissions
+fig_waste_wastewater_county_emissions <- 
+  plot_county_sector_emissions(county_emissions,
+                               .sector = "Waste",
+                               .plotly_source = "fig-waste-wastewater-county-emissions"
+  )
+fig_waste_wastewater_county_emissions
 ```
 
 
@@ -59,57 +59,85 @@ fig_waste_county_emissions_by_category <- plot_county_emissions(
 fig_waste_county_emissions_by_category
 ```
 
-Wastewater data come from two sources - the Metropolitan Council Environmental Services Division and [xxx]. 
+### Wastewater
 
-Data here are categorized into Scope 1, emissions directly from wastewater activities, and Scope 2, emissions based on electrical purchases.
-
-
-```{r fig-mn-county-ww-emissions}
-#| fig-cap: "County aggregated wastewater emissions by scope"
+```{r fig-wastewater-sector-emissions}
+#| fig-cap: "2021 wastewater emissions"
 #| out-width: "95%"
 
-metc_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metc_wastewater.RDS")) %>%
-  filter(year == 2021)
-
-metc_ww_summary <- metc_ww %>%
-  group_by(COUNTY_NAM, year, scope) %>%
-  summarize(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
-    .groups = "keep"
-  )
-
-fig_mn_county_ww_emissions <- plot_ly(
-  data = metc_ww_summary,
-  x = ~ reorder(COUNTY_NAM, -emissions_metric_tons_co2e),
-  y = ~emissions_metric_tons_co2e,
-  source = "fig-mn-county-ww-emissions",
-  color = ~scope,
-  type = "bar",
-  hovertemplate = ~ paste0(
-    COUNTY_NAM, " County", "<br>",
-    scope, "<br>",
-    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  )
-) %>%
+fig_wastewater_sector_emissions <- 
+  plot_ly(
+    type = "bar",
+    source = "fig-wastewater-sector-emissions",
+    data = county_emissions %>% 
+      filter(source == "Wastewater"),
+    y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+    x = ~emissions_metric_tons_co2e,
+    color = ~category,
+    colors = unlist(category_colors),
+    hovertemplate = ~ paste0(
+      geog_name, " County", "<br>",
+      category, "<br>",
+      round(emissions_metric_tons_co2e/1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
   plotly_layout(
-    main_title = "County wastewater emissions by scope",
-    x_title = "County",
-    y_title = "Metric tons CO<sub>2</sub>e"
+    main_title = "2021 wastewater emissions",
+    subtitle = "",
+    y_title = "County",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = ""
   ) %>%
   layout(
     barmode = "stack",
     legend = list(
-      traceorder = "normal"
+      traceorder = "reversed"
     )
   )
-
-fig_mn_county_ww_emissions
+fig_wastewater_sector_emissions
 ```
 
 
-## Results
+### Solid waste
 
+```{r fig-solid-waste-sector-emissions}
+#| fig-cap: "2021 wastewater emissions"
+#| out-width: "95%"
+
+
+fig_solid_waste_sector_emissions <- 
+  plot_ly(
+    type = "bar",
+    source = "fig-wastewater-sector-emissions",
+    data = county_emissions %>% 
+      filter(category == "Solid waste"),
+    y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+    x = ~emissions_metric_tons_co2e,
+    color = ~source,
+    colors = unlist(source_colors),
+    hovertemplate = ~ paste0(
+      geog_name, " County", "<br>",
+      category, "<br>",
+      round(emissions_metric_tons_co2e/1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
+  plotly_layout(
+    main_title = "2021 solid waste emissions",
+    subtitle = "",
+    y_title = "County",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Category"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+fig_solid_waste_sector_emissions
+```
 
 
 ```{r echo=FALSE}

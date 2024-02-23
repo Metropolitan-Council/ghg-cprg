@@ -6,6 +6,14 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 
 fuel_use <- readRDS(file.path(here::here(), "_energy/data/fuel_use.RDS"))
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+county_emissions_summary <- county_emissions %>%
+  group_by(sector, category, source, data_source, factor_source) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  )
 ```
 
 [U.S Energy Information Administration](www.eia.gov) provides per household estimates of residential energy use from various energy sources, including propane and kerosene at regional and state scales. These estimates are provided every 5 years, most recently in 2020 [The American Community Survey](https://www.census.gov/programs-surveys/acs) curated by the US Census Bureau provides estimated number of households using each fuel type at more granular spatial and temporal scales. In combination, we are able to estimate energy generation and therefore GHG emissions from these fuels for each of the 11 counties in our 2021 inventory.
@@ -30,6 +38,43 @@ ACS data is an annual survey of a subset of US households asking a large variety
 - What version is the data? Were there other versions available? If so, why did you choose this version? EIA data is from 2020 which is the most recent estimate of mmBtu generated per household using a given fuel available. ACS data is from 2021 which matches the year of investigation for our current GHG inventory.
 
 - What assumptions are made when we use this dataset? We're assuming energy generation per fuel is equal across the state (for propane) and Midwest region (for kerosene).
+
+
+```{r fig-energy-liquid-stationary-fuel-emissions}
+#| fig-cap: "2021 annual liquid stationary fuel emissions"
+#| out-width: "95%"
+
+fig_energy_liquid_stationary_fuel_emissions <- 
+ plot_ly(
+  type = "bar",
+  source = "fig-energy-liquid-stationary-fuel-emissions",
+  data = fuel_use,
+  y = ~ reorder(NAME, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
+  color = ~fuel_type,
+  colors = unlist(source_colors),
+  hovertemplate = ~ paste0(
+    NAME, " County", "<br>",
+    fuel_type, "<br>",
+    round(emissions_metric_tons_co2e/1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 annual liquid stationary fuel emissions",
+    subtitle = "",
+    y_title = "County",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Liquid fuel type"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+fig_energy_liquid_stationary_fuel_emissions
+```
 
 
 - Which subject matter expert (SME) reviewed this data?
