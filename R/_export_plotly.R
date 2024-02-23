@@ -139,25 +139,6 @@ purrr::map(
 )
 
 
-purrr::map(
-  names(pls),
-  function(x) {
-    this_pl <- get(x)
-
-    # navigate to text
-    # and change to empty character
-    this_pl$x$layoutAttrs[[1]]$title$text <- ""
-
-    save_plotly(this_pl,
-      fmt = "svg",
-      file_title = "source",
-      file_location = "assets/plots/plotly_no_title_svg",
-      width = 900,
-      height = 450,
-      scale = 2
-    )
-  }
-)
 
 # export leaflet -----
 #
