@@ -17,7 +17,16 @@ plot_county_emissions <- function(county_emissions,
                                   .sector,
                                   .plotly_source) {
   plot_data <- county_emissions %>%
-    dplyr::filter(sector == .sector)
+    dplyr::filter(sector == .sector) %>% 
+    rowwise() %>% 
+    mutate(
+      rounded_tons = ifelse(
+        max(emissions_metric_tons_co2e) > 1000000, 
+        paste0(round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>"),
+        paste0(round(emissions_metric_tons_co2e/1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>")),
+      
+    )
+  
 
   if (nrow(plot_data) == 0) {
     return(plot_ly(
@@ -25,7 +34,7 @@ plot_county_emissions <- function(county_emissions,
       type = "bar"
     ))
   }
-
+  
   plot_ly(
     data = plot_data,
     type = "bar",
@@ -38,7 +47,7 @@ plot_county_emissions <- function(county_emissions,
     hovertemplate = ~ paste0(
       geog_name, " County", "<br>",
       sector, " - ", category, ", ", source, "<br>",
-      round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+      rounded_tons,
       "<extra></extra>"
     )
   ) %>%
