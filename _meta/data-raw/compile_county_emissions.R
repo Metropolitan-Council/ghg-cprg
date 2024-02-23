@@ -53,7 +53,7 @@ solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
     geog_level = "county",
     geog_name = county,
     category = "Solid waste",
-    source = source,
+    source = str_to_sentence(source),
     data_source,
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
