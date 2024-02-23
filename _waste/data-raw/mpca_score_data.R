@@ -54,7 +54,7 @@ epa_ghg_factor_hub <- readRDS("_meta/data/epa_ghg_factor_hub.RDS")
 waste_factors <- epa_ghg_factor_hub$waste
 
 score_final <- score_filtered %>%
-  rowwise() %>% 
+  rowwise() %>%
   mutate( # emissions factor in metric tons co2/short tons waste
     emissions_factor =
       case_when(

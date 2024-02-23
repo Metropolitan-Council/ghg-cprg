@@ -50,7 +50,7 @@ source_colors <- list(
   "Organics" = "#fcc5c0",
   "Wastewater" = "#994d96",
   "Waste to energy" = "#df65b0",
-  
+
   # energy levels
   "Electricity" = "#0868ac",
   "Natural gas" = "#4eb3d3",

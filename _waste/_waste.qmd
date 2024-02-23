@@ -52,8 +52,8 @@ $$Emissions_c = Emissions_{total} \times \frac{Pop_c}{Pop_{total}}$$
 #| out-width: "95%"
 fig_waste_wastewater_county_emissions <-
   plot_county_sector_emissions(county_emissions,
-                               .sector = "Waste",
-                               .plotly_source = "fig-waste-wastewater-county-emissions"
+    .sector = "Waste",
+    .plotly_source = "fig-waste-wastewater-county-emissions"
   )
 
 fig_waste_wastewater_county_emissions$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
@@ -113,7 +113,7 @@ fig_wastewater_sector_emissions <-
     legend = list(
       traceorder = "reversed"
     ),
-    yaxis = list(categoryorder = "total ascending") 
+    yaxis = list(categoryorder = "total ascending")
   )
 fig_wastewater_sector_emissions
 ```
@@ -157,7 +157,7 @@ fig_solid_waste_emissions <-
     legend = list(
       traceorder = "reversed"
     ),
-    yaxis = list(categoryorder = "total ascending") 
+    yaxis = list(categoryorder = "total ascending")
   )
 fig_solid_waste_emissions
 ```
@@ -195,7 +195,7 @@ fig_solid_waste_sector_emissions_by_category <-
     legend = list(
       traceorder = "reversed"
     ),
-    yaxis = list(categoryorder = "total ascending") 
+    yaxis = list(categoryorder = "total ascending")
   )
 fig_solid_waste_sector_emissions_by_category
 ```
@@ -286,7 +286,7 @@ waste_totals <- waste_data %>%
   )
 
 waste_population <- left_join(waste_totals, cprg_population,
-                              by = c("geog_name" = "NAME")
+  by = c("geog_name" = "NAME")
 )
 
 plot_ly(
