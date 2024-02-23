@@ -93,7 +93,7 @@ fig_electricity_county_emissions <- plot_ly(
 ) %>%
   plotly_layout(
     main_title = "2021 county-level CO2e electricity emissions",
-    x_title =  "Metric tons CO<sub>2</sub>e",
+    x_title = "Metric tons CO<sub>2</sub>e",
     subtitle = "",
     yaxis = list(
       ticklen = 5,

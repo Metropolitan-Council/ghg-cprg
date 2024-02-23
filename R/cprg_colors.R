@@ -10,29 +10,30 @@ cprg_colors <- list(
 )
 
 
-# county_emissions %>% 
-#   select(sector, source, category) %>% 
-#   unique() %>% 
+# county_emissions %>%
+#   select(sector, source, category) %>%
+#   unique() %>%
 #   arrange(category)
 
 # county_emissions$category %>% unique %>% dput
 # category
-category_colors <- 
+category_colors <-
   list(
     # GnBu
     "Residential energy" = "#225ea8",
     "Commercial energy" = "#41b6c4",
     "Industrial energy" = "#7fcdbb",
-    "Liquid stationary fuels" = "#a8ddb5", 
-    
-    
+    "Liquid stationary fuels" = "#a8ddb5",
+
+
     # YlOrBr
-    "Passenger vehicles" = "#ec7014", 
-    "Commercial vehicles" = "#fec44f", 
-    
+    "Passenger vehicles" = "#ec7014",
+    "Commercial vehicles" = "#fec44f",
+
     # PuRd
     "Wastewater" = "#ce1256",
-    "Solid waste" = "#c994c7")
+    "Solid waste" = "#c994c7"
+  )
 
 
 # county_emissions$source %>% unique %>% dput
@@ -42,18 +43,16 @@ source_colors <- list(
   "Light-duty vehicles" = "#993404",
   "Medium-duty vehicles" = "#fe9929",
   "Heavy-duty vehicles" = "#fee391",
-  
+
   # waste levels
   "Landfill" = "#ae017e",
   "Recycling" = "#ed2c73",
   "Organics" = "#fcc5c0",
-  
   "Wastewater" = "#994d96",
-  
+
   # energy levels
   "Electricity" = "#0868ac",
   "Natural gas" = "#4eb3d3",
-  
   "Propane" = "#006d2c",
   "Kerosene" = "#a1d99b"
 )
@@ -63,7 +62,6 @@ vehicle_weight_colors <- list(
   "Passenger" = source_colors$`Light-duty vehicles`,
   "Medium" = source_colors$`Medium-duty vehicles`,
   "Heavy" = source_colors$`Heavy-duty vehicles`,
-  
   "Light-duty" = source_colors$`Light-duty vehicles`,
   "Medium-duty" = source_colors$`Medium-duty vehicles`,
   "Heavy-duty" = source_colors$`Heavy-duty vehicles`

@@ -128,38 +128,39 @@ emissions_all <- bind_rows(
   ) %>%
   mutate(
     source = factor(source,
-                    c(
-                      # transportation levels
-                      "Light-duty vehicles",
-                      "Medium-duty vehicles",
-                      "Heavy-duty vehicles",
-                      # waste levels
-                      "Landfill",
-                      "Recycling",
-                      "Organics",
-                      "Wastewater",
-                      # energy levels
-                      "Electricity",
-                      "Natural gas",
-                      "Propane",
-                      "Kerosene"
-                    ),
-                    ordered = TRUE
+      c(
+        # transportation levels
+        "Light-duty vehicles",
+        "Medium-duty vehicles",
+        "Heavy-duty vehicles",
+        # waste levels
+        "Landfill",
+        "Recycling",
+        "Organics",
+        "Wastewater",
+        # energy levels
+        "Electricity",
+        "Natural gas",
+        "Propane",
+        "Kerosene"
+      ),
+      ordered = TRUE
     ),
     category = factor(
       category,
-      c("Residential energy",
+      c(
+        "Residential energy",
         "Commercial energy",
         "Industrial energy",
-        "Liquid stationary fuels", 
-        
-        "Passenger vehicles", 
-        "Commercial vehicles", 
-        
+        "Liquid stationary fuels",
+        "Passenger vehicles",
+        "Commercial vehicles",
         "Wastewater",
-        "Solid waste"),
+        "Solid waste"
+      ),
       ordered = TRUE
-    )) %>%
+    )
+  ) %>%
   # join county population and calculate per capita emissions
   left_join(
     cprg_county_pop %>%

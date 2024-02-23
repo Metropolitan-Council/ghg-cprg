@@ -156,7 +156,7 @@ trip_length_bin <- county21_data$od_trip_all %>%
     starts_with("trip_length")
   ) %>%
   pivot_longer(10:23,
-               values_to = "percent_of_trips"
+    values_to = "percent_of_trips"
   ) %>%
   rowwise() %>%
   mutate(
@@ -177,15 +177,15 @@ trip_length_bin <- county21_data$od_trip_all %>%
       as.numeric() + 1,
     od_pair_name = paste0(origin_zone_name, "-", destination_zone_name),
     length_bin = factor(length_bin,
-                        levels = c(
-                          "0-1 miles", "1-2 miles", "2-5 miles",
-                          "5-10 miles", "10-20 miles",
-                          "20-30 miles", "30-40 miles", "40-50 miles",
-                          "50-60 miles", "60-70 miles",
-                          "70-80 miles", "80-90 miles", "90-100 miles",
-                          "100 miles"
-                        ),
-                        ordered = TRUE
+      levels = c(
+        "0-1 miles", "1-2 miles", "2-5 miles",
+        "5-10 miles", "10-20 miles",
+        "20-30 miles", "30-40 miles", "40-50 miles",
+        "50-60 miles", "60-70 miles",
+        "70-80 miles", "80-90 miles", "90-100 miles",
+        "100 miles"
+      ),
+      ordered = TRUE
     ),
     origin_zone_name = as.factor(origin_zone_name),
     destination_zone_name = as.factor(destination_zone_name)
@@ -449,7 +449,7 @@ Comparing trip distance and county area, we see a general, but weak, positive co
 #| out-width: "95%"
 cprg_area <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-           as.numeric())
+    as.numeric())
 
 passenger_dist_area <- left_join(
   passenger_od_trip %>%
@@ -544,7 +544,7 @@ comm_trip_length_bin <- county21_truck_data$od_trip_comm %>%
     starts_with("trip_length")
   ) %>%
   pivot_longer(11:24,
-               values_to = "percent_of_trips"
+    values_to = "percent_of_trips"
   ) %>%
   rowwise() %>%
   mutate(
@@ -565,15 +565,15 @@ comm_trip_length_bin <- county21_truck_data$od_trip_comm %>%
       as.numeric() + 1,
     od_pair_name = paste0(origin_zone_name, "-", destination_zone_name),
     length_bin = factor(length_bin,
-                        levels = c(
-                          "0-1 miles", "1-2 miles", "2-5 miles",
-                          "5-10 miles", "10-20 miles",
-                          "20-30 miles", "30-40 miles", "40-50 miles",
-                          "50-60 miles", "60-70 miles",
-                          "70-80 miles", "80-90 miles", "90-100 miles",
-                          "100 miles"
-                        ),
-                        ordered = TRUE
+      levels = c(
+        "0-1 miles", "1-2 miles", "2-5 miles",
+        "5-10 miles", "10-20 miles",
+        "20-30 miles", "30-40 miles", "40-50 miles",
+        "50-60 miles", "60-70 miles",
+        "70-80 miles", "80-90 miles", "90-100 miles",
+        "100 miles"
+      ),
+      ordered = TRUE
     ),
     origin_zone_name = as.factor(origin_zone_name),
     destination_zone_name = as.factor(destination_zone_name)
@@ -775,7 +775,7 @@ vehicle_weight_comp <-
 
 tbl_vehicle_weight_classifications <-
   gt::gt(vehicle_weight_comp,
-         row_group_as_column = FALSE
+    row_group_as_column = FALSE
   ) %>%
   tab_style(
     style = list(

@@ -114,7 +114,7 @@ We would expect counties with higher population to have higher emissions and VMT
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 vmt_population <- left_join(vmt_emissions_all, cprg_population,
-                            by = c("zone" = "NAME")
+  by = c("zone" = "NAME")
 )
 
 fig_emissions_pop_transportation <- plot_ly(
@@ -204,7 +204,7 @@ fig_activity_vs_nei <- plot_ly(
     data = nei_emissions_all,
     name = "2020 NEI on-road estimate",
     marker = list(
-      color = colors$metrostatsBrown,
+      color = cprg_colors$cprg_da_yellow,
       size = 18,
       line = list(
         color = "lightgray",
