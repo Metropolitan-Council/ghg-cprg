@@ -19,6 +19,8 @@ hookaddcap()
 
 Overall emissions
 
+<!-- TODO sentence here with percentages, by sector and data source. Will be put into Word doc -->
+
 ```{r fig-county-emissions-sector}
 #| fig-cap: "County emissions by sector and category"
 #| out-width: "95%"

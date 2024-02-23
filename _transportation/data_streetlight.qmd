@@ -373,6 +373,7 @@ passenger_od_tbi_distance <- passenger_od_trip %>%
 
 ```{r fig-stl-trip-dist-tbi}
 #| fig-cap: "Avg. trip distance, Travel Behavior Inventory and StreetLight"
+#| fig-alt: "A dot plot comparing average trip distance between counties using StreetLight and the Travel Behavior Inventory. The two are strongly correlated, validating StreetLight's trip length estimate"
 #| out-width: "95%"
 
 one_slope <- tibble(
