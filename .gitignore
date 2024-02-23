@@ -253,3 +253,5 @@ _transportation/data_epa_moves.html
 _transportation/data_epa_moves_files/
 
 R/fetch_path.R
+
+purl/
