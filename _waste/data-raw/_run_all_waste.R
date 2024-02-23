@@ -1,8 +1,8 @@
 # wastewater
 
 source("_waste/data-raw/wastewater/epa_state_wastewater.R")
-source("_waste/data-raw/wastewater/metc_wastewater.R")
-source("_waste/data-raw/wastewater/_wastewater.R")
+# source("_waste/data-raw/wastewater/metc_wastewater.R")
+# source("_waste/data-raw/wastewater/_wastewater.R")
 
 
 # solid waste

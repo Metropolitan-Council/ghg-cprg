@@ -1,6 +1,7 @@
 # compile emissions from all sectors into a single data table
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+cprg_county_pop <- readRDS("_meta/data/cprg_population.RDS")
 
 # transportation -----
 transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
@@ -29,16 +30,17 @@ transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.R
 
 # waste -----
 ## wastewater ----
-ww_emissions <- readRDS("_energy/data/wastewater.RDS") %>%
+ww_emissions <- readRDS("_waste/data/epa_county_wastewater.RDS") %>%
   mutate(
     sector = "Waste",
     geog_level = "county",
-    geog_name = COUNTY_NAME,
+    geog_name = NAME,
     category = "Wastewater",
     source = "Wastewater",
-    data_source = source,
-    factor_source = source,
-    emissions_metric_tons_co2e = co2e
+    data_source = "EPA State GHG Inventory and Projection Tool",
+    factor_source = data_source,
+    emissions_metric_tons_co2e = epa_co2e,
+    year = 2021
   ) %>%
   select(names(transportation_emissions))
 
@@ -60,41 +62,36 @@ solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
 
 
 # energy -----
+
+electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_proportioned.RDS")
+
 ## electricity ----
-electric_raw <- readRDS(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS")) %>%
-  bind_rows(readRDS(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
-    rename(county = county_name))
 
-
-electric_emissions <- electric_raw %>%
+electric_emissions <- electric_natgas_nrel_proportioned %>%
+  filter(source == "Electricity") %>%
   mutate(
     sector = "Energy",
     geog_level = "county",
     geog_name = county,
-    category = "Electricity",
-    source = "Electricity",
-    data_source = "Individual electric utilities",
+    category = category,
+    source = source,
+    data_source = "Individual electric utilities, NREL SLOPE",
     factor_source = "eGRID MROW"
   ) %>%
   select(names(transportation_emissions))
 
 
-rm(electric_raw)
-
 ## natural gas ----
-natgas_raw <- readRDS(file.path(here::here(), "_energy/data/minnesota_county_GasEmissions.RDS")) %>%
-  bind_rows(readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>%
-    rename(county = county_name))
 
-
-natural_gas_emissions <- natgas_raw %>%
+natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
+  filter(source == "Natural gas") %>%
   mutate(
     sector = "Energy",
     geog_level = "county",
     geog_name = county,
-    category = "Natural Gas",
-    source = "Natural Gas",
-    data_source = "Individual natural gas utilities",
+    category = category,
+    source = source,
+    data_source = "Individual natural gas utilities, NREL SLOPE",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
   select(names(transportation_emissions))
@@ -106,7 +103,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     sector = "Energy",
     geog_level = "county",
     geog_name = NAME,
-    category = stringr::str_to_sentence(fuel_type),
+    category = "Liquid stationary fuels",
     source = stringr::str_to_sentence(fuel_type),
     data_source = "EIA RECS (2020)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
@@ -142,13 +139,31 @@ emissions_all <- bind_rows(
       "Wastewater",
       # energy levels
       "Electricity",
-      "Natural Gas",
+      "Natural gas",
       "Propane",
       "Kerosene"
     ),
     ordered = TRUE
   )) %>%
+  # join county population and calculate per capita emissions
+  left_join(
+    cprg_county_pop %>%
+      select(
+        geog_id = COUNTYFP,
+        county_total_population = population,
+        population_data_source
+      ),
+    by = "geog_id"
+  ) %>%
+  rowwise() %>%
+  mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
   select(year, geog_level, geog_id, geog_name, everything())
+
+
+
+mean(emissions_all$emissions_per_capita)
+
+sum(emissions_all$emissions_metric_tons_co2e) / sum(cprg_county_pop$population)
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
@@ -164,9 +179,19 @@ emissions_all_meta <- tibble::tribble(
   "source", class(emissions_all$source), "Source of emissions. Most detailed sub-category in this table",
   "emissions_metric_tons_co2e", class(emissions_all$emissions_metric_tons_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given geography for given year",
   "data_source", class(emissions_all$data_source), "Activity data source",
-  "factor_source", class(emissions_all$factor_source), "Emissions factor data source"
+  "factor_source", class(emissions_all$factor_source), "Emissions factor data source",
+  "county_total_population", class(emissions_all$county_total_population), "Total geography population",
+  "population_data_source", class(emissions_all$population_data_source), "Population data source",
+  "emissions_per_capita", class(emissions_all$emissions_per_capita), "Metric tons CO~2~e per person living in given county for given sector and category"
 )
 
 saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
 write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)
+
+# save emissions to shared drive location
+source("R/fetch_path.R")
+
+if (fs::dir_exists(fetch_path())) {
+  write.csv(emissions_all, paste0(fetch_path(), "/cprg_county_emissions.CSV"), row.names = FALSE)
+}

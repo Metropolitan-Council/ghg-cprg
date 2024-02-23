@@ -20,7 +20,6 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 hookaddcap()
 ```
 
-
 {{< include data_streetlight.qmd >}}
 
 {{< include data_state_dot.qmd >}}
@@ -30,10 +29,10 @@ hookaddcap()
 {{< include data_tbi.qmd >}}
 
 
-
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
 caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
 saveCap(paste0("cap-", caption_index))
 saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
+{{< pagebreak >}}
