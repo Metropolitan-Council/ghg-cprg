@@ -5,9 +5,19 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/plot_county_emissions.R"))
 # pull data here
-mpca_score <- readRDS(file.path(here::here(), "_waste/data/mpca_score.RDS"))
+mpca_score <- readRDS(file.path(here::here(), "_waste/data/mpca_score.RDS")) %>% 
+  mutate(Method = ifelse(Method == "WTE", "Waste-to-Energy", Method)) %>% 
+  mutate(Method = factor(Method,
+                         levels = c(
+                           "Waste-to-Energy",
+                           "Organics",
+                           "Recycling", 
+                           "Landfill",
+                           "MSW Compost",
+                           "Onsite"
+                         ),
+                         ordered = TRUE))
 mpca_score_meta <- readRDS(file.path(here::here(), "_waste/data/mpca_score_meta.RDS"))
-# PULL IN DATA FROM TRANSPORTATION TO USE:
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 hookaddcap()
@@ -68,6 +78,7 @@ fig_total_waste <- plot_ly(
   type = "bar",
   hoverinfo = "text",
   color = ~Method,
+  colors = unlist(management_method_colors),
   hovertemplate = ~ paste0(
     "County: ", County, "<br>",
     "Management method: ", Method, "<br>",
@@ -96,7 +107,7 @@ fig_total_waste
 # Ignored exploration of area vs. total waste - little correlation, compare to area vs. pop
 cprg_area_mn <- cprg_county %>%
   mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
-    as.numeric()) %>%
+           as.numeric()) %>%
   filter(STATE == "Minnesota")
 
 mpca_score_area_summary <- mpca_score %>%
@@ -120,6 +131,7 @@ fig_waste_county_area <- plot_ly(
     "<extra></extra>"
   ),
   marker = list(
+    color = colors$councilBlue,
     size = 18,
     line = list(
       color = "lightgray",

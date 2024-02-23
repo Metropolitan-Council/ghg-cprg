@@ -86,7 +86,9 @@ fig_ng_county_emissions <- plot_ly(
   data = natGasEmissions_all,
   y = ~ reorder(geo, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
-  # color = ~vehicle_weight_label,
+  marker = list(
+    color = colors$councilBlue
+  ),
   hovertemplate = ~ paste0(
     county, " County, ", state, "<br>",
     "Emissions: %{x:,.2f} metric tons CO<sub>2</sub>e", "<br>",
@@ -141,6 +143,7 @@ fig_ng_emissions_population <- plot_ly(
   ),
   opacity = 0.7,
   marker = list(
+    color = colors$councilBlue,
     size = 18,
     line = list(
       color = "lightgray",
@@ -152,7 +155,7 @@ fig_ng_emissions_population <- plot_ly(
     main_title = "County population and natural gas emissions",
     subtitle = "2021 ACS 5-year population estimates",
     x_title = "Total population",
-    y_title = "Emissions"
+    y_title = "Metric tons CO<sub>2</sub>e"
   )
 fig_ng_emissions_population
 ```

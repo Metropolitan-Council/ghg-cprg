@@ -44,9 +44,9 @@ source_colors <- list(
   "Heavy-duty vehicles" = "#fee391",
   
   # waste levels
-  "Landfill" = "#f58ab1",
+  "Landfill" = "#ae017e",
   "Recycling" = "#ed2c73",
-  "Organics" = "#ce1256",
+  "Organics" = "#fcc5c0",
   
   "Wastewater" = "#994d96",
   
@@ -67,4 +67,13 @@ vehicle_weight_colors <- list(
   "Light-duty" = source_colors$`Light-duty vehicles`,
   "Medium-duty" = source_colors$`Medium-duty vehicles`,
   "Heavy-duty" = source_colors$`Heavy-duty vehicles`
+)
+
+management_method_colors <- list(
+  "WTE" = "#df65b0",
+  "Waste-to-Energy" = "#df65b0",
+  "Recycling" = source_colors$Recycling,
+  "Organics" = source_colors$Organics,
+  "Landfill" = source_colors$Landfill,
+  "Onsite" = "#750a31"
 )

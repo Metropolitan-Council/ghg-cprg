@@ -232,7 +232,7 @@ bscols(
     x = ~ factor(length_bin),
     y = ~percent_of_trips,
     marker = list(
-      fill = colors$councilBlue
+      color = colors$councilBlue
     ),
     type = "bar",
     hovertemplate = ~ paste0(
@@ -309,6 +309,10 @@ fig_stl_trip_dist_min_dist <- plot_ly(
   x = ~distance_miles,
   y = ~avg_all_trip_length_mi,
   color = ~pair_type,
+  colors = c(
+    "Adjacent or same county" = colors$councilBlue,
+    "Non-adjacent counties" = colors$metrostatsDaPurp
+  ),
   type = "scatter",
   mode = "markers",
   hoverinfo = "text",
@@ -319,11 +323,7 @@ fig_stl_trip_dist_min_dist <- plot_ly(
     "Average trip length: ", round(avg_all_trip_length_mi, digits = 1), " miles",
     "<extra></extra>"
   ),
-  opacity = 0.7,
-  colors = c(
-    colors$councilBlue,
-    colors$metrostatsDaPurp
-  ),
+  opacity = 0.75,
   marker = list(
     size = 18,
     line = list(
@@ -392,6 +392,10 @@ fig_stl_trip_dist_tbi <- plot_ly(
   x = ~mean_trip_dist,
   y = ~avg_all_trip_length_mi,
   color = ~pair_type,
+  colors = c(
+    "Same county" = colors$councilBlue,
+    "Different county" = colors$metrostatsDaPurp
+  ),
   type = "scatter",
   mode = "markers",
   hoverinfo = "text",
@@ -402,11 +406,7 @@ fig_stl_trip_dist_tbi <- plot_ly(
     "TBI avg. trip length: ", round(mean_trip_dist, digits = 1), " miles", "<br>",
     "<extra></extra>"
   ),
-  opacity = 0.6,
-  colors = c(
-    "Same county" = colors$councilBlue,
-    "Different county" = colors$metrostatsDaPurp
-  ),
+  opacity = 0.75,
   marker = list(
     size = 18,
     line = list(

@@ -35,9 +35,9 @@ fig_county_emissions_sector <- plot_ly(
   x = ~sector,
   y = ~emissions_metric_tons_co2e,
   color = ~category,
+  colors = unlist(category_colors),
   split = ~category,
   type = "bar",
-  colors = unlist(category_colors),
   hovertemplate = ~ paste0(
     category, "<br>",
     round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",

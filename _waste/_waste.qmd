@@ -76,7 +76,7 @@ fig_mn_county_ww_emissions <- plot_ly(
   plotly_layout(
     main_title = "County wastewater emissions by scope",
     x_title = "County",
-    y_title = "Emissions"
+    y_title = "Metric tons CO<sub>2</sub>e"
   ) %>%
   layout(
     barmode = "stack",

@@ -131,6 +131,11 @@ fig_wastewater_source_comparison <- plot_ly(
   type = "bar",
   hoverinfo = "text",
   color = ~source,
+  colors = c(
+    "EPA" = cprg_colors$cprg_da_yellow,
+    "MPCA" = "#5D295F",
+    "Met Council" = colors$councilBlue
+  ),
   hovertemplate = ~ paste0(
     "County: ", county_name, "<br>",
     "Data source: ", source, "<br>",

@@ -176,6 +176,10 @@ fig_moves_ghg_hub_comparison <- plot_ly(
   y = ~`Vehicle weight`,
   x = ~value,
   color = ~data_source,
+  colors = c(
+    "EPA GHG Hub" = colors$metrostatsDaPurp,
+    "MOVES" = colors$councilBlue
+  ),
   type = "scatter",
   mode = "markers",
   marker = list(

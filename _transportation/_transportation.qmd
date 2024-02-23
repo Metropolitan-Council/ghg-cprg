@@ -114,7 +114,7 @@ We would expect counties with higher population to have higher emissions and VMT
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 vmt_population <- left_join(vmt_emissions_all, cprg_population,
-  by = c("zone" = "NAME")
+                            by = c("zone" = "NAME")
 )
 
 fig_emissions_pop_transportation <- plot_ly(
@@ -143,7 +143,7 @@ fig_emissions_pop_transportation <- plot_ly(
     main_title = "County population and emissions",
     subtitle = "2021 ACS 5-year population estimates. Strong positive correlation",
     x_title = "Total population",
-    y_title = "Emissions",
+    y_title = "Metric tons CO<sub>2</sub>e",
     legend_title = "",
     legend = list(orientation = "h")
   )
@@ -184,14 +184,15 @@ fig_activity_vs_nei <- plot_ly(
   y = ~emissions_metric_tons_co2e,
   type = "scatter",
   mode = "markers",
-  name = "2021 activity/origin-destination",
+  name = "2021 Met Council estimate",
   hovertemplate = ~ paste0(
     zone, " County<br>",
-    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "Council estimate: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
   opacity = 0.8,
   marker = list(
+    color = colors$councilBlue,
     size = 18,
     line = list(
       color = "lightgray",
@@ -201,19 +202,28 @@ fig_activity_vs_nei <- plot_ly(
 ) %>%
   add_trace(
     data = nei_emissions_all,
-    name = "2020 NEI on-road emissions",
+    name = "2020 NEI on-road estimate",
+    marker = list(
+      color = colors$metrostatsBrown,
+      size = 18,
+      line = list(
+        color = "lightgray",
+        width = 2
+      )
+    ),
     hovertemplate = ~ paste0(
       zone, " County<br>",
-      "NEI Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+      "NEI estimate: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
     )
   ) %>%
   plotly_layout(
-    main_title = "County estimated vehicle emissions",
-    subtitle = "2020 NEI, all on-road emissions",
+    main_title = "County estimated vehicle emissions by data source",
+    subtitle = "", # "2020 NEI, all on-road emissions",
     x_title = "County",
-    y_title = "Greenhouse gases emitted (metric tons)",
-    legend_title = "Emissions data source"
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Data source",
+    legend = list(orientation = "h")
   )
 
 fig_activity_vs_nei

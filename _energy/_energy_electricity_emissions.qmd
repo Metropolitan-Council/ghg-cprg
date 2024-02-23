@@ -83,7 +83,7 @@ fig_electricity_county_emissions <- plot_ly(
   y = ~ reorder(geo, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   marker = list(
-    fill = colors$councilBlue
+    color = colors$councilBlue
   ),
   hovertemplate = ~ paste0(
     geo, "<br>",
@@ -150,7 +150,7 @@ fig_emissions_population <- plot_ly(
     main_title = "County population and emissions",
     subtitle = "2021 ACS 5-year population estimates",
     x_title = "Total population",
-    y_title = "Emissions"
+    y_title = "Metric tons CO<sub>2</sub>e"
   )
 
 fig_emissions_population

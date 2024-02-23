@@ -48,11 +48,15 @@ fig_dot_vmt <- plot_ly(
   x = ~year,
   y = ~annual_vmt,
   color = ~data_source,
-  opacity = 0.8,
+  colors = c(
+    "MnDOT" = colors$cdGreen,
+    "WisDOT" = colors$metrostatsRed
+  ),
+  opacity = 0.7,
   type = "scatter",
   mode = "lines+markers",
   marker = list(
-    size = 16,
+    size = 14,
     line = list(
       color = "lightgray",
       width = 2
