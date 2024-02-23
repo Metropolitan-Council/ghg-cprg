@@ -88,7 +88,7 @@ Table of emissions factors converted into CO~2~e??
 fig_electricity_county_emissions <- plot_ly(
   type = "bar",
   source = "fig-electricity-county-emissions",
-  data = county_emissions %>% 
+  data = county_emissions %>%
     filter(source == "Electricity"),
   y = ~ reorder(geog_name, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
@@ -130,23 +130,23 @@ fig_electricity_county_emissions
 #| out-width: "95%"
 
 
-fig_energy_electricity_sector_emissions <- 
- plot_ly(
-  type = "bar",
-  source = "fig-energy-electricity-sector-emissions",
-  data = county_emissions %>% 
-    filter(source == "Electricity"),
-  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
-  color = ~category,
-  colors = unlist(category_colors),
-  hovertemplate = ~ paste0(
-    geog_name, " County", "<br>",
-    source, ", ", category, "<br>",
-    round(emissions_metric_tons_co2e/1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  )
-) %>%
+fig_energy_electricity_sector_emissions <-
+  plot_ly(
+    type = "bar",
+    source = "fig-energy-electricity-sector-emissions",
+    data = county_emissions %>%
+      filter(source == "Electricity"),
+    y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+    x = ~emissions_metric_tons_co2e,
+    color = ~category,
+    colors = unlist(category_colors),
+    hovertemplate = ~ paste0(
+      geog_name, " County", "<br>",
+      source, ", ", category, "<br>",
+      round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
   plotly_layout(
     main_title = "2021 electricity emissions by sector",
     subtitle = "",

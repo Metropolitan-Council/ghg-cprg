@@ -72,7 +72,7 @@ fig_mn_county_ww_emissions <- plot_ly(
   hovertemplate = ~ paste0(
     COUNTY_NAM, " County", "<br>",
     scope, "<br>",
-    round(emissions_metric_tons_co2e/1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
+    round(emissions_metric_tons_co2e / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%

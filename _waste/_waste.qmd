@@ -38,10 +38,10 @@ hookaddcap()
 ```{r fig-waste-wastewater-county-emissions}
 #| fig-cap: "Waste and wastewater county emissions"
 #| out-width: "95%"
-fig_waste_wastewater_county_emissions <- 
+fig_waste_wastewater_county_emissions <-
   plot_county_sector_emissions(county_emissions,
-                               .sector = "Waste",
-                               .plotly_source = "fig-waste-wastewater-county-emissions"
+    .sector = "Waste",
+    .plotly_source = "fig-waste-wastewater-county-emissions"
   )
 fig_waste_wastewater_county_emissions
 ```
@@ -65,11 +65,11 @@ fig_waste_county_emissions_by_category
 #| fig-cap: "2021 wastewater emissions"
 #| out-width: "95%"
 
-fig_wastewater_sector_emissions <- 
+fig_wastewater_sector_emissions <-
   plot_ly(
     type = "bar",
     source = "fig-wastewater-sector-emissions",
-    data = county_emissions %>% 
+    data = county_emissions %>%
       filter(source == "Wastewater"),
     y = ~ reorder(geog_name, emissions_metric_tons_co2e),
     x = ~emissions_metric_tons_co2e,
@@ -78,7 +78,7 @@ fig_wastewater_sector_emissions <-
     hovertemplate = ~ paste0(
       geog_name, " County", "<br>",
       category, "<br>",
-      round(emissions_metric_tons_co2e/1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      round(emissions_metric_tons_co2e / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
     )
   ) %>%
@@ -106,11 +106,11 @@ fig_wastewater_sector_emissions
 #| out-width: "95%"
 
 
-fig_solid_waste_sector_emissions <- 
+fig_solid_waste_sector_emissions <-
   plot_ly(
     type = "bar",
     source = "fig-wastewater-sector-emissions",
-    data = county_emissions %>% 
+    data = county_emissions %>%
       filter(category == "Solid waste"),
     y = ~ reorder(geog_name, emissions_metric_tons_co2e),
     x = ~emissions_metric_tons_co2e,
@@ -119,7 +119,7 @@ fig_solid_waste_sector_emissions <-
     hovertemplate = ~ paste0(
       geog_name, " County", "<br>",
       category, "<br>",
-      round(emissions_metric_tons_co2e/1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      round(emissions_metric_tons_co2e / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
     )
   ) %>%

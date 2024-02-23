@@ -122,23 +122,23 @@ fig_ng_county_emissions
 #| out-width: "95%"
 
 
-fig_energy_natural_gas_sector_emissions <- 
- plot_ly(
-  type = "bar",
-  source = "fig-energy-natural-gas-sector-emissions",
-  data = county_emissions %>% 
-    filter(source == "Natural gas"),
-  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
-  color = ~category,
-  colors = unlist(category_colors),
-  hovertemplate = ~ paste0(
-    geog_name, " County", "<br>",
-    source, ", ", category, "<br>",
-    round(emissions_metric_tons_co2e/1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  )
-) %>%
+fig_energy_natural_gas_sector_emissions <-
+  plot_ly(
+    type = "bar",
+    source = "fig-energy-natural-gas-sector-emissions",
+    data = county_emissions %>%
+      filter(source == "Natural gas"),
+    y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+    x = ~emissions_metric_tons_co2e,
+    color = ~category,
+    colors = unlist(category_colors),
+    hovertemplate = ~ paste0(
+      geog_name, " County", "<br>",
+      source, ", ", category, "<br>",
+      round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
   plotly_layout(
     main_title = "2021 natural gas emissions by sector",
     subtitle = "",
