@@ -67,6 +67,7 @@ plot_county_sector_emissions <- function(county_emissions,
       barmode = "stack",
       legend = list(
         traceorder = "reversed"
-      )
+      ),
+      yaxis = list(categoryorder = "total ascending") 
     )
 }
