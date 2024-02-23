@@ -15,7 +15,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
-source(file.path(here::here(), "R/plot_county_emissions.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
 
 hookaddcap()
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))

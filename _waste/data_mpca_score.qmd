@@ -3,7 +3,7 @@
 ```{r}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
-source(file.path(here::here(), "R/plot_county_emissions.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
 # pull data here
 mpca_score <- readRDS(file.path(here::here(), "_waste/data/mpca_score.RDS")) %>%
   mutate(Method = ifelse(Method == "WTE", "Waste-to-Energy", Method)) %>%
