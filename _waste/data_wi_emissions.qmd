@@ -3,6 +3,7 @@
 ```{r}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/plot_county_emissions.R"))
 # pull data here
 wi_emissions <- readRDS(file.path(here::here(), "_waste/data/wi_emissions.RDS"))
 wi_emissions_meta <- readRDS(file.path(here::here(), "_waste/data/wi_emissions_meta.RDS"))

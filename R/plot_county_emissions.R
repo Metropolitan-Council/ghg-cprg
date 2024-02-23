@@ -34,12 +34,7 @@ plot_county_emissions <- function(county_emissions,
     y = ~emissions_metric_tons_co2e,
     color = ~source,
     split = ~source,
-    marker = list(
-      line = list(
-        color = "lightgray",
-        width = 1.3
-      )
-    ),
+    colors = unlist(source_colors), 
     hovertemplate = ~ paste0(
       geog_name, " County", "<br>",
       sector, " - ", category, ", ", source, "<br>",
@@ -56,3 +51,6 @@ plot_county_emissions <- function(county_emissions,
     ) %>%
     plotly::layout(barmode = "stack")
 }
+
+
+source(file.path(here::here(), "R/cprg_colors.R"))

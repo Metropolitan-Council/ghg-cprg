@@ -18,6 +18,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/plot_county_emissions.R"))
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS")) %>%
   st_union()
 

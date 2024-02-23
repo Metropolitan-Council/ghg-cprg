@@ -4,7 +4,6 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/plot_county_emissions.R"))
 
-
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 county_emissions_summary <- county_emissions %>%
@@ -26,32 +25,34 @@ Overall emissions
 #| out-width: "95%"
 
 fig_county_emissions_sector <- plot_ly(
-  data = county_emissions_summary,
+  data = county_emissions %>% 
+    group_by(sector, category) %>%
+    summarize(
+      emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+      .groups = "keep"
+    ),
   source = "fig-county-emissions-sector",
   x = ~sector,
   y = ~emissions_metric_tons_co2e,
   color = ~category,
   split = ~category,
   type = "bar",
-  marker = list(
-    line = list(
-      color = "lightgray",
-      width = 1.3
-    )
-  ),
+  colors = unlist(category_colors),
   hovertemplate = ~ paste0(
-    sector, ", ", source, " - ", category, "<br>",
+    category, "<br>",
     round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
   plotly_layout("11-county regional greenhouse gas emissions, 2021",
-    subtitle = "",
-    x_title = "Sector",
-    y_title = "Metric tones CO<sub>2</sub>e",
-    legend_title = "Category",
-    barmode = "stack"
+                subtitle = "",
+                x_title = "Sector",
+                y_title = "Metric tons CO<sub>2</sub>e",
+                legend_title = "Category",
+                barmode = "stack"
   )
+
+fig_county_emissions_sector
 ```
 
 ## Emissions by sector

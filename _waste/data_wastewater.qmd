@@ -3,6 +3,7 @@
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/plot_county_emissions.R"))
 
 # pull data here
 epa_ww <- readRDS(file.path(here::here(), "_waste/data/epa_county_wastewater.RDS"))

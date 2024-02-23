@@ -17,6 +17,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/plot_county_emissions.R"))
 hookaddcap()
 ```
 
@@ -81,24 +82,24 @@ fig_electricity_county_emissions <- plot_ly(
   data = elecEmissions_all,
   y = ~ reorder(geo, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
+  marker = list(
+    fill = colors$councilBlue
+  ),
   hovertemplate = ~ paste0(
     geo, "<br>",
-    "Emissions: %{x:,.2f} metric tons CO<sub>2</sub>e", "<br>",
+    "Emissions: %{x:,.0f} metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
   plotly_layout(
     main_title = "2021 county-level CO2e electricity emissions",
+    x_title =  "Metric tons CO<sub>2</sub>e",
     subtitle = "",
     yaxis = list(
       ticklen = 5,
       tickwidth = 2,
       tickcolor = "#000",
       tickfont = list(size = 14)
-    ),
-    xaxis = list(
-      title = "Greenhouse gases emitted (metric tons)"
-      # ... [any other x-axis settings] ...
     ),
     margin = list(l = 120)
   ) %>%

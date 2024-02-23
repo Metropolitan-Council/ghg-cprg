@@ -2,6 +2,8 @@
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/plot_county_emissions.R"))
+
 veh21 <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/veh21.RDS")) %>%
   mutate(
     fuel_orig = forcats::fct_rev(fuel_orig),

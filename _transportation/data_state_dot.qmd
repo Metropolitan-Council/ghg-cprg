@@ -4,6 +4,7 @@
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/plot_county_emissions.R"))
 commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_lines.RDS")) %>%
   mutate(hover_info = paste0(
     "Name: ", name, "<br>"
@@ -180,6 +181,7 @@ fig_vehicle_weight_distribution <- plot_ly(
   x = ~name,
   y = ~value,
   color = ~vehicle_weight,
+  colors = unlist(vehicle_weight_colors),
   hoverinfo = "text",
   hovertemplate = ~ paste0(
     "Name: ", name, "<br>",

@@ -3,7 +3,7 @@
 ```{r, echo=FALSE, message = FALSE, results='markup'}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
-library(magrittr)
+source(file.path(here::here(), "R/plot_county_emissions.R"))
 # complete_figure_index <- readRDS("data/_figure_index.RDS")
 
 printCap(book = TRUE) %>%

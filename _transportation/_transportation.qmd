@@ -15,6 +15,8 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/plot_county_emissions.R"))
+
 vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
 vmt_emissions_all <- vmt_emissions %>%
   group_by(zone) %>%
@@ -78,6 +80,7 @@ fig_transportation_county_emissions <- plot_ly(
   y = ~ reorder(zone, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   color = ~vehicle_weight_label,
+  colors = unlist(vehicle_weight_colors),
   hovertemplate = ~ paste0(
     zone, " County", "<br>",
     vehicle_weight_label, "<br>",
