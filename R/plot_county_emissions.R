@@ -47,6 +47,11 @@ plot_county_emissions <- function(county_emissions,
     color = ~source,
     split = ~source,
     colors = unlist(source_colors),
+    marker = list(
+      line = list(
+        width = 0
+      )
+    ),
     hovertemplate = ~ paste0(
       geog_name, " County", "<br>",
       sector, " - ", category, ", ", source, "<br>",
