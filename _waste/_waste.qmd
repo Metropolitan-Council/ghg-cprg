@@ -73,8 +73,11 @@ fig_wastewater_sector_emissions <-
       filter(source == "Wastewater"),
     y = ~ reorder(geog_name, emissions_metric_tons_co2e),
     x = ~emissions_metric_tons_co2e,
-    color = ~category,
-    colors = unlist(category_colors),
+    # color = ~category,
+    # colors = unlist(category_colors),
+    marker = list(
+      color = colors$councilBlue
+    ),
     hovertemplate = ~ paste0(
       geog_name, " County", "<br>",
       category, "<br>",
