@@ -49,7 +49,8 @@ source_colors <- list(
   "Recycling" = "#ed2c73",
   "Organics" = "#fcc5c0",
   "Wastewater" = "#994d96",
-
+  "Waste to energy" = "#df65b0",
+  
   # energy levels
   "Electricity" = "#0868ac",
   "Natural gas" = "#4eb3d3",
@@ -68,8 +69,8 @@ vehicle_weight_colors <- list(
 )
 
 management_method_colors <- list(
-  "WTE" = "#df65b0",
-  "Waste-to-Energy" = "#df65b0",
+  "WTE" = source_colors$`Waste to energy`,
+  "Waste to energy" = source_colors$`Waste to energy`,
   "Recycling" = source_colors$Recycling,
   "Organics" = source_colors$Organics,
   "Landfill" = source_colors$Landfill,
