@@ -15,7 +15,8 @@ score_filtered <- score_summary %>%
     County %in% cprg_county$NAME,
     Year == "2021"
   ) %>%
-  select(County,
+  select(
+    County,
     "Management Category" = "Mangement Method",
     Method,
     Year,
@@ -53,21 +54,22 @@ epa_ghg_factor_hub <- readRDS("_meta/data/epa_ghg_factor_hub.RDS")
 waste_factors <- epa_ghg_factor_hub$waste
 
 score_final <- score_filtered %>%
+  rowwise() %>% 
   mutate( # emissions factor in metric tons co2/short tons waste
     emissions_factor =
       case_when(
         Method == "Landfill" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Landfilled") %>%
-          magrittr::extract2("value")),
+          magrittr::extract2("value")), # 0.52
         Method == "MSW Compost" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Composted") %>%
-          magrittr::extract2("value")),
+          magrittr::extract2("value")), # NA
         Method == "Onsite" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Landfilled") %>%
-          magrittr::extract2("value")),
+          magrittr::extract2("value")), # 0.52
         Method == "Organics" ~ as.numeric(filter(waste_factors, Material == "Mixed Organics", name == "Composted") %>%
-          magrittr::extract2("value")),
+          magrittr::extract2("value")), # 0.17
         Method == "Recycling" ~ as.numeric(filter(waste_factors, Material == "Mixed Recyclables", name == "Recycled") %>%
-          magrittr::extract2("value")),
+          magrittr::extract2("value")), # 0.09
         Method == "WTE" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Combusted") %>%
-          magrittr::extract2("value")),
+          magrittr::extract2("value")), # 0.43
       ),
     # emissions in metric tons co2e
     emissions_metric_tons_co2e = Tons * emissions_factor
