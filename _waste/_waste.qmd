@@ -37,6 +37,7 @@ Wastewater emissions are emissions generated during the wastewater treatment pro
 
 ## Methods
 
+## Results
 The process for calculating solid waste emissions slightly differs between Minnesota and Wisconsin counties, due to a difference in data availability.
 
 For Minnesota counties, waste generation totals are allocated by sector from MPCA SCORE data, according to the sector breakdown featured in [data chapter]. Totals for each sector are multiplied by the appropriate EPA-provided emissions factor to provide an estimate of emissions from that source and county.
@@ -45,22 +46,24 @@ For Wisconsin counties, state-level emissions data as calculated by the Wisconsi
 
 $$Emissions_c = Emissions_{total} \times \frac{Pop_c}{Pop_{total}}$$
 
-## Results
 
 ```{r fig-waste-wastewater-county-emissions}
-#| fig-cap: "Waste and wastewater county emissions"
+#| fig-cap: "Solid waste and wastewater county emissions"
 #| out-width: "95%"
 fig_waste_wastewater_county_emissions <-
   plot_county_sector_emissions(county_emissions,
-    .sector = "Waste",
-    .plotly_source = "fig-waste-wastewater-county-emissions"
+                               .sector = "Waste",
+                               .plotly_source = "fig-waste-wastewater-county-emissions"
   )
+
+fig_waste_wastewater_county_emissions$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
+
 fig_waste_wastewater_county_emissions
 ```
 
 
 ```{r fig-waste-county-emissions-by-category}
-#| fig-cap: "Waste and wastewater county level emissions"
+#| fig-cap: "Solid waste and wastewater county emissions by category"
 #| out-width: "95%"
 
 fig_waste_county_emissions_by_category <- plot_county_emissions(
@@ -68,6 +71,9 @@ fig_waste_county_emissions_by_category <- plot_county_emissions(
   .sector = "Waste",
   .plotly_source = "fig-waste-county-emissions-by-category"
 )
+
+fig_waste_county_emissions_by_category$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
+
 fig_waste_county_emissions_by_category
 ```
 
@@ -85,8 +91,6 @@ fig_wastewater_sector_emissions <-
       filter(source == "Wastewater"),
     y = ~ reorder(geog_name, emissions_metric_tons_co2e),
     x = ~emissions_metric_tons_co2e,
-    # color = ~category,
-    # colors = unlist(category_colors),
     marker = list(
       color = colors$councilBlue
     ),
@@ -108,7 +112,8 @@ fig_wastewater_sector_emissions <-
     barmode = "stack",
     legend = list(
       traceorder = "reversed"
-    )
+    ),
+    yaxis = list(categoryorder = "total ascending") 
   )
 fig_wastewater_sector_emissions
 ```
@@ -116,56 +121,154 @@ fig_wastewater_sector_emissions
 
 ### Solid waste
 
-```{r fig-solid-waste-sector-emissions}
-#| fig-cap: "2021 wastewater emissions"
+```{r fig-solid-waste-emissions}
+#| fig-cap: "2021 solid waste emissions"
 #| out-width: "95%"
-
-waste_data <- county_emissions %>%
-  dplyr::filter(category == "Solid Waste")
-
-
-
-```{r fig-emissions-side-by-side}
-#| fig-cap: "2021 annual emissions by waste management category"
-
-plot_ly(
-  type = "bar",
-  source = opts_current$get()$label,
-  data = waste_data,
-  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
-  color = ~source,
-  hovertemplate = ~ paste0(
-    geog_name, " County", "<br>",
-    source, "<br>",
-    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  )
-) %>%
+fig_solid_waste_emissions <-
+  plot_ly(
+    type = "bar",
+    source = "fig-solid-waste-emissions",
+    data = county_emissions %>%
+      filter(category == "Solid waste"),
+    y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+    x = ~emissions_metric_tons_co2e,
+    marker = list(
+      color = colors$councilBlue,
+      line = list(
+        color = colors$councilBlue
+      )
+    ),
+    hovertemplate = ~ paste0(
+      geog_name, " County", "<br>",
+      category, ", ", source, "<br>",
+      round(emissions_metric_tons_co2e / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
   plotly_layout(
-    main_title = "2021 county-level CO2e solid waste emissions",
+    main_title = "2021 solid waste emissions",
     subtitle = "",
-    yaxis = list(
-      ticklen = 5,
-      tickwidth = 2,
-      tickcolor = "#000",
-      tickfont = list(size = 14)
-    ),
-    xaxis = list(
-      title = "Greenhouse gases emitted (metric tons)"
-      # ... [any other x-axis settings] ...
-    ),
-    margin = list(l = 120)
+    y_title = "County",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Category"
   ) %>%
   layout(
     barmode = "stack",
     legend = list(
       traceorder = "reversed"
     ),
-    yaxis = list(categoryorder = "total ascending")
-    # note: ask how we want to lay out these plots. should it be the same as others or ascending
+    yaxis = list(categoryorder = "total ascending") 
   )
+fig_solid_waste_emissions
 ```
+
+
+```{r fig-solid-waste-sector-emissions-by-category}
+#| fig-cap: "2021 solid waste emissions by category"
+#| out-width: "95%"
+fig_solid_waste_sector_emissions_by_category <-
+  plot_ly(
+    type = "bar",
+    source = "fig-solid-waste-sector-emissions-by-category",
+    data = county_emissions %>%
+      filter(category == "Solid waste"),
+    y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+    x = ~emissions_metric_tons_co2e,
+    color = ~source,
+    colors = unlist(source_colors),
+    hovertemplate = ~ paste0(
+      geog_name, " County", "<br>",
+      category, "<br>",
+      round(emissions_metric_tons_co2e / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
+  plotly_layout(
+    main_title = "2021 solid waste emissions",
+    subtitle = "",
+    y_title = "County",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Category"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    ),
+    yaxis = list(categoryorder = "total ascending") 
+  )
+fig_solid_waste_sector_emissions_by_category
+```
+
+```{r fig-sw-total-emissions}
+#| fig-cap: "2021 solid waste emissions"
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+waste_data <- county_emissions %>%
+  dplyr::filter(category == "Solid waste")
+
+plot_ly(
+  data = waste_data,
+  type = "bar",
+  source = opts_current$get()$label,
+  x = ~geog_name,
+  y = ~emissions_metric_tons_co2e,
+  color = ~source,
+  split = ~source,
+  colors = unlist(source_colors),
+  hovertemplate = ~ paste0(
+    geog_name, " County", "<br>",
+    sector, " - ", category, ", ", source, "<br>",
+    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  councilR::plotly_layout(
+    main_title = "Solid waste emissions",
+    subtitle = "",
+    x_title = stringr::str_to_title(unique(waste_data$geog_level)),
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Category"
+  ) %>%
+  plotly::layout(barmode = "stack")
+```
+
+
+
+
+<!-- ```{r fig-emissions-side-by-side} -->
+<!-- #| fig-cap: "2021 annual emissions by waste management category" -->
+<!-- plot_ly( -->
+<!--   type = "bar", -->
+<!--   source = opts_current$get()$label, -->
+<!--   data = waste_data, -->
+<!--   y = ~ reorder(geog_name, emissions_metric_tons_co2e), -->
+<!--   x = ~emissions_metric_tons_co2e, -->
+<!--   color = ~source, -->
+<!--   colors = unlist(source_colors), -->
+<!--   hovertemplate = ~ paste0( -->
+<!--     geog_name, " County", "<br>", -->
+<!--     source, "<br>", -->
+<!--     round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>", -->
+<!--     "<extra></extra>" -->
+<!--   ) -->
+<!-- ) %>% -->
+<!--   plotly_layout( -->
+<!--     main_title = "2021 county-level CO2e solid waste emissions", -->
+<!--     x_title = "Metric tons CO<sub>2</sub>e", -->
+<!--     y_title = "County", -->
+<!--     subtitle = "", -->
+<!--     legend_title = "Management method" -->
+<!--   ) %>% -->
+<!--   layout( -->
+<!--     barmode = "stack", -->
+<!--     legend = list( -->
+<!--       traceorder = "reversed" -->
+<!--     ), -->
+<!--     yaxis = list(categoryorder = "total ascending") -->
+<!--     # note: ask how we want to lay out these plots. should it be the same as others or ascending -->
+<!--   ) -->
+<!-- ``` -->
 
 ### Correlation with related data
 
@@ -183,7 +286,7 @@ waste_totals <- waste_data %>%
   )
 
 waste_population <- left_join(waste_totals, cprg_population,
-  by = c("geog_name" = "NAME")
+                              by = c("geog_name" = "NAME")
 )
 
 plot_ly(
@@ -201,6 +304,7 @@ plot_ly(
   ),
   opacity = 0.7,
   marker = list(
+    color = colors$councilBlue,
     size = 18,
     line = list(
       color = "lightgray",

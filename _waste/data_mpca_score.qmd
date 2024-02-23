@@ -21,6 +21,7 @@ mpca_score <- readRDS(file.path(here::here(), "_waste/data/mpca_score.RDS")) %>%
 mpca_score_meta <- readRDS(file.path(here::here(), "_waste/data/mpca_score_meta.RDS"))
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
+epa_ghg_factor_hub <- readRDS(file.path(here::here(), "_meta/data/epa_ghg_factor_hub.RDS"))
 source(file.path(here::here(), "_meta/data-raw/epa_nei.R"))
 hookaddcap()
 ```
@@ -191,11 +192,11 @@ Uncertainty was not included in the dataset given, nor does the EPA offer guidan
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
 
-### Waste Management Classification
+### Waste management classification
 
-The MPCA SCORE report classifies waste management by two management methods and, within those categories, five sub-methods. Within the management methods, "MMSW", or "Mixed Municipal Solid Waste", refers to garbage, organic refuse, or other solid waste aggregated for collection, while "Combined Recycling and Organics" refers to separated recyclable and composted materials, including traditional recyclables, source-separated compostable materials, and yard trimmings.
+The MPCA SCORE report classifies waste management by two management methods and, within those categories, five sub-methods [@mpcaSustainableMaterialsManagement2023]. Within the management methods, "MMSW", or "Mixed Municipal Solid Waste", refers to garbage, organic refuse, or other solid waste aggregated for collection, while "Combined Recycling and Organics" refers to separated recyclable and composted materials, including traditional recyclables, source-separated compostable materials, and yard trimmings.
 
-MMSW includes the subcategories of Landfill, WTE, Onsite, and MSW Compost. Landfill is all material disposed of in a landfill. WTE, or Waste to Energy, refers to waste combusted in an energy recovery facility or incinerator. Onsite refers to [??? where is documentation on this]. MSW Compost includes [all compost separated from landfill, check]. No metropolitan counties reported any MSW Compost in the year 2021. Only Sherburne and Chisago counties reported waste managed in onsite facilities.
+MMSW includes the subcategories of Landfill, WTE, Onsite, and MSW Compost. Landfill is all material disposed of in a landfill. WTE, or Waste to Energy, refers to waste combusted in an energy recovery facility or incinerator. Onsite refers to burning or burying MSW [@mpcaSustainableMaterialsManagement2023]. MSW Compost includes [all compost separated from landfill, check]. No metropolitan counties reported any MSW Compost in the year 2021. Only Sherburne and Chisago counties reported waste managed on-site. 
 
 Combined Recycling and Organics includes the subcategories Recycling and Organics. Organics, as compared to MSW Compost, refers to source-separated and direct compost streams. All compost data in this report comes from this category.
 
@@ -205,11 +206,15 @@ After comparing with federal tools like the EPA's [Waste and Recycling National 
 
 We used emissions factors from the EPA's [Emission Factors Hub](https://www.epa.gov/climateleadership/ghg-emission-factors-hub) to calculate emissions based on the totals reported by the MPCA. These emissions factors come from the EPA's [Waste Reduction Model](https://www.epa.gov/warm). 
 
-We selected for each management subcategory the emissions factor most aligned with the waste type as reported in SCORE. These emissions factors do not take into account emissions savings associated with a particular management method, for example energy savings from Waste to Energy facilities.
+We selected for each management subcategory the emissions factor most aligned with the waste type as reported in SCORE. These emissions factors do not take into account emissions savings associated with a particular management method, for example energy savings from waste to energy facilities.
 
 ```{r tbl-solid-waste-management-classifications}
 #| tbl-cap: "Solid waste management classifications by data source, including emissions factors"
 #| out-width: "95%"
+
+# waste_factors <- epa_ghg_factor_hub$waste
+# TODO fix table here with actual epa_ghg_factor_hub values used
+
 waste_management_comp <-
   tribble(
     ~`MPCA Management Method`, ~`MPCA Method`, ~`Our Category`, ~`Emissions Factor Name`, ~`Emissions Factor`,
