@@ -126,7 +126,7 @@ fig_wastewater_source_comparison <- plot_ly(
     filter(county_name %in% mc_ww_cty$COUNTY_NAM),
   x = ~ reorder(county_name, -co2e),
   y = ~co2e,
-  source = "fig-wastewwater-source-comparison",
+  source = "fig-wastewater-source-comparison",
   type = "bar",
   hoverinfo = "text",
   color = ~source,
