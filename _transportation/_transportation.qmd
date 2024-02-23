@@ -92,7 +92,7 @@ fig_transportation_county_emissions <- plot_ly(
     main_title = "2021 annual emissions by vehicle weight",
     subtitle = "",
     y_title = "County",
-    x_title = "Greenhouse gases emitted (metric tons)",
+    x_title = "Metric tons CO<sub>2</sub>e",
     legend_title = "Vehicle weight"
   ) %>%
   layout(

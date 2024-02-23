@@ -97,7 +97,7 @@ fig_ng_county_emissions <- plot_ly(
 ) %>%
   plotly_layout(
     main_title = "2021 county-level annual CO2e natural gas emissions",
-    x_title = "Greenhouse gases emitted (metric tons)",
+    x_title = "Metric tons CO<sub>2</sub>e",
     subtitle = "",
     yaxis = list(
       ticklen = 5, # Adjust tick length if needed
