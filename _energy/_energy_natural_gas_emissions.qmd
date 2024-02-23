@@ -84,28 +84,22 @@ fig_ng_county_emissions <- plot_ly(
   type = "bar",
   source = "fig-ng-county-emissions",
   data = natGasEmissions_all,
-  y = ~ reorder(geo, emissions_metric_tons_co2e),
+  y = ~ reorder(county, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   marker = list(
     color = colors$councilBlue
   ),
   hovertemplate = ~ paste0(
     county, " County, ", state, "<br>",
-    "Emissions: %{x:,.2f} metric tons CO<sub>2</sub>e", "<br>",
+    "Natural gas", "<br>",
+    "Emissions: %{x:,.0f} metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
   plotly_layout(
-    main_title = "2021 county-level annual CO2e natural gas emissions",
+    main_title = "2021 natural gas emissions",
     x_title = "Metric tons CO<sub>2</sub>e",
-    subtitle = "",
-    yaxis = list(
-      ticklen = 5, # Adjust tick length if needed
-      tickwidth = 2, # Adjust tick width if needed
-      tickcolor = "#000", # Adjust tick color if needed
-      tickfont = list(size = 14) # Adjust font size of ticks (labels) if needed
-    ),
-    margin = list(l = 120)
+    subtitle = ""
   ) %>%
   layout(
     barmode = "stack",
