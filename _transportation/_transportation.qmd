@@ -70,14 +70,26 @@ Transportation VMT and emissions were calculated in [vmt_emissions.R](data-raw/v
 ## Results
 
 ```{r fig-transportation-county-emissions}
+#| fig-cap: "Transportation county emissions"
+#| out-width: "95%"
+fig_transportation_county_emissions <- plot_county_sector_emissions(county_emissions,
+                             .sector = "Transportation",
+                             .plotly_source ="fig-transportation-county-emissions")
+fig_transportation_county_emissions
+```
+
+We can also view this data broken out by vehicle weight in @fig-transportation-county-emissions-by-weight. 
+
+
+```{r fig-transportation-county-emissions-by-weight}
 #| fig-cap: "2021 annual emissions by vehicle weight"
 #| out-width: "95%"
 
-fig_transportation_county_emissions <- plot_ly(
+fig_transportation_county_emissions_by_weight <- plot_ly(
   type = "bar",
-  source = "fig-transportation-county-emissions",
+  source = "fig-transportation-county-emissions-by-weight",
   data = vmt_emissions,
-  y = ~ reorder(zone, emissions_metric_tons_co2e),
+  y = ~reorder(zone, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   color = ~vehicle_weight_label,
   colors = unlist(vehicle_weight_colors),
@@ -101,7 +113,7 @@ fig_transportation_county_emissions <- plot_ly(
       traceorder = "reversed"
     )
   )
-fig_transportation_county_emissions
+fig_transportation_county_emissions_by_weight
 ```
 
 

@@ -23,15 +23,27 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 
 ## Introduction
 
-```{r fig-energy-emissions-plot}
-#| fig-cap: "Energy county level emissions"
+
+
+```{r fig-energy-county-emissions}
+#| fig-cap: "Energy county emissions"
 #| out-width: "95%"
-fig_energy_emissions_plot <- plot_county_emissions(
+fig_energy_county_emissions <- plot_county_sector_emissions(county_emissions,
+                             .sector = "Energy",
+                             .plotly_source ="fig-energy-county-emissions")
+fig_energy_county_emissions
+```
+
+
+```{r fig-energy-emissions-by-category}
+#| fig-cap: "Energy county emissions by category"
+#| out-width: "95%"
+fig_energy_emissions_by_category <- plot_county_emissions(
   county_emissions = county_emissions,
   .sector = "Energy",
-  .plotly_source = "fig-energy-emissions-plot"
+  .plotly_source = "fig-energy-emissions-by-category"
 )
-fig_energy_emissions_plot
+fig_energy_emissions_by_category
 ```
 
 {{< include _energy_electricity_emissions.qmd >}}
