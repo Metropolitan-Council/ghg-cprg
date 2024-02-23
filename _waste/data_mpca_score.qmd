@@ -89,9 +89,10 @@ fig_total_waste <- plot_ly(
 ) %>%
   plotly_layout(
     main_title = "Total waste generated per county",
+    subtitle = "Minnesota Pollution Control Agency (MPCA) SCORE",
     x_title = "County",
     y_title = "Waste (tons)",
-    legend_title = "Management Method",
+    legend_title = "Management method",
     barmode = "stack"
   ) %>%
   layout(
@@ -142,6 +143,7 @@ fig_waste_county_area <- plot_ly(
 ) %>%
   plotly_layout(
     main_title = "Total waste by county area",
+    subtitle = "Minnesota Pollution Control Agency (MPCA) SCORE",
     x_title = "Area (sq. mi.)",
     y_title = "Waste (tons)"
   )
@@ -181,6 +183,7 @@ fig_waste_county_pop <- plot_ly(
   ),
   marker = list(
     size = 18,
+    color = colors$councilBlue,
     line = list(
       color = "lightgray",
       width = 2
@@ -189,6 +192,7 @@ fig_waste_county_pop <- plot_ly(
 ) %>%
   plotly_layout(
     main_title = "Total waste by county population",
+    subtitle = "Minnesota Pollution Control Agency (MPCA) SCORE",
     x_title = "Population",
     y_title = "Waste (tons)"
   )
