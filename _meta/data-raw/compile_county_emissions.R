@@ -11,7 +11,7 @@ transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.R
     sector = "Transportation",
     geog_level = "county",
     geog_name = zone,
-    category = stringr::str_to_sentence(vehicle_type),
+    category = paste0(stringr::str_to_sentence(vehicle_type), " vehicles"),
     source = paste0(vehicle_weight_label, " vehicles"),
     data_source = "StreetLight Data",
     factor_source = paste0("EPA MOVES (", moves_year, ")")
@@ -52,7 +52,7 @@ solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
     sector = "Waste",
     geog_level = "county",
     geog_name = county,
-    category = "Solid Waste",
+    category = "Solid waste",
     source = source,
     data_source,
     factor_source = "EPA GHG Emission Factors Hub (2021)"
