@@ -634,4 +634,11 @@ epa_ghg_factor_hub <- list(
     )
 )
 
+#manual adjustment of eGRID MROW values -- 2021 Factor Hub used 2019 eGRID
+new_values <- c(995.8, 0.107, 0.015)
+epa_ghg_factor_hub[[1]] <- epa_ghg_factor_hub[[1]] %>%
+  mutate(across(value, ~replace(., 1:3, new_values)))
+
 saveRDS(epa_ghg_factor_hub, "_meta/data/epa_ghg_factor_hub.RDS")
+
+

@@ -5,6 +5,7 @@ if (exists("eGRID_MROW_emissionsFactor_CO2") == FALSE) {
 
   epa_ghg_factor_hub <- readRDS("_meta/data/epa_ghg_factor_hub.RDS")
   mrow_factors <- epa_ghg_factor_hub$egrid
+  
 
   # Load eGRID Total Output Emission Rates (lb/MWh) for the MROW subregion (
   # which covers our study area)
