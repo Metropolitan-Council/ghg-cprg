@@ -131,16 +131,15 @@
 2021,"county","139","Scott","Waste","Wastewater","Wastewater",14507.1521383052,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",149568,"ACS 5-Year Estimates 2021, Table DP05",0.1
 2021,"county","141","Sherburne","Waste","Wastewater","Wastewater",9340.00732214179,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",96295,"ACS 5-Year Estimates 2021, Table DP05",0.1
 2021,"county","163","Washington","Waste","Wastewater","Wastewater",25685.6748432935,"EPA State GHG Inventory and Projection Tool","EPA State GHG Inventory and Projection Tool",264818,"ACS 5-Year Estimates 2021, Table DP05",0.1
-<<<<<<< HEAD
-2021,"county","003","Anoka","Waste","Solid waste","Landfill",105380.3326,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.29
-2021,"county","019","Carver","Waste","Solid waste","Landfill",29200.5112,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.28
+2021,"county","003","Anoka","Waste","Solid waste","Landfill",97421.9012,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.27
+2021,"county","019","Carver","Waste","Solid waste","Landfill",29198,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.28
 2021,"county","025","Chisago","Waste","Solid waste","Landfill",20457.7412,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.36
-2021,"county","037","Dakota","Waste","Solid waste","Landfill",122239.8536,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.28
-2021,"county","053","Hennepin","Waste","Solid waste","Landfill",382775.54,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.3
-2021,"county","123","Ramsey","Waste","Solid waste","Landfill",143967.037,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.26
-2021,"county","139","Scott","Waste","Solid waste","Landfill",40439.6237,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.27
-2021,"county","141","Sherburne","Waste","Solid waste","Landfill",21909.34764,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.23
-2021,"county","163","Washington","Waste","Solid waste","Landfill",53248.0403,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.2
+2021,"county","037","Dakota","Waste","Solid waste","Landfill",117934.0916,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.27
+2021,"county","053","Hennepin","Waste","Solid waste","Landfill",229938.0772,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.18
+2021,"county","123","Ramsey","Waste","Solid waste","Landfill",42481.92,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.08
+2021,"county","139","Scott","Waste","Solid waste","Landfill",40439.3184,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.27
+2021,"county","141","Sherburne","Waste","Solid waste","Landfill",20153.22764,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.21
+2021,"county","163","Washington","Waste","Solid waste","Landfill",15712.476,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.06
 2021,"county","003","Anoka","Waste","Solid waste","Organics",7561.6646,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.02
 2021,"county","019","Carver","Waste","Solid waste","Organics",4809.3374,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.05
 2021,"county","025","Chisago","Waste","Solid waste","Organics",1224.4369,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.02
@@ -159,45 +158,14 @@
 2021,"county","139","Scott","Waste","Solid waste","Recycling",5246.8938,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.04
 2021,"county","141","Sherburne","Waste","Solid waste","Recycling",3057.6681,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.03
 2021,"county","163","Washington","Waste","Solid waste","Recycling",7529.0319,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.03
-2021,"county","093","Pierce","Waste","Solid waste","Landfill",15756.844830377,"Wisconsin DNR","EPA GHG Emission Factors Hub (2021)",42204,"ACS 5-Year Estimates 2021, Table DP05",0.37
-2021,"county","109","St. Croix","Waste","Solid waste","Landfill",34915.0061132888,"Wisconsin DNR","EPA GHG Emission Factors Hub (2021)",92495,"ACS 5-Year Estimates 2021, Table DP05",0.38
-=======
-2021,"county","003","Anoka","Waste","Solid Waste","Landfill",97421.9012,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.27
-2021,"county","019","Carver","Waste","Solid Waste","Landfill",29198,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.28
-2021,"county","025","Chisago","Waste","Solid Waste","Landfill",20457.7412,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.36
-2021,"county","037","Dakota","Waste","Solid Waste","Landfill",117934.0916,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.27
-2021,"county","053","Hennepin","Waste","Solid Waste","Landfill",229938.0772,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.18
-2021,"county","123","Ramsey","Waste","Solid Waste","Landfill",42481.92,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.08
-2021,"county","139","Scott","Waste","Solid Waste","Landfill",40439.3184,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.27
-2021,"county","141","Sherburne","Waste","Solid Waste","Landfill",20153.22764,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.21
-2021,"county","163","Washington","Waste","Solid Waste","Landfill",15712.476,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.06
-2021,"county","003","Anoka","Waste","Solid Waste","Organics",7561.6646,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.02
-2021,"county","019","Carver","Waste","Solid Waste","Organics",4809.3374,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.05
-2021,"county","025","Chisago","Waste","Solid Waste","Organics",1224.4369,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.02
-2021,"county","037","Dakota","Waste","Solid Waste","Organics",23737.4043,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.05
-2021,"county","053","Hennepin","Waste","Solid Waste","Organics",27869.9224,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.02
-2021,"county","123","Ramsey","Waste","Solid Waste","Organics",18024.8127,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.03
-2021,"county","139","Scott","Waste","Solid Waste","Organics",5100.1071,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.03
-2021,"county","141","Sherburne","Waste","Solid Waste","Organics",1133.0398,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.01
-2021,"county","163","Washington","Waste","Solid Waste","Organics",6045.0725,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.02
-2021,"county","003","Anoka","Waste","Solid Waste","Recycling",17823.2724,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.05
-2021,"county","019","Carver","Waste","Solid Waste","Recycling",3919.4181,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0.04
-2021,"county","025","Chisago","Waste","Solid Waste","Recycling",756.6354,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0.01
-2021,"county","037","Dakota","Waste","Solid Waste","Recycling",12578.5404,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.03
-2021,"county","053","Hennepin","Waste","Solid Waste","Recycling",30815.2845,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.02
-2021,"county","123","Ramsey","Waste","Solid Waste","Recycling",7134.6672,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.01
-2021,"county","139","Scott","Waste","Solid Waste","Recycling",5246.8938,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0.04
-2021,"county","141","Sherburne","Waste","Solid Waste","Recycling",3057.6681,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.03
-2021,"county","163","Washington","Waste","Solid Waste","Recycling",7529.0319,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.03
-2021,"county","003","Anoka","Waste","Solid Waste","Waste to Energy",7958.4314,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.02
-2021,"county","019","Carver","Waste","Solid Waste","Waste to Energy",2.5112,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0
-2021,"county","025","Chisago","Waste","Solid Waste","Waste to Energy",0,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0
-2021,"county","037","Dakota","Waste","Solid Waste","Waste to Energy",4305.762,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.01
-2021,"county","053","Hennepin","Waste","Solid Waste","Waste to Energy",152837.4628,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.12
-2021,"county","123","Ramsey","Waste","Solid Waste","Waste to Energy",101485.117,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.18
-2021,"county","139","Scott","Waste","Solid Waste","Waste to Energy",0.3053,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0
-2021,"county","141","Sherburne","Waste","Solid Waste","Waste to Energy",1756.12,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.02
-2021,"county","163","Washington","Waste","Solid Waste","Waste to Energy",37535.5643,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.14
-2021,"county","093","Pierce","Waste","Solid Waste","Landfill",15756.844830377,"Wisconsin DNR","EPA GHG Emission Factors Hub (2021)",42204,"ACS 5-Year Estimates 2021, Table DP05",0.37
-2021,"county","109","St. Croix","Waste","Solid Waste","Landfill",34915.0061132888,"Wisconsin DNR","EPA GHG Emission Factors Hub (2021)",92495,"ACS 5-Year Estimates 2021, Table DP05",0.38
->>>>>>> solid-waste-data-report
+2021,"county","003","Anoka","Waste","Solid waste","Waste to energy",7958.4314,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","019","Carver","Waste","Solid waste","Waste to energy",2.5112,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates 2021, Table DP05",0
+2021,"county","025","Chisago","Waste","Solid waste","Waste to energy",0,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates 2021, Table DP05",0
+2021,"county","037","Dakota","Waste","Solid waste","Waste to energy",4305.762,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",435863,"ACS 5-Year Estimates 2021, Table DP05",0.01
+2021,"county","053","Hennepin","Waste","Solid waste","Waste to energy",152837.4628,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",1270283,"ACS 5-Year Estimates 2021, Table DP05",0.12
+2021,"county","123","Ramsey","Waste","Solid waste","Waste to energy",101485.117,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",549377,"ACS 5-Year Estimates 2021, Table DP05",0.18
+2021,"county","139","Scott","Waste","Solid waste","Waste to energy",0.3053,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",149568,"ACS 5-Year Estimates 2021, Table DP05",0
+2021,"county","141","Sherburne","Waste","Solid waste","Waste to energy",1756.12,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",96295,"ACS 5-Year Estimates 2021, Table DP05",0.02
+2021,"county","163","Washington","Waste","Solid waste","Waste to energy",37535.5643,"MPCA SCORE","EPA GHG Emission Factors Hub (2021)",264818,"ACS 5-Year Estimates 2021, Table DP05",0.14
+2021,"county","093","Pierce","Waste","Solid waste","Landfill",15813.0382527193,"Wisconsin DNR","EPA GHG Emission Factors Hub (2021)",42204,"ACS 5-Year Estimates 2021, Table DP05",0.37
+2021,"county","109","St. Croix","Waste","Solid waste","Landfill",34656.1220070437,"Wisconsin DNR","EPA GHG Emission Factors Hub (2021)",92495,"ACS 5-Year Estimates 2021, Table DP05",0.37
