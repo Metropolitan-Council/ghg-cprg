@@ -259,3 +259,5 @@ _transportation/data_epa_moves_files/
 R/fetch_path.R
 
 purl/
+
+_transportation/data-raw/mndot/22_cdrs_hc.xlsx

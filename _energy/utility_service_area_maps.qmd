@@ -1,4 +1,4 @@
-# Utility Service Area Maps
+# Utility service area maps
 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
@@ -43,7 +43,7 @@ hookaddcap()
 ```
 
 
-To identify the utilities operating within our 11-county study area, we utilized data sets published by state and federal sources. The outcome of our data collection, yielding a list of distinct utilities for which activity data should be collected, resides within `distinct_natGas_util_WI.RDS` (4 utilities, all investor-owned) and `distinct_natGas_util_type_MN.RDS` (7 utilities, six investor-owned and one municipally-owned)
+To identify the utilities operating within our 11-county study area, we utilized data sets published by state and federal sources. The outcome of our data collection, yielding a list of distinct utilities for which activity data should be collected, resides within [distinct_natGas_util_WI.RDS](data/distinct_natGas_util_WI.RDS) (4 utilities, all investor-owned) and [distinct_natGas_util_type_MN.RDS](data/distinct_natGas_util_type_MN.RDS) (7 utilities, six investor-owned and one municipally-owned).  
 
 ### Minnesota
 
