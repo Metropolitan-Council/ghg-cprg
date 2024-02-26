@@ -43,6 +43,7 @@ list.files("purl",
 ) %>%
   purrr::map(source)
 fs::file_delete("purl/")
+fs::file_delete("assets/plots/")
 
 # find all plotly objects
 is_pl <- purrr::map(

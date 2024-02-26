@@ -188,9 +188,8 @@ fig_electricity_county_emissions <- plot_ly(
     filter(source == "Electricity"),
   y = ~ reorder(geog_name, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
-  marker = list(
-    color = colors$councilBlue
-  ),
+  color = ~source,
+  colors = unlist(source_colors),
   hovertemplate = ~ paste0(
     geog_name, "<br>",
     "Electricity", "<br>",

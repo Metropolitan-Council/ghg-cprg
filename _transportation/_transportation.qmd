@@ -153,7 +153,6 @@ fig_emissions_pop_transportation <- plot_ly(
     "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
-  opacity = 0.7,
   marker = list(
     color = colors$councilBlue,
     size = 18,

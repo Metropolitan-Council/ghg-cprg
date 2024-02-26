@@ -91,9 +91,8 @@ fig_wastewater_sector_emissions <-
       filter(source == "Wastewater"),
     y = ~ reorder(geog_name, emissions_metric_tons_co2e),
     x = ~emissions_metric_tons_co2e,
-    marker = list(
-      color = colors$councilBlue
-    ),
+    color = ~category,
+    colors = unlist(category_colors),
     hovertemplate = ~ paste0(
       geog_name, " County", "<br>",
       category, "<br>",
@@ -132,8 +131,9 @@ fig_solid_waste_emissions <-
       filter(category == "Solid waste"),
     y = ~ reorder(geog_name, emissions_metric_tons_co2e),
     x = ~emissions_metric_tons_co2e,
+    color = ~category,
+    colors = unlist(category_colors),
     marker = list(
-      color = colors$councilBlue,
       line = list(
         color = colors$councilBlue
       )
@@ -202,6 +202,7 @@ fig_solid_waste_sector_emissions_by_category
 
 ```{r fig-sw-total-emissions}
 #| fig-cap: "2021 solid waste emissions"
+#| out-width: "95%"
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 waste_data <- county_emissions %>%

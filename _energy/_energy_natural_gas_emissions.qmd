@@ -34,7 +34,7 @@ wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_
 natGasEmissions_all <- county_emissions %>%
   filter(source == "Natural gas") %>%
   mutate(county = geog_name) %>%
-  group_by(county, year) %>%
+  group_by(county, year, source) %>%
   summarise(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     .groups = "rowwise"
@@ -134,17 +134,13 @@ fig_ng_county_emissions <- plot_ly(
   data = natGasEmissions_all,
   y = ~ reorder(county, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
-  marker = list(
-    color = colors$councilBlue
-  ),
+  color = ~source,
+  colors = unlist(source_colors),
   hovertemplate = ~ paste0(
     county, " County", "<br>",
     "Natural gas", "<br>",
     round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
-  ),
-  marker = list(
-    color = colors$councilBlue
   )
 ) %>%
   plotly_layout(
@@ -162,13 +158,13 @@ fig_ng_county_emissions <- plot_ly(
 fig_ng_county_emissions
 ```
 
-```{r fig-energy-natural-gas-sector-emissions}
+```{r fig-energy-natural-gas-by-sector-emissions}
 #| fig-cap: "2021 natural gas emissions by sector"
 #| out-width: "95%"
-fig_energy_natural_gas_sector_emissions <-
+fig_energy_natural_gas_by_sector_emissions <-
   plot_ly(
     type = "bar",
-    source = "fig-energy-natural-gas-sector-emissions",
+    source = "fig-energy-natural-gas-by-sector-emissions",
     data = county_emissions %>%
       filter(source == "Natural gas"),
     y = ~ reorder(geog_name, emissions_metric_tons_co2e),
@@ -195,7 +191,7 @@ fig_energy_natural_gas_sector_emissions <-
       traceorder = "reversed"
     )
   )
-fig_energy_natural_gas_sector_emissions
+fig_energy_natural_gas_by_sector_emissions
 ```
 
 
