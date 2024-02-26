@@ -31,8 +31,8 @@ category_colors <-
     "Commercial vehicles" = "#fec44f",
 
     # PuRd
-    "Wastewater" = "#ce1256",
-    "Solid waste" = "#c994c7"
+    "Solid waste" = "#ce1256",
+    "Wastewater" = "#c994c7"
   )
 
 
