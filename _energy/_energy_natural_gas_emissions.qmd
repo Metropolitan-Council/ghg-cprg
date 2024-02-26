@@ -138,7 +138,7 @@ fig_ng_county_emissions <- plot_ly(
     color = colors$councilBlue
   ),
   hovertemplate = ~ paste0(
-    county, " County, ", state, "<br>",
+    county, " County", "<br>",
     "Natural gas", "<br>",
     round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
