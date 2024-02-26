@@ -42,6 +42,7 @@ list.files("purl",
   pattern = ".R", recursive = TRUE
 ) %>%
   purrr::map(source)
+
 fs::file_delete("purl/")
 fs::file_delete("assets/plots/")
 
