@@ -22,45 +22,43 @@ hookaddcap()
 
 ### Introduction
 
-Greenhouse gas emissions from Minnesota homes and apartment buildings have increased 14% over the past 15 years, and natural gas use is the largest source of these emissions [@mpcaClimateChangeTrends2023].
+Greenhouse gas emissions from Minnesota homes and apartment buildings have increased 14% over the past 15 years, and natural gas use is the largest source of these emissions [@mpcaClimateChangeTrends2023]. Many local and state governments are evaluating policies to reduce natural gas usage, such as building electrification (when paired with decarbonization of the electric grid) and banning natural gas hookups in new construction.
 
 ### Methods
 
-The general workflow for quantifying natural gas emissions is to identify all of the natural gas utilities that operate within our study area, collect/aggregate reporting they provide to the states of Minnesota and Wisconsin about the amount of energy delivered to all their customers (with reference to federal reporting sources where state-level reporting gaps exist), and apply EPA-provided emissions factor to the reported activity/energy deliveries to calculate emissions. Methodologies for allocating utility activity reports to counties varies across MN and WI, and between electricity and natural gas; please see.... for more details.
+The general workflow for quantifying natural gas emissions is to identify all of the natural gas utilities that operate within our study area, collect/aggregate reporting they provide to the states of Minnesota and Wisconsin about the amount of energy delivered to all their customers (with reference to federal reporting sources where state-level reporting gaps exist), and apply EPA-provided emissions factors to the reported activity/energy deliveries to calculate emissions. Methodologies for allocating utility activity reports to counties varies across MN and WI and are further described in the following section. All inputs we use in the construction of our natural gas emissions data set are of the highest quality rank, as they are either direct government-created data (e.g., emissions factors) or data reported to state/federal authorities (e.g., regulatory filings).
 
-*Note: Our inventory takes a "demand-side" approach to emissions quantification and seeks to aggregate all confirmed/reported delivery of energy to ALL customers served by utilities. This means that energy loss/use experienced by utilities in the process of energy generation, transmission, and delivery and resale to utilities operating outside of our study area are not reflected in the numbers attributed to counties...*
+Total regional emissions (Emissions~r~) represents the sum of all recorded energy deliveries by utility *i* within county *j*, where *i* refers to each of the electric utilities operating across our region, and *j* refers to the eleven counties included in this inventory. Our regional total therefore represents an aggregation of electricity deliveries for all distinct utility-county records (i.e., a row for every utility's operation within each county they operate in) within our 11 counties. Our inventory takes a "demand-side" approach to emissions quantification and seeks to aggregate all confirmed/reported delivery of energy to ALL customers served by utilities (meaning all customer types, inclusive of residential, commercial, industrial, and government accounts).
 
-$$Emissions = \Sigma (mcf \times {Emissions Factor}) $$
+$$Emissions_r = \Sigma (mcfDelivered_iCounty_j \times {Emissions Factor}) $$
+
+While our primary data collection does not include a breakout of natural gas deliveries by sector, and represents only *total* natural gas deliveries, we do leverage year 2021 NREL SLOPE forecasts of natural gas consumption (built from a base year of 2016 observed data) by sector (residential, commercial, industrial) at the county level to calculate modeled proportions of consumption by sector, which we then apply to our aggregate numbers to calculate estimated emissions *by sector*. [@maSectorSpecificMethodologiesSubnatonal2019] [@nrelSLOPEStateLocal2017]
 
 #### Identifying utilities in scope
 
-To identify the natural gas utilities that operate within our 11-county study area, we first referred to maps/geospatial datasets capturing utility service areas in Minnesota and Wisconsin. Where possible, state-maintained data sources were used, with federal sources referenced where state sources couldn't be accessed. To identify Wisconsin gas utilities, we downloaded the Natural Gas Service Territory map maintained by the Wisconsin Public Utilities Commission [@publicservicecommissionofwisconsinPSCInteractiveService2021]. Since Minnesota does not publish a state-maintained data set of natural gas service areas [@mnPublicUtilitiesInfrastructure2021], we used the Department of Homeland Security's Natural Gas Service Territories map from its Homeland Infrastructure Foundation-Level Data (HIFLD) portal is used to identify in-scope Minnesota gas utilities [@departmentofhomelandsecurityNaturalGasService2017].
+To identify the natural gas utilities that operate within our 11-county study area, we first referred to maps/geospatial datasets capturing utility service areas in Minnesota and Wisconsin. Where possible, state-maintained data sources were used, with federal sources referenced where state sources couldn't be accessed. To identify Wisconsin gas utilities, we downloaded the Natural Gas Service Territory map maintained by the Wisconsin Public Utilities Commission [@publicservicecommissionofwisconsinPSCInteractiveService2021]. Since Minnesota does not publish a state-maintained data set of natural gas service areas [@PublicUtilitiesInfrastructure], we used the Department of Homeland Security's Natural Gas Service Territories map from its Homeland Infrastructure Foundation-Level Data (HIFLD) portal to identify in-scope Minnesota gas utilities [@departmentofhomelandsecurityNaturalGasService2017].
 
-For each state, we generated two .RDS files, entitled *stateAbbreviation*\_natGas_inScope_utilityCountyPairs.RDS (listing out the unique county-utility records for which activity data is required to complete our inventory) and distinct_natGas_util\_*stateAbbreviation*.RDS (listing out the distinct utilities for whom information retrieval is necessary, to simplify data collection).
+#### Collecting and aggregating activity data from utilities
 
-*Insert table of unique utility-county pairs with state added, create a meta?*
-
-#### Collecting activity data from utilities
-
-Using distinct_natGas_util\_*stateAbbreviation*.RDS as a source for which utilities operate within our study area within each state,
+After identifying which utilities operate within our study area within each state, we collected the reporting submitted by these utilities to the relevant state and federal authorities, and followed a distinct process to accumulate data in each state and allocate utility activity/energy deliveries to specific counties therein.
 
 ##### Minnesota
 
-All natural gas utilities authorized to do business in Minnesota are required to file an annual data report pursuant to MN Rules Chapter 7610. The Minnesota Public Utilities Commission makes these reports searchable through an [eFiling Site](https://www.edockets.state.mn.us/EFiling/edockets/searchDocuments.do?method=eDocketsResult&docketYear=22&docketNumber=19) [@minnesotadepartmentofcommerceAnnualReportingForms2022]. For each utility identified in distinct_natGas_util_MN.RDS, we downloaded the relevant 2021 annual report from this site.
+All natural gas utilities authorized to do business in Minnesota are required to file an annual data report pursuant to MN Rules Chapter 7610. The Minnesota Public Utilities Commission makes these reports searchable through an [eFiling Site](https://www.edockets.state.mn.us/EFiling/edockets/searchDocuments.do?method=eDocketsResult&docketYear=22&docketNumber=19) [@minnesotadepartmentofcommerceAnnualReportingForms2022]. For each utility identified in distinct_natGas_util_MN.RDS (a data product of minnesota_natGasUtilities.R, a script that looks for intersections between electric utility service areas and our Minnesota counties), we downloaded the relevant annual reports from this site in their Excel workbook form.
 
-We wrote code to extract the county-level data reported in report section "ANNUAL GAS DELIVERED TO ULTIMATE CONSUMERS BY COUNTY IN 2021" from all reports compiled into a folder directory and create a table with three columns county, utility, and mcf_delivered (thousand cubic feet of natural gas delivered). By compiling this data for all utilities found to operate within our study area, aggregating utility activity data (and thus, quantifying estimated emissions) to the county level becomes possible.
+We wrote code to extract the county-level data reported in report section "ANNUAL GAS DELIVERED TO ULTIMATE CONSUMERS BY COUNTY IN 2021" from these reports (which were compiled into a distinct folder directory for file processing), and created a table with three columns county, utility, and mcf_delivered (thousand cubic feet of natural gas delivered). By compiling this data for all utilities found to operate within our study area, aggregating all natural gas deliveries at the county level becomes possible.
 
 ##### Wisconsin
 
-sss
+All municipal and investor-owned natural gas utilities authorized to do business in Wisconsin are required to file an annual report with financial and operational information pursuant to Wis. Stat. § 196.07. The Public Services Commission of Wisconsin makes these reports searchable through an [E-Services Portal](https://apps.psc.wi.gov/ARS/annualReports/default.aspx), and downloadable as either PDFs or Excel workbooks, with options to export only specific portions of the reports as spreadsheets [@publicservicecommissionofwisconsin2022]. For each utility identified in distinct_natGas_util_WI.RDS (a data product of wisconsin_natGasUtilities.R, a script that looks for intersections between electric utility service areas and our Wisconsin counties), we downloaded the relevant 2021 annual reports from this site.
+
+Because of the small amount of data, we hard-coded observed information into data frames rather than extracting data through a web scraper or document analyzer as we did in Minnesota (see *processed_wi_electricUtil_activityData.R* on the GitHub repository).
 
 #### Emissions factors
 
-To transform natural gas energy deliveries (recorded in mcf -- ) into emissions in metric tons CO~2~e, we referenced 2021 EPA GHG Emissions Factor Hub figures [@usepaEmissionsFactorsGreenhouse2021]:
+To transform natural gas energy deliveries into emissions in metric tons CO~2~e, we referenced 2021 EPA GHG Emissions Factor Hub figures [@usepaEmissionsFactorsGreenhouse2021]:
 
-Table of emissions factors converted into CO~2~e??
-
-EPA originally reported these factors as kg (for CO~2~) and g (for CH~4~ and N~2~O) per standard cubic foot (scf), and we transformed these into units of lbs. per thousand cubic feet (commonly written as *mcf*) for our analysis, to 1) align with providing results in metric tons CO~2~e, and 2) to match the convention of Minnesota utilities, who reported their energy delivered in mcf. Wisconsin utilities reported their energy delivered in therms.
+EPA originally reported these factors as kg (for CO~2~) and g (for CH~4~ and N~2~O) per standard cubic foot (scf), and we transformed these into units of lbs. per thousand cubic feet (commonly written as *mcf*) for our analysis, to 1) align with providing results in metric tons CO~2~e, and 2) to match the convention of Minnesota utilities, who reported their energy delivered in mcf. Wisconsin utilities reported their energy delivered in therms; we converted these to mcf during aggregation as well.
 
 ### Results
 
@@ -72,8 +70,7 @@ wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_
   rename(county = county_name)
 
 natGasEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
-  mutate(geo = paste(county, state, sep = ", ")) %>%
-  group_by(geo, county, state, year) %>%
+  group_by(county, state, year) %>%
   summarise(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     .groups = "rowwise"
@@ -83,26 +80,22 @@ plot_ly(
   type = "bar",
   source = opts_current$get()$label,
   data = natGasEmissions_all,
-  y = ~ reorder(geo, emissions_metric_tons_co2e),
+  y = ~ reorder(county, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
-  # color = ~vehicle_weight_label,
   hovertemplate = ~ paste0(
     county, " County, ", state, "<br>",
     "Emissions: %{x:,.2f} metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue
   )
 ) %>%
   plotly_layout(
-    main_title = "2021 county-level annual CO2e natural gas emissions",
-    x_title = "Greenhouse gases emitted (metric tons)",
+    main_title = "2021 county annual natural gas emissions",
+    x_title = "Metric tons CO<sub>2</sub>e",
     subtitle = "",
-    yaxis = list(
-      ticklen = 5, # Adjust tick length if needed
-      tickwidth = 2, # Adjust tick width if needed
-      tickcolor = "#000", # Adjust tick color if needed
-      tickfont = list(size = 14) # Adjust font size of ticks (labels) if needed
-    ),
-    margin = list(l = 120)
+    legend_title = ""
   ) %>%
   layout(
     barmode = "stack",
@@ -139,6 +132,7 @@ plot_ly(
   opacity = 0.7,
   marker = list(
     size = 18,
+    color = colors$councilBlue,
     line = list(
       color = "lightgray",
       width = 2
@@ -155,7 +149,78 @@ plot_ly(
 
 #### Comparison with other inventories
 
--   2018 Met Council inventory
+##### NREL SLOPE
+
+The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly forecasted emissions tied to the user of natural up to 2050 based on 2016 observed/reported data at the county level. In comparing these figures to our own inventory, we observed that, where we estimated 12,349,590 metric tons of emissions linked to natural gas use in our study area in the year 2021, NREL SLOPE forecasted 13,907,815 metrics tons in our study area.
+
+```{r}
+#| fig-cap: "METC emissions inventory v. NREL SLOPE modeled emissions"
+#| out-width: "95%"
+
+nrelQA <- read_rds(
+  file.path(
+    here::here(),
+    "_energy/data-raw/nrel_slope/nrel_emissions.RDS"
+  )
+) %>%
+  filter(source == "Natural gas" && year == 2021) %>%
+  group_by(county_name) %>%
+  summarise(total_emissions_metric_tons_co2e = sum(co2e)) %>%
+  rename(county = county_name)
+
+nrel_MetC_Comp <- nrelQA %>%
+  left_join(
+    natGasEmissions_all %>% select(county,
+      MetC = emissions_metric_tons_co2e
+    ),
+    by = "county"
+  ) %>%
+  pivot_longer(
+    cols = c("total_emissions_metric_tons_co2e", "MetC"),
+    names_to = "inventory_source",
+    values_to = "emissions_metric_tons_co2e"
+  ) %>%
+  mutate(
+    inventory_source = recode(inventory_source,
+      total_emissions_metric_tons_co2e =
+        "NREL SLOPE",
+      MetC =
+        "MetC - current inventory"
+    )
+  )
+
+
+# Create the plotly graph
+nrelQA_plot <- plot_ly(
+  data = nrel_MetC_Comp,
+  x = ~ reorder(county, -emissions_metric_tons_co2e),
+  y = ~emissions_metric_tons_co2e,
+  source = "fig-NREL-QA",
+  color = ~inventory_source,
+  type = "bar",
+  hovertemplate = ~ paste0(
+    county, "<br>",
+    inventory_source, "<br>",
+    "Emissions: %{y:,.2f} metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "Natural Gas Emissions Inventory QA<br><sub>Comparison between MetC and NREL SLOPE</sub>",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    x_title = "County",
+    subtitle = "",
+    legend_title = "Inventory source",
+    barmode = "group",
+    hovermode = "closest",
+    legend = list(
+      traceorder = "normal"
+    )
+  )
+
+# Show the plot
+nrelQA_plot
+```
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
@@ -163,5 +228,3 @@ caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pa
 saveCap(paste0("cap-", caption_index))
 saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
-
-{{< pagebreak >}}

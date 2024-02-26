@@ -1,4 +1,4 @@
-# Electricity  
+# Electricity
 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
@@ -25,96 +25,27 @@ hookaddcap()
 
 ### Minnesota
 
-Under Minnesota Administrative Rules Chapter 7610 [@minnesotadepartmentofcommerceCHAPTER7610ENERGY], utilities are required to file an annual data report that supports the identification of "emerging energy trends based on supply and demand, conservation and public health and safety factors, and to determine the level of statewide and service area needs." [@minnesotadepartmentofcommerceAnnualReportingForms2022] This includes a report of county-level energy deliveries (reported in thousand cubic feet, commonly written as mcf). Because the information is structured in this manner, natural gas emissions at the county-level can be estimated as a direct function of energy deliveries to counties reported by utilities, which isn't the case in Wisconsin (some modeling and estimation is required in WI).
+Under Minnesota Administrative Rules Chapter 7610 [@minnesotadepartmentofcommerceCHAPTER7610ENERGY], utilities are required to file an annual data report that supports the identification of "emerging energy trends based on supply and demand, conservation and public health and safety factors, and to determine the level of statewide and service area needs." [@minnesotadepartmentofcommerceAnnualReportingForms2022] This includes a report of county-level energy deliveries (reported in megawatt-hours, commonly written as mWh). Because the information is structured in this manner, electricity emissions at the county-level can be estimated as a direct function of energy deliveries to counties reported by utilities.
 
-For electric... great river
-
-#bar graph with utility county data
-
-#some data exists for MN customer counts... could be worthwile to calculate account level average for comparison to WI
+One utility operating within our study area, Great River Energy (GRE), is a non-profit wholesale electric power cooperative which provides wholesale power and delivery services to 28 Minnesota-based electric cooperatives, which collectively own GRE and provide retail electric service. They are the primary supplier of energy (\>99%) to the cooperative utilities operating in our study area. Though most electricity suppliers with relationships with Minnesota electric utilities do not file these annual data reports, GRE does, given their unique hybrid wholesale/transmission structure and cooperative ownership model. As a result, while we keep only GRE's reporting in our data collection for county-level electricity deliveries, we exclude reporting from these subsidiary retail electric cooperatives, in order to avoid double counting electric deliveries. We use GRE's reported deliveries to our 9 Minnesota study area counties as a full substitution for the deliveries of these utilities, which may represent a marginal undercount given that marginal-to-negligible amounts of energy delivered by these retail cooperatives came from other other sources, per their annual reports.
 
 ### Wisconsin
 
-Under Wis. Stat. § 196.07, investor- and municipally owned electric utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of *kWh*) and total number of customer accounts within each county [@wisconsinstatelegislatureChapter186Regulation].
+Under Wis. Stat. § 196.07, investor- and municipally-owned electric utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of *kWh*) and total number of customer accounts within each county [@wisconsinstatelegislatureChapter186Regulation].
 
-Of the seven in-scope electric utilities, only three (the investor- and municipally-owned utilities) were required to make these reports to the State in 2021 (four of the in-scope electric utilities are cooperative utilities); state data was leveraged in this case. For the four utilities (all cooperative utilities) not making these reports, we relied upon the detailed data files provided by the EIA, recording the responses of utilities to the Annual Electric Power Energy Report (Form EIA-861). Two utilities (Dunn Energy Cooperative and Polk-Burnett Electric Cooperative) filled the long version of the form, and two (St. Croix Electric Cooperative and Pierce-Pepin Electric Cooperative Services) filled the short form. For our purposes, both the long and short form provided suitable activity information (total energy delivered, total customers) to allocate energy deliveries to counties in concert with Census population data, in the process outlined below.
+Of the seven in-scope electric utilities, only three (the investor- and municipally-owned utilities) were required to make these reports to the State in 2021 (four of the in-scope electric utilities are cooperative utilities); state data was leveraged in this case. For the four utilities (all cooperative utilities) not making these reports, we relied upon the detailed data files provided by the EIA, recording the responses of utilities to the Annual Electric Power Energy Report (Form EIA-861), which records retail sales by utilities and power marketers [@useia2018]. Two utilities (Dunn Energy Cooperative and Polk-Burnett Electric Cooperative) filled the long version of the form (filled by larger entities), and two (St. Croix Electric Cooperative and Pierce-Pepin Electric Cooperative Services) filled the short form (filled by smaller entities). For our purposes, both the long and short form provided suitable activity information (total energy delivered, total customers) to allocate energy deliveries to counties in concert with Census population data, in the process outlined below.
 
-Because Wisconsin utilities do not report energy deliveries at the county level, it was necessary to estimate energy deliveries by a given utility *i* within a particular county *j.* For those three utilities who reported county-level customer counts and total customer counts to the state, we estimated mWh delivered by utility *i* in county *j* by multiplying their total statewide energy deliveries (as reported to the relevant state authorities) by the proportion of their customers residing in each of our two study area counties.
+Because Wisconsin utilities do not report energy deliveries at the county level , it was necessary to estimate energy deliveries by a given utility *i* within a particular county *j.* For those three utilities who reported county-level customer counts and total customer counts to the state, we estimated mWh delivered by utility *i* in county *j* by multiplying their total statewide energy deliveries (as reported to the relevant state authorities) by the proportion of their customers residing in each of our two study area counties.
 
 $$mWhDelivered_iCounty_j =  (mWhEnergyDeliveries_i \times {ProportionOfTotalUtilityCustomers_j}) $$
 
-To calculate the estimated energy delivered by utility *i* in county *j* for the four utilities that did not report county-level customer counts, we used population figures to allocate energy deliveries to counties. We took the actual total energy delivered by utility *i* (as reported to the relevant federal authorities) and multiplied this by the proportion of population within each utility's entire service area residing within county *j* at the 2020 decennial Census.
+Note: This approach implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when this is influenced by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county.
+
+To calculate the estimated energy delivered by utility *i* in county *j* for the four cooperatively-owned utilities that did not report county-level customer counts (i.e., did not report to the State), we used population figures to estimate/allocate reported electricity deliveries to counties. We took the actual total energy delivered by utility *i* across Wisconsin (as reported to the relevant federal authorities) and multiplied this by the proportion of total population within each utility's entire service area residing within county *j* at the 2020 decennial Census.
 
 $$mWhDelivered_iCounty_j =  (mWhDelivered_i \times {ProportionOfTotalUtilityPopulation_j}) $$
 
-The factor *ProportionOfTotalUtilityPopulation*~j~ was calculated by first spatially joining the two.... (where each polygon represents a given utility's service terrirory within a given county) to a spatial file containing total population for Census blocks using the block centroids, and then summing This step was completed in ArcGIS Pro and brought back to R due to memory constraints in RStudio on the relevant Met Council staffer's work machine.
-
-*Inquiries have been made...*
-
-Because all four "in-scope" natural gas utilities in Wisconsin are investor-owned, we were able to estimate county-wide emissions from natural gas in 2021 by first calculating the proportion of each utility customer's residing within Pierce and St. Croix counties, and allocating that proportion of the utility's total reported energy delivery to each county. This approach represents a divergence from our Minnesota process, which involves aggregating county-level numbers directly reported by utilities, and implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when in actuality this is likely impacted by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county (citation needed?)
-
-#histogram or other visualization of customer
-
-For electric... justifying modeling approach (reference to mean, use of a weighted average of per-account numbers for all utilities where we have actual and estimated per-account figures. All an estimation.
-
-For electric.. more detail on how population in service territories was used to 1) estimate customer/account counts, 2) allocate total utility numbers based on estimated accounts within the in-scope area, and 3) use estimated per-customer energy deliveries, alongside population figures and total customer counts within and without our study area for the two utilities that didn't energy activity to the state or federal government, to model energy delivery --\> customers/cus
-
-Data source description, type
-
--   Quality rank (See @tbl-quality-rank)
--   How, when, and why was the data collected?
--   If this is a modeled dataset, what is the sample?
--   What is the raw unit of measurement?
--   How was this data accessed? Include any relevant links/citations, code, or downloads.
--   What data cleaning or wrangling was completed? How did you test these processes and outputs?
--   What is the geographic and temporal scope? Did you complete any aggregation?
--   What version is the data? Were there other versions available? If so, why did you choose this version?
--   What assumptions are made when we use this dataset?
--   Which subject matter expert (SME) reviewed this data?
--   Describe testing used to verify data
-
-Be sure to add a citation of this dataset to the Zotero shared library.
-
-##### Data characteristics
-
--   Were there any missing data? How did you handle missing data?
--   Plots, tables, and description of data distribution
--   Variance, Z-Score, quantiles
--   Facet views by categorical variables
-
-##### Limitations
-
--   Usually only samples county and state roads, primary arterials
--   Not every site is sampled every year
-
-Additionally, aggregating
-
-#### Vehicle distribution by weight
-
-Introduction text Data source description, type
-
--   Quality rank (See @tbl-quality-rank)
--   How, when, and why was the data collected?
--   If this is a modeled dataset, what is the sample?
--   What is the raw unit of measurement?
--   How was this data accessed? Include any relevant links/citations, code, or downloads.
--   What data cleaning or wrangling was completed? How did you test these processes and outputs?
--   What is the geographic and temporal scope? Did you complete any aggregation?
--   What version is the data? Were there other versions available? If so, why did you choose this version?
--   What assumptions are made when we use this dataset?
--   Which subject matter expert (SME) reviewed this data?
--   Describe testing used to verify data
-
-Be sure to add a citation of this dataset to the Zotero shared library.
-
-##### Data characteristics
-
--   Were there any missing data? How did you handle missing data?
--   Plots, tables, and description of data distribution
--   Variance, Z-Score, quantiles
--   Facet views by categorical variables
-
-##### Limitations
+The factor *ProportionOfTotalUtilityPopulation*~j~ was calculated by spatially joining Census block centroids containing population data to 1) polygons representing the entirety of our in-scope utilities' service areas (including areas outside of St. Croix and Pierce counties) and 2) polygons representing only the portions of these utilities' service areas within a) St. Croix county and b) Pierce County. These utility-county service areas are calculated separately, to facilitate an informed allocation of statewide energy use to each county in turn.
 
 ### Data dictionaries
 

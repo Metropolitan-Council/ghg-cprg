@@ -1,4 +1,5 @@
-# Natural gas 
+# Natural gas
+
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -22,52 +23,17 @@ hookaddcap()
 
 ## Utility Activity Data
 
-In this section, we will describe the acquisition of utility activity data. Analysis process and results are described in the following chapter.
-
 ### Minnesota
 
 Under Minnesota Administrative Rules Chapter 7610 [@minnesotadepartmentofcommerceCHAPTER7610ENERGY], utilities are required to file an annual data report that supports the identification of "emerging energy trends based on supply and demand, conservation and public health and safety factors, and to determine the level of statewide and service area needs." [@minnesotadepartmentofcommerceAnnualReportingForms2022] This includes a report of county-level energy deliveries (reported in thousand cubic feet, commonly written as mcf). Because the information is structured in this manner, natural gas emissions at the county-level can be estimated as a direct function of energy deliveries to counties reported by utilities, which isn't the case in Wisconsin (some modeling and estimation is required in WI).
 
-<!-- #bar graph with utility county data? -->
-
-<!-- #some data exists for MN customer counts... could be worthwhile to calculate account level average for comparison to WI -->
-
 ### Wisconsin
 
-Under Wis. Stat. § 196.07, investor-owned natural gas utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of *therms*) and total number of customer accounts within each county [@wisconsinstatelegislatureChapter186Regulation]. Because all four "in-scope" natural gas utilities in Wisconsin are investor-owned, we were able to estimate county-wide emissions from natural gas in 2021 by first calculating the proportion of each utility customer's residing within Pierce and St. Croix counties, and allocating that proportion of the utility's total reported energy delivery to each county. This approach represents a divergence from our Minnesota process, which involves aggregating county-level numbers directly reported by utilities, and implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when in actuality this is likely impacted by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county (citation needed?)
+Under Wis. Stat. § 196.07, investor-owned natural gas utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of *therms*) and total number of customer accounts within each county [@wisconsinstatelegislatureChapter186Regulation]. Because all four "in-scope" natural gas utilities in Wisconsin are investor-owned, we did not have to refer to federal sources or use population figures to estimate energy deliveries. We estimated county-wide emissions from natural gas in 2021 by first calculating the proportion of each utility customer accounts that were linked to either Pierce or St. Croix counties, and allocating that proportion of the utility's total reported energy delivery to each county. This approach represents a divergence from our Minnesota process, which involves aggregating county-level numbers directly reported by utilities, and implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when in actuality this is likely impacted by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county.
 
-<!-- # histogram or other visualization of customer -->
+$$mcfDelivered_iCounty_j =  (mcfEnergyDeliveries_i \times {ProportionOfTotalUtilityCustomers_j}) $$
 
-For electric... justifying modeling approach (reference to mean, use of a weighted average of per-account numbers for all utilities where we have actual and estimated per-account figures. All an estimation.
-
-For electric.. more detail on how population in service territories was used to 1) estimate customer/account counts, 2) allocate total utility numbers based on estimated accounts within the in-scope area, and 3) use estimated per-customer energy deliveries, alongside population figures and total customer counts within and without our study area for the two utilities that didn't energy activity to the state or federal government, to model energy delivery --\> customers/cus
-
-Data source description, type
-
--   Quality rank (See @tbl-quality-rank)
--   How, when, and why was the data collected?
--   If this is a modeled dataset, what is the sample?
--   What is the raw unit of measurement?
--   How was this data accessed? Include any relevant links/citations, code, or downloads.
--   What data cleaning or wrangling was completed? How did you test these processes and outputs?
--   What is the geographic and temporal scope? Did you complete any aggregation?
--   What version is the data? Were there other versions available? If so, why did you choose this version?
--   What assumptions are made when we use this dataset?
--   Which subject matter expert (SME) reviewed this data?
--   Describe testing used to verify data
-
-Be sure to add a citation of this dataset to the Zotero shared library.
-
-##### Data characteristics
-
--   Were there any missing data? How did you handle missing data?
--   Plots, tables, and description of data distribution
--   Variance, Z-Score, quantiles
--   Facet views by categorical variables
-
-##### Limitations
-
-### Data dictionaries
+Note: This approach implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when this is influenced by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county.
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
@@ -75,4 +41,5 @@ caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pa
 saveCap(paste0("cap-", caption_index))
 saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
+
 {{< pagebreak >}}
