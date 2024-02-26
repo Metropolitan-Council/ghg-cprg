@@ -95,7 +95,7 @@ wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_
 elecEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
   mutate(geo = paste0(county, ", ", state))
 
-fig_electricity_county_emissions <- 
+fig_electricity_county_emissions <-
   plot_ly(
     type = "bar",
     source = "fig-electricity-county-emissions",
@@ -135,9 +135,9 @@ We would expect counties with higher population to have higher emissions.
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 emissions_population <- left_join(elecEmissions_all, cprg_population,
-                                  by = c("county" = "NAME")
+  by = c("county" = "NAME")
 )
-fig_electricity_emissions_population <- 
+fig_electricity_emissions_population <-
   plot_ly(
     data = emissions_population,
     source = "fig-electricity-emissions-population",
@@ -209,8 +209,8 @@ EIAvMETC_tons <- eiaQA_all %>%
   ) %>%
   mutate(
     inventory_source = recode(inventory_source,
-                              downscaled_EIA_total_CO2e_emissions_tons = "EIA",
-                              OURS_total_CO2e_emissions_tons = "MetC - current inventory"
+      downscaled_EIA_total_CO2e_emissions_tons = "EIA",
+      OURS_total_CO2e_emissions_tons = "MetC - current inventory"
     )
   )
 
@@ -235,7 +235,7 @@ eiaQA_plot <- plot_ly(
     y_title = "Metric tons CO<sub>2</sub>e",
     x_title = "County",
     legend_title = "Inventory source"
-  ) %>% 
+  ) %>%
   layout(
     barmode = "group",
     hovermode = "closest",
@@ -270,7 +270,7 @@ nrelQA <- read_rds(
 nrel_MetC_Comp <- nrelQA %>%
   left_join(
     elecEmissions_all %>% select(county,
-                                 MetC = emissions_metric_tons_co2e
+      MetC = emissions_metric_tons_co2e
     ),
     by = "county"
   ) %>%
@@ -281,10 +281,10 @@ nrel_MetC_Comp <- nrelQA %>%
   ) %>%
   mutate(
     inventory_source = recode(inventory_source,
-                              total_emissions_metric_tons_co2e =
-                                "NREL SLOPE",
-                              MetC =
-                                "MetC - current inventory"
+      total_emissions_metric_tons_co2e =
+        "NREL SLOPE",
+      MetC =
+        "MetC - current inventory"
     )
   )
 
@@ -309,7 +309,7 @@ nrelQA_plot <- plot_ly(
     y_title = "Metric tons CO<sub>2</sub>e",
     x_title = "County",
     legend_title = "Inventory source",
-  ) %>% 
+  ) %>%
   layout(
     barmode = "group",
     hovermode = "closest",
