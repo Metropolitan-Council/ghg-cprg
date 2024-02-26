@@ -79,6 +79,8 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 <body class="nav-sidebar docked fullcontent"><section id="navigation" class="navigation standalone-navigation">
@@ -315,7 +317,6 @@ div.csl-indent {
   <ul class="collapse">
   <li><a href="#minnesota" id="toc-minnesota" class="nav-link" data-scroll-target="#minnesota"><span class="header-section-number">3.1.1</span> Minnesota</a></li>
   <li><a href="#wisconsin" id="toc-wisconsin" class="nav-link" data-scroll-target="#wisconsin"><span class="header-section-number">3.1.2</span> Wisconsin</a></li>
-  <li><a href="#data-dictionaries" id="toc-data-dictionaries" class="nav-link" data-scroll-target="#data-dictionaries"><span class="header-section-number">3.1.3</span> Data dictionaries</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -342,49 +343,15 @@ div.csl-indent {
 
 <section id="utility-activity-data" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="utility-activity-data"><span class="header-section-number">3.1</span> Utility Activity Data</h2>
-<p>In this section, we will describe the acquisition of utility activity data. Analysis process and results are described in the following chapter.</p>
 <section id="minnesota" class="level3" data-number="3.1.1">
 <h3 data-number="3.1.1" class="anchored" data-anchor-id="minnesota"><span class="header-section-number">3.1.1</span> Minnesota</h3>
 <p>Under Minnesota Administrative Rules Chapter 7610 <span class="citation" data-cites="minnesotadepartmentofcommerceCHAPTER7610ENERGY">(<a href="../references.html#ref-minnesotadepartmentofcommerceCHAPTER7610ENERGY" role="doc-biblioref">Minnesota Department of Commerce, n.d.</a>)</span>, utilities are required to file an annual data report that supports the identification of “emerging energy trends based on supply and demand, conservation and public health and safety factors, and to determine the level of statewide and service area needs.” <span class="citation" data-cites="minnesotadepartmentofcommerceAnnualReportingForms2022">(<a href="../references.html#ref-minnesotadepartmentofcommerceAnnualReportingForms2022" role="doc-biblioref">Minnesota Department of Commerce 2022</a>)</span> This includes a report of county-level energy deliveries (reported in thousand cubic feet, commonly written as mcf). Because the information is structured in this manner, natural gas emissions at the county-level can be estimated as a direct function of energy deliveries to counties reported by utilities, which isn’t the case in Wisconsin (some modeling and estimation is required in WI).</p>
-<!-- #bar graph with utility county data? -->
-<!-- #some data exists for MN customer counts... could be worthwhile to calculate account level average for comparison to WI -->
 </section>
 <section id="wisconsin" class="level3" data-number="3.1.2">
 <h3 data-number="3.1.2" class="anchored" data-anchor-id="wisconsin"><span class="header-section-number">3.1.2</span> Wisconsin</h3>
-<p>Under Wis. Stat. § 196.07, investor-owned natural gas utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of <em>therms</em>) and total number of customer accounts within each county <span class="citation" data-cites="wisconsinstatelegislatureChapter186Regulation">(<a href="../references.html#ref-wisconsinstatelegislatureChapter186Regulation" role="doc-biblioref">Legislature, n.d.</a>)</span>. Because all four “in-scope” natural gas utilities in Wisconsin are investor-owned, we were able to estimate county-wide emissions from natural gas in 2021 by first calculating the proportion of each utility customer’s residing within Pierce and St.&nbsp;Croix counties, and allocating that proportion of the utility’s total reported energy delivery to each county. This approach represents a divergence from our Minnesota process, which involves aggregating county-level numbers directly reported by utilities, and implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when in actuality this is likely impacted by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county (citation needed?)</p>
-<!-- # histogram or other visualization of customer -->
-<p>For electric… justifying modeling approach (reference to mean, use of a weighted average of per-account numbers for all utilities where we have actual and estimated per-account figures. All an estimation.</p>
-<p>For electric.. more detail on how population in service territories was used to 1) estimate customer/account counts, 2) allocate total utility numbers based on estimated accounts within the in-scope area, and 3) use estimated per-customer energy deliveries, alongside population figures and total customer counts within and without our study area for the two utilities that didn’t energy activity to the state or federal government, to model energy delivery –&gt; customers/cus</p>
-<p>Data source description, type</p>
-<ul>
-<li>Quality rank (See <a href="../_meta/supplementary_tables.html#tbl-quality-rank">Table&nbsp;<span>B.2</span></a>)</li>
-<li>How, when, and why was the data collected?</li>
-<li>If this is a modeled dataset, what is the sample?</li>
-<li>What is the raw unit of measurement?</li>
-<li>How was this data accessed? Include any relevant links/citations, code, or downloads.</li>
-<li>What data cleaning or wrangling was completed? How did you test these processes and outputs?</li>
-<li>What is the geographic and temporal scope? Did you complete any aggregation?</li>
-<li>What version is the data? Were there other versions available? If so, why did you choose this version?</li>
-<li>What assumptions are made when we use this dataset?</li>
-<li>Which subject matter expert (SME) reviewed this data?</li>
-<li>Describe testing used to verify data</li>
-</ul>
-<p>Be sure to add a citation of this dataset to the Zotero shared library.</p>
-<section id="data-characteristics" class="level5" data-number="3.1.2.0.1">
-<h5 data-number="3.1.2.0.1" class="anchored" data-anchor-id="data-characteristics"><span class="header-section-number">3.1.2.0.1</span> Data characteristics</h5>
-<ul>
-<li>Were there any missing data? How did you handle missing data?</li>
-<li>Plots, tables, and description of data distribution</li>
-<li>Variance, Z-Score, quantiles</li>
-<li>Facet views by categorical variables</li>
-</ul>
-</section>
-<section id="limitations" class="level5" data-number="3.1.2.0.2">
-<h5 data-number="3.1.2.0.2" class="anchored" data-anchor-id="limitations"><span class="header-section-number">3.1.2.0.2</span> Limitations</h5>
-</section>
-</section>
-<section id="data-dictionaries" class="level3" data-number="3.1.3">
-<h3 data-number="3.1.3" class="anchored" data-anchor-id="data-dictionaries"><span class="header-section-number">3.1.3</span> Data dictionaries</h3>
+<p>Under Wis. Stat. § 196.07, investor-owned natural gas utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of <em>therms</em>) and total number of customer accounts within each county <span class="citation" data-cites="wisconsinstatelegislatureChapter186Regulation">(<a href="../references.html#ref-wisconsinstatelegislatureChapter186Regulation" role="doc-biblioref">Legislature, n.d.</a>)</span>. Because all four “in-scope” natural gas utilities in Wisconsin are investor-owned, we did not have to refer to federal sources or use population figures to estimate energy deliveries. We estimated county-wide emissions from natural gas in 2021 by first calculating the proportion of each utility customer accounts that were linked to either Pierce or St.&nbsp;Croix counties, and allocating that proportion of the utility’s total reported energy delivery to each county. This approach represents a divergence from our Minnesota process, which involves aggregating county-level numbers directly reported by utilities, and implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when in actuality this is likely impacted by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county.</p>
+<p><span class="math display">\[mcfDelivered_iCounty_j =  (mcfEnergyDeliveries_i \times {ProportionOfTotalUtilityCustomers_j}) \]</span></p>
+<p>Note: This approach implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when this is influenced by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county.</p>
 <div style="page-break-after: always;"></div>
 
 

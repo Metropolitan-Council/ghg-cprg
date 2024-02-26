@@ -183,33 +183,42 @@ WIcounty_level_electricity_emissions <- processed_wi_elecUtil_activityData %>%
 write_rds(processed_wi_elecUtil_activityData, here("_energy", "data", "wisconsin_elecUtils_ActivityAndEmissions.RDS"))
 write_rds(WIcounty_level_electricity_emissions, here("_energy", "data", "wisconsin_county_ElecEmissions.RDS"))
 
-#compare numbers we obtained to downscaled EIA numbers
+# compare numbers we obtained to downscaled EIA numbers
 
-#read in EIA state estimate (mWh) for WI -- https://www.eia.gov/electricity/state/archive/2021/wisconsin/
+# read in EIA state estimate (mWh) for WI -- https://www.eia.gov/electricity/state/archive/2021/wisconsin/
 
 EIA_WI_elecRetailEst_mWh <- 69426615
 
 
-WI_currentCounty_deliveries <- read_rds(here("_energy", 
-                                             "data", 
-                                             "wisconsin_county_ElecEmissions.RDS")) %>%
+WI_currentCounty_deliveries <- read_rds(here(
+  "_energy",
+  "data",
+  "wisconsin_county_ElecEmissions.RDS"
+)) %>%
   select(county_name, OURS_total_CO2e_emissions_lbs = total_CO2e_emissions_lbs)
 
-downscaleEIA_WI_electricRetail <- read_rds(here("_meta", 
-                                                "data", 
-                                                "cprg_county_proportions.RDS")) %>%
+downscaleEIA_WI_electricRetail <- read_rds(here(
+  "_meta",
+  "data",
+  "cprg_county_proportions.RDS"
+)) %>%
   filter(STATEFP == 55 &
-           population_data_source == "Decennial Census PL 94-171 Redistricting Data Summary File") %>%
+    population_data_source == "Decennial Census PL 94-171 Redistricting Data Summary File") %>%
   select(GEOID, county_name = NAME, county_proportion_of_state_pop) %>%
-  mutate(downscaled_EIA_total_CO2e_emissions_lbs = 
-           EIA_WI_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1,
-         state = "WI") %>%
+  mutate(
+    downscaled_EIA_total_CO2e_emissions_lbs =
+      EIA_WI_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1,
+    state = "WI"
+  ) %>%
   left_join(WI_currentCounty_deliveries,
-            by = "county_name")
+    by = "county_name"
+  )
 
-write_rds(downscaleEIA_WI_electricRetail, here("_energy",
-                                               "data",
-                                               "wisconsin_QA_versusEIAStateProfile.RDS"))
+write_rds(downscaleEIA_WI_electricRetail, here(
+  "_energy",
+  "data",
+  "wisconsin_QA_versusEIAStateProfile.RDS"
+))
 
 # USE THE FOLLOWING CODE TO GET CENSUS BLOCKS FOR WISCONSIN TO IDENTIFY POPULATIONS IN UTILITY SERVICE AREAS
 

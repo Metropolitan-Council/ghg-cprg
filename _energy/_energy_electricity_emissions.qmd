@@ -182,42 +182,50 @@ We compared our county-level emissions figures to emissions estimates derived fr
 #| out-width: "95%"
 
 mn_eiaQA <- read_rds(
-  file.path(here::here(),
-            "_energy/data/minnesota_QA_versusEIAStateProfile.RDS")) 
+  file.path(
+    here::here(),
+    "_energy/data/minnesota_QA_versusEIAStateProfile.RDS"
+  )
+)
 wi_eiaQA <- read_rds(
-  file.path(here::here(),
-            "_energy/data/wisconsin_QA_versusEIAStateProfile.RDS")) 
+  file.path(
+    here::here(),
+    "_energy/data/wisconsin_QA_versusEIAStateProfile.RDS"
+  )
+)
 
 eiaQA_all <- bind_rows(mn_eiaQA, wi_eiaQA)
 
 EIAvMETC_tons <- eiaQA_all %>%
-  mutate(downscaled_EIA_total_CO2e_emissions_tons = downscaled_EIA_total_CO2e_emissions_lbs / 2000,
-         OURS_total_CO2e_emissions_tons = OURS_total_CO2e_emissions_lbs / 2000,
-         geo = paste0(county_name, ", ", state)
-) %>%
+  mutate(
+    downscaled_EIA_total_CO2e_emissions_tons = downscaled_EIA_total_CO2e_emissions_lbs / 2000,
+    OURS_total_CO2e_emissions_tons = OURS_total_CO2e_emissions_lbs / 2000,
+    geo = paste0(county_name, ", ", state)
+  ) %>%
   pivot_longer(
     cols = c("downscaled_EIA_total_CO2e_emissions_tons", "OURS_total_CO2e_emissions_tons"),
     names_to = "inventory_source",
     values_to = "emissions_metric_tons_co2e"
   ) %>%
   mutate(
-    inventory_source = recode(inventory_source, 
-                             downscaled_EIA_total_CO2e_emissions_tons = "EIA",
-                             OURS_total_CO2e_emissions_tons = "MetC - current inventory")
-  ) 
+    inventory_source = recode(inventory_source,
+      downscaled_EIA_total_CO2e_emissions_tons = "EIA",
+      OURS_total_CO2e_emissions_tons = "MetC - current inventory"
+    )
+  )
 
 
 # Create the plotly graph
 eiaQA_plot <- plot_ly(
   data = EIAvMETC_tons,
-  x = ~reorder(geo, -emissions_metric_tons_co2e),
+  x = ~ reorder(geo, -emissions_metric_tons_co2e),
   y = ~emissions_metric_tons_co2e,
   source = "fig-eiaQA",
   color = ~inventory_source,
-  type = 'bar',
+  type = "bar",
   hovertemplate = ~ paste0(
     geo, "<br>",
-    inventory_source,"<br>",
+    inventory_source, "<br>",
     "Emissions: %{y:,.2f} metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
@@ -226,12 +234,12 @@ eiaQA_plot <- plot_ly(
     title = "Electricity Emissions Inventory QA<br><sub>Comparison between MetC and EIA State Electricity Profiles</sub>",
     yaxis = list(title = "Emissions (metric tons CO2e)"),
     xaxis = list(title = "County"),
-    barmode = 'group',
-    hovermode = 'closest',
+    barmode = "group",
+    hovermode = "closest",
     legend = list(
-      title = list(text = 'Inventory Source'),
+      title = list(text = "Inventory Source"),
       font = list(size = 10),
-      traceorder = 'normal' 
+      traceorder = "normal"
     )
   )
 
@@ -248,39 +256,46 @@ The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly fo
 #| out-width: "95%"
 
 nrelQA <- read_rds(
-  file.path(here::here(),
-            "_energy/data-raw/nrel_slope/nrel_emissions.RDS")) %>%
+  file.path(
+    here::here(),
+    "_energy/data-raw/nrel_slope/nrel_emissions.RDS"
+  )
+) %>%
   filter(source == "Electricity" && year == 2021) %>%
   group_by(county_name) %>%
   summarise(total_emissions_metric_tons_co2e = sum(co2e)) %>%
   rename(county = county_name)
 
 nrel_MetC_Comp <- nrelQA %>%
-  left_join(elecEmissions_all %>% select(county,
-                                         MetC=emissions_metric_tons_co2e),
-            by = "county") %>%
+  left_join(
+    elecEmissions_all %>% select(county,
+      MetC = emissions_metric_tons_co2e
+    ),
+    by = "county"
+  ) %>%
   pivot_longer(
     cols = c("total_emissions_metric_tons_co2e", "MetC"),
     names_to = "inventory_source",
     values_to = "emissions_metric_tons_co2e"
   ) %>%
   mutate(
-    inventory_source = recode(inventory_source, 
-                             total_emissions_metric_tons_co2e =
-                               "NREL SLOPE",
-                             MetC =
-                               "MetC - current inventory")
-  ) 
+    inventory_source = recode(inventory_source,
+      total_emissions_metric_tons_co2e =
+        "NREL SLOPE",
+      MetC =
+        "MetC - current inventory"
+    )
+  )
 
 
 # Create the plotly graph
 nrelQA_plot <- plot_ly(
   data = nrel_MetC_Comp,
-  x = ~reorder(county, -emissions_metric_tons_co2e),
+  x = ~ reorder(county, -emissions_metric_tons_co2e),
   y = ~emissions_metric_tons_co2e,
   source = "fig-NREL-QA",
   color = ~inventory_source,
-  type = 'bar',
+  type = "bar",
   hovertemplate = ~ paste0(
     county, "<br>",
     inventory_source, "<br>",
@@ -292,12 +307,12 @@ nrelQA_plot <- plot_ly(
     title = "Electricity Emissions Inventory QA<br><sub>Comparison between MetC and NREL SLOPE</sub>",
     yaxis = list(title = "Emissions (metric tons CO2e)"),
     xaxis = list(title = "County"),
-    barmode = 'group',
-    hovermode = 'closest',
+    barmode = "group",
+    hovermode = "closest",
     legend = list(
-      title = list(text = 'Inventory Source'),
+      title = list(text = "Inventory Source"),
       font = list(size = 10),
-      traceorder = 'normal' 
+      traceorder = "normal"
     )
   )
 
@@ -306,7 +321,6 @@ nrelQA_plot
 ```
 
 ```{r echo=FALSE}
-
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
 caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
 saveCap(paste0("cap-", caption_index))

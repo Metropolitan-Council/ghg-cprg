@@ -162,39 +162,46 @@ The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly fo
 #| out-width: "95%"
 
 nrelQA <- read_rds(
-  file.path(here::here(),
-            "_energy/data-raw/nrel_slope/nrel_emissions.RDS")) %>%
+  file.path(
+    here::here(),
+    "_energy/data-raw/nrel_slope/nrel_emissions.RDS"
+  )
+) %>%
   filter(source == "Natural gas" && year == 2021) %>%
   group_by(county_name) %>%
   summarise(total_emissions_metric_tons_co2e = sum(co2e)) %>%
   rename(county = county_name)
 
 nrel_MetC_Comp <- nrelQA %>%
-  left_join(natGasEmissions_all %>% select(county,
-                                         MetC=emissions_metric_tons_co2e),
-            by = "county") %>%
+  left_join(
+    natGasEmissions_all %>% select(county,
+      MetC = emissions_metric_tons_co2e
+    ),
+    by = "county"
+  ) %>%
   pivot_longer(
     cols = c("total_emissions_metric_tons_co2e", "MetC"),
     names_to = "inventory_source",
     values_to = "emissions_metric_tons_co2e"
   ) %>%
   mutate(
-    inventory_source = recode(inventory_source, 
-                             total_emissions_metric_tons_co2e =
-                               "NREL SLOPE",
-                             MetC =
-                               "MetC - current inventory")
-  ) 
+    inventory_source = recode(inventory_source,
+      total_emissions_metric_tons_co2e =
+        "NREL SLOPE",
+      MetC =
+        "MetC - current inventory"
+    )
+  )
 
 
 # Create the plotly graph
 nrelQA_plot <- plot_ly(
   data = nrel_MetC_Comp,
-  x = ~reorder(county, -emissions_metric_tons_co2e),
+  x = ~ reorder(county, -emissions_metric_tons_co2e),
   y = ~emissions_metric_tons_co2e,
   source = "fig-NREL-QA",
   color = ~inventory_source,
-  type = 'bar',
+  type = "bar",
   hovertemplate = ~ paste0(
     county, "<br>",
     inventory_source, "<br>",
@@ -206,12 +213,12 @@ nrelQA_plot <- plot_ly(
     title = "Natural Gas Emissions Inventory QA<br><sub>Comparison between MetC and NREL SLOPE</sub>",
     yaxis = list(title = "Emissions (metric tons CO2e)"),
     xaxis = list(title = "County"),
-    barmode = 'group',
-    hovermode = 'closest',
+    barmode = "group",
+    hovermode = "closest",
     legend = list(
-      title = list(text = 'Inventory Source'),
+      title = list(text = "Inventory Source"),
       font = list(size = 10),
-      traceorder = 'normal' 
+      traceorder = "normal"
     )
   )
 
