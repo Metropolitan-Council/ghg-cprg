@@ -43,8 +43,9 @@ plot_county_sector_emissions <- function(county_emissions,
     source = .plotly_source,
     x = ~emissions_metric_tons_co2e,
     y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+    color = ~sector,
+    colors = unlist(sector_colors),
     marker = list(
-      color = colors$councilBlue,
       line = list(
         width = 0
       )

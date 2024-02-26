@@ -9,13 +9,13 @@ cprg_colors <- list(
   "cprg_da_yellow" = "#faa819"
 )
 
+# sector colors
+sector_colors <- list(
+  "Transportation" = "#8e440b",
+  "Energy" = "#163c6a",
+  "Waste" = "#8d0c3b"
+)
 
-# county_emissions %>%
-#   select(sector, source, category) %>%
-#   unique() %>%
-#   arrange(category)
-
-# county_emissions$category %>% unique %>% dput
 # category
 category_colors <-
   list(
@@ -36,7 +36,6 @@ category_colors <-
   )
 
 
-# county_emissions$source %>% unique %>% dput
 # source
 source_colors <- list(
   # transportation levels
