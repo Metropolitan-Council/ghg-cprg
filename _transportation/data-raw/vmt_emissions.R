@@ -62,13 +62,13 @@ saveRDS(vehicle_emissions_meta, "_transportation/data/county_vmt_emissions_meta.
 
 
 # calculate total commercial VMT for a section of the PCAP
-vehicle_miles %>% 
+vehicle_miles %>%
   # filter(zone %in% c("Anoka",
   #                    "Carver",
   #                    "Dakota",
   #                    "Hennepin",
   #                    "Ramsey",
   #                    "Scott",
-  #                    "Washington")) %>% 
-  group_by(mode_of_travel) %>% 
+  #                    "Washington")) %>%
+  group_by(mode_of_travel) %>%
   summarize(vmt_total = sum(vmt_total))
