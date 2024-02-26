@@ -23,8 +23,15 @@ mn_emissions <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_
 wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
   rename(county = county_name)
 
-elecEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
-  mutate(geo = paste0(county, ", ", state))
+elecEmissions_all <- county_emissions %>%
+  filter(source == "Electricity") %>%
+  mutate(county = geog_name) %>%
+  group_by(county, year) %>%
+  summarise(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "rowwise"
+  )
+
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
@@ -34,12 +41,78 @@ county_emissions_summary <- county_emissions %>%
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     .groups = "keep"
   )
+
+eiaQA_all <- bind_rows(
+  read_rds(
+    file.path(
+      here::here(),
+      "_energy/data/minnesota_QA_versusEIAStateProfile.RDS"
+    )
+  ),
+  read_rds(
+    file.path(
+      here::here(),
+      "_energy/data/wisconsin_QA_versusEIAStateProfile.RDS"
+    )
+  )
+)
+
+EIAvMETC_tons <- eiaQA_all %>%
+  mutate(
+    downscaled_EIA_total_CO2e_emissions_tons = downscaled_EIA_total_CO2e_emissions_lbs / 2000,
+    OURS_total_CO2e_emissions_tons = OURS_total_CO2e_emissions_lbs / 2000
+  ) %>%
+  pivot_longer(
+    cols = c("downscaled_EIA_total_CO2e_emissions_tons", "OURS_total_CO2e_emissions_tons"),
+    names_to = "inventory_source",
+    values_to = "emissions_metric_tons_co2e"
+  ) %>%
+  mutate(
+    inventory_source = recode(inventory_source,
+      downscaled_EIA_total_CO2e_emissions_tons = "EIA",
+      OURS_total_CO2e_emissions_tons = "Metropolitan Council"
+    )
+  )
+
+nrelQA <- read_rds(
+  file.path(
+    here::here(),
+    "_energy/data-raw/nrel_slope/nrel_emissions.RDS"
+  )
+) %>%
+  filter(source == "Electricity" && year == 2021) %>%
+  group_by(county_name) %>%
+  summarise(total_emissions_metric_tons_co2e = sum(co2e)) %>%
+  rename(county = county_name)
+
+nrel_metc_electricity_comp <- nrelQA %>%
+  left_join(
+    elecEmissions_all %>% select(county,
+      MetC = emissions_metric_tons_co2e
+    ),
+    by = "county"
+  ) %>%
+  pivot_longer(
+    cols = c("total_emissions_metric_tons_co2e", "MetC"),
+    names_to = "inventory_source",
+    values_to = "emissions_metric_tons_co2e"
+  ) %>%
+  mutate(
+    inventory_source = recode(inventory_source,
+      total_emissions_metric_tons_co2e =
+        "NREL SLOPE",
+      MetC =
+        "Metropolitan Council"
+    )
+  )
+
+
 hookaddcap()
 ```
 
 ### Introduction
 
-Emissions from the electricity generation sector have declined by 54% in Minnesota since 2005, largely as a result of transitions in the grid towards energy sources such as wind and solar [@mpcaClimateChangeTrends2023]. In 2023, MN Governor Walz signed a bill mandating a statewide carbon-free electricity standard by 2040. The law "establishes a standard for utilities to supply Minnesota customers with electricity generated or procured from carbon-free resources, beginning at an amount equal to 80% of retail sales for public utility customers in Minnesota in 2030 and increasing every 5 years to reach 100% for all electric utilities by 2040. The bill also requires that, by 2035, an amount equal to at least 55% of an electric utility’s total retail electric sales to customers in Minnesota must be generated or procured from eligible energy technologies." Wisconsin has not adopted a similar carbon-free electricity standard, but a Wisconsin DNR report noted both the economic gains from such to the renewable energy economy in the state, as well as the opportunities for decarbonization [@holt2019].
+Emissions from the electricity generation sector have declined by 54% in Minnesota since 2005, largely as a result of transitions in the grid towards energy sources such as wind and solar [@mpcaClimateChangeTrends2023]. In 2023, Minnesota Governor Walz signed a bill mandating a statewide carbon-free electricity standard by 2040. The law "establishes a standard for utilities to supply Minnesota customers with electricity generated or procured from carbon-free resources, beginning at an amount equal to 80% of retail sales for public utility customers in Minnesota in 2030 and increasing every 5 years to reach 100% for all electric utilities by 2040. The bill also requires that, by 2035, an amount equal to at least 55% of an electric utility’s total retail electric sales to customers in Minnesota must be generated or procured from eligible energy technologies." Wisconsin has not adopted a similar carbon-free electricity standard, but a Wisconsin DNR report noted both the economic gains from such to the renewable energy economy in the state, as well as the opportunities for decarbonization [@holt2019].
 
 ### Methods
 
@@ -63,7 +136,7 @@ After identifying which utilities operate within our study area within each stat
 
 ##### Minnesota
 
-All electric utilities authorized to do business in Minnesota are required to file an annual data report pursuant to MN Rules Chapter 7610. The Minnesota Public Utilities Commission makes these reports searchable through an [eFiling Site](https://www.edockets.state.mn.us/EFiling/edockets/searchDocuments.do?method=eDocketsResult&docketYear=22&docketNumber=19) , and downloadable as Excel workbooks [@minnesotadepartmentofcommerceCHAPTER7610ENERGY]. For each utility identified in distinct_electricity_util_type_MN.RDS (a data product of minnesota_electricUtilities.R, a script that looks for intersections between electric utility service areas and our Minnesota counties), we downloaded the relevant 2021 annual reports from this site (see note about Great River Energy in the previous section for caveats), except for North Branch Municipal Water and Light, which did not submit a 2021 report (we used their 2022 report as a substitution). Elk River Municipal Utilities and New Prague Utilities Commission did not file reports for 2021 or 2022, and so we used financial reports to identify their total electricity delivered; both utilities operated within only one county in our study area, which meant no estimation/allocation was necessary.
+All electric utilities authorized to do business in Minnesota are required to file an annual data report pursuant to MN Rules Chapter 7610. The Minnesota Public Utilities Commission makes these reports searchable through an [eFiling Site](https://www.edockets.state.mn.us/EFiling/edockets/searchDocuments.do?method=eDocketsResult&docketYear=22&docketNumber=19) , and downloadable as Excel workbooks [@minnesotadepartmentofcommerceCHAPTER7610ENERGY]. For each utility identified in [distinct_electricity_util_type_MN.RDS](data/distinct_electricity_util_type_MN.RDS) (a data product of [minnesota_electricUtilities.R](data-raw/minnesota_electricUtilities.R), a script that looks for intersections between electric utility service areas and our Minnesota counties), we downloaded the relevant 2021 annual reports from this site (see note about Great River Energy in the previous section for caveats), except for North Branch Municipal Water and Light, which did not submit a 2021 report (we used their 2022 report as a substitution). Elk River Municipal Utilities and New Prague Utilities Commission did not file reports for 2021 or 2022, and so we used financial reports to identify their total electricity delivered; both utilities operated within only one county in our study area, which meant no estimation/allocation was necessary.
 
 We wrote code to extract the county-level data reported in report section "ITS DELIVERIES TO ULTIMATE CONSUMERS BY COUNTY FOR THE LAST CALENDAR YEAR" on the relevant annual data report Excel workbooks compiled into a folder directory, and created a table with three columns: county, utility, and mWh_delivered (megawatt-hours). By compiling this data for all utilities found to operate within our study area, aggregating all electricity deliveries at the county level becomes possible.
 
@@ -73,13 +146,13 @@ All municipal and investor-owned utilities authorized to do business in Wisconsi
 
 A similar process was followed for the four Wisconsin cooperative utilities for which we referenced federal regulatory filings data to populate our dataset of electricity deliveries.
 
-Because of the small amount of data, and the different data structures of the reports for municipally-, cooperatively-, and investor-owned utilities in Wisconsin, we hard-coded observed information into data frames rather than extracting data through a web scraper or document analyzer (see *processed_wi_electricUtil_activityData.R* on the GitHub repository).
+Because of the small amount of data, and the different data structures of the reports for municipally-, cooperatively-, and investor-owned utilities in Wisconsin, we hard-coded observed information into data frames rather than extracting data through a web scraper or document analyzer (see [processed_wi_electricUtil_activityData.R](data-raw/processed_wi_electricUtil_activityData.R)).
 
 #### Emissions factors
 
 To transform electricity deliveries (recorded in mWh) into emissions in metric tons CO~2~e, we referenced 2021 Emissions & Generation Resource Integrated Database (eGRID) summary data for the MROW subregion (Midwest Reliability Organization - West). [@usepaEGRIDEmissionsGeneration2021]
 
-This dataset provides estimates in lbs/mWh for CO~2~, CH4, N~2~O, and CO~2~e emissions based on MROW's sub-regional electricity generation grid mix; applying this factor to the county-level estimates for mWh and dividing by 2000 yields an estimate for CO~2~e in metric tons. To generate this sub-regional estimate, eGRID first calculates estimated emissions at the plant level, and assigns plants to regions. By using an emissions factor that is localized, our inventory accounts for the specific grid mix in our study area (see the grid mix linked to the eGRID MROW emissions factor usedf in this inventory below). Per the eGRID technical guide, "the subregions were defined to limit the import and export of electricity in order to establish an aggregated area where the determined emission rates most accurately matched the generation and emissions from the plants within that subregion."
+This dataset provides estimates in lbs/mWh for CO~2~, CH4, N~2~O, and CO~2~e emissions based on MROW's sub-regional electricity generation grid mix; applying this factor to the county-level estimates for mWh and dividing by 2000 yields an estimate for CO~2~e in metric tons. To generate this sub-regional estimate, eGRID first calculates estimated emissions at the plant level, and assigns plants to regions. By using an emissions factor that is localized, our inventory accounts for the specific grid mix in our study area (see the grid mix linked to the eGRID MROW emissions factor used in this inventory below). Per the eGRID technical guide, "the subregions were defined to limit the import and export of electricity in order to establish an aggregated area where the determined emission rates most accurately matched the generation and emissions from the plants within that subregion."
 
 ```{r tbl-elec-mrow-proportions}
 #| tbl-cap: "Grid Mix for MROW subregion of 2021 eGRID"
@@ -87,7 +160,7 @@ This dataset provides estimates in lbs/mWh for CO~2~, CH4, N~2~O, and CO~2~e emi
 
 eGRID_mix <- data.frame(
   "Energy Source" = c("Coal", "Oil", "Gas", "Other Fossil", "Nuclear", "Hydro", "Biomass", "Wind", "Solar", "Geothermal", "Other", "Unknown/Purchased Fuel"),
-  Percentage = c("39.60%", "0.20%", "10.60%", "0.10%", "8.60%", "4.40%", "0.80%", "34.60%", "0.90%", "0.00%", "0.20%", "N/A")
+  Percentage = c("39.6%", "0.2%", "10.6%", "0.10%", "8.6%", "4.4%", "0.8%", "34.6%", "0.9%", "0.0%", "0.2%", "N/A")
 )
 
 (eGRID_mix) %>%
@@ -119,7 +192,7 @@ fig_electricity_county_emissions <- plot_ly(
   hovertemplate = ~ paste0(
     geog_name, "<br>",
     "Electricity", "<br>",
-    "Emissions: %{x:,.0f} metric tons CO<sub>2</sub>e", "<br>",
+    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -186,37 +259,33 @@ We would expect counties with higher population to have higher emissions.
 #| fig-cap: "County population and electricity emissions"
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
+
 emissions_population <- left_join(elecEmissions_all, cprg_population,
   by = c("county" = "NAME")
 )
-fig_emissions_population <- plot_ly(
+
+fig_electricity_emissions_population <- plot_ly(
   data = emissions_population,
-  source = "fig-emissions-population",
+  source = "fig-electricity-emissions-population",
   x = ~population,
-fig_electricity_emissions_population <-
-  plot_ly(
-    data = emissions_population,
-    source = "fig-electricity-emissions-population",
-    x = ~population,
-    y = ~emissions_metric_tons_co2e,
-    type = "scatter",
-    mode = "markers",
-    hovertemplate = ~ paste0(
-      county, " County", "<br>",
-      "Population: ", scales::comma(population), "<br>",
-      "Emissions: %{y:,.2f} metric tons CO<sub>2</sub>e", "<br>",
-      "<extra></extra>"
-    ),
-    opacity = 0.7,
-    marker = list(
-      size = 18,
-      color = colors$councilBlue,
-      line = list(
-        color = "lightgray",
-        width = 2
-      )
+  y = ~emissions_metric_tons_co2e,
+  type = "scatter",
+  mode = "markers",
+  hovertemplate = ~ paste0(
+    county, " County", "<br>",
+    "Population: ", scales::comma(population), "<br>",
+    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(
+    size = 18,
+    color = colors$councilBlue,
+    line = list(
+      color = "lightgray",
+      width = 2
     )
-  ) %>%
+  )
+) %>%
   plotly_layout(
     main_title = "County population and emissions",
     subtitle = "2021 ACS 5-year population estimates",
@@ -229,78 +298,49 @@ fig_electricity_emissions_population
 
 #### Comparison with federal inventories
 
-##### EIA
+```{r region-total-electricity}
+region_total_electricity <- county_emissions %>%
+  ungroup() %>%
+  filter(source == "Electricity") %>%
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
+  magrittr::extract2("emissions_metric_tons_co2e")
 
-We compared our county-level emissions figures to emissions estimates derived from the EIA's State Electricity Profiles, which were generated by down-scaling EIA's Minnesota and Wisconsin state-level numbers for total electricity retail sales. We achieved this by applying the proportions of each state's population residing in each of our study area counties to generate county-level emissions estimates. Our inventory quantified X metric tons of electricity in our study area relative to 20,214,537 metrics tons based on the aforementioned downscaled statewide retail numbers.
+eia_total_electricity <- eiaQA_all$downscaled_EIA_total_CO2e_emissions_lbs %>%
+  sum() %>%
+  units::as_units("pound") %>%
+  units::set_units("ton") %>%
+  as.numeric()
+```
 
-```{r fig-eiaQA}
-#| fig-cap: "METC emissions inventory v. downscaled EIA State Electricity Profiles"
+##### Energy Information Administration (EIA)
+
+We compared our county-level emissions figures to emissions estimates derived from the EIA's State Electricity Profiles, which were generated by down-scaling EIA's Minnesota and Wisconsin state-level numbers for total electricity retail sales. We achieved this by applying the proportions of each state's population residing in each of our study area counties to generate county-level emissions estimates. Our inventory quantified `r scales::comma(region_total_electricity, accuracy = 1)` metric tons of electricity in our study area relative to `r scales::comma(eia_total_electricity, accuracy = 1)` metric tons based on the aforementioned downscaled statewide retail numbers.
+
+```{r fig-eia-qa-natural-gas-plot}
+#| fig-cap: "Metropolitan Council emissions inventory vs. downscaled EIA State Electricity Profiles"
 #| out-width: "95%"
 
-mn_eiaQA <- read_rds(
-  file.path(
-    here::here(),
-    "_energy/data/minnesota_QA_versusEIAStateProfile.RDS"
-  )
-)
-wi_eiaQA <- read_rds(
-  file.path(
-    here::here(),
-    "_energy/data/wisconsin_QA_versusEIAStateProfile.RDS"
-  )
-)
-
-eiaQA_all <- bind_rows(mn_eiaQA, wi_eiaQA)
-
-EIAvMETC_tons <- eiaQA_all %>%
-  mutate(
-    downscaled_EIA_total_CO2e_emissions_tons = downscaled_EIA_total_CO2e_emissions_lbs / 2000,
-    OURS_total_CO2e_emissions_tons = OURS_total_CO2e_emissions_lbs / 2000,
-    geo = paste0(county_name, ", ", state)
-  ) %>%
-  pivot_longer(
-    cols = c("downscaled_EIA_total_CO2e_emissions_tons", "OURS_total_CO2e_emissions_tons"),
-    names_to = "inventory_source",
-    values_to = "emissions_metric_tons_co2e"
-  ) %>%
-  mutate(
-    inventory_source = recode(inventory_source,
-      downscaled_EIA_total_CO2e_emissions_tons = "EIA",
-      OURS_total_CO2e_emissions_tons = "MetC - current inventory"
-    )
-  )
-
-
 # Create the plotly graph
-eiaQA_plot <- plot_ly(
+fig_eia_qa_electricity_plot <- plot_ly(
   data = EIAvMETC_tons,
-  x = ~ reorder(geo, -emissions_metric_tons_co2e),
+  x = ~ reorder(county_name, -emissions_metric_tons_co2e),
   y = ~emissions_metric_tons_co2e,
-  source = "fig-eiaQA",
+  source = "fig-eia-qa-natural-gas-plot",
   color = ~inventory_source,
   type = "bar",
-  hovertemplate = ~ paste0(
-    geo, "<br>",
-    inventory_source, "<br>",
-    "Emissions: %{y:,.2f} metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
+  colors = c(
+    "EIA" = cprg_colors$cprg_da_yellow,
+    "Metropolitan Council" = colors$councilBlue
   ),
-  opacity = 0.7,
-  marker = list(
-    color = colors$councilBlue,
-    size = 18,
-    line = list(
-      color = "lightgray",
-      width = 2
-    )
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    inventory_source, "<br>",
+    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
   )
 ) %>%
   plotly_layout(
-    main_title = "County population and emissions",
-    subtitle = "2021 ACS 5-year population estimates",
-    x_title = "Total population",
-    y_title = "Metric tons CO<sub>2</sub>e"
-    main_title = "Electricity Emissions Inventory QA<br><sub>Comparison between MetC and EIA State Electricity Profiles</sub>",
+    main_title = "Electricity Emissions Inventory QA<br><sub>Comparison between Metropolitan Council and EIA State Electricity Profiles</sub>",
     y_title = "Metric tons CO<sub>2</sub>e",
     x_title = "County",
     legend_title = "Inventory source"
@@ -313,70 +353,46 @@ eiaQA_plot <- plot_ly(
     )
   )
 
-fig_emissions_population
-
 # Show the plot
-eiaQA_plot
+fig_eia_qa_electricity_plot
 ```
 
 ##### NREL SLOPE
 
-The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly forecasted emissions tied to the user of electricity up to 2050 based on 2016 observed/reported data at the county level. In comparing these figures to our own inventory, we observed that, where we estimated X metric tons of emissions linked to electricity deliveries in our study area in the year 2021, NREL SLOPE forecasted 21,257,977 metrics tons in our study area.
+```{r}
+nrel_total_electrcity <- nrel_metc_electricity_comp %>%
+  filter(inventory_source == "NREL SLOPE") %>%
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
+  extract2("emissions_metric_tons_co2e")
+```
 
-```{r fig-NREL-QA}
-#| fig-cap: "METC emissions inventory v. NREL SLOPE modeled emissions"
+The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly forecasted emissions tied to the user of electricity up to 2050 based on 2016 observed/reported data at the county level. In comparing these figures to our own inventory, we observed that, where we estimated `r scales::comma(region_total_electricity, accuracy = 1)` metric tons of emissions linked to electricity deliveries in our study area in the year 2021, NREL SLOPE forecasted `r scales::comma(nrel_total_electrcity, accuracy = 1)`metrics tons in our study area.
+
+```{r fig-nrel-qa-electricity}
+#| fig-cap: "Metropolitan Council emissions inventory v. NREL SLOPE modeled emissions"
 #| out-width: "95%"
 
-nrelQA <- read_rds(
-  file.path(
-    here::here(),
-    "_energy/data-raw/nrel_slope/nrel_emissions.RDS"
-  )
-) %>%
-  filter(source == "Electricity" && year == 2021) %>%
-  group_by(county_name) %>%
-  summarise(total_emissions_metric_tons_co2e = sum(co2e)) %>%
-  rename(county = county_name)
-
-nrel_MetC_Comp <- nrelQA %>%
-  left_join(
-    elecEmissions_all %>% select(county,
-      MetC = emissions_metric_tons_co2e
-    ),
-    by = "county"
-  ) %>%
-  pivot_longer(
-    cols = c("total_emissions_metric_tons_co2e", "MetC"),
-    names_to = "inventory_source",
-    values_to = "emissions_metric_tons_co2e"
-  ) %>%
-  mutate(
-    inventory_source = recode(inventory_source,
-      total_emissions_metric_tons_co2e =
-        "NREL SLOPE",
-      MetC =
-        "MetC - current inventory"
-    )
-  )
-
-
 # Create the plotly graph
-nrelQA_plot <- plot_ly(
-  data = nrel_MetC_Comp,
+fig_nrel_qa_electricity <- plot_ly(
+  data = nrel_metc_electricity_comp,
   x = ~ reorder(county, -emissions_metric_tons_co2e),
   y = ~emissions_metric_tons_co2e,
-  source = "fig-NREL-QA",
+  source = "fig-nrel-qa-electricity",
   color = ~inventory_source,
   type = "bar",
+  colors = c(
+    "NREL SLOPE" = cprg_colors$cprg_green,
+    "Metropolitan Council" = colors$councilBlue
+  ),
   hovertemplate = ~ paste0(
     county, "<br>",
     inventory_source, "<br>",
-    "Emissions: %{y:,.2f} metric tons CO<sub>2</sub>e", "<br>",
+    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
   plotly_layout(
-    main_title = "Electricity Emissions Inventory QA<br><sub>Comparison between MetC and NREL SLOPE</sub>",
+    main_title = "Electricity Emissions Inventory QA<br><sub>Comparison between Metropolitan Council and NREL SLOPE</sub>",
     y_title = "Metric tons CO<sub>2</sub>e",
     x_title = "County",
     legend_title = "Inventory source",
@@ -390,7 +406,7 @@ nrelQA_plot <- plot_ly(
   )
 
 # Show the plot
-nrelQA_plot
+fig_nrel_qa_electricity
 ```
 
 ```{r echo=FALSE}
