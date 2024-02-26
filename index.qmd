@@ -19,10 +19,10 @@ hookaddcap()
 Overall emissions
 
 ```{r sector-percentages, echo=FALSE, include=FALSE}
-sector_percentages <- county_emissions_summary %>% 
-  group_by(sector) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
-  arrange(-emissions_metric_tons_co2e) %>% 
+sector_percentages <- county_emissions_summary %>%
+  group_by(sector) %>%
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
+  arrange(-emissions_metric_tons_co2e) %>%
   janitor::adorn_percentages(denominator = "col")
 sector_percentages
 ```
