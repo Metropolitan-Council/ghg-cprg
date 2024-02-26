@@ -64,7 +64,7 @@ To transform electricity deliveries (recorded in mWh) into emissions in metric t
 
 This dataset provides estimates in lbs/mWh for CO~2~, CH4, N~2~O, and CO~2~e emissions based on MROW's sub-regional electricity generation grid mix; applying this factor to the county-level estimates for mWh and dividing by 2000 yields an estimate for CO~2~e in metric tons. To generate this sub-regional estimate, eGRID first calculates estimated emissions at the plant level, and assigns plants to regions. By using an emissions factor that is localized, our inventory accounts for the specific grid mix in our study area (see the grid mix linked to the eGRID MROW emissions factor usedf in this inventory below). Per the eGRID technical guide, "the subregions were defined to limit the import and export of electricity in order to establish an aggregated area where the determined emission rates most accurately matched the generation and emissions from the plants within that subregion."
 
-```{r}
+```{r tbl-elec-mrow-proportions}
 #| tbl-cap: "Grid Mix for MROW subregion of 2021 eGRID"
 #| out-width: "95%"
 
@@ -95,32 +95,26 @@ wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_
 elecEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
   mutate(geo = paste0(county, ", ", state))
 
-plot_ly(
-  type = "bar",
-  source = opts_current$get()$label,
-  data = elecEmissions_all,
-  y = ~ reorder(geo, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
-  hovertemplate = ~ paste0(
-    geo, "<br>",
-    "Emissions: %{x:,.2f} metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  )
-) %>%
+fig_electricity_county_emissions <- 
+  plot_ly(
+    type = "bar",
+    source = "fig-electricity-county-emissions",
+    data = elecEmissions_all,
+    y = ~ reorder(county, emissions_metric_tons_co2e),
+    x = ~emissions_metric_tons_co2e,
+    marker = list(
+      color = colors$councilBlue
+    ),
+    hovertemplate = ~ paste0(
+      geo, "<br>",
+      "Emissions: %{x:,.2f} metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
   plotly_layout(
     main_title = "2021 county-level CO2e electricity emissions",
     subtitle = "",
-    yaxis = list(
-      ticklen = 5,
-      tickwidth = 2,
-      tickcolor = "#000",
-      tickfont = list(size = 14)
-    ),
-    xaxis = list(
-      title = "Greenhouse gases emitted (metric tons)"
-      # ... [any other x-axis settings] ...
-    ),
-    margin = list(l = 120)
+    x_title = "Metric tons CO<sub>2</sub>e"
   ) %>%
   layout(
     barmode = "stack",
@@ -128,47 +122,53 @@ plot_ly(
       traceorder = "reversed"
     )
   )
+
+fig_electricity_county_emissions
 ```
 
 #### Correlation with related data
 
 We would expect counties with higher population to have higher emissions.
 
-```{r fig-emissions-population}
+```{r fig-electricity-emissions-population}
 #| fig-cap: "County population and electricity emissions"
 #| out-width: "95%"
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 emissions_population <- left_join(elecEmissions_all, cprg_population,
-  by = c("county" = "NAME")
+                                  by = c("county" = "NAME")
 )
-plot_ly(
-  data = emissions_population,
-  source = opts_current$get()$label,
-  x = ~population,
-  y = ~emissions_metric_tons_co2e,
-  type = "scatter",
-  mode = "markers",
-  hovertemplate = ~ paste0(
-    county, " County", "<br>",
-    "Population: ", scales::comma(population), "<br>",
-    "Emissions: %{y:,.2f} metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  ),
-  opacity = 0.7,
-  marker = list(
-    size = 18,
-    line = list(
-      color = "lightgray",
-      width = 2
+fig_electricity_emissions_population <- 
+  plot_ly(
+    data = emissions_population,
+    source = "fig-electricity-emissions-population",
+    x = ~population,
+    y = ~emissions_metric_tons_co2e,
+    type = "scatter",
+    mode = "markers",
+    hovertemplate = ~ paste0(
+      county, " County", "<br>",
+      "Population: ", scales::comma(population), "<br>",
+      "Emissions: %{y:,.2f} metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    ),
+    opacity = 0.7,
+    marker = list(
+      size = 18,
+      color = colors$councilBlue,
+      line = list(
+        color = "lightgray",
+        width = 2
+      )
     )
-  )
-) %>%
+  ) %>%
   plotly_layout(
     main_title = "County population and emissions",
     subtitle = "2021 ACS 5-year population estimates",
     x_title = "Total population",
-    y_title = "Emissions"
+    y_title = "Metric tons CO<sub>2</sub>e"
   )
+
+fig_electricity_emissions_population
 ```
 
 #### Comparison with federal inventories
@@ -209,8 +209,8 @@ EIAvMETC_tons <- eiaQA_all %>%
   ) %>%
   mutate(
     inventory_source = recode(inventory_source,
-      downscaled_EIA_total_CO2e_emissions_tons = "EIA",
-      OURS_total_CO2e_emissions_tons = "MetC - current inventory"
+                              downscaled_EIA_total_CO2e_emissions_tons = "EIA",
+                              OURS_total_CO2e_emissions_tons = "MetC - current inventory"
     )
   )
 
@@ -230,15 +230,16 @@ eiaQA_plot <- plot_ly(
     "<extra></extra>"
   )
 ) %>%
+  plotly_layout(
+    main_title = "Electricity Emissions Inventory QA<br><sub>Comparison between MetC and EIA State Electricity Profiles</sub>",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    x_title = "County",
+    legend_title = "Inventory source"
+  ) %>% 
   layout(
-    title = "Electricity Emissions Inventory QA<br><sub>Comparison between MetC and EIA State Electricity Profiles</sub>",
-    yaxis = list(title = "Emissions (metric tons CO2e)"),
-    xaxis = list(title = "County"),
     barmode = "group",
     hovermode = "closest",
     legend = list(
-      title = list(text = "Inventory Source"),
-      font = list(size = 10),
       traceorder = "normal"
     )
   )
@@ -269,7 +270,7 @@ nrelQA <- read_rds(
 nrel_MetC_Comp <- nrelQA %>%
   left_join(
     elecEmissions_all %>% select(county,
-      MetC = emissions_metric_tons_co2e
+                                 MetC = emissions_metric_tons_co2e
     ),
     by = "county"
   ) %>%
@@ -280,10 +281,10 @@ nrel_MetC_Comp <- nrelQA %>%
   ) %>%
   mutate(
     inventory_source = recode(inventory_source,
-      total_emissions_metric_tons_co2e =
-        "NREL SLOPE",
-      MetC =
-        "MetC - current inventory"
+                              total_emissions_metric_tons_co2e =
+                                "NREL SLOPE",
+                              MetC =
+                                "MetC - current inventory"
     )
   )
 
@@ -303,15 +304,16 @@ nrelQA_plot <- plot_ly(
     "<extra></extra>"
   )
 ) %>%
+  plotly_layout(
+    main_title = "Electricity Emissions Inventory QA<br><sub>Comparison between MetC and NREL SLOPE</sub>",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    x_title = "County",
+    legend_title = "Inventory source",
+  ) %>% 
   layout(
-    title = "Electricity Emissions Inventory QA<br><sub>Comparison between MetC and NREL SLOPE</sub>",
-    yaxis = list(title = "Emissions (metric tons CO2e)"),
-    xaxis = list(title = "County"),
     barmode = "group",
     hovermode = "closest",
     legend = list(
-      title = list(text = "Inventory Source"),
-      font = list(size = 10),
       traceorder = "normal"
     )
   )

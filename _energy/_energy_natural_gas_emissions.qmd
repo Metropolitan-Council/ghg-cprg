@@ -70,8 +70,7 @@ wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_
   rename(county = county_name)
 
 natGasEmissions_all <- rbind(mn_emissions, wi_emissions) %>%
-  mutate(geo = paste(county, state, sep = ", ")) %>%
-  group_by(geo, county, state, year) %>%
+  group_by(county, state, year) %>%
   summarise(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     .groups = "rowwise"
@@ -81,26 +80,22 @@ plot_ly(
   type = "bar",
   source = opts_current$get()$label,
   data = natGasEmissions_all,
-  y = ~ reorder(geo, emissions_metric_tons_co2e),
+  y = ~ reorder(county, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
-  # color = ~vehicle_weight_label,
   hovertemplate = ~ paste0(
     county, " County, ", state, "<br>",
     "Emissions: %{x:,.2f} metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue
   )
 ) %>%
   plotly_layout(
-    main_title = "2021 county-level annual CO2e natural gas emissions",
-    x_title = "Greenhouse gases emitted (metric tons)",
+    main_title = "2021 county annual natural gas emissions",
+    x_title = "Metric tons CO<sub>2</sub>e",
     subtitle = "",
-    yaxis = list(
-      ticklen = 5, # Adjust tick length if needed
-      tickwidth = 2, # Adjust tick width if needed
-      tickcolor = "#000", # Adjust tick color if needed
-      tickfont = list(size = 14) # Adjust font size of ticks (labels) if needed
-    ),
-    margin = list(l = 120)
+    legend_title = ""
   ) %>%
   layout(
     barmode = "stack",
@@ -137,6 +132,7 @@ plot_ly(
   opacity = 0.7,
   marker = list(
     size = 18,
+    color = colors$councilBlue,
     line = list(
       color = "lightgray",
       width = 2
@@ -209,15 +205,15 @@ nrelQA_plot <- plot_ly(
     "<extra></extra>"
   )
 ) %>%
-  layout(
-    title = "Natural Gas Emissions Inventory QA<br><sub>Comparison between MetC and NREL SLOPE</sub>",
-    yaxis = list(title = "Emissions (metric tons CO2e)"),
-    xaxis = list(title = "County"),
+  plotly_layout(
+    main_title = "Natural Gas Emissions Inventory QA<br><sub>Comparison between MetC and NREL SLOPE</sub>",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    x_title = "County",
+    subtitle = "",
+    legend_title = "Inventory source",
     barmode = "group",
     hovermode = "closest",
     legend = list(
-      title = list(text = "Inventory Source"),
-      font = list(size = 10),
       traceorder = "normal"
     )
   )
