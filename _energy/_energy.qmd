@@ -1,4 +1,5 @@
 # Stationary Energy
+
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -13,6 +14,7 @@ knitr::opts_chunk$set(
 
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
+
 ```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
@@ -58,9 +60,6 @@ fig_energy_emissions_by_category
 {{< include _energy_electricity_emissions.qmd >}}
 
 {{< include _energy_natural_gas_emissions.qmd >}}
-
-
-
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
