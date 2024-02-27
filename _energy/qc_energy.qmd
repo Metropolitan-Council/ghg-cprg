@@ -15,6 +15,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
@@ -45,7 +46,8 @@ Local inventory of GHG emissions from electric power consumption with documentat
 
 ```{r tbl-energy-qc, results='markup'}
 #| tbl-cap: "Local estimate comparison with control estimate"
-tibble::tribble(
+
+tbl_energy_qc <- tibble::tribble(
   ~"Power Consuming Sector", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"QC Estimate based on SLOPE (Metric Tons CO~2~e)",
   "Residential", "", "",
   "Commercial", "", "",
@@ -61,6 +63,8 @@ tibble::tribble(
   ) %>%
   gt::fmt_markdown() %>%
   gt::as_raw_html()
+
+tbl_energy_qc
 ```
 
 ```{r echo=FALSE}

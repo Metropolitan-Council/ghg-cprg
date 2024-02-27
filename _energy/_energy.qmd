@@ -18,22 +18,43 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
-source(file.path(here::here(), "R/plot_county_emissions.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+county_emissions_summary <- county_emissions %>%
+  group_by(sector, category, source, data_source, factor_source) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  )
 
 hookaddcap()
-county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 ```
 
 ## Introduction
 
-```{r fig-energy-emissions-plot}
-#| fig-cap: "Energy county level emissions"
+
+
+```{r fig-energy-county-emissions}
+#| fig-cap: "Energy county emissions"
 #| out-width: "95%"
-plot_county_emissions(
+fig_energy_county_emissions <- plot_county_sector_emissions(county_emissions,
+  .sector = "Energy",
+  .plotly_source = "fig-energy-county-emissions"
+)
+fig_energy_county_emissions
+```
+
+
+```{r fig-energy-emissions-by-category}
+#| fig-cap: "Energy county emissions by category"
+#| out-width: "95%"
+fig_energy_emissions_by_category <- plot_county_emissions(
   county_emissions = county_emissions,
   .sector = "Energy",
-  .plotly_source = opts_current$get()$label
+  .plotly_source = "fig-energy-emissions-by-category"
 )
+fig_energy_emissions_by_category
 ```
 
 {{< include _energy_electricity_emissions.qmd >}}

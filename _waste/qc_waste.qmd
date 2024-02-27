@@ -14,6 +14,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
@@ -46,14 +47,16 @@ Local inventory of GHG emissions from landfills with documentation of the follow
 
 ```{r tbl-waste-qc}
 #| tbl-cap: "Landfill emissions comparison between local estimate and FLIGHT."
+#| out-width: "95%"
 
-tibble::tribble(
-  ~"Solid Waste (Landfills)", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"FLIGHT Data (Metric Tons CO~2~e)",
-  "", "", "",
-  "", "", "",
-  "", "", "",
-  "", "", ""
-) %>%
+tbl_waste_qc <-
+  tibble::tribble(
+    ~"Solid Waste (Landfills)", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"FLIGHT Data (Metric Tons CO~2~e)",
+    "", "", "",
+    "", "", "",
+    "", "", "",
+    "", "", ""
+  ) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -62,6 +65,8 @@ tibble::tribble(
   ) %>%
   gt::fmt_markdown() %>%
   gt::as_raw_html()
+
+tbl_waste_qc
 ```
 
 

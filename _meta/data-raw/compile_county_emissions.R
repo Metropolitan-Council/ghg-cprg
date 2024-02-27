@@ -11,7 +11,7 @@ transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.R
     sector = "Transportation",
     geog_level = "county",
     geog_name = zone,
-    category = stringr::str_to_sentence(vehicle_type),
+    category = paste0(stringr::str_to_sentence(vehicle_type), " vehicles"),
     source = paste0(vehicle_weight_label, " vehicles"),
     data_source = "StreetLight Data",
     factor_source = paste0("EPA MOVES (", moves_year, ")")
@@ -52,8 +52,8 @@ solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
     sector = "Waste",
     geog_level = "county",
     geog_name = county,
-    category = "Solid Waste",
-    source = source,
+    category = "Solid waste",
+    source = str_to_sentence(source),
     data_source,
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
@@ -73,7 +73,7 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
     sector = "Energy",
     geog_level = "county",
     geog_name = county,
-    category = category,
+    category = paste0(category, " energy"),
     source = source,
     data_source = "Individual electric utilities, NREL SLOPE",
     factor_source = "eGRID MROW"
@@ -89,7 +89,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
     sector = "Energy",
     geog_level = "county",
     geog_name = county,
-    category = category,
+    category = paste0(category, " energy"),
     source = source,
     data_source = "Individual natural gas utilities, NREL SLOPE",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
@@ -126,25 +126,42 @@ emissions_all <- bind_rows(
       select(NAME, geog_id = COUNTYFP),
     by = c("geog_name" = "NAME")
   ) %>%
-  mutate(source = factor(source,
-    c(
-      # transportation levels
-      "Light-duty vehicles",
-      "Medium-duty vehicles",
-      "Heavy-duty vehicles",
-      # waste levels
-      "Landfill",
-      "Recycling",
-      "Organics",
-      "Wastewater",
-      # energy levels
-      "Electricity",
-      "Natural gas",
-      "Propane",
-      "Kerosene"
+  mutate(
+    source = factor(source,
+      c(
+        # transportation levels
+        "Light-duty vehicles",
+        "Medium-duty vehicles",
+        "Heavy-duty vehicles",
+        # waste levels
+        "Landfill",
+        "Waste to energy",
+        "Recycling",
+        "Organics",
+        "Wastewater",
+        # energy levels
+        "Electricity",
+        "Natural gas",
+        "Propane",
+        "Kerosene"
+      ),
+      ordered = TRUE
     ),
-    ordered = TRUE
-  )) %>%
+    category = factor(
+      category,
+      c(
+        "Residential energy",
+        "Commercial energy",
+        "Industrial energy",
+        "Liquid stationary fuels",
+        "Passenger vehicles",
+        "Commercial vehicles",
+        "Wastewater",
+        "Solid waste"
+      ),
+      ordered = TRUE
+    )
+  ) %>%
   # join county population and calculate per capita emissions
   left_join(
     cprg_county_pop %>%
@@ -188,6 +205,8 @@ emissions_all_meta <- tibble::tribble(
 saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
 write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)
+
+county_emissions <- emissions_all
 
 # save emissions to shared drive location
 source("R/fetch_path.R")

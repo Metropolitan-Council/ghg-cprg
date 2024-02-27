@@ -5,6 +5,8 @@ source("R/_load_pkgs.R")
 # from https://widnr.widen.net/view/pdf/o9xmpot5x7/AM610.pdf?t.download=true
 # WI GHG Emissions Inventory from the DNR, 2018 data
 wi_total_emissions <- 2.2 * 10^6 # in mtco2e
+# 0.1 from waste combustion
+# 2.1 from landfills (accounts for flaring and landfill gas to energy)
 
 cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
@@ -12,7 +14,7 @@ cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
 wi_pop <- cprg_county_proportions %>%
   filter(
     STATE == "Wisconsin",
-    year == "2020"
+    year == "2021"
   )
 
 wi_emissions <- wi_pop %>%

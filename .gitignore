@@ -246,6 +246,10 @@ _transportation/data-raw/stl_raw_downloads/1689255_CPRG_County_AADT_motor_trunk_
 
 _transportation/data-raw/stl_raw_downloads/1600439_CPRG_County_OD_NP_Truck_Calib_ReClass/
 
+R/fetch_path.R
+
+_transportation/data_epa_moves_files/
+
 _transportation/data_epa_moves_files/
 
 _transportation/data_epa_moves.html
@@ -253,3 +257,7 @@ _transportation/data_epa_moves.html
 _transportation/data_epa_moves_files/
 
 R/fetch_path.R
+
+purl/
+
+_transportation/data-raw/mndot/22_cdrs_hc.xlsx

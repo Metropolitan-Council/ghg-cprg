@@ -11,6 +11,7 @@ vehicle_miles <- bind_rows(
   calculate_vmt(county21_truck, class = "commercial")
 )
 
+
 vehicle_emissions <- vehicle_miles %>%
   calculate_emissions(emissions_factors = epa_moves) %>%
   mutate(year = 2021) %>%
@@ -58,3 +59,16 @@ vehicle_emissions_meta <-
 
 saveRDS(vehicle_emissions, "_transportation/data/county_vmt_emissions.RDS")
 saveRDS(vehicle_emissions_meta, "_transportation/data/county_vmt_emissions_meta.RDS")
+
+
+# calculate total commercial VMT for a section of the PCAP
+vehicle_miles %>%
+  # filter(zone %in% c("Anoka",
+  #                    "Carver",
+  #                    "Dakota",
+  #                    "Hennepin",
+  #                    "Ramsey",
+  #                    "Scott",
+  #                    "Washington")) %>%
+  group_by(mode_of_travel) %>%
+  summarize(vmt_total = sum(vmt_total))
