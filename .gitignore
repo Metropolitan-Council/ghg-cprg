@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-_energy/data-raw/*/
 
 /.quarto/
 *_cache
@@ -263,3 +262,31 @@ R/fetch_path.R
 purl/
 
 _transportation/data-raw/mndot/22_cdrs_hc.xlsx
+
+_energy/data-raw/wi_utility_reporting/
+
+_energy/data-raw/wi_natGas_utility_reporting/
+
+_energy/data-raw/shp_util_eusa_MN/
+
+_energy/data-raw/NG_PSCW_ServTerr/
+
+_energy/data-raw/Natural_Gas_Service_Territories/
+
+_energy/data-raw/EL_PSCW_ServTerr (1)/
+
+_energy/data-raw/mn_natGas_utility_reporting/
+
+_energy/data-raw/mn_utility_reporting/
+
+_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv
+
+_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.csv
+
+_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_state.csv
+
+_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual.zip
+
+_energy/data-raw/nrel_slope/NREL_CITATION.txt
+
+_energy/data-raw/nrel_slope/NREL_DISCLAIMER.txt
