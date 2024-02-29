@@ -186,8 +186,13 @@ hookaddcap <- function(loc = NULL) {
 }
 
 
-save_plotly <- function(a_plotly, fmt = c("png", "pdf"),
-                        file_title = c("source", "title")) {
+save_plotly <- function(a_plotly, fmt = c("png", "pdf", "svg"),
+                        file_title = c("source", "title"),
+                        file_location = paste0("assets/plots/plotly_", fmt),
+                        width = 900,
+                        height = 450,
+                        scale = 1) {
+  # browser()
   pl_titles <-
     purrr::map(
       1:length(a_plotly$x$layoutAttrs),
@@ -213,14 +218,18 @@ save_plotly <- function(a_plotly, fmt = c("png", "pdf"),
     unique() %>%
     unlist()
 
+  if (!fs::dir_exists(file_location)) {
+    fs::dir_create(file_location, recurse = TRUE)
+  }
+
   file_name <- if (file_title == "source") {
     paste0(
-      "plotly_", fmt, "/",
+      file_location, "/",
       pl_source, ".", fmt
     )
   } else if (file_title == "title") {
     paste0(
-      "plotly_", fmt, "/",
+      file_location, "/",
       pl_title, ".", fmt
     )
   }
@@ -229,7 +238,10 @@ save_plotly <- function(a_plotly, fmt = c("png", "pdf"),
 
   scope$transform(
     p = a_plotly,
-    file = file_name
+    file = file_name,
+    width = width,
+    height = height,
+    scale = scale
   )
 
   if (fmt == "pdf") {

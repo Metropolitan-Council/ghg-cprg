@@ -1,4 +1,4 @@
-# Utility Service Area Maps
+# Utility service area maps
 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
@@ -18,6 +18,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS")) %>%
   st_union()
 
@@ -42,7 +43,7 @@ hookaddcap()
 ```
 
 
-To identify the utilities operating within our 11-county study area, we utilized data sets published by state and federal sources. The outcome of our data collection, yielding a list of distinct utilities for which activity data should be collected, resides within `distinct_natGas_util_WI.RDS` (4 utilities, all investor-owned) and `distinct_natGas_util_type_MN.RDS` (7 utilities, six investor-owned and one municipally-owned)
+To identify the utilities operating within our 11-county study area, we utilized data sets published by state and federal sources. The outcome of our data collection, yielding a list of distinct utilities for which activity data should be collected, resides within [distinct_natGas_util_WI.RDS](data/distinct_natGas_util_WI.RDS) (4 utilities, all investor-owned) and [distinct_natGas_util_type_MN.RDS](data/distinct_natGas_util_type_MN.RDS) (7 utilities, six investor-owned and one municipally-owned).  
 
 ### Minnesota
 
@@ -66,7 +67,7 @@ bound_box <- list(
 )
 
 
-MN_ng_servTerrs <- council_leaflet() %>%
+fig_mninnesota_ng_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
       sf::st_transform(4326),
@@ -92,7 +93,7 @@ MN_ng_servTerrs <- council_leaflet() %>%
     lat2 = bound_box[[4]]
   )
 
-MN_ng_servTerrs
+fig_mninnesota_ng_servTerrs
 ```
 
 ```{r fig-MN-ng-inScope-servTerrs}
@@ -112,7 +113,7 @@ MN_bound_box <- list(
   lat2 =  45.4 # Northeast latitude
 )
 
-MN_ng_inScope_servTerrs <- council_leaflet() %>%
+fig_MN_ng_inScope_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
       sf::st_transform(4326),
@@ -137,7 +138,7 @@ MN_ng_inScope_servTerrs <- council_leaflet() %>%
     lat2 = MN_bound_box[[4]]
   )
 
-MN_ng_inScope_servTerrs
+fig_MN_ng_inScope_servTerrs
 ```
 
 ### Wisconsin
@@ -165,7 +166,7 @@ bound_box <- list(
   lat2 =  47.080 # Northeast latitude
 )
 
-WI_ng_servTerrs <- council_leaflet() %>%
+fig_wisconsin_ng_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
       sf::st_transform(4326),
@@ -190,7 +191,7 @@ WI_ng_servTerrs <- council_leaflet() %>%
     lat2 = bound_box[[4]]
   )
 
-WI_ng_servTerrs
+fig_wisconsin_ng_servTerrs
 ```
 
 Wisconsin utilities in scope
@@ -212,7 +213,7 @@ WI_bound_box <- list(
 )
 
 
-WI_ng_inScope_servTerrs <- council_leaflet() %>%
+fig_wisconsin_ng_inScope_servTerrs <- council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
       sf::st_transform(4326),
@@ -242,7 +243,7 @@ WI_ng_inScope_servTerrs <- council_leaflet() %>%
     lat2 = WI_bound_box[[4]]
   )
 
-WI_ng_inScope_servTerrs
+fig_wisconsin_ng_inScope_servTerrs
 ```
 
 ```{r echo=FALSE}

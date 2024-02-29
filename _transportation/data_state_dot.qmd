@@ -4,6 +4,7 @@
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
 commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_lines.RDS")) %>%
   mutate(hover_info = paste0(
     "Name: ", name, "<br>"
@@ -41,17 +42,21 @@ dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) 
   group_by(county)
 
 
-plot_ly(
+fig_dot_vmt <- plot_ly(
   data = dot_vmt,
-  source = knitr::opts_current$get()$label,
+  source = "fig-dot-vmt",
   x = ~year,
   y = ~annual_vmt,
   color = ~data_source,
-  opacity = 0.8,
+  colors = c(
+    "MnDOT" = colors$cdGreen,
+    "WisDOT" = colors$metrostatsRed
+  ),
+  opacity = 0.7,
   type = "scatter",
   mode = "lines+markers",
   marker = list(
-    size = 16,
+    size = 14,
     line = list(
       color = "lightgray",
       width = 2
@@ -73,6 +78,8 @@ plot_ly(
     y_title = "VMT",
     legend_title = "Data source"
   )
+
+fig_dot_vmt
 ```
 
 
@@ -98,7 +105,8 @@ cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 bound_box <- st_bbox(commercial_lines) %>%
   unlist()
 
-council_leaflet() %>%
+fig_map_calibration_set <-
+  council_leaflet() %>%
   addPolygons(
     data = cprg_county %>%
       sf::st_transform(4326),
@@ -134,6 +142,8 @@ council_leaflet() %>%
     lat1 = bound_box[[2]],
     lat2 = bound_box[[4]]
   )
+
+fig_map_calibration_set
 ```
 
 Only `r nrow(commercial_points)` calibration roads were used for this inventory due to data availability constraints. 
@@ -168,13 +178,14 @@ calibration_long <- commercial_points %>%
       )
   )
 
-plot_ly(
+fig_vehicle_weight_distribution <- plot_ly(
   data = calibration_long,
-  source = opts_current$get()$label,
+  source = "fig-vehicle-weight-distribution",
   type = "bar",
   x = ~name,
   y = ~value,
   color = ~vehicle_weight,
+  colors = unlist(vehicle_weight_colors),
   hoverinfo = "text",
   hovertemplate = ~ paste0(
     "Name: ", name, "<br>",
@@ -200,6 +211,8 @@ plot_ly(
       tickformat = "1%"
     )
   )
+
+fig_vehicle_weight_distribution
 ```
 
 ### Limitations

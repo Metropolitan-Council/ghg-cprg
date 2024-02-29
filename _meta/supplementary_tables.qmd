@@ -15,6 +15,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 ## Acronyms
@@ -22,7 +23,7 @@ hookaddcap()
 ```{r tbl-acroynms}
 #| tbl-cap: "Acronyms"
 #| out-width: "95%"
-read.csv(file.path(here::here(), "_meta/data-raw/acronyms.csv")) %>%
+tbl_acronyms <- read.csv(file.path(here::here(), "_meta/data-raw/acronyms.csv")) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -30,6 +31,7 @@ read.csv(file.path(here::here(), "_meta/data-raw/acronyms.csv")) %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+tbl_acronyms
 ```
 
 
@@ -38,7 +40,7 @@ read.csv(file.path(here::here(), "_meta/data-raw/acronyms.csv")) %>%
 ```{r tbl-quality-rank}
 #| tbl-cap: "Data source quality ranking"
 #| out-width: "95%"
-tibble::tribble(
+tbl_quality_rank <- tibble::tribble(
   ~"Quality Rank", ~"Source Type",
   "Highest", "Federal, state, and local government agencies",
   "Second", "Consultant reports for state and local government agencies",
@@ -53,7 +55,9 @@ tibble::tribble(
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+tbl_quality_rank
 ```
+
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
 caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")

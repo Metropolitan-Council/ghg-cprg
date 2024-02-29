@@ -11,7 +11,7 @@ Code and styling
 * [ ] I have added additional package dependencies as necessary with `renv::install()`
 * [ ] I have run `styler::style_dir(".", recursive = TRUE, filetype = c("R", "qmd"))`
 * [ ] Plots
-  - [ ] If plotly, use `source = opts_current$get()$label` in `plot_ly()`
+  - [ ] If plotly, use `source = "chunk-name"` in `plot_ly()`
   - [ ] Use formatting with `councilR::plotly_layout()`?
 * [ ] Chunk formatting
   - [ ] All chunks named

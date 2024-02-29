@@ -73,7 +73,7 @@ MNcounty_level_gas_emissions <- processed_mn_gasUtil_activityData %>%
   ) %>%
   mutate(
     state = "MN",
-    sector = "Natural Gas",
+    sector = "Natural gas",
     year = 2021
   )
 
