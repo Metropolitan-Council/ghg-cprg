@@ -1,0 +1,40 @@
+# LIDAC maps
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+```{r, include=FALSE}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+hookaddcap()
+```
+
+
+````{r fig-map_lidac}
+#| fig-cap: "Map of Low Income or Disadvantaged Communities"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+
+knitr::include_graphics(file.path(here::here(), "assets/maps/map_lidac.png"))
+```
+
+
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}
