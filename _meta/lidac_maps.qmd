@@ -21,11 +21,66 @@ hookaddcap()
 
 
 ```{r fig-map-lidac}
-#| fig-cap: "Map of Low Income or Disadvantaged Communities"
+#| fig-cap: "Low income or disadvantaged communities (LIDAC)"
 #| fig-alt: "alt text for this map"
 #| out-width: "95%"
 knitr::include_graphics("assets/maps/map_lidac.png")
 ```
+
+
+
+```{r fig-map-PM2.5}
+#| fig-cap: "Distribution of inhalable particulate matter ≤ 2.5 µm (PM2.5)"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_PM2.5.png")
+```
+
+
+
+```{r fig-map-diesel}
+#| fig-cap: "Distribution of inhalable diesel particulate matter"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_diesel.png")
+```
+
+
+
+```{r fig-map-asthma}
+#| fig-cap: "Distribution of asthma in adults"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_asthma.png")
+```
+
+
+
+```{r fig-map-impervious}
+#| fig-cap: "Impervious surface or cropland coverage"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_impervious.png")
+```
+
+
+
+```{r fig-map-housing.burden}
+#| fig-cap: "Distribution of housing cost burdened households"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_housing.burden.png")
+```
+
+
+
+```{r fig-map-energy.burden}
+#| fig-cap: "Distribution of energy cost burdened households"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_energy.burden.png")
+```
+
 
 
 
