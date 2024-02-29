@@ -20,12 +20,11 @@ hookaddcap()
 ```
 
 
-````{r fig-map_lidac}
+```{r fig-map-lidac}
 #| fig-cap: "Map of Low Income or Disadvantaged Communities"
 #| fig-alt: "alt text for this map"
 #| out-width: "95%"
-
-knitr::include_graphics(file.path(here::here(), "assets/maps/map_lidac.png"))
+knitr::include_graphics("assets/maps/map_lidac.png")
 ```
 
 
