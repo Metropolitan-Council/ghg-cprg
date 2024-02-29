@@ -130,9 +130,6 @@ LIDAC_polygons_dissolved <- LIDAC_polygons %>%
 
 
 
-CEJST_map_data
-LIDAC_polygons
 
-
-# saveRDS(LIDAC_polygons, "_meta/data/lidac_block_groups.RDS")
-# saveRDS(CEJST_map_data, "_meta/data/ejscreen_block_groups.RDS")
+saveRDS(LIDAC_polygons, "_meta/data/lidac_block_groups.RDS")
+saveRDS(CEJST_map_data, "_meta/data/ejscreen_block_groups.RDS")
