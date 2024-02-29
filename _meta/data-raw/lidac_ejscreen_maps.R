@@ -8,6 +8,8 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/plot_county_emissions.R"))
 
 
+export.plots <- TRUE
+outpath <- file.path(here::here(), "assets/maps/")
 
 
 county_data <- readRDS("_meta/data/cprg_county.RDS")
@@ -15,6 +17,8 @@ LIDAC_polygons <- readRDS("_meta/data/lidac_block_groups.RDS")
 CEJST_map_data <- readRDS("_meta/data/ejscreen_block_groups.RDS")
 
 
+# Read the Metro Council logo
+metc_logo <- png::readPNG(file.path(here::here(), "style/logo-no-text.png"))
 
 
 LIDAC_polygons_dissolved <- LIDAC_polygons %>%
@@ -22,9 +26,11 @@ LIDAC_polygons_dissolved <- LIDAC_polygons %>%
   summarize(do_union = TRUE)
 
 
-## ggnewscale, patchwork, classInt
+## png, ggnewscale, patchwork, classInt
 
 
+
+# CUSTOM FUNS -------------------------------------------------------------
 mutate_jenks_brks <- function(input, variable, ...) {
   var_string <- deparse(substitute(variable))
   # var_name <- enquo(variable)
@@ -64,55 +70,6 @@ mutate_jenks_brks <- function(input, variable, ...) {
   
 }
 
-
-convert_brks_strings <- function(data, column_name) {
-  # Function to convert the format
-  convert_format <- function(string) {
-    parts <- strsplit(as.character(string), "-")[[1]]  # Ensure conversion to character
-    
-    if (length(parts) != 2) {
-      cat("Error: Unexpected input format:", string, "\n")
-      return(NA) # Return NA for unexpected inputs
-    }
-    
-    start_num <- as.numeric(parts[1])
-    end_num <- as.numeric(parts[2])
-    
-    # Function to determine suffix
-    determine_suffix <- function(num) {
-      if (num == 0) {
-        return("")  # No suffix for 0
-      } else if (num %% 10 == 1 && num != 11) {
-        return("st")
-      } else if (num %% 10 == 2 && num != 12) {
-        return("nd")
-      } else if (num %% 10 == 3 && num != 13) {
-        return("rd")
-      } else {
-        return("th")
-      }
-    }
-    
-    # Convert start number to the desired format
-    start_suffix <- determine_suffix(start_num)
-    start_formatted <- ifelse(start_num == 0, "0", paste0(start_num, start_suffix))
-    
-    # Convert end number to the desired format
-    end_suffix <- determine_suffix(end_num)
-    end_formatted <- paste0(end_num, end_suffix)
-    
-    # Concatenate the formatted strings
-    formatted_string <- paste0(start_formatted, " to ", end_formatted)
-    return(formatted_string)
-  }
-  
-  # Apply the conversion function to the specified column
-  data <- data %>%
-    mutate(!!paste0(column_name, "_formatted") := sapply(!!sym(column_name), convert_format))
-  
-  return(data)
-}
-
 sort_factor_column <- function(data, column_name) {
   data <- data %>%
     mutate(numeric_value = as.numeric(str_extract(!!sym(column_name), "\\d+"))) %>%
@@ -122,43 +79,342 @@ sort_factor_column <- function(data, column_name) {
   return(data)
 }
 
-plot_design <- "
-  AAAAAAAAAAAA
-  AAAAAAAAAAAA
-  AAAAAAAAAAAA
-  AAAAAAAAAAAA
-"
+palette_no <- "Blues"
 
 
-map_PM2.5 <- 
-  ggplot() +
-  # geom_sf(data = CEJST_map_data %>%
-  #           mutate_jenks_brks(PM2.5.in.the.air..percentile., n = 4) %>%
-  #           convert_brks_strings(data=., "PM2.5.in.the.air..percentile._brks") %>% 
-  #           dplyr::group_by(PM2.5.in.the.air..percentile._brks_formatted) %>%
-  #           summarize(do_union = TRUE) %>% sort_factor_column(., "PM2.5.in.the.air..percentile._brks_formatted") %>%
-  #           filter(!is.na(PM2.5.in.the.air..percentile._brks_formatted)),
-  #         aes(fill=PM2.5.in.the.air..percentile._brks_formatted), alpha=0.8, lwd=0)  +
-  geom_sf(data = county_data, color="steelblue4", fill=NA, lwd=0.4) +
-  scale_fill_brewer(name=expression(PM[2.5]~"percentile"), type = "seq", palette = 3, guide = guide_legend(order = 1)) +
-  councilR::theme_council_geo(use_showtext=T) +
+
+
+# Make some maps! ---------------------------------------------------------
+# plot_template
+plot_template <- ggplot(county_data) +   geom_sf(color=NA, fill=NA, lwd=0) +
+  ggspatial::annotation_scale(location = "br", width_hint = 0.3, pad_x = unit(0.23, "in"),unit_category="imperial") +
+  ggspatial::annotation_north_arrow(location = "br", which_north = "true",  
+                                    height= unit(0.33, "in"), width= unit(0.35, "in"),
+                                    pad_x = unit(1.65, "in"), pad_y = unit(0.35, "in"),
+                                    style = ggspatial::north_arrow_minimal) + 
+  annotation_custom(grid::rasterGrob(metc_logo),  
+                    ymin = 44.48,  ymax = 44.6, 
+                    xmin = -92.7,  xmax = -92.55) + 
+  councilR::theme_council_geo() 
+
+
+
+# LIDAC boundary map 
+map_lidac <- plot_template +
+  geom_sf(data = LIDAC_polygons, fill="#FFFFFF", color="gray80", alpha=0.8, show.legend = F, lwd=0.2)  +
+  geom_sf(color="gray65", fill=NA, lwd=0.7) +
   
   ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
   
   geom_sf(data = LIDAC_polygons_dissolved %>% filter(LIDAC == "Yes"),
-          aes(fill="orange"), color="goldenrod1", 
-          # color="goldenrod1", fill="orange", 
-          alpha=0.3, lwd=0.3) +
-  scale_fill_identity(name='', guide='legend', labels=c('LIDAC')) +
-  labs(title=expression(bold("Exposure to inhalable particulate matter ≤ 2.5"~mu*"m ("*PM[2.5]*")")),
-       caption="Source: Climate and Economic Justice Screening Tool (https://screeningtool.geoplatform.gov) \nEPA Inflation Reduction Act Disadvantaged Communities Map (https://www.epa.gov/environmentaljustice/inflation-reduction-act-disadvantaged-communities-map)") + 
-  theme(plot.title = element_text(hjust=0, size=14),
-        plot.subtitle = element_text(hjust=0, size=11),
-        plot.caption = element_text(hjust=0, vjust=1, face="italic", size=7)) 
+          aes(fill="#005DAA"), color="#005DAA", alpha=0.6, lwd=0.3) +
+  scale_fill_identity(name='', guide='legend', labels=c('Low Income or \nDisadvantaged \nCommunities (LIDAC)')) +
+  theme(
+    legend.position = c(-0.08,0.655),
+    legend.direction = "vertical",
+    legend.justification = c("left","top"),
+    legend.margin = margin(2, 0, 0, 0),
+    legend.key.height = unit(0.4, "cm"),
+    legend.key.width = unit(0.4, "cm"),
+    legend.box = "vertical",
+    legend.box.just = "left"
+  ) 
+
+mini_map_lidac <- ggplot(county_data) +
+  geom_sf(color=NA, fill=NA) +
+  councilR::theme_council_geo() 
 
 
-map_PM2.5 <- map_PM2.5 + patchwork::plot_layout(design = plot_design)
+map_lidac <- map_lidac + patchwork::inset_element(mini_map_lidac, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
 
 
 
+if (export.plots) png(paste0(outpath,"map_lidac.png"), width=7, height=5.5, units="in", res=600); invisible(print(map_lidac)); dev.off()
+
+
+
+
+
+
+
+
+
+# PM2.5.in.the.air..percentile.
+map_PM2.5 <- plot_template +
+  geom_sf(data = CEJST_map_data %>% # take your CEJST data
+            mutate_jenks_brks(PM2.5.in.the.air..percentile., n = 4) %>% # create discrete breaks using n=4 breaks
+            dplyr::group_by(PM2.5.in.the.air..percentile._brks) %>% # group by the new breaks
+            summarize(do_union = TRUE) %>% sort_factor_column(., "PM2.5.in.the.air..percentile._brks") %>% # dissolve boundaries
+            filter(!is.na(PM2.5.in.the.air..percentile._brks)), # remove NAs
+          aes(fill=PM2.5.in.the.air..percentile._brks), alpha=0.8, lwd=0)  +
+  geom_sf(color="gray65", fill=NA, lwd=0.4) + # add county lines
+  
+  scale_fill_brewer(name=expression(
+    atop(textstyle("Inhalable fine particulate               "), # bit of a hacky solution but the extra spaces help with justifying this particular text
+         atop(textstyle("matter ≤ 2.5"~mu*"m ("*PM[2.5]*") percentile"),scriptscriptstyle("")) )), 
+    type = "seq", palette = palette_no, guide = guide_legend(order = 1)) +
+  
+  ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(data = LIDAC_polygons_dissolved %>% filter(LIDAC == "Yes"),
+          aes(fill="orange"), color="goldenrod1", alpha=0.3, lwd=0.3) +
+  scale_fill_identity(name='', guide='legend', labels=c('Low Income or \nDisadvantaged \nCommunities (LIDAC)')) +
+  theme(
+    legend.position = c(-0.08,0.97),
+    legend.direction = "vertical", 
+    legend.justification = c("left","top"),
+    legend.margin = margin(2, 0, 0, 0),
+    legend.key.height = unit(0.4, "cm"), 
+    legend.key.width = unit(0.4, "cm"),
+    legend.box = "vertical",
+    legend.box.just = "left"
+  ) 
+
+# Make a mini map while retaining block group boundaries (don't dissolve)
+mini_map_PM2.5 <- ggplot(county_data) +
+  geom_sf(data = CEJST_map_data %>% mutate_jenks_brks(PM2.5.in.the.air..percentile., n = 4),
+          aes(fill=PM2.5.in.the.air..percentile._brks), color="gray75", alpha=0.8, show.legend = F, lwd=0.07)  +
+  geom_sf(color="gray60", fill=NA, lwd=0.2) +
+  scale_fill_brewer(type = "seq", palette = palette_no) +
+  councilR::theme_council_geo() 
+
+
+map_PM2.5 <- map_PM2.5 + patchwork::inset_element(mini_map_PM2.5, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
+
+if (export.plots) png(paste0(outpath,"map_PM2.5.png"), width=7, height=5.5, units="in", res=600); invisible(print(map_PM2.5)); dev.off()
+
+
+
+
+# Diesel.particulate.matter.exposure..percentile.
+map_diesel <- plot_template +
+  geom_sf(data = CEJST_map_data %>%
+            mutate_jenks_brks(Diesel.particulate.matter.exposure..percentile., n = 4) %>%
+            dplyr::group_by(Diesel.particulate.matter.exposure..percentile._brks) %>%
+            summarize(do_union = TRUE) %>% sort_factor_column(., "Diesel.particulate.matter.exposure..percentile._brks") %>%
+            filter(!is.na(Diesel.particulate.matter.exposure..percentile._brks)),
+          aes(fill=Diesel.particulate.matter.exposure..percentile._brks), alpha=0.8, lwd=0)  +
+  geom_sf(color="gray65", fill=NA, lwd=0.4) +
+  
+  scale_fill_brewer(name=expression(
+    atop(textstyle("Inhalable diesel particulate"),
+         atop(textstyle("matter exposure percentile"),scriptscriptstyle("")) )), 
+    type = "seq", palette = palette_no, guide = guide_legend(order = 1)) +
+  
+  ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(data = LIDAC_polygons_dissolved %>% filter(LIDAC == "Yes"),
+          aes(fill="orange"), color="goldenrod1", alpha=0.3, lwd=0.3) +
+  scale_fill_identity(name='', guide='legend', labels=c('Low Income or \nDisadvantaged \nCommunities (LIDAC)')) +
+  theme(
+    legend.position = c(-0.08,0.97),
+    legend.direction = "vertical", 
+    legend.justification = c("left","top"),
+    legend.margin = margin(2, 0, 0, 0),
+    legend.key.height = unit(0.4, "cm"), 
+    legend.key.width = unit(0.4, "cm"),
+    legend.box = "vertical",
+    legend.box.just = "left"
+  ) 
+
+
+mini_map_diesel <- ggplot(county_data) +
+  geom_sf(data = CEJST_map_data %>% mutate_jenks_brks(Diesel.particulate.matter.exposure..percentile., n = 4),
+          aes(fill=Diesel.particulate.matter.exposure..percentile._brks), color="gray75", alpha=0.8, show.legend = F, lwd=0.07)  +
+  geom_sf(color="gray60", fill=NA, lwd=0.2) +
+  scale_fill_brewer(type = "seq", palette = palette_no) +
+  councilR::theme_council_geo()  
+
+
+
+map_diesel <- map_diesel + patchwork::inset_element(mini_map_diesel, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
+
+
+if (export.plots) png(paste0(outpath,"map_diesel.png"), width=7, height=5.5, units="in", res=600); invisible(print(map_diesel)); dev.off()
+
+
+
+
+# Current.asthma.among.adults.aged.greater.than.or.equal.to.18.years..percentile.
+map_asthma <- plot_template +
+  geom_sf(data = CEJST_map_data %>%
+            mutate_jenks_brks(Current.asthma.among.adults.aged.greater.than.or.equal.to.18.years..percentile., n = 4) %>%
+            dplyr::group_by(Current.asthma.among.adults.aged.greater.than.or.equal.to.18.years..percentile._brks) %>%
+            summarize(do_union = TRUE) %>% sort_factor_column(., "Current.asthma.among.adults.aged.greater.than.or.equal.to.18.years..percentile._brks") %>%
+            filter(!is.na(Current.asthma.among.adults.aged.greater.than.or.equal.to.18.years..percentile._brks)),
+          aes(fill=Current.asthma.among.adults.aged.greater.than.or.equal.to.18.years..percentile._brks), alpha=0.8, lwd=0)  +
+  geom_sf(color="gray65", fill=NA, lwd=0.4) +
+  
+  scale_fill_brewer(name=expression(
+    atop(textstyle("Asthma prevalence among"),
+         atop(textstyle("adults (≥ 18 yrs) percentile"),scriptscriptstyle("")) )), 
+    type = "seq", palette = palette_no, guide = guide_legend(order = 1)) +
+  
+  ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(data = LIDAC_polygons_dissolved %>% filter(LIDAC == "Yes"),
+          aes(fill="orange"), color="goldenrod1", alpha=0.3, lwd=0.3) +
+  scale_fill_identity(name='', guide='legend', labels=c('Low Income or \nDisadvantaged \nCommunities (LIDAC)')) +
+  theme(
+    legend.position = c(-0.08,0.97),
+    legend.direction = "vertical", 
+    legend.justification = c("left","top"),
+    legend.margin = margin(2, 0, 0, 0),
+    legend.key.height = unit(0.4, "cm"), 
+    legend.key.width = unit(0.4, "cm"),
+    legend.box = "vertical",
+    legend.box.just = "left"
+  ) 
+
+
+mini_map_asthma <- ggplot(county_data) +
+  geom_sf(data = CEJST_map_data %>% mutate_jenks_brks(Current.asthma.among.adults.aged.greater.than.or.equal.to.18.years..percentile., n = 4),
+          aes(fill=Current.asthma.among.adults.aged.greater.than.or.equal.to.18.years..percentile._brks), color="gray75", alpha=0.8, show.legend = F, lwd=0.07)  +
+  geom_sf(color="gray60", fill=NA, lwd=0.2) +
+  scale_fill_brewer(type = "seq", palette = palette_no) +
+  councilR::theme_council_geo() 
+
+map_asthma <- map_asthma + patchwork::inset_element(mini_map_asthma, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
+
+if (export.plots) png(paste0(outpath,"map_asthma.png"), width=7, height=5.5, units="in", res=600); invisible(print(map_asthma)); dev.off()
+
+
+
+
+# Energy.burden..percentile.
+map_energy.burden <- plot_template +
+  geom_sf(data = CEJST_map_data %>%
+            mutate_jenks_brks(Energy.burden..percentile., n = 5) %>%
+            dplyr::group_by(Energy.burden..percentile._brks) %>%
+            summarize(do_union = TRUE) %>% sort_factor_column(., "Energy.burden..percentile._brks") %>%
+            filter(!is.na(Energy.burden..percentile._brks)),
+          aes(fill=Energy.burden..percentile._brks), alpha=0.8, lwd=0)  +
+  geom_sf(color="gray65", fill=NA, lwd=0.4) +
+  
+  scale_fill_brewer(name=expression(
+    atop(textstyle("Energy cost burdened"),
+         atop(textstyle("households percentile"),scriptscriptstyle("")) )), 
+    type = "seq", palette = palette_no, guide = guide_legend(order = 1)) +
+  
+  ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(data = LIDAC_polygons_dissolved %>% filter(LIDAC == "Yes"),
+          aes(fill="orange"), color="goldenrod1", alpha=0.3, lwd=0.3) +
+  scale_fill_identity(name='', guide='legend', labels=c('Low Income or \nDisadvantaged \nCommunities (LIDAC)')) +
+  theme(
+    legend.position = c(-0.08,0.97),
+    legend.direction = "vertical", 
+    legend.justification = c("left","top"),
+    legend.margin = margin(2, 0, 0, 0),
+    legend.key.height = unit(0.4, "cm"), 
+    legend.key.width = unit(0.4, "cm"),
+    legend.box = "vertical",
+    legend.box.just = "left"
+  ) 
+
+
+mini_map_energy.burden <- ggplot(county_data) +
+  geom_sf(data = CEJST_map_data %>% mutate_jenks_brks(Energy.burden..percentile., n = 5),
+          aes(fill=Energy.burden..percentile._brks), color="gray75", alpha=0.8, show.legend = F, lwd=0.07)  +
+  geom_sf(color="gray60", fill=NA, lwd=0.2) +
+  scale_fill_brewer(type = "seq", palette = palette_no) +
+  councilR::theme_council_geo()  
+
+
+map_energy.burden <- map_energy.burden + patchwork::inset_element(mini_map_energy.burden, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
+
+if (export.plots) png(paste0(outpath,"map_energy.burden.png"), width=7, height=5.5, units="in", res=600); invisible(print(map_energy.burden)); dev.off()
+
+
+# Housing.burden..percent...percentile.
+map_housing.burden <- plot_template +
+  geom_sf(data = CEJST_map_data %>%
+            mutate_jenks_brks(Housing.burden..percent...percentile., n = 5) %>%
+            dplyr::group_by(Housing.burden..percent...percentile._brks) %>%
+            summarize(do_union = TRUE) %>% sort_factor_column(., "Housing.burden..percent...percentile._brks") %>%
+            filter(!is.na(Housing.burden..percent...percentile._brks)),
+          aes(fill=Housing.burden..percent...percentile._brks), alpha=0.8, lwd=0)  +
+  geom_sf(color="gray65", fill=NA, lwd=0.4) +
+  
+  scale_fill_brewer(name=expression(
+    atop(textstyle("Housing cost burdened"),
+         atop(textstyle("households percentile  "),scriptscriptstyle("")) )), 
+    type = "seq", palette = palette_no, guide = guide_legend(order = 1)) +
+  
+  ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(data = LIDAC_polygons_dissolved %>% filter(LIDAC == "Yes"),
+          aes(fill="orange"), color="goldenrod1", alpha=0.3, lwd=0.3) +
+  scale_fill_identity(name='', guide='legend', labels=c('Low Income or \nDisadvantaged \nCommunities (LIDAC)')) +
+  theme(
+    legend.position = c(-0.08,0.97),
+    legend.direction = "vertical", 
+    legend.justification = c("left","top"),
+    legend.margin = margin(2, 0, 0, 0),
+    legend.key.height = unit(0.4, "cm"), 
+    legend.key.width = unit(0.4, "cm"),
+    legend.box = "vertical",
+    legend.box.just = "left"
+  ) 
+
+
+mini_map_housing.burden <- ggplot(county_data) +
+  geom_sf(data = CEJST_map_data %>% mutate_jenks_brks(Housing.burden..percent...percentile., n = 5),
+          aes(fill=Housing.burden..percent...percentile._brks), color="gray75", alpha=0.8, show.legend = F, lwd=0.07)  +
+  geom_sf(color="gray60", fill=NA, lwd=0.2) +
+  scale_fill_brewer(type = "seq", palette = palette_no) +
+  councilR::theme_council_geo() 
+
+
+map_housing.burden <- map_housing.burden + patchwork::inset_element(mini_map_housing.burden, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
+
+if (export.plots) png(paste0(outpath,"map_housing.burden.png"), width=7, height=5.5, units="in", res=600); invisible(print(map_housing.burden)); dev.off()
+
+
+
+
+
+# Share.of.the.tract.s.land.area.that.is.covered.by.impervious.surface.or.cropland.as.a.percent..percentile.
+map_impervious <- plot_template +
+  geom_sf(data = CEJST_map_data %>%
+            mutate_jenks_brks(Share.of.the.tract.s.land.area.that.is.covered.by.impervious.surface.or.cropland.as.a.percent..percentile., n = 4) %>%
+            dplyr::group_by(Share.of.the.tract.s.land.area.that.is.covered.by.impervious.surface.or.cropland.as.a.percent..percentile._brks) %>%
+            summarize(do_union = TRUE) %>% sort_factor_column(., "Share.of.the.tract.s.land.area.that.is.covered.by.impervious.surface.or.cropland.as.a.percent..percentile._brks") %>%
+            filter(!is.na(Share.of.the.tract.s.land.area.that.is.covered.by.impervious.surface.or.cropland.as.a.percent..percentile._brks)),
+          aes(fill=Share.of.the.tract.s.land.area.that.is.covered.by.impervious.surface.or.cropland.as.a.percent..percentile._brks), alpha=0.8, lwd=0)  +
+  geom_sf(color="gray65", fill=NA, lwd=0.4) +
+  
+  scale_fill_brewer(name=expression(
+    atop(textstyle("Share of tract covered by impervious"),
+         atop(textstyle("surface or cropland percentile           "),scriptscriptstyle("")) )), 
+    type = "seq", palette = palette_no, guide = guide_legend(order = 1)) +
+  
+  ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(data = LIDAC_polygons_dissolved %>% filter(LIDAC == "Yes"),
+          aes(fill="orange"), color="goldenrod1",  alpha=0.3, lwd=0.3) +
+  scale_fill_identity(name='', guide='legend', labels=c('Low Income or \nDisadvantaged \nCommunities (LIDAC)')) +
+  theme(
+    legend.position = c(-0.08,0.97),
+    legend.direction = "vertical", 
+    legend.justification = c("left","top"),
+    legend.margin = margin(2, 0, 0, 0),
+    legend.key.height = unit(0.4, "cm"), 
+    legend.key.width = unit(0.4, "cm"),
+    legend.box = "vertical",
+    legend.box.just = "left"
+  ) 
+
+
+mini_map_impervious <- ggplot(county_data) +
+  geom_sf(data = CEJST_map_data %>% mutate_jenks_brks(Share.of.the.tract.s.land.area.that.is.covered.by.impervious.surface.or.cropland.as.a.percent..percentile., n = 4),
+          aes(fill=Share.of.the.tract.s.land.area.that.is.covered.by.impervious.surface.or.cropland.as.a.percent..percentile._brks), color="gray75", alpha=0.8, show.legend = F, lwd=0.07)  +
+  geom_sf(color="gray60", fill=NA, lwd=0.2) +
+  scale_fill_brewer(type = "seq", palette = palette_no) +
+  councilR::theme_council_geo()  
+
+
+map_impervious <- map_impervious + patchwork::inset_element(mini_map_impervious, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
+
+if (export.plots) png(paste0(outpath,"map_impervious.png"), width=7, height=5.5, units="in", res=600); invisible(print(map_impervious)); dev.off()
 
