@@ -1,0 +1,94 @@
+# LIDAC maps
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+```{r, include=FALSE}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+hookaddcap()
+```
+
+
+```{r fig-map-lidac}
+#| fig-cap: "Low income or disadvantaged communities (LIDAC)"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_lidac.png")
+```
+
+
+
+```{r fig-map-PM25}
+#| fig-cap: "Distribution of inhalable particulate matter ≤ 2.5 µm (PM2.5)"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_PM2.5.png")
+```
+
+
+
+```{r fig-map-diesel}
+#| fig-cap: "Distribution of inhalable diesel particulate matter"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_diesel.png")
+```
+
+
+
+```{r fig-map-asthma}
+#| fig-cap: "Distribution of asthma in adults"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_asthma.png")
+```
+
+
+
+```{r fig-map-impervious}
+#| fig-cap: "Impervious surface or cropland coverage"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_impervious.png")
+```
+
+
+
+```{r fig-map-housing-burden}
+#| fig-cap: "Distribution of housing cost burdened households"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_housing.burden.png")
+```
+
+
+
+```{r fig-map-energy-burden}
+#| fig-cap: "Distribution of energy cost burdened households"
+#| fig-alt: "alt text for this map"
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/map_energy.burden.png")
+```
+
+
+
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}
