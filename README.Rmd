@@ -14,6 +14,8 @@ knitr::opts_chunk$set(
 
 # Greenhouse Gas Inventory - Climate Pollution Reduction Grant (CPRG)
 
+*This project has been funded wholly or in part by the United States Environmental Protection Agency (EPA) under assistance agreement 00E03476 to the Metropolitan Council. The contents of this repository do not necessarily reflect the views and policies of the EPA, nor does the EPA endorse trade names or recommend the use of commercial products mentioned in this repository.*
+
 <!-- badges: start -->
 <!-- badges: end -->
 
