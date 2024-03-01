@@ -16,7 +16,18 @@ county_emissions_summary <- county_emissions %>%
 hookaddcap()
 ```
 
-Overall emissions
+*This project has been funded wholly or in part by the United States Environmental Protection Agency (EPA) under assistance agreement 00E03476 to the Metropolitan Council. The contents of this document do not necessarily reflect the views and policies of the EPA, nor does the EPA endorse trade names or recommend the use of commercial products mentioned in this document.*
+
+::: {.callout-note}
+This document is one part of the Metropolitan Council Priority Climate Action Plan (PCAP), submitted to the EPA on March 1, 2024. See [metrocouncil.org](https://www.metrocouncil.org/tcghginventory) for more details. 
+:::
+
+```{r fig-ghg-inventory-tableau}
+#| fig-cap: "Greenhouse Gas Inventory Interactive "
+#| out-width: "95%"
+#| out-height: "800px"
+# htmltools::HTML("<iframe width='95%' height='500' src='https://metrocouncil.maps.arcgis.com/apps/webappviewer/index.html?id=0b0735b3407f49ceb347fc30c9b83bda' title='Regional Bicycle Transportation Network'></iframe>")
+```
 
 ```{r sector-percentages, echo=FALSE, include=FALSE}
 sector_percentages <- county_emissions_summary %>%
@@ -126,23 +137,23 @@ This is a Quarto book. Code, data, and documentation are all stored in the same 
 
 ## Acknowledgements
 
-This document is the result of tremendous work across the Metropolitan Council. Individuals are noted by their name, title, and division. 
+This document is the result of tremendous work across the Metropolitan Council. Individuals are noted by their name, title, contribution, and division. 
 
 :::: {.columns}
 
-::: {.column width="40%"}
+::: {.column width="50%"}
 #### Primary authors {.unnumbered}
- Liz Roten, Senior Data Scientist (MTS)  
- Sam Limerick, Senior Data Scientist (CD)  
- Peter Wilfhart, Principal Researcher (CD)   
- Zoey Yandell, Intern (CD)  
+ - Liz Roten, Senior Data Scientist, Transportation (MTS)  
+ - Sam Limerick, Senior Data Scientist, Electricity and natural gas (CD)  
+ - Peter Wilfhart, Principal Researcher, Liquid stationary energy and wastewater (CD)   
+ - Zoey Yandell, Intern, solid waste (CD)  
 :::
 
 ::: {.column width="50%"}
-#### Editors and contributors {.unnumbered}
- Kenneth Smith, Principal Researcher (CD)  
- Laine McNamara, Business Systems Analyst III (CD)  
- Trevor Prater, Senior Engineer (ES)  
+#### Contributors {.unnumbered}
+ - Kenneth Smith, Principal Researcher, LIDAC and editing (CD)  
+ - Laine McNamara, Business Systems Analyst III, database and editing (CD)  
+ - Trevor Prater, Senior Engineer, wastewater (ES)  
 :::
 
 ::::
