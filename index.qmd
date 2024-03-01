@@ -146,13 +146,13 @@ This document is the result of tremendous work across the Metropolitan Council. 
  - Liz Roten, Senior Data Scientist, Transportation (MTS)  
  - Sam Limerick, Senior Data Scientist, Electricity and natural gas (CD)  
  - Peter Wilfhart, Principal Researcher, Liquid stationary energy and wastewater (CD)   
- - Zoey Yandell, Intern, solid waste (CD)  
+ - Zoey Yandell, Intern, Solid waste (CD)  
 :::
 
 ::: {.column width="50%"}
 #### Contributors {.unnumbered}
- - Kenneth Smith, Principal Researcher, LIDAC and editing (CD)  
- - Laine McNamara, Business Systems Analyst III, database and editing (CD)  
+ - Kenneth Smith, Principal Researcher, LIDAC, editing (CD)  
+ - Laine McNamara, Business Systems Analyst III, editing (CD)  
  - Trevor Prater, Senior Engineer, wastewater (ES)  
 :::
 
