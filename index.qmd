@@ -109,6 +109,7 @@ fig_waste_emissions_index$x$layoutAttrs[[1]]$title$text <- "Solid waste and wast
 fig_waste_emissions_index
 ```
 
+::: {.content-visible when-format="html"}
 
 ## About this document
 
@@ -121,6 +122,30 @@ This is a Quarto book. Code, data, and documentation are all stored in the same 
 - Sections are cross-referenced throughout the document. Click on a "Section x.xx.xx" link to navigate to the appropriate section
 - All headings, tables, and figures are permalinked, meaning that you can share specific sections of the document through a URL. Hover your mouse over a heading and click on the link icon. Then, copy the URL in your browser and share with colleagues. 
 
+::: 
+
+## Acknowledgements
+
+This document is the result of tremendous work across the Metropolitan Council. Individuals are noted by their name, title, and division. 
+
+:::: {.columns}
+
+::: {.column width="40%"}
+#### Primary authors {.unnumbered}
+ Liz Roten, Senior Data Scientist (MTS)  
+ Sam Limerick, Senior Data Scientist (CD)  
+ Peter Wilfhart, Principal Researcher (CD)   
+ Zoey Yandell, Intern (CD)  
+:::
+
+::: {.column width="50%"}
+#### Editors and contributors {.unnumbered}
+ Kenneth Smith, Principal Researcher (CD)  
+ Laine McNamara, Business Systems Analyst III (CD)  
+ Trevor Prater, Senior Engineer (ES)  
+:::
+
+::::
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
