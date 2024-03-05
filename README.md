@@ -53,10 +53,10 @@ rstudioapi::terminalExecute("quarto preview")
 This is a Quarto book project. Top level Quarto files include
 
     #> .
-    #> ├── _quarto.yml            # Quarto configuration
-    #> ├── metcouncil-cprg-ghg    # references auto-imported from Zotero
-    #> ├── style/                 # Quarto template, CSS styling, font files
-    #> ├── assets/                # chapter numbering, captions, and filtering helpers
+    #> ├── _quarto.yml                # Quarto configuration
+    #> ├── metcouncil-cprg-ghg.bib    # references auto-imported from Zotero
+    #> ├── style/                     # Quarto template, CSS styling, font files
+    #> ├── assets/                    # chapter numbering, captions, and filtering helpers
 
 All scripts in `R/` are ready to run at will.
 
