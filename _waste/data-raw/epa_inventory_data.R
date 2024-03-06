@@ -2,7 +2,7 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 
 # read in csvs generated at https://cfpub.epa.gov/ghgdata/inventoryexplorer/#waste/entiresector/allgas/category/all
 
-epa_wi <- read_csv(file.path(here::here(), "_waste/data-raw/epa_inventory_wi.csv")) %>%
+epa_wi <- read_csv(file.path(here::here(), "_waste/data-raw/epa_inventory_wi.csv"), show_col_types = FALSE) %>%
   mutate(values = `2021`*10^6) %>% 
   select("Category" = "Wisconsin Emissions, Waste Management, MMT CO2 eq.",
          "values") %>% 
@@ -10,7 +10,7 @@ epa_wi <- read_csv(file.path(here::here(), "_waste/data-raw/epa_inventory_wi.csv
   mutate("STATE" = "Wisconsin",
          "STATEFP" = "55")
   
-epa_mn <- read_csv(file.path(here::here(), "_waste/data-raw/epa_inventory_mn.csv")) %>% 
+epa_mn <- read_csv(file.path(here::here(), "_waste/data-raw/epa_inventory_mn.csv"), show_col_types = FALSE) %>% 
   mutate(values = `2021`*10^6) %>% 
   select("Category" = "Minnesota Emissions, Waste Management, MMT CO2 eq.",
          "values") %>% 
@@ -26,7 +26,7 @@ cprg_county_proportions <- readRDS(file.path(here::here(),"_meta/data/cprg_count
 
 federal_inventory_waste_allocated <- cprg_county_proportions %>%
   filter(year == 2021) %>% 
-  left_join(epa_all) %>% 
+  left_join(epa_all, join_by(STATE, STATEFP)) %>% 
   mutate(
     "Landfill" = Landfills*county_proportion_of_state_pop,
     "Compost" = Composting*county_proportion_of_state_pop,
@@ -35,13 +35,32 @@ federal_inventory_waste_allocated <- cprg_county_proportions %>%
     "Total" = Total*county_proportion_of_state_pop
   ) %>% 
   select(
-    "STATE",
-    "NAME",
+    geog_name = "NAME",
     "year",
     "Landfill",
     "Compost",
     "Anaerobic Digestion",
     "Wastewater",
     "Total"
+  )%>% 
+  pivot_longer(
+    cols = c("Landfill",
+             "Compost",
+             "Anaerobic Digestion",
+             "Wastewater",
+             "Total"),
+    names_to = "source",
+    values_to = "emissions_metric_tons_co2e"
+  ) %>% 
+  mutate(
+    data_source = "Federal Inventory"
+  )
+
+federal_totals <- federal_inventory_waste_allocated %>% 
+  filter(source == "Total") %>% 
+  select(
+    geog_name,
+    emissions_metric_tons_co2e,
+    data_source
   )
 
