@@ -29,7 +29,7 @@ knitr::include_graphics("assets/maps/map_lidac.png")
 
 
 
-```{r fig-map-PM2.5}
+```{r fig-map-PM25}
 #| fig-cap: "Distribution of inhalable particulate matter ≤ 2.5 µm (PM2.5)"
 #| fig-alt: "alt text for this map"
 #| out-width: "95%"
@@ -65,7 +65,7 @@ knitr::include_graphics("assets/maps/map_impervious.png")
 
 
 
-```{r fig-map-housing.burden}
+```{r fig-map-housing-burden}
 #| fig-cap: "Distribution of housing cost burdened households"
 #| fig-alt: "alt text for this map"
 #| out-width: "95%"
@@ -74,7 +74,7 @@ knitr::include_graphics("assets/maps/map_housing.burden.png")
 
 
 
-```{r fig-map-energy.burden}
+```{r fig-map-energy-burden}
 #| fig-cap: "Distribution of energy cost burdened households"
 #| fig-alt: "alt text for this map"
 #| out-width: "95%"

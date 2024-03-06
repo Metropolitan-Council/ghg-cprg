@@ -135,7 +135,9 @@ map_lidac <- map_lidac + patchwork::inset_element(mini_map_lidac, left = 0.7, bo
 
 
 
-if (export.plots) png(paste0(outpath, "map_lidac.png"), width = 7, height = 5.5, units = "in", res = 600); invisible(print(map_lidac)); dev.off()
+if (export.plots) png(paste0(outpath, "map_lidac.png"), width = 7, height = 5.5, units = "in", res = 600)
+invisible(print(map_lidac))
+dev.off()
 
 
 
@@ -198,7 +200,9 @@ mini_map_PM2.5 <- ggplot(county_data) +
 
 map_PM2.5 <- map_PM2.5 + patchwork::inset_element(mini_map_PM2.5, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
 
-if (export.plots) png(paste0(outpath, "map_PM2.5.png"), width = 7, height = 5.5, units = "in", res = 600); invisible(print(map_PM2.5)); dev.off()
+if (export.plots) png(paste0(outpath, "map_PM2.5.png"), width = 7, height = 5.5, units = "in", res = 600)
+invisible(print(map_PM2.5))
+dev.off()
 
 
 
@@ -258,7 +262,9 @@ mini_map_diesel <- ggplot(county_data) +
 map_diesel <- map_diesel + patchwork::inset_element(mini_map_diesel, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
 
 
-if (export.plots) png(paste0(outpath, "map_diesel.png"), width = 7, height = 5.5, units = "in", res = 600); invisible(print(map_diesel)); dev.off()
+if (export.plots) png(paste0(outpath, "map_diesel.png"), width = 7, height = 5.5, units = "in", res = 600)
+invisible(print(map_diesel))
+dev.off()
 
 
 
@@ -315,7 +321,9 @@ mini_map_asthma <- ggplot(county_data) +
 
 map_asthma <- map_asthma + patchwork::inset_element(mini_map_asthma, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
 
-if (export.plots) png(paste0(outpath, "map_asthma.png"), width = 7, height = 5.5, units = "in", res = 600); invisible(print(map_asthma)); dev.off()
+if (export.plots) png(paste0(outpath, "map_asthma.png"), width = 7, height = 5.5, units = "in", res = 600)
+invisible(print(map_asthma))
+dev.off()
 
 
 
@@ -373,7 +381,9 @@ mini_map_energy.burden <- ggplot(county_data) +
 
 map_energy.burden <- map_energy.burden + patchwork::inset_element(mini_map_energy.burden, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
 
-if (export.plots) png(paste0(outpath, "map_energy.burden.png"), width = 7, height = 5.5, units = "in", res = 600); invisible(print(map_energy.burden)); dev.off()
+if (export.plots) png(paste0(outpath, "map_energy.burden.png"), width = 7, height = 5.5, units = "in", res = 600)
+invisible(print(map_energy.burden))
+dev.off()
 
 
 # Housing.burden..percent...percentile.
@@ -429,7 +439,9 @@ mini_map_housing.burden <- ggplot(county_data) +
 
 map_housing.burden <- map_housing.burden + patchwork::inset_element(mini_map_housing.burden, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
 
-if (export.plots) png(paste0(outpath, "map_housing.burden.png"), width = 7, height = 5.5, units = "in", res = 600); invisible(print(map_housing.burden)); dev.off()
+if (export.plots) png(paste0(outpath, "map_housing.burden.png"), width = 7, height = 5.5, units = "in", res = 600)
+invisible(print(map_housing.burden))
+dev.off()
 
 
 
@@ -488,4 +500,6 @@ mini_map_impervious <- ggplot(county_data) +
 
 map_impervious <- map_impervious + patchwork::inset_element(mini_map_impervious, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
 
-if (export.plots) png(paste0(outpath, "map_impervious.png"), width = 7, height = 5.5, units = "in", res = 600); invisible(print(map_impervious)); dev.off()
+if (export.plots) png(paste0(outpath, "map_impervious.png"), width = 7, height = 5.5, units = "in", res = 600)
+invisible(print(map_impervious))
+dev.off()
