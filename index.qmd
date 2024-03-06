@@ -145,7 +145,7 @@ This document is the result of tremendous work across the Metropolitan Council. 
 #### Primary authors {.unnumbered}
  - Liz Roten, Senior Data Scientist, Transportation (MTS)  
  - Sam Limerick, Senior Data Scientist, Electricity and natural gas (CD)  
- - Peter Wilfhart, Principal Researcher, Liquid stationary energy and wastewater (CD)   
+ - Peter Wilfahrt, Principal Researcher, Liquid stationary energy and wastewater (CD)   
  - Zoey Yandell, Intern, Solid waste (CD)  
 :::
 
