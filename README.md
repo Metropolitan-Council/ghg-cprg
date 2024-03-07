@@ -151,3 +151,12 @@ below. We can share our raw data downloads upon request.
 
 To ensure consistency, there are a set of tests located in `tests/`.
 These are run before rendering in `R/render_for_publication.R`.
+
+## Contributing and Code of Conduct
+
+Contributions are welcome. Please review our [contribution
+guide](CONTRIBUTING.md) before making a pull-request.
+
+Please note that the ghg-cprg project is released with a [Contributor
+Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project
+you agree to abide by its terms.
