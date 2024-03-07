@@ -10,11 +10,11 @@ not necessarily reflect the views and policies of the EPA, nor does the
 EPA endorse trade names or recommend the use of commercial products
 mentioned in this repository.*
 
-> This repository contains essential data, code, and documentation for
-> the greenhouse gas (GHG) inventory, as completed for the Twin Cities
-> MSA Priority Climate Action Plan (PCAP), submitted to the EPA on March
-> 1, 2024. You can find the full PCAP on the [EPA
-> website](https://www.epa.gov/system/files/documents/2024-03/metropolitan-council-twin-cities-msa-priority-climate-action-plan.pdf).
+This repository contains essential data, code, and documentation for the
+greenhouse gas (GHG) inventory, as completed for the Twin Cities MSA
+Priority Climate Action Plan (PCAP), submitted to the EPA on March 1,
+2024. You can find the full PCAP on the [EPA
+website](https://www.epa.gov/system/files/documents/2024-03/metropolitan-council-twin-cities-msa-priority-climate-action-plan.pdf).
 
 ## Repository details
 
