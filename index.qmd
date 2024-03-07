@@ -22,13 +22,6 @@ hookaddcap()
 This document is one part of the Metropolitan Council Priority Climate Action Plan (PCAP), submitted to the EPA on March 1, 2024. See [metrocouncil.org](https://www.metrocouncil.org/tcghginventory) for more details. 
 :::
 
-```{r fig-ghg-inventory-tableau}
-#| fig-cap: "Greenhouse Gas Inventory Interactive "
-#| out-width: "95%"
-#| out-height: "800px"
-# htmltools::HTML("<iframe width='95%' height='500' src='https://metrocouncil.maps.arcgis.com/apps/webappviewer/index.html?id=0b0735b3407f49ceb347fc30c9b83bda' title='Regional Bicycle Transportation Network'></iframe>")
-```
-
 ```{r sector-percentages, echo=FALSE, include=FALSE}
 sector_percentages <- county_emissions_summary %>%
   group_by(sector) %>%
@@ -91,7 +84,8 @@ fig_energy_emissions <- plot_county_emissions(
 fig_energy_emissions
 ```
 
-The transportation sector generated `r round(sum(county_emissions$emissions_metric_tons_co2e)/1000000 * sector_percentages[[2]][2], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021.
+The transportation sector generated `r round(sum(county_emissions$emissions_metric_tons_co2e)/1000000 * sector_percentages[[2]][2], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. This is a county-level, activity-based estimate that accounts for the total number of vehicle trips that originate in the county, terminate in the county, or both originate and terminate within the county for passenger and medium-duty commercial vehicles. Heavy-duty commercial vehicles are only accounted for trips that both originate and terminate within the county.
+
 
 ```{r fig-transportation-emissions}
 #| fig-cap: "Transportation county level emissions"
