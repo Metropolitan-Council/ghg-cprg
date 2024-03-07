@@ -5,7 +5,7 @@ This project uses a [feature-branch](https://deepsource.io/blog/git-branch-namin
 
 ## Fixing typos
 
-You can fix typos, spelling mistakes, or grammatical errors in the documentation directly using the GitHub web interface, as long as the changes are made in the _source_ file, such as `.md`, `.Rmd` or `.R`. 
+You can fix typos, spelling mistakes, or grammatical errors in the documentation directly using the GitHub web interface, as long as the changes are made in the _source_ file, such as `.md`, `.Rmd`, `.qmd`, or `.R`. 
 
 ## Bigger changes
 
