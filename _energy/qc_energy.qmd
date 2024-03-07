@@ -18,6 +18,10 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
+::: {.callout-warning}
+Quality control sections will be formally completed for the Comprehensive Climate Action Plan (CCAP) in Summer 2025. 
+:::
+
 
 ## Electric power consumption
 

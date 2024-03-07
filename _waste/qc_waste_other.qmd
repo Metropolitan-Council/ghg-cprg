@@ -19,6 +19,10 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
+::: {.callout-warning}
+Quality control sections will be formally completed for the Comprehensive Climate Action Plan (CCAP) in Summer 2025. 
+:::
+
 
 Local inventory of GHG emissions from the community’s other sources with documentation of the following QC activities: 
 
