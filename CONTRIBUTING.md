@@ -27,7 +27,6 @@ Contribute to the project by making changes to your own feature branch and creat
     * create a new custom variable,  
     * fix an issue - [please name your branch with the issue number](https://deepsource.io/blog/git-branch-naming-conventions/)
 * Commit changes related to your feature and push them to GitHub. You can push changes to your feature branch at any time.
-* Update the [changelog](NEWS.md) with your changes. 
 * When you're ready to have your work reviewed, create a pull-request on GitHub.
 * If you want guidance on code or content, create a draft pull-request and request a review from a project maintainer.
 * When your pull request is ready, you _must_ request a review from one of the project maintainers. Pull requests without an approving review will not be accepted.

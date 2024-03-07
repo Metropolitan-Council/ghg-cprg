@@ -149,3 +149,12 @@ in this repo, upload it in the same place in MS Teams.
 
 When possible, write a few tests for your data and functions. Save them
 in `/tests`. See the existing files in `/tests` for ideas.
+
+## Contributing and Code of Conduct
+
+Contributions are welcome. Please review our [contribution
+guide](CONTRIBUTING.md) before making a pull-request.
+
+Please note that the ghg-cprg project is released with a [Contributor
+Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project
+you agree to abide by its terms.
