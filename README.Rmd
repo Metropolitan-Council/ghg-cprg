@@ -18,13 +18,10 @@ library(tibble)
 
 *This project has been funded wholly or in part by the United States Environmental Protection Agency (EPA) under assistance agreement 00E03476 to the Metropolitan Council. The contents of this repository do not necessarily reflect the views and policies of the EPA, nor does the EPA endorse trade names or recommend the use of commercial products mentioned in this repository.*
 
-<div class="markdown-alert markdown-alert-note" dir="auto"><p class="markdown-alert-title" dir="auto"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p dir="auto">This repository contains essential data, code, and documentation for the greenhouse gas (GHG) inventory, as completed for the Twin Cities MSA Priority Climate Action Plan (PCAP), submitted to the EPA on March 1, 2024. You can find the full PCAP on the <a href="https://www.epa.gov/system/files/documents/2024-03/metropolitan-council-twin-cities-msa-priority-climate-action-plan.pdf">EPA
-website</a></p>
-</div>
+> This repository contains essential data, code, and documentation for the greenhouse gas (GHG) inventory, as completed for the Twin Cities MSA Priority Climate Action Plan (PCAP), submitted to the EPA on March 1, 2024. You can find the full PCAP on the [EPA website](https://www.epa.gov/system/files/documents/2024-03/metropolitan-council-twin-cities-msa-priority-climate-action-plan.pdf). 
+
 
 ## Repository details
-
-This project uses [`{renv}`](https://rstudio.github.io/renv/index.html). Ensure you have `{renv}` installed on your machine. When you open the project in RStudio, run `renv::restore()` in your console to install/restore the package environment.
 
 ### File structure
 
@@ -91,7 +88,7 @@ Within each sector folder is a `data-raw/` folder. This is where you should put 
 
 ### Building the Quarto book/site
 
-Clone or fork the repository and `ghg-cprg.Rproj` in RStudio. RStudio will prompt you to install packages through `{renv}`. Once package installation is complete, open [R/render_for_publication.R](R/render_for_publication.R) and run the last two lines, previewed below.
+Clone or fork the repository and `ghg-cprg.Rproj` in RStudio. RStudio will prompt you to install packages through [`{renv}`](https://rstudio.github.io/renv/index.html) with `renv::restore()`. Once package installation is complete, open [R/render_for_publication.R](R/render_for_publication.R) and run the last two lines, previewed below.
 
 ```r
 rstudioapi::terminalExecute("quarto render --cache-refresh --to html")
@@ -149,6 +146,6 @@ To ensure consistency, there are a set of tests located in `tests/`. These are r
 
 ## Contributing and Code of Conduct
 
-Contributions are welcome. Please review our [contribution guide](CONTRIBUTING.md) before making a pull-request. 
+Contributions are welcome. Please review our [contribution guide](CONTRIBUTING.md) before making a pull-request. Met Council employees should also review the [internal contribution guide](CONTRIBUTING_INTERNAL.md). 
 
 Please note that the ghg-cprg project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project you agree to abide by its terms.
