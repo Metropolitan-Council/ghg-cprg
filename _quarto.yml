@@ -35,21 +35,21 @@ book:
        - _energy/data_natural_gas.qmd
        - _energy/data_propane_kerosene.qmd
        # - _energy/data_energy.qmd
-       - _energy/pa_energy.qmd
+       # - _energy/pa_energy.qmd
        - _energy/qc_energy.qmd
 
     - part: "Transportation"
       chapters:
        - _transportation/_transportation.qmd
        - _transportation/data_transportation.qmd
-       - _transportation/pa_transportation.qmd
+       # - _transportation/pa_transportation.qmd
        - _transportation/qc_transportation.qmd
        
     - part: "Waste and Wastewater"
       chapters:
        - _waste/_waste.qmd
        - _waste/data_waste.qmd
-       - _waste/pa_waste.qmd
+       # - _waste/pa_waste.qmd
        - _waste/qc_waste.qmd
        - _waste/qc_waste_other.qmd
   appendices:
@@ -100,7 +100,7 @@ format:
     # number-depth: 4
     copyright: "Metropolitan Council"
     fig-responsive: true
-    link-external-filter: "metrocouncil.org|tel|metropolitan-council|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council"
+    link-external-filter: "metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council"
     fig-cap-location: top
     knitr: 
       opts_chunk: 
