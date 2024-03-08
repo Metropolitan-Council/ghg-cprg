@@ -19,8 +19,8 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 # source(file.path(here::here(), "_waste/data-raw/epa_inventory_data.R"))
 epa_solidwaste_inventory <- readRDS(file.path(here::here(), "_waste/data-raw/epa_solidwaste_inventory.RDS"))
 
-federal_totals <- federal_inventory_waste_allocated %>% 
-  filter(source == "Total") %>% 
+federal_totals <- epa_solidwaste_inventory %>%
+  filter(source == "Total") %>%
   select(
     geog_name,
     emissions_metric_tons_co2e,
@@ -41,13 +41,12 @@ hookaddcap()
 
 ## Introduction
 
-Solid waste and wastewater account for about _% of United States greenhouse gas emissions, making them the third largest sector accounted for in this inventory. Solid waste emissions primarily consist of $CH_4$, emitted in large part by landfills and organics composting, but also include $CO_2$ and $N_2O$ generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. This inventory also includes emissions generated in the management of recyclables.
+Solid waste and wastewater account for about 2.7% of United States greenhouse gas emissions, making them the third largest sector accounted for in this inventory. Solid waste emissions primarily consist of $CH_4$, emitted in large part by landfills and organics composting, but also include $CO_2$ and $N_2O$ generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. This inventory also includes emissions generated in the management of recyclables.
 
 Wastewater emissions are emissions generated during the wastewater treatment process, [???]
 
 ## Methods
 
-## Results
 The process for calculating solid waste emissions slightly differs between Minnesota and Wisconsin counties, due to a difference in data availability.
 
 For Minnesota counties, waste generation totals are allocated by sector from MPCA SCORE data. Totals for each sector are multiplied by the appropriate EPA-provided emissions factor to provide an estimate of emissions from that source and county.
@@ -56,14 +55,15 @@ For Wisconsin counties, state-level emissions data as calculated by the Wisconsi
 
 $$Emissions_c = Emissions_{total} \times \frac{Pop_c}{Pop_{total}}$$
 
+## Results
 
 ```{r fig-waste-wastewater-county-emissions}
 #| fig-cap: "Solid waste and wastewater county emissions"
 #| out-width: "95%"
 fig_waste_wastewater_county_emissions <-
   plot_county_sector_emissions(county_emissions,
-                               .sector = "Waste",
-                               .plotly_source = "fig-waste-wastewater-county-emissions"
+    .sector = "Waste",
+    .plotly_source = "fig-waste-wastewater-county-emissions"
   )
 
 fig_waste_wastewater_county_emissions$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
@@ -129,6 +129,8 @@ fig_wastewater_sector_emissions
 
 
 ### Solid waste
+
+Greenhouse gas emissions from solid waste are dominated by the landfill sector. In Hennepin, Ramsey, and Washington counties, municipal centers where a significant portion of waste is incinerated, waste-to-energy or incineration makes up a large fraction of emissions as well. 
 
 ```{r fig-solid-waste-emissions}
 #| fig-cap: "2021 solid waste emissions"
@@ -297,7 +299,7 @@ waste_totals <- waste_data %>%
   )
 
 waste_population <- left_join(waste_totals, cprg_population,
-                              by = c("geog_name" = "NAME")
+  by = c("geog_name" = "NAME")
 )
 
 fig_emissions_population_solidwaste <- plot_ly(
@@ -344,7 +346,6 @@ The United States EPA conducts a comprehensive yearly estimate of greenhouse gas
 US Inventory data for the waste sector in both Minnesota and Wisconsin was downloaded from the [Greenhouse Gas Inventory Data Explorer](https://cfpub.epa.gov/ghgdata/inventoryexplorer/) and processed in R script: [epa_inventory_data.R](/data-raw/epa_inventory_data.R), where it was disaggregated from state to county level by population.
 
 ```{r fig-federal-inventory-compare}
-
 waste_federal <- waste_totals %>%
   mutate(data_source = "Met Council") %>%
   rbind(federal_totals)
@@ -374,44 +375,48 @@ plot_ly(
     legend_title = "Emissions Source"
   ) %>%
   plotly::layout(barmode = "group")
-
 ```
 
 
 ```{r}
 metc_solidwaste_inventory <- county_emissions %>%
-  filter(sector == "Waste") %>% 
-  mutate(data_source = "Met Council",
-         year = as.character(year)) %>% 
+  filter(sector == "Waste") %>%
+  mutate(
+    data_source = "Met Council",
+    year = as.character(year)
+  ) %>%
   select(names(epa_solidwaste_inventory))
 
-metc_epa_comp_solid <- epa_solidwaste_inventory %>% 
-  filter(source != "Total") %>% 
-  bind_rows(metc_solidwaste_inventory) %>% 
+metc_epa_comp_solid <- epa_solidwaste_inventory %>%
+  filter(source != "Total") %>%
+  bind_rows(metc_solidwaste_inventory) %>%
   mutate(
     source_unified = case_when(
       # source == "Anaerobic Digestion" ~ "Organics",
       TRUE ~ source
     )
-  ) %>% 
+  ) %>%
   select(-source)
 
-wide_metc_epa_comp_solid <- metc_epa_comp_solid %>% 
-  pivot_wider(names_from = data_source,
-              values_from = emissions_metric_tons_co2e) %>% 
-  filter(!is.na(`Met Council`),
-         !is.na(`Federal Inventory`))
-
-
+wide_metc_epa_comp_solid <- metc_epa_comp_solid %>%
+  pivot_wider(
+    names_from = data_source,
+    values_from = emissions_metric_tons_co2e
+  ) %>%
+  filter(
+    !is.na(`Met Council`),
+    !is.na(`Federal Inventory`)
+  )
 ```
 
 
 
 ```{r}
 plot_ly(
-  data = metc_epa_comp_solid %>% 
+  data = metc_epa_comp_solid %>%
     filter(
-      source_unified == "Landfill"),
+      source_unified == "Landfill"
+    ),
   y = ~geog_name,
   x = ~emissions_metric_tons_co2e,
   color = ~data_source,
@@ -419,9 +424,9 @@ plot_ly(
     "Met Council" = colors$councilBlue,
     "Federal Inventory" = cprg_colors$cprg_da_yellow
   ),
-  hovertemplate = ~paste0(
+  hovertemplate = ~ paste0(
     geog_name, " County", "<br>",
-    data_source, "<br>", 
+    data_source, "<br>",
     source_unified, "<br>",
     round(emissions_metric_tons_co2e * 1e-3, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
@@ -430,9 +435,9 @@ plot_ly(
   opacity = 0.7,
   type = "scatter",
   mode = "markers"
-) %>% 
+) %>%
   add_segments(
-    data = wide_metc_epa_comp_solid %>% 
+    data = wide_metc_epa_comp_solid %>%
       filter(source_unified == "Landfill"),
     y = ~geog_name,
     yend = ~geog_name,
@@ -443,7 +448,7 @@ plot_ly(
     line = list(
       color = "darkgray"
     )
-  ) %>% 
+  ) %>%
   councilR::plotly_layout(
     main_title = "Landfill emissions comparison",
     subtitle = "Met Council vs. US Greenhouse Gas Inventory estimates",
@@ -455,9 +460,10 @@ plot_ly(
 ```
 ```{r}
 plot_ly(
-  data = metc_epa_comp_solid %>% 
+  data = metc_epa_comp_solid %>%
     filter(
-      source_unified == "Wastewater"),
+      source_unified == "Wastewater"
+    ),
   # geog_name == "Hennepin",
   y = ~geog_name,
   x = ~emissions_metric_tons_co2e,
@@ -466,9 +472,9 @@ plot_ly(
     "Met Council" = colors$councilBlue,
     "Federal Inventory" = cprg_colors$cprg_da_yellow
   ),
-  hovertemplate = ~paste0(
+  hovertemplate = ~ paste0(
     geog_name, " County", "<br>",
-    data_source, "<br>", 
+    data_source, "<br>",
     source_unified, "<br>",
     round(emissions_metric_tons_co2e * 1e-3, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
@@ -477,9 +483,9 @@ plot_ly(
   opacity = 0.7,
   type = "scatter",
   mode = "markers"
-) %>% 
+) %>%
   add_segments(
-    data = wide_metc_epa_comp_solid %>% 
+    data = wide_metc_epa_comp_solid %>%
       filter(source_unified == "Wastewater"),
     inherit = FALSE,
     y = ~geog_name,
@@ -490,7 +496,7 @@ plot_ly(
     line = list(
       color = "darkgray"
     )
-  ) %>% 
+  ) %>%
   councilR::plotly_layout(
     main_title = "Wastewater emissions comparison",
     subtitle = "Federal estimate consistently higher",
@@ -504,7 +510,7 @@ plot_ly(
 
 ```{r}
 plot_ly(
-  data = wide_metc_epa_comp_solid %>% 
+  data = wide_metc_epa_comp_solid %>%
     filter(source_unified == "Landfill"),
   y = ~geog_name,
   x = ~`Federal Inventory`,
@@ -516,24 +522,24 @@ plot_ly(
   opacity = 0.7,
   marker = list(
     symbol = "circle",
-    size = 12)
-  
-) %>% 
+    size = 12
+  )
+) %>%
   add_trace(
     inherit = TRUE,
     x = ~`Met Council`,
     opacity = 0.7,
     marker = list(
       symbol = "square",
-      size = 12)
-  ) %>% 
+      size = 12
+    )
+  ) %>%
   add_segments(
     y = ~geog_name,
     yend = ~geog_name,
     x = ~`Federal Inventory`,
     xend = ~`Met Council`
   )
-
 ```
 
 
