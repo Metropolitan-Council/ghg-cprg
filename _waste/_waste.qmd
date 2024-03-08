@@ -46,7 +46,7 @@ sector_percentages <- county_emissions_summary %>%
 
 
 waste_percentages <- county_emissions_summary %>%
-  filter(sector == "Waste") %>% 
+  filter(sector == "Waste") %>%
   group_by(category, source) %>%
   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e), .groups = "keep") %>%
   arrange(-emissions_metric_tons_co2e) %>%
@@ -56,12 +56,14 @@ hookaddcap()
 
 ## Introduction
 
-In 2021, waste activities generated emissions of 169.2 MMTCO~2~e, or 2.7 percent of total U.S. greenhouse gas emissions [@usepaInventoryGreenhouseGas2023]. Solid waste emissions primarily consist of CH~4~, emitted in large part by landfills and organics composting, but also include CO~2~ and N~2~O generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. This inventory also includes emissions generated in the management of recyclables.
+In 2021, waste activities over the entire United States generated emissions of 169.2 MMTCO~2~e, or 2.7 percent of total U.S. greenhouse gas emissions [@usepaInventoryGreenhouseGas2023]. Solid waste emissions primarily consist of CH~4~, emitted in large part by landfills and organics composting, but also include CO~2~ and N~2~O generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. This inventory also includes emissions generated in the management of recyclables.
 
 
 Wastewater emissions account for direct CH~4~ and N~2~O emissions from the treatment of municipal wastewater, and not additional indirect anthropogenic emissions such as the electricity needed to operate processing plants.
 
 ## Methods {#sec-waste-methods}
+
+### Solid Waste
 
 The process for calculating solid waste emissions slightly differs between Minnesota and Wisconsin counties, due to a difference in data availability.
 
@@ -73,17 +75,22 @@ The emissions for each county $c$ are proportional to its fractional share of Wi
 
 $$Emissions_c = Emissions_{total} \times \frac{Pop_c}{Pop_{total}}$$
 
+### Wastewater
+
+
 ## Results
 
 Emissions from waste is the smallest of the three sectors in the Twin Cities MSA. Waste generated `r round(sum(county_emissions$emissions_metric_tons_co2e)/1000000 * sector_percentages[[2]][3], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Solid waste, including landfills, recycling, and organics, generates the largest share of emissions in the waste sector, with wastewater treatment comprising a smaller share of waste emissions. 
+
+Waste emissions in Minnesota have declined nearly 40% since 2005, due to a variety of factors including gas capture technologies and aging waste in open landfills [@mpcaClimateChangeTrends2023]. Waste emissions in Wisconsin show no significant change from 2005 to 2018, possibly due to increased waste generation ofsetting reductions from gas capture [@wisconsindnrGreenhouseGas2021]. The Metropolitan Council, which oversees wastewater services for the majority of the urbanized extent of the metropolitan region, continues to work to reduce wastewater emissions across its 9 wastewater treatment plants.
 
 ```{r fig-waste-wastewater-county-emissions}
 #| fig-cap: "Solid waste and wastewater county emissions"
 #| out-width: "95%"
 fig_waste_wastewater_county_emissions <-
   plot_county_sector_emissions(county_emissions,
-                               .sector = "Waste",
-                               .plotly_source = "fig-waste-wastewater-county-emissions"
+    .sector = "Waste",
+    .plotly_source = "fig-waste-wastewater-county-emissions"
   )
 
 fig_waste_wastewater_county_emissions$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
@@ -110,12 +117,14 @@ fig_waste_county_emissions_by_category
 ### Wastewater
 
 ```{r wastewater-percentages, include = FALSE}
-total_wastewater <- 
-  county_emissions %>% 
-  filter(category == "Wastewater") %>% 
-  ungroup() %>% 
-  summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e), 
-            .groups = "keep") %>% 
+total_wastewater <-
+  county_emissions %>%
+  filter(category == "Wastewater") %>%
+  ungroup() %>%
+  summarise(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  ) %>%
   extract2("emissions_metric_tons_co2e")
 ```
 
@@ -163,19 +172,19 @@ fig_wastewater_sector_emissions
 ### Solid waste
 
 ```{r solid-waste-percentages, include=FALSE}
-solid_waste_percentages <- county_emissions %>% 
-  filter(category == "Solid waste") %>% 
-  group_by(category, source) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+solid_waste_percentages <- county_emissions %>%
+  filter(category == "Solid waste") %>%
+  group_by(category, source) %>%
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
   arrange(-emissions_metric_tons_co2e) %>%
   janitor::adorn_percentages(denominator = "col")
-  
 
-total_solid_waste <- 
-  county_emissions %>% 
-  filter(category == "Solid waste") %>% 
-  ungroup() %>% 
-  summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+
+total_solid_waste <-
+  county_emissions %>%
+  filter(category == "Solid waste") %>%
+  ungroup() %>%
+  summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
   extract2("emissions_metric_tons_co2e")
 ```
 
@@ -273,14 +282,14 @@ We would expect counties with a higher population to have high wastewater emissi
 #| out-width: "95%"
 
 wastewater_totals <- county_emissions %>%
-  filter(source == "Wastewater") %>% 
+  filter(source == "Wastewater") %>%
   group_by(geog_name) %>%
   summarise(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
   )
 
 wastewater_population <- left_join(wastewater_totals, cprg_population,
-                                   by = c("geog_name" = "NAME")
+  by = c("geog_name" = "NAME")
 )
 
 fig_emissions_population_wastewater <- plot_ly(
@@ -328,14 +337,14 @@ We would expect counties with a higher population to have high solid waste emiss
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 
 solidwaste_totals <- county_emissions %>%
-  filter(category == "Solid waste") %>% 
+  filter(category == "Solid waste") %>%
   group_by(geog_name) %>%
   summarise(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
   )
 
 solidwaste_population <- left_join(solidwaste_totals, cprg_population,
-                                   by = c("geog_name" = "NAME")
+  by = c("geog_name" = "NAME")
 )
 
 fig_emissions_population_solidwaste <- plot_ly(
@@ -449,14 +458,13 @@ wide_metc_epa_comp_solid <- metc_epa_comp_solid %>%
   filter(
     !is.na(`Met Council`),
     !is.na(`US GHG Inventory`)
-  ) %>% 
+  ) %>%
   mutate(emiss_diff = `US GHG Inventory` - `Met Council`)
-
 ```
 
 ```{r plot_waste_comparison}
 plot_waste_comparison <- function(waste_source,
-                                  plotly_source){
+                                  plotly_source) {
   plot_ly(
     source = plotly_source,
     data = metc_epa_comp_solid %>%
@@ -513,21 +521,23 @@ Wastewater comparisons are very consistent, with the US GHG Inventory consistent
 
 ```{r fig-metc-epa-ghg-wastewater}
 #| fig-cap: "Wastewater emissions comparison by county, Met Council and US GHG Inventory. US inventory consistently higher than Council. "
-#| out-width: "95%" 
+#| out-width: "95%"
 
 fig_metc_epa_ghg_wastewater <- plot_waste_comparison("Wastewater",
-                                                     plotly_source = "fig-metc-epa-ghg-wastewater")
+  plotly_source = "fig-metc-epa-ghg-wastewater"
+)
 fig_metc_epa_ghg_wastewater
 ```
 
-Solid waste emissions differences vary by county; while Ramsey and Hennepin county estimates from the US GHG Inventory are higher than the Council estimates, the opposite is true for Dakota and Anoka counties. 
+Solid waste emissions differences vary by county; while Ramsey, Hennepin and Washington county estimates from the US GHG Inventory are higher than the Council estimates, the opposite is true for Dakota and Anoka counties. This is likely related to the fact that Ramsey, Hennepin and Washington counties process a significant portion of their waste in waste-to-energy facilities, reducing the amount of emissions accounted for under the landfill category.
 
 ```{r fig-metc-epa-ghg-landfill}
 #| fig-cap: "Landfill emissions comparison by county, Met Council and US GHG Inventory. Results vary by county."
-#| out-width: "95%" 
+#| out-width: "95%"
 
 fig_metc_epa_ghg_landfill <- plot_waste_comparison("Landfill",
-                                                   plotly_source = "fig-metc-epa-ghg-landfill")
+  plotly_source = "fig-metc-epa-ghg-landfill"
+)
 fig_metc_epa_ghg_landfill
 ```
 

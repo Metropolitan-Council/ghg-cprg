@@ -33,13 +33,11 @@ The SCORE data is a high-quality government dataset submitted annually by solid 
 
 The data was accessed through the SCORE tool's Tableau dashboard, then filtered to include only the 9-county Minnesota portion of the region studied in this report.
 
-Be sure to add a citation of this dataset to the Zotero shared library.
-
 #### Data distribution
 
 To check if the data is reasonable, we can start by visualizing the tons of waste generated for each county, broken into categories. 
 
-We would expect waste from landfills to be greater than recycling in most cases, and both landfill and recycling waste to be greater than compost (or "organics").  We can see that this expectation largely holds true, with the exception of Ramsey County, where compost outstrips both recycling and landfill. Part of the explanation for this may lie in the fact that, like Hennepin and Washington, a large portion of Ramsey County's waste is managed in Waste-to-Energy facilities rather than landfills. This is consistent with waste management strategies of the metropolitan areas within Ramsey, Hennepin and Washington counties (add citation).
+We would expect waste from landfills to be greater than recycling in most cases, and both landfill and recycling waste to be greater than compost (or "organics").  We can see that this expectation largely holds true, with the exception of Ramsey County, where compost outstrips both recycling and landfill. Part of the explanation for this may lie in the fact that, like Hennepin and Washington, a large portion of Ramsey County's waste is managed in Waste-to-Energy facilities rather than landfills. This is consistent with waste management strategies of the metropolitan areas within Ramsey, Hennepin and Washington counties [@alexanderHennepinCountyGreenhouse2020].
 
 We also note that only two counties, Chisago and Sherburne, processed waste through onsite waste processors in 2021.  
 
@@ -188,9 +186,9 @@ This data includes MSW Compost as a category, but since all values for this cate
 
 Uncertainty was not included in the dataset given, nor does the EPA offer guidance for estimating uncertainty of solid waste emissions factors.
 
-- Plots, tables, and description of data distribution
-- Variance, Z-Score, quantiles
-- Facet views by categorical variables
+<!-- - Plots, tables, and description of data distribution -->
+<!-- - Variance, Z-Score, quantiles -->
+<!-- - Facet views by categorical variables -->
 
 ### Waste management classification
 
@@ -320,7 +318,7 @@ gt::gt(waste_management_comp,
 
 - As mentioned above, EPA emissions factors do not account for emissions saved through Waste to Energy conversions, as contrasted with Wisconsin emissions, which do.
 - There is wide variation between emissions factors for waste of various kinds within the same category. Because we do not have a detailed breakdown of the makeup of every category, we have assumed each one is adequately represented by the "Mixed MSW", "Mixed Organics", and "Mixed Recyclables" factors respectively.
-- This estimation method generates emissions for all waste generated in 2021. However, waste in landfills and composting facilities does not release all emissions at once. This method tends to overestimate emissions for a given year (cite: GHG Protocol).
+- This estimation method generates emissions for all waste generated in 2021. However, waste in landfills and composting facilities does not release all emissions at once. This method tends to overestimate emissions for a given year [@fongGlobalProtocolCommunityScale].
 
 Subject matter expert reviewer: ___
 
