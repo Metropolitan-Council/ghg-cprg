@@ -57,7 +57,9 @@ hookaddcap()
 
 ## Introduction
 
+Waste activities generated emissions of 169.2 MMTCO~2~e, or 2.7 percent of total U.S. greenhouse gas emissions  Solid waste emissions primarily consist of $CH_4$, emitted in large part by landfills and organics composting, but also include $CO_2$ and $N_2O$ generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. This inventory also includes emissions generated in the management of recyclables.
 Overall, in 2021, waste activities generated emissions of 169.2 MMTCO~2~e, or 2.7 percent of total U.S. greenhouse gas emissions [@usepaInventoryGreenhouseGas2023]. Solid waste emissions primarily consist of CH~4~, emitted in large part by landfills and organics composting, but also include CO~2~ and N~2~O generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. This inventory also includes emissions generated in the management of recyclables.
+Solid waste and wastewater account for about 2.7% of United States greenhouse gas emissions, making them the third largest sector accounted for in this inventory. Solid waste emissions primarily consist of $CH_4$, emitted in large part by landfills and organics composting, but also include $CO_2$ and $N_2O$ generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. This inventory also includes emissions generated in the management of recyclables.
 
 Wastewater emissions account for direct CH~4~ and N~2~O emissions from the treatment of municipal wastewater, and not additional indirect anthropogenic emissions such as the electricity needed to operate processing plants.
 
@@ -81,10 +83,9 @@ Emissions from waste is the smallest of the three sectors in the Twin Cities MSA
 #| fig-cap: "Solid waste and wastewater county emissions"
 #| out-width: "95%"
 fig_waste_wastewater_county_emissions <-
-  plot_county_sector_emissions(
-    county_emissions,
-    .sector = "Waste",
-    .plotly_source = "fig-waste-wastewater-county-emissions"
+  plot_county_sector_emissions(county_emissions,
+                               .sector = "Waste",
+                               .plotly_source = "fig-waste-wastewater-county-emissions"
   )
 
 fig_waste_wastewater_county_emissions$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
@@ -190,6 +191,7 @@ total_solid_waste <-
 
 Solid waste generated `r round(total_solid_waste/1000000, digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Of that total, `r scales::percent(solid_waste_percentages$emissions_metric_tons_co2e[1], accuracy = 0.1)` of emissions came from `r str_to_lower(solid_waste_percentages$source[1])`, `r scales::percent(solid_waste_percentages$emissions_metric_tons_co2e[2], accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[2])` facilities, and the remaining `r scales::percent(sum(solid_waste_percentages$emissions_metric_tons_co2e[3:4]), accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[3])` and `r str_to_lower(solid_waste_percentages$source[4])`.  
 
+Greenhouse gas emissions from solid waste are dominated by the landfill sector. In Hennepin, Ramsey, and Washington counties, municipal centers where a significant portion of waste is incinerated, waste-to-energy or incineration makes up a large fraction of emissions as well. 
 ```{r fig-solid-waste-emissions}
 #| fig-cap: "2021 solid waste emissions"
 #| out-width: "95%"
