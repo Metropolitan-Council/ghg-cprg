@@ -16,7 +16,16 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
-source(file.path(here::here(), "_waste/data-raw/epa_inventory_data.R"))
+# source(file.path(here::here(), "_waste/data-raw/epa_inventory_data.R"))
+epa_solidwaste_inventory <- readRDS(file.path(here::here(), "_waste/data-raw/epa_solidwaste_inventory.RDS"))
+
+federal_totals <- federal_inventory_waste_allocated %>% 
+  filter(source == "Total") %>% 
+  select(
+    geog_name,
+    emissions_metric_tons_co2e,
+    data_source
+  )
 
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
@@ -53,8 +62,8 @@ $$Emissions_c = Emissions_{total} \times \frac{Pop_c}{Pop_{total}}$$
 #| out-width: "95%"
 fig_waste_wastewater_county_emissions <-
   plot_county_sector_emissions(county_emissions,
-    .sector = "Waste",
-    .plotly_source = "fig-waste-wastewater-county-emissions"
+                               .sector = "Waste",
+                               .plotly_source = "fig-waste-wastewater-county-emissions"
   )
 
 fig_waste_wastewater_county_emissions$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
@@ -288,10 +297,10 @@ waste_totals <- waste_data %>%
   )
 
 waste_population <- left_join(waste_totals, cprg_population,
-  by = c("geog_name" = "NAME")
+                              by = c("geog_name" = "NAME")
 )
 
-plot_ly(
+fig_emissions_population_solidwaste <- plot_ly(
   data = waste_population,
   source = opts_current$get()$label,
   x = ~population,
@@ -304,7 +313,7 @@ plot_ly(
     "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
-  opacity = 0.7,
+  # opacity = 0.7,
   marker = list(
     color = colors$councilBlue,
     size = 18,
@@ -315,13 +324,15 @@ plot_ly(
   )
 ) %>%
   plotly_layout(
-    main_title = "County population and emissions",
+    main_title = "County population and solid waste emissions",
     subtitle = "2021 ACS 5-year population estimates. Strong positive correlation",
     x_title = "Total population",
-    y_title = "Emissions",
+    y_title = "Metric tons CO<sub>2</sub>e",
     legend_title = "",
     legend = list(orientation = "h")
   )
+
+fig_emissions_population_solidwaste
 ```
 
 ### Comparison with other inventories
@@ -331,8 +342,6 @@ plot_ly(
 The United States EPA conducts a comprehensive yearly estimate of greenhouse gas emissions from multiple sectors and gases. It also publishes statewide totals consistent with the national inventory. These emissions totals are consistent with international standards for greenhouse gas accounting, although they may differ from inventories completed at the state level for various reasons.
 
 US Inventory data for the waste sector in both Minnesota and Wisconsin was downloaded from the [Greenhouse Gas Inventory Data Explorer](https://cfpub.epa.gov/ghgdata/inventoryexplorer/) and processed in R script: [epa_inventory_data.R](/data-raw/epa_inventory_data.R), where it was disaggregated from state to county level by population.
-
-
 
 ```{r fig-federal-inventory-compare}
 
@@ -345,11 +354,15 @@ plot_ly(
   source = opts_current$get()$label,
   x = ~geog_name,
   y = ~emissions_metric_tons_co2e,
-  split = ~data_source,
+  color = ~data_source,
   type = "bar",
+  colors = c(
+    "Met Council" = colors$councilBlue,
+    "Federal Inventory" = cprg_colors$cprg_da_yellow
+  ),
   hovertemplate = ~ paste0(
     geog_name, " County", "<br>",
-    data_source, " emissions estimate: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    data_source, " emissions estimate: <br>", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -357,10 +370,169 @@ plot_ly(
     main_title = "Solid Waste Emissions Comparison",
     subtitle = "Our emissions estimates compared to US Greenhouse Gas Inventory estimates",
     x_title = "County",
-    y_title = "Emissions",
+    y_title = "Metric tons CO<sub>2</sub>e",
     legend_title = "Emissions Source"
   ) %>%
   plotly::layout(barmode = "group")
+
+```
+
+
+```{r}
+metc_solidwaste_inventory <- county_emissions %>%
+  filter(sector == "Waste") %>% 
+  mutate(data_source = "Met Council",
+         year = as.character(year)) %>% 
+  select(names(epa_solidwaste_inventory))
+
+metc_epa_comp_solid <- epa_solidwaste_inventory %>% 
+  filter(source != "Total") %>% 
+  bind_rows(metc_solidwaste_inventory) %>% 
+  mutate(
+    source_unified = case_when(
+      # source == "Anaerobic Digestion" ~ "Organics",
+      TRUE ~ source
+    )
+  ) %>% 
+  select(-source)
+
+wide_metc_epa_comp_solid <- metc_epa_comp_solid %>% 
+  pivot_wider(names_from = data_source,
+              values_from = emissions_metric_tons_co2e) %>% 
+  filter(!is.na(`Met Council`),
+         !is.na(`Federal Inventory`))
+
+
+```
+
+
+
+```{r}
+plot_ly(
+  data = metc_epa_comp_solid %>% 
+    filter(
+      source_unified == "Landfill"),
+  y = ~geog_name,
+  x = ~emissions_metric_tons_co2e,
+  color = ~data_source,
+  colors = c(
+    "Met Council" = colors$councilBlue,
+    "Federal Inventory" = cprg_colors$cprg_da_yellow
+  ),
+  hovertemplate = ~paste0(
+    geog_name, " County", "<br>",
+    data_source, "<br>", 
+    source_unified, "<br>",
+    round(emissions_metric_tons_co2e * 1e-3, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(size = 18),
+  opacity = 0.7,
+  type = "scatter",
+  mode = "markers"
+) %>% 
+  add_segments(
+    data = wide_metc_epa_comp_solid %>% 
+      filter(source_unified == "Landfill"),
+    y = ~geog_name,
+    yend = ~geog_name,
+    x = ~`Federal Inventory`,
+    xend = ~`Met Council`,
+    showlegend = FALSE,
+    inherit = FALSE,
+    line = list(
+      color = "darkgray"
+    )
+  ) %>% 
+  councilR::plotly_layout(
+    main_title = "Landfill emissions comparison",
+    subtitle = "Met Council vs. US Greenhouse Gas Inventory estimates",
+    y_title = "County",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Data source"
+  ) %>%
+  layout(yaxis = list(categoryorder = "total ascending"))
+```
+```{r}
+plot_ly(
+  data = metc_epa_comp_solid %>% 
+    filter(
+      source_unified == "Wastewater"),
+  # geog_name == "Hennepin",
+  y = ~geog_name,
+  x = ~emissions_metric_tons_co2e,
+  color = ~data_source,
+  colors = c(
+    "Met Council" = colors$councilBlue,
+    "Federal Inventory" = cprg_colors$cprg_da_yellow
+  ),
+  hovertemplate = ~paste0(
+    geog_name, " County", "<br>",
+    data_source, "<br>", 
+    source_unified, "<br>",
+    round(emissions_metric_tons_co2e * 1e-3, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(size = 18),
+  opacity = 0.7,
+  type = "scatter",
+  mode = "markers"
+) %>% 
+  add_segments(
+    data = wide_metc_epa_comp_solid %>% 
+      filter(source_unified == "Wastewater"),
+    inherit = FALSE,
+    y = ~geog_name,
+    yend = ~geog_name,
+    x = ~`Federal Inventory`,
+    xend = ~`Met Council`,
+    showlegend = FALSE,
+    line = list(
+      color = "darkgray"
+    )
+  ) %>% 
+  councilR::plotly_layout(
+    main_title = "Wastewater emissions comparison",
+    subtitle = "Federal estimate consistently higher",
+    y_title = "County",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Data source"
+  ) %>%
+  layout(yaxis = list(categoryorder = "total ascending"))
+```
+
+
+```{r}
+plot_ly(
+  data = wide_metc_epa_comp_solid %>% 
+    filter(source_unified == "Landfill"),
+  y = ~geog_name,
+  x = ~`Federal Inventory`,
+  split = ~source_unified,
+  color = ~source_unified,
+  # color = ~data_source,
+  type = "scatter",
+  mode = "markers",
+  opacity = 0.7,
+  marker = list(
+    symbol = "circle",
+    size = 12)
+  
+) %>% 
+  add_trace(
+    inherit = TRUE,
+    x = ~`Met Council`,
+    opacity = 0.7,
+    marker = list(
+      symbol = "square",
+      size = 12)
+  ) %>% 
+  add_segments(
+    y = ~geog_name,
+    yend = ~geog_name,
+    x = ~`Federal Inventory`,
+    xend = ~`Met Council`
+  )
 
 ```
 
