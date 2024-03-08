@@ -36,6 +36,22 @@ county_emissions_summary <- county_emissions %>%
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     .groups = "keep"
   )
+
+waste_data <- county_emissions %>%
+  dplyr::filter(category == "Solid waste")
+
+cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
+
+waste_totals <- waste_data %>%
+  group_by(geog_name) %>%
+  summarise(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  )
+
+waste_population <- left_join(waste_totals, cprg_population,
+  by = c("geog_name" = "NAME")
+)
+
 hookaddcap()
 ```
 
@@ -56,6 +72,8 @@ For Wisconsin counties, state-level emissions data as calculated by the Wisconsi
 $$Emissions_c = Emissions_{total} \times \frac{Pop_c}{Pop_{total}}$$
 
 ## Results
+
+Waste emissions in Minnesota have declined nearly 40% since 2005, due to a variety of factors including gas capture technologies and aging waste in open landfills [@mpcaClimateChangeTrends2023]. Waste emissions in Wisconsin show no significant change from 2005 to 2018, possibly due to increased waste generation ofsetting reductions from gas capture [@wisconsindnrGreenhouseGas2021]. The Metropolitan Council, which oversees wastewater services for the majority of the urbanized extent of the metropolitan region, continues to work to reduce wastewater emissions across its 9 wastewater treatment plants.
 
 ```{r fig-waste-wastewater-county-emissions}
 #| fig-cap: "Solid waste and wastewater county emissions"
@@ -212,41 +230,39 @@ fig_solid_waste_sector_emissions_by_category <-
 fig_solid_waste_sector_emissions_by_category
 ```
 
-```{r fig-sw-total-emissions}
-#| fig-cap: "2021 solid waste emissions"
-#| out-width: "95%"
-county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
-
-waste_data <- county_emissions %>%
-  dplyr::filter(category == "Solid waste")
-
-plot_ly(
-  data = waste_data,
-  type = "bar",
-  source = opts_current$get()$label,
-  x = ~geog_name,
-  y = ~emissions_metric_tons_co2e,
-  color = ~source,
-  split = ~source,
-  colors = unlist(source_colors),
-  hovertemplate = ~ paste0(
-    geog_name, " County", "<br>",
-    sector, " - ", category, ", ", source, "<br>",
-    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  )
-) %>%
-  councilR::plotly_layout(
-    main_title = "Solid waste emissions",
-    subtitle = "",
-    x_title = stringr::str_to_title(unique(waste_data$geog_level)),
-    y_title = "Metric tons CO<sub>2</sub>e",
-    legend_title = "Category"
-  ) %>%
-  plotly::layout(barmode = "stack")
-```
-
-
+<!-- # ```{r fig-sw-total-emissions} -->
+<!-- # #| fig-cap: "2021 solid waste emissions" -->
+<!-- # #| out-width: "95%" -->
+<!-- # county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS")) -->
+<!-- #  -->
+<!-- # waste_data <- county_emissions %>% -->
+<!-- #   dplyr::filter(category == "Solid waste") -->
+<!-- #  -->
+<!-- # plot_ly( -->
+<!-- #   data = waste_data, -->
+<!-- #   type = "bar", -->
+<!-- #   source = opts_current$get()$label, -->
+<!-- #   x = ~geog_name, -->
+<!-- #   y = ~emissions_metric_tons_co2e, -->
+<!-- #   color = ~source, -->
+<!-- #   split = ~source, -->
+<!-- #   colors = unlist(source_colors), -->
+<!-- #   hovertemplate = ~ paste0( -->
+<!-- #     geog_name, " County", "<br>", -->
+<!-- #     sector, " - ", category, ", ", source, "<br>", -->
+<!-- #     round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>", -->
+<!-- #     "<extra></extra>" -->
+<!-- #   ) -->
+<!-- # ) %>% -->
+<!-- #   councilR::plotly_layout( -->
+<!-- #     main_title = "Solid waste emissions", -->
+<!-- #     subtitle = "", -->
+<!-- #     x_title = stringr::str_to_title(unique(waste_data$geog_level)), -->
+<!-- #     y_title = "Metric tons CO<sub>2</sub>e", -->
+<!-- #     legend_title = "Category" -->
+<!-- #   ) %>% -->
+<!-- #   plotly::layout(barmode = "stack") -->
+<!-- # ``` -->
 
 
 <!-- ```{r fig-emissions-side-by-side} -->
@@ -290,17 +306,6 @@ We would expect counties with a higher population to have high solid waste emiss
 ```{r fig-emissions-population-solidwaste}
 #| fig-cap: "County population and solid waste emissions"
 #| out-width: "95%"
-cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
-
-waste_totals <- waste_data %>%
-  group_by(geog_name) %>%
-  summarise(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
-  )
-
-waste_population <- left_join(waste_totals, cprg_population,
-  by = c("geog_name" = "NAME")
-)
 
 fig_emissions_population_solidwaste <- plot_ly(
   data = waste_population,
@@ -346,11 +351,10 @@ The United States EPA conducts a comprehensive yearly estimate of greenhouse gas
 US Inventory data for the waste sector in both Minnesota and Wisconsin was downloaded from the [Greenhouse Gas Inventory Data Explorer](https://cfpub.epa.gov/ghgdata/inventoryexplorer/) and processed in R script: [epa_inventory_data.R](/data-raw/epa_inventory_data.R), where it was disaggregated from state to county level by population.
 
 ```{r fig-federal-inventory-compare}
-waste_federal <- waste_totals %>%
-  mutate(data_source = "Met Council") %>%
-  rbind(federal_totals)
+#| fig-cap: "Our emissions estimates compared to US Greenhouse Gas Inventory estimates"
+#| out-width: "95%"
 
-plot_ly(
+fig_federal_inventory_compare <- plot_ly(
   data = waste_federal,
   source = opts_current$get()$label,
   x = ~geog_name,
@@ -369,12 +373,14 @@ plot_ly(
 ) %>%
   councilR::plotly_layout(
     main_title = "Solid Waste Emissions Comparison",
-    subtitle = "Our emissions estimates compared to US Greenhouse Gas Inventory estimates",
+    subtitle = "",
     x_title = "County",
     y_title = "Metric tons CO<sub>2</sub>e",
     legend_title = "Emissions Source"
   ) %>%
   plotly::layout(barmode = "group")
+
+fig_federal_inventory_compare
 ```
 
 
