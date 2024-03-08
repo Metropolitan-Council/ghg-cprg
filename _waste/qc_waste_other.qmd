@@ -58,7 +58,7 @@ Local inventory of GHG emissions from the community’s other sources with docum
 
 tbl_waste_other_qc <-
   tibble::tribble(
-    ~"Other Sectors", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"QC Estimate based on SLOPE (Metric Tons CO~2~e)",
+    ~"Other Sectors", ~"Initial Local Estimate (Metric Tons CO₂e)", ~"QC Estimate based on SLOPE (Metric Tons CO₂e)",
     "Stationary Combustion", "", "",
     "Agriculture & land management", "", "",
     "Waste generation", "", "",

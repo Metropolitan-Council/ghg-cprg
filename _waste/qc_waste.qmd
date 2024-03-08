@@ -56,7 +56,7 @@ Local inventory of GHG emissions from landfills with documentation of the follow
 
 tbl_waste_qc <-
   tibble::tribble(
-    ~"Solid Waste (Landfills)", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"FLIGHT Data (Metric Tons CO~2~e)",
+    ~"Solid Waste (Landfills)", ~"Initial Local Estimate (Metric Tons CO₂e)", ~"FLIGHT Data (Metric Tons CO₂e)",
     "", "", "",
     "", "", "",
     "", "", "",

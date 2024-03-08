@@ -52,7 +52,7 @@ Local inventory of GHG emissions from electric power consumption with documentat
 #| tbl-cap: "Local estimate comparison with control estimate"
 
 tbl_energy_qc <- tibble::tribble(
-  ~"Power Consuming Sector", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"QC Estimate based on SLOPE (Metric Tons CO~2~e)",
+  ~"Power Consuming Sector", ~"Initial Local Estimate (Metric Tons CO₂e)", ~"QC Estimate based on SLOPE (Metric Tons CO₂e)",
   "Residential", "", "",
   "Commercial", "", "",
   "Industrial", "", "",
@@ -65,7 +65,7 @@ tbl_energy_qc <- tibble::tribble(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
   ) %>%
-  gt::fmt_markdown() %>%
+  # gt::fmt_markdown() %>% 
   gt::as_raw_html()
 
 tbl_energy_qc
