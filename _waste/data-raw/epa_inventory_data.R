@@ -2,20 +2,20 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 
 # read in csvs generated at https://cfpub.epa.gov/ghgdata/inventoryexplorer/#waste/entiresector/allgas/category/all
 # same as allstate ghg inventory
-# epa_waste_inv_all <- read_xlsx("_waste/data-raw/epa/state_ghg/allstateghgdatapy2023readme_100323_0/AllStateGHGDataPY2023_100323.xlsx", sheet = 2) %>% 
-#   clean_names() %>% 
+# epa_waste_inv_all <- read_xlsx("_waste/data-raw/epa/state_ghg/allstateghgdatapy2023readme_100323_0/AllStateGHGDataPY2023_100323.xlsx", sheet = 2) %>%
+#   clean_names() %>%
 #   filter(state %in% c("MN", "WI")) %>%
 #   pivot_longer(starts_with("y"),
 #                names_to = "year",
 #                values_to = "value"
 #   ) %>%
 #   filter(year == "y2021",
-#          sector == "Waste") %>% 
+#          sector == "Waste") %>%
 #   # reported in millions of metric tons
-#   mutate(emissions_metric_tons_co2e = value * 1000000) 
-# 
-# epa_waste_inv_all %>% 
-#   group_by(state, year, sector, subsector, category) %>% 
+#   mutate(emissions_metric_tons_co2e = value * 1000000)
+#
+# epa_waste_inv_all %>%
+#   group_by(state, year, sector, subsector, category) %>%
 #   summarise(value = sum(value),
 #             emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% View
 
