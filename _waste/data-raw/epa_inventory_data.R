@@ -64,3 +64,4 @@ federal_totals <- federal_inventory_waste_allocated %>%
     data_source
   )
 
+saveRDS(federal_inventory_waste_allocated, "_waste/data-raw/epa_solidwaste_inventory.RDS")
