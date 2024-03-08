@@ -202,7 +202,8 @@ fig_moves_ghg_hub_comparison <- plot_ly(
     xend = ~`EPA GHG Hub`,
     showlegend = FALSE,
     line = list(
-      color = "darkgray"
+      color = "darkgray",
+      size = 2
     )
   ) %>%
   plotly_layout(
