@@ -3,12 +3,19 @@
 ```{r}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
-# pull data here
+source(file.path(here::here(), "R/_plotting_helpers.R"))
 wi_emissions <- readRDS(file.path(here::here(), "_waste/data/wi_emissions.RDS"))
 wi_emissions_meta <- readRDS(file.path(here::here(), "_waste/data/wi_emissions_meta.RDS"))
-# PULL IN DATA FROM TRANSPORTATION TO USE:
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+county_emissions_summary <- county_emissions %>%
+  group_by(sector, category, source, data_source, factor_source) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  )
 hookaddcap()
 ```
 

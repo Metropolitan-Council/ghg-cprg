@@ -3,6 +3,8 @@
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
 library(crosstalk)
 
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
@@ -69,7 +71,7 @@ StreetLight provides a rough sample size for the entire analysis, as shown in @t
 ```{r tbl-passenger-stl-sample-size}
 #| tbl-cap: "StreetLight passenger travel analysis sample size"
 #| out-width: "95%"
-county21_data$sample_size %>%
+tbl_passenger_stl_sample_size <- county21_data$sample_size %>%
   select(
     `Data periods` = data_periods,
     `Mode of travel` = mode_of_travel,
@@ -83,6 +85,8 @@ county21_data$sample_size %>%
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
   )
+
+tbl_passenger_stl_sample_size
 ```
 
 
@@ -94,9 +98,9 @@ StreetLight returns not only vehicle volume, but also trip attributes, like trip
 #| fig-cap: "StreetLight origin-destination passenger trip length matrix"
 #| out-width: "95%"
 
-plot_ly(
+fig_stl_trip_distance_matrix_passenger <- plot_ly(
   data = passenger_od_trip,
-  source = opts_current$get()$label,
+  source = "fig-stl-trip-distance-matrix-passenger",
   y = ~origin_zone_name,
   x = ~destination_zone_name,
   z = ~avg_all_trip_length_mi,
@@ -131,6 +135,8 @@ plot_ly(
     y_title = "Origin county",
     legend_title = "Average trip length"
   )
+
+fig_stl_trip_distance_matrix_passenger
 ```
 
 
@@ -220,11 +226,14 @@ bscols(
       multiple = FALSE
     )
   ),
-  plot_ly(
+  plot_ly( # do not save as fig
     data = shared_trip_length_bin,
-    source = opts_current$get()$label,
+    source = "fig-stl-trip-length-dist-widget",
     x = ~ factor(length_bin),
     y = ~percent_of_trips,
+    marker = list(
+      color = colors$councilBlue
+    ),
     type = "bar",
     hovertemplate = ~ paste0(
       "Origin county: ", origin_zone_name, "<br>",
@@ -294,12 +303,16 @@ one_slope <- tibble(
   y = 0:max(passenger_od_distance$distance_miles + 10)
 )
 
-plot_ly(
+fig_stl_trip_dist_min_dist <- plot_ly(
   data = passenger_od_distance,
-  source = opts_current$get()$label,
+  source = "fig-trip-dist-min-dist",
   x = ~distance_miles,
   y = ~avg_all_trip_length_mi,
   color = ~pair_type,
+  colors = c(
+    "Adjacent or same county" = colors$councilBlue,
+    "Non-adjacent counties" = colors$metrostatsDaPurp
+  ),
   type = "scatter",
   mode = "markers",
   hoverinfo = "text",
@@ -310,11 +323,7 @@ plot_ly(
     "Average trip length: ", round(avg_all_trip_length_mi, digits = 1), " miles",
     "<extra></extra>"
   ),
-  opacity = 0.7,
-  colors = c(
-    colors$councilBlue,
-    colors$metrostatsDaPurp
-  ),
+  opacity = 0.75,
   marker = list(
     size = 18,
     line = list(
@@ -343,6 +352,8 @@ plot_ly(
     legend_title = "",
     legend = list(orientation = "h")
   )
+
+fig_stl_trip_dist_min_dist
 ```
 
 We can also compare these distances with the observed average trip distance from the Met Council Travel Behavior Inventory (TBI). Read more about the TBI in @sec-tbi. 
@@ -363,10 +374,11 @@ passenger_od_tbi_distance <- passenger_od_trip %>%
   filter(!is.na(mean_trip_dist))
 ```
 
-@fig-trip-dist-tbi shows a strong positive correlation when comparing origin-destination pairs. Note that TBI origin-destination pairs with fewer than 30 observed trips were removed due to low sample size. 
+@fig-stl-trip-dist-tbi shows a strong positive correlation when comparing origin-destination pairs. Note that TBI origin-destination pairs with fewer than 30 observed trips were removed due to low sample size. 
 
-```{r fig-trip-dist-tbi}
-#| fig-cap:  "Avg. trip distance, Travel Behavior Inventory and StreetLight"
+```{r fig-stl-trip-dist-tbi}
+#| fig-cap: "Avg. trip distance, Travel Behavior Inventory and StreetLight"
+#| fig-alt: "A dot plot comparing average trip distance between counties using StreetLight and the Travel Behavior Inventory. The two are strongly correlated, validating StreetLight's trip length estimate"
 #| out-width: "95%"
 
 one_slope <- tibble(
@@ -374,12 +386,16 @@ one_slope <- tibble(
   y = 0:max(passenger_od_tbi_distance$mean_trip_dist + 10)
 )
 
-plot_ly(
+fig_stl_trip_dist_tbi <- plot_ly(
   data = passenger_od_tbi_distance,
-  source = opts_current$get()$label,
+  source = "fig-stl-trip-dist-tbi",
   x = ~mean_trip_dist,
   y = ~avg_all_trip_length_mi,
   color = ~pair_type,
+  colors = c(
+    "Same county" = colors$councilBlue,
+    "Different county" = colors$metrostatsDaPurp
+  ),
   type = "scatter",
   mode = "markers",
   hoverinfo = "text",
@@ -390,11 +406,7 @@ plot_ly(
     "TBI avg. trip length: ", round(mean_trip_dist, digits = 1), " miles", "<br>",
     "<extra></extra>"
   ),
-  opacity = 0.6,
-  colors = c(
-    "Same county" = colors$councilBlue,
-    "Different county" = colors$metrostatsDaPurp
-  ),
+  opacity = 0.75,
   marker = list(
     size = 18,
     line = list(
@@ -423,6 +435,8 @@ plot_ly(
     legend_title = "",
     legend = list(orientation = "h")
   )
+
+fig_stl_trip_dist_tbi
 ```
 
 
@@ -445,9 +459,9 @@ passenger_dist_area <- left_join(
 )
 
 
-plot_ly(
+fig_trip_county_area <- plot_ly(
   data = passenger_dist_area,
-  source = opts_current$get()$label,
+  source = "fig-trip-county-area",
   x = ~area_sq_mi,
   y = ~avg_all_trip_length_mi,
   type = "scatter",
@@ -476,6 +490,8 @@ plot_ly(
     legend_title = "",
     legend = list(orientation = "h")
   )
+
+fig_trip_county_area
 ```
 
 
@@ -488,7 +504,8 @@ StreetLight compares the AADT calibration values for a given zone with StreetLig
 ```{r tbl-commercial-stl-sample-size}
 #| tbl-cap: "StreetLight commercial travel analysis sample size"
 #| out-width: "95%"
-county21_truck_data$sample_size %>%
+
+tbl_commercial_stl_sample_size <- county21_truck_data$sample_size %>%
   select(
     `Data periods` = data_periods,
     `Mode of travel` = mode_of_travel,
@@ -503,6 +520,8 @@ county21_truck_data$sample_size %>%
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
   )
+
+tbl_commercial_stl_sample_size
 ```
 
 #### Trip length
@@ -572,10 +591,10 @@ comm_od_pair_index <- comm_trip_length_bin %>%
 #| fig-cap: "StreetLight origin-destination medium-duty trip length matrix"
 #| out-width: "95%"
 
-plot_ly(
+fig_stl_trip_distance_matrix_medium <- plot_ly(
   data = comm_trip_length_bin %>%
     filter(vehicle_weight == "Medium"),
-  source = opts_current$get()$label,
+  source = "fig-stl-trip-distance-matrix-medium",
   y = ~origin_zone_name,
   x = ~destination_zone_name,
   z = ~avg_all_trip_length_mi,
@@ -610,16 +629,18 @@ plot_ly(
     y_title = "Origin county",
     legend_title = "Average trip length"
   )
+
+fig_stl_trip_distance_matrix_medium
 ```
 
 ```{r fig-stl-trip-distance-matrix-heavy}
 #| fig-cap: "StreetLight origin-destination heavy-duty trip length matrix"
 #| out-width: "95%"
 
-plot_ly(
+fig_stl_trip_distance_matrix_heavy <- plot_ly(
   data = comm_trip_length_bin %>%
     filter(vehicle_weight == "Heavy"),
-  source = opts_current$get()$label,
+  source = "fig-stl-trip-distance-matrix-heavy",
   y = ~origin_zone_name,
   x = ~destination_zone_name,
   z = ~avg_all_trip_length_mi,
@@ -654,6 +675,8 @@ plot_ly(
     y_title = "Origin county",
     legend_title = "Average trip length"
   )
+
+fig_stl_trip_distance_matrix_heavy
 ```
 
 ```{r fig-stl-trip-length-dist-widget-comm}
@@ -681,12 +704,13 @@ bscols(
       multiple = FALSE
     )
   ),
-  plot_ly(
+  plot_ly( # do not save as fig
     data = shared_comm_trip_length_bin,
-    source = opts_current$get()$label,
+    source = "fig-stl-trip-length-dist-widget-comm",
     x = ~ factor(length_bin),
     y = ~percent_of_trips,
     color = ~vehicle_weight,
+    colors = unlist(vehicle_weight_colors),
     type = "bar",
     hovertemplate = ~ paste0(
       "Origin county: ", origin_zone_name, "<br>",
@@ -749,9 +773,10 @@ vehicle_weight_comp <-
     ">33,000", "Class 8+: >33,001 lbs", "Heavy-duty", "Heavy-duty"
   )
 
-gt::gt(vehicle_weight_comp,
-  row_group_as_column = FALSE
-) %>%
+tbl_vehicle_weight_classifications <-
+  gt::gt(vehicle_weight_comp,
+    row_group_as_column = FALSE
+  ) %>%
   tab_style(
     style = list(
       cell_fill(
@@ -823,6 +848,8 @@ gt::gt(vehicle_weight_comp,
   ) %>%
   # fmt_markdown() %>%
   as_raw_html()
+
+tbl_vehicle_weight_classifications
 ```
 
 To create the calibration dataset, we found the ratio of passenger/medium/heavy-duty vehicles for at traffic count stations within our study area using state DOT data. You can read more about vehicle classification data in @sec-vehicle-weight-dist. 
@@ -844,12 +871,13 @@ dot_streetlight <- left_join(
 ```
 
 
-```{r fig-streetlight-hpms}
+```{r fig-streetlight-hpms-vmt}
 #| fig-cap: "County vehicle miles traveled and StreetLight Volume"
 #| out-width: "95%"
-plot_ly(
+
+fig_streetlight_hpms_vmt <- plot_ly(
   data = dot_streetlight,
-  source = opts_current$get()$label,
+  source = "fig-streetlight-hpms-vmt",
   x = ~annual_vmt,
   y = ~vmt_total,
   type = "scatter",
@@ -877,12 +905,14 @@ plot_ly(
     legend_title = "",
     legend = list(orientation = "h")
   )
+
+fig_streetlight_hpms_vmt
 ```
 
 
 ### Limitations
 
-- The data used for passenger traffic contains "all vehicles", not just passenger vehicles, meaning that commercial vehicles may be double counted. As a default, StreetLight suggests that users use a ratio of 96/2/2 (95% passenger, 2% medium, 2% heavy). We could apply a scaling factor of 0.96 to the passenger data to account for this.
+- The data used for passenger traffic contains "all vehicles", not just passenger vehicles, meaning that commercial vehicles may be double counted. As a default, StreetLight suggests that users use a ratio of 96/2/2 (96% passenger, 2% medium, 2% heavy). We could apply a scaling factor of 0.96 to the passenger data to account for this.
 - Commercial vehicle classifications schemes differ across data sources, though the scale of this effect is unknown.
 
 Subject matter expert reviewer: ________

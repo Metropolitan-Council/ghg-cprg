@@ -8,7 +8,7 @@ mn_cleaned <- mn_emissions %>%
     source = case_when(
       Method == "Landfill" ~ "Landfill",
       Method == "Onsite" ~ "Landfill",
-      Method == "WTE" ~ "Waste to Energy",
+      Method == "WTE" ~ "Waste to energy",
       Method == "Organics" ~ "Organics",
       Method == "Recycling" ~ "Recycling"
     )

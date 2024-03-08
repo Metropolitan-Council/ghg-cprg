@@ -3,12 +3,25 @@
 ```{r}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
 # pull data here
-mpca_score <- readRDS(file.path(here::here(), "_waste/data/mpca_score.RDS"))
+mpca_score <- readRDS(file.path(here::here(), "_waste/data/mpca_score.RDS")) %>%
+  mutate(Method = ifelse(Method == "WTE", "Waste-to-Energy", Method)) %>%
+  mutate(Method = factor(Method,
+    levels = c(
+      "Waste-to-Energy",
+      "Organics",
+      "Recycling",
+      "Landfill",
+      "MSW Compost",
+      "Onsite"
+    ),
+    ordered = TRUE
+  ))
 mpca_score_meta <- readRDS(file.path(here::here(), "_waste/data/mpca_score_meta.RDS"))
-# PULL IN DATA FROM TRANSPORTATION TO USE:
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
+epa_ghg_factor_hub <- readRDS(file.path(here::here(), "_meta/data/epa_ghg_factor_hub.RDS"))
 source(file.path(here::here(), "_meta/data-raw/epa_nei.R"))
 hookaddcap()
 ```
@@ -35,34 +48,37 @@ We also note that only two counties, Chisago and Sherburne, processed waste thro
 #| out-width: "95%"
 
 # is this too many categories. should i switch to side-by-side bar plot
+mpca_score_no_msw <- mpca_score %>%
+  filter(!Method == "MSW Compost")
 
-mpca_score %>%
-  filter(!Method == "MSW Compost") %>%
-  # pivot_wider(names_from = Method, values_from = Tons, values_fill = 0) %>%
-  plot_ly(
-    x = ~ reorder(County, -Tons),
-    y = ~Tons,
-    source = opts_current$get()$label,
-    type = "bar",
-    hoverinfo = "text",
-    color = ~Method,
-    hovertemplate = ~ paste0(
-      "County: ", County, "<br>",
-      "Management method: ", Method, "<br>",
-      "Waste generated: ", round(Tons / 1000), " thousand tons",
-      "<extra></extra>"
-    )
-  ) %>%
+fig_total_waste <- plot_ly(
+  data = mpca_score_no_msw,
+  x = ~ reorder(County, -Tons),
+  y = ~Tons,
+  source = "fig-total-waste",
+  type = "bar",
+  hoverinfo = "text",
+  color = ~Method,
+  colors = unlist(management_method_colors),
+  hovertemplate = ~ paste0(
+    "County: ", County, "<br>",
+    "Management method: ", Method, "<br>",
+    "Waste generated: ", round(Tons / 1000), " thousand tons",
+    "<extra></extra>"
+  )
+) %>%
   plotly_layout(
     main_title = "Total waste generated per county",
+    subtitle = "Minnesota Pollution Control Agency (MPCA) SCORE",
     x_title = "County",
     y_title = "Waste (tons)",
-    legend_title = "Management Method",
+    legend_title = "Management method",
     barmode = "stack"
   ) %>%
   layout(
     barmode = "stack"
   )
+fig_total_waste
 ```
 
 We would expect that the total amount of waste generated would be generally positively correlated with county area. 
@@ -79,37 +95,43 @@ cprg_area_mn <- cprg_county %>%
     as.numeric()) %>%
   filter(STATE == "Minnesota")
 
-mpca_score %>%
+mpca_score_area_summary <- mpca_score %>%
   filter(!Method == "MSW Compost") %>%
   group_by(County) %>%
   mutate(Total = sum(Tons)) %>%
-  full_join(cprg_area_mn, by = join_by(County == NAME)) %>%
-  plot_ly(
-    x = ~area_sq_mi,
-    y = ~Total,
-    source = opts_current$get()$label,
-    type = "scatter",
-    mode = "markers",
-    hoverinfo = "text",
-    hovertemplate = ~ paste0(
-      "County: ", County, "<br>",
-      "Waste generated: ", round(Total / 1000), " thousand tons", "<br>",
-      "Area: ", round(area_sq_mi), " sq mi",
-      "<extra></extra>"
-    ),
-    marker = list(
-      size = 18,
-      line = list(
-        color = "lightgray",
-        width = 2
-      )
+  full_join(cprg_area_mn, by = join_by(County == NAME))
+
+fig_waste_county_area <- plot_ly(
+  data = mpca_score_area_summary,
+  x = ~area_sq_mi,
+  y = ~Total,
+  source = "fig-waste-county-area",
+  type = "scatter",
+  mode = "markers",
+  hoverinfo = "text",
+  hovertemplate = ~ paste0(
+    "County: ", County, "<br>",
+    "Waste generated: ", round(Total / 1000), " thousand tons", "<br>",
+    "Area: ", round(area_sq_mi), " sq mi",
+    "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue,
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
     )
-  ) %>%
+  )
+) %>%
   plotly_layout(
     main_title = "Total waste by county area",
+    subtitle = "Minnesota Pollution Control Agency (MPCA) SCORE",
     x_title = "Area (sq. mi.)",
     y_title = "Waste (tons)"
   )
+
+fig_waste_county_area
 ```
 
 We would expect that counties with large populations, such as Ramsey County, would generate more waste and smaller counties would generate less.
@@ -122,37 +144,42 @@ Comparing waste generated and population, we see a strong positive correlation (
 cprg_pop_mn <- cprg_pop %>%
   filter(STATE == "Minnesota")
 
-mpca_score %>%
+mpca_score_population <- mpca_score %>%
   filter(!Method == "MSW Compost") %>%
   group_by(County) %>%
   mutate(Total = sum(Tons)) %>%
-  full_join(cprg_pop_mn, by = join_by(County == NAME)) %>%
-  plot_ly(
-    x = ~population,
-    y = ~Total,
-    source = opts_current$get()$label,
-    type = "scatter",
-    mode = "markers",
-    hoverinfo = "text",
-    hovertemplate = ~ paste0(
-      "County: ", County, "<br>",
-      "Waste generated: ", round(Total / 1000), " thousand tons", "<br>",
-      "Population: ", round(population),
-      "<extra></extra>"
-    ),
-    marker = list(
-      size = 18,
-      line = list(
-        color = "lightgray",
-        width = 2
-      )
+  full_join(cprg_pop_mn, by = join_by(County == NAME))
+
+fig_waste_county_pop <- plot_ly(
+  data = mpca_score_population,
+  x = ~population,
+  y = ~Total,
+  source = "fig-waste-county-pop",
+  type = "scatter",
+  mode = "markers",
+  hoverinfo = "text",
+  hovertemplate = ~ paste0(
+    "County: ", County, "<br>",
+    "Waste generated: ", round(Total / 1000), " thousand tons", "<br>",
+    "Population: ", round(population),
+    "<extra></extra>"
+  ),
+  marker = list(
+    size = 18,
+    color = colors$councilBlue,
+    line = list(
+      color = "lightgray",
+      width = 2
     )
-  ) %>%
+  )
+) %>%
   plotly_layout(
     main_title = "Total waste by county population",
+    subtitle = "Minnesota Pollution Control Agency (MPCA) SCORE",
     x_title = "Population",
     y_title = "Waste (tons)"
   )
+fig_waste_county_pop
 ```
 
 ### Data characteristics
@@ -165,11 +192,11 @@ Uncertainty was not included in the dataset given, nor does the EPA offer guidan
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
 
-### Waste Management Classification
+### Waste management classification
 
-The MPCA SCORE report classifies waste management by two management methods and, within those categories, five sub-methods. Within the management methods, "MMSW", or "Mixed Municipal Solid Waste", refers to garbage, organic refuse, or other solid waste aggregated for collection, while "Combined Recycling and Organics" refers to separated recyclable and composted materials, including traditional recyclables, source-separated compostable materials, and yard trimmings.
+The MPCA SCORE report classifies waste management by two management methods and, within those categories, five sub-methods [@mpcaSustainableMaterialsManagement2023]. Within the management methods, "MMSW", or "Mixed Municipal Solid Waste", refers to garbage, organic refuse, or other solid waste aggregated for collection, while "Combined Recycling and Organics" refers to separated recyclable and composted materials, including traditional recyclables, source-separated compostable materials, and yard trimmings.
 
-MMSW includes the subcategories of Landfill, WTE, Onsite, and MSW Compost. Landfill is all material disposed of in a landfill. WTE, or Waste to Energy, refers to waste combusted in an energy recovery facility or incinerator. Onsite refers to [??? where is documentation on this]. MSW Compost includes [all compost separated from landfill, check]. No metropolitan counties reported any MSW Compost in the year 2021. Only Sherburne and Chisago counties reported waste managed in onsite facilities.
+MMSW includes the subcategories of Landfill, WTE, Onsite, and MSW Compost. Landfill is all material disposed of in a landfill. WTE, or Waste to Energy, refers to waste combusted in an energy recovery facility or incinerator. Onsite refers to burning or burying MSW [@mpcaSustainableMaterialsManagement2023]. MSW Compost includes [all compost separated from landfill, check]. No metropolitan counties reported any MSW Compost in the year 2021. Only Sherburne and Chisago counties reported waste managed on-site. 
 
 Combined Recycling and Organics includes the subcategories Recycling and Organics. Organics, as compared to MSW Compost, refers to source-separated and direct compost streams. All compost data in this report comes from this category.
 
@@ -179,11 +206,15 @@ After comparing with federal tools like the EPA's [Waste and Recycling National 
 
 We used emissions factors from the EPA's [Emission Factors Hub](https://www.epa.gov/climateleadership/ghg-emission-factors-hub) to calculate emissions based on the totals reported by the MPCA. These emissions factors come from the EPA's [Waste Reduction Model](https://www.epa.gov/warm). 
 
-We selected for each management subcategory the emissions factor most aligned with the waste type as reported in SCORE. These emissions factors do not take into account emissions savings associated with a particular management method, for example energy savings from Waste to Energy facilities.
+We selected for each management subcategory the emissions factor most aligned with the waste type as reported in SCORE. These emissions factors do not take into account emissions savings associated with a particular management method, for example energy savings from waste to energy facilities.
 
 ```{r tbl-solid-waste-management-classifications}
 #| tbl-cap: "Solid waste management classifications by data source, including emissions factors"
 #| out-width: "95%"
+
+# waste_factors <- epa_ghg_factor_hub$waste
+# TODO fix table here with actual epa_ghg_factor_hub values used
+
 waste_management_comp <-
   tribble(
     ~`MPCA Management Method`, ~`MPCA Method`, ~`Our Category`, ~`Emissions Factor Name`, ~`Emissions Factor`,

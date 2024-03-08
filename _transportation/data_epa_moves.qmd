@@ -2,6 +2,8 @@
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
 epa_moves <- readRDS(file.path(here::here(), "_transportation/data/epa_moves.RDS"))
 epa_moves_meta <- readRDS(file.path(here::here(), "_transportation/data/epa_moves_meta.RDS"))
 hookaddcap()
@@ -66,7 +68,7 @@ lggit_clean <- lggit_kg_emissions_per_mile %>%
 ```{r tbl-epa-moves-values}
 #| tbl-cap: "Emissions in grams per mile traveled by vehicle weight in the Twin Cities region. EPA MOVES4."
 #| out-width: "95%"
-epa_moves_clean %>%
+tbl_epa_moves_values <- epa_moves_clean %>%
   gt() %>%
   gt::opt_row_striping() %>%
   fmt_number(3:6, decimals = 2) %>%
@@ -75,6 +77,7 @@ epa_moves_clean %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+tbl_epa_moves_values
 ```
 ### Comparsion with EPA GHG Emissions Hub (2021)
 
@@ -83,7 +86,8 @@ For comparison, we pulled the emissions per mile rates from the Local Greenhouse
 ```{r tbl-lggit-emissions-per-mile}
 #| tbl-cap: "Grams of emissions per mile by vehicle type and fuel type. EPA GHG Emission Hub (2021)"
 #| out-width: "95%"
-lggit_clean %>%
+
+tbl_lggit_emissions_per_mile <- lggit_clean %>%
   gt() %>%
   fmt_number(4:7, decimals = 2) %>%
   gt::opt_row_striping() %>%
@@ -92,6 +96,8 @@ lggit_clean %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_lggit_emissions_per_mile
 ```
 
 ```{r lggit-mean-passenger}
@@ -162,17 +168,23 @@ To directly compare overall passenger emissions rates, we applied a weighted ave
 #| fig-cap: "MOVES4 and GHG Emissions Hub per mile emission rates by vehicle weight"
 #| out-width: "95%"
 #| out-height: "300px"
-plot_ly(
+
+fig_moves_ghg_hub_comparison <- plot_ly(
   data = epa_plus_moves %>%
     group_by(`Vehicle weight`),
-  source = opts_current$get()$label,
+  source = "fig-moves-ghg-hub-comparison",
   y = ~`Vehicle weight`,
   x = ~value,
   color = ~data_source,
+  colors = c(
+    "EPA GHG Hub" = cprg_colors$cprg_da_yellow,
+    "MOVES" = colors$councilBlue
+  ),
   type = "scatter",
   mode = "markers",
+  opacity = 0.7,
   marker = list(
-    size = 10
+    size = 15
   ),
   hovertemplate = ~ paste0(
     "Vehicle weight: ", `Vehicle weight`, "<br>",
@@ -188,13 +200,18 @@ plot_ly(
     yend = ~`Vehicle weight`,
     x = ~MOVES,
     xend = ~`EPA GHG Hub`,
-    showlegend = FALSE
+    showlegend = FALSE,
+    line = list(
+      color = "darkgray"
+    )
   ) %>%
   plotly_layout(
     main_title = "MOVES4 and GHG Emissions Hub per mile emission rates",
     x_title = "Grams CO<sub>2</sub>e per mile"
   ) %>%
   layout(barmode = "identity")
+
+fig_moves_ghg_hub_comparison
 ```
 
 ### Limitations

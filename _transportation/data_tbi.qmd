@@ -2,6 +2,8 @@
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
 veh21 <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/veh21.RDS")) %>%
   mutate(
     fuel_orig = forcats::fct_rev(fuel_orig),
@@ -27,8 +29,8 @@ TBI survey statistics were processed in [tbi_survey_stats.R](data-raw/tbi_survey
 ```{r tbl-tbi-hh-county-dist}
 #| tbl-cap: "2021 TBI household survey geographic distribution"
 #| out-width: "95%"
-
-tbi_home_county %>%
+tbl_tbi_hh_county_dist <-
+  tbi_home_county %>%
   select(
     "Household county" = cprg_hh_county,
     "Estimated number of households" = est_n,
@@ -47,6 +49,8 @@ tbi_home_county %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_tbi_hh_county_dist
 ```
 
 
@@ -63,7 +67,8 @@ Regional fleet statistics were processed in [tbi_vehicle_stats.R](data-raw/tbi_v
 ```{r tbl-vehicle-fuel-age}
 #| tbl-cap: "Median vehicle age and proportion of all regional vehicles by grouped fuel type"
 #| out-width: "95%"
-tbi_vehicle_fuel_age %>%
+tbl_vehicle_fuel_age <-
+  tbi_vehicle_fuel_age %>%
   select(
     "Fuel type" = fuel,
     "Median vehicle year" = year_median,
@@ -84,6 +89,8 @@ tbi_vehicle_fuel_age %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_vehicle_fuel_age
 ```
 
 ```{r fig-regional-fuel-veh-age}
@@ -110,13 +117,14 @@ fuel_grp <- plot_ly(
 ) %>%
   plotly_layout()
 
-subplot(
-  fuel_grp,
-  fuel_dist_pl,
-  shareX = TRUE,
-  heights = c(0.2, 0.8),
-  nrows = 2
-) %>%
+fig_regional_fuel_veh_age <-
+  subplot(
+    fuel_grp,
+    fuel_dist_pl,
+    shareX = TRUE,
+    heights = c(0.2, 0.8),
+    nrows = 2
+  ) %>%
   plotly_layout(
     main_title = "Regional fleet vehicle year by fuel type",
     subtitle = "2021 Travel Behavior Inventory",
@@ -126,6 +134,14 @@ subplot(
   layout(
     legend = list(orientation = "h")
   )
+fig_regional_fuel_veh_age
+
+# add source to combined plot
+fig_regional_fuel_veh_age$x$source <- "fig-regional-fuel-veh-age"
+
+# remove subplots
+rm(fuel_dist_pl)
+rm(fuel_grp)
 ```
 
 ### Average trip distance between counties
@@ -141,8 +157,8 @@ TBI trip distances were processed in [tbi_trip_length.R](data-raw/tbi_trip_lengt
 ```{r tbl-reg-avg-trip-length}
 #| tbl-cap: "Regional mean trip distance. 2021 TBI."
 #| out-width: "95%"
-
-regional_trip_length_avg %>%
+tbl_reg_avg_trip_length <-
+  regional_trip_length_avg %>%
   select(
     "Mean trip distance (miles)" = mean_trip_dist,
     "Mean trip distance standard error" = mean_trip_dist_se,
@@ -164,6 +180,8 @@ regional_trip_length_avg %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_reg_avg_trip_length
 ```
 
 Origin-destination pairs with fewer than 30 observed trips were removed. 
@@ -173,9 +191,9 @@ Origin-destination pairs with fewer than 30 observed trips were removed.
 #| fig-cap: "TBI origin-destination trip length matrix"
 #| out-width: "95%"
 
-plot_ly(
+fig_tbi_trip_dist_matrix <- plot_ly(
   data = tbi_od_ordered_trip_length,
-  source = opts_current$get()$label,
+  source = "fig-tbi-trip-distance-matrix",
   y = ~trip_o_county,
   x = ~trip_d_county,
   z = ~ round(mean_trip_dist, 1),
@@ -210,6 +228,8 @@ plot_ly(
     y_title = "Origin county",
     legend_title = "Average trip length"
   )
+
+fig_tbi_trip_dist_matrix
 ```
 
 
@@ -218,7 +238,8 @@ plot_ly(
 ```{r tbl-od-trip-length}
 #| tbl-cap: "Mean trip distance by origin-destination county"
 #| out-width: "95%"
-tbi_od_ordered_trip_length %>%
+tbl_od_trip_length <-
+  tbi_od_ordered_trip_length %>%
   arrange(-estimate_n) %>%
   select(
     "Origin-Destination pair" = origin_dest_county_pair,
@@ -242,6 +263,8 @@ tbi_od_ordered_trip_length %>%
     locations = cells_column_labels()
   ) %>%
   gt::as_raw_html()
+
+tbl_od_trip_length
 ```
 
 :::

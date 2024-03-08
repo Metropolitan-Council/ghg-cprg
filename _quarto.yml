@@ -55,6 +55,7 @@ book:
     - _meta/supplementary_tables.qmd
     - _meta/additional_resources.qmd
     - _energy/utility_service_area_maps.qmd
+    - _meta/lidac_maps.qmd
     - figures.qmd
     - tables.qmd
     - references.qmd

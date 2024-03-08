@@ -141,6 +141,7 @@ nrel_slope_proportions <- nrel_emissions %>%
   mutate(county = county_name) %>%
   select(-total, -county_name)
 
+saveRDS(nrel_emissions, "_energy/data-raw/nrel_slope/nrel_emissions.RDS")
 saveRDS(nrel_slope_proportions, "_energy/data-raw/nrel_slope/nrel_slope_proportions.RDS")
 
 # plot_ly(
