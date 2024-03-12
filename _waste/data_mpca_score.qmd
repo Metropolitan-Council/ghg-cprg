@@ -318,7 +318,7 @@ gt::gt(waste_management_comp,
 
 - As mentioned above, EPA emissions factors do not account for emissions saved through Waste to Energy conversions, as contrasted with Wisconsin emissions, which do.
 - There is wide variation between emissions factors for waste of various kinds within the same category. Because we do not have a detailed breakdown of the makeup of every category, we have assumed each one is adequately represented by the "Mixed MSW", "Mixed Organics", and "Mixed Recyclables" factors respectively.
-- This estimation method generates emissions for all waste generated in 2021. However, waste in landfills and composting facilities does not release all emissions at once. This method tends to overestimate emissions for a given year [@fongGlobalProtocolCommunityScale].
+- This estimation method generates emissions for all waste generated in 2021. However, waste in landfills and composting facilities does not release all emissions at once. This method tends to overestimate emissions for a given year [@fongGlobalProtocolCommunityScale2021].
 
 Subject matter expert reviewer: ___
 
