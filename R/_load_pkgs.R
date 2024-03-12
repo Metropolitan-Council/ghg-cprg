@@ -6,16 +6,16 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(readxl, quietly = TRUE))
   suppressMessages(library(janitor, quietly = TRUE))
   suppressMessages(library(purrr, quietly = TRUE))
-  suppressMessages(library(furrr, quietly = TRUE))
+  # suppressMessages(library(furrr, quietly = TRUE))
   # suppressMessages(library(future, quietly = TRUE))
   suppressMessages(library(stringr, quietly = TRUE))
   suppressMessages(library(sf, quietly = TRUE))
-  suppressMessages(library(tidycensus, quietly = TRUE))
+  # suppressMessages(library(tidycensus, quietly = TRUE))
   suppressMessages(library(councilR, quietly = TRUE))
   suppressMessages(library(lubridate, quietly = TRUE))
 
   # Workflow ------
-  suppressMessages(library(keyring, quietly = TRUE))
+  # suppressMessages(library(keyring, quietly = TRUE))
   suppressMessages(library(here, quietly = TRUE))
   suppressMessages(library(fs, quietly = TRUE))
   suppressMessages(library(testthat, quietly = TRUE))
@@ -36,9 +36,6 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(knitr, quietly = TRUE))
   suppressMessages(library(kableExtra, quietly = TRUE))
   suppressMessages(library(gt, quietly = TRUE))
-
-  # require(Hmisc)
-  # getRs("reptools.r") # Loads reptools.r from Github
 
   load_packages <- TRUE
   cli::cli_inform(
