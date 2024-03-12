@@ -1,4 +1,4 @@
-## Wisconsin waste data
+## Wisconsin Greenhouse Gas Emissions Inventory
 
 ```{r}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -21,8 +21,6 @@ hookaddcap()
 
 
 Waste emissions for Wisconsin counties were unavailable in the same detail as the MPCA data. Thus, we estimated total waste emissions based on statewide emissions estimates, allocated by population.
-
-## Wisconsin Greenhouse Gas Emissions Inventory
 
 The most recent [Wisconsin Greenhouse Gas Emissions Inventory](https://widnr.widen.net/view/pdf/o9xmpot5x7/AM610.pdf?t.download=true) was done in 2018 by the Wisconsin Department of Natural Resources. Included in the solid waste data for this source are emissions from landfills and waste combustion, taking into account the emissions reduced by landfill gas collection for gas-to-energy use or flaring. This inventory does not, however, include emissions generated from composting or recycling.
 
