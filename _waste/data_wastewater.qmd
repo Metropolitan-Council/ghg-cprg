@@ -136,7 +136,7 @@ fig_map_ww_service_area <- council_leaflet() %>%
     popup = "CPRG county area"
   ) %>%
   addPolygons(
-    data = metc_service_area %>% 
+    data = metc_service_area %>%
       sf::st_simplify(dTolerance = 1),
     group = "MetC wastewater service area",
     weight = 1,

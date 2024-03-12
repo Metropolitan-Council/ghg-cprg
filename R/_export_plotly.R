@@ -36,6 +36,10 @@ list.files(path = ".", pattern = "*.qmd", recursive = TRUE) %>%
     }
   )
 
+fs::file_delete("purl/chapter_template.R")
+fs::file_delete("purl/data_source_template.R")
+fs::file_delete("purl/_meta/data_request_template.R")
+
 # evaluate all quarto
 list.files("purl",
   full.names = TRUE,

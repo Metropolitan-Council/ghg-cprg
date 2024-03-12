@@ -400,7 +400,7 @@ waste_federal <- solidwaste_totals %>%
 
 fig_federal_inventory_compare <- plot_ly(
   data = waste_federal,
-  source = opts_current$get()$label,
+  source = "fig-federal-inventory-compare",
   x = ~geog_name,
   y = ~emissions_metric_tons_co2e,
   color = ~data_source,
