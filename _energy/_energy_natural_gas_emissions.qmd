@@ -118,9 +118,7 @@ Because of the small amount of data, we hard-coded observed information into dat
 
 #### Emissions factors
 
-To transform natural gas energy deliveries into emissions in metric tons CO~2~e, we referenced 2021 EPA GHG Emissions Factor Hub figures [@usepaEmissionsFactorsGreenhouse2021]:
-
-EPA originally reported these factors as kg (for CO~2~) and g (for CH~4~ and N~2~O) per standard cubic foot (scf), and we transformed these into units of lbs. per thousand cubic feet (commonly written as *mcf*) for our analysis, to 1) align with providing results in metric tons CO~2~e, and 2) to match the convention of Minnesota utilities, who reported their energy delivered in mcf. Wisconsin utilities reported their energy delivered in therms; we converted these to mcf during aggregation as well.
+Natural gas energy deliveries were reported in standard cubic feet and converted into emissions in metric tons CO~2~e, referencing the 2021 EPA GHG Emissions Factor Hub [@usepaEmissionsFactorsGreenhouse2021].
 
 ### Results
 
@@ -252,7 +250,7 @@ nrel_region_total_natural_gas <- nrel_metc_natural_gas_comp %>%
   magrittr::extract2("emissions_metric_tons_co2e")
 ```
 
-The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly forecasted emissions tied to the user of natural up to 2050 based on 2016 observed/reported data at the county level. In comparing these figures to our own inventory, we observed that, where we estimated `r scales::comma(region_total_natural_gas, accuracy = 1)` metric tons of emissions linked to natural gas use in our study area in the year 2021, NREL SLOPE forecasted `r scales::comma(nrel_region_total_natural_gas, accuaracy = 1)` metric tons in our study area.
+The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly forecasted emissions from natural gas through 2050 based on 2016 observed/reported data at the county level. In comparing these figures to our own inventory, we observed that, where we estimated `r scales::comma(region_total_natural_gas, accuracy = 1)` metric tons of emissions linked to natural gas use in our study area in the year 2021, NREL SLOPE forecasted `r scales::comma(nrel_region_total_natural_gas, accuaracy = 1)` metric tons in our study area.
 
 ```{r fig-nrel-metc-comparison-nat-gas}
 #| fig-cap: "Metropolitan Council emissions inventory v. NREL SLOPE modeled emissions"
