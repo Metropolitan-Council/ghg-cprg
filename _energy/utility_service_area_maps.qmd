@@ -43,7 +43,7 @@ hookaddcap()
 ```
 
 
-To identify the utilities operating within our 11-county study area, we utilized data sets published by state and federal sources. The outcome of our data collection, yielding a list of distinct utilities for which activity data should be collected, resides within [distinct_natGas_util_WI.RDS](data/distinct_natGas_util_WI.RDS) (4 utilities, all investor-owned) and [distinct_natGas_util_type_MN.RDS](data/distinct_natGas_util_type_MN.RDS) (7 utilities, six investor-owned and one municipally-owned).  
+To identify the utilities operating within our 11-county study area, we utilized data sets published by state and federal sources. The outcome of our data collection yields a list of distinct utilities suplying activity data and resides within [distinct_natGas_util_WI.RDS](data/distinct_natGas_util_WI.RDS) (4 utilities, all investor-owned) and [distinct_natGas_util_type_MN.RDS](data/distinct_natGas_util_type_MN.RDS) (7 utilities, six investor-owned and one municipally-owned).  
 
 ### Minnesota
 
@@ -143,11 +143,7 @@ fig_MN_ng_inScope_servTerrs
 
 ### Wisconsin
 
-The Public Service Commission of Wisconsin publishes and maintains maps of service territories for natural gas utilities operating within the state. This data set relies upon, and is accurate to, "the extent that various sources \[utilities\] supplied accurate data." [@publicservicecommissionofwisconsinPSCInteractiveService2021]. This dataset spans the whole state of Wisconsin (see @fig-wisconsin-ng-servTerrs), and both clipped to the two Wisconsin counties included in the study area of this inventory (see @fig-wisconsin-ng-inScope-servTerrs)
-
-for electric... as well as the full service territories beyond the two-county area to facilitate estimation and modeling of energy demand (see fig. Z)
-
-For electric.. Because Wisconsin does not require utilities to report the amount of energy, both the extent of utilities' operations within our study area (St. Croix and Pierce counties within Wisconsin) as well as their statewide service territories represent important inputs to our methodology for estimating both number of customer accounts and energy
+The Public Service Commission of Wisconsin publishes and maintains maps of service territories for natural gas utilities operating within the state. This data set relies upon, and is accurate to, "the extent that various sources \[utilities\] supplied accurate data." [@publicservicecommissionofwisconsinPSCInteractiveService2021]. This dataset spans the whole state of Wisconsin (see @fig-wisconsin-ng-servTerrs), but was clipped to the two Wisconsin counties included in the study area of this inventory (see @fig-wisconsin-ng-inScope-servTerrs).
 
 ```{r fig-wisconsin-ng-servTerrs}
 #| fig-cap: "Wisconsin utility service service territories"
