@@ -58,14 +58,13 @@ hookaddcap()
 
 In 2021, waste activities over the entire United States generated emissions of 169.2 MMTCO~2~e, or 2.7 percent of total U.S. greenhouse gas emissions [@usepaInventoryGreenhouseGas2023]. Solid waste emissions primarily consist of CH~4~, emitted in large part by landfills and organics composting, but also include CO~2~ and N~2~O generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. This inventory also includes emissions generated in the management of recyclables.
 
-
 Wastewater emissions account for direct CH~4~ and N~2~O emissions from the treatment of municipal wastewater, and not additional indirect anthropogenic emissions such as the electricity needed to operate processing plants.
 
 ## Methods {#sec-waste-methods}
 
 ### Solid Waste
 
-The process for calculating solid waste emissions slightly differs between Minnesota and Wisconsin counties, due to a difference in data availability.
+The process for calculating solid waste emissions slightly differs between Minnesota and Wisconsin counties, due to a difference in data availability. Both state's use state or federal data sources, the highest quality data rank (@tbl-quality-rank).
 
 For Minnesota counties, waste generation totals are allocated by sector from Minnesota Pollution Control Agency (MPCA) SCORE data [@mpcaMPCASCOREGuidebook2022]. Totals for each sector are multiplied by the appropriate EPA-provided emissions factor to provide an estimate of emissions from that source and county. Learn more about MPCA SCORE in @sec-mpca-score. 
 
@@ -77,12 +76,15 @@ $$Emissions_c = Emissions_{total} \times \frac{Pop_c}{Pop_{total}}$$
 
 ### Wastewater
 
+We used state level estimates of municipal wastewater emissions (metric tons CO~2~e) from the EPA state inventory and projection tool [@usepaStateGreenhouseGas2024]. Due to incomplete data, industrial wastewater emissions were not estimated. Emissions were apportioned to each county, $c$, based on its fractional share of its state's population.
+
+$$Emissions_c = Emissions_{state} \times \frac{Pop_c}{Pop_{state}}$$
 
 ## Results
 
-Emissions from waste is the smallest of the three sectors in the Twin Cities MSA. Waste generated `r round(sum(county_emissions$emissions_metric_tons_co2e)/1000000 * sector_percentages[[2]][3], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Solid waste, including landfills, recycling, and organics, generates the largest share of emissions in the waste sector, with wastewater treatment comprising a smaller share of waste emissions. 
+Emissions from waste is the smallest of the three sectors in the Twin Cities MSA. Waste generated `r round(sum(county_emissions$emissions_metric_tons_co2e)/1000000 * sector_percentages[[2]][3], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Solid waste, including landfills, recycling, and organics, generates the largest share of emissions in the waste sector, with municipal wastewater treatment comprising a smaller share of waste emissions. 
 
-Waste emissions in Minnesota have declined nearly 40% since 2005, due to a variety of factors including gas capture technologies and aging waste in open landfills [@mpcaClimateChangeTrends2023]. Waste emissions in Wisconsin show no significant change from 2005 to 2018, possibly due to increased waste generation ofsetting reductions from gas capture [@wisconsindnrGreenhouseGas2021]. The Metropolitan Council, which oversees wastewater services for the majority of the urbanized extent of the metropolitan region, continues to work to reduce wastewater emissions across its 9 wastewater treatment plants.
+Waste emissions in Minnesota have declined nearly 40% since 2005, due to a variety of factors including gas capture technologies and aging waste in open landfills [@mpcaClimateChangeTrends2023]. Waste emissions in Wisconsin show no significant change from 2005 to 2018, possibly due to increased waste generation offsetting reductions from gas capture [@wisconsindnrGreenhouseGas2021]. The Metropolitan Council, which oversees wastewater services for the majority of the urbanized extent of the metropolitan region, continues to work to reduce wastewater emissions across its 9 wastewater treatment plants.
 
 ```{r fig-waste-wastewater-county-emissions}
 #| fig-cap: "Solid waste and wastewater county emissions"
@@ -275,61 +277,8 @@ fig_solid_waste_sector_emissions_by_category
 
 ## Correlation with related data
 
-We would expect counties with a higher population to have high wastewater emissions. The resulting correlation is strong. 
 
-```{r fig-emissions-population-wastewater}
-#| fig-cap: "County population and wastewater emissions"
-#| out-width: "95%"
-
-wastewater_totals <- county_emissions %>%
-  filter(source == "Wastewater") %>%
-  group_by(geog_name) %>%
-  summarise(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
-  )
-
-wastewater_population <- left_join(wastewater_totals, cprg_population,
-  by = c("geog_name" = "NAME")
-)
-
-fig_emissions_population_wastewater <- plot_ly(
-  data = wastewater_population,
-  source = "fig-emissions-population-wastewater",
-  x = ~population,
-  y = ~emissions_metric_tons_co2e,
-  type = "scatter",
-  mode = "markers",
-  hovertemplate = ~ paste0(
-    geog_name, " County", "<br>",
-    "Population: ", scales::comma(population), "<br>",
-    "Emissions: ", round(emissions_metric_tons_co2e * 1e-3, digits = 0),
-    " thousand metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  ),
-  # opacity = 0.7,
-  marker = list(
-    color = colors$councilBlue,
-    size = 18,
-    line = list(
-      color = "lightgray",
-      width = 2
-    )
-  )
-) %>%
-  plotly_layout(
-    main_title = "County population and wastewater emissions",
-    subtitle = "2021 ACS 5-year population estimates. Strong positive correlation",
-    x_title = "Total population",
-    y_title = "Metric tons CO<sub>2</sub>e",
-    legend_title = "",
-    legend = list(orientation = "h")
-  )
-
-fig_emissions_population_wastewater
-```
-
-
-We would expect counties with a higher population to have high solid waste emissions.
+We would expect counties with a higher population to have higher solid waste emissions.
 
 ```{r fig-emissions-population-solidwaste}
 #| fig-cap: "County population and solid waste emissions"
@@ -388,7 +337,7 @@ fig_emissions_population_solidwaste
 
 The United States EPA conducts a comprehensive yearly estimate of greenhouse gas emissions from multiple sectors and gases. It also publishes statewide totals consistent with the national inventory. These emissions totals are consistent with international standards for greenhouse gas accounting, although they may differ from inventories completed at the state level for various reasons.
 
-US Inventory data for the waste sector in both Minnesota and Wisconsin was downloaded from the [Greenhouse Gas Inventory Data Explorer](https://cfpub.epa.gov/ghgdata/inventoryexplorer/) and processed in R script: [epa_inventory_data.R](/data-raw/epa_inventory_data.R), where it was disaggregated from state to county level by population.
+US Inventory data for the waste sector in both Minnesota and Wisconsin was downloaded from the [Greenhouse Gas Inventory Data Explorer](https://cfpub.epa.gov/ghgdata/inventoryexplorer/) and processed in R script: [epa_inventory_data.R](/data-raw/epa_inventory_data.R), where it was apportioned from state to county level by population.
 
 ```{r fig-federal-inventory-compare}
 #| fig-cap:  "Solid waste emissions comparison: Met Council and US GHG Inventory"
@@ -516,11 +465,10 @@ plot_waste_comparison <- function(waste_source,
 }
 ```
 
-Wastewater comparisons are very consistent, with the US GHG Inventory consistently estimating more emissions than the Met Council estimate. 
-
+Wastewater comparisons are very consistent, with the US GHG Inventory consistently estimating more emissions than the EPA derived Met Council estimate. 
 
 ```{r fig-metc-epa-ghg-wastewater}
-#| fig-cap: "Wastewater emissions comparison by county, Met Council and US GHG Inventory. US inventory consistently higher than Council. "
+#| fig-cap: "Wastewater emissions comparison by county, EPA-derived Met Council and US GHG Inventory. US inventory consistently higher than Council. "
 #| out-width: "95%"
 
 fig_metc_epa_ghg_wastewater <- plot_waste_comparison("Wastewater",

@@ -28,7 +28,7 @@ The emissions for solid waste in this report were calculated using the [EPA's St
 
 For 2018, the Wisconsin DNR reported 2.2 million metric tons carbon dioxide equivalent (MMTCO~2~e) generated through landfilling and solid waste management.
 
-In the process of analysis, this statewide estimate was disaggregated to the county level based on county population data, as detailed in @sec-waste-methods.
+In the process of analysis, this statewide estimate was apportioned to the county level based on county population data, as detailed in @sec-waste-methods.
 
 ### Limitations
 

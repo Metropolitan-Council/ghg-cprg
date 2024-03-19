@@ -21,13 +21,13 @@ mc_ww_cty <- mc_ww %>%
 hookaddcap()
 ```
 
-We currently have three sources for wastewater emissions: the EPA state inventory and projection tool, the Minnesota Pollution Control Agency (MPCA) emissions inventory, and Metropolitan Council Environmental Services emission estimates. Because only the EPA's estimate extends to Wisconsin and Minnesota we are reporting those data for consistency, but explore all three below where they have geographic overlap.
+We explored three sources for wastewater emissions: the EPA state inventory and projection tool, the Minnesota Pollution Control Agency (MPCA) emissions inventory, and Metropolitan Council Environmental Services emission estimates. Because only the EPA's estimate extends to Wisconsin and Minnesota, we are reporting those data for consistency, but explore all three below where they have geographic overlap.
 
-The EPA estimate is a high-quality government dataset that models emissions using state population, biochemical oxygen demand, fraction of wastewater anaerobically digested, fraction of population on septic, estimated protein content, and biosolids used as fertilizer to estimate CH~4~ and N~2~O emissions [@usepaStateGreenhouseGas2024]. These inputs are modifiable and should be explored further in the CCAP. We down-scaled the state level emission estimates to county levels by population percentage. The actual sample os unclear. 
+The EPA estimate is a high-quality government dataset that models emissions using state population, biochemical oxygen demand, fraction of wastewater anaerobically digested, fraction of population on septic, estimated protein content, and biosolids used as fertilizer to estimate CH~4~ and N~2~O emissions [@usepaStateGreenhouseGas2024]. These inputs are modifiable and will be explored further in the CCAP. We apportioned the state level emission estimates to county levels by population percentage.
 
 The EPA tool provides outputs in metric tons CO~2~e. We confirmed that the global warming potentials (GWP) used are from AR5 [@ipccClimateChange2014]. We used the most recent version of the tool released in January 2024, version 2024.1. 
 
-We are currently using all and only default input values provided by the EPA, though will refine these based on our knowledge of local wastewater treatment in the future.
+We are currently using default input values provided by the EPA, though will refine these based on our knowledge of local wastewater treatment in the future.
 
 You can access the EPA tool on the [EPA website](https://www.epa.gov/statelocalenergy/download-state-inventory-and-projection-tool) and the MPCA data through their [Tableau Dashboard](https://public.tableau.com/app/profile/mpca.data.services/viz/GHGemissioninventory/GHGsummarystory). You can also read full methodologies for MPCA [@claflinGreenhouseGasEmissions2023] and EPA [@usepaStateGreenhouseGas2024a] in their respective documents. 
 
@@ -37,7 +37,7 @@ There are many sources of uncertainty in these estimates due to multiple activit
 
 ### Limitations
 
-- In order to have homogeneous comparisons among counties, we are relying on default EPA State Inventory Tool data which may miss particularities about how wastewater is processed in our narrower county scope.
+- In order to have homogeneous comparisons among counties, we are relying on default EPA state inventory and projection tool data which may miss particularities about how wastewater is processed in our narrower county scope.
 - We are assuming EPA default input values are appropriate representations of the 11 county MSA region and that we can scale to county levels by population given that we are estimating municipal wastewater treatment.
 
 ### Comparison with similar datasets
