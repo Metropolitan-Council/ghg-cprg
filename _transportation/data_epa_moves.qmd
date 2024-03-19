@@ -9,10 +9,9 @@ epa_moves_meta <- readRDS(file.path(here::here(), "_transportation/data/epa_move
 hookaddcap()
 ```
 
-Emissions rates for our region were calculated using the EPA's [Motor Vehicle Emissions Simulator (MOVES4)](https://www.epa.gov/moves) [@usepaMotorVehicleEmission2023]. MOVES4 calculates emissions factors using Council's regional travel demand model, Minnesota Department of Vehicle Services' county vehicle registration data, and the Minnesota Pollution Control Agency's vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle's age and size, as well as its fuel intake (diesel or gasoline). The results are specific to the conditions of our region, and so are more accurate than national averages. 
+Emissions rates for our region were calculated using the EPA's [Motor Vehicle Emissions Simulator (MOVES)](https://www.epa.gov/moves) [@usepaPopulationActivityOnroad2016]. MOVES calculates emissions factors using Council's regional travel demand model, Minnesota Department of Vehicle Services' county vehicle registration data, and the Minnesota Pollution Control Agency's vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle's age and size, as well as its fuel intake (diesel or gasoline). The results are specific to the conditions of our region, and so are more accurate than national averages. 
 
-<!-- TODO fill in these values -->
-MOVES is a high-quality government modeling system with strong data inputs and outputs. We requested this data from our MOVES coordinator, Dennis Farmer, who ran the model and shared the resulting table with us. The model run covers [exact geographic scope here] for years [exact years here], using MOVES version [exact version here]. 
+MOVES is a high-quality government modeling system with strong data inputs and outputs. We requested this data from our MOVES coordinator who ran the model and shared the resulting table with us. The model run covers the entirety of the 7-county metro for years 2018 and 2019 ^[Passenger vehicles were updated to 2019. Commercial vehicles use 2018 values.], using MOVES version 2014B. 
 
 The resulting table provides grams of CO~2~, CH~4~, and N~2~O per vehicle mile traveled. We imported, processed, and saved the data in an R script, [epa_moves.R](data-raw/epa_moves.R). CO~2~ equivalence (CO~2~e) values are derived using global warming potential (GWP) values. See @sec-gwp for more details.
 
@@ -66,7 +65,7 @@ lggit_clean <- lggit_kg_emissions_per_mile %>%
 
 
 ```{r tbl-epa-moves-values}
-#| tbl-cap: "Emissions in grams per mile traveled by vehicle weight in the Twin Cities region. EPA MOVES4."
+#| tbl-cap: "Emissions in grams per mile traveled by vehicle weight in the Twin Cities region. EPA MOVES."
 #| out-width: "95%"
 tbl_epa_moves_values <- epa_moves_clean %>%
   gt() %>%
@@ -165,7 +164,7 @@ epa_moves_wide <- epa_plus_moves %>%
 To directly compare overall passenger emissions rates, we applied a weighted average to the EPA GHG Hub emissions rates for passenger vehicles according to the regional fleet gasoline-diesel distribution (98% gasoline, 2% diesel). Learn more about the regional fleet in @sec-regional-fleet.  
 
 ```{r fig-moves-ghg-hub-comparison}
-#| fig-cap: "MOVES4 and GHG Emissions Hub per mile emission rates by vehicle weight"
+#| fig-cap: "MOVES and GHG Emissions Hub per mile emission rates by vehicle weight"
 #| out-width: "95%"
 #| out-height: "300px"
 
@@ -207,7 +206,7 @@ fig_moves_ghg_hub_comparison <- plot_ly(
     )
   ) %>%
   plotly_layout(
-    main_title = "MOVES4 and GHG Emissions Hub per mile emission rates",
+    main_title = "MOVES and GHG Emissions Hub per mile emission rates",
     x_title = "Grams CO<sub>2</sub>e per mile"
   ) %>%
   layout(barmode = "identity")
@@ -219,7 +218,8 @@ fig_moves_ghg_hub_comparison
 
 - This edition of MOVES is outdated relative to our estimation year (2021).
 - We are not breaking out vehicles by fuel type; instead, we are aggregating based on the regional fleet. This may result in more inaccuracies.
-- MOVES4 only accounts for vehicles that are registered in the 7-county metro area, so does not account for vehicles on regional roads, but registered elsewhere. However, the traffic generated from those vehicles is detected in the regional travel demand model. 
+- MOVES only accounts for vehicles that are registered in the 7-county metro area, so does not account for vehicles on regional roads, but registered elsewhere. However, the traffic generated from those vehicles is detected in the regional travel demand model. 
+- MOVES values were last updated in 2019. We anticipate using a more recent version of MOVES for the CCAP. 
 
 <!-- ### Data dictionary -->
 
