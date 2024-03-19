@@ -749,9 +749,9 @@ window.onload = filter_default_comm;
 
 StreetLight classifies commercial vehicles by Federal Highway Administration (FHWA) gross vehicle weight range (GWVR) classes: where vehicles between 14,000 lbs and 26,000 lbs (Class 4 to Class 6) are considered medium-duty, and vehicles greater than 26,000 lbs (Class 7+) are heavy-duty [@streetlightdataTruckTravelMode2023]. 
 
-EPA's Motor Vehicle Emissions Simulator (MOVES4) has their own, slightly different vehicle classification system [@usepaPopulationActivityOnroad2023].
+EPA's Motor Vehicle Emissions Simulator (MOVES) has their own, slightly different vehicle classification system [@usepaPopulationActivityOnroad2016].
 
-After reviewing MnDOT's [visual definitions of commercial vehicles](https://www.dot.state.mn.us/traffic/data/reports/wim/Definitions_of_Visual_Classifications_of_Heavy_Commercial_Vehicles.pdf), we defined MnDOT vehicle types 4-7 as medium-duty and types 8-13 as heavy-duty. We believe this configuration aligns most closely with both StreetLight's and MOVES4's vehicle classifications schemes.
+After reviewing MnDOT's [visual definitions of commercial vehicles](https://www.dot.state.mn.us/traffic/data/reports/wim/Definitions_of_Visual_Classifications_of_Heavy_Commercial_Vehicles.pdf), we defined MnDOT vehicle types 4-7 as medium-duty and types 8-13 as heavy-duty. We believe this configuration aligns most closely with both StreetLight's and MOVES's vehicle classifications schemes.
 
 However, vehicles falling in FHWA class 7 (> 26,000 lbs, < 33,000 lbs) are classified as medium duty by state DOTs, and heavy duty by StreetLight. This discrepancy is relatively small, and is unlikely to heavily influence emissions reported.
 

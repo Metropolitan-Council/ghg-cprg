@@ -135,7 +135,7 @@ tbl_waste_factors
 Transportation emissions factors were processed in [epa_moves.R](../_transportation/data-raw/epa_moves.R). Read more about these emission factors in @sec-epa-moves. 
 
 ```{r tbl-moves-factors}
-#| tbl-cap: "Transportation emissions factors. Source: EPA MOVES4"
+#| tbl-cap: "Transportation emissions factors. Source: EPA MOVES"
 #| out-width: "95%"
 tbl_moves_factors <- epa_moves %>%
   pivot_longer(
@@ -145,7 +145,7 @@ tbl_moves_factors <- epa_moves %>%
   ) %>%
   mutate(
     `Grams per vehicle mile traveled` = Value,
-    Source = paste0("EPA MOVES4 (", moves_year, ")"),
+    Source = paste0("EPA MOVES (", moves_year, ")"),
     GHG = case_when(
       GHG == "co2" ~ "CO₂",
       GHG == "ch4" ~ "CH₄",
