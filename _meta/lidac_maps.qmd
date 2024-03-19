@@ -20,7 +20,7 @@ hookaddcap()
 ```
 
 ::: {.callout-note}
-This page contains excerpts from the PCAP section in low-income and disadvantaged communities. See the [full PCAP document](https://www.epa.gov/system/files/documents/2024-03/metropolitan-council-twin-cities-msa-priority-climate-action-plan.pdf) for more information. 
+This page contains excerpts from the PCAP section on low-income and disadvantaged communities. See the [full PCAP document](https://www.epa.gov/system/files/documents/2024-03/metropolitan-council-twin-cities-msa-priority-climate-action-plan.pdf) for more information. 
 :::
 
 Everyone will be affected by climate change, but elderly people, households with low incomes, and communities that have faced historical and ongoing oppression and marginalization will be impacted most (including, but not limited to, Black, Indigenous, and communities of color). This PCAP recommends strategies that recognize the unique needs of these communities and work to identify and minimize potential adverse effects from climate change.
@@ -32,7 +32,7 @@ Geographies for Low Income and Disadvantaged Communities (LIDAC) were identified
     
 By using the data from this tool, 659 LIDAC block groups were identified. Approximately 817,000 (24%) of residents in the 11-county area are living in LIDAC block groups. These areas are primarily located in eastern Hennepin County and southern Ramsey County, centered in the cities of Minneapolis and Saint Paul. 
 
-LIDAC designated areas are substantially more racially and ethnically diverse than the rest of the 11-county area. About 54% of people living in LIDAC-designated block groups are Black, Indigenous, or people of color (BIPOC), compared to 19% of non-LIDAC communities. Black, Indigenous, and people of color comprise a much larger share of the population in LIDACs.
+LIDAC designated areas are substantially more racially and ethnically diverse than the rest of the 11-county area. About 54% of people living in LIDAC-designated block groups are Black, Indigenous, or people of color (BIPOC), compared to 19% in non-LIDAC communities. Black, Indigenous, and people of color comprise a much larger share of the population in LIDACs.
 
 
 ```{r fig-map-lidac}
@@ -54,7 +54,7 @@ LIDACs are substantially more likely to be in places with higher levels of PM~2.
 knitr::include_graphics("assets/maps/map_PM2.5.png")
 ```
 
-LIDACs are also substantially more likely to be in places with higher levels of diesel particulate exposure. Diesel exhaust has been linked to airway inflammation, vascular dysfunction, developmental toxicity, neuroinflammation, respiratory mortality, and is carcinogenic to humans [@weitekampSystematicReviewHealth2020].  Most diesel particulate exposure is the result of commercial trucking; the greenhouse gas inventory in this report totaled over 869 million commercial vehicle miles traveled.^[This figure includes medium- and heavy-duty vehicles miles traveled in the seven-county Twin Cities metro region, generated from StreetLight Data, 2021.]
+LIDACs are also substantially more likely to be in places with higher levels of diesel particulate exposure. Diesel exhaust has been linked to airway inflammation, vascular dysfunction, developmental toxicity, neuroinflammation, respiratory mortality, and is carcinogenic to humans [@weitekampSystematicReviewHealth2020]. Most diesel particulate exposure is the result of commercial trucking; the greenhouse gas inventory in this report totaled over 869 million commercial vehicle miles traveled.^[This figure includes medium- and heavy-duty vehicles miles traveled in the seven-county Twin Cities metro region, generated from StreetLight Data, 2021.]
 
 ```{r fig-map-diesel}
 #| fig-cap: "Distribution of inhalable diesel particulate matter by percentiles"

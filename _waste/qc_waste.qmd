@@ -47,7 +47,7 @@ Local inventory of GHG emissions from landfills with documentation of the follow
 
 5.	Review by TL or senior technical reviewer—analytical methods and results are explained clearly, technical terms are defined, conclusions are reasonable based on information presented, and level of technical detail is appropriate)
 
-6.	Editor review—writing is clear, free of grammatical and typing errors.
+6.	Editor review — writing is clear, free of grammatical and typing errors.
 
 
 ```{r tbl-waste-qc}
