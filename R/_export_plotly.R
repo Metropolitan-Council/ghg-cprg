@@ -87,26 +87,6 @@ saveRDS(complete_figure_index, "assets/_figure_index.RDS")
 # export plots -----
 cli::cli_alert(paste0("Writing ", length(pls), " plots"))
 
-# export to pdf (highest resolution)
-# purrr::map(
-#   names(pls),
-#   function(x) {
-#     save_plotly(get(x),
-#                 fmt = "pdf",
-#                 file_title = "source"
-#     )
-#   }
-# )
-# purrr::map(
-#   names(pls),
-#   function(x) {
-#     save_plotly(get(x),
-#                 fmt = "svg",
-#                 file_title = "source"
-#     )
-#   }
-# )
-
 
 purrr::map(
   names(pls),
@@ -145,30 +125,3 @@ purrr::map(
 )
 
 
-
-# export leaflet -----
-#
-# l_maps <- list()
-#
-# purrr::map(
-#   names(l_maps),
-#   function(x) {
-#     saveWidget(get(x), "temp.html", selfcontained = FALSE)
-#     webshot("temp.html",
-#             file = paste0("leaflet_png/", x, ".png"),
-#             cliprect = "viewport"
-#     )
-#   }
-# )
-#
-# fs::file_delete("temp.html")
-
-# additional export -----
-# useful for maps
-
-# htmlwidgets::saveWidget(
-#   a_map,
-#   file = "",
-#   title = "A map",
-#   selfcontained = TRUE
-# )
