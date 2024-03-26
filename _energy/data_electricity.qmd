@@ -48,7 +48,7 @@ $$mWhDelivered_iCounty_j =  (mWhDelivered_i \times {ProportionOfTotalUtilityPopu
 
 The factor *ProportionOfTotalUtilityPopulation*~j~ was calculated by spatially joining Census block centroids containing population data to 1) polygons representing the entirety of our in-scope utilities' service areas (including areas outside of St. Croix and Pierce counties) and 2) polygons representing only the portions of these utilities' service areas within a) St. Croix county and b) Pierce County. These utility-county service areas are calculated separately, to facilitate an informed allocation of statewide energy use to each county in turn.
 
-### Data dictionaries
+<!-- ### Data dictionaries -->
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
