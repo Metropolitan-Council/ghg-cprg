@@ -16,7 +16,11 @@ county_emissions_summary <- county_emissions %>%
 hookaddcap()
 ```
 
-Overall emissions
+*This project has been funded wholly or in part by the United States Environmental Protection Agency (EPA) under assistance agreement 00E03476 to the Metropolitan Council. The contents of this document do not necessarily reflect the views and policies of the EPA, nor does the EPA endorse trade names or recommend the use of commercial products mentioned in this document.*
+
+::: {.callout-note}
+This document is one part of the Metropolitan Council Priority Climate Action Plan (PCAP), submitted to the EPA on March 1, 2024. See [metrocouncil.org](https://www.metrocouncil.org/tcghginventory) for more details. 
+:::
 
 ```{r sector-percentages, echo=FALSE, include=FALSE}
 sector_percentages <- county_emissions_summary %>%
@@ -80,7 +84,8 @@ fig_energy_emissions <- plot_county_emissions(
 fig_energy_emissions
 ```
 
-The transportation sector generated `r round(sum(county_emissions$emissions_metric_tons_co2e)/1000000 * sector_percentages[[2]][2], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021.
+The transportation sector generated `r round(sum(county_emissions$emissions_metric_tons_co2e)/1000000 * sector_percentages[[2]][2], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. This is a county-level, activity-based estimate that accounts for the total number of vehicle trips that originate in the county, terminate in the county, or both originate and terminate within the county for passenger and medium-duty commercial vehicles. Heavy-duty commercial vehicles are only accounted for trips that both originate and terminate within the county.
+
 
 ```{r fig-transportation-emissions}
 #| fig-cap: "Transportation county level emissions"
@@ -109,6 +114,7 @@ fig_waste_emissions_index$x$layoutAttrs[[1]]$title$text <- "Solid waste and wast
 fig_waste_emissions_index
 ```
 
+::: {.content-visible when-format="html"}
 
 ## About this document
 
@@ -121,6 +127,30 @@ This is a Quarto book. Code, data, and documentation are all stored in the same 
 - Sections are cross-referenced throughout the document. Click on a "Section x.xx.xx" link to navigate to the appropriate section
 - All headings, tables, and figures are permalinked, meaning that you can share specific sections of the document through a URL. Hover your mouse over a heading and click on the link icon. Then, copy the URL in your browser and share with colleagues. 
 
+::: 
+
+## Acknowledgements
+
+This document is the result of tremendous work across the Metropolitan Council. Individuals are noted by their name, title, contribution, and division. 
+
+:::: {.columns}
+
+::: {.column width="50%"}
+#### Primary authors {.unnumbered}
+ - Liz Roten, Senior Data Scientist, Transportation (MTS)  
+ - Sam Limerick, Senior Data Scientist, Electricity and natural gas (CD)  
+ - Peter Wilfahrt, Principal Researcher, Liquid stationary energy and wastewater (CD)   
+ - Zoey Yandell, Intern, Solid waste (CD)  
+:::
+
+::: {.column width="50%"}
+#### Contributors {.unnumbered}
+ - Kenneth Smith, Principal Researcher, LIDAC, editing (CD)  
+ - Laine McNamara, Business Systems Analyst III, editing (CD)  
+ - Trevor Prater, Senior Engineer, wastewater (ES)  
+:::
+
+::::
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))

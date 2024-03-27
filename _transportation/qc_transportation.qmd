@@ -18,6 +18,10 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
+::: {.callout-warning}
+Quality control sections will be formally completed for the Comprehensive Climate Action Plan (CCAP) in Summer 2025. 
+:::
+
 Local inventory of GHG emissions from mobile sources with documentation of the following QC activities: 
 
 (1) narrative report describing data sources and QC measures for data acquisition steps, 
@@ -31,14 +35,13 @@ Local inventory of GHG emissions from mobile sources with documentation of the f
 
 1. Comparison of local estimate of average miles traveled per year and average miles per gallon (by vehicle type) versus state and national averages. 
 
-1. For any values used in local inventory that differ from the state average MPY or the national average MPG by more than 10% the community will provide an explanation of why local factors may differ from state or national averages. Additionally, precision and bias calculations will be in accordance with the [EPA’s Data Assessment Statistical Calculator (DASC) Tool](https://www.epa.gov/sites/default/files/2020-10/dasc_11_3_17.xls) with the community’s estimate taken as the measured value and the LGGIT [@usepaLocalGreenhouseGas2017] value taken as the audit value.
-
+1. For any values used in local inventory that differ from the state average MPG or the national average MPG by more than 10% the community will provide an explanation of why local factors may differ from state or national averages. Additionally, precision and bias calculations will be in accordance with the [EPA’s Data Assessment Statistical Calculator (DASC) Tool](https://www.epa.gov/sites/default/files/2020-10/dasc_11_3_17.xls) with the community’s estimate taken as the measured value and the LGGIT [@usepaLocalGreenhouseGas2017] value taken as the audit value.
 
 1. Ensure the GWPs used for the local estimate and the LGGIT [@usepaLocalGreenhouseGas2017] estimate are on the same basis. The LGGIT tool uses AR5 GWP (e.g., methane GWP = 28).
 
 1. Review by TL or senior technical reviewer — analytical methods / results are explained clearly, technical terms are defined, conclusions are reasonable based on information presented, and level of technical detail is appropriate.
 
-1. Editor review — verify or remediate draft deliverables to ensure clear, error-free writing.
+1. Editor review — verify or edit draft deliverables to ensure clear, error-free writing.
 
 ```{r tbl-transport-qc-mpy}
 #| tbl-cap: "Transportation average miles per year, local and quality control comparison by vehicle and fuel types."

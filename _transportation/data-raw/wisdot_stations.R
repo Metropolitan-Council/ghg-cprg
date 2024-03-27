@@ -70,7 +70,7 @@ if (file.exists("_transportation/data-raw/wisdot/Traffic_Counts.geojson") == FAL
   cli::cli_abort(c(
     "Required datasets unavailable",
     "*" = "Download class data from the WisDOT website",
-    "*" = "{.url https://data-wisdot.opendata.arcgis.com/datasets/c99c497fae6c4d5d8f5453ea9237c679_0/explore}"
+    "*" = "{.url https://data-wisdot.opendata.arcgis.com/datasets/c99c497fae6c4d5d8f5453ea9237c679_0}"
   ))
 }
 

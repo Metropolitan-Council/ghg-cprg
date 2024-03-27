@@ -1,4 +1,4 @@
-## Wisconsin waste data
+## Wisconsin Greenhouse Gas Emissions Inventory
 
 ```{r}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -22,35 +22,13 @@ hookaddcap()
 
 Waste emissions for Wisconsin counties were unavailable in the same detail as the MPCA data. Thus, we estimated total waste emissions based on statewide emissions estimates, allocated by population.
 
-## WI Greenhouse Gas Emissions Inventory
-
 The most recent [Wisconsin Greenhouse Gas Emissions Inventory](https://widnr.widen.net/view/pdf/o9xmpot5x7/AM610.pdf?t.download=true) was done in 2018 by the Wisconsin Department of Natural Resources. Included in the solid waste data for this source are emissions from landfills and waste combustion, taking into account the emissions reduced by landfill gas collection for gas-to-energy use or flaring. This inventory does not, however, include emissions generated from composting or recycling.
 
-The emissions for solid waste in this report were calculated using the EPA's SIT tool, a tool designed to help states calculate greenhouse gas emissions. Default values provided by the tool were used except in the case of default Mixed Solid Waste population tonnage values, which were replaced by data from the WI state DNR's Annual Waste Tonnage Report (cite inventory).
+The emissions for solid waste in this report were calculated using the [EPA's State Inventory and Projection Tool](https://www.epa.gov/statelocalenergy/state-inventory-and-projection-tool), a tool designed to help states calculate greenhouse gas emissions [@usepaStateGreenhouseGas2024a]. Default values provided by the tool were used except in the case of default Mixed Solid Waste population tonnage values, which were replaced by data from the Wisconsin state DNR Annual Waste Tonnage Report [@wisconsindnrGreenhouseGas2021].
 
-For 2018, the Wisconsin DNR reported 2.2 Million Metric Tons Carbon Dioxide Equivalent (MMTCO2e) generated through landfilling and solid waste management.
+For 2018, the Wisconsin DNR reported 2.2 million metric tons carbon dioxide equivalent (MMTCO~2~e) generated through landfilling and solid waste management.
 
-In the process of analysis, this statewide estimate was disaggregated to the county level based on county population data, as detailed in [methods chapter].
-
-
-- Quality rank (See @tbl-quality-rank)
-Highest quality - state-level source
-- How, when, and why was the data collected?
-- What is the raw unit of measurement? 
-- How was this data accessed? Include any relevant links/citations, code, or downloads.
-- What data cleaning or wrangling was completed? How did you test these processes and outputs?
-- What is the geographic and temporal scope? Did you complete any aggregation?
-- What version is the data? Were there other versions available? If so, why did you choose this version?
-- What assumptions are made when we use this dataset?
-- Which subject matter expert (SME) reviewed this data?
-- Describe testing used to verify data
-
-### Data Characteristics
-
-- Were there any missing data? How did you handle missing data?
-- Plots, tables, and description of data distribution
-- Variance, Z-Score, quantiles
-- Facet views by categorical variables
+In the process of analysis, this statewide estimate was apportioned to the county level based on county population data, as detailed in @sec-waste-methods.
 
 ### Limitations
 
@@ -59,7 +37,7 @@ Highest quality - state-level source
 
 ### Comparison to similar datasets
 
-The US EPA completes yearly state-level estimates of emissions for each state, which combined sum to the totals reported in the US Greenhouse Gas Emissions Inventory. The data for these estimates and the US inventory can be explored at the [GHG Inventory Data Explorer](https://cfpub.epa.gov/ghgdata/inventoryexplorer/index.html). The EPA's total of landfill emissions for Wisconsin for 2018 was 2.450 MMTCO2e, not far off from the Wisconsin DNR's 2.2 MMTCO2e. The EPA's estimate for 2021 was 2.422 MMTCO2e.
+The US EPA completes yearly state-level estimates of emissions for each state, which combined sum to the totals reported in the US Greenhouse Gas Emissions Inventory. The data for these estimates and the US inventory can be explored at the [GHG Inventory Data Explorer](https://cfpub.epa.gov/ghgdata/inventoryexplorer/index.html). The EPA's total of landfill emissions for Wisconsin for 2018 was 2.450 MMTCO~2~e, not far off from the Wisconsin DNR's 2.2 MMTCO~2~e. The EPA's estimate for 2021 was 2.422 MMTCO~2~e. More details can be found in @sec-waste-inventory-comparison. 
 
 Since the EPA completes an inventory for the entire US and its methods may not reflect the specific nuances of emissions in each state, we elected to use the data from the Wisconsin DNR for this inventory.
 

@@ -1,4 +1,4 @@
-# LIDAC maps
+# Low-Income and Disadvantaged Communities
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -19,70 +19,95 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
+::: {.callout-note}
+This page contains excerpts from the PCAP section on low-income and disadvantaged communities. See the [full PCAP document](https://www.epa.gov/system/files/documents/2024-03/metropolitan-council-twin-cities-msa-priority-climate-action-plan.pdf) for more information. 
+:::
+
+Everyone will be affected by climate change, but elderly people, households with low incomes, and communities that have faced historical and ongoing oppression and marginalization will be impacted most (including, but not limited to, Black, Indigenous, and communities of color). This PCAP recommends strategies that recognize the unique needs of these communities and work to identify and minimize potential adverse effects from climate change.
+
+Geographies for Low Income and Disadvantaged Communities (LIDAC) were identified and downloaded directly from the EPA’s Inflation Reduction Act Disadvantaged Communities Map. These communities are identified based on the following criteria:
+
+- Any census block group at or above the 90th percentile for any of EJScreen’s Supplemental Indexes when compared to the nation or state  
+- And/or any tribal lands category in EJScreen
+    
+By using the data from this tool, 659 LIDAC block groups were identified. Approximately 817,000 (24%) of residents in the 11-county area are living in LIDAC block groups. These areas are primarily located in eastern Hennepin County and southern Ramsey County, centered in the cities of Minneapolis and Saint Paul. 
+
+LIDAC designated areas are substantially more racially and ethnically diverse than the rest of the 11-county area. About 54% of people living in LIDAC-designated block groups are Black, Indigenous, or people of color (BIPOC), compared to 19% in non-LIDAC communities. Black, Indigenous, and people of color comprise a much larger share of the population in LIDACs.
+
 
 ```{r fig-map-lidac}
-#| fig-cap: "Low income or disadvantaged communities (LIDAC)"
-#| fig-alt: "alt text for this map"
-#| out-width: "95%"
+#| fig-cap: "Low Income and Disadvantaged Communities (LIDAC) in the Twin Cities’ CPRG Planning Area"
+#| fig-alt: "A map of the 11-county CPRG region with Low Income and Disadvantaged Community (LIDAC) census block groups colored in blue. LIDACs are found across the region but are concentrated in eastern Hennepin County and southern Ramsey County."
+#| out-width: "90%"
 knitr::include_graphics("assets/maps/map_lidac.png")
 ```
 
 
+On average, life expectancy in LIDACs is significantly lower; PM~2.5~ air pollution and diesel particulate exposure is significantly higher; homes are more likely to have lead paint; air toxics, superfund and hazardous chemicals and waste sites are more likely to be present; impervious surfaces comprise more of the area; and housing and energy cost burden is significantly higher. ^[All differences in vulnerabilities comparing LIDAC to non-LIDAC tracts are statistically significant at the p <.001 level. ] The historical disenfranchisement of these communities resulting in these outcomes underscores the importance of focusing emissions reductions efforts in LIDACs.
+
+LIDACs are substantially more likely to be in places with higher levels of PM~2.5~ fine particulate air pollution. Exposure to these particles is associated with respiratory injury including asthma, respiratory inflammation, pneumonia, chronic obstructive pulmonary disease, lung cancer, increased mortality, and a host of other health hazards [@nanOverviewPM2Health2023].
 
 ```{r fig-map-PM25}
-#| fig-cap: "Distribution of inhalable particulate matter ≤ 2.5 µm (PM2.5)"
-#| fig-alt: "alt text for this map"
+#| fig-cap: "Distribution of inhalable particulate matter ≤ 2.5 µm (PM~2.5~)"
+#| fig-alt: "A map of LIDAC block groups overlaying concentrations of inhalable fine particulate matter. There is noticeable overlap in the most polluted regions and where LIDAC block groups are concentrated, particularly in Ramsey County."
 #| out-width: "95%"
 knitr::include_graphics("assets/maps/map_PM2.5.png")
 ```
 
-
+LIDACs are also substantially more likely to be in places with higher levels of diesel particulate exposure. Diesel exhaust has been linked to airway inflammation, vascular dysfunction, developmental toxicity, neuroinflammation, respiratory mortality, and is carcinogenic to humans [@weitekampSystematicReviewHealth2020]. Most diesel particulate exposure is the result of commercial trucking; the greenhouse gas inventory in this report totaled over 869 million commercial vehicle miles traveled.^[This figure includes medium- and heavy-duty vehicles miles traveled in the seven-county Twin Cities metro region, generated from StreetLight Data, 2021.]
 
 ```{r fig-map-diesel}
-#| fig-cap: "Distribution of inhalable diesel particulate matter"
-#| fig-alt: "alt text for this map"
+#| fig-cap: "Distribution of inhalable diesel particulate matter by percentiles"
+#| fig-alt: "A map of LIDAC block groups overlaying concentrations of inhalable diesel particulate matter. There is noticeable overlap in the most polluted regions and where LIDAC block groups are concentrated, particularly in eastern Hennepin County."
 #| out-width: "95%"
 knitr::include_graphics("assets/maps/map_diesel.png")
 ```
 
-
+Given the long-term exposure to fine particulates, it is not surprising that many LIDACs are in places with the highest percentiles of asthma prevalence of asthma among adults.
 
 ```{r fig-map-asthma}
-#| fig-cap: "Distribution of asthma in adults"
-#| fig-alt: "alt text for this map"
+#| fig-cap: "Distribution of asthma in adults (age 18+) by percentiles"
+#| fig-alt: "A map of LIDAC block groups overlaying concentrations of asthma prevalence among adults. There is noticeable overlap in asthma prevalence and where LIDAC block groups are concentrated, particularly in Hennepin and Ramsey Counties."
 #| out-width: "95%"
 knitr::include_graphics("assets/maps/map_asthma.png")
 ```
 
-
+LIDACs are among the most likely places to have more impervious surface as a share of the tract land area. These conditions make areas hotter and can result in higher energy costs to cool residents.^[[Heat Island Effect | US EPA](https://www.epa.gov/heatislands)]
 
 ```{r fig-map-impervious}
 #| fig-cap: "Impervious surface or cropland coverage"
-#| fig-alt: "alt text for this map"
+#| fig-alt: "A map of LIDAC block groups overlaying concentrations of impervious surface or cropland. There is noticeable overlap in impervious surfaces where LIDAC block groups are concentrated, particularly in Hennepin and Ramsey Counties."
 #| out-width: "95%"
 knitr::include_graphics("assets/maps/map_impervious.png")
 ```
 
 
+Past research at the Met Council has also shown that individuals with low incomes are more likely to live in areas with less tree cover and more impervious surfaces compared to wealthier individuals and experience hotter temperatures.^[[Extreme Heat | Metropolitan Council](https://storymaps.arcgis.com/stories/10ec7b3b6dde440cbb0047cb01c51327)] As shown in @fig-land-temp-by-hh-income, households with median household incomes less than $100,000, particularly the lowest income households, are more likely to experience the highest temperatures during heat waves with several degrees difference between the hottest and coolest areas in the metro. [The Met Council’s extreme heat tool can be accessed here](https://storymaps.arcgis.com/stories/10ec7b3b6dde440cbb0047cb01c51327).
+
+```{r fig-land-temp-by-hh-income}
+#| fig-cap: "Land temperature by median household income"
+#| fig-alt: "This figure shows the relationship between surface temperature and median household income. As median household income increases, average surface temperature decreases until income reaches $100,000."
+#| out-width: "95%"
+knitr::include_graphics("assets/maps/Land-temperature-by-median-hh-income.png")
+```
+
+A household that pays more than 30% of their income toward housing is considered housing cost-burdened. People living in LIDACs are much more likely to be cost burdened.
 
 ```{r fig-map-housing-burden}
 #| fig-cap: "Distribution of housing cost burdened households"
-#| fig-alt: "alt text for this map"
+#| fig-alt: "A map of LIDAC block groups overlaying concentrations of housing cost burden. There is noticeable overlap in high housing cost burdens and where LIDAC block groups are concentrated, particularly in Hennepin and Ramsey Counties."
 #| out-width: "95%"
 knitr::include_graphics("assets/maps/map_housing.burden.png")
 ```
 
-
+LIDACs are more likely to be in areas with the highest percentiles for energy cost-burden. Households with high energy cost-burden are also located in the most rural portions of the region.
 
 ```{r fig-map-energy-burden}
 #| fig-cap: "Distribution of energy cost burdened households"
-#| fig-alt: "alt text for this map"
+#| fig-alt: "A map of LIDAC block groups overlaying concentrations of energy cost burden. There is noticeable overlap in high energy cost burdens and where LIDAC block groups are concentrated, particularly in Hennepin and Ramsey Counties. Additionally high energy cost burdens exist in Chisago, St. Croix and Pierce Counties."
 #| out-width: "95%"
 knitr::include_graphics("assets/maps/map_energy.burden.png")
 ```
-
-
-
 
 
 ```{r echo=FALSE}

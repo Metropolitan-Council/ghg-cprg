@@ -7,42 +7,20 @@ output: github_document
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  eval = FALSE,
+  eval = TRUE,
+  echo = FALSE,
   comment = "#>"
 )
+library(tibble)
 ```
 
 # Greenhouse Gas Inventory - Climate Pollution Reduction Grant (CPRG)
 
-<!-- badges: start -->
-<!-- badges: end -->
+*This project has been funded wholly or in part by the United States Environmental Protection Agency (EPA) under assistance agreement 00E03476 to the Metropolitan Council. The contents of this repository do not necessarily reflect the views and policies of the EPA, nor does the EPA endorse trade names or recommend the use of commercial products mentioned in this repository.*
 
-We are tracking our progress using GitHub Projects. See our project page [here](https://github.com/orgs/Metropolitan-Council/projects/8/views/1).  
+This repository contains essential data, code, and documentation for the greenhouse gas (GHG) inventory, as completed for the Twin Cities MSA Priority Climate Action Plan (PCAP), submitted to the EPA on March 1, 2024. You can find the full PCAP on the [EPA website](https://www.epa.gov/system/files/documents/2024-03/metropolitan-council-twin-cities-msa-priority-climate-action-plan.pdf). 
 
-This project uses [`{renv}`](https://rstudio.github.io/renv/index.html). Ensure you have `{renv}` installed on your machine. When you open the project in RStudio, run `renv::restore()` in your console to install/restore the package environment.
-
-Additionally, be sure to set your current Council username and password with `{keyring}` so you can utilize the defaults parameters with `{councilR}` functions.  
-
-```{r}
-keyring::key_set("councilR.uid") # your username
-keyring::key_set("councilR.pwd") # your password
-```
-
-## Adding chapters
-
-Use the [chapter_template.qmd](chapter_template.qmd) to start.
-
-If you are writing a data source report, use [data_source_template.qmd](data_source_template.qmd).
-
-## Building the Quarto book/site
-
-Open this project in RStudio. Open [R/render_for_publication.R](R/render_for_publication.R) and run the last two lines, previewed below.
-
-```r
-rstudioapi::terminalExecute("quarto render --cache-refresh --to html")
-rstudioapi::terminalExecute("quarto preview")
-```
-
+## Repository details
 
 ### File structure
 
@@ -50,10 +28,10 @@ This is a Quarto book project. Top level Quarto files include
 
 ```
 #> .
-#> ├── _quarto.yml            # Quarto configuration
-#> ├── metcouncil-cprg-ghg    # references auto-imported from Zotero
-#> ├── style/                 # Quarto template, CSS styling, font files
-#> ├── assets/                # chapter numbering, captions, and filtering helpers
+#> ├── _quarto.yml                # Quarto configuration
+#> ├── metcouncil-cprg-ghg.bib    # references auto-imported from Zotero
+#> ├── style/                     # Quarto template, CSS styling, font files
+#> ├── assets/                    # chapter numbering, captions, and filtering helpers
 ```
 
 All scripts in `R/` are ready to run at will. 
@@ -70,7 +48,7 @@ All scripts in `R/` are ready to run at will.
 #> ├── ...
 ```
 
-Common datasets, like shapefiles, population, county population proportions, GHG emission factors, and other data, live in _meta/data/. Each usually as associated metadata, noted with `[dataset_name]_meta.RDS`
+Common datasets, like spatial geometries, population, county population proportions, GHG emission factors, and other data, live in _meta/data/. Each usually as associated metadata, noted with `[dataset_name]_meta.RDS`
 
 ```
 #>_meta/data/
@@ -94,44 +72,68 @@ Documents are organized by sector and document purpose.
 #> ├── data/                   # cleaned, compressed data. RDS files only
 #> ├── data_streetlight.qmd    # data source report for StreetLight
 #> ├── data_transportation.qmd # compiled sector data report
-#> ├── pa_transportation.qmd   # priority actions
 #> ├── qc_transportation.qmd   # quality control document
 ```
 
-Several prefixes are used to mark document purpose
+Several prefixes are used to denote document purpose
 
 - `qc_{sector}.qmd` indicates a quality control report
-- `pa_{sector}.qmd` indicates priority actions for a given sector.
+<!-- - `pa_{sector}.qmd` indicates priority actions for a given sector. -->
 - `data_{sector}.qmd` indicates a combined data report for given sector
 - `data_{source}.qmd` indicates an individual data source report. These are added as child documents in the `data_{sector}` document.
 
-`data-raw/` is present in each sector and is where you should put any processing/calculation code for items in `data/`. Generally, only .RDS data should be saved in `data/`
+Within each sector folder is a `data-raw/` folder. This is where you should put any processing/calculation code and raw data. The code in `data-raw/` will save output datasets in `data/`. Generally, only .RDS data should be saved in `data/`
 
-When rendered, the output Quarto book/website lives in `docs/`. 
+
+### Building the Quarto book/site
+
+Clone or fork the repository and `ghg-cprg.Rproj` in RStudio. RStudio will prompt you to install packages through [`{renv}`](https://rstudio.github.io/renv/index.html) with `renv::restore()`. Once package installation is complete, open [R/render_for_publication.R](R/render_for_publication.R) and run the last two lines, previewed below.
+
+```r
+rstudioapi::terminalExecute("quarto render --cache-refresh --to html")
+rstudioapi::terminalExecute("quarto preview")
+```
+
+`quarto render` renders all the Qmd documents into HTML in /docs.
+`quarto preview` launches a live server previewing the book/site in your web browser. 
 
 ### Citation management
 
-Create a [Zotero](https://www.zotero.org/) account and install Zotero on your machine. Once your account is created, message/email Liz and ask to be added to our [group library](https://www.zotero.org/groups/5318360/metcouncil-cprg-ghg/library). In Zotero on your machine, ensure you have installed the [BetterBibTex](https://retorque.re/zotero-better-bibtex/installation/index.html) extension. Then, change your settings to omit the "file" field (Settings > Better BibTex > Export > Fields > Fields to omit) on export; otherwise, it will include the file path where the item lives on your machine. 
+We created a shared [Zotero](https://www.zotero.org/) group library. `metcouncil-cprg-ghg.bib` is the BibTex export. If you would like access through your own Zotero account, please contact @eroten or @pawilfahrt. 
 
-Alternatively, you can use the [Zotero Web API](https://quarto.org/docs/visual-editor/technical.html#zotero-web-api). 
+### Data and project files
 
-To add a citation to the document you are writing in RStudio, go to "Addins" and select "Insert a citation". Enable the Zotero connection. Ensure the citation is added to our Zotero group library. Alternatively, you can set up automatic exports from Zotero to the root directory of this project. Ask Liz how to set this up.
+All data required to render the Quarto document and perform essential calculations are stored in .RDS files within each sector folder. 
 
-## Data and project files
+Where possible, we access data directly from source providers through APIs and programmatic downloads. However, some datasets were compiled manually from various sources. All data processing code live within each sector folder in `/data-raw/`.
 
-We use a [MS Team](https://teams.microsoft.com/l/channel/19%3a0ea5e55bb4c8449a98334fc1402d4fae%40thread.skype/GHG%2520Inventory?groupId=44f6d2b9-a73a-4969-9267-de486d00b3b8&tenantId=ddbff68b-482a-4573-81e0-fef8156a4fd0). Contact Joel, Krysten, or Luis to get access. 
+To better manage our GitHub data storage, we have not included most of the raw data in this repository. See more details on specific datasets below. We can share our raw data downloads upon request. 
 
-Any data you download should NOT be tracked on GitHub to preserve our storage. Generally, only .RDS files should be tracked in git. 
+```{r}
+tibble::tribble(
+  ~`Sector`, ~`Data source`, ~`Availability`,
+  "Energy - Electricity and natural gas", "Individual utility reporting documents", "Many of these documents are large PDFs downloaded directly from utility websites.",
+  "Transportation", "StreetLight Data", "StreetLight Data© is a subscription based service. If you have access to the Minnesota DOT Regional Subscription, you can find the exact analyses we used on [StreetLight Insight](https://insight.streetlightdata.com/). Otherwise, the processed data are available in `_transportation/data-raw/analysis_runs/`",
+  "Transportation", "MnDOT tables", "MnDOT county/route system VMT and volume trends with vehicle type distribution reports are available on the [MnDOT website](https://www.dot.state.mn.us/traffic/data/data-products.html) ",
+  "Transportation", "WisDOT tables", "WisDOT traffic counts and vehicle type distributions are available on the [WisDOT website](https://data-wisdot.opendata.arcgis.com/) ",
+  "Waste - solid waste", "MPCA SCORE", "MPCA score data were downloaded from their interactive [Tableau](https://public.tableau.com/app/profile/mpca.data.services/viz/SCOREOverview/SCOREOverview)",
+  "All", "MPCA GHG Inventory", "Minnesota state emisssions data downloaded from their interactive [Tableau](https://public.tableau.com/app/profile/mpca.data.services/viz/GHGemissioninventory/GHGsummarystory)",
+  "All", "Wisconsin statewide emissions", "Downloaded from Wisconsin DNR [website](https://widnr.widen.net/view/pdf/o9xmpot5x7/AM610.pdf?t.download=true)",
+  "All", "EPA Local Greenhouse Gas Inventory Tool", "Available on the [EPA website](https://www.epa.gov/statelocalenergy/local-greenhouse-gas-inventory-tool).",
+  "All", "EPA GHG Emissions Factor Hub", "Available on the [EPA website](https://www.epa.gov/climateleadership/ghg-emission-factors-hub)"
+) %>%
+  knitr::kable(
+    format = "markdown"
+  )
+```
 
-If you add any raw data (like shapefiles, CSVs, Excel workbooks, etc. you downloaded directly from a data source), add it to the `.gitignore` (you can use `usethis::use_git_ignore("path/to/file/file")`, edit the `.gitignore` manually, or use your git GUI). Then, upload the data to the our MS Team, navigating to the appropriate location in `GHG Inventory - 2024 Update/ghg-cprg/`. The file structure mirrors the file structure of this repo, so if you add data to `_energy/data-raw/` in this repo, upload it in the same place in MS Teams. 
 
 ## Testing
 
-When possible, write a few tests for your data and functions. Save them in `/tests`. See the existing files in `/tests` for ideas. 
-
+To ensure consistency, there are a set of tests located in `tests/`. These are run before rendering in `R/render_for_publication.R`. 
 
 ## Contributing and Code of Conduct
 
-Contributions are welcome. Please review our [contribution guide](CONTRIBUTING.md) before making a pull-request. 
+Contributions are welcome. Please review our [contribution guide](CONTRIBUTING.md) before making a pull-request. Met Council employees should also review the [internal contribution guide](CONTRIBUTING_INTERNAL.md). 
 
 Please note that the ghg-cprg project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project you agree to abide by its terms.

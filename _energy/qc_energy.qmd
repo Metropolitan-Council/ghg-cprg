@@ -18,6 +18,10 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
+::: {.callout-warning}
+Quality control sections will be formally completed for the Comprehensive Climate Action Plan (CCAP) in Summer 2025. 
+:::
+
 
 ## Electric power consumption
 
@@ -37,18 +41,18 @@ Local inventory of GHG emissions from electric power consumption with documentat
 
 3. Ensure the GWPs used for the local estimate and the independent estimate are on the same basis. 
 
-4. Technical review of methods, calculations, and underlying datasets—data are appropriate for intended use, data are complete and representative and current, data sources documented, analytical methods are appropriate, and calculations are accurate.
+4. Technical review of methods, calculations, and underlying datasets — data are appropriate for intended use, data are complete and representative and current, data sources documented, analytical methods are appropriate, and calculations are accurate.
 
 5. Review by TL or senior technical reviewer — analytical methods and results are explained clearly, technical terms are defined, conclusions are reasonable based on information presented, and level of technical detail is appropriate)
 
-6. Editor review—writing is clear, free of grammatical and typographical errors.
+6. Editor review — writing is clear, free of grammatical and typographical errors.
 
 
 ```{r tbl-energy-qc, results='markup'}
 #| tbl-cap: "Local estimate comparison with control estimate"
 
 tbl_energy_qc <- tibble::tribble(
-  ~"Power Consuming Sector", ~"Initial Local Estimate (Metric Tons CO~2~e)", ~"QC Estimate based on SLOPE (Metric Tons CO~2~e)",
+  ~"Power Consuming Sector", ~"Initial Local Estimate (Metric Tons CO₂e)", ~"QC Estimate based on SLOPE (Metric Tons CO₂e)",
   "Residential", "", "",
   "Commercial", "", "",
   "Industrial", "", "",
@@ -61,7 +65,7 @@ tbl_energy_qc <- tibble::tribble(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
   ) %>%
-  gt::fmt_markdown() %>%
+  # gt::fmt_markdown() %>%
   gt::as_raw_html()
 
 tbl_energy_qc
