@@ -80,7 +80,7 @@ nlcd_is <- get_nlcd(
 #### convert to data.frame
 nlcdlc_values <- extract(nlcd_lc, cprg_county)
 nlcdis_values <- extract(nlcd_is, cprg_county)
-area_values <- extract(wc_outline, cprg_county)
+area_values <- extract(area_wc, cprg_county)
 wc_values <- extract(wc_outline, cprg_county)
 cty_values <- extract(county_raster, cprg_county)
 
@@ -88,5 +88,7 @@ wc_df <- data.frame(county = cty_values[,2],
                     nlcd_cover = nlcdlc_values[,2],
                     impervious_cover = as.numeric(as.character(nlcdis_values[,2])), 
                     area = area_values[,2], 
-                    wc_lab = wc_values[,2]) %>% 
+                    wc_lab = wc_values[,2]) 
+
+%>% 
   left_join(.,code_class_tab, by = c('wc_lab' = "old_lab"))
