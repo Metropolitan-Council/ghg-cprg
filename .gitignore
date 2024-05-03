@@ -308,3 +308,7 @@ _transportation/data-raw/epa/metc_lggit_11.28.23.xlsm
 _waste/data-raw/wastewater/GHGEmissions_2019-2021_CorrectedWSCA.xlsx
 
 _transportation/data-raw/epa/community_ghg_inventorytool_11.28.23 2/
+_nature/data-raw/ESA_WorldCover_10m_2021_v200_N42W093_Map.tif
+_nature/data-raw/ESA_WorldCover_10m_2021_v200_N42W096_Map.tif
+_nature/data-raw/ESA_WorldCover_10m_2021_v200_N45W093_Map.tif
+_nature/data-raw/ESA_WorldCover_10m_2021_v200_N45W096_Map.tif

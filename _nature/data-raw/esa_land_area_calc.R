@@ -5,8 +5,8 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 library(FedData)
 library(terra)
 #install.packages('tidyterra')
-library(tidyterra)
-library(ggplot)
+
+
 
 ## load ESA World Cover rasters
 wc1 <- rast('./_nature/data-raw/ESA_WorldCover_10m_2021_v200_N42W093_Map.tif')
@@ -41,8 +41,11 @@ wc_outline <- mask(wc_combined, cprg_county)
 #check
 #terra::plot(wc_outline)
 
-#turn raster into factors to avoid weird warping of raster values and for plotting
-wc_factor <- as.factor(wc_outline)
+# calculate the area of each pixel
+area_wc <- mask(cellSize(wc_outline, unit = 'km'), cprg_county)
+
+#rasterize cprg_county to assign pixels to counties
+county_raster <- rasterize(cprg_county,wc_outline, field = 'NAME')
 
 #nicer plot - move to qmd later
 # ggplot() + geom_spatraster(data= wc_factor) +
@@ -52,4 +55,38 @@ wc_factor <- as.factor(wc_outline)
 #                     na.value="white",
 #                     name = 'World Cover Class') + theme_void()
 
-### load nlcd impervious surface data
+### load nlcd land cover and impervious surface data and match to WC data
+
+nlcd_lc <- get_nlcd(
+  cprg_county,
+  '11-county area',
+  year = 2021,
+  dataset = 'landcover') %>% 
+  project(.,crs_use) %>% #reproject
+  resample(., wc_outline) #resample nlcd raster to match more granular ESA World Cover raster
+
+nlcd_is <- get_nlcd(
+  cprg_county,
+  '11-county area',
+  year = 2021,
+  dataset = 'impervious') %>% 
+  project(.,crs_use) %>% 
+  resample(., wc_outline)
+
+
+
+#convert all rasters to data.frame
+
+#### convert to data.frame
+nlcdlc_values <- extract(nlcd_lc, cprg_county)
+nlcdis_values <- extract(nlcd_is, cprg_county)
+area_values <- extract(wc_outline, cprg_county)
+wc_values <- extract(wc_outline, cprg_county)
+cty_values <- extract(county_raster, cprg_county)
+
+wc_df <- data.frame(county = cty_values[,2],
+                    nlcd_cover = nlcdlc_values[,2],
+                    impervious_cover = as.numeric(as.character(nlcdis_values[,2])), 
+                    area = area_values[,2], 
+                    wc_lab = wc_values[,2]) %>% 
+  left_join(.,code_class_tab, by = c('wc_lab' = "old_lab"))
