@@ -21,7 +21,21 @@ seq_rates_sum <- mutate(seq_rates, mtco2e = if_else(units == 'metric ton C', act
 wc_county_seq <- left_join(wc_county,seq_rates_sum) %>% 
   filter(mtco2e_sqkm < 0) %>% 
   mutate(sequestration_potential = area  * mtco2e_sqkm)
+
+wc_county_seq_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "county ", class(wc_county_seq$county ), "County name",
+    "land_cover_type", class(wc_county_seq$land_cover_type), "Land cover type from World Cover. 'Urban_' indicates a natural area within NLCD designated developed land cover",
+    "area", class(wc_county_seq$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled down by NLCD percent impervious",
+    "CO2e per square km", class(wc_county_seq$mtco2e_sqkm), "Average regional sequestration rate in CO2 equivalency per square kilometer",
+    "land cover sequestration potential", class(wc_county_seq$sequestration_potential), "Annual sequestration potential of land cover type in the county"
+  )
   
+
+saveRDS(wc_county_seq, './_nature/data/county_landcover_sequestration_2021.rds')
+saveRDS(wc_county_seq_meta, './_nature/data/county_landcover_sequestration_2021_meta.rds')
+
 county_seq_total <- summarize(wc_county_seq, seq_total = sum(sequestration_potential))
 
 county_seq_total
