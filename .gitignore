@@ -313,3 +313,12 @@ _nature/data-raw/ESA_WorldCover_10m_2021_v200_N42W096_Map.tif
 _nature/data-raw/ESA_WorldCover_10m_2021_v200_N45W093_Map.tif
 _nature/data-raw/ESA_WorldCover_10m_2021_v200_N45W096_Map.tif
 _nature/data-raw/land_cover_seq_rates.csv
+_nature/data-raw/DBO_RPTAdministrativeBoundary.dbf
+_nature/data-raw/DBO_RPTAdministrativeBoundary.cpg
+_nature/data-raw/DBO_RPTAdministrativeBoundary.prj
+_nature/data-raw/DBO_RPTAdministrativeBoundary.sbx
+_nature/data-raw/DBO_RPTAdministrativeBoundary.sbn
+_nature/data-raw/DBO_RPTAdministrativeBoundary.shp
+_nature/data-raw/DBO_RPTAdministrativeBoundary.shp.xml
+_nature/data-raw/DBO_RPTAdministrativeBoundary.shx
+_nature/data-raw/land_cover_stock.csv
