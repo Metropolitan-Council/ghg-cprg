@@ -40,3 +40,5 @@ land_cover_c_meta <-
     "Stock potential", class(land_cover_c$stock_mtco2e_sqkm), "Total carbon stock potential of land cover type in metric tons CO2 equivalency per square kilometer"
   )
 
+saveRDS(land_cover_c, './_nature/data/land_cover_carbon.rds')
+saveRDS(land_cover_c_meta, './_nature/data/land_cover_carbon_meta.rds')
