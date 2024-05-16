@@ -37,6 +37,9 @@ wc_outline <- mask(wc_combined, cprg_county)
 #check
 #terra::plot(wc_outline)
 
+# save object for later plotting
+saveRDS(wc_outline, './_nature/data/worldcover_msa.rds')
+
 # calculate the area of each pixel (raster cells are skewed at higher latitudes)
 area_wc <- mask(cellSize(wc_outline, unit = 'km'), cprg_county)
 
@@ -44,7 +47,7 @@ area_wc <- mask(cellSize(wc_outline, unit = 'km'), cprg_county)
 county_raster <- rasterize(cprg_county,wc_outline, field = 'NAME')
 
 #nicer plot - move to qmd later
-# ggplot() + geom_spatraster(data= wc_factor) +
+# ggplot() + geom_spatraster(data= wc_outline) +
 #   scale_fill_manual(breaks = code_class_tab$old_lab,
 #                     labels = code_class_tab$new_lab,
 #                     values=esa_color,

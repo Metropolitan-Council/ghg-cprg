@@ -1,0 +1,86 @@
+# Chapter title
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+worldcover_msa <- unwrap(read_rds(here(
+  "_nature", "data", "worldcover_msa.rds"
+)))
+
+hookaddcap()
+```
+
+
+```{r fig-figure}
+#| fig-cap: "A figure"
+#| out-width: "95%"
+#| include: false
+# all figure chunks should be named "fig-{plot-desc}"
+#nicer plot - move to qmd later
+
+### create class conversion table (couldn't get ESA to output this info which would be cleaner)
+code_class_tab <- data.frame(old_lab = c(10, 20, 30, 40, 50, 60, 70, 80, 90),
+                             esa_label = c('Tree','Shrubland','Grassland','Cropland','Built-up','Bare','Snow','Water','Wetland'))
+#create color palette for mapping - this may be exported to qmd files later
+esa_color <- c('forestgreen','brown4','yellow2','wheat3','red','plum','lightblue','navy','mediumturquoise')
+
+library(tidyterra)
+worldcover_msa_map <- ggplot() + geom_spatraster(data= worldcover_msa) +
+  scale_fill_manual(breaks = as.character(code_class_tab$old_lab),
+                    labels = code_class_tab$esa_label,
+                    values=esa_color,
+                    na.value="white",
+                    name = 'World Cover Class') + theme_void()
+
+worldcover_msa_map
+```
+
+```{r tbl-table}
+#| tbl-cap: "A table"
+#| out-width: "95%"
+#| include: false
+shinipsum::random_table(nrow = 5, ncol = 3) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::fmt_markdown() %>%
+  gt::as_raw_html()
+```
+
+### Introduction
+
+Natural systems are a critical component of capturing carbon from the atmosphere and sequestering it in biomass and terrestrial soils. Photosynthesis is central mechanism of this process and vegetation is therefore the focal land cover classification for quantifying the potential for regions to both sequester and store carbon. Different vegetation ecosystems have varying capacities for carbon capture and this work focuses on five broad classifications: urban trees, urban grasslands (turf grass), forests, natural grasslands, and wetlands. The distinction between tree and grassland cover in developed areas (i.e. urban) is important as despite having similar sequestration rates, these systems are generally understood to have smaller storage capacities. The preservation and restoration of natural systems will be a key tool in limiting atmospheric greenhouse gases.
+
+### Methods
+  
+The approach for calculating carbon sequestration potential for a given geography, j, is,
+$$Sequestration_j = \Sigma (area_i \times {SequestrationRate_i}) $$
+where *i* is land cover classification. The sequestration rate is based on midwest specific sequestration rate estimates found in the primary scientific literature (REFERENCE TABLE). 
+
+#### Land cover classification
+
+Land cover was determined by using the European Space Agencies 2021 WorldCover, a 10 m resolution satellite data product, in combination with USGS's National Land Cover Dataset (NLCD). Specifically the NLCD 'Developed' land classification was used to assign the 'urban' label to WorldCover tree and grassland cells, and the NLCD impervious cover layer was used to correct the area of urban trees in WorldCover.
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+
+{{< pagebreak >}}
