@@ -42,6 +42,8 @@ wc_parks <- mask(wc_combined, parks)
 #check
 #terra::plot(wc_outline)
 
+saveRDS(wc_parks, './_nature/data/worldcover_parks.rds')
+
 # calculate the area of each pixel (raster cells are skewed at higher latitudes)
 area_wc <- mask(cellSize(wc_outline, unit = 'km'), parks)
 

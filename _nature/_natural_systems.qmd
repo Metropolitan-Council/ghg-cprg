@@ -1,4 +1,4 @@
-# Chapter title
+# Natural Systems
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -15,20 +15,45 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
+library(tidyterra)
+library(terra)
+
+
 worldcover_msa <- unwrap(read_rds(here(
   "_nature", "data", "worldcover_msa.rds"
 )))
+
+cprg_county <- read_rds(here(
+  "_nature", "data", "cprg_county.RDS"))
+
+crs_use <- terra::crs(worldcover_msa)
+
+nlcd_lc <- get_nlcd(
+  cprg_county,
+  'county',
+  year = 2021,
+  dataset = 'landcover') %>% 
+  project(.,crs_use) %>% 
+  mask(cprg_county)
+
+nlcd_is <- get_nlcd(
+  cprg_county,
+  'county',
+  year = 2021,
+  dataset = 'impervious') %>% 
+  project(.,crs_use) %>% 
+  mask(cprg_county)
 
 hookaddcap()
 ```
 
 
 ```{r fig-figure}
-#| fig-cap: "A figure"
+#| fig-cap: "European Space Agency WorldCover land classification"
 #| out-width: "95%"
-#| include: false
+# | include: false
 # all figure chunks should be named "fig-{plot-desc}"
-#nicer plot - move to qmd later
+
 
 ### create class conversion table (couldn't get ESA to output this info which would be cleaner)
 code_class_tab <- data.frame(old_lab = c(10, 20, 30, 40, 50, 60, 70, 80, 90),
@@ -37,29 +62,41 @@ code_class_tab <- data.frame(old_lab = c(10, 20, 30, 40, 50, 60, 70, 80, 90),
 esa_color <- c('forestgreen','brown4','yellow2','wheat3','red','plum','lightblue','navy','mediumturquoise')
 
 library(tidyterra)
-worldcover_msa_map <- ggplot() + geom_spatraster(data= worldcover_msa) +
-  scale_fill_manual(breaks = as.character(code_class_tab$old_lab),
+worldcover_msa_map <- ggplot() + geom_spatraster(data= as.factor(worldcover_msa)) +
+  scale_fill_manual(breaks = code_class_tab$old_lab,
                     labels = code_class_tab$esa_label,
                     values=esa_color,
                     na.value="white",
-                    name = 'World Cover Class') + theme_void()
+                    name = 'WorldCover Land Cover') + theme_void()
 
-worldcover_msa_map
+nlcd_msa_map <- ggplot() + geom_spatraster(data= nlcd_lc) +
+  guides(fill=guide_legend(title="NLCD Land Cover")) +
+  theme_void()
+
+
 ```
-
-```{r tbl-table}
-#| tbl-cap: "A table"
+```{r fig-figure}
+#| fig-cap: "USGS National Land Cover Database"
 #| out-width: "95%"
-#| include: false
-shinipsum::random_table(nrow = 5, ncol = 3) %>%
-  gt() %>%
-  gt::opt_row_striping() %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_labels()
-  ) %>%
-  gt::fmt_markdown() %>%
-  gt::as_raw_html()
+# | include: false
+# all figure chunks should be named "fig-{plot-desc}"
+
+
+### create class conversion table (couldn't get ESA to output this info which would be cleaner)
+code_class_tab <- data.frame(old_lab = c(10, 20, 30, 40, 50, 60, 70, 80, 90),
+                             esa_label = c('Tree','Shrubland','Grassland','Cropland','Built-up','Bare','Snow','Water','Wetland'))
+#create color palette for mapping - this may be exported to qmd files later
+esa_color <- c('forestgreen','brown4','yellow2','wheat3','red','plum','lightblue','navy','mediumturquoise')
+
+library(tidyterra)
+worldcover_msa_map <- ggplot() + geom_spatraster(data= as.factor(worldcover_msa)) +
+  scale_fill_manual(breaks = code_class_tab$old_lab,
+                    labels = code_class_tab$esa_label,
+                    values=esa_color,
+                    na.value="white",
+                    name = 'WorldCover Land Cover') + theme_void()
+
+
 ```
 
 ### Introduction
@@ -75,6 +112,15 @@ where *i* is land cover classification. The sequestration rate is based on midwe
 #### Land cover classification
 
 Land cover was determined by using the European Space Agencies 2021 WorldCover, a 10 m resolution satellite data product, in combination with USGS's National Land Cover Dataset (NLCD). Specifically the NLCD 'Developed' land classification was used to assign the 'urban' label to WorldCover tree and grassland cells, and the NLCD impervious cover layer was used to correct the area of urban trees in WorldCover.
+
+``` {r echo=FALSE}
+
+worldcover_msa_map
+
+
+nlcd_msa_map
+
+```
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
