@@ -110,6 +110,36 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
   ) %>%
   select(names(transportation_emissions))
 
+## natural systems ----
+
+natural_systems_sequestration <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
+  mutate(
+    sector = "Nature",
+    geog_level = "county",
+    geog_name = county,
+    category = "Sequestration",
+    source = stringr::str_to_sentence(land_cover_type),
+    data_source = "ESA WorldCover & NLCD 2021",
+    factor_source = "Various primary literature",
+    year = 2021,
+    emissions_metric_tons_co2e = sequestration_potential ,
+  ) %>%
+  select(names(transportation_emissions))
+
+natural_systems_stock <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
+  mutate(
+    sector = "Nature",
+    geog_level = "county",
+    geog_name = county,
+    category = "Stock",
+    source = stringr::str_to_sentence(land_cover_type),
+    data_source = "ESA WorldCover & NLCD 2021",
+    factor_source = "Various primary literature",
+    year = 2021,
+    emissions_metric_tons_co2e = stock_potential ,
+  ) %>%
+  select(names(transportation_emissions))
+
 # combine and write metadata----
 
 emissions_all <- bind_rows(

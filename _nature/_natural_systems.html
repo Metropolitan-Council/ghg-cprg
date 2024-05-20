@@ -56,14 +56,6 @@ ul.task-list li input[type="checkbox"] {
 =========================================
                                           </code></pre>
 </div>
-<div class="cell-output-display">
-<div id="fig-figure" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="_natural_systems_files/figure-html/fig-figure-1.png" class="img-fluid figure-img" style="width:95.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;1: European Space Agency WorldCover land classification</figcaption>
-</figure>
-</div>
-</div>
 </div>
 <section id="introduction" class="level3">
 <h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
@@ -74,7 +66,37 @@ ul.task-list li input[type="checkbox"] {
 <p>The approach for calculating carbon sequestration potential for a given geography, j, is, <span class="math display">\[Sequestration_j = \Sigma (area_i \times {SequestrationRate_i}) \]</span> where <em>i</em> is land cover classification. The sequestration rate is based on midwest specific sequestration rate estimates found in the primary scientific literature (REFERENCE TABLE).</p>
 <section id="land-cover-classification" class="level4">
 <h4 class="anchored" data-anchor-id="land-cover-classification">Land cover classification</h4>
-<p>Land cover was determined by using the European Space Agencies 2021 WorldCover, a 10 m resolution satellite data product, in combination with USGS’s National Land Cover Dataset (NLCD). Specifically the NLCD ‘Developed’ land classification was used to assign the ‘urban’ label to WorldCover tree and grassland cells, and the NLCD impervious cover layer was used to correct the area of urban trees in WorldCover.</p>
+<p>Land cover was determined by using the European Space Agencies 2021 WorldCover, a 10 m resolution satellite data product, in combination with USGS’s National Land Cover Dataset (NLCD). These datasets complement each other as WorldCover provides finer spatial resolution and classifies green spaces within urban areas, whereas the NLCD products can split and downscale green space area in developed lands from those in non-developed lands, offering an important distinction between carbon sequestration and stock capacities. Specifically the NLCD ‘Developed’ land classification was used to assign the ‘urban’ label to WorldCover tree and grassland cells, and the NLCD impervious cover layer was used to correct the area of urban trees in WorldCover, which otherwise classifies any cell with &gt;10% tree cover as 100% tree.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-esa-worldcover" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="_natural_systems_files/figure-html/fig-esa-worldcover-1.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption class="figure-caption">Figure&nbsp;1: European Space Agency WorldCover</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-nlcd-classification" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="_natural_systems_files/figure-html/fig-nlcd-classification-1.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption class="figure-caption">Figure&nbsp;2: USGS National Land Cover Database</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-nlcd-impervious-cover" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="_natural_systems_files/figure-html/fig-nlcd-impervious-cover-1.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption class="figure-caption">Figure&nbsp;3: USGS National Land Cover Database - Impervious Cover</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <div style="page-break-after: always;"></div>
 </section>
 </section>

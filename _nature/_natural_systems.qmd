@@ -24,7 +24,7 @@ worldcover_msa <- unwrap(read_rds(here(
 )))
 
 cprg_county <- read_rds(here(
-  "_nature", "data", "cprg_county.RDS"))
+  "_meta", "data", "cprg_county.RDS"))
 
 crs_use <- terra::crs(worldcover_msa)
 
@@ -73,31 +73,16 @@ nlcd_msa_map <- ggplot() + geom_spatraster(data= nlcd_lc) +
   guides(fill=guide_legend(title="NLCD Land Cover")) +
   theme_void()
 
-
-```
-```{r fig-figure}
-#| fig-cap: "USGS National Land Cover Database"
-#| out-width: "95%"
-# | include: false
-# all figure chunks should be named "fig-{plot-desc}"
-
-
-### create class conversion table (couldn't get ESA to output this info which would be cleaner)
-code_class_tab <- data.frame(old_lab = c(10, 20, 30, 40, 50, 60, 70, 80, 90),
-                             esa_label = c('Tree','Shrubland','Grassland','Cropland','Built-up','Bare','Snow','Water','Wetland'))
-#create color palette for mapping - this may be exported to qmd files later
-esa_color <- c('forestgreen','brown4','yellow2','wheat3','red','plum','lightblue','navy','mediumturquoise')
-
-library(tidyterra)
-worldcover_msa_map <- ggplot() + geom_spatraster(data= as.factor(worldcover_msa)) +
-  scale_fill_manual(breaks = code_class_tab$old_lab,
-                    labels = code_class_tab$esa_label,
-                    values=esa_color,
-                    na.value="white",
-                    name = 'WorldCover Land Cover') + theme_void()
+imperv_msa_map <- ggplot() +
+  geom_spatraster(data= nlcd_is, na.rm = TRUE) +
+  geom_spatvector(data = cprg_county, fill= NA) +
+  scale_fill_gradient(low = 'pink', high = 'firebrick4', na.value = 'white') +
+  guides(fill=guide_legend(title="NLCD Impervious Cover")) +
+  theme_void()
 
 
 ```
+
 
 ### Introduction
 
@@ -111,14 +96,37 @@ where *i* is land cover classification. The sequestration rate is based on midwe
 
 #### Land cover classification
 
-Land cover was determined by using the European Space Agencies 2021 WorldCover, a 10 m resolution satellite data product, in combination with USGS's National Land Cover Dataset (NLCD). Specifically the NLCD 'Developed' land classification was used to assign the 'urban' label to WorldCover tree and grassland cells, and the NLCD impervious cover layer was used to correct the area of urban trees in WorldCover.
+Land cover was determined by using the European Space Agencies 2021 WorldCover, a 10 m resolution satellite data product, in combination with USGS's National Land Cover Dataset (NLCD). These datasets complement each other as WorldCover provides finer spatial resolution and classifies green spaces within urban areas, whereas the NLCD products can split and downscale green space area in developed lands from those in non-developed lands, offering an important distinction between carbon sequestration and stock capacities. Specifically the NLCD 'Developed' land classification was used to assign the 'urban' label to WorldCover tree and grassland cells, and the NLCD impervious cover layer was used to correct the area of urban trees in WorldCover, which otherwise classifies any cell with >10% tree cover as 100% tree.
 
-``` {r echo=FALSE}
+
+```{r fig-esa-worldcover}
+#| fig-cap: "European Space Agency WorldCover"
+#| out-width: "95%"
+# | include: false
+# all figure chunks should be named "fig-{plot-desc}"
 
 worldcover_msa_map
 
+```
+
+
+```{r fig-nlcd-classification}
+#| fig-cap: "USGS National Land Cover Database"
+#| out-width: "95%"
+# | include: false
+# all figure chunks should be named "fig-{plot-desc}"
 
 nlcd_msa_map
+
+```
+
+```{r fig-nlcd-impervious-cover}
+#| fig-cap: "USGS National Land Cover Database - Impervious Cover"
+#| out-width: "95%"
+# | include: false
+# all figure chunks should be named "fig-{plot-desc}"
+
+imperv_msa_map
 
 ```
 
