@@ -18,6 +18,7 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 library(tidyterra)
 library(terra)
 
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 worldcover_msa <- unwrap(read_rds(here(
   "_nature", "data", "worldcover_msa.rds"
@@ -48,7 +49,7 @@ hookaddcap()
 ```
 
 
-```{r fig-figure}
+```{r, include = FALSE}
 #| fig-cap: "European Space Agency WorldCover land classification"
 #| out-width: "95%"
 # | include: false
@@ -130,11 +131,74 @@ imperv_msa_map
 
 ```
 
-```{r echo=FALSE}
-caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
-caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
-saveCap(paste0("cap-", caption_index))
-saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
-```
+```{r fig-ns-county-sequestration}
+#| fig-cap: "2021 county electricity emissions"
+#| out-width: "95%"
 
+fig_ns_county_sequestration <- plot_ly(
+  type = "bar",
+  source = "fig-ns-county-sequestration",
+  data = county_emissions %>%
+    filter(category == "Sequestration"),
+  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
+  color = ~source,
+  colors = unlist(source_colors),
+  hovertemplate = ~ paste0(
+    geog_name, "<br>",
+    source, "<br>",
+    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county natural system sequestration",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_county_sequestration
+```
 {{< pagebreak >}}
+
+
+```{r fig-ns-county-stock}
+#| fig-cap: "2021 county electricity emissions"
+#| out-width: "95%"
+
+fig_ns_county_stock <- plot_ly(
+  type = "bar",
+  source = "fig-ns-county-sequestration",
+  data = county_emissions %>%
+    filter(category == "Stock"),
+  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
+  color = ~source,
+  colors = unlist(source_colors),
+  hovertemplate = ~ paste0(
+    geog_name, "<br>",
+    "Natural Systems", "<br>",
+    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county natural system stock potential",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_county_stock
+```

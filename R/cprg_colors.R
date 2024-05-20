@@ -53,8 +53,16 @@ source_colors <- list(
   # energy levels
   "Electricity" = "#0868ac",
   "Natural gas" = "#4eb3d3",
-  "Propane" = "#006d2c",
-  "Kerosene" = "#a1d99b"
+  "Propane" = "#2f4f4f",
+  "Kerosene" = "#004242",
+  
+  # nature
+  "Tree" = "#006d2c",
+  "Grassland" = "#22b600",
+  "Wetland" = "#26cc00",
+  "Urban_tree" = "#7be382",
+  "Urban_grassland" = "#a1d99b"
+  
 )
 
 

@@ -124,6 +124,7 @@ natural_systems_sequestration <- readRDS("_nature/data/county_landcover_sequestr
     year = 2021,
     emissions_metric_tons_co2e = sequestration_potential ,
   ) %>%
+  ungroup() %>% 
   select(names(transportation_emissions))
 
 natural_systems_stock <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
@@ -138,6 +139,7 @@ natural_systems_stock <- readRDS("_nature/data/county_landcover_sequestration_20
     year = 2021,
     emissions_metric_tons_co2e = stock_potential ,
   ) %>%
+  ungroup() %>% 
   select(names(transportation_emissions))
 
 # combine and write metadata----
@@ -148,7 +150,9 @@ emissions_all <- bind_rows(
   electric_emissions,
   natural_gas_emissions,
   ww_emissions,
-  solid_waste
+  solid_waste,
+  natural_systems_sequestration,
+  natural_systems_stock
 ) %>%
   left_join(
     cprg_county %>%
@@ -173,7 +177,13 @@ emissions_all <- bind_rows(
         "Electricity",
         "Natural gas",
         "Propane",
-        "Kerosene"
+        "Kerosene",
+        # nature levels
+        "Urban_grassland",
+        "Urban_tree",
+        "Grassland",
+        "Tree",
+        "Wetland"
       ),
       ordered = TRUE
     ),
@@ -187,7 +197,9 @@ emissions_all <- bind_rows(
         "Passenger vehicles",
         "Commercial vehicles",
         "Wastewater",
-        "Solid waste"
+        "Solid waste",
+        "Sequestration",
+        "Stock"
       ),
       ordered = TRUE
     )
@@ -208,9 +220,8 @@ emissions_all <- bind_rows(
 
 
 
-mean(emissions_all$emissions_per_capita)
-
-sum(emissions_all$emissions_metric_tons_co2e) / sum(cprg_county_pop$population)
+mean(emissions_all$emissions_per_capita[!emissions_all$category == 'Stock'])
+sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == 'Stock']) / sum(cprg_county_pop$population)
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
