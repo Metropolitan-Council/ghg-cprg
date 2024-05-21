@@ -11,6 +11,11 @@ wc_park_c <- left_join(wc_parks,land_cover_c) %>%
          stock_potential = area * stock_mtco2e_sqkm) %>% 
   dplyr::select(-c(seq_mtco2e_sqkm,stock_mtco2e_sqkm ))
 
+# assign park implementing agencies to county
+wc_park_c <- left_join(wc_park_c,
+                       data.frame(park = unique(wc_park_c$park),
+                                  county = c('Anoka','Hennepin','Carver','Dakota','Hennepin','Ramsey','Ramsey','Scott','Hennepin','Washington',NA)))
+
 
 wc_park_c_meta <-
   tibble::tribble(
@@ -19,7 +24,8 @@ wc_park_c_meta <-
     "land_cover_type", class(wc_park_c$land_cover_type), "Land cover type from World Cover. 'Urban_' indicates a natural area within NLCD designated developed land cover",
     "area", class(wc_park_c$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled down by NLCD percent impervious",
     "Carbon sequestration potential", class(wc_park_c$sequestration_potential), "Carbon sequestration potential of park land cover type in metric tons of CO2e per year",
-    "Carbon stock potential", class(wc_park_c$stock_potential), "Carbon stock potential of park land cover type in metric tons of CO2e"
+    "Carbon stock potential", class(wc_park_c$stock_potential), "Carbon stock potential of park land cover type in metric tons of CO2e",
+    "county", class(wc_park_c$county), "County"
   )
 
 

@@ -17,8 +17,10 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 
 library(tidyterra)
 library(terra)
+library(FedData)
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+carbon_stock <- readRDS(file.path(here::here(), "_meta/data/cprg_county_carbon_stock.RDS"))
 
 worldcover_msa <- unwrap(read_rds(here(
   "_nature", "data", "worldcover_msa.rds"
@@ -27,7 +29,13 @@ worldcover_msa <- unwrap(read_rds(here(
 cprg_county <- read_rds(here(
   "_meta", "data", "cprg_county.RDS"))
 
+cprg_area <- cprg_county %>%
+  mutate(area_sq_km = sf::st_area(cprg_county) %>% units::set_units("km^2") %>%
+    as.numeric())
+
 crs_use <- terra::crs(worldcover_msa)
+
+cprg_county <- project(vect(cprg_county), crs_use)
 
 nlcd_lc <- get_nlcd(
   cprg_county,
@@ -62,7 +70,6 @@ code_class_tab <- data.frame(old_lab = c(10, 20, 30, 40, 50, 60, 70, 80, 90),
 #create color palette for mapping - this may be exported to qmd files later
 esa_color <- c('forestgreen','brown4','yellow2','wheat3','red','plum','lightblue','navy','mediumturquoise')
 
-library(tidyterra)
 worldcover_msa_map <- ggplot() + geom_spatraster(data= as.factor(worldcover_msa)) +
   scale_fill_manual(breaks = code_class_tab$old_lab,
                     labels = code_class_tab$esa_label,
@@ -131,8 +138,10 @@ imperv_msa_map
 
 ```
 
+### Results
+
 ```{r fig-ns-county-sequestration}
-#| fig-cap: "2021 county electricity emissions"
+#| fig-cap: "2021 county natural system carbon sequestration potential"
 #| out-width: "95%"
 
 fig_ns_county_sequestration <- plot_ly(
@@ -169,14 +178,13 @@ fig_ns_county_sequestration
 
 
 ```{r fig-ns-county-stock}
-#| fig-cap: "2021 county electricity emissions"
+#| fig-cap: "2021 county natural system carbon stock potential"
 #| out-width: "95%"
 
 fig_ns_county_stock <- plot_ly(
   type = "bar",
   source = "fig-ns-county-sequestration",
-  data = county_emissions %>%
-    filter(category == "Stock"),
+  data = carbon_stock,
   y = ~ reorder(geog_name, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   color = ~source,
@@ -202,3 +210,165 @@ fig_ns_county_stock <- plot_ly(
 
 fig_ns_county_stock
 ```
+
+### Correlation with county area
+
+
+
+```{r fig-ns-county-sequestration-area}
+#| fig-cap: "2021 carbon stock by county area"
+#| out-width: "95%"
+
+sequestration_area <- left_join(county_emissions %>% 
+                                  filter(category == "Sequestration") %>% 
+                                 group_by(geog_name) %>% 
+                                 summarize(emissions_metric_tons_co2e  = sum(emissions_metric_tons_co2e)), 
+                               cprg_area, by = c("geog_name" = "NAME")) %>% 
+  mutate(seq_per_area = emissions_metric_tons_co2e / area_sq_km)
+
+fig_ns_sequestration_area <- plot_ly(
+  type = "scatter",
+  mode = "markers",
+  source = "fig-ns-county-sequestration-area",
+  data = sequestration_area,
+  y = ~ emissions_metric_tons_co2e,
+  x = ~ area_sq_km,
+   hovertemplate = ~ paste0(
+    geog_name  , " County", "<br>",
+    "Area: ", scales::comma(area_sq_km), " square kilometers", "<br>",
+    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue,
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "County area and sequestration potential",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_sequestration_area
+```
+
+
+```{r fig-ns-county-stock-area}
+#| fig-cap: "2021 carbon stock by county area"
+#| out-width: "95%"
+
+carbon_stock_area <- left_join(carbon_stock %>% 
+                                 group_by(geog_name) %>% 
+                                 summarize(emissions_metric_tons_co2e  = sum(emissions_metric_tons_co2e)) , 
+                               cprg_area, by = c("geog_name" = "NAME")) %>% 
+  mutate(stock_per_area = emissions_metric_tons_co2e / area_sq_km)
+
+fig_ns_stock_area <- plot_ly(
+  type = "scatter",
+  mode = "markers",
+  source = "fig-ns-county-stock-area",
+  data = carbon_stock_area,
+  y = ~ emissions_metric_tons_co2e,
+  x = ~ area_sq_km,
+   hovertemplate = ~ paste0(
+    geog_name  , " County", "<br>",
+    "Area: ", scales::comma(area_sq_km), " square kilometers", "<br>",
+    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue,
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "County area and stock potential",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_stock_area
+```
+
+
+## Regional Parks
+
+```{r  include=FALSE}
+
+park_carbon <- readRDS(file.path(here::here(), "_nature/data/park_landcover_sequestration_2021.RDS"))
+parks <- readRDS(file.path(here::here(), "_nature/data/regional_parks_shape.RDS"))
+
+
+cprg_7 <- cprg_county %>% filter(!NAME %in% c('Sherburne','Chisago','St. Croix','Pierce'))
+county_emissions_7 <- county_emissions %>% filter(geog_name %in% cprg_7$NAME)
+
+sum(expanse(parks, unit = 'km')) #307.684
+sum(expanse(cprg_7, unit = 'km')) #7711.262
+sum(expanse(parks, unit = 'km')) / sum(expanse(cprg_7, unit = 'km')) # 3.99%
+
+park_area <- data.frame(agency = parks$AgencyMana, area = expanse(parks, unit = 'km')) %>% group_by(agency) %>%  summarize(area = sum(area))
+
+sum(wc_park_c$sequestration_potential) / sum(wc_county_c_7$sequestration_potential) # 5.56%
+sum(wc_park_c$stock_potential) / sum(wc_county_c_7$stock_potential) # 7.19%
+
+wc_park_c <- left_join(wc_park_c,
+                       data.frame(park = unique(wc_park_c$park),
+                                  county = c('Anoka','Hennepin','Carver','Dakota','Hennepin','Ramsey','Ramsey','Scott','Hennepin','Washington',NA)))
+
+wc_park_c_agg <- wc_park_c %>% filter(!is.na(park)) %>%  group_by(park, county) %>% 
+  summarize(area = sum(area),sequestration_potential = sum(sequestration_potential), stock_potential = sum(stock_potential)) %>% 
+  mutate(seq_area = sequestration_potential/area, stock_area = stock_potential/area)
+
+comp_graph <- rbind(
+  data.frame(type = c('sequestration','sequestration'),
+             sector = c('wastewater emissions','parks sequestration'),
+             value = c(
+               sum(cprg_county_emissions_7$emissions_metric_tons_co2e[cprg_county_emissions_7$category == 'Wastewater']),
+               sequestration = -1 * sum(wc_park_c$sequestration_potential))),
+  data.frame(type = c('stock','stock'),
+  sector = c('transportation emissions','parks carbon stock'),
+  value = c(sum(cprg_county_emissions_7$emissions_metric_tons_co2e[cprg_county_emissions_7$sector == 'Transportation']),
+                        stock = -1 * sum(wc_park_c$stock_potential))))
+
+ggplot(comp_graph, aes(x = sector, y = value, fill = sector)) + geom_bar(stat = 'identity') + facet_wrap(type~., scales = 'free') + theme_bw()
+
+
+hookaddcap()
+```
+
+Parks play an important role in climate change 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

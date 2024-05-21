@@ -251,7 +251,7 @@ write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FAL
 
 county_emissions <- emissions_all
 
-saveRDS(emissions_all, "_meta/data/cprg_county_carbon_stock.RDS")
+saveRDS(carbon_stock, "_meta/data/cprg_county_carbon_stock.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_carbon_stock_meta.RDS")
 
 # save emissions to shared drive location

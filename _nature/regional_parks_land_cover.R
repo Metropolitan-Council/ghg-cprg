@@ -14,6 +14,8 @@ wc4 <- rast('./_nature/data-raw/ESA_WorldCover_10m_2021_v200_N45W096_Map.tif')
 
 parks <- vect('./_nature/data-raw/DBO_RPTAdministrativeBoundary.shp')
 
+saveRDS(parks, './_nature/data/regional_parks_shape.rds')
+
 ### create class conversion table (couldn't get ESA to output this info which would be cleaner)
 code_class_tab <- data.frame(old_lab = c(10, 20, 30, 40, 50, 60, 70, 80, 90),
                              esa_label = c('Tree','Shrubland','Grassland','Cropland','Built-up','Bare','Snow','Water','Wetland'))
