@@ -218,7 +218,9 @@ emissions_all <- bind_rows(
   mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
   select(year, geog_level, geog_id, geog_name, everything())
 
-
+#splitting off carbon stock here as it is a capacity, not a rate
+carbon_stock <- emissions_all %>% filter(category == 'Stock')
+emissions_all <- emissions_all %>% filter(category != "Stock")
 
 mean(emissions_all$emissions_per_capita[!emissions_all$category == 'Stock'])
 sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == 'Stock']) / sum(cprg_county_pop$population)
@@ -248,6 +250,9 @@ saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
 write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)
 
 county_emissions <- emissions_all
+
+saveRDS(emissions_all, "_meta/data/cprg_county_carbon_stock.RDS")
+saveRDS(emissions_all_meta, "_meta/data/cprg_county_carbon_stock_meta.RDS")
 
 # save emissions to shared drive location
 # source("R/fetch_path.R")
