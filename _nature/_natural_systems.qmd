@@ -321,38 +321,30 @@ parks <- readRDS(file.path(here::here(), "_nature/data/regional_parks_shape.RDS"
 
 
 cprg_7 <- cprg_county %>% filter(!NAME %in% c('Sherburne','Chisago','St. Croix','Pierce'))
-county_emissions_7 <- county_emissions %>% filter(geog_name %in% cprg_7$NAME)
+county_seq_7 <- county_emissions %>% filter(geog_name %in% cprg_7$NAME, sector == "Nature")
 
-sum(expanse(parks, unit = 'km')) #307.684
-sum(expanse(cprg_7, unit = 'km')) #7711.262
+park_area <- sum(expanse(parks, unit = 'km')) #307.684
+cprg_7_area <- sum(expanse(cprg_7, unit = 'km')) #7711.262
 sum(expanse(parks, unit = 'km')) / sum(expanse(cprg_7, unit = 'km')) # 3.99%
 
 park_area <- data.frame(agency = parks$AgencyMana, area = expanse(parks, unit = 'km')) %>% group_by(agency) %>%  summarize(area = sum(area))
 
-sum(wc_park_c$sequestration_potential) / sum(wc_county_c_7$sequestration_potential) # 5.56%
-sum(wc_park_c$stock_potential) / sum(wc_county_c_7$stock_potential) # 7.19%
+sum(park_carbon$sequestration_potential) / sum(county_seq_7$emissions_metric_tons_co2e) # 5.56%
+sum(park_carbon$stock_potential) / sum(county_seq_7$stock_potential) # 7.19%
 
-wc_park_c <- left_join(wc_park_c,
-                       data.frame(park = unique(wc_park_c$park),
-                                  county = c('Anoka','Hennepin','Carver','Dakota','Hennepin','Ramsey','Ramsey','Scott','Hennepin','Washington',NA)))
 
-wc_park_c_agg <- wc_park_c %>% filter(!is.na(park)) %>%  group_by(park, county) %>% 
+park_carbon_agg <- park_carbon %>% filter(!is.na(park)) %>%  group_by(county) %>% 
   summarize(area = sum(area),sequestration_potential = sum(sequestration_potential), stock_potential = sum(stock_potential)) %>% 
-  mutate(seq_area = sequestration_potential/area, stock_area = stock_potential/area)
+  mutate(seq_per_area = sequestration_potential/area, stock_area = stock_potential/area)
 
-comp_graph <- rbind(
-  data.frame(type = c('sequestration','sequestration'),
-             sector = c('wastewater emissions','parks sequestration'),
-             value = c(
-               sum(cprg_county_emissions_7$emissions_metric_tons_co2e[cprg_county_emissions_7$category == 'Wastewater']),
-               sequestration = -1 * sum(wc_park_c$sequestration_potential))),
-  data.frame(type = c('stock','stock'),
-  sector = c('transportation emissions','parks carbon stock'),
-  value = c(sum(cprg_county_emissions_7$emissions_metric_tons_co2e[cprg_county_emissions_7$sector == 'Transportation']),
-                        stock = -1 * sum(wc_park_c$stock_potential))))
-
-ggplot(comp_graph, aes(x = sector, y = value, fill = sector)) + geom_bar(stat = 'identity') + facet_wrap(type~., scales = 'free') + theme_bw()
-
+park_county_comp <- bind_rows(bind_rows(pivot_longer(park_carbon_agg %>% select(county,seq_area, stock_area),
+                                 cols = c(seq_area, stock_area)) %>% mutate(geography = "Regional Parks"),
+                              sequestration_area %>% dplyr::select(geog_name, seq_per_area) %>% 
+                                          mutate(name = "seq_area", geography = "County") %>% 
+                                          rename(value = "seq_per_area", county = "geog_name")),
+                              carbon_stock_area %>% dplyr::select(geog_name, stock_per_area) %>% 
+                                          mutate(name = "stock_area", geography = "County") %>% 
+                                          rename(value = "stock_per_area", county = "geog_name"))
 
 hookaddcap()
 ```
