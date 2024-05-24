@@ -140,6 +140,8 @@ imperv_msa_map
 
 ### Results
 
+There is considerable variation across counties in two key components that affect natural system carbon sequestration and stock potential: total area of green spaces and the ratio of 'natural' to 'urban' green spaces. Hennepin county has the highest sequestration potential due to a high proportion of urban trees and turf grass (urban grasslands) which have high potential for rapid carbon sequestration. However, counties with more acreage of green spaces in undeveloped areas, most notably St. Croix county, have a higher stock capacity. This dichotomy illustrates that different counties curation of natural spaces may play different roles. Highly developed areas may help offset carbon emissions be providing rapid sequestration sinks in urban greenery, whereas less developed counties can provide longer term carbon sinks in natural areas with a higher capacity to continue drawing down atmospheric carbon even if future emissions approach net zero. Two important caveats to these results are that (1) carbon sequestration tends to slow as natural systems mature and (2) present day natural systems exist at some intermediate level of the illustrated carbon stock potential. The former means that these approximations could be higher or lower depending on the average age of natural systems in each county (e.g. time since agricultural abandonment). The latter means that the loss of these natural systems to development or habitat instruction means that not only would the region lose carbon sinks, but a substantial amount of the stored carbon will be transferred to the atmosphere, increasing atmospheric greenhouse gases.
+
 ```{r fig-ns-county-sequestration}
 #| fig-cap: "2021 county natural system carbon sequestration potential"
 #| out-width: "95%"
@@ -213,7 +215,7 @@ fig_ns_county_stock
 
 ### Correlation with county area
 
-
+The expectation is that larger counties have higher carbon sequestration and storage capacities due to more acreage for green spaces; this is indeed observed.
 
 ```{r fig-ns-county-sequestration-area}
 #| fig-cap: "2021 carbon stock by county area"
@@ -314,7 +316,9 @@ fig_ns_stock_area
 
 ## Regional Parks
 
-```{r  include=FALSE}
+Parks play an important role in climate change resilience by protecting existing natural systems and acquiring lands for natural system restoration. The regional park system of the seven county Twin Cities region provides an excellent example of this. The following graphs show how regional parks, on a per area basis, are more efficient carbon sinks than the counties they reside in. For both sequestration and stock potential, this is in large part due to a much small proportion of non-green spaces (e.g.. impervious surfaces, agricultural lands), but stock potential in particular has a higher capacity due to a larger proportion of natural green spaces as opposed to urban green spaces.
+
+```{r fig-park-county-comp}
 
 park_carbon <- readRDS(file.path(here::here(), "_nature/data/park_landcover_sequestration_2021.RDS"))
 parks <- readRDS(file.path(here::here(), "_nature/data/regional_parks_shape.RDS"))
@@ -340,23 +344,87 @@ park_carbon_agg <- park_carbon %>% filter(!is.na(park)) %>%  group_by(county) %>
 park_county_comp <- bind_rows(bind_rows(pivot_longer(park_carbon_agg %>% select(county,seq_area, stock_area),
                                  cols = c(seq_area, stock_area)) %>% mutate(geography = "Regional Parks"),
                               sequestration_area %>% dplyr::select(geog_name, seq_per_area) %>% 
+                                          filter(geog_name %in% park_carbon_agg$county) %>% 
                                           mutate(name = "seq_area", geography = "County") %>% 
                                           rename(value = "seq_per_area", county = "geog_name")),
                               carbon_stock_area %>% dplyr::select(geog_name, stock_per_area) %>% 
+                                          filter(geog_name %in% park_carbon_agg$county) %>% 
                                           mutate(name = "stock_area", geography = "County") %>% 
                                           rename(value = "stock_per_area", county = "geog_name"))
+
+#### graph comparing sequestration rates per area in parks vs counties
+
+park_county_plot <-  plot_ly(
+  type = "bar",
+  source = "fig-park-county-comp",
+  data = park_county_comp %>% filter(name == 'seq_area'),
+  y = ~ value,
+  x = ~county,
+  color = ~geography,
+  colors = c('lightgreen','darkgreen'),
+  hovertemplate = ~ paste0(
+    geography, "<br>",
+    "Natural Systems", "<br>",
+    round(value, digits = 2), " metric tons CO<sub>2</sub>e per square kilometers", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county vs park natural system sequestration potential",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "group",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+park_county_plot
 
 hookaddcap()
 ```
 
-Parks play an important role in climate change 
 
 
 
 
+```{r fig-park-county-stock-comp}
 
+#### graph comparing sequestration rates per area in parks vs counties
 
+park_county_plot_stock <-  plot_ly(
+  type = "bar",
+  source = "fig-park-county-stock-comp",
+  data = park_county_comp %>% filter(name == 'stock_area'),
+  y = ~ value,
+  x = ~county,
+  color = ~geography,
+  colors = c('lightgreen','darkgreen'),
+  hovertemplate = ~ paste0(
+    geography, "<br>",
+    "Natural Systems", "<br>",
+    round(value / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e per square kilometers", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county vs park natural system stock potential",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "group",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
 
+park_county_plot_stock
+
+hookaddcap()
+```
 
 
 
