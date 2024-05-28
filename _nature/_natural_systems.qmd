@@ -100,17 +100,17 @@ imperv_msa_map <- ggplot() +
 ```
 
 
-### Introduction
+## Introduction
 
 Natural systems are a critical component of capturing carbon from the atmosphere and sequestering it in biomass and terrestrial soils. Photosynthesis is central mechanism of this process and vegetation is therefore the focal land cover classification for quantifying the potential for regions to both sequester and store carbon. Different vegetation ecosystems have varying capacities for carbon capture and this work focuses on five broad classifications: urban trees, urban grasslands (turf grass), forests, natural grasslands, and wetlands. The distinction between tree and grassland cover in developed areas (i.e. urban) is important as despite having similar sequestration rates, these systems are generally understood to have smaller storage capacities. The preservation and restoration of natural systems will be a key tool in limiting atmospheric greenhouse gases.
 
-### Methods
+## Methods
   
 The approach for calculating carbon sequestration potential for a given geography, j, is,
 $$Sequestration_j = \Sigma (area_i \times {SequestrationRate_i}) $$
 where *i* is land cover classification. The sequestration rate is based on midwest specific sequestration rate estimates found in the primary scientific literature (REFERENCE TABLE). 
 
-#### Land cover classification
+### Land cover classification
 
 Land cover was determined by using the European Space Agencies 2021 WorldCover, a 10 m resolution satellite data product, in combination with USGS's National Land Cover Dataset (NLCD). These datasets complement each other as WorldCover provides finer spatial resolution and classifies green spaces within urban areas, whereas the NLCD products can split and downscale green space area in developed lands from those in non-developed lands, offering an important distinction between carbon sequestration and stock capacities. Specifically the NLCD 'Developed' land classification was used to assign the 'urban' label to WorldCover tree and grassland cells, and the NLCD impervious cover layer was used to correct the area of urban trees in WorldCover, which otherwise classifies any cell with >10% tree cover as 100% tree.
 
@@ -143,7 +143,7 @@ nlcd_msa_map
 imperv_msa_map
 ```
 
-### Results
+## Results
 
 There is considerable variation across counties in two key components that affect natural system carbon sequestration and stock potential: total area of green spaces and the ratio of 'natural' to 'urban' green spaces. Hennepin county has the highest sequestration potential due to a high proportion of urban trees and turf grass (urban grasslands) which have high potential for rapid carbon sequestration. However, counties with more acreage of green spaces in undeveloped areas, most notably St. Croix county, have a higher stock capacity. This dichotomy illustrates that different counties curation of natural spaces may play different roles. Highly developed areas may help offset carbon emissions be providing rapid sequestration sinks in urban greenery, whereas less developed counties can provide longer term carbon sinks in natural areas with a higher capacity to continue drawing down atmospheric carbon even if future emissions approach net zero. Two important caveats to these results are that (1) carbon sequestration tends to slow as natural systems mature and (2) present day natural systems exist at some intermediate level of the illustrated carbon stock potential. The former means that these approximations could be higher or lower depending on the average age of natural systems in each county (e.g. time since agricultural abandonment). The latter means that the loss of these natural systems to development or habitat instruction means that not only would the region lose carbon sinks, but a substantial amount of the stored carbon will be transferred to the atmosphere, increasing atmospheric greenhouse gases.
 
@@ -326,7 +326,7 @@ fig_ns_stock_area <- plot_ly(
 fig_ns_stock_area
 ```
 
-``` {r include = false}
+``` {r include = FALSE}
 park_carbon <- readRDS(file.path(here::here(), "_nature/data/park_landcover_sequestration_2021.RDS"))
 parks <- readRDS(file.path(here::here(), "_nature/data/regional_parks_shape.RDS"))
 
@@ -345,7 +345,7 @@ park_area <- data.frame(agency = parks$AgencyMana, area = expanse(parks, unit = 
   summarize(area = sum(area))
 
 park_seq_ratio <- sum(park_carbon$sequestration_potential) / sum(county_seq_7$emissions_metric_tons_co2e) # 5.56%
-park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_stock_7$emissions_metric_tons_co2e ) # 7.19%
+park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_stock_7$emissions_metric_tons_co2e) # 7.19%
 
 
 park_carbon_agg <- park_carbon %>%
@@ -369,11 +369,10 @@ park_county_comp <- bind_rows(
     mutate(name = "stock_area", geography = "County") %>%
     rename(value = "stock_per_area", county = "geog_name")
 )
-
 ```
-## Regional Parks
+### Regional Parks
 
-Parks play an important role in climate change resilience by protecting existing natural systems and acquiring lands for natural system restoration. The regional park system of the seven county Twin Cities region provides an excellent example of this. The following graphs show how regional parks, on a per area basis, are more efficient carbon sinks than the counties they reside in. For both sequestration and stock potential, this is in large part due to a much small proportion of non-green spaces (e.g.. impervious surfaces, agricultural lands), but stock potential in particular has a higher capacity due to a larger proportion of natural green spaces as opposed to urban green spaces. Regional parks represent (`r scales::percent(park_area_ratio, accuracy = 0.1)`) of the total land area of the seven county region, but (`r scales::percent(park_seq_ratio, accuracy = 0.1)`) of its carbon sequestration potential and (`r scales::percent(park_stock_ratio, accuracy = 0.1)`) of its carbon stock potential.
+Parks play an important role in climate change resilience by protecting existing natural systems and acquiring lands for natural system restoration. The regional park system of the seven county Twin Cities region provides an excellent example of this. The following graphs show how regional parks, on a per area basis, are more efficient carbon sinks than the counties they reside in. For both sequestration and stock potential, this is in large part due to a much small proportion of non-green spaces (e.g.. impervious surfaces, agricultural lands), but stock potential in particular has a higher capacity due to a larger proportion of natural green spaces as opposed to urban green spaces. Regional parks represent `r scales::percent(park_area_ratio, accuracy = 0.1)` of the total land area of the seven county region, but `r scales::percent(park_seq_ratio, accuracy = 0.1)` of its carbon sequestration potential and `r scales::percent(park_stock_ratio, accuracy = 0.1)` of its carbon stock potential.
 
 
 ```{r fig-park-county-comp}
@@ -398,7 +397,7 @@ park_county_plot <- plot_ly(
 ) %>%
   plotly_layout(
     main_title = "2021 county vs park natural system sequestration potential",
-    y_title = "Metric tons CO<sub>2</sub>e",
+    y_title = "Metric tons CO<sub>2</sub>e / km<sup>2</sup>",
     subtitle = ""
   ) %>%
   layout(
@@ -438,7 +437,7 @@ park_county_plot_stock <- plot_ly(
 ) %>%
   plotly_layout(
     main_title = "2021 county vs park natural system stock potential",
-    y_title = "Metric tons CO<sub>2</sub>e",
+    y_title = "Metric tons CO<sub>2</sub>e / km<sup>2</sup>",
     subtitle = ""
   ) %>%
   layout(
