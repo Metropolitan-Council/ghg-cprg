@@ -1,5 +1,14 @@
 ## {Data Source}
-```{r}
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
@@ -12,82 +21,47 @@ Natural systems have the capacity to sequester carbon in biomass and soils. In o
 Thus, an 'Urban_tree' raster cell occurred for raster cells that were labeled as 'Tree' by WorldCover and 'Developed' by NLCD and had an estimated area of:
 $$AreaOfUrbanTree =  (CellArea \times (1 - (ImperviousCover/100))) $$
 
-In order to determine the annual carbon sequestration rate of natural systems, we searched for region-specific estimates for each land cover type (tree, urban_tree, grassland, urban_grassland, wetland), preferring primary scientific literature where possible. Carbon sequestration rates in natural systems are non-linear through time, with highest sequestration rates in younger systems and saturated rates (i.e. net zero carbon fluxes) in mature systems. Given that our land cover approach is unable to distinguish the age of a system, we used intermediate aged system rates where available. Future research could leverage the NLCD Land Cover Change Disturbance Date to attempt to determine natural system age, though this is most likely to find loss of natural systems in our region as opposed to land use conversion *to* natural systems. An additional consideration is that these systems have different storage potentials that are not necessarily directly related to their sequestration rates. For instance, turf grass systems (likely most urban_grasslands in our designation) rapidly accumulate soil carbon relative to natural grasslands but saturate by 50 years, whereas grasslands as old as 75 years continue to sequester carbon at the northern edge of our system. Additional factors affecting sequestration rates include species specific life histories, soil charateristics, and water and nutrient inputs. Carbon sequestration rates were multiplied by a value of 3.67 to equate a unit of carbon to a unit of CO2. Sequestration rates are the third highest quality rank (@tbl-quality-rank), coming predominantly from peer-reviewed journal articles.
+In order to determine the annual carbon sequestration rate of natural systems, we searched for region-specific estimates for each land cover type (tree, urban_tree, grassland, urban_grassland, wetland), preferring primary scientific literature where possible. Carbon sequestration rates in natural systems are non-linear through time, with highest sequestration rates in younger systems and saturated rates (i.e. net zero carbon fluxes) in mature systems. Given that our land cover approach is unable to distinguish the age of a system, we used intermediate aged system rates where available. Future research could leverage the NLCD Land Cover Change Disturbance Date to attempt to determine natural system age, though this is most likely to find loss of natural systems in our region as opposed to land use conversion *to* natural systems. An additional consideration is that these systems have different storage potentials that are not necessarily directly related to their sequestration rates. For instance, turf grass systems (likely most urban_grasslands in our designation) rapidly accumulate soil carbon relative to natural grasslands but saturate by 50 years, whereas grasslands as old as 75 years continue to sequester carbon at the northern edge of our system. Additional factors affecting sequestration rates include species specific life histories, soil characteristics, and water and nutrient inputs. Carbon sequestration rates were multiplied by a value of 3.67 to equate a unit of carbon to a unit of CO2, representing the different in atomic weights. Sequestration rates are the third highest quality rank (@tbl-quality-rank), coming predominantly from peer-reviewed journal articles.
 
 
-HOLD TO CREATE TABLE OF SEQ RATES AND SOURCES
-
-
-
-Introduction text 
-Data source description, type
-
-- Quality rank (See @tbl-quality-rank)
-- How, when, and why was the data collected?
-- If this is a modeled dataset, what is the sample?
-- What is the raw unit of measurement? 
-- How was this data accessed? Include any relevant links/citations, code, or downloads.
-- What data cleaning or wrangling was completed? How did you test these processes and outputs?
-- What is the geographic and temporal scope? Did you complete any aggregation?
-- What version is the data? Were there other versions available? If so, why did you choose this version?
-- What assumptions are made when we use this dataset?
-- Which subject matter expert (SME) reviewed this data?
-- Describe testing used to verify data
-
-Be sure to add a citation of this dataset to the Zotero shared library.
-
-### Data characteristics
-
-- Were there any missing data? How did you handle missing data?
-- Plots, tables, and description of data distribution
-- Variance, Z-Score, quantiles
-- Facet views by categorical variables
-
-```{r fig-scatter}
-#| fig-cap: "A scatter plot"
+```{r tbl-sequestration}
+#| tbl-cap: "Ecosystem Sequestration Rates"
 #| out-width: "95%"
-#| include: false
-shinipsum::random_ggplotly(type = "point") %>%
-  councilR::plotly_layout(
-    main_title = "Scatter"
+land_cover_carbon <- readRDS(file.path(here::here(), "_nature/data/land_cover_carbon.RDS")) %>%
+  mutate(land_cover_type = str_replace_all(land_cover_type, "_", " "))
+
+seq_citations <- tibble(
+  land_cover_type = land_cover_carbon$land_cover_type,
+  Citation = c(
+    "[@knopsSoilCarbonNitrogen2009]",
+    "[@CarbonMinnesotaTrees]",
+    "[@phillipsHighSoilCarbon2023]",
+    "[@nowakCarbonStorageSequestration2013]",
+    "[@polaskySupplyTerrestrialCarbon]"
   )
+)
+
+
+
+tbl_sequestration <- kable(
+  land_cover_carbon %>%
+    dplyr::select(
+      land_cover_type,
+      `Metric tons CO₂e per square kilometer` = seq_mtco2e_sqkm
+    ) %>%
+    left_join(., seq_citations) %>%
+    unite("Land Cover Type", c("land_cover_type", "Citation"), sep = ""),
+  row.names = FALSE, format = "markdown"
+)
+# %>%
+#   gt() %>%
+#   gt::opt_row_striping() %>%
+#   fmt_number(2, decimals = 1) %>%
+#   tab_style(
+#     style = cell_text(weight = "bold"),
+#     locations = cells_column_labels()
+#   ) %>%
+#   gt::as_raw_html()
+
+tbl_sequestration
 ```
-
-
-```{r fig-boxplot}
-#| fig-cap: "A boxplot"
-#| out-width: "95%"
-#| include: false
-shinipsum::random_ggplotly(type = "boxplot") %>%
-  councilR::plotly_layout(
-    main_title = "Boxplot"
-  )
-```
-
-
-```{r fig-density}
-#| fig-cap: "A density plot"
-#| out-width: "95%"
-#| include: false
-shinipsum::random_ggplotly(type = "density") %>%
-  councilR::plotly_layout(
-    main_title = "Density"
-  )
-```
-
-
-### Limitations
-
-### Comparison with similar datasets
-
-### Data dictionary
-
-Table with detailed description of columns and definitions for each data table.
-
-```{r echo=FALSE}
-caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
-caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
-saveCap(paste0("cap-", caption_index))
-saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
-```
-{{< pagebreak >}}

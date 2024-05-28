@@ -52,6 +52,12 @@ book:
        # - _waste/pa_waste.qmd
        - _waste/qc_waste.qmd
        - _waste/qc_waste_other.qmd
+    
+    - part: "Natural Systems"
+      chapters:
+       - _nature/_natural_systems.qmd
+       - _nature/data_land_area_sequestration.qmd
+       
   appendices:
     # - _meta/data_request_template.qmd
     - _meta/supplementary_data.qmd

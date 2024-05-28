@@ -11,7 +11,7 @@ county_emissions_summary <- county_emissions %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     .groups = "keep"
-  ) 
+  )
 
 hookaddcap()
 ```
@@ -24,7 +24,7 @@ This document is one part of the Metropolitan Council Priority Climate Action Pl
 
 ```{r sector-percentages, echo=FALSE, include=FALSE}
 sector_percentages <- county_emissions_summary %>%
-  filter(!sector == 'Nature') %>% # not contributing to emissions
+  filter(!sector == "Nature") %>% # not contributing to emissions
   group_by(sector) %>%
   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
   arrange(-emissions_metric_tons_co2e) %>%
@@ -34,8 +34,7 @@ sector_percentages
 emissions_total <- sum(county_emissions_summary$emissions_metric_tons_co2e[county_emissions_summary$sector != "Nature"])
 seq_total <- (-1 * sum(county_emissions_summary$emissions_metric_tons_co2e[county_emissions_summary$sector == "Nature"]))
 
-seq_percentage <- (-1 * sum(county_emissions_summary$emissions_metric_tons_co2e[county_emissions_summary$sector == "Nature"])) /         sum(county_emissions_summary$emissions_metric_tons_co2e[county_emissions_summary$sector != "Nature"])
-
+seq_percentage <- (-1 * sum(county_emissions_summary$emissions_metric_tons_co2e[county_emissions_summary$sector == "Nature"])) / sum(county_emissions_summary$emissions_metric_tons_co2e[county_emissions_summary$sector != "Nature"])
 ```
 
 In 2021, the Twin-Cities MSA generated `r round(emissions_total/1000000, digits = 2)` million metric tons CO~2~ equivalent (MMtCO~2~e) emissions from energy, transportation, and waste sectors. `r sector_percentages[[1]][1]` was the largest contributor to GHG emissions (`r scales::percent(sector_percentages[[2]][1], accuracy = 0.1)`), followed by `r sector_percentages[[1]][2]` (`r scales::percent(sector_percentages[[2]][2], accuracy = 0.1)`), and `r sector_percentages[[1]][3]` (`r scales::percent(sector_percentages[[2]][3], accuracy = 0.1)`). Carbon sequestration from natural systems offset `r scales::percent(seq_percentage, accuracy = 0.1)` of total emissions.
@@ -45,12 +44,13 @@ In 2021, the Twin-Cities MSA generated `r round(emissions_total/1000000, digits 
 #| out-width: "95%"
 
 # reorder to put sequestration at end
-county_emissions$sector <- factor(county_emissions$sector, 
-                                  levels = c("Energy", "Transportation", "Waste", "Nature"))
+county_emissions$sector <- factor(county_emissions$sector,
+  levels = c("Energy", "Transportation", "Waste", "Nature")
+)
 
 fig_county_emissions_sector <- plot_ly(
   data = county_emissions %>%
-    filter(category != "Stock") %>% 
+    filter(category != "Stock") %>%
     group_by(sector, category) %>%
     summarize(
       emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
