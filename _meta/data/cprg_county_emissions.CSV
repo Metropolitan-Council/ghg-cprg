@@ -171,56 +171,56 @@
 2021,"county","109","St. Croix","Waste","Solid waste","Landfill",34656.1220070437,"Wisconsin DNR","EPA GHG Emission Factors Hub (2021)",92495,"ACS 5-Year Estimates 2021, Table DP05",0.37
 2021,"county","003","Anoka","Nature","Sequestration","Grassland",-34489.6009911476,"ESA WorldCover & NLCD 2021","Various primary literature",360773,"ACS 5-Year Estimates 2021, Table DP05",-0.1
 2021,"county","003","Anoka","Nature","Sequestration","Tree",-118249.878032248,"ESA WorldCover & NLCD 2021","Various primary literature",360773,"ACS 5-Year Estimates 2021, Table DP05",-0.33
-2021,"county","003","Anoka","Nature","Sequestration","Urban_grassland",-29334.5577542091,"ESA WorldCover & NLCD 2021","Various primary literature",360773,"ACS 5-Year Estimates 2021, Table DP05",-0.08
-2021,"county","003","Anoka","Nature","Sequestration","Urban_tree",-73118.7991063042,"ESA WorldCover & NLCD 2021","Various primary literature",360773,"ACS 5-Year Estimates 2021, Table DP05",-0.2
+2021,"county","003","Anoka","Nature","Sequestration","Urban grassland",-29334.5577542091,"ESA WorldCover & NLCD 2021","Various primary literature",360773,"ACS 5-Year Estimates 2021, Table DP05",-0.08
+2021,"county","003","Anoka","Nature","Sequestration","Urban tree",-73118.7991063042,"ESA WorldCover & NLCD 2021","Various primary literature",360773,"ACS 5-Year Estimates 2021, Table DP05",-0.2
 2021,"county","003","Anoka","Nature","Sequestration","Wetland",-26306.630849473,"ESA WorldCover & NLCD 2021","Various primary literature",360773,"ACS 5-Year Estimates 2021, Table DP05",-0.07
 2021,"county","019","Carver","Nature","Sequestration","Grassland",-18303.0688668415,"ESA WorldCover & NLCD 2021","Various primary literature",105694,"ACS 5-Year Estimates 2021, Table DP05",-0.17
 2021,"county","019","Carver","Nature","Sequestration","Tree",-57344.4999965799,"ESA WorldCover & NLCD 2021","Various primary literature",105694,"ACS 5-Year Estimates 2021, Table DP05",-0.54
-2021,"county","019","Carver","Nature","Sequestration","Urban_grassland",-11815.493538909,"ESA WorldCover & NLCD 2021","Various primary literature",105694,"ACS 5-Year Estimates 2021, Table DP05",-0.11
-2021,"county","019","Carver","Nature","Sequestration","Urban_tree",-19934.1613854225,"ESA WorldCover & NLCD 2021","Various primary literature",105694,"ACS 5-Year Estimates 2021, Table DP05",-0.19
+2021,"county","019","Carver","Nature","Sequestration","Urban grassland",-11815.493538909,"ESA WorldCover & NLCD 2021","Various primary literature",105694,"ACS 5-Year Estimates 2021, Table DP05",-0.11
+2021,"county","019","Carver","Nature","Sequestration","Urban tree",-19934.1613854225,"ESA WorldCover & NLCD 2021","Various primary literature",105694,"ACS 5-Year Estimates 2021, Table DP05",-0.19
 2021,"county","019","Carver","Nature","Sequestration","Wetland",-7098.11128320861,"ESA WorldCover & NLCD 2021","Various primary literature",105694,"ACS 5-Year Estimates 2021, Table DP05",-0.07
 2021,"county","025","Chisago","Nature","Sequestration","Grassland",-32048.0036716751,"ESA WorldCover & NLCD 2021","Various primary literature",56328,"ACS 5-Year Estimates 2021, Table DP05",-0.57
 2021,"county","025","Chisago","Nature","Sequestration","Tree",-141553.221162176,"ESA WorldCover & NLCD 2021","Various primary literature",56328,"ACS 5-Year Estimates 2021, Table DP05",-2.51
-2021,"county","025","Chisago","Nature","Sequestration","Urban_grassland",-12250.7640086741,"ESA WorldCover & NLCD 2021","Various primary literature",56328,"ACS 5-Year Estimates 2021, Table DP05",-0.22
-2021,"county","025","Chisago","Nature","Sequestration","Urban_tree",-20639.1485818241,"ESA WorldCover & NLCD 2021","Various primary literature",56328,"ACS 5-Year Estimates 2021, Table DP05",-0.37
+2021,"county","025","Chisago","Nature","Sequestration","Urban grassland",-12250.7640086741,"ESA WorldCover & NLCD 2021","Various primary literature",56328,"ACS 5-Year Estimates 2021, Table DP05",-0.22
+2021,"county","025","Chisago","Nature","Sequestration","Urban tree",-20639.1485818241,"ESA WorldCover & NLCD 2021","Various primary literature",56328,"ACS 5-Year Estimates 2021, Table DP05",-0.37
 2021,"county","025","Chisago","Nature","Sequestration","Wetland",-14396.9996883883,"ESA WorldCover & NLCD 2021","Various primary literature",56328,"ACS 5-Year Estimates 2021, Table DP05",-0.26
 2021,"county","037","Dakota","Nature","Sequestration","Grassland",-18271.9303353252,"ESA WorldCover & NLCD 2021","Various primary literature",435863,"ACS 5-Year Estimates 2021, Table DP05",-0.04
 2021,"county","037","Dakota","Nature","Sequestration","Tree",-78256.7806503538,"ESA WorldCover & NLCD 2021","Various primary literature",435863,"ACS 5-Year Estimates 2021, Table DP05",-0.18
-2021,"county","037","Dakota","Nature","Sequestration","Urban_grassland",-28670.524425565,"ESA WorldCover & NLCD 2021","Various primary literature",435863,"ACS 5-Year Estimates 2021, Table DP05",-0.07
-2021,"county","037","Dakota","Nature","Sequestration","Urban_tree",-79628.436923987,"ESA WorldCover & NLCD 2021","Various primary literature",435863,"ACS 5-Year Estimates 2021, Table DP05",-0.18
+2021,"county","037","Dakota","Nature","Sequestration","Urban grassland",-28670.524425565,"ESA WorldCover & NLCD 2021","Various primary literature",435863,"ACS 5-Year Estimates 2021, Table DP05",-0.07
+2021,"county","037","Dakota","Nature","Sequestration","Urban tree",-79628.436923987,"ESA WorldCover & NLCD 2021","Various primary literature",435863,"ACS 5-Year Estimates 2021, Table DP05",-0.18
 2021,"county","037","Dakota","Nature","Sequestration","Wetland",-4737.2185542491,"ESA WorldCover & NLCD 2021","Various primary literature",435863,"ACS 5-Year Estimates 2021, Table DP05",-0.01
 2021,"county","053","Hennepin","Nature","Sequestration","Grassland",-22112.4007667059,"ESA WorldCover & NLCD 2021","Various primary literature",1270283,"ACS 5-Year Estimates 2021, Table DP05",-0.02
 2021,"county","053","Hennepin","Nature","Sequestration","Tree",-78210.3910894837,"ESA WorldCover & NLCD 2021","Various primary literature",1270283,"ACS 5-Year Estimates 2021, Table DP05",-0.06
-2021,"county","053","Hennepin","Nature","Sequestration","Urban_grassland",-43910.5147126484,"ESA WorldCover & NLCD 2021","Various primary literature",1270283,"ACS 5-Year Estimates 2021, Table DP05",-0.03
-2021,"county","053","Hennepin","Nature","Sequestration","Urban_tree",-181312.265626723,"ESA WorldCover & NLCD 2021","Various primary literature",1270283,"ACS 5-Year Estimates 2021, Table DP05",-0.14
+2021,"county","053","Hennepin","Nature","Sequestration","Urban grassland",-43910.5147126484,"ESA WorldCover & NLCD 2021","Various primary literature",1270283,"ACS 5-Year Estimates 2021, Table DP05",-0.03
+2021,"county","053","Hennepin","Nature","Sequestration","Urban tree",-181312.265626723,"ESA WorldCover & NLCD 2021","Various primary literature",1270283,"ACS 5-Year Estimates 2021, Table DP05",-0.14
 2021,"county","053","Hennepin","Nature","Sequestration","Wetland",-19082.1973219573,"ESA WorldCover & NLCD 2021","Various primary literature",1270283,"ACS 5-Year Estimates 2021, Table DP05",-0.02
 2021,"county","093","Pierce","Nature","Sequestration","Grassland",-24866.021441582,"ESA WorldCover & NLCD 2021","Various primary literature",42204,"ACS 5-Year Estimates 2021, Table DP05",-0.59
 2021,"county","093","Pierce","Nature","Sequestration","Tree",-183298.900287845,"ESA WorldCover & NLCD 2021","Various primary literature",42204,"ACS 5-Year Estimates 2021, Table DP05",-4.34
-2021,"county","093","Pierce","Nature","Sequestration","Urban_grassland",-10216.4788732948,"ESA WorldCover & NLCD 2021","Various primary literature",42204,"ACS 5-Year Estimates 2021, Table DP05",-0.24
-2021,"county","093","Pierce","Nature","Sequestration","Urban_tree",-17883.0096977736,"ESA WorldCover & NLCD 2021","Various primary literature",42204,"ACS 5-Year Estimates 2021, Table DP05",-0.42
+2021,"county","093","Pierce","Nature","Sequestration","Urban grassland",-10216.4788732948,"ESA WorldCover & NLCD 2021","Various primary literature",42204,"ACS 5-Year Estimates 2021, Table DP05",-0.24
+2021,"county","093","Pierce","Nature","Sequestration","Urban tree",-17883.0096977736,"ESA WorldCover & NLCD 2021","Various primary literature",42204,"ACS 5-Year Estimates 2021, Table DP05",-0.42
 2021,"county","093","Pierce","Nature","Sequestration","Wetland",-3845.3269340855,"ESA WorldCover & NLCD 2021","Various primary literature",42204,"ACS 5-Year Estimates 2021, Table DP05",-0.09
 2021,"county","123","Ramsey","Nature","Sequestration","Grassland",-2482.16762750472,"ESA WorldCover & NLCD 2021","Various primary literature",549377,"ACS 5-Year Estimates 2021, Table DP05",0
 2021,"county","123","Ramsey","Nature","Sequestration","Tree",-14106.3494898179,"ESA WorldCover & NLCD 2021","Various primary literature",549377,"ACS 5-Year Estimates 2021, Table DP05",-0.03
-2021,"county","123","Ramsey","Nature","Sequestration","Urban_grassland",-13487.2947618979,"ESA WorldCover & NLCD 2021","Various primary literature",549377,"ACS 5-Year Estimates 2021, Table DP05",-0.02
-2021,"county","123","Ramsey","Nature","Sequestration","Urban_tree",-71514.3859790958,"ESA WorldCover & NLCD 2021","Various primary literature",549377,"ACS 5-Year Estimates 2021, Table DP05",-0.13
+2021,"county","123","Ramsey","Nature","Sequestration","Urban grassland",-13487.2947618979,"ESA WorldCover & NLCD 2021","Various primary literature",549377,"ACS 5-Year Estimates 2021, Table DP05",-0.02
+2021,"county","123","Ramsey","Nature","Sequestration","Urban tree",-71514.3859790958,"ESA WorldCover & NLCD 2021","Various primary literature",549377,"ACS 5-Year Estimates 2021, Table DP05",-0.13
 2021,"county","123","Ramsey","Nature","Sequestration","Wetland",-3419.68735269416,"ESA WorldCover & NLCD 2021","Various primary literature",549377,"ACS 5-Year Estimates 2021, Table DP05",-0.01
 2021,"county","139","Scott","Nature","Sequestration","Grassland",-21921.9006583303,"ESA WorldCover & NLCD 2021","Various primary literature",149568,"ACS 5-Year Estimates 2021, Table DP05",-0.15
 2021,"county","139","Scott","Nature","Sequestration","Tree",-71797.8080060375,"ESA WorldCover & NLCD 2021","Various primary literature",149568,"ACS 5-Year Estimates 2021, Table DP05",-0.48
-2021,"county","139","Scott","Nature","Sequestration","Urban_grassland",-17359.9254581213,"ESA WorldCover & NLCD 2021","Various primary literature",149568,"ACS 5-Year Estimates 2021, Table DP05",-0.12
-2021,"county","139","Scott","Nature","Sequestration","Urban_tree",-24820.7089982919,"ESA WorldCover & NLCD 2021","Various primary literature",149568,"ACS 5-Year Estimates 2021, Table DP05",-0.17
+2021,"county","139","Scott","Nature","Sequestration","Urban grassland",-17359.9254581213,"ESA WorldCover & NLCD 2021","Various primary literature",149568,"ACS 5-Year Estimates 2021, Table DP05",-0.12
+2021,"county","139","Scott","Nature","Sequestration","Urban tree",-24820.7089982919,"ESA WorldCover & NLCD 2021","Various primary literature",149568,"ACS 5-Year Estimates 2021, Table DP05",-0.17
 2021,"county","139","Scott","Nature","Sequestration","Wetland",-6538.20980190031,"ESA WorldCover & NLCD 2021","Various primary literature",149568,"ACS 5-Year Estimates 2021, Table DP05",-0.04
 2021,"county","141","Sherburne","Nature","Sequestration","Grassland",-34658.094298833,"ESA WorldCover & NLCD 2021","Various primary literature",96295,"ACS 5-Year Estimates 2021, Table DP05",-0.36
 2021,"county","141","Sherburne","Nature","Sequestration","Tree",-130286.821683771,"ESA WorldCover & NLCD 2021","Various primary literature",96295,"ACS 5-Year Estimates 2021, Table DP05",-1.35
-2021,"county","141","Sherburne","Nature","Sequestration","Urban_grassland",-14251.2765237245,"ESA WorldCover & NLCD 2021","Various primary literature",96295,"ACS 5-Year Estimates 2021, Table DP05",-0.15
-2021,"county","141","Sherburne","Nature","Sequestration","Urban_tree",-25413.7676938118,"ESA WorldCover & NLCD 2021","Various primary literature",96295,"ACS 5-Year Estimates 2021, Table DP05",-0.26
+2021,"county","141","Sherburne","Nature","Sequestration","Urban grassland",-14251.2765237245,"ESA WorldCover & NLCD 2021","Various primary literature",96295,"ACS 5-Year Estimates 2021, Table DP05",-0.15
+2021,"county","141","Sherburne","Nature","Sequestration","Urban tree",-25413.7676938118,"ESA WorldCover & NLCD 2021","Various primary literature",96295,"ACS 5-Year Estimates 2021, Table DP05",-0.26
 2021,"county","141","Sherburne","Nature","Sequestration","Wetland",-17694.3500764328,"ESA WorldCover & NLCD 2021","Various primary literature",96295,"ACS 5-Year Estimates 2021, Table DP05",-0.18
 2021,"county","109","St. Croix","Nature","Sequestration","Grassland",-46894.1219913274,"ESA WorldCover & NLCD 2021","Various primary literature",92495,"ACS 5-Year Estimates 2021, Table DP05",-0.51
 2021,"county","109","St. Croix","Nature","Sequestration","Tree",-178860.672929003,"ESA WorldCover & NLCD 2021","Various primary literature",92495,"ACS 5-Year Estimates 2021, Table DP05",-1.93
-2021,"county","109","St. Croix","Nature","Sequestration","Urban_grassland",-22659.3411977724,"ESA WorldCover & NLCD 2021","Various primary literature",92495,"ACS 5-Year Estimates 2021, Table DP05",-0.24
-2021,"county","109","St. Croix","Nature","Sequestration","Urban_tree",-28237.579311675,"ESA WorldCover & NLCD 2021","Various primary literature",92495,"ACS 5-Year Estimates 2021, Table DP05",-0.31
+2021,"county","109","St. Croix","Nature","Sequestration","Urban grassland",-22659.3411977724,"ESA WorldCover & NLCD 2021","Various primary literature",92495,"ACS 5-Year Estimates 2021, Table DP05",-0.24
+2021,"county","109","St. Croix","Nature","Sequestration","Urban tree",-28237.579311675,"ESA WorldCover & NLCD 2021","Various primary literature",92495,"ACS 5-Year Estimates 2021, Table DP05",-0.31
 2021,"county","109","St. Croix","Nature","Sequestration","Wetland",-3113.53363908091,"ESA WorldCover & NLCD 2021","Various primary literature",92495,"ACS 5-Year Estimates 2021, Table DP05",-0.03
 2021,"county","163","Washington","Nature","Sequestration","Grassland",-26417.8708417566,"ESA WorldCover & NLCD 2021","Various primary literature",264818,"ACS 5-Year Estimates 2021, Table DP05",-0.1
 2021,"county","163","Washington","Nature","Sequestration","Tree",-110133.967281653,"ESA WorldCover & NLCD 2021","Various primary literature",264818,"ACS 5-Year Estimates 2021, Table DP05",-0.42
-2021,"county","163","Washington","Nature","Sequestration","Urban_grassland",-24680.6999731557,"ESA WorldCover & NLCD 2021","Various primary literature",264818,"ACS 5-Year Estimates 2021, Table DP05",-0.09
-2021,"county","163","Washington","Nature","Sequestration","Urban_tree",-58559.5970853134,"ESA WorldCover & NLCD 2021","Various primary literature",264818,"ACS 5-Year Estimates 2021, Table DP05",-0.22
+2021,"county","163","Washington","Nature","Sequestration","Urban grassland",-24680.6999731557,"ESA WorldCover & NLCD 2021","Various primary literature",264818,"ACS 5-Year Estimates 2021, Table DP05",-0.09
+2021,"county","163","Washington","Nature","Sequestration","Urban tree",-58559.5970853134,"ESA WorldCover & NLCD 2021","Various primary literature",264818,"ACS 5-Year Estimates 2021, Table DP05",-0.22
 2021,"county","163","Washington","Nature","Sequestration","Wetland",-9861.14313699487,"ESA WorldCover & NLCD 2021","Various primary literature",264818,"ACS 5-Year Estimates 2021, Table DP05",-0.04

@@ -33,7 +33,7 @@ category_colors <-
     # PuRd
     "Solid waste" = "#ce1256",
     "Wastewater" = "#c994c7",
-    
+
     # Gn
     "Sequestration" = "#006f3c",
     "Stock" = "#27b376"
@@ -59,13 +59,13 @@ source_colors <- list(
   "Natural gas" = "#4eb3d3",
   "Propane" = "#2f4f4f",
   "Kerosene" = "#004242",
-  
+
   # nature
   "Tree" = "#006d2c",
   "Grassland" = "#22b600",
   "Wetland" = "#26cc00",
-  "Urban_tree" = "#7be382",
-  "Urban_grassland" = "#a1d99b"
+  "Urban tree" = "#7be382",
+  "Urban grassland" = "#a1d99b"
 )
 
 
