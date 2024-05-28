@@ -86,3 +86,7 @@ management_method_colors <- list(
   "Landfill" = source_colors$Landfill,
   "Onsite" = "#750a31"
 )
+
+# european space agency colors
+esa_color <- c("forestgreen", "brown4", "yellow2", "wheat3", "red",
+               "plum", "lightblue", "navy", "mediumturquoise")

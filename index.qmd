@@ -126,7 +126,7 @@ fig_waste_emissions_index$x$layoutAttrs[[1]]$title$text <- "Solid waste and wast
 fig_waste_emissions_index
 ```
 
-Potential sequestration from natural systems totaled `r round(seq_total, digits = 2)` MMtCO~2~e in the Twin Cities MSA in 2021. Urban forests and grasslands have high sequestration potential, though are expected to have lower stock potential, capping their potential carbon storage in the future.
+Potential sequestration from natural systems totaled `r round(seq_total/1000000, digits = 2)` MMtCO~2~e in the Twin Cities MSA in 2021. Urban forests and grasslands have high sequestration potential, though are expected to have lower stock potential, capping their potential carbon storage in the future.
 
 ```{r fig-nature-sequestration}
 #| fig-cap: "Natural systems county level sequestration"
@@ -166,7 +166,7 @@ This document is the result of tremendous work across the Metropolitan Council. 
 #### Primary authors {.unnumbered}
  - Liz Roten, Senior Data Scientist, Transportation (MTS)  
  - Sam Limerick, Senior Data Scientist, Electricity and natural gas (CD)  
- - Peter Wilfahrt, Principal Researcher, Liquid stationary energy and wastewater (CD)   
+ - Peter Wilfahrt, Principal Researcher, Liquid stationary energy, wastewater, natural systems (CD)   
  - Zoey Yandell, Intern, Solid waste (CD)  
 :::
 
