@@ -16,10 +16,11 @@ hookaddcap()
 ```
 
 
-Natural systems have the capacity to sequester carbon in biomass and soils. In order to estimate the potential, we require area estimates of different natural systems and MN specific estimates of their sequestration rates.  The European Space Agency created WorldCover, a remotely sensed product that depicts land cover classifications at 10 m resolution for 2021. Two important caveats are that WorldCover (1) labels any raster cell as 'Tree' with at least 10% tree cover, leading to potential overestimates of tree coverage particularly in urbanized areas and (2) does not distinguish between urban and non-urban natural systems. In order to address these issues, we incorporated USGS's National Land Cover Database (NLCD). To address point 1, we intersected the WorldCover data with the NLCD 2021 Impervious Surface layer, which estimates the percentage of the raster cell which is impervious. From there, we reduced the area of a WorldCover 'Tree' cell to the percent pervious surface (100 - %impervious).  To address point 2, we intersected the WorldCover data with the NLCD 2021 land cover dataset which has 'Developed areas' when to label WorldCover 'Tree' and 'Grassland' raster cells as 'urban' to distinguish forests and natural grasslands from urban trees and turf grass systems. Raster cell areas were calculated based on the 10 m resolution and their cartographic position. Raster cells were assigned to county areas by intersecting the WorldCover raster with county shape files. This land area estimation is the highest quality of data according to (@tbl-quality-rank).
+Natural systems have the capacity to sequester carbon in biomass and soils. In order to estimate the potential, we require area estimates of different natural systems and MN specific estimates of their sequestration rates.  The European Space Agency created [WorldCover](https://esa-worldcover.org/en), a remotely sensed product that depicts land cover classifications at 10 m resolution for 2021. Two important caveats are that WorldCover (1) labels any raster cell as 'Tree' with at least 10% tree cover, leading to potential overestimates of tree coverage particularly in urbanized areas and (2) does not distinguish between urban and non-urban natural systems. In order to address these issues, we incorporated USGS's National Land Cover Database (NLCD). To address point 1, we intersected the WorldCover data with the NLCD 2021 Impervious Surface layer, which estimates the percentage of the raster cell which is impervious. From there, we reduced the area of a WorldCover 'Tree' cell to the percent pervious surface (100 - %impervious).  To address point 2, we intersected the WorldCover data with the NLCD 2021 land cover dataset which has 'Developed areas' when to label WorldCover 'Tree' and 'Grassland' raster cells as 'urban' to distinguish forests and natural grasslands from urban trees and turf grass systems. Raster cell areas were calculated based on the 10 m resolution and their cartographic position. Raster cells were assigned to county areas by intersecting the WorldCover raster with county shape files. This land area estimation is the highest quality of data according to (@tbl-quality-rank).
 
 Thus, an 'Urban_tree' raster cell occurred for raster cells that were labeled as 'Tree' by WorldCover and 'Developed' by NLCD and had an estimated area of:
 $$AreaOfUrbanTree =  (CellArea \times (1 - (ImperviousCover/100))) $$
+The script for processing land cover data, is [esa_land_area_calc.R](_nature/data-raw/esa_land_area_calc.R) and requires census geography and the appropriate .tif files from [WorldCover](https://esa-worldcover.org/en).
 
 In order to determine the annual carbon sequestration rate of natural systems, we searched for region-specific estimates for each land cover type (tree, urban_tree, grassland, urban_grassland, wetland), preferring primary scientific literature where possible. Carbon sequestration rates in natural systems are non-linear through time, with highest sequestration rates in younger systems and saturated rates (i.e. net zero carbon fluxes) in mature systems. Given that our land cover approach is unable to distinguish the age of a system, we used intermediate aged system rates where available. Future research could leverage the NLCD Land Cover Change Disturbance Date to attempt to determine natural system age, though this is most likely to find loss of natural systems in our region as opposed to land use conversion *to* natural systems. An additional consideration is that these systems have different storage potentials that are not necessarily directly related to their sequestration rates. For instance, turf grass systems (likely most urban_grasslands in our designation) rapidly accumulate soil carbon relative to natural grasslands but saturate by 50 years, whereas grasslands as old as 75 years continue to sequester carbon at the northern edge of our system. Additional factors affecting sequestration rates include species specific life histories, soil characteristics, and water and nutrient inputs. Carbon sequestration rates were multiplied by a value of 3.67 to equate a unit of carbon to a unit of CO2, representing the different in atomic weights. Sequestration rates are the third highest quality rank (@tbl-quality-rank), coming predominantly from peer-reviewed journal articles.
 
@@ -47,7 +48,7 @@ tbl_sequestration <- kable(
   land_cover_carbon %>%
     dplyr::select(
       land_cover_type,
-      `Metric tons CO₂e per square kilometer` = seq_mtco2e_sqkm
+      `Metric tons CO₂e per square kilometer per year` = seq_mtco2e_sqkm
     ) %>%
     left_join(., seq_citations) %>%
     unite("Land Cover Type", c("land_cover_type", "Citation"), sep = ""),
@@ -64,4 +65,45 @@ tbl_sequestration <- kable(
 #   gt::as_raw_html()
 
 tbl_sequestration
+```
+```{r tbl-stock}
+#| tbl-cap: "Ecosystem Carbon Stock Potential"
+#| out-width: "95%"
+land_cover_carbon <- readRDS(file.path(here::here(), "_nature/data/land_cover_carbon.RDS")) %>%
+  mutate(land_cover_type = str_replace_all(land_cover_type, "_", " "))
+
+stock_citations <- tibble(
+  land_cover_type = land_cover_carbon$land_cover_type,
+  Citation = c(
+    "[@liuBaselineProjectedFuture2014]",
+    "[@liuBaselineProjectedFuture2014]",
+    "[@selhorstNetCarbonSequestration2013]",
+    "[@nowakCarbonStorageSequestration2013]",
+    "[@nahlikCarbonStorageUS2016]"
+  )
+)
+
+
+
+tbl_stock <- kable(
+  land_cover_carbon %>%
+    dplyr::select(
+      land_cover_type,
+      `Metric tons CO₂e per square kilometer` = seq_mtco2e_sqkm
+    ) %>%
+    left_join(., seq_citations) %>%
+    unite("Land Cover Type", c("land_cover_type", "Citation"), sep = ""),
+  row.names = FALSE, format = "markdown"
+)
+# %>%
+#   gt() %>%
+#   gt::opt_row_striping() %>%
+#   fmt_number(2, decimals = 1) %>%
+#   tab_style(
+#     style = cell_text(weight = "bold"),
+#     locations = cells_column_labels()
+#   ) %>%
+#   gt::as_raw_html()
+
+tbl_stock
 ```

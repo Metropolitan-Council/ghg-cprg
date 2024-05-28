@@ -102,13 +102,13 @@ imperv_msa_map <- ggplot() +
 
 ## Introduction
 
-Natural systems are a critical component of capturing carbon from the atmosphere and sequestering it in biomass and terrestrial soils. Photosynthesis is central mechanism of this process and vegetation is therefore the focal land cover classification for quantifying the potential for regions to both sequester and store carbon. Different vegetation ecosystems have varying capacities for carbon capture and this work focuses on five broad classifications: urban trees, urban grasslands (turf grass), forests, natural grasslands, and wetlands. The distinction between tree and grassland cover in developed areas (i.e. urban) is important as despite having similar sequestration rates, these systems are generally understood to have smaller storage capacities. The preservation and restoration of natural systems will be a key tool in limiting atmospheric greenhouse gases.
+Natural systems are a critical component of capturing carbon from the atmosphere and sequestering it in biomass and terrestrial soils. Photosynthesis is the central mechanism of this process and vegetation is therefore the focal land cover classification for quantifying the potential for regions to both sequester and store carbon. Different ecosystems have varying capacities for carbon capture and this work focuses on five broad classifications: urban trees, urban grasslands (i.e. turf grass), forests, natural grasslands, and wetlands. The distinction between tree and grassland cover in developed areas (i.e. urban) is important as despite having similar sequestration rates, urban natural systems are generally understood to have smaller storage capacities. The preservation and restoration of natural systems will be a key tool in limiting atmospheric greenhouse gases.
 
 ## Methods
   
 The approach for calculating carbon sequestration potential for a given geography, j, is,
 $$Sequestration_j = \Sigma (area_i \times {SequestrationRate_i}) $$
-where *i* is land cover classification. The sequestration rate is based on midwest specific sequestration rate estimates found in the primary scientific literature (REFERENCE TABLE). 
+where *i* is land cover classification. The sequestration rate is based on Midwest specific sequestration rate estimates found in the primary scientific literature (@tbl-sequestration). 
 
 ### Land cover classification
 
