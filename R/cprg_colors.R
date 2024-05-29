@@ -88,5 +88,7 @@ management_method_colors <- list(
 )
 
 # european space agency colors
-esa_color <- c("forestgreen", "brown4", "yellow2", "wheat3", "red",
-               "plum", "lightblue", "navy", "mediumturquoise")
+esa_color <- c(
+  "forestgreen", "brown4", "yellow2", "wheat3", "red",
+  "plum", "lightblue", "navy", "mediumturquoise"
+)

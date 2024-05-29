@@ -58,7 +58,7 @@ tbl_sequestration <- kable(
       land_cover_type,
       `Metric tons CO₂e per square kilometer per year` = seq_mtco2e_sqkm
     ) %>%
-    mutate(across(where(is.numeric), round)) %>% 
+    mutate(across(where(is.numeric), round)) %>%
     left_join(., seq_citations) %>%
     unite("Land Cover Type", c("land_cover_type", "Citation"), sep = " "),
   row.names = FALSE, format = "markdown"
@@ -89,8 +89,9 @@ tbl_stock <- kable(
       land_cover_type,
       `Metric tons CO₂e per square kilometer` = stock_mtco2e_sqkm
     ) %>%
+    mutate(across(where(is.numeric), round)) %>%
     left_join(., stock_citations) %>%
-    unite("Land Cover Type", c("land_cover_type", "Citation"), sep = ""),
+    unite("Land Cover Type", c("land_cover_type", "Citation"), sep = " "),
   row.names = FALSE, format = "markdown"
 )
 

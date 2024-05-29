@@ -23,7 +23,7 @@ hookaddcap()
 ```
 
 ```{r load-clean-cprg-stock-data}
-#| include: false 
+#| include: false
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 carbon_stock <- readRDS(file.path(here::here(), "_meta/data/cprg_county_carbon_stock.RDS"))
 
@@ -60,7 +60,6 @@ nlcd_is <- get_nlcd(
 ) %>%
   project(., crs_use) %>%
   mask(cprg_county)
-
 ```
 
 
