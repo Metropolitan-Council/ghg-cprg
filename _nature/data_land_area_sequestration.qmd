@@ -1,4 +1,4 @@
-# Data Sources
+# Data Sources {#sec-land-area-data-sources}
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -9,6 +9,7 @@ knitr::opts_chunk$set(
   dpi = 300
 )
 
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
