@@ -66,11 +66,11 @@ tbl_sequestration <- kable(
 
 tbl_sequestration
 ```
+
+
 ```{r tbl-stock}
 #| tbl-cap: "Ecosystem Carbon Stock Potential"
 #| out-width: "95%"
-land_cover_carbon <- readRDS(file.path(here::here(), "_nature/data/land_cover_carbon.RDS")) %>%
-  mutate(land_cover_type = str_replace_all(land_cover_type, "_", " "))
 
 stock_citations <- tibble(
   land_cover_type = land_cover_carbon$land_cover_type,
@@ -89,9 +89,9 @@ tbl_stock <- kable(
   land_cover_carbon %>%
     dplyr::select(
       land_cover_type,
-      `Metric tons CO₂e per square kilometer` = seq_mtco2e_sqkm
+      `Metric tons CO₂e per square kilometer` = stock_mtco2e_sqkm
     ) %>%
-    left_join(., seq_citations) %>%
+    left_join(., stock_citations) %>%
     unite("Land Cover Type", c("land_cover_type", "Citation"), sep = ""),
   row.names = FALSE, format = "markdown"
 )
