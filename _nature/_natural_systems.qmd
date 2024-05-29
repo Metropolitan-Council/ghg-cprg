@@ -117,7 +117,6 @@ Land cover was determined by using the [European Space Agencies 2021 WorldCover]
 ```{r fig-esa-worldcover}
 #| fig-cap: "European Space Agency WorldCover"
 #| out-width: "95%"
-#| include: false
 # all figure chunks should be named "fig-{plot-desc}"
 
 worldcover_msa_map
@@ -127,7 +126,6 @@ worldcover_msa_map
 ```{r fig-nlcd-classification}
 #| fig-cap: "USGS National Land Cover Database"
 #| out-width: "95%"
-#| include: false
 # all figure chunks should be named "fig-{plot-desc}"
 
 nlcd_msa_map
@@ -136,7 +134,6 @@ nlcd_msa_map
 ```{r fig-nlcd-impervious-cover}
 #| fig-cap: "USGS National Land Cover Database - Impervious Cover"
 #| out-width: "95%"
-#| include: false
 # all figure chunks should be named "fig-{plot-desc}"
 
 imperv_msa_map
