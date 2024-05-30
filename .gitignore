@@ -7,6 +7,8 @@
 *_cache
 .DS_Store
 
+**/desktop.ini
+
 _transportation/report_transportation_files/figure-html/
 _waste/data-raw/score_summary.csv
 _waste/data-raw/ghg-emission-factors-hub-2021.xlsx
@@ -314,3 +316,7 @@ _energy/data-raw/geoCrosswalk/
 _energy/data-raw/nhgis_blk2000_blk2010_MN/
 
 _energy/data-raw/nhgis_blk2000_blk2010_WI/
+
+_energy/data-raw/EIA861
+
+_energy/data-raw/libraryDocs_2005

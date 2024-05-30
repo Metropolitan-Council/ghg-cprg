@@ -1,5 +1,8 @@
 source("R/_load_pkgs.R")
 source("_meta/data-raw/cprg_geography.R")
+library(tidycensus)
+options(tidycensus.cache = TRUE)
+
 
 # Fetch data for the 2000 decennial census for Wisconsin and Minnesota
 population_data_2000 <- get_decennial(
@@ -58,6 +61,7 @@ crosswalkPop_2000_to_2010_centroids <- st_centroid(crosswalkPop_2000_to_2010) %>
     )
   )
 
+
 GEOID10_2000_2005_2010_population_MNWI <- crosswalkPop_2000_to_2010_centroids %>%
   left_join(st_drop_geometry(population_data_2010),
             by = join_by(GEOID10 == GEOID)
@@ -71,15 +75,35 @@ GEOID10_2000_2005_2010_population_MNWI <- crosswalkPop_2000_to_2010_centroids %>
   )
 
 GEOID10_2005_population_MNWI <- GEOID10_2000_2005_2010_population_MNWI %>%
-  select(-totalPop2000, -state, -NAME, -totalPop2010)
+  select(-totalPop2000, -NAME, -totalPop2010)
 
-cprg_county_population2005 <- cprg_county %>%
-  st_join(GEOID10_2005_population_MNWI,
-          join = st_intersects) %>%
-  group_by(NAMELSAD) %>%
-  summarize(population_2005_censusInterp = sum(totalPop2005_interpolated,
-                                               na.rm = TRUE))
-  
+est_state_pop_2005 <- st_drop_geometry(GEOID10_2005_population_MNWI) %>%
+  group_by(state) %>%
+  summarize(
+    state_population = sum(totalPop2005_interpolated)
+  )
+
+
+#rejoin back to cprg_county to hold onto necessary reference data
+cprg_county_population2005_export <- cprg_county %>%
+  left_join((st_drop_geometry(intercensal_pop_2005_MNWI)),
+            by = join_by(NAMELSAD == county_name)
+  ) %>%
+  mutate(
+    year = 2005,
+    county_population = round(population_2005_censusInterp)
+  ) %>%
+  group_by(STATE) %>%
+  mutate(
+    state_population = sum(county_population)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    county_proportion_of_state_pop = county_population / state_population,
+    population_data_source = "Interpolation of data from Summmary File 1, 2000/2010 Decennial Census based on 2000-2010 Geographic Crosswalk from IPUMS NHGIS, University of Minnesota"
+  ) %>%
+  select(-population_2005_censusInterp)
+
 
 #write_sf(crosswalkPop_2000_to_2010,here("_energy", "data-raw", "geoCrosswalk","crosswalkPop_2000_to_2010_blocks_MNWI.shp"))
 #write_sf(GEOID10_2000_2005_2010_population_MNWI,here("_energy", "data-raw", "geoCrosswalk","GEOID10_2000_2005_2010_population_MNWI.shp"))
