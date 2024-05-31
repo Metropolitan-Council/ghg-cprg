@@ -23,7 +23,7 @@ transportation <- bind_rows(cprg_comp %>%
                          ungroup() %>% 
                          dplyr::select(sector, subsector = source,co2e_per_cap,geography, year),
                        mpca_inv %>% 
-                         filter(Subsector %in% c("Light-duty trucks","Passenger cars","Heavy-duty trucks","Motorcycle"), year %in% c(2019,2020)) %>% 
+                         filter(Subsector %in% c("Light-duty trucks","Passenger cars","Heavy-duty trucks","Motorcycle"), year %in% c(2020)) %>% 
                          dplyr::select(sector = Sector, subsector = Subsector,co2e_per_cap, geography,year))
 
 ### Energy 
@@ -84,3 +84,25 @@ inventory_comparison_meta <-
 
 saveRDS(inventory_comparison, "_meta/data/mpca_inventory_comparison.RDS")
 saveRDS(inventory_comparison_meta, "_meta/data/mpca_inventory_comparison_meta.RDS")
+
+
+#### temporary ggplots
+### redo color palettes and legend ordering if publishing
+
+
+cross_sector_comparison <- ggplot(inventory_comparison  %>% 
+  mutate(comp = if_else(grepl("Natural gas",subsector),"Natural gas",
+                        if_else(grepl("Electricity", subsector),"Electricity",
+                                sector))),
+       aes(x = geography, y = co2e_per_cap, fill = subsector)) + geom_bar(stat = 'identity') + facet_wrap(~comp) + theme_bw() +
+  xlab("") + ylab("Metric tons of CO2e per capita")
+       
+cross_sector_comparison
+
+
+transportation_comparison <- ggplot(inventory_comparison  %>% 
+                                    filter(sector == 'Transportation'),
+                                  aes(x = geography, y = co2e_per_cap, fill = subsector)) + geom_bar(stat = 'identity') + theme_bw() +
+  xlab("") + ylab("Metric tons of CO2e per capita")
+
+transportation_comparison
