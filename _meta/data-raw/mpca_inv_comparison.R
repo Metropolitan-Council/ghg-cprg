@@ -82,20 +82,68 @@ inventory_comparison_meta <-
     "co2e_per_cap", class(inventory_comparison$co2e_per_cap), "Metric tonnes of CO2 equivalency generated per capita"
   )
 
-saveRDS(inventory_comparison, "_meta/data/mpca_inventory_comparison.RDS")
-saveRDS(inventory_comparison_meta, "_meta/data/mpca_inventory_comparison_meta.RDS")
+# saveRDS(inventory_comparison, "_meta/data/mpca_inventory_comparison.RDS")
+# saveRDS(inventory_comparison_meta, "_meta/data/mpca_inventory_comparison_meta.RDS")
 
 
 #### temporary ggplots
 ### redo color palettes and legend ordering if publishing
 
-
-cross_sector_comparison <- ggplot(inventory_comparison  %>% 
-  mutate(comp = if_else(grepl("Natural gas",subsector),"Natural gas",
+inventory_comparison <- inventory_comparison  %>% 
+  mutate(sectors = if_else(grepl("Natural gas",subsector),"Natural gas",
                         if_else(grepl("Electricity", subsector),"Electricity",
-                                sector))),
-       aes(x = geography, y = co2e_per_cap, fill = subsector)) + geom_bar(stat = 'identity') + facet_wrap(~comp) + theme_bw() +
-  xlab("") + ylab("Metric tons of CO2e per capita")
+                                sector)))  %>%
+  arrange(sectors) %>%
+  mutate(subsector = factor(subsector, levels = unique(subsector)))
+
+## create color palettes for each sector
+generate_shades <- function(palette_name, n) {
+  if (n < 3) {
+    brewer.pal(3, palette_name)[1:n]
+  } else {
+    brewer.pal(n, palette_name)
+  }
+}
+
+# Define base colors for each sector
+palette_names <- c(
+  Transportation = "Oranges",
+  Electricity = "Blues",
+  `Natural gas` = "Greens",
+  Waste = "RdPu"
+)
+
+# inventory_comparison <- left_join(inventory_comparison,
+#                            inventory_comparison %>%
+#   group_by(sector) %>%
+#   summarise(subsectors = list(unique(subsector)), .groups = 'drop') %>%
+#   mutate(
+#     palette_name = palette_names[sector],
+#     num_colors = map_int(subsectors, length),
+#     shades = map2(palette_name, num_colors, generate_shades)
+#   ) %>%
+#   unnest(cols = c(subsectors, shades)) %>% 
+#     dplyr::select(subsector = subsectors, shades),
+#   by = c("subsector"))
+
+color_palette <- inventory_comparison %>%
+  group_by(sectors) %>%
+  summarise(subsectors = list(sort(unique(subsector))), .groups = 'drop') %>%
+  mutate(
+    palette_name = palette_names[sectors],
+    num_colors = map_int(subsectors, length),
+    shades = map2(palette_name, num_colors, generate_shades)
+  ) %>%
+  unnest(cols = c(subsectors, shades))
+
+color_palette_vector <- setNames(color_palette$shades, color_palette$subsectors)
+
+cross_sector_comparison <- ggplot(inventory_comparison,
+       aes(x = geography, y = co2e_per_cap, fill = subsector)) + geom_bar(stat = 'identity') + facet_wrap(~sectors) + theme_bw() +
+  xlab("") + ylab("Metric tons of CO2e per capita") +
+  scale_fill_manual(values = color_palette_vector) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())  
        
 cross_sector_comparison
 
@@ -103,6 +151,28 @@ cross_sector_comparison
 transportation_comparison <- ggplot(inventory_comparison  %>% 
                                     filter(sector == 'Transportation'),
                                   aes(x = geography, y = co2e_per_cap, fill = subsector)) + geom_bar(stat = 'identity') + theme_bw() +
-  xlab("") + ylab("Metric tons of CO2e per capita")
+  xlab("") + ylab("Metric tons of CO2e per capita") +
+  scale_fill_manual(values = color_palette_vector) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())  
 
 transportation_comparison
+
+transportation_sub <- inventory_comparison %>% 
+  filter(sector == 'Transportation') %>% 
+  mutate(type = if_else(subsector %in% 
+                          c("Light-duty vehicles", "Light-duty trucks", "Motorcycle", "Passenger cars"),
+                        "Passenger Vehicles","Medium/Heavy Duty"))
+  
+transportation_subcomparison <- ggplot(transportation_sub,
+                                    aes(x = geography, y = co2e_per_cap, fill = subsector)) + 
+  geom_bar(stat = 'identity') + theme_bw() +
+  facet_wrap(~type) + 
+  xlab("") + ylab("Metric tons of CO2e per capita") +
+  scale_fill_manual(values = color_palette_vector) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) 
+
+        
+transportation_subcomparison        
+        
