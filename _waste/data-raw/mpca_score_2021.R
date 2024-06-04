@@ -80,7 +80,7 @@ mn_emissions_2021_meta <- tribble(
   ~Column, ~Class, ~Description,
   "County", class(score_final_2021$County), "MN county of waste origin",
   "Management Category", class(score_final_2021$`Management Category`), "Waste category
-  (either M__ Municipal Solid Waste or Combined Recycling and Organics)",
+  (either Mixed Municipal Solid Waste or Combined Recycling and Organics)",
   "Method", class(score_final_2021$Method), "Waste disposal method",
   "Year", class(score_final_2021$Year), "MPCA SCORE data collection year",
   "Tons", class(score_final_2021$Tons), "Tons of waste collected",
