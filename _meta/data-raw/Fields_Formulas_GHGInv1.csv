@@ -13,10 +13,10 @@ $ Electricity R MWh,Y,Activity
 $ Landfill Emis T CO2e,Y,Emissions
 $ NG R Emis T CO2e,Y,Emissions
 $ NG R Therms,Y,Activity
-$ Other Fuels Emis T CO2e,Y,Emissions
+$ Other Fuels Emis T CO2e,,Emissions
 $ Passenger Veh Emis T CO2e,Y,Emissions
 $ Transit Emis T CO2e,Y,Emissions
-$ Trucks Emis T CO2e,Y,Emissions
+$ Trucks Emis T CO2e,,Emissions
 Actual R E Emis T Co2E,,
 Actual R E Mwh,,
 Actual R Ng Emis T Co2E,,
@@ -27,8 +27,8 @@ Est R E Emis T Co2E,,
 Est R E Mwh,,
 Est R Ng Emis T Co2E,,
 Est R Ng Therms,,
-Kerodfo Emis Tonnes Co2E,,Emissions
-Kerodfo Res Use Mmbtu,,Activity
+Kerodfo Emis Tonnes Co2E,Y,Emissions
+Kerodfo Res Use Mmbtu,Y,Activity
 Landfill Scope1 Co2E Tonnes,,
 Landfill Scope3 Co2E Tonnes,,
 Metrotransit Tonnes Co2E,,

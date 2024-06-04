@@ -167,3 +167,6 @@ saveRDS(cprg_ctu_meta, "_meta/data/cprg_ctu_meta.RDS")
 
 saveRDS(ctu_co_crosswalk, "_meta/data/geog_crosswalk.RDS")
 saveRDS(geogs_list, "_meta/data/geogs_list.RDS")
+geogs_list_unique <- unique(geogs_list)
+write.csv(geogs_list_unique, "_meta/data-raw/geogs_list.csv", row.names = FALSE)
+write.csv(geog_crosswalk, "_meta/data-raw/geog_crosswalk.csv", row.names = FALSE)
