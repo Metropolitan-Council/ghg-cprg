@@ -61,7 +61,8 @@ sector_graph <- ggplot(msa_total_inv %>% group_by(sector_use) %>%  summarize(emi
   scale_fill_manual(values = color_palette_vector_sector, guide = FALSE) + theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 25, vjust = 0.5, hjust=0.45, size = 14)) + 
+        axis.text.x = element_text(angle = 25, vjust = 0.5, hjust=0.45, size = 14),
+        axis.title.y = element_text(size = 16)) + 
   ylab("Millions of metric tons of CO2e") + xlab("")
 
 sector_graph
@@ -74,8 +75,9 @@ subsector_graph <- ggplot(msa_total_inv,
   scale_fill_manual(values = color_palette_vector) + theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 25, vjust = 0.5, hjust=0.45, size = 14)) + 
-  ylab("Millions of metric tons of CO2e") + xlab("")
+        axis.text.x = element_text(angle = 25, vjust = 0.5, hjust=0.45, size = 14),
+        axis.title.y = element_text(size = 16)) + 
+  ylab("Millions of metric tons of CO2e") + xlab("") + labs(fill = "Subsector")
 
 subsector_graph
 
@@ -87,19 +89,31 @@ county_elec <- ggplot(msa_inv %>% filter(sector_use == 'Electricity'),
   scale_fill_manual(values = color_palette_vector) + theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 25, vjust = 0.5, hjust=0.45, size = 14)) + 
-  ylab("Millions of metric tons of CO2e") + xlab("")
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.45, size = 14),
+        axis.title.y = element_text(size = 16)) + 
+  ylab("Millions of metric tons of CO2e") + xlab("")  + labs(fill = "Subsector")
 
 county_elec
 
+county_elec_pop <- ggplot(msa_inv %>% filter(sector_use == 'Electricity'),
+                      aes(x = geog_name  , y = emissions_metric_tons_co2e / county_total_population, fill = source_use)) + geom_bar(stat = "identity") +
+  scale_fill_manual(values = color_palette_vector) + theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.45, size = 14),
+        axis.title.y = element_text(size = 16)) + 
+  ylab("Metric tons of CO2e per capita") + xlab("") + labs(fill = "Subsector")
+
+county_elec_pop
 
 county_building <- ggplot(msa_inv %>% filter(sector_use == 'Building Fuel'),
                       aes(x = geog_name  , y = emissions_metric_tons_co2e / 1000000, fill = source_use)) + geom_bar(stat = "identity") +
   scale_fill_manual(values = color_palette_vector) + theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 25, vjust = 0.5, hjust=0.45, size = 14)) + 
-  ylab("Millions of metric tons of CO2e") + xlab("")
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.45, size = 14),
+        axis.title.y = element_text(size = 16)) + 
+  ylab("Millions of metric tons of CO2e") + xlab("") + labs(fill = "Subsector")
 
 county_building
 
@@ -109,8 +123,9 @@ county_transport <- ggplot(msa_inv %>% filter(sector_use == 'Transportation'),
   scale_fill_manual(values = color_palette_vector) + theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 25, vjust = 0.5, hjust=0.45, size = 14)) + 
-  ylab("Millions of metric tons of CO2e") + xlab("")
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.45, size = 14),
+        axis.title.y = element_text(size = 16)) + 
+  ylab("Millions of metric tons of CO2e") + xlab("") + labs(fill = "Subsector")
 
 county_transport
 
@@ -120,8 +135,9 @@ county_waste <- ggplot(msa_inv %>% filter(sector_use == 'Waste'),
   scale_fill_manual(values = color_palette_vector) + theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 25, vjust = 0.5, hjust=0.45, size = 14)) + 
-  ylab("Millions of metric tons of CO2e") + xlab("")
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.45, size = 14),
+        axis.title.y = element_text(size = 16)) + 
+  ylab("Millions of metric tons of CO2e") + xlab("") + labs(fill = "Subsector")
 
 county_waste
 
@@ -130,7 +146,44 @@ county_seq <- ggplot(msa_inv %>% filter(sector_use == 'Nature'),
   scale_fill_manual(values = color_palette_vector) + theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 25, vjust = 0.5, hjust=0.45, size = 14)) + 
-  ylab("Millions of metric tons of CO2e") + xlab("")
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.45, size = 14),
+        axis.title.y = element_text(size = 16)) + 
+  ylab("Millions of metric tons of CO2e") + xlab("") + labs(fill = "Subsector")
 
 county_seq
+
+# carbon stock potential in natural systems
+
+carbon_stock <- readRDS(file.path(here::here(), "_meta/data/cprg_county_carbon_stock.RDS")) %>% 
+  filter(!geog_name %in% c("Pierce","Sherburne","St. Croix","Chisago"))
+
+county_stock <- ggplot(carbon_stock,
+                     aes(x = geog_name  , y = emissions_metric_tons_co2e / 1000000, fill = source)) + geom_bar(stat = "identity") +
+  scale_fill_manual(values = color_palette_vector) + theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.45, size = 14)) + 
+  ylab("Millions of metric tons of CO2e") + xlab("")
+
+county_stock
+
+
+### total stock vs total emissions
+
+stock_emissions <- bind_rows(data.frame(carbon = "Stock\nPotential", metric_tons_co2e =  -1 * sum(carbon_stock$emissions_metric_tons_co2e)),
+                             data.frame(carbon = "Total\nEmissions", metric_tons_co2e = sum(msa_inv$emissions_metric_tons_co2e[msa_inv$sector != "Nature"]))
+)
+
+stock_emissions
+
+emissions_v_stock <- ggplot(stock_emissions,
+                       aes(x = carbon  , y = metric_tons_co2e / 1000000, fill = carbon)) + geom_bar(stat = "identity") +
+  scale_fill_manual(values = c("#66CC66","cornflowerblue"), guide = 'none') + theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.y = element_text(size = 16)) + 
+  ylab("Millions of metric tons of CO2e") + xlab("")
+
+emissions_v_stock
