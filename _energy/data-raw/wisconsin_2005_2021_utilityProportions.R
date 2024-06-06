@@ -111,23 +111,27 @@ wi_pop_2021 <- st_transform(population_data_2020_wi, st_crs(inScope_WI_elecUtils
 
 
 # Spatial join between total utility areas and population data to enable estimation of utility service area popualtion
-utility_pop_totals_2005 <- fullServiceArea_inScopeUtilities_WI %>%
+utility_pop_totals_2005 <- inScope_WI_elecUtils_fullServTerr %>%
   st_join(wi_pop_2005, join = st_intersects) %>%
   group_by(utility_name) %>%  
-  summarize(total_pop_served = sum(estimate), .groups = 'drop')
+  summarize(total_pop_served = sum(totalPop2005_interpolated), .groups = 'drop') %>%
+  mutate(year = 2005)
 
-utility_pop_totals_2021 <- fullServiceArea_inScopeUtilities_WI %>%
+utility_pop_totals_2021 <- inScope_WI_elecUtils_fullServTerr %>%
   st_join(wi_pop_2021, join = st_intersects) %>%
   group_by(utility_name) %>% 
-  summarize(total_pop_served = sum(estimate), .groups = 'drop')
+  summarize(total_pop_served = sum(P1_001N), .groups = 'drop') %>%
+  mutate(year = 2021)
 
 # Spatial join between in-scope utility areas and population data
-utility_pop_county_2005 <- WIutilities_in_scope_CensusBlockSums %>%
+utility_pop_county_2005 <- WI_elecUtilities_area_in_scope %>%
   st_join(wi_pop_2005, join = st_intersects) %>%
   group_by(utility_name, county) %>%
-  summarize(total_pop_served = sum(estimate), .groups = 'drop')
+  summarize(total_pop_served = sum(totalPop2005_interpolated), .groups = 'drop') %>%
+  mutate(year = 2005)
 
-utility_pop_county_2021 <- WIutilities_in_scope_CensusBlockSums %>%
+utility_pop_county_2021 <- WI_elecUtilities_area_in_scope %>%
   st_join(wi_pop_2021, join = st_intersects) %>%
   group_by(utility_name, county) %>%  
-  summarize(total_pop_served = sum(estimate), .groups = 'drop')
+  summarize(total_pop_served = sum(P1_001N), .groups = 'drop') %>%
+  mutate(year = 2021)
