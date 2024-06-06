@@ -1,0 +1,73 @@
+Material,Mean,Lower,Upper
+PAPER,,,
+Newsprint (ONP),1.4%,1.1%,1.7%
+High Grade Office Paper,1.1%,0.7%,1.6%
+Magazines/Catalogs,0.7%,0.5%,1.0%
+Phone Books,0.1%,0.0%,0.3%
+"Gable Top/AsepticContainers/Cartons",0.3%,0.2%,0.4%
+OCC and Kraft Bags,3.7%,3.1%,4.2%
+Boxboard,1.6%,1.4%,1.8%
+Compostable Paper,9.8%,8.7%,10.8%
+Mixed Recyclable Paper,3.4%,2.8%,4.1%
+Non-Recyclable Paper,2.3%,1.4%,3.2%
+Subtotal Paper,24.5%,22.4%,26.5%
+"",,,
+PLASTIC,,,
+"#1 PET Beverage Containers",0.8%,0.7%,0.9%
+"Other PET (e.g. jars andclamshells)",0.5%,0.5%,0.6%
+HDPE Bottles/Jars,0.5%,0.4%,0.6%
+Other HDPE,0.6%,0.3%,0.8%
+PVC - #3,0.0%,0.0%,0.1%
+Polystyrene - #6,1.0%,0.8%,1.2%
+LDPE (Rigids) - #4,0.1%,0.0%,0.1%
+Polypropylene - #5,0.6%,0.5%,0.7%
+Other #7 Plastics,0.1%,0.0%,0.2%
+PLA & Compostable Plastics,0.0%,0.0%,0.1%
+Bag and Film Film Plastic,6.6%,5.9%,7.3%
+Other Plastic (nonpackaging),7.1%,5.6%,8.6%
+Subtotal Plastic,17.9%,16.3%,19.5%
+"",,,
+HHW,,,
+Batteries,0.1%,0.0%,0.1%
+Mercury Containing Lamps,0.0%,0.0%,0.0%
+Paint Containers,0.2%,0.0%,0.5%
+Oil Containers & Filters,0.0%,0.0%,0.0%
+Smoke Detectors,0.0%,0.0%,0.0%
+Other HHW,0.2%,0.0%,0.4%
+Subtotal HHW,0.4%,0.0%,0.8%
+"",Mean,Lower,Upper
+METAL,,,
+Aluminum Beverage Containers,0.4%,0.4%,0.5%
+Other Aluminum,0.7%,0.3%,1.0%
+Steel/Tin (Ferrous) Containers,0.7%,0.4%,1.0%
+Other Metal,2.7%,1.8%,3.5%
+Subtotal Metal,4.5%,3.5%,5.4%
+"",,,
+GLASS,,,
+Beverage Container Glass,1.3%,0.9%,1.8%
+Glass Containers,0.5%,0.2%,0.8%
+Other (Non-Container) Glass,0.4%,0.2%,0.6%
+Subtotal Glass,2.2%,1.6%,2.9%
+"",,,
+ELECTRONICS,,,
+Laptops,0.0%,0.0%,0.0%
+Computer Monitors,,"notfound",
+Televisions,0.0%,0.0%,0.1%
+Printers,0.1%,0.0%,0.2%
+All Other Electronic Items,1.1%,0.7%,1.4%
+Subtotal Electronics,1.2%,0.8%,1.6%
+"",,,
+ORGANIC,,,
+Yard Waste,2.8%,1.6%,3.9%
+Food Waste,17.8%,15.2%,20.3%
+Wood,5.7%,4.3%,7.2%
+Other Organic Material,4.7%,3.8%,5.6%
+Subtotal Organic,31.0%,28.4%,33.6%
+"",,,
+OTHER WASTES,,,
+Mattresses/Box Springs,0.4%,0.0%,0.8%
+Appliances & Furniture,3.0%,1.6%,4.3%
+Textiles & Leather,4.7%,3.8%,5.5%
+Carpet,2.3%,1.5%,3.1%
+Sharps and Infectious Waste,0.0%,0.0%,0.0%
+Other Not Elsewhere Classified,8.0%,6.1%,9.8%
