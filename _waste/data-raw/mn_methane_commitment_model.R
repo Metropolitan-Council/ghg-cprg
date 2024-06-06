@@ -18,7 +18,7 @@ doc_f = 0.6
 # fraction of methane in landfill gas (F)
 f = 0.5
 
-l = mcf * doc * doc_f * f * 16/12
+l_0 = mcf * doc * doc_f * f * 16/12
 
 # oxidation factor (OX)
 ox = 0.1 # for well-managed landfills
@@ -40,54 +40,33 @@ doc <- doc_sum$doc_total
 
 # function ----
 
-calc_landfill_emissions <- function(County, Year, Tons, f_rec){
-  mcf = 0.5
-  # calc doc here
-  # placeholder value:
-  doc = 0.5 #PLACEHOLDER
-  doc_f = 0.6
-  f = 0.5
-  l_0 = mcf * doc * doc_f * f * 16/12
-  ox = 0.1
-  msw = Tons * 0.90718474 # conversion factor short tons to metric tons
-  
-  emissions = msw * l_0 * (1-f_rec) * (1-ox)
-  return(tibble(ch4_emissions = emissions, year = Year, county = County))
-}
-
-# pull in and calculate f_rec ----
-
-# Source: EPA State Inventory Solid Waste tool, methane flaring data 
-
-# flaring_natl_data <- read_csv(file.path(here::here(), "_waste/data-raw/solid-waste-module-flaring.csv"))%>%  
-#   row_to_names(row_number = 1) 
-# flaring_natl_data <- data.frame(t(flaring_natl_data)) %>%  
-#   row_to_names(row_number = 1) 
+# calc_landfill_emissions <- function(County, Year, Tons, f_rec){
+#   mcf = 0.5
+#   # calc doc here
+#   # placeholder value:
+#   doc = 0.5 #PLACEHOLDER
+#   doc_f = 0.6
+#   f = 0.5
+#   l_0 = mcf * doc * doc_f * f * 16/12
+#   ox = 0.1
+#   msw = Tons * 0.90718474 # conversion factor short tons to metric tons
+#   
+#   emissions = msw * l_0 * (1-f_rec) * (1-ox)
+#   return(tibble(ch4_emissions = emissions, year = Year, county = County))
+# }
 
 
-flaring_data <- readxl::read_xlsx("_waste/data-raw/solid_waste_flaring.xlsx",
-                                  range = "A2:AG54") %>% 
-  rename(State = 1) %>% 
-  filter(State == "MN") 
-
-  
-flaring_data <- data.frame(t(flaring_data)) %>% 
-  tibble::rownames_to_column("Year") %>% 
-  rename("LFGTE MMT CH4" = t.flaring_data.)
-
-flaring_data <- flaring_data[-1,]
-
-# need to:
-# check units (mmt or mt?)
-# multiply by population percentages to scale down
-# save both flaring and lfgte
-
+# landfill data from MPCA SCORE report. Transformed to metric tons
 landfill_data <- score_data %>% 
   filter(Method == "Landfill") %>% 
   select(County,
          Year, 
          Tons)
-# join f_rec by county and year
 
-ch4_yearly <- purrr::pmap(landfill_data, calc_landfill_emissions)
-landfill_emissions <- bind_rows(ch4_yearly)
+# join both lines of f_rec by county and year
+# calculate sum (flaring + lfgte = rec)
+
+# ch4_yearly <- purrr::pmap(landfill_data, calc_landfill_emissions)
+# landfill_emissions <- bind_rows(ch4_yearly)
+
+# use mutate to calculate emissions = ((Tons * l_0) - rec) * (1-ox)

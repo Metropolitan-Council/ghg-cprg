@@ -15,7 +15,9 @@ _waste/data-raw/score_summary.csv
 
 _waste/data-raw/ghg-emission-factors-hub-2021.xlsx
 
-_waste/data-raw/solid-waste-flaring.xlsx
+_waste/data-raw/solid_waste_flaring.xlsx
+
+_waste/data-raw/solid_waste_lfgte.xlsx
 
 R/WI_Cities%2C_Towns_and_Villages_(July_2023)/
 
