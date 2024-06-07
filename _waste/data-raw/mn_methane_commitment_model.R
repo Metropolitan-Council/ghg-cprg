@@ -1,7 +1,9 @@
 # Import necessary info
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
-score_data <- readRDS("_waste/data/mpca_score.RDS")
+if (!exists("score_data")) {
+  score_data <- readRDS("_waste/data/mpca_score.RDS")
+}
 waste_comp <- readRDS("_waste/data/mn_waste_composition.RDS")
 
 ## Methane Commitment model ----
@@ -56,7 +58,7 @@ doc <- doc_sum$doc_total
 # }
 
 
-# landfill data from MPCA SCORE report. Transformed to metric tons
+# landfill data from MPCA SCORE report. Transformed to metric tons ----
 landfill_data <- score_data %>% 
   filter(Method == "Landfill") %>% 
   select(County,
@@ -70,3 +72,5 @@ landfill_data <- score_data %>%
 # landfill_emissions <- bind_rows(ch4_yearly)
 
 # use mutate to calculate emissions = ((Tons * l_0) - rec) * (1-ox)
+# convert to metric tons co2e?
+
