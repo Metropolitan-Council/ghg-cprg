@@ -20,8 +20,6 @@ doc_f = 0.6
 # fraction of methane in landfill gas (F)
 f = 0.5
 
-l_0 = mcf * doc * doc_f * f * 16/12
-
 # oxidation factor (OX)
 ox = 0.1 # for well-managed landfills
 
@@ -40,7 +38,9 @@ doc_sum <- waste_comp %>%
 
 doc <- doc_sum$doc_total
 
-# function ----
+l_0 = mcf * doc * doc_f * f * 16/12
+
+# function deprecated ----
 
 # calc_landfill_emissions <- function(County, Year, Tons, f_rec){
 #   mcf = 0.5
@@ -63,7 +63,8 @@ landfill_data <- score_data %>%
   filter(Method == "Landfill") %>% 
   select(County,
          Year, 
-         Tons)
+         `Metric Tons`,
+         Method)
 
 # join both lines of f_rec by county and year
 # calculate sum (flaring + lfgte = rec)
@@ -72,5 +73,16 @@ landfill_data <- score_data %>%
 # landfill_emissions <- bind_rows(ch4_yearly)
 
 # use mutate to calculate emissions = ((Tons * l_0) - rec) * (1-ox)
-# convert to metric tons co2e?
+
+# placeholder data
+landfill_emissions <- landfill_data %>% 
+  mutate(
+    emissions_metric_tons_ch4 = `Metric Tons` * l_0 * (1-ox)
+  ) %>% 
+  select(
+    County,
+    Method,
+    Year,
+    emissions_metric_tons_ch4
+  )
 
