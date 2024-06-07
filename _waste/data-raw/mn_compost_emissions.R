@@ -1,8 +1,7 @@
 # calculate emissions from aerobic composting using IPCC equations and MPCA data.
 source("R/_load_pkgs.R")
-score_data <- readRDS("_waste/data/mpca_score.RDS")
-if (!exists("gwp")) {
-  source("R/global_warming_potential.R")
+if (!exists("score_data")) {
+  score_data <- readRDS("_waste/data/mpca_score.RDS")
 }
 
 # function deprecated ----
@@ -73,7 +72,5 @@ compost_emissions <- compost_data %>%
     emissions_metric_tons_n2o
   )
  
-# decide whether to convert to co2e
-# write meta
-# save as rds
+# combined and saved in mn_emissions_all
 

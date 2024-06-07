@@ -3,9 +3,6 @@ source("R/_load_pkgs.R")
 if (!exists("score_data")) {
   score_data <- readRDS("_waste/data/mpca_score.RDS")
 }
-if (!exists("gwp")) {
-  source("R/global_warming_potential.R")
-}
 
 # function deprecated ----
 # calc_incineration_emissions <- function(County, Year, Metric_Tons, efficiency, ef_n2o, Source){
@@ -44,7 +41,7 @@ incin_factors <- tibble(
   n2o = 10^(-6) * c(n2o_emissions_factor_wte, n2o_emissions_factor_onsite)
 )
 
-incineration_data <- score_data %>% 
+incineration_emissions <- score_data %>% 
   filter(Method %in% c("WTE", "Onsite")) %>% 
   select(County,
          Method,
@@ -63,6 +60,4 @@ incineration_data <- score_data %>%
     emissions_metric_tons_n2o
   )
 
-# decide whether to convert to co2e
-# write meta
-# save as rds
+# combined and saved in mn_emissions_all
