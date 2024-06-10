@@ -8,7 +8,28 @@ manure_ch4 <- read_csv('_agriculture/data-raw/manure-ch4.csv')
 mn_feedlots <- read_csv('_agriculture/data-raw/mn-feedlots.csv') %>% 
   filter(county_name %in% cprg_county$NAME)
 
-### m
+### format enteric fermentation emissions factors
+
+enteric_formatted <- enteric  %>% 
+  select(c(2,3,6)) %>% 
+  setNames(c("Year","Livestock","Emission_factor_kg_ch4_per_head")) %>% 
+  filter(!(is.na(Year) | is.na(Emission_factor_kg_ch4_per_head))) %>% 
+  filter(Year >= 2005) %>% 
+  mutate(Emission_factor_kg_ch4_per_head = as.numeric(Emission_factor_kg_ch4_per_head))
+
+
+
+### format n20 emissions factors
+
+manure_n2o_formatted <- manure_n2o  %>% 
+  select(c(2,3,6)) %>% 
+  setNames(c("Year","Livestock","Emission_factor_kg_ch4_per_head")) %>% 
+  filter(!(is.na(Year) | is.na(Emission_factor_kg_ch4_per_head))) %>% 
+  filter(Year >= 2005) %>% 
+  mutate(Emission_factor_kg_ch4_per_head = as.numeric(Emission_factor_kg_ch4_per_head))
+
+
+### make the feedlot data long form
 mn_feedlots_long <- mn_feedlots %>% 
   mutate(start_year = year(as.Date(start_d_reg)),
          end_year = year(as.Date(end_d_reg))) %>%
@@ -31,5 +52,4 @@ mn_feedlots_long <- mn_feedlots %>%
   group_by(county_name, years, animal) %>% 
   summarize(county_count = sum(count)) 
   
-
 
