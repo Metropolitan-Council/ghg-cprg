@@ -47,17 +47,15 @@ source_tbl <- categories %>%
   select(source, source_desc, sector) %>% unique() %>% 
   add_row(source = 'transit', source_desc = 'Transit', sector = 'transportation') # maybe???
 
-write.csv(sectors_tbl, '_meta/data-raw/sectors_tbl.csv', row.names = FALSE)
-write.csv(source_tbl, '_meta/data-raw/source_tbl.csv', row.names = FALSE)
-write.csv(category_tbl, '_meta/data-raw/category_tbl.csv', row.names = FALSE)
+write.csv(sectors_tbl, '_meta/data-raw/CD_Emissions/sectors_tbl.csv', row.names = FALSE)
+write.csv(source_tbl, '_meta/data-raw/CD_Emissions/source_tbl.csv', row.names = FALSE)
+write.csv(category_tbl, '_meta/data-raw/CD_Emissions/category_tbl.csv', row.names = FALSE)
 
 
 inv_2021_reformat <- cprg_county_emissions %>% select(geog_id, year, sector, category, source, emissions_metric_tons_co2e, data_source, factor_source) %>%
   mutate(geog_level_id = 'CO', .after = geog_id) %>%
   mutate(value_Emissions = emissions_metric_tons_co2e,
          units_Emissions = 'Tonnes CO2e') %>% rename(geog_unit_id = geog_id)
-pop_2021 <- cprg_county_emissions %>% select(geog_id, geog_level, year, population = county_total_population, data_source = population_data_source) %>%
-  mutate(geog_level_id = 'CO') %>% rename(geog_unit_id = geog_id)
 
 # same process to merge with inventory_2018
 sectors_2018 <- inventory_2018 %>% select(sector, sub_sector, source) %>% unique() %>%
@@ -96,19 +94,35 @@ inv_2018_reformat <- inventory_2018 %>%
          geog_level_id = 'CTU', .after = geog_id) %>% rename(geog_unit_id = geog_id)
 
 ## check trucks
-trucks <- inv_2018_reformat %>% filter(source %in% c('heavy-duty vehicle', 'medium-duty vehicle')) %>%
-  group_by(geog_id, year) %>% summarise(heavy_medium = sum(value_Emissions)) %>% 
-  left_join(filter(inv_2018_reformat, source == 'trucks'), by = c('geog_id', 'year'))
-write.csv(trucks, '_meta/data-raw/trucks_troubleshooting_05212024.csv')
+# trucks <- inv_2018_reformat %>% filter(source %in% c('heavy-duty vehicle', 'medium-duty vehicle')) %>%
+#   group_by(geog_id, year) %>% summarise(heavy_medium = sum(value_Emissions)) %>% 
+#   left_join(filter(inv_2018_reformat, source == 'trucks'), by = c('geog_id', 'year'))
+# write.csv(trucks, '_meta/data-raw/CD_Emissions/trucks_troubleshooting_05212024.csv')
 # trucks ARE just the sum of heavy and medium duty vehicles!!! GREAT.
+
+
+### Concatenate population data from both inventories and the county proportions table
+pop_2021 <- cprg_county_emissions %>% 
+  select(geog_unit_id = geog_id, year, population = county_total_population, data_source = population_data_source) %>% unique() %>%
+  mutate(geog_level_id = 'CO', .after = geog_unit_id)
 
 pop_2018 <- inventory_2018 %>% select(geog_id = GEOG_ID, year = Year, population = Population) %>% unique() %>%
   mutate(geog_id = as.character(geog_id), geog_level_id = 'CTU', .after = geog_id) %>% rename(geog_unit_id = geog_id) %>%
   mutate(data_source = 'Met Council Population Estimates')
 
-population_tbl <- bind_rows(pop_2021, pop_2018) 
-write.csv(population_tbl, '_meta/data-raw/population_tbl.csv', row.names = FALSE)
+st_pop <- cprg_county_proportions %>% select(geog_unit_id = STATEFP, year, population = state_population, data_source = population_data_source) %>%
+  unique() %>% mutate(geog_level_id = 'ST', .after = geog_unit_id) %>%
+  bind_rows(
+    select(cprg_county_proportions, geog_unit_id = COUNTYFP, year, population = county_population, data_source = population_data_source) %>% 
+      mutate(geog_level_id = 'CO', .after = geog_unit_id)
+  ) %>% mutate(year = as.double(year),
+               data_source = case_when(year == 2020 ~ 'Decennial Census PL 94-171 Summary File',
+                                       .default = data_source)) # needed to shorten this for db field length purposes
 
+population_tbl <- bind_rows(pop_2021, pop_2018) %>% bind_rows(st_pop) %>% unique()
+write.csv(population_tbl, '_meta/data-raw/CD_Emissions/population_tbl.csv', row.names = FALSE)
+
+### Concatenate inventory data
 inventory_db <- inv_2021_reformat %>% 
   left_join(sectors_tbl, by = join_by(sector == sector_desc)) %>% mutate(sector = sector.y) %>%
   select(-emissions_metric_tons_co2e, -sector.y) %>% 
@@ -118,11 +132,11 @@ inventory_db <- inv_2021_reformat %>%
   left_join(unique(select(source_tbl, source, source_desc)), by = join_by(source == source_desc)) %>%
   mutate(source = source.y, source.y = NULL) 
 
-write.csv(inventory_db, '_meta/data-raw/inventory_tbl.csv', row.names = FALSE, na = "")
+write.csv(inventory_db, '_meta/data-raw/CD_Emissions/inventory_tbl.csv', row.names = FALSE, na = "")
 
 nulls <- filter(inventory_db, is.na(source)) 
 
-# data sources table
+### data sources table
 inv_data_sources <- inventory_db %>% select(data_source) %>% unique() %>%
   mutate(data_source_desc = data_source,
          data_source = case_when(data_source_desc == 'Streetlight' ~ 'streetlight',
@@ -136,7 +150,7 @@ inv_data_sources <- inventory_db %>% select(data_source) %>% unique() %>%
                                  .default = NA
                                  ))
 
-# emissions factors table 
+### emissions factors table 
 factors_tbl <- inventory_db %>% select(factor_source) %>% unique() %>% filter(!is.na(factor_source)) %>%
   mutate(year = stringr::str_extract(factor_source, '[\\d]+'),
          factor_code = case_when(stringr::str_detect(factor_source, 'EPA MOVES') ~ 'MOVES',
@@ -145,18 +159,3 @@ factors_tbl <- inventory_db %>% select(factor_source) %>% unique() %>% filter(!i
                                  factor_source == 'EPA State GHG Inventory and Projection Tool' ~ 'EPA_STATE')
   )
 
-# also need to add ST records to geogs table (done!)
-# and ST records to population table
-st_pop <- cprg_county_proportions %>% select(geog_unit_id = STATEFP, year, population = state_population, population_data_source) %>%
-  unique() %>% mutate(geog_level_id = 'ST', .after = geog_unit_id) %>%
-  bind_rows(
-    select(cprg_county_proportions, geog_unit_id = COUNTYFP, year, population = county_population, population_data_source) %>% 
-      mutate(geog_level_id = 'CO', .after = geog_unit_id)
-    )
-
-
-## to do as of EOD May 21: 
-# add 2020 ST/CO pop records to population table
-
-# make cprg_county_emissions_vw ## drafted!
-# make cprg_county_proportions_vw
