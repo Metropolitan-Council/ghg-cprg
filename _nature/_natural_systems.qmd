@@ -1,4 +1,4 @@
-# Natural Systems
+# Natural Systems {#sec-natural-systems}
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -105,7 +105,9 @@ Natural systems are a critical component of capturing carbon from the atmosphere
 ## Methods
   
 The approach for calculating carbon sequestration potential for a given geography, $j$, is,
-$$Sequestration_j = \Sigma (\text{area}_i \times {\text{Sequestration Rate}_i}) $$
+
+$$\text{Sequestration}_j = \Sigma (\text{area}_i \times {\text{Sequestration Rate}_i}) $$
+
 where $i$ is land cover classification. The sequestration rate is based on Midwest specific sequestration rate estimates found in the primary scientific literature (@tbl-sequestration). 
 
 ### Land cover classification
@@ -122,14 +124,14 @@ worldcover_msa_map
 
 
 ```{r fig-nlcd-classification}
-#| fig-cap: "USGS National Land Cover Database"
+#| fig-cap: "USGS National Land Cover Database (NLCD)"
 #| out-width: "95%"
 
 nlcd_msa_map
 ```
 
 ```{r fig-nlcd-impervious-cover}
-#| fig-cap: "USGS National Land Cover Database - Impervious Cover"
+#| fig-cap: "USGS National Land Cover Database (NLCD) - impervious cover"
 #| out-width: "95%"
 
 imperv_msa_map
@@ -332,7 +334,7 @@ county_seq_7 <- county_emissions %>% filter(geog_name %in% cprg_7$NAME, sector =
 county_stock_7 <- carbon_stock_area %>% filter(geog_name %in% cprg_7$NAME)
 
 
-park_area <- sum(expanse(parks, unit = "km")) # 307.684
+park_area_total <- sum(expanse(parks, unit = "km")) # 307.684
 cprg_7_area <- sum(expanse(cprg_7, unit = "km")) # 7711.262
 park_area_ratio <- sum(expanse(parks, unit = "km")) / sum(expanse(cprg_7, unit = "km")) # 3.99%
 
@@ -347,7 +349,9 @@ park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_stock_7$emissi
 park_carbon_agg <- park_carbon %>%
   filter(!is.na(park)) %>%
   group_by(county) %>%
-  summarize(area = sum(area), sequestration_potential = sum(sequestration_potential), stock_potential = sum(stock_potential)) %>%
+  summarize(area = sum(area), 
+            sequestration_potential = sum(sequestration_potential),
+            stock_potential = sum(stock_potential)) %>%
   mutate(seq_area = sequestration_potential / area, stock_area = stock_potential / area)
 
 park_county_comp <- bind_rows(

@@ -26,7 +26,8 @@ To address point 1, we intersected the WorldCover data with the NLCD 2021 Imperv
 To address point 2, we intersected the WorldCover data with the NLCD 2021 land cover dataset which has 'Developed areas' when to label WorldCover 'Tree' and 'Grassland' raster cells as 'urban' to distinguish forests and natural grasslands from urban trees and turf grass systems. Raster cell areas were calculated based on the 10 m resolution and their cartographic position. Raster cells were assigned to county areas by intersecting the WorldCover raster with county shape files. This land area estimation is the highest quality of data according to (@tbl-quality-rank).
 
 Thus, an 'Urban_tree' raster cell occurred for raster cells that were labeled as 'Tree' by WorldCover and 'Developed' by NLCD and had an estimated area of:
-$$AreaOfUrbanTree =  (CellArea \times (1 - (ImperviousCover/100))) $$
+
+$$\text{Area Of UrbanTree} =  \text{CellArea} \times \left(1 -  \frac{\text{ImperviousCover}} {100}\right) $$
 The script for processing land cover data, is [esa_land_area_calc.R](_nature/data-raw/esa_land_area_calc.R) and requires census geography and the appropriate .tif files from [WorldCover](https://esa-worldcover.org/en).
 
 In order to determine the annual carbon sequestration rate of natural systems, we searched for region-specific estimates for each land cover type (tree, urban_tree, grassland, urban_grassland, wetland), preferring primary scientific literature where possible. Carbon sequestration rates in natural systems are non-linear through time, with highest sequestration rates in younger systems and saturated rates (i.e. net zero carbon fluxes) in mature systems. Given that our land cover approach is unable to distinguish the age of a system, we used intermediate aged system rates where available. Future research could leverage the [NLCD Land Cover Change Disturbance Date](https://www.mrlc.gov/nlcd-2021-science-research-products) to attempt to determine natural system age, though this is most likely to find loss of natural systems in our region as opposed to land use conversion *to* natural systems. 
@@ -37,7 +38,7 @@ Carbon sequestration rates were multiplied by a value of 3.67 to equate a unit o
 
 
 ```{r tbl-sequestration}
-#| tbl-cap: "Ecosystem Sequestration Rates"
+#| tbl-cap: "Ecosystem sequestration rates"
 #| out-width: "95%"
 land_cover_carbon <- readRDS(file.path(here::here(), "_nature/data/land_cover_carbon.RDS")) %>%
   mutate(land_cover_type = str_replace_all(land_cover_type, "_", " "))
@@ -59,7 +60,7 @@ tbl_sequestration <- kable(
       land_cover_type,
       `Metric tons CO₂e per square kilometer per year` = seq_mtco2e_sqkm
     ) %>%
-    mutate(across(where(is.numeric), round)) %>%
+    mutate(across(where(is.numeric), scales::comma)) %>%
     left_join(., seq_citations) %>%
     unite("Land Cover Type", c("land_cover_type", "Citation"), sep = " "),
   row.names = FALSE, format = "markdown"
@@ -70,7 +71,7 @@ tbl_sequestration
 
 
 ```{r tbl-stock}
-#| tbl-cap: "Ecosystem Carbon Stock Potential"
+#| tbl-cap: "Ecosystem carbon stock potential"
 #| out-width: "95%"
 
 stock_citations <- tibble(
@@ -90,7 +91,7 @@ tbl_stock <- kable(
       land_cover_type,
       `Metric tons CO₂e per square kilometer` = stock_mtco2e_sqkm
     ) %>%
-    mutate(across(where(is.numeric), round)) %>%
+    mutate(across(where(is.numeric), scales::comma)) %>%
     left_join(., stock_citations) %>%
     unite("Land Cover Type", c("land_cover_type", "Citation"), sep = " "),
   row.names = FALSE, format = "markdown"
