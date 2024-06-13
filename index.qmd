@@ -19,7 +19,7 @@ hookaddcap()
 *This project has been funded wholly or in part by the United States Environmental Protection Agency (EPA) under assistance agreement 00E03476 to the Metropolitan Council. The contents of this document do not necessarily reflect the views and policies of the EPA, nor does the EPA endorse trade names or recommend the use of commercial products mentioned in this document.*
 
 ::: {.callout-note}
-This document is one part of the Metropolitan Council Priority Climate Action Plan (PCAP), submitted to the EPA on March 1, 2024. See [metrocouncil.org](https://www.metrocouncil.org/tcghginventory) for more details. 
+This document will be updated continuously in preparation of the Metropolitan Council Comprehensive Climate Action Plan (CCAP). Please check back occasionally as we update modify and add new content. 
 :::
 
 ```{r sector-percentages, echo=FALSE, include=FALSE}
