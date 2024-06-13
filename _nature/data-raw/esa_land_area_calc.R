@@ -1,9 +1,6 @@
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
-library(FedData)
-library(terra)
-
 ## load ESA World Cover rasters
 wc1 <- rast("./_nature/data-raw/ESA_WorldCover_10m_2021_v200_N42W093_Map.tif")
 wc2 <- rast("./_nature/data-raw/ESA_WorldCover_10m_2021_v200_N42W096_Map.tif")

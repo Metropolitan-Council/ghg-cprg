@@ -15,10 +15,6 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
-library(tidyterra)
-library(terra)
-library(FedData)
-
 hookaddcap()
 ```
 

@@ -31,6 +31,7 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(scales, quietly = TRUE))
   suppressMessages(library(webshot, quietly = TRUE))
   suppressMessages(library(terra, quietly = TRUE))
+  suppressMessages(library(tidyterra, quietly = TRUE))
   suppressMessages(library(FedData, quietly = TRUE))
 
   # tables -----
