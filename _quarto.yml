@@ -67,6 +67,7 @@ book:
     - _meta/lidac_maps.qmd
     - figures.qmd
     - tables.qmd
+    - changelog.qmd
     - references.qmd
 
 bibliography: metcouncil-cprg-ghg.bib
