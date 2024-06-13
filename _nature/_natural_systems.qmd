@@ -60,14 +60,17 @@ nlcd_is <- get_nlcd(
 
 
 ```{r create-esa-nlcd-maps, include = FALSE}
-#| fig-cap: "European Space Agency WorldCover land classification"
-#| out-width: "95%"
-#| include: false
+# <!-- #| fig-cap: "European Space Agency WorldCover land classification" -->
+# <!-- #| out-width: "95%" -->
+# <!-- #| include: false -->
 
 ### create class conversion table (couldn't get ESA to output this info which would be cleaner)
 code_class_tab <- data.frame(
   old_lab = c(10, 20, 30, 40, 50, 60, 70, 80, 90),
-  esa_label = c("Tree", "Shrubland", "Grassland", "Cropland", "Built-up", "Bare", "Snow", "Water", "Wetland")
+  esa_label = c(
+    "Tree", "Shrubland", "Grassland", "Cropland", "Built-up",
+    "Bare", "Snow", "Water", "Wetland"
+  )
 )
 
 worldcover_msa_map <- ggplot() +
@@ -102,7 +105,7 @@ Natural systems are a critical component of capturing carbon from the atmosphere
 ## Methods
   
 The approach for calculating carbon sequestration potential for a given geography, $j$, is,
-$$Sequestration_j = \Sigma (area_i \times {SequestrationRate_i}) $$
+$$Sequestration_j = \Sigma (\text{area}_i \times {\text{Sequestration Rate}_i}) $$
 where $i$ is land cover classification. The sequestration rate is based on Midwest specific sequestration rate estimates found in the primary scientific literature (@tbl-sequestration). 
 
 ### Land cover classification
@@ -113,7 +116,6 @@ Land cover was determined by using the [European Space Agencies 2021 WorldCover]
 ```{r fig-esa-worldcover}
 #| fig-cap: "European Space Agency WorldCover"
 #| out-width: "95%"
-# all figure chunks should be named "fig-{plot-desc}"
 
 worldcover_msa_map
 ```
@@ -122,7 +124,6 @@ worldcover_msa_map
 ```{r fig-nlcd-classification}
 #| fig-cap: "USGS National Land Cover Database"
 #| out-width: "95%"
-# all figure chunks should be named "fig-{plot-desc}"
 
 nlcd_msa_map
 ```
@@ -130,7 +131,6 @@ nlcd_msa_map
 ```{r fig-nlcd-impervious-cover}
 #| fig-cap: "USGS National Land Cover Database - Impervious Cover"
 #| out-width: "95%"
-# all figure chunks should be named "fig-{plot-desc}"
 
 imperv_msa_map
 ```
@@ -175,8 +175,8 @@ fig_ns_county_sequestration <- plot_ly(
 
 fig_ns_county_sequestration
 ```
-{{< pagebreak >}}
 
+{{< pagebreak >}}
 
 ```{r fig-ns-county-stock}
 #| fig-cap: "2021 county natural system carbon stock potential"
@@ -320,6 +320,8 @@ fig_ns_stock_area <- plot_ly(
 fig_ns_stock_area
 ```
 
+### Regional parks
+
 ``` {r park-carbon-data, include = FALSE}
 park_carbon <- readRDS(file.path(here::here(), "_nature/data/park_landcover_sequestration_2021.RDS"))
 parks <- readRDS(file.path(here::here(), "_nature/data/regional_parks_shape.RDS"))
@@ -364,8 +366,6 @@ park_county_comp <- bind_rows(
     rename(value = "stock_per_area", county = "geog_name")
 )
 ```
-
-### Regional Parks
 
 Parks play an important role in climate change resilience by protecting existing natural systems and acquiring lands for natural system restoration. The regional park system of the seven county Twin Cities region provides an excellent example of this. The following graphs show how regional parks, on a per area basis, are more efficient carbon sinks than the counties they reside in. For both sequestration and stock potential, this is in large part due to a much small proportion of non-green spaces (e.g.. impervious surfaces, agricultural lands), but stock potential in particular has a higher capacity due to a larger proportion of natural green spaces as opposed to urban green spaces. Regional parks represent `r scales::percent(park_area_ratio, accuracy = 0.1)` of the total land area of the seven county region, but `r scales::percent(park_seq_ratio, accuracy = 0.1)` of its carbon sequestration potential and `r scales::percent(park_stock_ratio, accuracy = 0.1)` of its carbon stock potential.
 

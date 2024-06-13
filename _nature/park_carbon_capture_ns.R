@@ -18,7 +18,10 @@ wc_park_c <- left_join(
   wc_park_c,
   data.frame(
     park = unique(wc_park_c$park),
-    county = c("Anoka", "Hennepin", "Carver", "Dakota", "Hennepin", "Ramsey", "Ramsey", "Scott", "Hennepin", "Washington", NA)
+    county = c(
+      "Anoka", "Hennepin", "Carver", "Dakota", "Hennepin",
+      "Ramsey", "Ramsey", "Scott", "Hennepin", "Washington", NA
+    )
   )
 )
 
@@ -26,7 +29,7 @@ wc_park_c <- left_join(
 wc_park_c_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "park", class(wc_park_c$park), "Park implementing agency",
+    "park", class(wc_park_c$park), "Regional park implementing agency",
     "land_cover_type", class(wc_park_c$land_cover_type), "Land cover type from World Cover. 'Urban_' indicates a natural area within NLCD designated developed land cover",
     "area", class(wc_park_c$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled down by NLCD percent impervious",
     "Carbon sequestration potential", class(wc_park_c$sequestration_potential), "Carbon sequestration potential of park land cover type in metric tons of CO2e per year",
@@ -75,14 +78,21 @@ wc_park_c <- left_join(
   wc_park_c,
   data.frame(
     park = unique(wc_park_c$park),
-    county = c("Anoka", "Hennepin", "Carver", "Dakota", "Hennepin", "Ramsey", "Ramsey", "Scott", "Hennepin", "Washington", NA)
+    county = c(
+      "Anoka", "Hennepin", "Carver", "Dakota", "Hennepin", "Ramsey",
+      "Ramsey", "Scott", "Hennepin", "Washington", NA
+    )
   )
 )
 
 wc_park_c_agg <- wc_park_c %>%
   filter(!is.na(park)) %>%
   group_by(park, county) %>%
-  summarize(area = sum(area), sequestration_potential = sum(sequestration_potential), stock_potential = sum(stock_potential)) %>%
+  summarize(
+    area = sum(area),
+    sequestration_potential = sum(sequestration_potential),
+    stock_potential = sum(stock_potential)
+  ) %>%
   mutate(seq_area = sequestration_potential / area, stock_area = stock_potential / area)
 
 comp_graph <- rbind(

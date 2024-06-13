@@ -1,4 +1,6 @@
 source("R/_load_pkgs.R")
+source("R/cprg_colors.R")
+
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 ## load ESA World Cover rasters
@@ -18,9 +20,6 @@ code_class_tab <- data.frame(
   old_lab = c(10, 20, 30, 40, 50, 60, 70, 80, 90),
   esa_label = c("Tree", "Shrubland", "Grassland", "Cropland", "Built-up", "Bare", "Snow", "Water", "Wetland")
 )
-# create color palette for mapping - this may be exported to qmd files later
-esa_color <- c("forestgreen", "brown4", "yellow2", "wheat3", "red", "plum", "lightblue", "navy", "mediumturquoise")
-
 
 ## reduce raster size before merging
 wc_red_list <- lapply(paste0("wc", 1:4), function(x) terra::crop(get(x), cprg_county))

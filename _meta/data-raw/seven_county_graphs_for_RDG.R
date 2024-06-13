@@ -2,40 +2,42 @@
 source("R/_load_pkgs.R")
 
 msa_inv_raw <- readRDS("_meta/data/cprg_county_emissions.RDS") %>%
-  filter(!geog_name %in% c("Pierce", "Sherburne", "St. Croix", "Chisago")) 
+  filter(!geog_name %in% c("Pierce", "Sherburne", "St. Croix", "Chisago"))
 
 sector_use_category <- tibble::tribble(
-  ~sector,      ~sector_use,                ~source,                 ~source_use,                 ~category,
-  "Energy",    "Electricity",          "Electricity",    "Commercial Electricity",       "Commercial energy",
-  "Energy",    "Electricity",          "Electricity",    "Industrial Electricity",       "Industrial energy",
-  "Energy",    "Electricity",          "Electricity",   "Residential Electricity",      "Residential energy",
-  "Energy",  "Building Fuel",          "Natural gas",  "Commercial Building Fuel",       "Commercial energy",
-  "Energy",  "Building Fuel",          "Natural gas",  "Industrial Building Fuel",       "Industrial energy",
-  "Energy",  "Building Fuel",              "Propane", "Residential Building Fuel", "Liquid stationary fuels",
-  "Energy",  "Building Fuel",             "Kerosene", "Residential Building Fuel", "Liquid stationary fuels",
-  "Energy",  "Building Fuel",          "Natural gas", "Residential Building Fuel",      "Residential energy",
-  "Transportation", "Transportation",  "Heavy-duty vehicles",       "Heavy-duty vehicles",     "Commercial vehicles",
-  "Transportation", "Transportation",  "Light-duty vehicles",       "Light-duty vehicles",      "Passenger vehicles",
-  "Transportation", "Transportation", "Medium-duty vehicles",      "Medium-duty vehicles",     "Commercial vehicles",
-  "Waste",          "Waste",             "Landfill",               "Solid waste",             "Solid waste",
-  "Waste",          "Waste",             "Organics",               "Solid waste",             "Solid waste",
-  "Waste",          "Waste",            "Recycling",               "Solid waste",             "Solid waste",
-  "Waste",          "Waste",      "Waste to energy",               "Solid waste",             "Solid waste",
-  "Waste",          "Waste",           "Wastewater",                "Wastewater",              "Wastewater",
-  "Nature",         "Nature",            "Grassland",                 "Grassland",           "Sequestration",
-  "Nature",         "Nature",                 "Tree",                      "Tree",           "Sequestration",
-  "Nature",         "Nature",      "Urban grassland",           "Urban grassland",           "Sequestration",
-  "Nature",         "Nature",           "Urban tree",                "Urban tree",           "Sequestration",
-  "Nature",         "Nature",              "Wetland",                   "Wetland",           "Sequestration"
-) %>% 
-  mutate(sector_use = factor(sector_use, 
-                             levels = c("Electricity", "Building Fuel",
-                                        "Transportation", "Waste", "Nature"))
-  )
+  ~sector, ~sector_use, ~source, ~source_use, ~category,
+  "Energy", "Electricity", "Electricity", "Commercial Electricity", "Commercial energy",
+  "Energy", "Electricity", "Electricity", "Industrial Electricity", "Industrial energy",
+  "Energy", "Electricity", "Electricity", "Residential Electricity", "Residential energy",
+  "Energy", "Building Fuel", "Natural gas", "Commercial Building Fuel", "Commercial energy",
+  "Energy", "Building Fuel", "Natural gas", "Industrial Building Fuel", "Industrial energy",
+  "Energy", "Building Fuel", "Propane", "Residential Building Fuel", "Liquid stationary fuels",
+  "Energy", "Building Fuel", "Kerosene", "Residential Building Fuel", "Liquid stationary fuels",
+  "Energy", "Building Fuel", "Natural gas", "Residential Building Fuel", "Residential energy",
+  "Transportation", "Transportation", "Heavy-duty vehicles", "Heavy-duty vehicles", "Commercial vehicles",
+  "Transportation", "Transportation", "Light-duty vehicles", "Light-duty vehicles", "Passenger vehicles",
+  "Transportation", "Transportation", "Medium-duty vehicles", "Medium-duty vehicles", "Commercial vehicles",
+  "Waste", "Waste", "Landfill", "Solid waste", "Solid waste",
+  "Waste", "Waste", "Organics", "Solid waste", "Solid waste",
+  "Waste", "Waste", "Recycling", "Solid waste", "Solid waste",
+  "Waste", "Waste", "Waste to energy", "Solid waste", "Solid waste",
+  "Waste", "Waste", "Wastewater", "Wastewater", "Wastewater",
+  "Nature", "Nature", "Grassland", "Grassland", "Sequestration",
+  "Nature", "Nature", "Tree", "Tree", "Sequestration",
+  "Nature", "Nature", "Urban grassland", "Urban grassland", "Sequestration",
+  "Nature", "Nature", "Urban tree", "Urban tree", "Sequestration",
+  "Nature", "Nature", "Wetland", "Wetland", "Sequestration"
+) %>%
+  mutate(sector_use = factor(sector_use,
+    levels = c(
+      "Electricity", "Building Fuel",
+      "Transportation", "Waste", "Nature"
+    )
+  ))
 
 
-msa_inv <- msa_inv_raw %>% 
-  left_join(sector_use_category, by = join_by(sector, category, source)) %>% 
+msa_inv <- msa_inv_raw %>%
+  left_join(sector_use_category, by = join_by(sector, category, source)) %>%
   arrange(sector_use, source_use) %>% # Arrange by sector_use and source_use alphabetically
   group_by(sector_use) %>% # Group by sector_use to apply within-sector ordering
   mutate(source_use = factor(source_use, levels = sort(unique(source_use)))) %>% # Order source_use alphabetically within each sector_use
@@ -43,8 +45,10 @@ msa_inv <- msa_inv_raw %>%
 
 msa_total_inv <- msa_inv %>%
   group_by(sector_use, category, source_use) %>%
-  summarise(emissions = sum(emissions_metric_tons_co2e),
-            .groups = "keep")
+  summarise(
+    emissions = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  )
 
 
 ## create color palettes for each sector
@@ -292,4 +296,3 @@ emissions_v_stock <- ggplot(
   xlab("")
 
 emissions_v_stock
-
