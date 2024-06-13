@@ -1,22 +1,41 @@
 ##### Seven county graphs
 source("R/_load_pkgs.R")
 
-msa_inv <- read_rds("_meta/data/cprg_county_emissions.RDS") %>%
-  filter(!geog_name %in% c("Pierce", "Sherburne", "St. Croix", "Chisago")) %>%
-  mutate(
-    sector_use = if_else(sector == "Energy", "Building Fuel", sector),
-    sector_use = if_else(grepl("Electricity", source), "Electricity",
-      sector_use
-    ),
-    source_use = if_else(category %in% c("Residential energy", "Liquid stationary fuels"), paste("Residential", sector_use, sep = " "),
-      if_else(category == "Commercial energy", paste("Commercial", sector_use, sep = " "),
-        if_else(category == "Industrial energy", paste("Industrial", sector_use, sep = " "),
-          if_else(sector_use == "Waste", category, as.character(source))
-        )
-      )
-    ),
-    sector_use = factor(sector_use, levels = c("Electricity", "Building Fuel", "Transportation", "Waste", "Nature"))
-  ) %>%
+msa_inv_raw <- readRDS("_meta/data/cprg_county_emissions.RDS") %>%
+  filter(!geog_name %in% c("Pierce", "Sherburne", "St. Croix", "Chisago")) 
+
+sector_use_category <- tibble::tribble(
+  ~sector,      ~sector_use,                ~source,                 ~source_use,                 ~category,
+  "Energy",    "Electricity",          "Electricity",    "Commercial Electricity",       "Commercial energy",
+  "Energy",    "Electricity",          "Electricity",    "Industrial Electricity",       "Industrial energy",
+  "Energy",    "Electricity",          "Electricity",   "Residential Electricity",      "Residential energy",
+  "Energy",  "Building Fuel",          "Natural gas",  "Commercial Building Fuel",       "Commercial energy",
+  "Energy",  "Building Fuel",          "Natural gas",  "Industrial Building Fuel",       "Industrial energy",
+  "Energy",  "Building Fuel",              "Propane", "Residential Building Fuel", "Liquid stationary fuels",
+  "Energy",  "Building Fuel",             "Kerosene", "Residential Building Fuel", "Liquid stationary fuels",
+  "Energy",  "Building Fuel",          "Natural gas", "Residential Building Fuel",      "Residential energy",
+  "Transportation", "Transportation",  "Heavy-duty vehicles",       "Heavy-duty vehicles",     "Commercial vehicles",
+  "Transportation", "Transportation",  "Light-duty vehicles",       "Light-duty vehicles",      "Passenger vehicles",
+  "Transportation", "Transportation", "Medium-duty vehicles",      "Medium-duty vehicles",     "Commercial vehicles",
+  "Waste",          "Waste",             "Landfill",               "Solid waste",             "Solid waste",
+  "Waste",          "Waste",             "Organics",               "Solid waste",             "Solid waste",
+  "Waste",          "Waste",            "Recycling",               "Solid waste",             "Solid waste",
+  "Waste",          "Waste",      "Waste to energy",               "Solid waste",             "Solid waste",
+  "Waste",          "Waste",           "Wastewater",                "Wastewater",              "Wastewater",
+  "Nature",         "Nature",            "Grassland",                 "Grassland",           "Sequestration",
+  "Nature",         "Nature",                 "Tree",                      "Tree",           "Sequestration",
+  "Nature",         "Nature",      "Urban grassland",           "Urban grassland",           "Sequestration",
+  "Nature",         "Nature",           "Urban tree",                "Urban tree",           "Sequestration",
+  "Nature",         "Nature",              "Wetland",                   "Wetland",           "Sequestration"
+) %>% 
+  mutate(sector_use = factor(sector_use, 
+                             levels = c("Electricity", "Building Fuel",
+                                        "Transportation", "Waste", "Nature"))
+  )
+
+
+msa_inv <- msa_inv_raw %>% 
+  left_join(sector_use_category, by = join_by(sector, category, source)) %>% 
   arrange(sector_use, source_use) %>% # Arrange by sector_use and source_use alphabetically
   group_by(sector_use) %>% # Group by sector_use to apply within-sector ordering
   mutate(source_use = factor(source_use, levels = sort(unique(source_use)))) %>% # Order source_use alphabetically within each sector_use
@@ -24,7 +43,8 @@ msa_inv <- read_rds("_meta/data/cprg_county_emissions.RDS") %>%
 
 msa_total_inv <- msa_inv %>%
   group_by(sector_use, category, source_use) %>%
-  summarise(emissions = sum(emissions_metric_tons_co2e))
+  summarise(emissions = sum(emissions_metric_tons_co2e),
+            .groups = "keep")
 
 
 ## create color palettes for each sector
@@ -57,11 +77,12 @@ color_palette <- msa_total_inv %>%
 
 color_palette_vector <- setNames(color_palette$shades, color_palette$subsectors)
 
+# set color palette vector names
 color_palette_vector_sector <- setNames(color_palette$shades, color_palette$sector_use)
 color_palette_vector_sector <- color_palette_vector_sector[duplicated(names(color_palette_vector_sector))]
 color_palette_vector_sector <- color_palette_vector_sector[!duplicated(names(color_palette_vector_sector))]
 
-# sector widegraph
+# sector wide graph
 sector_graph <- ggplot(
   msa_total_inv %>% group_by(sector_use) %>% summarize(emissions = sum(emissions)),
   aes(x = sector_use, y = emissions / 1000000, fill = sector_use)
@@ -271,3 +292,4 @@ emissions_v_stock <- ggplot(
   xlab("")
 
 emissions_v_stock
+
