@@ -22,7 +22,7 @@ Additional changes
 - Various text edits and updates, including references
 
 
-See full changelog on GitHub release [v1.1.0](https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v1.1.0)
+See full changelog in GitHub release [v1.1.0](https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v1.1.0)
 
 ## v1.0.0 (March 2024) {.unnumbered}
 
@@ -33,4 +33,4 @@ Initial release supporting [PCAP](https://www.metrocouncil.org/tcghginventory). 
 - Waste and wastewater (solid waste, wastewater)
 - Appendices with utility service area maps, low-income and disadvantaged communities (LIDAC)
 
-See full changelog on GitHub release [v1.0.0](https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v1.0.0)
+See full changelog in GitHub release [v1.0.0](https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v1.0.0)
