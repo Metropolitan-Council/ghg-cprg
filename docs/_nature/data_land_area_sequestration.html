@@ -323,6 +323,12 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../changelog.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">H</span>&nbsp; <span class="chapter-title">Release notes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">References</span></a>
   </div>
@@ -362,7 +368,8 @@ div.csl-indent {
 <p>Two important caveats are that WorldCover (1) labels any raster cell as ‘Tree’ with at least 10% tree cover, leading to potential overestimates of tree coverage particularly in urbanized areas and (2) does not distinguish between urban and non-urban natural systems. In order to address these issues, we incorporated USGS’s National Land Cover Database (NLCD).</p>
 <p>To address point 1, we intersected the WorldCover data with the NLCD 2021 Impervious Surface layer, which estimates the percentage of the raster cell which is impervious. From there, we reduced the area of a WorldCover ‘Tree’ cell to the percent pervious surface (100 - % impervious).</p>
 <p>To address point 2, we intersected the WorldCover data with the NLCD 2021 land cover dataset which has ‘Developed areas’ when to label WorldCover ‘Tree’ and ‘Grassland’ raster cells as ‘urban’ to distinguish forests and natural grasslands from urban trees and turf grass systems. Raster cell areas were calculated based on the 10 m resolution and their cartographic position. Raster cells were assigned to county areas by intersecting the WorldCover raster with county shape files. This land area estimation is the highest quality of data according to (<a href="../_meta/supplementary_tables.html#tbl-quality-rank" class="quarto-xref">Table&nbsp;<span>B.2</span></a>).</p>
-<p>Thus, an ‘Urban_tree’ raster cell occurred for raster cells that were labeled as ‘Tree’ by WorldCover and ‘Developed’ by NLCD and had an estimated area of: <span class="math display">\[AreaOfUrbanTree =  (CellArea \times (1 - (ImperviousCover/100))) \]</span> The script for processing land cover data, is <a href="_nature/data-raw/esa_land_area_calc.R">esa_land_area_calc.R</a> and requires census geography and the appropriate .tif files from <a href="https://esa-worldcover.org/en">WorldCover</a>.</p>
+<p>Thus, an ‘Urban_tree’ raster cell occurred for raster cells that were labeled as ‘Tree’ by WorldCover and ‘Developed’ by NLCD and had an estimated area of:</p>
+<p><span class="math display">\[\text{Area Of UrbanTree} =  \text{CellArea} \times \left(1 -  \frac{\text{ImperviousCover}} {100}\right) \]</span> The script for processing land cover data, is <a href="_nature/data-raw/esa_county_land_area_cover_calc.R">esa_county_land_area_cover_calc.R</a> and requires census geography and the appropriate .tif files from <a href="https://esa-worldcover.org/en">WorldCover</a>.</p>
 <p>In order to determine the annual carbon sequestration rate of natural systems, we searched for region-specific estimates for each land cover type (tree, urban_tree, grassland, urban_grassland, wetland), preferring primary scientific literature where possible. Carbon sequestration rates in natural systems are non-linear through time, with highest sequestration rates in younger systems and saturated rates (i.e.&nbsp;net zero carbon fluxes) in mature systems. Given that our land cover approach is unable to distinguish the age of a system, we used intermediate aged system rates where available. Future research could leverage the <a href="https://www.mrlc.gov/nlcd-2021-science-research-products">NLCD Land Cover Change Disturbance Date</a> to attempt to determine natural system age, though this is most likely to find loss of natural systems in our region as opposed to land use conversion <em>to</em> natural systems.</p>
 <p>An additional consideration is that these systems have different storage potentials that are not necessarily related to their sequestration rates. For instance, turf grass systems (likely most urban_grasslands in our designation) rapidly accumulate soil carbon relative to natural grasslands but saturate by 50 years, whereas grasslands as old as 75 years continue to sequester carbon at the northern edge of our system. Additional factors affecting sequestration rates include species specific life histories, soil characteristics, and water and nutrient inputs.</p>
 <p>Carbon sequestration rates were multiplied by a value of 3.67 to equate a unit of carbon to a unit of CO<sub>2</sub>, representing the different in atomic weights. Sequestration rates are the third highest quality rank (<a href="../_meta/supplementary_tables.html#tbl-quality-rank" class="quarto-xref">Table&nbsp;<span>B.2</span></a>), coming predominantly from peer-reviewed journal articles.</p>
@@ -370,7 +377,7 @@ div.csl-indent {
 <div id="tbl-sequestration" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sequestration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;14.1: Ecosystem Sequestration Rates
+Table&nbsp;14.1: Ecosystem sequestration rates
 </figcaption>
 <div aria-describedby="tbl-sequestration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -382,29 +389,29 @@ Table&nbsp;14.1: Ecosystem Sequestration Rates
 <thead>
 <tr class="header">
 <th style="text-align: left;">Land Cover Type</th>
-<th style="text-align: right;">Metric tons CO₂e per square kilometer per year</th>
+<th style="text-align: left;">Metric tons CO₂e per square kilometer per year</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Grassland <span class="citation" data-cites="knopsSoilCarbonNitrogen2009">(<a href="../references.html#ref-knopsSoilCarbonNitrogen2009" role="doc-biblioref">Knops and Bradley 2009</a>)</span></td>
-<td style="text-align: right;">-125</td>
+<td style="text-align: left;">-125</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Tree <span class="citation" data-cites="russellCarbonMinnesotaTrees2020">(<a href="../references.html#ref-russellCarbonMinnesotaTrees2020" role="doc-biblioref">Russell 2020</a>)</span></td>
-<td style="text-align: right;">-329</td>
+<td style="text-align: left;">-329</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Urban Grassland <span class="citation" data-cites="phillipsHighSoilCarbon2023">(<a href="../references.html#ref-phillipsHighSoilCarbon2023" role="doc-biblioref">Phillips et al. 2023</a>)</span></td>
-<td style="text-align: right;">-301</td>
+<td style="text-align: left;">-301</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Urban Tree <span class="citation" data-cites="nowakCarbonStorageSequestration2013">(<a href="../references.html#ref-nowakCarbonStorageSequestration2013" role="doc-biblioref">Nowak et al. 2013</a>)</span></td>
-<td style="text-align: right;">-620</td>
+<td style="text-align: left;">-620</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Wetland <span class="citation" data-cites="polaskySupplyTerrestrialCarbon2006">(<a href="../references.html#ref-polaskySupplyTerrestrialCarbon2006" role="doc-biblioref">Polasky and Liu 2006</a>)</span></td>
-<td style="text-align: right;">-1115</td>
+<td style="text-align: left;">-1,115</td>
 </tr>
 </tbody>
 </table>
@@ -417,7 +424,7 @@ Table&nbsp;14.1: Ecosystem Sequestration Rates
 <div id="tbl-stock" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-stock-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;14.2: Ecosystem Carbon Stock Potential
+Table&nbsp;14.2: Ecosystem carbon stock potential
 </figcaption>
 <div aria-describedby="tbl-stock-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -429,29 +436,29 @@ Table&nbsp;14.2: Ecosystem Carbon Stock Potential
 <thead>
 <tr class="header">
 <th style="text-align: left;">Land Cover Type</th>
-<th style="text-align: right;">Metric tons CO₂e per square kilometer</th>
+<th style="text-align: left;">Metric tons CO₂e per square kilometer</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Grassland <span class="citation" data-cites="liuBaselineProjectedFuture2014">(<a href="../references.html#ref-liuBaselineProjectedFuture2014" role="doc-biblioref">Liu et al. 2014</a>)</span></td>
-<td style="text-align: right;">-24589</td>
+<td style="text-align: left;">-24,589</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Tree <span class="citation" data-cites="liuBaselineProjectedFuture2014">(<a href="../references.html#ref-liuBaselineProjectedFuture2014" role="doc-biblioref">Liu et al. 2014</a>)</span></td>
-<td style="text-align: right;">-45141</td>
+<td style="text-align: left;">-45,141</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Urban Grassland <span class="citation" data-cites="selhorstNetCarbonSequestration2013">(<a href="../references.html#ref-selhorstNetCarbonSequestration2013" role="doc-biblioref">Selhorst and Lal 2013</a>)</span></td>
-<td style="text-align: right;">-16809</td>
+<td style="text-align: left;">-16,809</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Urban Tree <span class="citation" data-cites="nowakCarbonStorageSequestration2013">(<a href="../references.html#ref-nowakCarbonStorageSequestration2013" role="doc-biblioref">Nowak et al. 2013</a>)</span></td>
-<td style="text-align: right;">-16148</td>
+<td style="text-align: left;">-16,148</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Wetland <span class="citation" data-cites="nahlikCarbonStorageUS2016">(<a href="../references.html#ref-nahlikCarbonStorageUS2016" role="doc-biblioref">Nahlik and Fennessy 2016</a>)</span></td>
-<td style="text-align: right;">-134138</td>
+<td style="text-align: left;">-134,138</td>
 </tr>
 </tbody>
 </table>

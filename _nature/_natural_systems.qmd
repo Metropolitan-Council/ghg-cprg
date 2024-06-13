@@ -349,9 +349,11 @@ park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_stock_7$emissi
 park_carbon_agg <- park_carbon %>%
   filter(!is.na(park)) %>%
   group_by(county) %>%
-  summarize(area = sum(area), 
-            sequestration_potential = sum(sequestration_potential),
-            stock_potential = sum(stock_potential)) %>%
+  summarize(
+    area = sum(area),
+    sequestration_potential = sum(sequestration_potential),
+    stock_potential = sum(stock_potential)
+  ) %>%
   mutate(seq_area = sequestration_potential / area, stock_area = stock_potential / area)
 
 park_county_comp <- bind_rows(

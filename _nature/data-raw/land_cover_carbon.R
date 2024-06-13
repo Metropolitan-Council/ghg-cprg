@@ -6,9 +6,9 @@ stock <- read_csv("./_nature/data-raw/land_cover_stock.csv")
 
 # sequestration rates require some recalculation given varying units.
 # Further, urban grasslands (usually turf grass) have a C sequestration rate but also are expected emitters of N20
-seq_rates_sum <- seq_rates %>% 
+seq_rates_sum <- seq_rates %>%
   mutate(
-    mtco2e = 
+    mtco2e =
       case_when(
         # scale units carbon to CO2e (atomic weight of a carbon atom compared to CO2 molecule)
         units == "metric ton C" ~ activity * 3.67,
@@ -16,31 +16,37 @@ seq_rates_sum <- seq_rates %>%
         units == "US ton C" ~ activity * 3.67 * 0.907185,
         # IPCC 2019 assumes 1% of nitrogen fertilizer volatilizes to N20
         units == "kg N" ~ activity * 0.01 * gwp$n2o * 0.001,
-        TRUE ~ activity)
+        TRUE ~ activity
+      )
   ) %>%
   ##### convert all seq rates to Mt per 1 sq km
-  mutate(sqkm = case_when(area_unit == "ha" ~ area / 100,
-                          area_unit == "acre" ~ area / 247.1,
-                          TRUE ~ NA)
-  ) %>%
+  mutate(sqkm = case_when(
+    area_unit == "ha" ~ area / 100,
+    area_unit == "acre" ~ area / 247.1,
+    TRUE ~ NA
+  )) %>%
   mutate(mtco2e_sqkm = mtco2e / sqkm) %>%
   filter(!activity == 0.25) %>% # remove hidden carbon cost calculation as it seems to underestimate emissions
   group_by(land_cover_type) %>%
   summarize(seq_mtco2e_sqkm = sum(mtco2e_sqkm))
 
 # find the mean stock estimates with standardized units
-stock_mean <- stock %>% 
+stock_mean <- stock %>%
   mutate(
     mtco2e = case_when(
       # scale units carbon to CO2e (atomic weight of a carbon atom compared to CO2 molecule)
       units == "metric tons C" ~ activity * 3.67,
       # kg carbon to metric ton CO2e
       units == "kg C" ~ activity * 3.67 * 0.001,
-      TRUE ~ activity)) %>%
+      TRUE ~ activity
+    )
+  ) %>%
   ##### convert all seq rates to Mt per 1 sq km
-  mutate(sqkm = case_when(area_unit == "ha" ~ area / 100,
-                          area_unit == "m" ~ area * 1e-6,
-                          TRUE ~ NA)) %>%
+  mutate(sqkm = case_when(
+    area_unit == "ha" ~ area / 100,
+    area_unit == "m" ~ area * 1e-6,
+    TRUE ~ NA
+  )) %>%
   mutate(mtco2e_sqkm = mtco2e / sqkm) %>%
   group_by(land_cover_type) %>%
   summarize(stock_mtco2e_sqkm = -mean(mtco2e_sqkm)) # take the mean values for cover types with multiple, call it negative for messaging
