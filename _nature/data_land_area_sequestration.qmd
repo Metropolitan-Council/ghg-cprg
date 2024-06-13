@@ -28,7 +28,7 @@ To address point 2, we intersected the WorldCover data with the NLCD 2021 land c
 Thus, an 'Urban_tree' raster cell occurred for raster cells that were labeled as 'Tree' by WorldCover and 'Developed' by NLCD and had an estimated area of:
 
 $$\text{Area Of UrbanTree} =  \text{CellArea} \times \left(1 -  \frac{\text{ImperviousCover}} {100}\right) $$
-The script for processing land cover data, is [esa_land_area_calc.R](_nature/data-raw/esa_land_area_calc.R) and requires census geography and the appropriate .tif files from [WorldCover](https://esa-worldcover.org/en).
+The script for processing land cover data, is [esa_county_land_area_cover_calc.R](_nature/data-raw/esa_county_land_area_cover_calc.R) and requires census geography and the appropriate .tif files from [WorldCover](https://esa-worldcover.org/en).
 
 In order to determine the annual carbon sequestration rate of natural systems, we searched for region-specific estimates for each land cover type (tree, urban_tree, grassland, urban_grassland, wetland), preferring primary scientific literature where possible. Carbon sequestration rates in natural systems are non-linear through time, with highest sequestration rates in younger systems and saturated rates (i.e. net zero carbon fluxes) in mature systems. Given that our land cover approach is unable to distinguish the age of a system, we used intermediate aged system rates where available. Future research could leverage the [NLCD Land Cover Change Disturbance Date](https://www.mrlc.gov/nlcd-2021-science-research-products) to attempt to determine natural system age, though this is most likely to find loss of natural systems in our region as opposed to land use conversion *to* natural systems. 
 

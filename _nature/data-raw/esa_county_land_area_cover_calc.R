@@ -101,7 +101,7 @@ wc_df <- data.frame(
       paste0("Urban_", esa_label),
       esa_label
     )
-  ) # relabel natural areas in developed zones as urban_ as these likely have diminished C sequestration potential
+  ) # re-label natural areas in developed zones as urban_ as these likely have diminished C sequestration potential
 
 # reduce data frame to sum of all pixels (i.e. area) of designated land class system within each county
 wc_county <- wc_df %>%
