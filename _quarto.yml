@@ -5,7 +5,7 @@ project:
     - R/start_caption_index.R
   post-render: 
     - R/fix_style.R
-    
+
 quarto-required: 1.4.553
 
 book:
@@ -13,7 +13,7 @@ book:
   title: "Twin Cities MSA Greenhouse Gas Inventory"
   subtitle: "Climate Pollution Reduction Grant Documentation"
   author: "Metropolitan Council"
-  date: 2024-05-28
+  date: today
   page-navigation: true
   search: true
   repo-url: https://github.com/Metropolitan-Council/ghg-cprg
