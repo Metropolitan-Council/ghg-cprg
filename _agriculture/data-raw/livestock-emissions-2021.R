@@ -14,11 +14,31 @@ mn_feedlots <- read_csv('_agriculture/data-raw/mn-feedlots.csv') %>%
 key <- keyring::key_get('usda_key')
 
 counties <- toupper(cprg_county$NAME)
+counties <- if_else(counties == 'ST. CROIX', "ST CROIX", counties)
+
+
+ramsey <- tidyUSDA::getQuickstat(
+  sector="ANIMALS & PRODUCTS",
+  group="LIVESTOCK",
+  commodity=NULL,
+  category= NULL,
+  domain= NULL,
+  county= "ST CROIX",
+  key = key,
+  program = "CENSUS",
+  data_item = NULL,
+  geographic_level = 'COUNTY',
+  year = as.character(2005:2022),
+  state = c("MINNESOTA","WISCONSIN"),
+  geometry = TRUE,
+  lower48 = TRUE, 
+  weighted_by_area = T)
 
 ### this is an API to get livestock data (mammals) from the USDA.
-### USDA has year survey data that provides heads of animals
-### USDA also has 5 year census data with more detailed information (2007, 2012, 2017, 2022). This should be examined for validation later
-usda_livestock <- tidyUSDA::getQuickstat(
+### USDA has yearly survey data that provides heads of animals - only cattle appear to be available after 2013.
+### USDA also has 5 year census data with more detailed information (2007, 2012, 2017, 2022). Census data will be needed for hogs, sheep, and feedlots
+### Cattle survey and census data should be compared in 2017 and 2022
+usda_survey <- tidyUSDA::getQuickstat(
   sector="ANIMALS & PRODUCTS",
   group="LIVESTOCK",
   commodity=NULL,
@@ -29,22 +49,22 @@ usda_livestock <- tidyUSDA::getQuickstat(
   program = "SURVEY",
   data_item = NULL,
   geographic_level = 'COUNTY',
-  year = as.character(2005:2022),
+  year = as.character(2005:2021),
   state = c("MINNESOTA","WISCONSIN"),
   geometry = TRUE,
   lower48 = TRUE, 
   weighted_by_area = T)
 
 
-usda_livestock_use <- usda_livestock %>% 
-  filter(!is.na(Value), unit_desc == "HEAD")  # exclude missing values, take only head count surveys now. May be useful to validate by operations census later.
+usda_cattle <- usda_survey %>% 
+  filter(!is.na(Value), # exclude missing values, this omits Ramsey county (the UofM has some cattle, but this is low importance)
+         commodity_desc == "CATTLE",  # only CATTLE extends to 2021 for survey data, will use census data and interpolation for other livestock
+         !grepl("FEED", short_desc)) %>%  ## feedlot data also stops in 2013, so going to use census
+  as.data.frame() %>% select(-geometry) #Don't need this to be a spatial object
 
-usda_livestock_use %>% 
-  filter(commodity_desc != "CATTLE") %>% 
-  distinct(year)
 ## there is no non-cattle survey data past 2013. Will need to use inventory data to in-fill other livestock
 
-unique(usda_livestock_use$short_desc)
+unique(usda_cattle$short_desc)
 
 ### other live stock have head estimates from 2005:2013, and 2017
 
@@ -66,27 +86,56 @@ unique(enteric_formatted$Livestock)
 
 enteric_agg <- enteric_formatted %>% 
   filter(!grepl("mos.",Livestock)) %>% 
-  mutate(livestock_type = if_else(grepl("Replacement",Livestock), "Calves",
-                                  if_else(grepl("Feedlot",Livestock),"Feedlot cattle",
-                                          Livestock))) %>% 
+  mutate(livestock_type = 
+           case_when(
+             grepl("Replacement", Livestock) ~ "Calves",
+             grepl("Feedlot",Livestock) ~ "Feedlot Cows",
+             TRUE ~ Livestock
+           )) %>% 
   group_by(Year, livestock_type) %>% 
   summarize(kg_ch4_per_head = mean(Emission_factor_kg_ch4_per_head ))
 
 unique(enteric_agg$livestock_type)
-unique(usda_livestock_use$short_desc)
+unique(usda_cattle$short_desc)
 
-usda_livestock_agg <- usda_livestock_use %>%
-  mutate(livestock_type = if_else(grepl("MILK", short_desc), "Dairy Cows", 
-                                  if_else(grepl("BEEF", short_desc), "Beef Cows",
-                                          if_else(grepl("FEED", short_desc), "Feedlot cattle",
-                                                  if_else(grepl("CALVES",short_desc), "Calves",
-                                                  if_else(grepl("HOGS", short_desc),"Swine",
-                                                          if_else(grepl("SHEEP",short_desc),"Sheep",
-                                                                  short_desc))))))) %>% 
-  group_by(year, county_name) %>% 
+### match livestock labels to enteric and summarize to county-year-livestockType
+usda_cattle_agg <- usda_cattle %>%
+  mutate(livestock_type = 
+           case_when(
+             grepl("MILK", short_desc) ~ "Dairy Cows",
+             grepl("BEEF", short_desc) ~ "Beef Cows",
+             grepl("FEED", short_desc) ~ "Feedlot Cows",
+             grepl("CALVES",short_desc) ~ "Calves",
+             grepl("HOGS", short_desc) ~ "Swine",
+             grepl("SHEEP",short_desc) ~ "Sheep",
+             TRUE ~ short_desc
+           )) %>% 
+  group_by(year, county_name, livestock_type) %>% 
   summarise(head_count = sum(Value))
 
-### match livestock labels to enteric
+ggplot(usda_cattle_corrected, aes(x = year, y = head_count, col = county_name)) + geom_line() + facet_wrap(.~livestock_type)
+
+### Calf category appears to be all cattle plus calves. The documentation is scarce, but subtracting away adult cattle appears to be correct
+usda_cattle_corrected <- left_join(usda_cattle_agg,
+                      usda_cattle_agg %>%
+  filter(grepl("Cows$", livestock_type)) %>%
+  group_by(year, county_name) %>%
+  summarise(cows_sum = sum(head_count)),
+  by =  c("year", "county_name")) %>%
+  mutate(head_count = ifelse(livestock_type == "Calves", head_count - cows_sum, head_count)) %>%
+  select(-cows_sum)
+
+### merge enteric cattle data with head count survey data
+
+cow_burps <- left_join(usda_cattle_corrected, enteric_agg, by = c("year" = "Year", "livestock_type" = "livestock_type")) %>% 
+  mutate(kg_ch4 = kg_ch4_per_head * head_count,
+         MT_ch4 = kg_ch4 / 1000,
+         CO2e = MT_ch4 * gwp$ch4) %>% 
+  group_by(year, county_name) %>% 
+  summarize(CO2e = sum(CO2e))
+
+ggplot(cow_burps, aes(x = year, y = CO2e, col = county_name)) + geom_line() + theme_bw()
+
 
 #is TOTAL overlapping with non-TOTAL fields?
 usda_livestock_use %>% filter(domain_desc == "TOTAL", grepl("CATTLE", short_desc)) %>% 
