@@ -32,7 +32,11 @@ category_colors <-
 
     # PuRd
     "Solid waste" = "#ce1256",
-    "Wastewater" = "#c994c7"
+    "Wastewater" = "#c994c7",
+
+    # Gn
+    "Sequestration" = "#006f3c",
+    "Stock" = "#27b376"
   )
 
 
@@ -53,8 +57,15 @@ source_colors <- list(
   # energy levels
   "Electricity" = "#0868ac",
   "Natural gas" = "#4eb3d3",
-  "Propane" = "#006d2c",
-  "Kerosene" = "#a1d99b"
+  "Propane" = "#2f4f4f",
+  "Kerosene" = "#004242",
+
+  # nature
+  "Tree" = "#006d2c",
+  "Grassland" = "#22b600",
+  "Wetland" = "#26cc00",
+  "Urban tree" = "#7be382",
+  "Urban grassland" = "#a1d99b"
 )
 
 
@@ -74,4 +85,10 @@ management_method_colors <- list(
   "Organics" = source_colors$Organics,
   "Landfill" = source_colors$Landfill,
   "Onsite" = "#750a31"
+)
+
+# european space agency colors
+esa_color <- c(
+  "forestgreen", "brown4", "yellow2", "wheat3", "red",
+  "plum", "lightblue", "navy", "mediumturquoise"
 )

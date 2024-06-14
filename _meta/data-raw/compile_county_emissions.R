@@ -110,6 +110,38 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
   ) %>%
   select(names(transportation_emissions))
 
+## natural systems ----
+
+natural_systems_sequestration <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
+  mutate(
+    sector = "Nature",
+    geog_level = "county",
+    geog_name = county,
+    category = "Sequestration",
+    source = stringr::str_to_sentence(str_replace_all(land_cover_type, "_", " ")),
+    data_source = "ESA WorldCover & NLCD 2021",
+    factor_source = "Various primary literature",
+    year = 2021,
+    emissions_metric_tons_co2e = sequestration_potential,
+  ) %>%
+  ungroup() %>%
+  select(names(transportation_emissions))
+
+natural_systems_stock <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
+  mutate(
+    sector = "Nature",
+    geog_level = "county",
+    geog_name = county,
+    category = "Stock",
+    source = stringr::str_to_sentence(str_replace_all(land_cover_type, "_", " ")),
+    data_source = "ESA WorldCover & NLCD 2021",
+    factor_source = "Various primary literature",
+    year = 2021,
+    emissions_metric_tons_co2e = stock_potential,
+  ) %>%
+  ungroup() %>%
+  select(names(transportation_emissions))
+
 # combine and write metadata----
 
 emissions_all <- bind_rows(
@@ -118,7 +150,9 @@ emissions_all <- bind_rows(
   electric_emissions,
   natural_gas_emissions,
   ww_emissions,
-  solid_waste
+  solid_waste,
+  natural_systems_sequestration,
+  natural_systems_stock
 ) %>%
   left_join(
     cprg_county %>%
@@ -143,7 +177,13 @@ emissions_all <- bind_rows(
         "Electricity",
         "Natural gas",
         "Propane",
-        "Kerosene"
+        "Kerosene",
+        # nature levels
+        "Urban grassland",
+        "Urban tree",
+        "Grassland",
+        "Tree",
+        "Wetland"
       ),
       ordered = TRUE
     ),
@@ -157,7 +197,9 @@ emissions_all <- bind_rows(
         "Passenger vehicles",
         "Commercial vehicles",
         "Wastewater",
-        "Solid waste"
+        "Solid waste",
+        "Sequestration",
+        "Stock"
       ),
       ordered = TRUE
     )
@@ -176,11 +218,12 @@ emissions_all <- bind_rows(
   mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
   select(year, geog_level, geog_id, geog_name, everything())
 
+# splitting off carbon stock here as it is a capacity, not a rate
+carbon_stock <- emissions_all %>% filter(category == "Stock")
+emissions_all <- emissions_all %>% filter(category != "Stock")
 
-
-mean(emissions_all$emissions_per_capita)
-
-sum(emissions_all$emissions_metric_tons_co2e) / sum(cprg_county_pop$population)
+mean(emissions_all$emissions_per_capita[!emissions_all$category == "Stock"])
+sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"]) / sum(cprg_county_pop$population)
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
@@ -207,6 +250,9 @@ saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
 write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)
 
 county_emissions <- emissions_all
+
+saveRDS(carbon_stock, "_meta/data/cprg_county_carbon_stock.RDS")
+saveRDS(emissions_all_meta, "_meta/data/cprg_county_carbon_stock_meta.RDS")
 
 # save emissions to shared drive location
 # source("R/fetch_path.R")

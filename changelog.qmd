@@ -1,0 +1,36 @@
+# Release notes
+
+```{r, echo=FALSE, message = FALSE, results='markup'}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+```
+
+## v1.1.0 (June 2024) {.unnumbered}
+
+NEW SECTOR - Natural systems sequestration and carbon stock (@sec-natural-systems).
+
+Natural systems sequestration and carbon stock at county level, with particular focus on regional parks. Data sources include WorldCover and USGS NLCD. Sequestration rates and carbon stock potential come from various literature as cited. Values are correlated with county area in square kilometers. 
+
+Additional changes  
+
+- Increment release version to 1.1.0, increment date  
+- Updates R version to 4.4.0 and Quarto version to 1.4.533  
+- Update renv packages to follow R 4.4.0  
+- New packages FedData, terra, tidyterra, usethis, arcgislayers, dbplyr,  and various sub-dependencies  
+- Start changelog section in appendix  
+- Start folder structure for agriculture sector 
+- Various text edits and updates, including references
+
+
+See full changelog in GitHub release [v1.1.0](https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v1.1.0)
+
+## v1.0.0 (March 2024) {.unnumbered}
+
+Initial release supporting [PCAP](https://www.metrocouncil.org/tcghginventory). Sections include 
+
+- Stationary energy (electricity, natural gas, propane and kerosene)
+- Transportation  (passenger, commercial)
+- Waste and wastewater (solid waste, wastewater)
+- Appendices with utility service area maps, low-income and disadvantaged communities (LIDAC)
+
+See full changelog in GitHub release [v1.0.0](https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v1.0.0)
