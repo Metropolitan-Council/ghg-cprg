@@ -25,10 +25,3 @@ wc_county_c_meta <-
 
 saveRDS(wc_county_c, "./_nature/data/county_landcover_sequestration_2021.rds")
 saveRDS(wc_county_c_meta, "./_nature/data/county_landcover_sequestration_2021_meta.rds")
-
-county_seq_total <- summarize(wc_county_c, seq_total = sum(sequestration_potential))
-county_stock_total <- summarize(wc_county_c, stock_total = sum(stock_potential))
-
-
-sum(county_seq_total$seq_total) # -2180841 ! Liz gets 2390357
-sum(county_stock_total$stock_total) #-257,462,245
