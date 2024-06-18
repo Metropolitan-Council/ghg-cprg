@@ -34,6 +34,7 @@ ramsey <- tidyUSDA::getQuickstat(
   lower48 = TRUE, 
   weighted_by_area = T)
 
+#### Survey data ####
 ### this is an API to get livestock data (mammals) from the USDA.
 ### USDA has yearly survey data that provides heads of animals - only cattle appear to be available after 2013.
 ### USDA also has 5 year census data with more detailed information (2007, 2012, 2017, 2022). Census data will be needed for hogs, sheep, and feedlots
@@ -113,7 +114,6 @@ usda_cattle_agg <- usda_cattle %>%
   group_by(year, county_name, livestock_type) %>% 
   summarise(head_count = sum(Value))
 
-ggplot(usda_cattle_corrected, aes(x = year, y = head_count, col = county_name)) + geom_line() + facet_wrap(.~livestock_type)
 
 ### Calf category appears to be all cattle plus calves. The documentation is scarce, but subtracting away adult cattle appears to be correct
 usda_cattle_corrected <- left_join(usda_cattle_agg,
@@ -124,6 +124,9 @@ usda_cattle_corrected <- left_join(usda_cattle_agg,
   by =  c("year", "county_name")) %>%
   mutate(head_count = ifelse(livestock_type == "Calves", head_count - cows_sum, head_count)) %>%
   select(-cows_sum)
+
+ggplot(usda_cattle_corrected, aes(x = year, y = head_count, col = county_name)) + geom_line() + facet_wrap(.~livestock_type)
+
 
 ### merge enteric cattle data with head count survey data
 
@@ -136,6 +139,44 @@ cow_burps <- left_join(usda_cattle_corrected, enteric_agg, by = c("year" = "Year
 
 ggplot(cow_burps, aes(x = year, y = CO2e, col = county_name)) + geom_line() + theme_bw()
 
+#### Census data ####
+
+usda_census <- tidyUSDA::getQuickstat(
+  sector="ANIMALS & PRODUCTS",
+  group="LIVESTOCK",
+  commodity=NULL,
+  category= "INVENTORY",
+  domain= NULL,
+  county= counties,
+  key = key,
+  program = "CENSUS",
+  data_item = NULL,
+  geographic_level = 'COUNTY',
+  year = as.character(2005:2022),
+  state = c("MINNESOTA","WISCONSIN"),
+  geometry = TRUE,
+  lower48 = TRUE, 
+  weighted_by_area = T) %>% 
+  as.data.frame() %>% select(-geometry)
+
+### what are the various descriptors that are needed here (metadata is lacking or hard to find)
+unique(usda_census$unit_desc) # "HEAD"       "OPERATIONS"
+unique(usda_census$short_desc) # 32 categories, broadly broken down into operations vs inventory; types of cattle, hogs, sheep, goats
+unique(usda_census$class_desc) # just the species modifier (e.g. 'cows, beef', 'ewes, breeding')
+unique(usda_census$group_desc) #all "LIVESTOCK"
+unique(usda_census$commodity_desc) #"CATTLE" "GOATS"  "HOGS"   "SHEEP" 
+unique(usda_census$statisticcat_desc) #all "INVENTORY"
+unique(usda_census$domaincat_desc) # like short_desc but with range of number of head, e.g. "INVENTORY OF CATTLE ON FEED: (1 TO 19 HEAD)"  
+unique(usda_census$domain_desc) # 8 inventory types (e.g. cattle on feed) and "TOTAL" 
+usda_census %>% filter(domain_desc == "TOTAL") %>% distinct(domaincat_desc) # "NOT SPECFIED"
+usda_census %>% filter(unit_desc == "HEAD") %>% distinct(domaincat_desc) # "NOT SPECFIED"
+
+usda_census %>% filter(county_name == "DAKOTA", year == 2017, commodity_desc == "CATTLE", unit_desc == "HEAD", Value != "NA",
+                       domain_desc == "TOTAL") %>% 
+  group_by(short_desc) %>% 
+  summarize(value = sum(Value))
+
+usda_census %>% filter(county_name == "DAKOTA", year == 2022, commodity_desc == "CATTLE", unit_desc == "HEAD", Value != "NA", short_desc == "CATTLE, ON FEED - INVENTORY")
 
 #is TOTAL overlapping with non-TOTAL fields?
 usda_livestock_use %>% filter(domain_desc == "TOTAL", grepl("CATTLE", short_desc)) %>% 
