@@ -90,7 +90,7 @@ enteric_agg <- enteric_formatted %>%
   mutate(livestock_type = 
            case_when(
              grepl("Replacement", Livestock) ~ "Calves",
-             grepl("Feedlot",Livestock) ~ "Feedlot Cows",
+             grepl("Feedlot",Livestock) ~ "Feedlot Cattle",
              TRUE ~ Livestock
            )) %>% 
   group_by(Year, livestock_type) %>% 
@@ -105,7 +105,7 @@ usda_cattle_agg <- usda_cattle %>%
            case_when(
              grepl("MILK", short_desc) ~ "Dairy Cows",
              grepl("BEEF", short_desc) ~ "Beef Cows",
-             grepl("FEED", short_desc) ~ "Feedlot Cows",
+             grepl("FEED", short_desc) ~ "Feedlot Cattle",
              grepl("CALVES",short_desc) ~ "Calves",
              grepl("HOGS", short_desc) ~ "Swine",
              grepl("SHEEP",short_desc) ~ "Sheep",
@@ -133,9 +133,7 @@ ggplot(usda_cattle_corrected, aes(x = year, y = head_count, col = county_name)) 
 cow_burps <- left_join(usda_cattle_corrected, enteric_agg, by = c("year" = "Year", "livestock_type" = "livestock_type")) %>% 
   mutate(kg_ch4 = kg_ch4_per_head * head_count,
          MT_ch4 = kg_ch4 / 1000,
-         CO2e = MT_ch4 * gwp$ch4) %>% 
-  group_by(year, county_name) %>% 
-  summarize(CO2e = sum(CO2e))
+         CO2e = MT_ch4 * gwp$ch4)
 
 ggplot(cow_burps, aes(x = year, y = CO2e, col = county_name)) + geom_line() + theme_bw()
 
@@ -152,7 +150,7 @@ usda_census <- tidyUSDA::getQuickstat(
   program = "CENSUS",
   data_item = NULL,
   geographic_level = 'COUNTY',
-  year = as.character(2005:2022),
+  year = as.character(2002:2022),
   state = c("MINNESOTA","WISCONSIN"),
   geometry = TRUE,
   lower48 = TRUE, 
@@ -168,15 +166,91 @@ unique(usda_census$commodity_desc) #"CATTLE" "GOATS"  "HOGS"   "SHEEP"
 unique(usda_census$statisticcat_desc) #all "INVENTORY"
 unique(usda_census$domaincat_desc) # like short_desc but with range of number of head, e.g. "INVENTORY OF CATTLE ON FEED: (1 TO 19 HEAD)"  
 unique(usda_census$domain_desc) # 8 inventory types (e.g. cattle on feed) and "TOTAL" 
-usda_census %>% filter(domain_desc == "TOTAL") %>% distinct(domaincat_desc) # "NOT SPECFIED"
-usda_census %>% filter(unit_desc == "HEAD") %>% distinct(domaincat_desc) # "NOT SPECFIED"
+usda_census %>% filter(domain_desc == "TOTAL", Value != "NA") %>% distinct(short_desc) # "NOT SPECFIED"
+usda_census %>% filter(unit_desc == "HEAD", Value != "NA") %>% distinct(short_desc) # "NOT SPECFIED"
 
 usda_census %>% filter(county_name == "DAKOTA", year == 2017, commodity_desc == "CATTLE", unit_desc == "HEAD", Value != "NA",
                        domain_desc == "TOTAL") %>% 
   group_by(short_desc) %>% 
   summarize(value = sum(Value))
+# comparing to USDA county profile, CATTLE, INCL CALVES - INVENTORY is the total number of cattle, other categories are subsets
+# So CATTLE, (EXCL COWS) - INVENTORY is a calf inventory, CATTLE, COWS, BEEF - INVENTORY is adult beef cows, CATTLE, COWS, MILK - INVENTORY
+# are dairy cows, and CATTLE, ON FEED - INVENTORY are calves on feed (documentation says explicitly these are not COWS)
+# We'll create four categories - dairy cows, beef cows, calves, feedlot cattle
 
-usda_census %>% filter(county_name == "DAKOTA", year == 2022, commodity_desc == "CATTLE", unit_desc == "HEAD", Value != "NA", short_desc == "CATTLE, ON FEED - INVENTORY")
+usda_census %>% filter(commodity_desc == "HOGS", unit_desc == "HEAD", Value != "NA",
+                       domain_desc == "TOTAL") %>% 
+  group_by(year,short_desc) %>% 
+  summarize(value = sum(Value))
+
+usda_census %>% filter( commodity_desc == "SHEEP", unit_desc == "HEAD", Value != "NA",
+                       domain_desc == "TOTAL") %>% 
+  group_by(year,short_desc,county_name) %>% 
+  summarize(value = sum(Value)) %>% 
+  filter
+
+### rename and aggregate
+usda_census_agg <- usda_census %>%
+  filter(domain_desc == "TOTAL",!is.na(Value),
+         short_desc %in% c("CATTLE, (EXCL COWS) - INVENTORY",
+                           "CATTLE, ON FEED - INVENTORY",
+                           "CATTLE, COWS, BEEF - INVENTORY",
+                           "CATTLE, COWS, MILK - INVENTORY",
+                           "GOATS - INVENTORY",
+                           "HOGS - INVENTORY",
+                           "SHEEP, INCL LAMBS - INVENTORY")) %>% 
+  mutate(livestock_type = 
+           case_when(
+             grepl("MILK", short_desc) ~ "Dairy Cows",
+             grepl("BEEF", short_desc) ~ "Beef Cows",
+             grepl("FEED", short_desc) ~ "Feedlot Cattle",
+             grepl("(EXCL COWS)",short_desc) ~ "Calves",
+             grepl("HOGS", short_desc) ~ "Swine",
+             grepl("SHEEP",short_desc) ~ "Sheep",
+             grepl("GOATS",short_desc) ~ "Goats",
+             TRUE ~ short_desc
+           )) %>% 
+  group_by(year, county_name, livestock_type) %>% 
+  summarise(head_count = sum(Value))
+
+### subtract feedlot calves from total calves
+usda_census_corrected <- left_join(usda_census_agg,
+                                   usda_census_agg %>%
+                                     filter(grepl("Feedlot", livestock_type)) %>%
+                                     group_by(year, county_name) %>%
+                                     summarise(feedlot_sum = sum(head_count)),
+                                   by =  c("year", "county_name")) %>%
+  mutate(head_count = ifelse(livestock_type == "Calves", head_count - feedlot_sum, head_count)) %>%
+  select(-feedlot_sum)
+
+### interpolate between census years for all animal types
+census_interpolated <- left_join( # this creates an empty grid of all desired year,livestock combinations
+    expand.grid(
+    year = seq(2002, 2022, by = 1),
+    county_name = unique(usda_census_corrected$county_name),
+    livestock_type = unique(usda_census_corrected$livestock_type)
+    ),
+    usda_census_corrected) %>%  # merged with our populated census data, it creates NAs wherever data is missing
+  mutate(head_count = if_else(year %in% c(2002,2007,2012,2017,2022) & is.na(head_count),0, head_count)) %>%  # override census years to be 0 if livestock-county combo is missing
+  group_by(county_name, livestock_type) %>%
+  arrange(year) %>%
+  mutate(
+    head_count = zoo::na.approx(head_count, na.rm = FALSE), # this function linearly interpolates NAs between known values, following the group_by
+    status = ifelse(year %in% c(2002,2007,2012,2017,2022), 'census', 'interpolated') # marking whether values are from the census or interpolation
+  )
+
+## merge this with enteric fermentation data by year
+animal_burps <- left_join(census_interpolated %>% filter(year >=2005 & year <= 2021), enteric_agg, by = c("year" = "Year", "livestock_type" = "livestock_type")) %>% 
+  mutate(kg_ch4 = kg_ch4_per_head * head_count,
+         MT_ch4 = kg_ch4 / 1000,
+         CO2e = MT_ch4 * gwp$ch4)
+
+ggplot(animal_burps %>% 
+         group_by(year,county_name) %>% 
+         summarize(CO2e = sum(CO2e)),
+       aes(x = year, y = CO2e, col = county_name)) + geom_line() + theme_bw()
+
+animal_burps %>% filter(year == 2021) %>% ungroup %>%  summarize(CO2e = sum(CO2e))
 
 #is TOTAL overlapping with non-TOTAL fields?
 usda_livestock_use %>% filter(domain_desc == "TOTAL", grepl("CATTLE", short_desc)) %>% 
