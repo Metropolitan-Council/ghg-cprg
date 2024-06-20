@@ -58,7 +58,7 @@ plot_county_sector_emissions <- function(county_emissions,
     )
   ) %>%
     councilR::plotly_layout(
-      main_title = paste0(.sector, " emissions"),
+      main_title = if_else(.sector == "Nature", "Natural systems sequestration", paste0(.sector, " emissions")),
       subtitle = "",
       y_title = stringr::str_to_title(unique(plot_data$geog_level)),
       x_title = "Metric tons CO<sub>2</sub>e",

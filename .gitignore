@@ -308,3 +308,21 @@ _transportation/data-raw/epa/metc_lggit_11.28.23.xlsm
 _waste/data-raw/wastewater/GHGEmissions_2019-2021_CorrectedWSCA.xlsx
 
 _transportation/data-raw/epa/community_ghg_inventorytool_11.28.23 2/
+_nature/data-raw/ESA_WorldCover_10m_2021_v200_N42W093_Map.tif
+_nature/data-raw/ESA_WorldCover_10m_2021_v200_N42W096_Map.tif
+_nature/data-raw/ESA_WorldCover_10m_2021_v200_N45W093_Map.tif
+_nature/data-raw/ESA_WorldCover_10m_2021_v200_N45W096_Map.tif
+_nature/data-raw/land_cover_seq_rates.csv
+_nature/data-raw/DBO_RPTAdministrativeBoundary.dbf
+_nature/data-raw/DBO_RPTAdministrativeBoundary.cpg
+_nature/data-raw/DBO_RPTAdministrativeBoundary.prj
+_nature/data-raw/DBO_RPTAdministrativeBoundary.sbx
+_nature/data-raw/DBO_RPTAdministrativeBoundary.sbn
+_nature/data-raw/DBO_RPTAdministrativeBoundary.shp
+_nature/data-raw/DBO_RPTAdministrativeBoundary.shp.xml
+_nature/data-raw/DBO_RPTAdministrativeBoundary.shx
+_nature/data-raw/land_cover_stock.csv
+/_nature/_natural_systems_files
+
+site_libs/
+_nature/_natural_systems_files/*

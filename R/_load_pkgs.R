@@ -30,7 +30,9 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(leaflet, quietly = TRUE))
   suppressMessages(library(scales, quietly = TRUE))
   suppressMessages(library(webshot, quietly = TRUE))
-
+  suppressMessages(library(terra, quietly = TRUE))
+  suppressMessages(library(tidyterra, quietly = TRUE))
+  suppressMessages(library(FedData, quietly = TRUE))
 
   # tables -----
   suppressMessages(library(knitr, quietly = TRUE))
