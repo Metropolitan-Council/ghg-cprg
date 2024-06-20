@@ -255,10 +255,13 @@ manure_ch4_formatted  <- manure_ch4  %>%
              grepl("Feedlot",Livestock) ~ "Feedlot Cattle",
              grepl("Hens",Livestock) ~ "Layers",
              grepl("Chickens",Livestock) ~ "Layers",
+             grepl("Sheep",Livestock) ~ "Sheep",
+             grepl("Swine",Livestock) ~ "Swine",
+             grepl("Market",Livestock) ~ "Swine",
              TRUE ~ Livestock
            )) %>% 
   group_by(Year, livestock_type) %>% 
-  summarize(ch4_per_head = mean(Emission_factor_mt_ch4_per_head))
+  summarize(mt_ch4_per_head = mean(Emission_factor_mt_ch4_per_head))
 
 ### format n20 emissions factors
 
@@ -275,11 +278,30 @@ manure_n2o_formatted <- manure_n2o  %>%
              grepl("Feedlot",Livestock) ~ "Feedlot Cattle",
              grepl("Hens",Livestock) ~ "Layers",
              grepl("Chickens",Livestock) ~ "Layers",
+             grepl("Sheep",Livestock) ~ "Sheep",
+             grepl("Swine",Livestock) ~ "Swine",
+             grepl("Market",Livestock) ~ "Swine",
              TRUE ~ Livestock
            )) %>% 
   group_by(Year, livestock_type) %>% 
-  summarize(kg_n2o_per_head = mean(Emission_factor_kg_n2o_per_head))
+  summarize(kg_n2o_per_head = mean(Emission_factor_kg_n2o_per_head)) 
+  
+animal_poops <- left_join(
+  left_join(census_interpolated %>% filter(year >=2005 & year <= 2021), manure_ch4_formatted, 
+                       by = c("year" = "Year", "livestock_type" = "livestock_type")),
+  manure_n2o_formatted, by = c("year" = "Year", "livestock_type" = "livestock_type")
+  ) %>% 
+  #goats don't have n2o estimates, maybe use sheep? for now zero
+  mutate(kg_n2o_per_head = if_else(is.na(kg_n2o_per_head),0,kg_n2o_per_head)) %>% 
+  mutate(MT_ch4 = mt_ch4_per_head * head_count,
+         MT_n2o = (kg_n2o_per_head * head_count) / 1000,
+         CO2e = (MT_ch4 * gwp$ch4) + (MT_n2o * gwp$n2o)) %>% 
+  ungroup()
 
+ggplot(animal_poops %>% 
+         group_by(year,county_name) %>% 
+         summarize(CO2e = sum(CO2e)),
+       aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
 
 usda_poultry <- tidyUSDA::getQuickstat(
   sector="ANIMALS & PRODUCTS",
@@ -307,6 +329,26 @@ usda_poultry_agg <- usda_poultry %>%
                            "CHICKENS, PULLETS, REPLACEMENT - INVENTORY",
                            "CHICKENS, ROOSTERS - INVENTORY",
                            "TURKEYS - INVENTORY")) %>% 
+  mutate(livestock_type = 
+           case_when(
+             grepl("BROILERS", short_desc) ~ "Broilers",
+             grepl("LAYERS", short_desc) ~ "Layers",
+             grepl("PULLETS", short_desc) ~ "Pullets",
+             grepl("ROOSTERS",short_desc) ~ "Broilers",
+             grepl("TURKEYS", short_desc) ~ "Turkeys",
+             TRUE ~ short_desc
+           )) %>% 
+  group_by(year, county_name, livestock_type) %>% 
+  summarise(head_count = sum(Value))
+
+#usda_poultry_ops <- 
+  
+  usda_poultry %>%
+  filter(grepl("OPERATIONS", short_desc),
+         #domain_desc != "TOTAL",
+         county_name == "DAKOTA",
+         grepl("TURKEY",short_desc)) 
+%>% 
   mutate(livestock_type = 
            case_when(
              grepl("BROILERS", short_desc) ~ "Broilers",
