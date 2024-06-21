@@ -5,14 +5,19 @@ library(tidyUSDA)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
+### load in EPA Ag SIT csvs
 enteric <- read_csv('_agriculture/data-raw/enteric-fermentation.csv')
 manure_n2o <- read_csv('_agriculture/data-raw/manure-n2o.csv')
 manure_ch4 <- read_csv('_agriculture/data-raw/manure-ch4.csv')
+
+### mpca data on feedlots - currently unused but formatted at end of script
 mn_feedlots <- read_csv('_agriculture/data-raw/mn-feedlots.csv') %>% 
   filter(county_name %in% cprg_county$NAME)
 
+## you'll need an API key to use USDA data (https://quickstats.nass.usda.gov/api)
 key <- keyring::key_get('usda_key')
 
+### create county names matched to USDA format
 counties <- toupper(cprg_county$NAME)
 counties <- if_else(counties == 'ST. CROIX', "ST CROIX", counties)
 
@@ -40,6 +45,7 @@ usda_survey <- tidyUSDA::getQuickstat(
   weighted_by_area = T)
 
 
+### pull out usable data
 usda_cattle <- usda_survey %>% 
   filter(!is.na(Value), # exclude missing values, this omits Ramsey county (the UofM has some cattle, but this is low importance)
          commodity_desc == "CATTLE",  # only CATTLE extends to 2021 for survey data, will use census data and interpolation for other livestock
@@ -47,33 +53,29 @@ usda_cattle <- usda_survey %>%
   as.data.frame() %>% select(-geometry) #Don't need this to be a spatial object
 
 ## there is no non-cattle survey data past 2013. Will need to use inventory data to in-fill other livestock
-
 unique(usda_cattle$short_desc)
 
-### other live stock have head estimates from 2005:2013, and 2017
-
-### operations censuses are benchmarks at 2007,2012,2017, 2022
-
-### format enteric fermentation emissions factors
-
+#### need to standardize livestock category naming between enteric fermentation data and USDA livestock head count data
 enteric_formatted <- enteric  %>% 
-  select(c(2,3,6)) %>% 
-  setNames(c("Year","Livestock","Emission_factor_kg_ch4_per_head")) %>% 
-  filter(!(is.na(Year) | is.na(Emission_factor_kg_ch4_per_head))) %>% 
-  filter(Year >= 2005) %>% 
+  select(c(2,3,6)) %>% ### these columns are year, livestock type, and emission factor. The latter varies across livestock type AND year
+  setNames(c("Year","Livestock","Emission_factor_kg_ch4_per_head")) %>%  # provide readable names
+  filter(!(is.na(Year) | is.na(Emission_factor_kg_ch4_per_head))) %>% ## bad formatting from Excel leaves many unusable rows
+  filter(Year >= 2005) %>% #as per our baseline
   mutate(Emission_factor_kg_ch4_per_head = as.numeric(Emission_factor_kg_ch4_per_head))
 
+## check
 unique(enteric_formatted$Livestock)
 
 ### USDA data has heads of dairy cattle, beef cattle, and 'cattle including calves' - My interpretation is last category double counts previous
 ### EPA enteric fermentation has many categories, and multiple estimates for 'replacements' (calves). Taking the average of calves as they are similar
 
+#### change names as needed and summarize
 enteric_agg <- enteric_formatted %>% 
   filter(!grepl("mos.",Livestock)) %>% 
   mutate(livestock_type = 
            case_when(
-             grepl("Replacement", Livestock) ~ "Calves",
-             grepl("Feedlot",Livestock) ~ "Feedlot Cattle",
+             grepl("Replacement", Livestock) ~ "Calves", ### enteric data differs between age classes of calves but USDA not, so taking average value
+             grepl("Feedlot",Livestock) ~ "Feedlot Cattle", ### all feedlot cattle type will be classified as same
              TRUE ~ Livestock
            )) %>% 
   group_by(Year, livestock_type) %>% 
@@ -85,7 +87,7 @@ unique(usda_cattle$short_desc)
 ### match livestock labels to enteric and summarize to county-year-livestockType
 usda_cattle_agg <- usda_cattle %>%
   mutate(livestock_type = 
-           case_when(
+           case_when( 
              grepl("MILK", short_desc) ~ "Dairy Cows",
              grepl("BEEF", short_desc) ~ "Beef Cows",
              grepl("FEED", short_desc) ~ "Feedlot Cattle",
@@ -98,28 +100,41 @@ usda_cattle_agg <- usda_cattle %>%
   summarise(head_count = sum(Value))
 
 
-### Calf category appears to be all cattle plus calves. The documentation is scarce, but subtracting away adult cattle appears to be correct
+### Calf category appears to be all cattle plus calves. The documentation is scarce, but subtracting away adult cattle appears to be correct.
+### Update this matched county generated reports, validating this approach
 usda_cattle_corrected <- left_join(usda_cattle_agg,
                       usda_cattle_agg %>%
-  filter(grepl("Cows$", livestock_type)) %>%
+  filter(grepl("Cows$", livestock_type)) %>%  ## grab any non-calf categories (contains cows- no bull or steer data)
   group_by(year, county_name) %>%
   summarise(cows_sum = sum(head_count)),
   by =  c("year", "county_name")) %>%
-  mutate(head_count = ifelse(livestock_type == "Calves", head_count - cows_sum, head_count)) %>%
+  mutate(head_count = ifelse(livestock_type == "Calves", head_count - cows_sum, head_count)) %>% ### subtract the adults from the combined category to leave calves
   select(-cows_sum)
 
-ggplot(usda_cattle_corrected, aes(x = year, y = head_count, col = county_name)) + geom_line() + facet_wrap(.~livestock_type)
-
-
 ### merge enteric cattle data with head count survey data
-
 cow_burps <- left_join(usda_cattle_corrected, enteric_agg, by = c("year" = "Year", "livestock_type" = "livestock_type")) %>% 
-  mutate(kg_ch4 = kg_ch4_per_head * head_count,
-         MT_ch4 = kg_ch4 / 1000,
-         CO2e = MT_ch4 * gwp$ch4)
+  mutate(kg_ch4 = kg_ch4_per_head * head_count, # total kg methane from livestock_type
+         MT_ch4 = kg_ch4 / 1000, # convert kg to metric tons 
+         CO2e = MT_ch4 * gwp$ch4) # convert methane to CO2e
 
-ggplot(cow_burps %>% group_by(year,county_name) %>% summarise(CO2e = sum(CO2e)),
-       aes(x = year, y = CO2e, col = county_name)) + geom_line() + theme_bw()
+cow_burps_survey <- cow_burps %>% 
+  select(-kg_ch4)
+
+# create metadata
+cow_burps_survey_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "year", class(cow_burps$year), "Year of survey",
+    "county_name", class(cow_burps$county_name), "County name",
+    "livestock_type", class(cow_burps$livestock_type), "Livestock classification",
+    "head_count", class(cow_burps$head_count), "Number of individual (heads) of livestock type",
+    "kg_ch4_per_head", class(cow_burps$kg_ch4_per_head), "Methane emission factor per head for specific livestock_year combination",
+    "MT_ch4", class(cow_burps$MT_ch4), "Total metric tons of methane emissions from livestock/year/county",
+    "CO2e", class(cow_burps$CO2e), "Metric tons of CO2 equivalency",
+  )
+
+saveRDS(cow_burps_survey, "./_agriculture/data/county_enteric_fermentation_cattle_survey.rds")
+saveRDS(cow_burps_survey_meta, "./_agriculture/data/county_enteric_fermentation_cattle_survey_meta.rds")
 
 #### Census data ####
 
