@@ -220,7 +220,7 @@ census_interpolated <- left_join( # this creates an empty grid of all desired ye
   arrange(year) %>%
   mutate(
     head_count = zoo::na.approx(head_count, na.rm = FALSE), # this function linearly interpolates NAs between known values, following the group_by
-    status = ifelse(year %in% c(2002,2007,2012,2017,2022), 'census', 'interpolated') # marking whether values are from the census or interpolation
+    data_type = ifelse(year %in% c(2002,2007,2012,2017,2022), 'census', 'interpolated') # marking whether values are from the census or interpolation
   )
 
 ## merge this with enteric fermentation data by year
@@ -235,6 +235,8 @@ ggplot(animal_burps %>%
        aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
 
 animal_burps %>% filter(year == 2021) %>% ungroup %>%  summarize(CO2e = sum(CO2e))
+
+
 
 #### manure and lagoons ####
 
@@ -303,6 +305,11 @@ ggplot(animal_poops %>%
          summarize(CO2e = sum(CO2e)),
        aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
 
+
+animal_poops %>% filter(year == 2021) %>% ungroup %>%  summarize(CO2e = sum(CO2e))
+
+#### Poultry ####
+
 usda_poultry <- tidyUSDA::getQuickstat(
   sector="ANIMALS & PRODUCTS",
   group="POULTRY",
@@ -341,70 +348,72 @@ usda_poultry_agg <- usda_poultry %>%
   group_by(year, county_name, livestock_type) %>% 
   summarise(head_count = sum(Value))
 
-#usda_poultry_ops <- 
-  
-  usda_poultry %>%
-  filter(grepl("OPERATIONS", short_desc),
-         #domain_desc != "TOTAL",
-         county_name == "DAKOTA",
-         grepl("TURKEY",short_desc)) 
-%>% 
-  mutate(livestock_type = 
-           case_when(
-             grepl("BROILERS", short_desc) ~ "Broilers",
-             grepl("LAYERS", short_desc) ~ "Layers",
-             grepl("PULLETS", short_desc) ~ "Pullets",
-             grepl("ROOSTERS",short_desc) ~ "Broilers",
-             grepl("TURKEYS", short_desc) ~ "Turkeys",
-             TRUE ~ short_desc
-           )) %>% 
-  group_by(year, county_name, livestock_type) %>% 
-  summarise(head_count = sum(Value))
-
-### subtract feedlot calves from total calves
-usda_census_corrected <- left_join(usda_census_agg,
-                                   usda_census_agg %>%
-                                     filter(grepl("Feedlot", livestock_type)) %>%
-                                     group_by(year, county_name) %>%
-                                     summarise(feedlot_sum = sum(head_count)),
-                                   by =  c("year", "county_name")) %>%
-  mutate(head_count = ifelse(livestock_type == "Calves", head_count - feedlot_sum, head_count)) %>%
-  select(-feedlot_sum)
 
 ### interpolate between census years for all animal types
-census_interpolated <- left_join( # this creates an empty grid of all desired year,livestock combinations
+poultry_interpolated <- left_join( # this creates an empty grid of all desired year,livestock combinations
   expand.grid(
     year = seq(2002, 2022, by = 1),
-    county_name = unique(usda_census_corrected$county_name),
-    livestock_type = unique(usda_census_corrected$livestock_type)
+    county_name = unique(usda_poultry_agg$county_name),
+    livestock_type = unique(usda_poultry_agg$livestock_type)
   ),
-  usda_census_corrected) %>%  # merged with our populated census data, it creates NAs wherever data is missing
+  usda_poultry_agg) %>%  # merged with our populated census data, it creates NAs wherever data is missing
   mutate(head_count = if_else(year %in% c(2002,2007,2012,2017,2022) & is.na(head_count),0, head_count)) %>%  # override census years to be 0 if livestock-county combo is missing
   group_by(county_name, livestock_type) %>%
   arrange(year) %>%
   mutate(
     head_count = zoo::na.approx(head_count, na.rm = FALSE), # this function linearly interpolates NAs between known values, following the group_by
-    status = ifelse(year %in% c(2002,2007,2012,2017,2022), 'census', 'interpolated') # marking whether values are from the census or interpolation
+    data_type = ifelse(year %in% c(2002,2007,2012,2017,2022), 'census', 'interpolated') # marking whether values are from the census or interpolation
   )
 
+ggplot(poultry_interpolated %>% 
+         group_by(year,county_name) %>% 
+         summarize(poultry_total = sum(head_count)),
+       aes(x = year, y = poultry_total, col = county_name)) + geom_line(size = 1.5) + theme_bw()
 
-#is TOTAL overlapping with non-TOTAL fields?
-usda_livestock_use %>% filter(domain_desc == "TOTAL", grepl("CATTLE", short_desc)) %>% 
-  group_by(year) %>% 
-  summarize(cattle_count = sum(Value)) %>% print(n=50)
+bird_poops <- left_join(
+  left_join(poultry_interpolated %>% filter(year >=2005 & year <= 2021), manure_ch4_formatted, 
+            by = c("year" = "Year", "livestock_type" = "livestock_type")),
+  manure_n2o_formatted, by = c("year" = "Year", "livestock_type" = "livestock_type")
+) %>% 
+  #goats don't have n2o estimates, maybe use sheep? for now zero
+  mutate(kg_n2o_per_head = if_else(is.na(kg_n2o_per_head),0,kg_n2o_per_head)) %>% 
+  mutate(MT_ch4 = mt_ch4_per_head * head_count,
+         MT_n2o = (kg_n2o_per_head * head_count) / 1000,
+         CO2e = (MT_ch4 * gwp$ch4) + (MT_n2o * gwp$n2o)) %>% 
+  ungroup()
 
-usda_livestock_use %>% filter(domain_desc != "TOTAL", grepl("CATTLE", short_desc)) %>% 
-  group_by(year) %>% 
-  summarize(cattle_count = sum(Value))
+ggplot(bird_poops %>% 
+         group_by(year,county_name) %>% 
+         summarize(CO2e = sum(CO2e)),
+       aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
 
-## non-TOTAL fields are from 5 year inventories, omitting inventory for now. TOTAL fields roughly triple in inventory years, digging down further
+# there is a 
 
+animal_poops %>% filter(year == 2021) %>% ungroup %>%  summarize(CO2e = sum(CO2e))
 
-usda_livestock_use
+animal_burps
+cow_burps
 
+livestock_poops <- rows_append(animal_poops,bird_poops)
+ 
+county_burps <- animal_burps %>% group_by(year,county_name) %>% summarize(CO2e = sum(CO2e))
+county_poops <- livestock_poops %>% group_by(year,county_name) %>% summarize(CO2e = sum(CO2e))
 
+county_livestock <- rows_append(county_burps %>% mutate(source = 'enteric_fermentation'),
+                                county_poops %>% mutate(source = 'manure_emissions')) 
 
-  
+ggplot(county_livestock %>% 
+         group_by(year,county_name) %>% 
+         summarize(CO2e = sum(CO2e)),
+       aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
+
+county_livestock %>% filter(year == 2021) %>% summarize(CO2e = sum(CO2e))
+county_livestock %>% filter(year == 2021, !county_name %in% c("ST CROIX", "SHERBURNE", "PIERCE", "CHISAGO")) %>% summarize(CO2e = sum(CO2e))
+
+ggplot(county_livestock %>% 
+         group_by(year,source) %>% 
+         summarize(CO2e = sum(CO2e)),
+       aes(x = year, y = CO2e, fill = source)) + geom_area() + theme_bw()
 
 ### make the feedlot data long form
 mn_feedlots_long <- mn_feedlots %>% 
