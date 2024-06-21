@@ -9,7 +9,7 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 # based on the contents of MNutilities_in_scope$utility_name
 
 # NOTE: Great River Energy, which supplies energy to many MN electric co-ops,
-#  reports their sales to the state and their reporting stands in for.... FILL IN
+# reports their sales to the state and their reporting stands in for.... FILL IN
 dir_mn_electricity <- here("_energy", "data-raw", "mn_utility_reporting")
 
 # Get list of Excel files in the directory
@@ -146,7 +146,7 @@ MNcounty_level_electricity_emissions_2005 <- data.frame(
     sector = "Electricity",
     year = 2005
   ) %>%
-  #drop activity data to align with 2021
+  #drop activity data to align with 2021 -- maybe better to retain and add for long-term data model?
   select(-mWh_delivered)
 
 MNcounty_level_electricity_emissions <- rbind(MNcounty_level_electricity_emissions_2005,

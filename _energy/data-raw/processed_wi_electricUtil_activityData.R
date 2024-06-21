@@ -242,3 +242,37 @@ write_rds(downscaleEIA_WI_electricRetail, here(
 #  group_by(utlty_nm_x) %>%
 #  summarize(total_pop_served = sum(value)) %>%
 #  ungroup()
+
+
+
+
+#2005 WI Elec utility data collection draft
+mutate(
+  util_Total_mWh = case_when(
+    utility_name == "Dunn Energy Cooperative" ~ 135991, # EIA-861 
+    utility_name == "Polk-Burnett Electric Cooperative" ~ 221602, # EIA-861 
+    utility_name == "New Richmond Municipal Electric Utility" ~ 85873, # WI reporting! number same on EIA
+    utility_name == "River Falls Municipal Utility" ~ 117812, # WI reporting! number same on EIA
+    utility_name == "Northern States Power Company-Wisconsin" ~ 6142751, # WI reporting -- EIA shows smaller number (6007310)
+    utility_name == "St Croix Electric Cooperative" ~ 167000, # EIA-861
+    utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 115091 # EIA-861 
+  ),
+  # input total customer count for the 7 utilities (we have info for all)
+  utility_TotalCustomerCount = case_when(
+    utility_name == "Dunn Energy Cooperative" ~ 8916, # EIA-861 
+    utility_name == "Polk-Burnett Electric Cooperative" ~ 18881, # EIA-861 
+    utility_name == "St Croix Electric Cooperative" ~ 9116, # EIA-861 
+    utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 7072, # EIA-861 
+    utility_name == "Northern States Power Company-Wisconsin" ~ 230761, # reflects number reported to state; number reported to EIA is higher: 240315. Using state number since we used state numbers for county
+    utility_name == "River Falls Municipal Utility" ~ 5500, # 5623 is year-round "avg. customer number (monthly)" on state reports; 5500 is federal
+    utility_name == "New Richmond Municipal Electric Utility" ~ 3987 # EIA number; 3979 is avg no. cust figure reported to state
+  ),
+  # input county-specific customer counts -- we only have have this for 2 of 7 utilities in 2005
+  utilityCustomer_county = case_when(
+    utility_name == "New Richmond Municipal Electric Utility" ~ 3987, # not in WI reporting, check EIA, use 3979 if no (avg no. cust)
+    utility_name == "Northern States Power Company-Wisconsin" &
+      county_name == "Pierce" ~ 6740, #
+    utility_name == "Northern States Power Company-Wisconsin" &
+      county_name == "St. Croix" ~ 20357
+  )
+)
