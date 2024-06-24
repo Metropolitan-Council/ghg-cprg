@@ -33,6 +33,7 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(terra, quietly = TRUE))
   suppressMessages(library(tidyterra, quietly = TRUE))
   suppressMessages(library(FedData, quietly = TRUE))
+  suppressMessages(library(tidyUSDA, quietly = TRUE))
 
   # tables -----
   suppressMessages(library(knitr, quietly = TRUE))

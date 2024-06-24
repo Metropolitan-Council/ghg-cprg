@@ -1,7 +1,6 @@
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
 
-library(tidyUSDA)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
