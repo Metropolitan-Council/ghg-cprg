@@ -1,5 +1,6 @@
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+cprg_city <- readRDS("_meta/data/cprg_ctu.RDS")
 # https://maps.nrel.gov/slope/
 # Zotero key @murphyStateLocalPlanning2024
 
@@ -33,3 +34,6 @@ city_emissions  <- raw_city_emissions %>%
   filter(state_name %in% c("MN", "WI"))
 
 unique(city_emissions$sector)
+
+city_emissions %>% 
+  filter(city %in% cprg_city$CTU_NAME)
