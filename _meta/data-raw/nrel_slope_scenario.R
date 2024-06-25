@@ -1,6 +1,7 @@
 # data from NREL SLOPE emissions scenario planner
 # Download from MS Teams location first
 # https://maps.nrel.gov/slope/
+# Zotero key @schleiferSLOPEScenarioPlanner2023
 
 # This scenario evaluates the effects of business-as-usual projections for the 
 # evolution of electricity supply and energy demand sectors, incorporating the 

@@ -1,6 +1,7 @@
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 # https://maps.nrel.gov/slope/
+# Zotero key @murphyStateLocalPlanning2024
 
 # City-level GHG emissions for the year 2020 are estimated by sector and energy 
 # type and reported in units of carbon dioxide equivalent (CO₂e) based on the 
