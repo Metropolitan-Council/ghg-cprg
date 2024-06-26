@@ -13,7 +13,7 @@ ag_residual_burning_n2o <- read_csv('_agriculture/data-raw/ag_residual_burning_n
 ag_soils_liming <- read_csv('_agriculture/data-raw/ag_soils_liming.csv')
 ag_constants <- read_csv('_agriculture/data-raw/ag_constants.csv')
 ag_control <- read_csv('_agriculture/data-raw/ag_control.csv')
-
+ag_fertilizer <- read_csv('_agriculture/data-raw/ag_fertilizer.csv')
 
 
 ### create county names matched to USDA format
@@ -107,4 +107,62 @@ soil_residue_emissions <- usda_survey_formatted %>%
          mt_c2oe = mt_n2o * gwp$n2o)
 
 soil_residue_emissions %>% filter(year == 2021) %>% pull(mt_n2o) %>% sum()
-# 450056.4 - seems high...
+# 450056.4 
+
+ggplot(soil_residue_emissions %>% 
+         group_by(year,county_name) %>% 
+         summarize(CO2e = sum(mt_c2oe)),
+       aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
+# quite a bit of scatter - 2013 in particular has major dip that should be investigated
+
+
+#### fertilizer data ####
+### some creativity is required here. 
+### Fertilizer purchases are recorded by MN Dept of Ag - waiting to see if data exists outside of pdfs
+### Fertilizer expenses are recorded in USDA 5 year census
+### Fertilizer application is estimated in SIT for state, but data source is unclear
+
+### need to extract state fertilizer application estimates by year and then multiply by year constants to convert to organic vs synthetic rates
+ag_fert_formatted <- left_join(ag_fertilizer[c(2,4:53),] %>% 
+  mutate(`Consumption of Primary Plant Nutrients: Total Nitrogen (Metric Tons)` = replace(`Consumption of Primary Plant Nutrients: Total Nitrogen (Metric Tons)`, 
+                        is.na(`Consumption of Primary Plant Nutrients: Total Nitrogen (Metric Tons)`), 
+                        "state")) %>%
+  row_to_names(1) %>% 
+  pivot_longer(cols = -1,
+               names_to = "year",
+               values_to = "value") %>%
+  filter(state %in% c ("MN","WI")) %>% 
+  mutate(value = as.numeric(str_replace_all(value,",","")),
+         year = as.numeric(year)),
+  ag_fertilizer[c(2,56),2:33] %>% 
+    row_to_names(1) %>% 
+    pivot_longer(cols = 1:32,
+                 names_to = "year",
+                 values_to = "percent_synthetic") %>% 
+    mutate(percent_synthetic = as.numeric(str_replace_all(percent_synthetic,"%",""))/100,
+           year = as.numeric(year)),
+  by = 'year') %>% 
+  mutate(mt_n_synthetic = value * percent_synthetic,
+         mt_n_organic = value *(1 - percent_synthetic)) %>% 
+  filter(!is.na(value))
+
+ag_fert_formatted
+
+
+usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
+  sector="ECONOMICS",
+  group="EXPENSES",
+  commodity="FERTILIZER TOTALS",
+  category= "EXPENSE",
+  domain= NULL,
+  county= NULL,
+  key = key,
+  program = "CENSUS",
+  data_item = "FERTILIZER TOTALS, INCL LIME & SOIL CONDITIONERS - EXPENSE, MEASURED IN $",
+  geographic_level = 'COUNTY',
+  year = as.character(2002:2022),
+  state = c("MINNESOTA","WISCONSIN"),
+  geometry = TRUE,
+  lower48 = TRUE, 
+  weighted_by_area = T) %>% 
+  as.data.frame() %>% select(-geometry)
