@@ -81,9 +81,9 @@ usda_survey_formatted <- usda_survey %>%
   )) %>% #convert all units to metric tons
   left_join(.,crop_conversions, by = c("crop_type" = "crop")) %>% 
   mutate(metric_tons = case_when(
-    grepl("Beans", crop_type) ~ Value * 45.4, # 1000s of hundredweights to metric tons
-    grepl("Alfalfa", crop_type) ~ Value * 1000 * 0.9072, # 1000s of tons to metric tons
-    TRUE ~ Value * 1000 * metric_tons_bushel # 1000s of bushels to metric tons
+    grepl("Beans", crop_type) ~ Value * .0454, # 1000s of hundredweights to metric tons
+    grepl("Alfalfa", crop_type) ~ Value  * 0.9072, # 1000s of tons to metric tons
+    TRUE ~ Value * metric_tons_bushel # 1000s of bushels to metric tons
   )
          ) %>% # determine N delivered to soils
   mutate(MT_N_to_soil = if_else(
@@ -97,12 +97,14 @@ usda_survey_formatted <- usda_survey %>%
     0
     ))
 
+usda_survey_formatted %>% filter(year == 2006, crop_type == "Alfalfa") %>% pull(Value) %>% sum()
+
 soil_residue_emissions <- usda_survey_formatted %>% 
   filter(!is.na(MT_N_fixation)) %>% 
   group_by(county_name, year) %>% 
   summarize(mt_n_soils = sum(MT_N_to_soil + MT_N_fixation)) %>% 
-  mutate(mt_n2o = mt_n_soils * 0.1571428,
+  mutate(mt_n2o = mt_n_soils * 0.01 * (44/28),
          mt_c2oe = mt_n2o * gwp$n2o)
 
-soil_residue_emissions %>% filter(year == 2021) %>% pull(mt_c2oe) %>% sum()
-# 4500561915 - so that's not right...
+soil_residue_emissions %>% filter(year == 2021) %>% pull(mt_n2o) %>% sum()
+# 450056.4 - seems high...
