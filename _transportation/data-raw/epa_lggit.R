@@ -155,6 +155,8 @@ write.csv(lggit_vmt_entries,
   row.names = FALSE
 )
 
+waldo::compare(lggit_vmt_entries, readRDS("_transportation/data-raw/epa/lggit_vmt_entries.RDS"))
+
 saveRDS(
   lggit_vmt_entries,
   "_transportation/data-raw/epa/lggit_vmt_entries.RDS"
@@ -175,6 +177,7 @@ lggit_totals <- tibble::tribble(
   rowwise() %>%
   mutate(total = sum(co2, ch4, n2o, na.rm = T))
 
+waldo::compare(lggit_totals, readRDS("_transportation/data-raw/epa/lggit_totals.RDS"))
 saveRDS(lggit_totals, "_transportation/data-raw/epa/lggit_totals.RDS")
 
 # effective emissions per mile  -----
@@ -234,4 +237,5 @@ lggit_kg_emissions_per_mile <- lggit_kg_other_per_mile %>%
 # lggit_kg_emissions_per_mile
 
 # save
+waldo::compare(lggit_kg_emissions_per_mile, readRDS("_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS"))
 saveRDS(lggit_kg_emissions_per_mile, "_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS")
