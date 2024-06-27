@@ -13,7 +13,7 @@
       "Package": "DBI",
       "Version": "1.2.2",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "methods"
@@ -36,33 +36,6 @@
         "promises"
       ],
       "Hash": "64ff3427f559ce3f2597a4fe13255cb6"
-    },
-    "FedData": {
-      "Package": "FedData",
-      "Version": "4.0.1",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "R",
-        "arcgislayers",
-        "curl",
-        "dplyr",
-        "httr",
-        "igraph",
-        "lifecycle",
-        "lubridate",
-        "magrittr",
-        "progress",
-        "purrr",
-        "readr",
-        "sf",
-        "stringr",
-        "terra",
-        "tibble",
-        "tidyr",
-        "xml2"
-      ],
-      "Hash": "e4be3773b5365f854fe7d65c35495dee"
     },
     "KernSmooth": {
       "Package": "KernSmooth",
@@ -216,17 +189,6 @@
       ],
       "Hash": "1eb4a0603478b5557b77d75534251371"
     },
-    "RcppSimdJson": {
-      "Package": "RcppSimdJson",
-      "Version": "0.1.11",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "Rcpp",
-        "utils"
-      ],
-      "Hash": "40d6a1f3bb5905ee998f1d094a320457"
-    },
     "RcppTOML": {
       "Package": "RcppTOML",
       "Version": "0.2.2",
@@ -274,41 +236,6 @@
         "utils"
       ],
       "Hash": "4f57884290cc75ab22f4af9e9d4ca862"
-    },
-    "arcgislayers": {
-      "Package": "arcgislayers",
-      "Version": "0.2.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "RcppSimdJson",
-        "arcgisutils",
-        "cli",
-        "httr2",
-        "jsonify",
-        "lifecycle",
-        "rlang",
-        "sf",
-        "terra",
-        "utils"
-      ],
-      "Hash": "beba0fbec3f32ea92b8dd0191e38b1ba"
-    },
-    "arcgisutils": {
-      "Package": "arcgisutils",
-      "Version": "0.3.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "RcppSimdJson",
-        "cli",
-        "dbplyr",
-        "httr2",
-        "rlang",
-        "sf",
-        "utils"
-      ],
-      "Hash": "28f1b7aa5baf407282da87cee91bf163"
     },
     "askpass": {
       "Package": "askpass",
@@ -417,7 +344,7 @@
       "Package": "bslib",
       "Version": "0.7.0",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "base64enc",
@@ -439,7 +366,7 @@
       "Package": "cachem",
       "Version": "1.1.0",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "fastmap",
         "rlang"
@@ -546,13 +473,13 @@
       "Package": "councilR",
       "Version": "0.2.6",
       "Source": "GitHub",
+      "Remotes": "crsh/citr",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "Metropolitan-Council",
       "RemoteRepo": "councilR",
-      "RemoteRef": "main",
+      "RemoteUsername": "Metropolitan-Council",
+      "RemoteRef": "HEAD",
       "RemoteSha": "8c65f343a7c9192b5112c2d37baece09f46ecff0",
-      "Remotes": "crsh/citr",
       "Requirements": [
         "DBI",
         "R",
@@ -574,7 +501,7 @@
         "tigris",
         "utils"
       ],
-      "Hash": "3d7a7705aa79df801cb12fcb7716619c"
+      "Hash": "daf3a08387c21424066aeb57f1a8a6f1"
     },
     "cpp11": {
       "Package": "cpp11",
@@ -626,7 +553,7 @@
       "Package": "curl",
       "Version": "5.2.1",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R"
       ],
@@ -636,40 +563,12 @@
       "Package": "data.table",
       "Version": "1.15.4",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "methods"
       ],
       "Hash": "8ee9ac56ef633d0c7cab8b2ca87d683e"
-    },
-    "dbplyr": {
-      "Package": "dbplyr",
-      "Version": "2.5.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "DBI",
-        "R",
-        "R6",
-        "blob",
-        "cli",
-        "dplyr",
-        "glue",
-        "lifecycle",
-        "magrittr",
-        "methods",
-        "pillar",
-        "purrr",
-        "rlang",
-        "tibble",
-        "tidyr",
-        "tidyselect",
-        "utils",
-        "vctrs",
-        "withr"
-      ],
-      "Hash": "39b2e002522bfd258039ee4e889e0fd1"
     },
     "desc": {
       "Package": "desc",
@@ -703,7 +602,7 @@
       "Package": "digest",
       "Version": "0.6.35",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "utils"
@@ -791,14 +690,14 @@
       "Package": "farver",
       "Version": "2.1.2",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Hash": "680887028577f3fa2a81e410ed0d6e42"
     },
     "fastmap": {
       "Package": "fastmap",
       "Version": "1.2.0",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Hash": "aa5e1cd11c2d15497494c5292d7ffcc8"
     },
     "filelock": {
@@ -843,7 +742,7 @@
       "Package": "fs",
       "Version": "1.6.4",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "methods"
@@ -885,7 +784,7 @@
       "Package": "ggplot2",
       "Version": "3.5.1",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "MASS",
         "R",
@@ -972,7 +871,7 @@
       "Package": "gtable",
       "Version": "0.3.5",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "cli",
@@ -995,14 +894,14 @@
     },
     "highr": {
       "Package": "highr",
-      "Version": "0.10",
+      "Version": "0.11",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "xfun"
       ],
-      "Hash": "06230136b2d2b9ba5805e1963fa6e890"
+      "Hash": "d65ba49117ca223614f71b60d85b8ab7"
     },
     "hms": {
       "Package": "hms",
@@ -1020,26 +919,26 @@
     },
     "htmltab": {
       "Package": "htmltab",
-      "Version": "0.7.0",
+      "Version": "0.8.2.9000",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "crubba",
+      "RemoteUsername": "htmltab",
       "RemoteRepo": "htmltab",
       "RemoteRef": "master",
-      "RemoteSha": "1608afdd6f0d9da2246e09e6dc0391540c3caa52",
+      "RemoteSha": "39dffc08314ff522477057ddefb56e6291da6ec3",
       "Requirements": [
         "R",
         "XML",
         "httr"
       ],
-      "Hash": "419995a6b07f215cce6dc0886a39e97e"
+      "Hash": "120431ed97f325f6e9b464dcdd3fd374"
     },
     "htmltools": {
       "Package": "htmltools",
       "Version": "0.5.8.1",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "base64enc",
@@ -1100,7 +999,7 @@
       "Package": "httr2",
       "Version": "1.0.1",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
@@ -1193,18 +1092,6 @@
       ],
       "Hash": "5aab57a3bd297eee1c1d862735972182"
     },
-    "jsonify": {
-      "Package": "jsonify",
-      "Version": "1.2.2",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "R",
-        "Rcpp",
-        "rapidjsonr"
-      ],
-      "Hash": "49a9775e4f8c96c654b6018739067055"
-    },
     "jsonlite": {
       "Package": "jsonlite",
       "Version": "1.8.8",
@@ -1274,7 +1161,7 @@
       "Package": "knitr",
       "Version": "1.46",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "evaluate",
@@ -1473,7 +1360,7 @@
       "Package": "minqa",
       "Version": "1.2.7",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "Rcpp"
       ],
@@ -1495,7 +1382,7 @@
       "Package": "munsell",
       "Version": "0.5.1",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "colorspace",
         "methods"
@@ -1548,7 +1435,7 @@
       "Package": "openssl",
       "Version": "2.2.0",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "askpass"
       ],
@@ -1756,7 +1643,7 @@
       "Package": "promises",
       "Version": "1.3.0",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R6",
         "Rcpp",
@@ -1805,13 +1692,6 @@
         "vctrs"
       ],
       "Hash": "1cba04a4e9414bdefc9dcaa99649a8dc"
-    },
-    "rapidjsonr": {
-      "Package": "rapidjsonr",
-      "Version": "1.2.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "88b9f48c93d17cdb811b54079a6a414f"
     },
     "rappdirs": {
       "Package": "rappdirs",
@@ -1991,7 +1871,7 @@
       "Package": "rmarkdown",
       "Version": "2.27",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "bslib",
@@ -2040,7 +1920,7 @@
       "Package": "rstudioapi",
       "Version": "0.16.0",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Hash": "96710351d642b70e8f02ddeb237c46a7"
     },
     "rvest": {
@@ -2078,7 +1958,7 @@
       "Package": "sass",
       "Version": "0.4.9",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R6",
         "fs",
@@ -2125,7 +2005,7 @@
       "Package": "sf",
       "Version": "1.0-16",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "DBI",
         "R",
@@ -2281,7 +2161,7 @@
       "Package": "stringi",
       "Version": "1.8.4",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "stats",
@@ -2460,7 +2340,7 @@
       "Package": "tictoc",
       "Version": "1.2.1",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "methods"
@@ -2544,7 +2424,7 @@
       "Package": "tidyselect",
       "Version": "1.2.1",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "cli",
@@ -2555,27 +2435,6 @@
         "withr"
       ],
       "Hash": "829f27b9c4919c16b593794a6344d6c0"
-    },
-    "tidyterra": {
-      "Package": "tidyterra",
-      "Version": "0.6.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "R",
-        "cli",
-        "data.table",
-        "dplyr",
-        "ggplot2",
-        "magrittr",
-        "rlang",
-        "scales",
-        "sf",
-        "terra",
-        "tibble",
-        "tidyr"
-      ],
-      "Hash": "aa6419fb394e232bb39b7b2eaf064b96"
     },
     "tigris": {
       "Package": "tigris",
@@ -2611,7 +2470,7 @@
       "Package": "tinytex",
       "Version": "0.51",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "xfun"
       ],
@@ -2766,7 +2625,7 @@
       "Package": "xfun",
       "Version": "0.44",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "grDevices",
         "stats",
