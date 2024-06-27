@@ -37,6 +37,33 @@
       ],
       "Hash": "64ff3427f559ce3f2597a4fe13255cb6"
     },
+    "FedData": {
+      "Package": "FedData",
+      "Version": "4.0.1",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "arcgislayers",
+        "curl",
+        "dplyr",
+        "httr",
+        "igraph",
+        "lifecycle",
+        "lubridate",
+        "magrittr",
+        "progress",
+        "purrr",
+        "readr",
+        "sf",
+        "stringr",
+        "terra",
+        "tibble",
+        "tidyr",
+        "xml2"
+      ],
+      "Hash": "e4be3773b5365f854fe7d65c35495dee"
+    },
     "KernSmooth": {
       "Package": "KernSmooth",
       "Version": "2.23-22",
@@ -189,6 +216,17 @@
       ],
       "Hash": "1eb4a0603478b5557b77d75534251371"
     },
+    "RcppSimdJson": {
+      "Package": "RcppSimdJson",
+      "Version": "0.1.11",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "Rcpp",
+        "utils"
+      ],
+      "Hash": "40d6a1f3bb5905ee998f1d094a320457"
+    },
     "RcppTOML": {
       "Package": "RcppTOML",
       "Version": "0.2.2",
@@ -236,6 +274,41 @@
         "utils"
       ],
       "Hash": "4f57884290cc75ab22f4af9e9d4ca862"
+    },
+    "arcgislayers": {
+      "Package": "arcgislayers",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "RcppSimdJson",
+        "arcgisutils",
+        "cli",
+        "httr2",
+        "jsonify",
+        "lifecycle",
+        "rlang",
+        "sf",
+        "terra",
+        "utils"
+      ],
+      "Hash": "beba0fbec3f32ea92b8dd0191e38b1ba"
+    },
+    "arcgisutils": {
+      "Package": "arcgisutils",
+      "Version": "0.3.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "RcppSimdJson",
+        "cli",
+        "dbplyr",
+        "httr2",
+        "rlang",
+        "sf",
+        "utils"
+      ],
+      "Hash": "28f1b7aa5baf407282da87cee91bf163"
     },
     "askpass": {
       "Package": "askpass",
@@ -473,13 +546,13 @@
       "Package": "councilR",
       "Version": "0.2.6",
       "Source": "GitHub",
-      "Remotes": "crsh/citr",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "councilR",
       "RemoteUsername": "Metropolitan-Council",
-      "RemoteRef": "HEAD",
+      "RemoteRepo": "councilR",
+      "RemoteRef": "main",
       "RemoteSha": "8c65f343a7c9192b5112c2d37baece09f46ecff0",
+      "Remotes": "crsh/citr",
       "Requirements": [
         "DBI",
         "R",
@@ -501,7 +574,7 @@
         "tigris",
         "utils"
       ],
-      "Hash": "daf3a08387c21424066aeb57f1a8a6f1"
+      "Hash": "3d7a7705aa79df801cb12fcb7716619c"
     },
     "cpp11": {
       "Package": "cpp11",
@@ -569,6 +642,34 @@
         "methods"
       ],
       "Hash": "8ee9ac56ef633d0c7cab8b2ca87d683e"
+    },
+    "dbplyr": {
+      "Package": "dbplyr",
+      "Version": "2.5.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "DBI",
+        "R",
+        "R6",
+        "blob",
+        "cli",
+        "dplyr",
+        "glue",
+        "lifecycle",
+        "magrittr",
+        "methods",
+        "pillar",
+        "purrr",
+        "rlang",
+        "tibble",
+        "tidyr",
+        "tidyselect",
+        "utils",
+        "vctrs",
+        "withr"
+      ],
+      "Hash": "39b2e002522bfd258039ee4e889e0fd1"
     },
     "desc": {
       "Package": "desc",
@@ -894,14 +995,14 @@
     },
     "highr": {
       "Package": "highr",
-      "Version": "0.11",
+      "Version": "0.10",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "xfun"
       ],
-      "Hash": "d65ba49117ca223614f71b60d85b8ab7"
+      "Hash": "06230136b2d2b9ba5805e1963fa6e890"
     },
     "hms": {
       "Package": "hms",
@@ -919,20 +1020,20 @@
     },
     "htmltab": {
       "Package": "htmltab",
-      "Version": "0.8.2.9000",
+      "Version": "0.7.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "htmltab",
+      "RemoteUsername": "crubba",
       "RemoteRepo": "htmltab",
       "RemoteRef": "master",
-      "RemoteSha": "39dffc08314ff522477057ddefb56e6291da6ec3",
+      "RemoteSha": "1608afdd6f0d9da2246e09e6dc0391540c3caa52",
       "Requirements": [
         "R",
         "XML",
         "httr"
       ],
-      "Hash": "120431ed97f325f6e9b464dcdd3fd374"
+      "Hash": "419995a6b07f215cce6dc0886a39e97e"
     },
     "htmltools": {
       "Package": "htmltools",
@@ -1091,6 +1192,18 @@
         "htmltools"
       ],
       "Hash": "5aab57a3bd297eee1c1d862735972182"
+    },
+    "jsonify": {
+      "Package": "jsonify",
+      "Version": "1.2.2",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "rapidjsonr"
+      ],
+      "Hash": "49a9775e4f8c96c654b6018739067055"
     },
     "jsonlite": {
       "Package": "jsonlite",
@@ -1692,6 +1805,13 @@
         "vctrs"
       ],
       "Hash": "1cba04a4e9414bdefc9dcaa99649a8dc"
+    },
+    "rapidjsonr": {
+      "Package": "rapidjsonr",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "88b9f48c93d17cdb811b54079a6a414f"
     },
     "rappdirs": {
       "Package": "rappdirs",
@@ -2435,6 +2555,27 @@
         "withr"
       ],
       "Hash": "829f27b9c4919c16b593794a6344d6c0"
+    },
+    "tidyterra": {
+      "Package": "tidyterra",
+      "Version": "0.6.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "cli",
+        "data.table",
+        "dplyr",
+        "ggplot2",
+        "magrittr",
+        "rlang",
+        "scales",
+        "sf",
+        "terra",
+        "tibble",
+        "tidyr"
+      ],
+      "Hash": "aa6419fb394e232bb39b7b2eaf064b96"
     },
     "tigris": {
       "Package": "tigris",
