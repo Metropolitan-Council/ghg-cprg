@@ -110,6 +110,23 @@ wi_pop_2005 <- st_transform(GEOID10_2005_population_WI, st_crs(inScope_WI_elecUt
 wi_pop_2021 <- st_transform(population_data_2020_wi, st_crs(inScope_WI_elecUtils_fullServTerr))
 
 
+# limit the spatial extent of the block-level population to the extent of full in-scope utility areas, to conserve memory
+wi_pop_2005 <- wi_pop_2005 %>%
+  st_intersection(inScope_WI_elecUtils_fullServTerr)
+wi_pop_2021 <- wi_pop_2021 %>%
+  st_intersection(inScope_WI_elecUtils_fullServTerr)
+
+# clean up intermediate dfs/sfs before heavy duty joins to conserve memory
+rm(GEOID10_2005_population_WI)
+rm(GEOID10_2000_2005_2010_population_WI)
+rm(population_data_2000_wi)
+rm(population_data_2010_wi)
+rm(population_data_2020_wi)
+rm(crosswalkPop_2000_to_2010)
+rm(crosswalkPop_2000_to_2010_centroids)
+rm(crosswalkWI)
+
+
 # Spatial join between total utility areas and population data to enable estimation of utility service area popualtion
 utility_pop_totals_2005 <- inScope_WI_elecUtils_fullServTerr %>%
   st_join(wi_pop_2005, join = st_intersects) %>%
