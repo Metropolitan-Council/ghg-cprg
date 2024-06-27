@@ -1,3 +1,4 @@
+# Read in 2020 city-level emissions data from NREL SLOPE tool
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_city <- readRDS("_meta/data/cprg_ctu.RDS")
@@ -14,29 +15,32 @@ cprg_city <- readRDS("_meta/data/cprg_ctu.RDS")
 # the 2020 National Emissions Inventory, and the City and County Energy Profiles.
 
 
-# download city level emissions
+# download city level emissions -----
 download.file("https://gds-files.nrel.gov/slope/ghg_emissions_baseline.zip",
-  destfile = "_meta/data-raw/nrel_slope_emissions/ghg_emissions_baseline.zip"
+  destfile = "_meta/data-raw/nrel_slope/emissions/ghg_emissions_baseline.zip"
 )
 # unzip
-unzip("_meta/data-raw/nrel_slope_emissions/ghg_emissions_baseline.zip",
-  exdir = "_meta/data-raw/nrel_slope_emissions/"
+unzip("_meta/data-raw/nrel_slope/emissions/ghg_emissions_baseline.zip",
+  exdir = "_meta/data-raw/nrel_slope/emissions/"
 )
 
 # read in CSV
-raw_city_emissions <- read.csv("_meta/data-raw/nrel_slope_emissions/ghg_emissions_baseline_us_places_2020.csv") %>%
+raw_city_emissions <- read.csv("_meta/data-raw/nrel_slope/emissions/ghg_emissions_baseline_us_places_2020.csv") %>%
   clean_names()
 
+# filtering and cleaning -----
 city_emissions <- raw_city_emissions %>%
   mutate(
+    # extract state name
     state_name = stringr::str_sub(city_name, start = -2, end = -1),
+    # clean city name
     city = stringr::str_remove_all(city_name, " city, MN") %>%
       stringr::str_remove(" city, WI") %>%
       stringr::str_remove(" village, WI")
   ) %>%
-  filter(state_name %in% c("MN", "WI"))
+  # filter to our states, our cities
+  filter(state_name %in% c("MN", "WI"),
+         city %in% cprg_city$CTU_NAME)
 
-unique(city_emissions$sector)
 
-city_emissions %>%
-  filter(city %in% cprg_city$CTU_NAME)
+city_emissions

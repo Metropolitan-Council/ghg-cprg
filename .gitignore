@@ -330,3 +330,7 @@ _nature/_natural_systems_files/*
 _meta/data-raw/nrel_slope_emissions/scenario_planner/
 
 _meta/data-raw/nrel_slope_emissions/
+
+_meta/data-raw/nrel_slope/scenario_planner/
+
+_meta/data-raw/nrel_slope/emissions/
