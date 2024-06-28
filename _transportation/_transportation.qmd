@@ -176,6 +176,14 @@ fig_emissions_pop_transportation
 
 ### Comparison with other inventories
 
+### Activity-induced and geographic calculation approaches
+
+Different allocation principle
+
+Though both geographic and activity-induced methods fufill Scope 1 requirements, the resulting values are significantly different
+
+[@fongGlobalProtocolCommunityScale2021]
+
 #### National Emissions Inventory 
 
 The National Emissions Inventory (NEI) is a comprehensive and detailed estimate of air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants from air emissions sources. The county-level GHG emissions included in the NEI for this category are calculated by running the MOVES model with State-, Local-, and Tribal-submitted activity data and EPA-developed activity inputs based on data from FHWA and other sources [@usepa2020NationalEmissions2023]. 
