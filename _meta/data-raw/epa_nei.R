@@ -1,7 +1,6 @@
 # get data from the 2020 national emissions inventory
 # graphic model here: https://www.epa.gov/enviro/nei-model
 source("R/_load_pkgs.R")
-source("R/global_warming_potential.R")
 library(httr2)
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
