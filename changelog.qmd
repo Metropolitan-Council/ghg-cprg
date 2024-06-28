@@ -5,6 +5,23 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 ```
 
+## v1.1.1 (July 2024) {.unnumbered}
+
+Minor changes across all sectors (excluding natural systems) by updating GWP values to AR6 [@ipccAR62021].  
+
+Additional changes
+
+- Some energy data processing to get back to 2005 in `_energy/data-raw/MNWI_2005_CensusCrosswalk_UtilityAllocation.R`  
+- Text for GWP updated @sec-gwp  
+- Noted differences in LGGIT values @sec-epa-lggit-transportation  
+- Re-ran transportation LGGIT comparison values. Minor changes 
+- Test values updated for EPA MOVES and GWP  
+- Slight updates to renv package repository locations (RSPM vs. CRAN)  
+- Minor text update in transportation section   
+- Zotero and gitignore updated as needed  
+
+See full changelog in GitHub release [v1.1.1](https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v1.1.1)
+
 ## v1.1.0 (June 2024) {.unnumbered}
 
 NEW SECTOR - Natural systems sequestration and carbon stock (@sec-natural-systems).
