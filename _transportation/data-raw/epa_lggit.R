@@ -165,15 +165,15 @@ saveRDS(
 
 # results from LGGIT tool -----
 # located in MS Teams ghg-cprg/_transportation/data-raw/epa/met_council_community_ghg_inventorytool_11.28.23.xlsm
-# If on macOS, open in Excel using Citrix. 
+# If on macOS, open in Excel using Citrix.
 # CH4 and N2O reported in terms of GWP already,
 # so do not apply GWPs again
 # 28 and 265, respectively
 
 lggit_totals <- tibble::tribble(
   ~Sector, ~CO2, ~CH4, ~N2O,
-  "Residential",  8371291.47 ,  4754.11 ,  29124.38 ,
-  "Commercial/Institutional",  485027.94 , 35.12, 1507.90
+  "Residential", 8371291.47, 4754.11, 29124.38,
+  "Commercial/Institutional", 485027.94, 35.12, 1507.90
 ) %>%
   clean_names() %>%
   rowwise() %>%

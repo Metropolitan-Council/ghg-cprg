@@ -33,21 +33,21 @@ veh21 <- tbi21$vehicle %>%
   ) %>%
   mutate(
     fuel_orig = recode_factor(fuel,
-                              "Missing: Skip logic" = "Other/Not Provided",
-                              "Missing: Non-response" = "Other/Not Provided",
-                              "Other" = "Other/Not Provided"
+      "Missing: Skip logic" = "Other/Not Provided",
+      "Missing: Non-response" = "Other/Not Provided",
+      "Other" = "Other/Not Provided"
     ),
     # these entries are from cars that were entered by hand by the survey respondent
     fuel = recode_factor(fuel,
-                         "Missing: Skip logic" = "Other/Not Provided",
-                         "Missing: Non-response" = "Other/Not Provided",
-                         "Other" = "Other/Not Provided",
-                         "Hybrid (HEV)" = "Gas + all other fuels",
-                         "Electric (EV)" = "Gas + all other fuels",
-                         "Flex fuel (FFV)" = "Gas + all other fuels",
-                         "Plug-in hybrid (PHEV)" = "Gas + all other fuels",
-                         "Other (e.g., natural gas, bio-diesel)" = "Gas + all other fuels",
-                         "Gas" = "Gas + all other fuels"
+      "Missing: Skip logic" = "Other/Not Provided",
+      "Missing: Non-response" = "Other/Not Provided",
+      "Other" = "Other/Not Provided",
+      "Hybrid (HEV)" = "Gas + all other fuels",
+      "Electric (EV)" = "Gas + all other fuels",
+      "Flex fuel (FFV)" = "Gas + all other fuels",
+      "Plug-in hybrid (PHEV)" = "Gas + all other fuels",
+      "Other (e.g., natural gas, bio-diesel)" = "Gas + all other fuels",
+      "Gas" = "Gas + all other fuels"
     )
   ) %>%
   filter(
@@ -69,7 +69,7 @@ tbi_veh_age_orig_fuel_binned <- veh21 %>%
   summarize(
     n = unweighted(n()),
     est_n = survey_total(),
-    est_pct = survey_prop(proportion = TRUE) %>% 
+    est_pct = survey_prop(proportion = TRUE) %>%
       round(digits = 4)
   ) %>%
   arrange(-est_n)
@@ -92,7 +92,7 @@ tbi_veh_age_fuel_binned <- veh21 %>%
   summarize(
     n = unweighted(n()),
     est_n = survey_total(),
-    est_pct = survey_prop(proportion = TRUE) %>% 
+    est_pct = survey_prop(proportion = TRUE) %>%
       round(digits = 4)
   ) %>%
   arrange(-est_n)
@@ -131,7 +131,7 @@ tbi_vehicle_orig_fuel_age <- veh21 %>%
     year_median = survey_median(year, vartype = "se"),
     n = unweighted(n()),
     est_n = survey_total(),
-    est_pct = survey_prop(proportion = TRUE) %>% 
+    est_pct = survey_prop(proportion = TRUE) %>%
       round(digits = 4)
   ) %>%
   arrange(-est_n)
@@ -154,7 +154,7 @@ tbi_vehicle_fuel_age <- veh21 %>%
     year_median = survey_median(year, vartype = "se"),
     n = unweighted(n()),
     est_n = survey_total(),
-    est_pct = survey_prop(proportion = TRUE) %>% 
+    est_pct = survey_prop(proportion = TRUE) %>%
       round(digits = 4)
   ) %>%
   arrange(-est_n)

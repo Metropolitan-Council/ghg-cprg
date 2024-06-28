@@ -4,6 +4,12 @@ testthat::test_that("GWP values", {
   testthat::expect_equal(length(gwp), 5)
 
   testthat::expect_equal(gwp$co2, 1)
-  testthat::expect_equal(gwp$ch4, 28)
-  testthat::expect_equal(gwp$n2o, 265)
+  testthat::expect_equal(gwp$ch4, 27.9)
+  testthat::expect_equal(gwp$n2o, 273)
+  
+  
+  # GWP AR5 values
+  # testthat::expect_equal(gwp$co2, 1)
+  # testthat::expect_equal(gwp$ch4, 28)
+  # testthat::expect_equal(gwp$n2o, 265)
 })
