@@ -336,3 +336,7 @@ _energy/data-raw/nhgis_blk2000_blk2010_WI/
 _energy/data-raw/EIA861
 
 _energy/data-raw/libraryDocs_2005
+
+_meta/data-raw/nrel_slope/scenario_planner/
+
+_meta/data-raw/nrel_slope/scenario_planner.zip
