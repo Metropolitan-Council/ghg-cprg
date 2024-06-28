@@ -2,7 +2,7 @@ source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 source("R/plot_county_emissions.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
-# NREL SLOPE data download, cleaning, and light viz
+# NREL SLOPE energy consumption and expenditure data download, cleaning, and viz
 
 # 1 Mmbtu is 0.293071 MWH
 mmbtu_to_mwh <- 0.293071
