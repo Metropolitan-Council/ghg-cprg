@@ -249,7 +249,7 @@ fig_activity_vs_nei <- plot_ly(
 fig_activity_vs_nei
 ```
 
-#### Local Greenhouse Gas Inventory Tool (LGGIT)
+#### Local Greenhouse Gas Inventory Tool (LGGIT) {#sec-epa-lggit-transportation}
 
 EPA’s Local Greenhouse Gas Inventory Tool (LGGIT) was developed to help communities across the United States to evaluate their greenhouse gas emissions. We used the LGGIT to validate our calculations and datasets [@usepaLocalGreenhouseGas2017].
 
@@ -297,7 +297,7 @@ lggit_totals <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lg
 lggit_total_emiss <- (lggit_totals$total %>% sum()) %>% scales::comma()
 ```
 
-The results from the LGGIT tool estimate a regional emissions total of **`r lggit_total_emiss` metric tons CO~2~e**, while our calculations estimate **`r cprg_total_emiss` metric tons CO~2~e**. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. Additionally, LGGIT uses global warming potential (GWP) values from the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5) [@ipccClimateChange2014], while our calculations use slightly higher values from the 6th Assessment Report (AR6) [@intergovernmentalpanelonclimatechangeipccClimateChange20212023]. See @sec-epa-moves for a more detailed comparison.
+The results from the LGGIT tool estimate a regional emissions total of **`r lggit_total_emiss` metric tons CO~2~e**, while our calculations estimate **`r cprg_total_emiss` metric tons CO~2~e**. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. Additionally, LGGIT uses global warming potential (GWP) values from the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5) [@ipccClimateChange2014], while our calculations use slightly higher values from the 6th Assessment Report (AR6) [@ipccAR62021]. See @sec-epa-moves for a more detailed comparison.
 
 
 ```{r echo=FALSE}

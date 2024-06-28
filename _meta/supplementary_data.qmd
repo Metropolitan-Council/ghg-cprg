@@ -177,7 +177,7 @@ The Global Warming Potential (GWP) was developed to allow comparisons of the glo
 
 <!-- Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5), Box 3.2, Table 1 [@ipccClimateChange2014]. We processed these values in [global_warming_potential.R](../R/global_warming_potential.R). -->
 
-Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) 6th Assessment Report (AR6), Table 7.SM.7 [@intergovernmentalpanelonclimatechangeipccClimateChange20212023]. We processed these values in [global_warming_potential.R](../R/global_warming_potential.R).
+Across all sectors, we used the GWP values established in the Intergovernmental Panel on Climate Change (IPCC) 6th Assessment Report (AR6), Table 7.SM.7 [@ipccAR62021]. We processed these values in [global_warming_potential.R](../R/global_warming_potential.R).
 
 ```{r tbl-gwp}
 #| tbl-cap: "Global Warming Potential (GWP) values"
