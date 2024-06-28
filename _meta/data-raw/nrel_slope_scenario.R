@@ -19,6 +19,7 @@
 # from a single link
 # I downloaded each state and county manually and added each to our MS Team site
 # 
+source("R/_load_pkgs.R")
 if (!file.exists("_meta/data-raw/nrel_slope/scenario_planner/anoka_reference/c03e2f7f40cf72b29fdb11fe595cc6851bf4ed23c592b02d0014c6db-CO2-emissions-county.csv")) {
   cli::cli_abort("You need to download the raw data from MS Teams. Contact a project lead if you need help")
 }
@@ -64,6 +65,14 @@ nrel_reference_county <- bind_rows(
     state = "MN",
     county = "Dakota"
   ),
+  read_nrel_scenario("_meta/data-raw/nrel_slope/scenario_planner/hennepin_reference/d037c812b9dd6dc0d9b42c6bbb97213172391853a9ac4e83ec5c3628_county.csv",
+                     state = "MN",
+                     county = "Hennepin"
+  ),
+  read_nrel_scenario("_meta/data-raw/nrel_slope/scenario_planner/ramsey_reference/4e0b8987e8d3b66893a4e348f049eed5af27c7d000b4e7c1f28cb2eb-CO2-emissions-county.csv",
+                     state = "MN",
+                     county = "Ramsey"
+  ),
   read_nrel_scenario("_meta/data-raw/nrel_slope/scenario_planner/pierce_reference/a4794ae3e72bcab0cd614f877d587092b9f5944e137d9574704875b4-CO2-emissions-county.csv",
     state = "WI",
     county = "Pierce"
@@ -86,4 +95,5 @@ nrel_reference_county <- bind_rows(
   ),
 )
 
-nrel_reference_county
+
+length(unique(nrel_reference_county$county))
