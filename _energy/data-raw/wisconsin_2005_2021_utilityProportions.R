@@ -1,6 +1,7 @@
 source("R/_load_pkgs.R")
 source("_meta/data-raw/cprg_geography.R")
 library(tidycensus)
+library(tigris)
 options(tidycensus.cache = TRUE)
 
 
@@ -110,11 +111,34 @@ wi_pop_2005 <- st_transform(GEOID10_2005_population_WI, st_crs(inScope_WI_elecUt
 wi_pop_2021 <- st_transform(population_data_2020_wi, st_crs(inScope_WI_elecUtils_fullServTerr))
 
 
-# limit the spatial extent of the block-level population to the extent of full in-scope utility areas, to conserve memory
-wi_pop_2005 <- wi_pop_2005 %>%
-  st_intersection(inScope_WI_elecUtils_fullServTerr)
-wi_pop_2021 <- wi_pop_2021 %>%
-  st_intersection(inScope_WI_elecUtils_fullServTerr)
+
+#snag correct county spatial reference to join to 
+counties10 <- counties(state = "WI", year = 2010) %>% st_transform(st_crs(wi_pop_2005))
+counties20 <- counties(state = "WI", year = 2020) %>% st_transform(st_crs(wi_pop_2021))
+
+# add county info and limit the spatial extent of the block-level population to the extent of full in-scope utility areas, to conserve memory
+wi_pop_2005_filtered <- wi_pop_2005 %>%
+  st_filter(inScope_WI_elecUtils_fullServTerr, .predicate = st_intersects) %>%
+  st_join(counties10 %>% select(county = NAME10), join = st_intersects) %>%
+  st_join(inScope_WI_elecUtils_fullServTerr, join = st_intersects)
+
+wi_pop_2021_filtered <- wi_pop_2021 %>%
+  st_filter(inScope_WI_elecUtils_fullServTerr, .predicate = st_intersects) %>%
+  st_join(counties20 %>% select(county = NAME), join = st_intersects) %>%
+  st_join(inScope_WI_elecUtils_fullServTerr, join = st_intersects)
+
+
+#store population files in data-raw -- these shouldn't be tracked on git bcuz they are large
+write_rds(wi_pop_2005_filtered, here("_energy",
+                            "data-raw",
+                            "wi_popBlocks_2005_withUtility.RDS")
+)
+  
+write_rds(wi_pop_2021_filtered, here("_energy",
+                            "data-raw",
+                            "wi_popBlocks_2021_withUtility.RDS")
+)
+
 
 # clean up intermediate dfs/sfs before heavy duty joins to conserve memory
 rm(GEOID10_2005_population_WI)
@@ -127,28 +151,95 @@ rm(crosswalkPop_2000_to_2010_centroids)
 rm(crosswalkWI)
 
 
+#Summarize to utility
+
+#Summarize to utility-county
+
+
+#Combine tables
+
+
+
+
 # Spatial join between total utility areas and population data to enable estimation of utility service area popualtion
 utility_pop_totals_2005 <- inScope_WI_elecUtils_fullServTerr %>%
   st_join(wi_pop_2005, join = st_intersects) %>%
-  group_by(utility_name) %>%  
+  group_by(utility_name.x) %>%  
   summarize(total_pop_served = sum(totalPop2005_interpolated), .groups = 'drop') %>%
   mutate(year = 2005)
 
 utility_pop_totals_2021 <- inScope_WI_elecUtils_fullServTerr %>%
   st_join(wi_pop_2021, join = st_intersects) %>%
-  group_by(utility_name) %>% 
+  group_by(utility_name.x) %>% 
   summarize(total_pop_served = sum(P1_001N), .groups = 'drop') %>%
   mutate(year = 2021)
 
 # Spatial join between in-scope utility areas and population data
 utility_pop_county_2005 <- WI_elecUtilities_area_in_scope %>%
   st_join(wi_pop_2005, join = st_intersects) %>%
-  group_by(utility_name, county) %>%
+  group_by(utility_name.x, county) %>%
   summarize(total_pop_served = sum(totalPop2005_interpolated), .groups = 'drop') %>%
   mutate(year = 2005)
 
 utility_pop_county_2021 <- WI_elecUtilities_area_in_scope %>%
   st_join(wi_pop_2021, join = st_intersects) %>%
-  group_by(utility_name, county) %>%  
+  group_by(utility_name.x, county) %>%  
   summarize(total_pop_served = sum(P1_001N), .groups = 'drop') %>%
   mutate(year = 2021)
+
+
+# Function to calculate population for a single utility area
+calculate_population <- function(utility_area, population_data, year_column, population_column) {
+  utility_pop <- utility_area %>%
+    st_join(population_data, join = st_intersects) %>%
+    group_by(utility_name.x) %>%
+    summarize(total_pop_served = sum(!!sym(population_column), na.rm = TRUE), .groups = 'drop') %>%
+    mutate(year = year_column)
+  return(utility_pop)
+}
+
+# Iterate over each utility polygon for 2005
+utility_pop_totals_2005_list <- lapply(seq_len(nrow(inScope_WI_elecUtils_fullServTerr)), function(i) {
+  utility_area <- inScope_WI_elecUtils_fullServTerr[i, ]
+  calculate_population(utility_area, wi_pop_2005, 2005, "totalPop2005_interpolated")
+})
+
+# Combine the results
+utility_pop_totals_2005 <- bind_rows(utility_pop_totals_2005_list)
+
+# Iterate over each utility polygon for 2021
+utility_pop_totals_2021_list <- lapply(seq_len(nrow(inScope_WI_elecUtils_fullServTerr)), function(i) {
+  utility_area <- inScope_WI_elecUtils_fullServTerr[i, ]
+  calculate_population(utility_area, wi_pop_2021, 2021, "P1_001N")
+})
+
+# Combine the results
+utility_pop_totals_2021 <- bind_rows(utility_pop_totals_2021_list)
+
+# Similarly for county level data
+calculate_population_by_county <- function(utility_area, population_data, year_column, population_column) {
+  utility_pop <- utility_area %>%
+    st_join(population_data, join = st_intersects) %>%
+    group_by(utility_name.x, county) %>%
+    summarize(total_pop_served = sum(!!sym(population_column), na.rm = TRUE), .groups = 'drop') %>%
+    mutate(year = year_column)
+  return(utility_pop)
+}
+
+# Iterate for 2005 county level data
+utility_pop_county_2005_list <- lapply(seq_len(nrow(WI_elecUtilities_area_in_scope)), function(i) {
+  utility_area <- WI_elecUtilities_area_in_scope[i, ]
+  calculate_population_by_county(utility_area, wi_pop_2005, 2005, "totalPop2005_interpolated")
+})
+
+# Combine the results
+utility_pop_county_2005 <- bind_rows(utility_pop_county_2005_list)
+
+# Iterate for 2021 county level data
+utility_pop_county_2021_list <- lapply(seq_len(nrow(WI_elecUtilities_area_in_scope)), function(i) {
+  utility_area <- WI_elecUtilities_area_in_scope[i, ]
+  calculate_population_by_county(utility_area, wi_pop_2021, 2021, "P1_001N")
+})
+
+# Combine the results
+utility_pop_county_2021 <- bind_rows(utility_pop_county_2021_list)
