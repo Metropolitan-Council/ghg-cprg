@@ -1,0 +1,251 @@
+# Utility service area maps
+
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r, include=FALSE}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS")) %>%
+  st_union()
+
+# MN
+MN_inScopeUtilities <- read_rds(here(
+  "_energy", "data", "MN_natGas_inScope_utilityCountyPairs.RDS"
+))
+MN_allUtilities_countrywide <- read_rds(here(
+  "_energy", "data", "MN_fed_natGasUtils.RDS"
+))
+
+# WI
+WI_inScopeUtilities <- read_rds(here(
+  "_energy", "data", "WI_natGas_inScope_utilityCountyPairs.RDS"
+))
+WI_allUtilities <- read_rds(here(
+  "_energy", "data", "WI_natGasUtils.RDS"
+))
+
+
+hookaddcap()
+```
+
+
+To identify the utilities operating within our 11-county study area, we utilized data sets published by state and federal sources. The outcome of our data collection yields a list of distinct utilities suplying activity data and resides within [distinct_natGas_util_WI.RDS](data/distinct_natGas_util_WI.RDS) (4 utilities, all investor-owned) and [distinct_natGas_util_type_MN.RDS](data/distinct_natGas_util_type_MN.RDS) (7 utilities, six investor-owned and one municipally-owned).  
+
+### Minnesota
+
+Since there is no state-maintained map of natural gas service territories in Minnesota [@mnPublicUtilitiesInfrastructure2021], we looked to the Homeland Infrastructure Foundation-Level Data (HIFLD) database, a product of the Department of Homeland Security's Geospatial Management Office (DHS GMO) that compiles "foundation-level geospatial data" for homeland security, homeland defense, and emergency preparedness purposes. This dataset was last updated in 2017 [@departmentofhomelandsecurityNaturalGasService2017]. Though this dataset is national in scope (see @fig-minnesota-ng-servTerrs), it is clipped to only include utility service areas within the nine Minnesota counties included in the study area of this inventory (see @fig-MN-ng-inScope-servTerrs). Note that utilities operating across county lines have a polygon covering the extent of their service territory within each and every county they operate within.
+
+```{r fig-minnesota-ng-servTerrs}
+#| fig-cap: "Nationwide utility service service territories"
+#| out-width: "95%"
+#| out-height: "500px"
+
+# Create a color palette
+utilities <- unique(MN_allUtilities_countrywide$NAME)
+color_palette <- colorFactor(palette = "viridis", domain = utilities)
+
+# bounding box for continental United States
+bound_box <- list(
+  lng1 = -124.6, # Southwest longitude
+  lat1 =  24.5, # Southwest latitude
+  lng2 = -66.7, # Northeast longitude
+  lat2 =  49.5 # Northeast latitude
+)
+
+
+fig_mninnesota_ng_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = cprg_county %>%
+      sf::st_transform(4326),
+    fill = FALSE,
+    color = "gray",
+    popup = cprg_county$NAMELSAD,
+    group = "County outlines"
+  ) %>%
+  addPolygons(
+    data = MN_allUtilities_countrywide %>% sf::st_transform(4326),
+    fill = TRUE,
+    fillColor = ~ color_palette(NAME),
+    stroke = TRUE,
+    color = "gray",
+    weight = 2,
+    popup = MN_allUtilities_countrywide$NAME
+    # Temporarily comment out group for debugging
+  ) %>%
+  fitBounds(
+    lng1 = bound_box[[1]],
+    lng2 = bound_box[[3]],
+    lat1 = bound_box[[2]],
+    lat2 = bound_box[[4]]
+  )
+
+fig_mninnesota_ng_servTerrs
+```
+
+```{r fig-MN-ng-inScope-servTerrs}
+#| fig-cap: "Minnesota utility service service territories in scope"
+#| out-width: "95%"
+#| out-height: "600px"
+
+# Create a color palette
+inScopeUtilities <- unique(MN_inScopeUtilities$utility_name)
+color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
+
+# bounding box for MN study area counties
+MN_bound_box <- list(
+  lng1 = -94.3, # Southwest longitude
+  lat1 =  44.8, # Southwest latitude
+  lng2 = -92.4, # Northeast longitude
+  lat2 =  45.4 # Northeast latitude
+)
+
+fig_MN_ng_inScope_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = cprg_county %>%
+      sf::st_transform(4326),
+    fill = FALSE,
+    color = "gray",
+    popup = cprg_county$NAMELSAD,
+    group = "County outlines"
+  ) %>%
+  addPolygons(
+    data = MN_inScopeUtilities %>% sf::st_transform(4326),
+    fill = TRUE,
+    fillColor = ~ color_palette(utility_name),
+    stroke = TRUE,
+    color = "gray",
+    weight = 2,
+    popup = MN_inScopeUtilities$utility_name
+  ) %>%
+  fitBounds(
+    lng1 = MN_bound_box[[1]],
+    lng2 = MN_bound_box[[3]],
+    lat1 = MN_bound_box[[2]],
+    lat2 = MN_bound_box[[4]]
+  )
+
+fig_MN_ng_inScope_servTerrs
+```
+
+### Wisconsin
+
+The Public Service Commission of Wisconsin publishes and maintains maps of service territories for natural gas utilities operating within the state. This data set relies upon, and is accurate to, "the extent that various sources \[utilities\] supplied accurate data." [@publicservicecommissionofwisconsinPSCInteractiveService2021]. This dataset spans the whole state of Wisconsin (see @fig-wisconsin-ng-servTerrs), but was clipped to the two Wisconsin counties included in the study area of this inventory (see @fig-wisconsin-ng-inScope-servTerrs).
+
+```{r fig-wisconsin-ng-servTerrs}
+#| fig-cap: "Wisconsin utility service service territories"
+#| out-width: "95%"
+#| out-height: "500px"
+
+# Create a color palette
+utilities <- unique(WI_allUtilities$Util_Name)
+color_palette <- colorFactor(palette = "viridis", domain = utilities)
+
+# bounding box for continental United States
+bound_box <- list(
+  lng1 = -92.888, # Southwest longitude
+  lat1 =  42.491, # Southwest latitude
+  lng2 = -86.805, # Northeast longitude
+  lat2 =  47.080 # Northeast latitude
+)
+
+fig_wisconsin_ng_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = cprg_county %>%
+      sf::st_transform(4326),
+    fill = FALSE,
+    color = "gray",
+    popup = cprg_county$NAMELSAD,
+    group = "County outlines"
+  ) %>%
+  addPolygons(
+    data = WI_allUtilities %>% sf::st_transform(4326),
+    fill = TRUE,
+    fillColor = ~ color_palette(Util_Name),
+    stroke = TRUE,
+    color = "gray",
+    weight = 2,
+    popup = WI_allUtilities$Util_Name
+  ) %>%
+  fitBounds(
+    lng1 = bound_box[[1]],
+    lng2 = bound_box[[3]],
+    lat1 = bound_box[[2]],
+    lat2 = bound_box[[4]]
+  )
+
+fig_wisconsin_ng_servTerrs
+```
+
+Wisconsin utilities in scope
+
+```{r fig-wisconsin-ng-inScope-servTerrs}
+#| fig-cap: "Wisconsin utility service service territories in scope"
+#| out-width: "95%"
+#| out-height: "500px"
+# Create a color palette
+inScopeUtilities <- unique(WI_inScopeUtilities$utility_name)
+color_palette <- colorFactor(palette = "viridis", domain = inScopeUtilities)
+
+# bounding box for MN study area counties
+WI_bound_box <- list(
+  lng1 = -92.9, # Southwest longitude
+  lat1 =  44.5, # Southwest latitude
+  lng2 = -92.0, # Northeast longitude
+  lat2 =  45.23 # Northeast latitude
+)
+
+
+fig_wisconsin_ng_inScope_servTerrs <- council_leaflet() %>%
+  addPolygons(
+    data = cprg_county %>%
+      sf::st_transform(4326),
+    fill = FALSE,
+    color = "gray",
+    popup = cprg_county$NAMELSAD,
+    group = "County outlines"
+  ) %>%
+  addPolygons(
+    data = WI_inScopeUtilities %>% sf::st_transform(4326),
+    fill = TRUE,
+    fillColor = ~ color_palette(utility_name),
+    stroke = TRUE,
+    color = "gray",
+    weight = 2,
+    popup = paste0(
+      WI_inScopeUtilities$utility_name,
+      ", ",
+      WI_inScopeUtilities$county_name,
+      " County"
+    )
+  ) %>%
+  fitBounds(
+    lng1 = WI_bound_box[[1]],
+    lng2 = WI_bound_box[[3]],
+    lat1 = WI_bound_box[[2]],
+    lat2 = WI_bound_box[[4]]
+  )
+
+fig_wisconsin_ng_inScope_servTerrs
+```
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}
