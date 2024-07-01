@@ -166,3 +166,59 @@ usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
   lower48 = TRUE, 
   weighted_by_area = T) %>% 
   as.data.frame() %>% select(-geometry)
+
+usda_fertilizer_mn_wi %>% filter(is.na(Value)) %>% arrange(year) %>% select(state_name, county_name, year)
+### there are 9 missing values by county. 2 MN, 2 WI in 2002. 2 MN in 2007, 3 WI in 2017. None are counties of focus except Ramsey in 2002, which has limited ag.
+
+usda_fert_prop <- usda_fertilizer_mn_wi %>% 
+  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>% 
+  group_by(state_name, year) %>% 
+  mutate(state_total = sum(Value, na.rm = TRUE), fert_prop = Value / state_total) %>% 
+  filter(county_name %in% counties) %>% 
+  select(year, county_name, fert_prop)
+
+### expand grid and interpolate
+
+fert_prop_interpolated <- left_join( # this creates an empty grid of all year county_name possibilities from 2002-2022
+  expand.grid(
+    year = seq(2002, 2022, by = 1),
+    county_name = unique(usda_fert_prop$county_name)
+  ),
+  usda_fert_prop) %>%  # merged with our populated fertilizer proportion data, it creates NAs wherever data is missing
+  mutate(fert_prop = if_else(year %in% c(2002,2007,2012,2017,2022) & is.na(fert_prop),0, fert_prop)) %>%  # add 0 as Ramsey value in 2002
+  group_by(county_name) %>%
+  arrange(year) %>%
+  mutate(
+    fert_prop = zoo::na.approx(fert_prop, na.rm = FALSE), # this function linearly interpolates NAs between known values, following the group_by
+    data_type = ifelse(year %in% c(2002,2007,2012,2017,2022), 'census', 'interpolated') # marking whether values are from the census or interpolation
+  )
+
+#### merge fertilize proportion estimates with state fertilizer values
+
+county_fertilizer_emissions <- left_join(
+  left_join(fert_prop_interpolated, cprg_county %>% 
+                                 mutate(county_name = if_else(NAME == "St. Croix",
+                                                              "ST CROIX",
+                                                              toupper(NAME))) %>% 
+                                 as.data.frame() %>% 
+                                        select(county_name, STATE_ABB)),
+  ag_fert_formatted,
+  by = c("STATE_ABB" = "state", "year" = "year")) %>% 
+  filter(year >= 2005 & year <= 2021) %>% 
+  mutate(mt_n_synthetic_cty = fert_prop * mt_n_synthetic,
+         mt_n_organic_cty = fert_prop * mt_n_organic) %>% 
+  #### separating mutate as this is where we will calculate emissions from estimated fertilizer application
+  mutate(n2o_direct = (mt_n_synthetic_cty * (1 - as.numeric(ag_constants[21,1])) + # unvolatilized N from synthetic fertilizer
+                      mt_n_organic_cty * as.numeric(ag_constants[19,1]) * (1 - as.numeric(ag_constants[20,1]))) * # unvolatilized N from organic fertilizer
+                      as.numeric(ag_constants[22,1]) * as.numeric(ag_constants[10,1]), ## multiplied by the EF of unvolatilized N and N2O N: N2O
+         n2o_indirect = (mt_n_synthetic_cty * as.numeric(ag_constants[21,1]) + # volatilized N from synthetic fertilizer
+                      mt_n_organic_cty * as.numeric(ag_constants[19,1]) * as.numeric(ag_constants[20,1])) * # volatized N from organic fertilizer
+                      as.numeric(ag_constants[23,1]) * as.numeric(ag_constants[10,1]),  ## multiplied by the EF of volatized N and N2O N: N2O
+         mt_n2o = n2o_direct + n2o_indirect,
+         mt_co2e = mt_n2o * gwp$n2o) %>% 
+  select(year, county_name, data_type, mt_n_synthetic, mt_n_organic, mt_n2o, mt_co2e)
+
+ggplot(county_fertilizer_emissions %>% 
+         group_by(year,county_name) %>% 
+         summarize(CO2e = sum(mt_co2e)),
+       aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
