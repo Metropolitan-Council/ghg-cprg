@@ -15,20 +15,17 @@ mobile_sectors <- sectors %>%
 
 # combine MN and WI
 # filter to only needed datasets
-nei_county <- bind_rows(
-  mn_county,
-  wi_county
-) %>%
-  mutate(GEOID = paste0(state_fips, county_fips)) %>%
+nei_county <- nei_county_multi_year %>% 
+  left_join(cprg_county, by = c("county_fips" = "COUNTYFP")) %>% 
   filter(
-    GEOID %in% cprg_county$GEOID,
     sector_code %in% mobile_sectors$sector_code,
     pollutant_type == "GHG"
   ) %>%
-  left_join(sectors, by = c("sector_code")) %>%
   filter(sector_two == "On-Road") %>%
   rowwise() %>%
-  mutate(vehicle_weight_label = case_when(
+  mutate(
+    county_name = NAME,
+    vehicle_weight_label = case_when(
     ei_sector %in% c(
       "Mobile - On-Road Diesel Light Duty Vehicles",
       "Mobile - On-Road non-Diesel Light Duty Vehicles"
@@ -54,7 +51,8 @@ nei_county_emissisons <- nei_county %>%
     units::as_units("ton") %>% # short tons/US tons
     units::set_units("gram") %>% # convert to grams
     as.numeric()) %>%
-  select(ei_sector, vehicle_weight_label,
+  select(
+    ei_sector, vehicle_weight_label,
     county_name, county_fips,
     nei_inventory_year = inventory_year,
     pollutant_code, emissions_grams
