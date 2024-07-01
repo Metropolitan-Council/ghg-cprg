@@ -117,10 +117,9 @@ intercensal_pop_2005_MN <- intercensal_pop_2005_MN %>%
     year = 2005,
     state_population = total_pop_MN$state_population
   ) %>%
-  mutate(
+  rename(
     county_population = `2005`
-  ) %>%
-  select(-`2005`)
+  )
 
 # WI
 total_pop_WI <- intercensal_pop_2005_WI %>%
@@ -131,10 +130,9 @@ intercensal_pop_2005_WI <- intercensal_pop_2005_WI %>%
     year = 2005,
     state_population = total_pop_WI$state_population
   ) %>%
-  mutate(
+  rename(
     county_population = `2005`
-  ) %>%
-  select(-`2005`)
+  )
 
 intercensal_pop_2005_MNWI <- rbind(intercensal_pop_2005_MN, intercensal_pop_2005_WI) %>%
   mutate(
@@ -144,7 +142,7 @@ intercensal_pop_2005_MNWI <- rbind(intercensal_pop_2005_MN, intercensal_pop_2005
   )
 
 cprg_county_population2005 <- cprg_county %>%
-  left_join((st_drop_geometry(intercensal_pop_2005_MNWI)),
+  left_join((intercensal_pop_2005_MNWI),
     by = join_by(NAMELSAD == county_name, STATE_ABB == state)
   ) %>%
   st_drop_geometry() %>%
