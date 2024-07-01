@@ -152,40 +152,53 @@ rm(crosswalkWI)
 
 
 #Summarize to utility
+wi_pop_2005_utility <- wi_pop_2005_filtered %>%
+  group_by(utility_name, county) %>%
+  summarize(
+    serviceAreaPop = sum(totalPop2005_interpolated)
+  ) %>%
+  mutate(
+    year = 2005
+  )
+
+wi_pop_2021_utility <- wi_pop_2021_filtered %>%
+  group_by(utility_name, county) %>%
+  summarize(
+    serviceAreaPop = sum(P1_001N)
+  ) %>%
+  mutate(
+    year = 2021
+  )
 
 #Summarize to utility-county
+wi_pop_2005_utilityCounty <- wi_pop_2005_filtered %>%
+  group_by(utility_name, county) %>%
+  summarize(
+    serviceAreaPop = sum(totalPop2005_interpolated)
+  ) %>%
+  mutate(
+    year = 2005
+  ) %>%
+  filter(
+    county %in% c('St. Croix', 'Pierce')
+  )
+  
+wi_pop_2021_utilityCounty <- wi_pop_2021_filtered %>%
+  group_by(utility_name, county) %>%
+  summarize(
+    serviceAreaPop = sum(P1_001N)
+  ) %>%
+  mutate(
+    year = 2021
+  ) %>%
+  filter(
+    county %in% c('St. Croix', 'Pierce')
+  )
+
+#Combine tables and write to final RDS
 
 
-#Combine tables
 
-
-
-
-# Spatial join between total utility areas and population data to enable estimation of utility service area popualtion
-utility_pop_totals_2005 <- inScope_WI_elecUtils_fullServTerr %>%
-  st_join(wi_pop_2005, join = st_intersects) %>%
-  group_by(utility_name.x) %>%  
-  summarize(total_pop_served = sum(totalPop2005_interpolated), .groups = 'drop') %>%
-  mutate(year = 2005)
-
-utility_pop_totals_2021 <- inScope_WI_elecUtils_fullServTerr %>%
-  st_join(wi_pop_2021, join = st_intersects) %>%
-  group_by(utility_name.x) %>% 
-  summarize(total_pop_served = sum(P1_001N), .groups = 'drop') %>%
-  mutate(year = 2021)
-
-# Spatial join between in-scope utility areas and population data
-utility_pop_county_2005 <- WI_elecUtilities_area_in_scope %>%
-  st_join(wi_pop_2005, join = st_intersects) %>%
-  group_by(utility_name.x, county) %>%
-  summarize(total_pop_served = sum(totalPop2005_interpolated), .groups = 'drop') %>%
-  mutate(year = 2005)
-
-utility_pop_county_2021 <- WI_elecUtilities_area_in_scope %>%
-  st_join(wi_pop_2021, join = st_intersects) %>%
-  group_by(utility_name.x, county) %>%  
-  summarize(total_pop_served = sum(P1_001N), .groups = 'drop') %>%
-  mutate(year = 2021)
 
 
 # Function to calculate population for a single utility area
