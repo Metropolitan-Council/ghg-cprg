@@ -77,12 +77,12 @@ landfill_data <- score_data %>%
 # placeholder data
 landfill_emissions <- landfill_data %>% 
   mutate(
-    emissions_metric_tons_ch4 = `Metric Tons` * l_0 * (1-ox)
+    total_ch4 = `Metric Tons` * l_0 * (1-ox)
   ) %>% 
   select(
     County,
     Method,
     Year,
-    emissions_metric_tons_ch4
+    total_ch4
   )
 

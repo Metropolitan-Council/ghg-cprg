@@ -61,15 +61,15 @@ compost_data <- compost_data_organics %>%
 compost_emissions <- compost_data %>% 
   left_join(compost_factors, by = join_by(Method)) %>% 
   mutate(
-    emissions_metric_tons_ch4 = `Metric Tons` * ch4,
-    emissions_metric_tons_n2o = `Metric Tons` * n2o # decide whether to convert to co2e
+    total_ch4 = `Metric Tons` * ch4,
+    total_n2o = `Metric Tons` * n2o # decide whether to convert to co2e
   ) %>% 
   select(
     County,
     Method,
     Year,
-    emissions_metric_tons_ch4,
-    emissions_metric_tons_n2o
+    total_ch4,
+    total_n2o
   )
  
 # combined and saved in mn_emissions_all

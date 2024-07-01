@@ -49,15 +49,15 @@ incineration_emissions <- score_data %>%
          `Metric Tons`) %>% 
   left_join(incin_factors, by = join_by(Method)) %>% 
   mutate(
-    emissions_metric_tons_co2 = `Metric Tons` * co2,
-    emissions_metric_tons_n2o = `Metric Tons` * n2o 
+    total_co2 = `Metric Tons` * co2,
+    total_n2o = `Metric Tons` * n2o 
   ) %>% 
   select(
     County,
     Method,
     Year,
-    emissions_metric_tons_co2,
-    emissions_metric_tons_n2o
+    total_co2,
+    total_n2o
   )
 
 # combined and saved in mn_emissions_all
