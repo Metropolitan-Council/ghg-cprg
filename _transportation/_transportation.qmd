@@ -180,9 +180,18 @@ fig_emissions_pop_transportation
 
 Different allocation principle
 
-Though both geographic and activity-induced methods fufill Scope 1 requirements, the resulting values are significantly different
+Though both geographic and activity-induced methods fulfill Scope 1 requirements [@fongGlobalProtocolCommunityScale2021], the resulting values are significantly different.
 
-[@fongGlobalProtocolCommunityScale2021]
+Activity-induced methods (as we have used here) estimate the emissions from trips that begin, end, or are entirely contained within a given city. All passthrough trips (those that neither begin or end in the city, but pass through without stopping) are excluded. 
+
+Territorial or geographic methods represent "all traffic occurring within city boundaries, regardless of origin or destination" [@fongGlobalProtocolCommunityScale2021]. 
+
+The GPC recommends the induced activity method for cities, as it provides results more suited to local policy making. 
+
+However, the Twin Cities metropolitan area includes over 250 individual jurisdictions, with cities ranging from over 400,000 people to under 500 people. The entirety of the 11-county CPRG study area is larger than some US states. 
+
+
+The origin-destination activity method is used in several regional PCAPs, including metro areas such as : Santa Clara MSA [@countyofsanbenitoCountySanBenito2024], 
 
 #### National Emissions Inventory 
 
