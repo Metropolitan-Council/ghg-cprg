@@ -9,7 +9,7 @@ project:
 quarto-required: 1.4.553
 
 book:
-  version: 1.1.0
+  version: 1.1.1
   title: "Twin Cities MSA Greenhouse Gas Inventory"
   subtitle: "Climate Pollution Reduction Grant Documentation"
   author: "Metropolitan Council"

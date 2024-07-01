@@ -1,5 +1,4 @@
 source("R/_load_pkgs.R")
-source("R/global_warming_potential.R")
 
 seq_rates <- read_csv("./_nature/data-raw/land_cover_seq_rates.csv")
 stock <- read_csv("./_nature/data-raw/land_cover_stock.csv")

@@ -57,6 +57,8 @@ vehicle_emissions_meta <-
     "emissions_metric_tons_co2e", class(vehicle_emissions$emissions_metric_tons_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given county"
   )
 
+waldo::compare(vehicle_emissions, readRDS("_transportation/data/county_vmt_emissions.RDS"))
+
 saveRDS(vehicle_emissions, "_transportation/data/county_vmt_emissions.RDS")
 saveRDS(vehicle_emissions_meta, "_transportation/data/county_vmt_emissions_meta.RDS")
 

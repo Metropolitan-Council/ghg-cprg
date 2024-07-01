@@ -99,5 +99,9 @@ epa_nei_meta <- tibble::tribble(
 )
 
 
+waldo::compare(epa_nei, readRDS("_transportation/data/epa_nei.RDS"))
+waldo::compare(epa_nei_meta, readRDS("_transportation/data/epa_nei_meta.RDS"))
+
+
 saveRDS(epa_nei, "_transportation/data/epa_nei.RDS")
 saveRDS(epa_nei_meta, "_transportation/data/epa_nei_meta.RDS")

@@ -56,4 +56,5 @@ electric_natgas_nrel_proportioned <- electric_raw %>%
   ) %>%
   mutate(category = str_to_sentence(category))
 
+waldo::compare(electric_natgas_nrel_proportioned, readRDS("_energy/data/electric_natgas_nrel_proportioned.RDS"))
 saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_proportioned.RDS")

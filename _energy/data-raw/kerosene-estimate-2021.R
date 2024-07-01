@@ -57,7 +57,7 @@ wi_kero_use <- as.numeric(eia2020[6, 12])
 #   print(n = 10000)
 
 # get number of households in each county using propane
-mn_kero_hh <- get_acs(
+mn_kero_hh <- tidycensus::get_acs(
   geography = "county",
   variables = "B25040_005",
   state = "MN",
@@ -73,7 +73,7 @@ mn_kero_hh <- get_acs(
   )
 
 # repeat for WI
-wi_kero_hh <- get_acs(
+wi_kero_hh <- tidycensus::get_acs(
   geography = "county",
   variables = "B25040_005",
   state = "WI",
@@ -94,4 +94,5 @@ kero_county
 total_regional_kerosene_emissions <- sum(kero_county$CO2e) # total regional emissions of the 11 county area
 total_regional_kerosene_emissions
 
+waldo::compare(kero_county, readRDS("_energy/data-raw/kerosene_use_county.RDS"))
 saveRDS(kero_county, "_energy/data-raw/kerosene_use_county.RDS")
