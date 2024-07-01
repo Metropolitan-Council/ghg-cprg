@@ -191,7 +191,7 @@ The GPC recommends the induced activity method for cities, as it provides result
 However, the Twin Cities metropolitan area includes over 250 individual jurisdictions, with cities ranging from over 400,000 people to under 500 people. The entirety of the 11-county CPRG study area is larger than some US states. 
 
 
-The origin-destination activity method is used in several regional PCAPs, including metro areas such as : Santa Clara MSA [@countyofsanbenitoCountySanBenito2024], 
+The origin-destination activity method is used in regional PCAPs, including metro areas such as Santa Clara MSA [@countyofsanbenitoCountySanBenito2024], 
 
 #### National Emissions Inventory 
 
