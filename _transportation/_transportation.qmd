@@ -194,6 +194,7 @@ NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and pr
 epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei.RDS"))
 
 nei_emissions_all <- epa_nei %>%
+  filter(nei_inventory_year == 2020) %>% 
   group_by(zone = county_name) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
