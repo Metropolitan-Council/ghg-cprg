@@ -40,6 +40,62 @@ fetch_nei <- function(year, state){
     )
 }
 
+multi_year <- 
+  bind_rows(
+    purrr::map_dfr(
+      c(2020,
+        2017,
+        2014,
+        2011,
+        2008),
+      fetch_nei,
+      state = "Minnesota"),
+    purrr::map_dfr(
+      c(2020,
+        2017,
+        2014,
+        2011,
+        2008),
+      fetch_nei,
+      state = "Wisconsin")
+  ) 
+
+nei_county_multi_year <- multi_year %>% 
+  group_by(
+    state_name, inventory_year,
+    state_fips, county_fips, pollutant_type, uom, emissions,
+    sector_code, pollutant_code, st_abbrv
+  ) %>%
+  summarise(emissions = sum(emissions), .groups = "keep") %>%
+  filter(pollutant_type == "GHG") %>%
+  left_join(sectors, by = c("sector_code")) %>%
+  mutate(emissions_grams = emissions %>%
+           units::as_units("ton") %>% # short tons/US tons
+           units::set_units("metric_ton") %>% # convert to grams
+           as.numeric()) %>% 
+  mutate(GEOID = paste0(state_fips, county_fips)) %>%
+  filter(
+    GEOID %in% cprg_county$GEOID
+  ) %>%
+  rowwise()
+
+nei_state_multi_year <- multi_year %>% 
+  group_by(
+    state_name, inventory_year,
+    state_fips, pollutant_type, uom, emissions,
+    sector_code, pollutant_code, st_abbrv
+  ) %>%
+  summarise(emissions = sum(emissions), .groups = "keep") %>%
+  filter(pollutant_type == "GHG") %>%
+  left_join(sectors, by = c("sector_code")) %>%
+  mutate(emissions_grams = emissions %>%
+           units::as_units("ton") %>% # short tons/US tons
+           units::set_units("metric_ton") %>% # convert to grams
+           as.numeric()) %>% 
+  rowwise()
+
+
+# state aggregation, most recent year
 nei_state <- bind_rows(
   fetch_nei(2020, "Minnesota"),
   fetch_nei(2020, "Wisconsin")
@@ -53,9 +109,9 @@ nei_state <- bind_rows(
   filter(pollutant_type == "GHG") %>%
   left_join(sectors, by = c("sector_code")) %>%
   mutate(emissions_grams = emissions %>%
-    units::as_units("ton") %>% # short tons/US tons
-    units::set_units("metric_ton") %>% # convert to grams
-    as.numeric())
+           units::as_units("ton") %>% # short tons/US tons
+           units::set_units("metric_ton") %>% # convert to grams
+           as.numeric())
 
 
 
