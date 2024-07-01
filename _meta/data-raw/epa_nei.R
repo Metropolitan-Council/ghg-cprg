@@ -7,39 +7,6 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 # base URL
 req_base <- httr2::request("https://data.epa.gov/efservice")
 
-# fetch MN county emissions, 2020
-mn_county <- req_base %>%
-  # county sector summary table, all rows
-  httr2::req_url_path_append("COUNTY_SECTOR_SUMMARY/ROWS/") %>%
-  # Minnesota only
-  httr2::req_url_path_append("STATE_NAME/Minnesota") %>%
-  # year 2020 inventory only
-  httr2::req_url_path_append("INVENTORY_YEAR/2020/") %>%
-  # in CSV format
-  httr2::req_url_path_append("CSV") %>%
-  # Go!
-  httr2::req_perform() %>%
-  # read response as CSV
-  httr2::resp_body_string(encoding = "UTF-8") %>%
-  readr::read_delim(
-    delim = ",",
-    show_col_types = FALSE
-  )
-
-# fetch WI county emissions, 2020
-wi_county <- req_base %>%
-  httr2::req_url_path_append("COUNTY_SECTOR_SUMMARY/ROWS/") %>%
-  httr2::req_url_path_append("STATE_NAME/Wisconsin") %>%
-  httr2::req_url_path_append("INVENTORY_YEAR/2020/") %>%
-  httr2::req_url_path_append("CSV") %>%
-  httr2::req_perform() %>%
-  httr2::resp_body_string(encoding = "UTF-8") %>%
-  readr::read_delim(
-    delim = ",",
-    show_col_types = FALSE
-  )
-
-
 # supplementary tables
 # fetch sectors
 sectors <- req_base %>%
@@ -53,10 +20,29 @@ sectors <- req_base %>%
   )
 
 
-# state aggregation
+fetch_nei <- function(year, state){
+  req_base %>%
+    # county sector summary table, all rows
+    httr2::req_url_path_append("COUNTY_SECTOR_SUMMARY/ROWS/") %>%
+    # Minnesota only
+    httr2::req_url_path_append(paste0("STATE_NAME/", state)) %>%
+    # year 2020 inventory only
+    httr2::req_url_path_append("INVENTORY_YEAR/", year, "/") %>%
+    # in CSV format
+    httr2::req_url_path_append("CSV") %>%
+    # Go!
+    httr2::req_perform() %>%
+    # read response as CSV
+    httr2::resp_body_string(encoding = "UTF-8") %>%
+    readr::read_delim(
+      delim = ",",
+      show_col_types = FALSE
+    )
+}
+
 nei_state <- bind_rows(
-  mn_county,
-  wi_county
+  fetch_nei(2020, "Minnesota"),
+  fetch_nei(2020, "Wisconsin")
 ) %>%
   group_by(
     state_name, inventory_year,
@@ -76,10 +62,9 @@ nei_state <- bind_rows(
 
 # combine MN and WI, counties
 # filter to only CPRG counties
-# filter to only needed
 nei_county <- bind_rows(
-  mn_county,
-  wi_county
+  fetch_nei(2020, "Minnesota"),
+  fetch_nei(2020, "Wisconsin")
 ) %>%
   mutate(GEOID = paste0(state_fips, county_fips)) %>%
   filter(
