@@ -273,25 +273,66 @@ wi_2005_2021_utilityCounty_activity <- wi_2005_2021_utilityCounty_popProp %>%
       year == 2005 & utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 7072, # EIA-861 
       year == 2005 & utility_name == "Northern States Power Company-Wisconsin" ~ 230761, # reflects number reported to state; number reported to EIA is higher: 240315. Using state number since we used state numbers for county
       year == 2005 & utility_name == "River Falls Municipal Utility" ~ 5500, # 5623 is year-round "avg. customer number (monthly)" on state reports; 5500 is federal
-      year == 2005 & utility_name == "New Richmond Municipal Electric Utility" ~ 3987 # EIA number; 3979 is avg no. cust figure reported to state
+      year == 2005 & utility_name == "New Richmond Municipal Electric Utility" ~ 3987, # EIA number; 3979 is avg no. cust figure reported to state
       year == 2021 & utility_name == "Dunn Energy Cooperative" ~ 10270,
       year == 2021 & utility_name == "Polk-Burnett Electric Cooperative" ~ 21303,
       year == 2021 & utility_name == "St Croix Electric Cooperative" ~ 11386, # EIA-861 short form
       year == 2021 & utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 7795, # EIA-861 short form
       year == 2021 & utility_name == "Northern States Power Company-Wisconsin" ~ 266071,
       year == 2021 & utility_name == "River Falls Municipal Utility" ~ 7038,
-      year == 2021 & utility_name == "New Richmond Municipal Electric Utility" ~ 5333,
+      year == 2021 & utility_name == "New Richmond Municipal Electric Utility" ~ 5333
     ),
     utilityCustomer_county = case_when(
       year == 2005 & utility_name == "New Richmond Municipal Electric Utility" ~ 3987, # not in WI reporting, check EIA, use 3979 if no (avg no. cust)
-      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "Pierce" ~ 6740,
-      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "St. Croix" ~ 20357,
+      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" & county == "Pierce" ~ 6740,
+      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" & county == "St. Croix" ~ 20357,
       year == 2021 & utility_name == "New Richmond Municipal Electric Utility" ~ 5333,
-      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "Pierce" ~ 7489,
-      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "St. Croix" ~ 24850,
-      year == 2021 & utility_name == "River Falls Municipal Utility" & county_name == "Pierce" ~ 4901,
-      year == 2021 & utility_name == "River Falls Municipal Utility" & county_name == "St. Croix" ~ 2137
+      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" & county == "Pierce" ~ 7489,
+      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" & county == "St. Croix" ~ 24850,
+      year == 2021 & utility_name == "River Falls Municipal Utility" & county == "Pierce" ~ 4901,
+      year == 2021 & utility_name == "River Falls Municipal Utility" & county == "St. Croix" ~ 2137
     )
+  ) %>%
+  mutate(
+    # estimate the number of customer accounts within the service territory included
+    # within our two county study area when not reported directly by the utility
+    # use Census population in study area service area / whole service area (propUtilityPopInCounty)
+    # and multyiply by total customer count to estimate accounts in study area
+    propCustomerAccountsInCounty = 
+      ifelse(!is.na(utilityCustomer_county),
+             round(utilityCustomer_county / utility_TotalCustomerCount),
+             NA
+      ),
+    EST_CustomerAccountsInCounty =
+      ifelse(!is.na(utilityCustomer_county),
+             NA,
+             round(propUtilityPopInCounty * utility_TotalCustomerCount)
+      ),
+    EST_propCustomerAccountsInCounty =
+      ifelse(!is.na(utilityCustomer_county),
+             NA,
+             EST_CustomerAccountsInCounty / utility_TotalCustomerCount
+      ),
+    utilityCounty_mWh =
+      ifelse(!is.na(utilityCustomer_county),
+             util_Total_mWh * (propCustomerAccountsInCounty),
+             NA
+      ),
+    mWh_perCustomerAccount =
+      ifelse(!is.na(EST_CustomerAccountsInCounty),
+             NA,
+             util_Total_mWh / utility_TotalCustomerCount
+      ),
+    EST_utilityCounty_mWh =
+      ifelse(is.na(EST_CustomerAccountsInCounty),
+             NA,
+             EST_propCustomerAccountsInCounty * util_Total_mWh
+      ),
+    EST_mWh_perCustomerAccount =
+      ifelse(is.na(EST_CustomerAccountsInCounty),
+             NA,
+             EST_utilityCounty_mWh / EST_CustomerAccountsInCounty
+      )
   )
 
   
