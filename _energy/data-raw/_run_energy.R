@@ -20,7 +20,7 @@ source("_energy/data-raw/wisconsin_natGas_ActivityAndEmissions.R")
 
 # finalize processing
 source("_energy/data-raw/processed_mn_electricUtil_activityData.R")
-source("_energy/data-raw/processed_wi_electricUtil_activityData.R")
+source("_energy/data-raw/wi_2005_2021_utilityCounty_popProp.R")
 
 source("_energy/data-raw/nrel_slope.R")
 
