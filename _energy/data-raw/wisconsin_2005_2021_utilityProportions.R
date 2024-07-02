@@ -1,5 +1,6 @@
 source("R/_load_pkgs.R")
 source("_meta/data-raw/cprg_geography.R")
+source("_energy/data-raw/_energy_emissions_factors.R")
 library(tidycensus)
 library(tigris)
 options(tidycensus.cache = TRUE)
@@ -245,7 +246,7 @@ write_rds(wi_2005_2021_utilityCounty_popProp, here("_energy",
                                                    "wi_2005_2021_utilityCounty_popProp.RDS")
 )
 
-wi_2005_2021_utilityCounty_activity <- wi_2005_2021_utilityCounty_popProp %>% 
+wi_2005_2021_utilityCounty_activityEmissions <- wi_2005_2021_utilityCounty_popProp %>% 
   #remove rough pop estimates used to calc county proportions of utility population
   select(-estServiceAreaPop, -estTotalServiceAreaPop) %>%
   # add activity data from utility reporting to state/federal regulatory bodies (WI PSC, EIA)
@@ -300,7 +301,7 @@ wi_2005_2021_utilityCounty_activity <- wi_2005_2021_utilityCounty_popProp %>%
     # and multyiply by total customer count to estimate accounts in study area
     propCustomerAccountsInCounty = 
       ifelse(!is.na(utilityCustomer_county),
-             round(utilityCustomer_county / utility_TotalCustomerCount),
+             utilityCustomer_county / utility_TotalCustomerCount,
              NA
       ),
     EST_CustomerAccountsInCounty =
@@ -333,6 +334,56 @@ wi_2005_2021_utilityCounty_activity <- wi_2005_2021_utilityCounty_popProp %>%
              NA,
              EST_utilityCounty_mWh / EST_CustomerAccountsInCounty
       )
+  ) %>%
+  mutate(
+    coalesced_utilityCounty_mWh = coalesce(
+      utilityCounty_mWh,
+      EST_utilityCounty_mWh
+      )
+    ) %>%
+  mutate(
+    CO2_emissions = coalesced_utilityCounty_mWh * case_when(
+      year == 2005 ~ eGRID_MROW_emissionsFactor_CO2_2005,
+      year == 2021 ~ eGRID_MROW_emissionsFactor_CO2_2021
+    ),
+    CH4_emissions = coalesced_utilityCounty_mWh * case_when(
+      year == 2005 ~ eGRID_MROW_emissionsFactor_CH4_2005,
+      year == 2021 ~ eGRID_MROW_emissionsFactor_CH4_2021
+    ),
+    N2O_emissions = coalesced_utilityCounty_mWh * case_when(
+      year == 2005 ~ eGRID_MROW_emissionsFactor_N2O_2005,
+      year == 2021 ~ eGRID_MROW_emissionsFactor_N2O_2021
+    )
   )
+
+WIcounty_level_electricity_emissions <- wi_2005_2021_utilityCounty_activityEmissions %>%
+  group_by(county, year) %>%
+  summarise(
+    total_mWh = sum(coalesced_utilityCounty_mWh, na.rm = TRUE),
+    total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
+    total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
+    total_CH4_emissions_lbs = sum(CH4_emissions, na.rm = TRUE),
+    total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
+    total_N2O_emissions_lbs = sum(N2O_emissions, na.rm = TRUE),
+    total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000,
+    total_CO2e_emissions_lbs = sum(
+      CO2_emissions +
+        (CH4_emissions * gwp$ch4) +
+        (N2O_emissions * gwp$n2o),
+      na.rm = TRUE
+    ),
+    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
+    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    .groups ="keep"
+  ) %>%
+  mutate(
+    state = "WI",
+    sector = "Electricity",
+  )
+
+
 
   
