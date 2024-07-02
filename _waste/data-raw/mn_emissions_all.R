@@ -40,8 +40,8 @@ solid_waste_emissions_mt_meta <-
     "total_n2o", class(solid_waste_emissions_metric_tons$total_n2o), "Annual total metric tons of N~2~O  attributed to the given county",
   )
 # save RDS
-saveRDS(solid_waste_emissions_metric_tons, "_waste/data/mn_sw_emissions_by_gas")
-saveRDS(solid_waste_emissions_mt_meta, "_waste/data/mn_sw_emissions_by_gas_meta")
+saveRDS(solid_waste_emissions_metric_tons, "_waste/data/mn_sw_emissions_by_gas.RDS")
+saveRDS(solid_waste_emissions_mt_meta, "_waste/data/mn_sw_emissions_by_gas_meta.RDS")
 
 solid_waste_emissions_co2e <- solid_waste_emissions_metric_tons %>% 
   mutate(
@@ -85,6 +85,6 @@ solid_waste_emissions_co2e_meta <-
   )
 
 # save RDS
-saveRDS(solid_waste_emissions_co2e, "_waste/data/mn_sw_emissions_co2e")
-saveRDS(solid_waste_emissions_co2e_meta, "_waste/data/mn_sw_emissions_co2e_meta")
+saveRDS(solid_waste_emissions_co2e, "_waste/data/mn_sw_emissions_co2e.RDS")
+saveRDS(solid_waste_emissions_co2e_meta, "_waste/data/mn_sw_emissions_co2e_meta.RDS")
 

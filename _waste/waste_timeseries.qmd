@@ -1,0 +1,141 @@
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r, include=FALSE}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
+epa_waste_inventory <- readRDS(file.path(here::here(), "_waste/data-raw/epa_solidwaste_inventory.RDS"))
+
+federal_totals <- epa_waste_inventory %>%
+  filter(source == "Total") %>%
+  select(
+    geog_name,
+    source,
+    emissions_metric_tons_co2e,
+    data_source
+  )
+
+cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
+sw_emissions <- readRDS(file.path(here::here(), "_waste/data/mn_sw_emissions_co2e.RDS"))
+county_emissions_old <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+hookaddcap()
+```
+
+# Graphing
+
+timeseries of categories over time, across the whole area
+```{r fig-sw-timeseries}
+sw_total_geog <- sw_emissions %>% 
+  group_by(sector, category, year, source) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  filter(source != "Onsite")
+
+fig_solid_waste_time <-
+  plot_ly(
+    type = "bar",
+    source = "fig-sw-timeseries",
+    data = sw_total_geog,
+    y = ~ emissions_metric_tons_co2e,
+    x = ~year,
+    color = ~source,
+    colors = unlist(source_colors),
+    marker = list(
+      line = list(
+        width=0
+      )
+    ),
+    hovertemplate = ~ paste0(
+      category, ", ", source, "<br>",
+      round(emissions_metric_tons_co2e / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
+  plotly_layout(
+    main_title = "Solid Waste Emissions MN Counties 2005-2021",
+    subtitle = "",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    x_title = "Year",
+    legend_title = "Category"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    ),
+    yaxis = list(categoryorder = "total ascending")
+  )
+fig_solid_waste_time
+```
+
+Looks beautiful. At some point will need to add onsite (first add a color to source_colors, check with Liz)
+
+2nd graph: compare 2021 waste data (this run) with previous waste data and NEI data.
+
+```{r fig-solid-waste-versions-compare}
+#| fig-cap:  "Solid waste emissions comparison: Met Council and US GHG Inventory"
+#| out-width: "95%"
+
+solidwaste_totals_prev <- county_emissions_old %>%
+  filter(category == "Solid waste") %>%
+  group_by(geog_name) %>%
+  summarise(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  )
+
+solidwaste_totals_new <- sw_emissions %>% 
+  filter(year == 2021) %>% 
+  group_by(geog_name) %>% 
+  summarise(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  ) %>% 
+  mutate(data_source = "Met Council V2")
+
+waste_federal <- solidwaste_totals_prev %>%
+  mutate(data_source = "Met Council V1") %>%
+  bind_rows(solidwaste_totals_new) %>% 
+  bind_rows(federal_totals)
+
+fig_federal_inventory_compare <- plot_ly(
+  data = waste_federal,
+  source = "fig-federal-inventory-compare",
+  x = ~geog_name,
+  y = ~emissions_metric_tons_co2e,
+  color = ~data_source,
+  type = "bar",
+  colors = c(
+    "Met Council V1" = colors$councilBlue,
+    "Met Council V2" = cprg_colors$cprg_green,
+    "US GHG Inventory" = cprg_colors$cprg_da_yellow
+  ),
+  hovertemplate = ~ paste0(
+    geog_name, " County", "<br>",
+    data_source, "<br>",
+    round(emissions_metric_tons_co2e * 1e-3, digits = 0),
+    " thousand metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  councilR::plotly_layout(
+    main_title = "Solid waste emissions comparison",
+    subtitle = "Met Council estimates compared to US GHG Inventory",
+    x_title = "County",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Emissions Source"
+  ) %>%
+  plotly::layout(barmode = "group")
+
+fig_federal_inventory_compare
+```
