@@ -155,6 +155,8 @@ write.csv(lggit_vmt_entries,
   row.names = FALSE
 )
 
+waldo::compare(lggit_vmt_entries, readRDS("_transportation/data-raw/epa/lggit_vmt_entries.RDS"))
+
 saveRDS(
   lggit_vmt_entries,
   "_transportation/data-raw/epa/lggit_vmt_entries.RDS"
@@ -162,19 +164,22 @@ saveRDS(
 
 
 # results from LGGIT tool -----
+# located in MS Teams ghg-cprg/_transportation/data-raw/epa/met_council_community_ghg_inventorytool_11.28.23.xlsm
+# If on macOS, open in Excel using Citrix.
 # CH4 and N2O reported in terms of GWP already,
 # so do not apply GWPs again
 # 28 and 265, respectively
 
 lggit_totals <- tibble::tribble(
   ~Sector, ~CO2, ~CH4, ~N2O,
-  "Residential", 8371304.18, 4753.94, 29123.38,
+  "Residential", 8371291.47, 4754.11, 29124.38,
   "Commercial/Institutional", 485027.94, 35.12, 1507.90
 ) %>%
   clean_names() %>%
   rowwise() %>%
   mutate(total = sum(co2, ch4, n2o, na.rm = T))
 
+waldo::compare(lggit_totals, readRDS("_transportation/data-raw/epa/lggit_totals.RDS"))
 saveRDS(lggit_totals, "_transportation/data-raw/epa/lggit_totals.RDS")
 
 # effective emissions per mile  -----
@@ -234,4 +239,5 @@ lggit_kg_emissions_per_mile <- lggit_kg_other_per_mile %>%
 # lggit_kg_emissions_per_mile
 
 # save
+waldo::compare(lggit_kg_emissions_per_mile, readRDS("_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS"))
 saveRDS(lggit_kg_emissions_per_mile, "_transportation/data-raw/epa/lggit_kg_emissions_per_mile.RDS")

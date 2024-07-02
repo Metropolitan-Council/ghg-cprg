@@ -16,7 +16,7 @@ testthat::test_that("epa moves", {
   epa_moves %>%
     filter(vehicle_weight == "Passenger") %>%
     magrittr::extract2("co2_co2_equivalent") %>%
-    testthat::expect_equal(356.36)
+    testthat::expect_equal(356.439)
 
   # expect manual CO2e calculation to be same as
   # that in the dataset

@@ -7,6 +7,8 @@
 *_cache
 .DS_Store
 
+**/desktop.ini
+
 _transportation/report_transportation_files/figure-html/
 _waste/data-raw/score_summary.csv
 _waste/data-raw/ghg-emission-factors-hub-2021.xlsx
@@ -327,6 +329,18 @@ _nature/data-raw/land_cover_stock.csv
 site_libs/
 _nature/_natural_systems_files/*
 
+_energy/data-raw/nhgis_blk2000_blk2010_MN/
+
+_energy/data-raw/nhgis_blk2000_blk2010_WI/
+
+_energy/data-raw/EIA861
+
+_energy/data-raw/libraryDocs_2005
+
+_meta/data-raw/nrel_slope/scenario_planner/
+
+_meta/data-raw/nrel_slope/scenario_planner.zip
+
 _meta/data-raw/nrel_slope_emissions/scenario_planner/
 
 _meta/data-raw/nrel_slope_emissions/
@@ -336,3 +350,7 @@ _meta/data-raw/nrel_slope/scenario_planner/
 _meta/data-raw/nrel_slope/emissions/
 
 _meta/data-raw/nrel_slope/scenario_planner.zip
+
+_transportation/data-raw/ghg_protocol/Emission_Factors_for_Cross_Sector_Tools_V2.0_0.xlsx
+
+_transportation/data-raw/ghg_protocol/ghg-uncertainty.xlsx
