@@ -14,7 +14,10 @@ population_data_2000_wi <- get_decennial(
   year = 2000,
   geometry = TRUE,  # Include geometry for spatial operations
   output = "wide"  # Outputs data in a 'wide' format, each variable as a separate column
-)
+) %>%
+  rename(
+    pop2000 = P001001
+  )
 
 # Fetch data for the 2010 decennial census for Wisconsin
 population_data_2010_wi <- get_decennial(
@@ -24,7 +27,10 @@ population_data_2010_wi <- get_decennial(
   year = 2010,
   geometry = TRUE,  # Include geometry for spatial operations
   output = "wide"  # Outputs data in a 'wide' format, each variable as a separate column
-)
+) %>%
+  rename(
+    pop2010 = P001001
+  )
 
 
 # Calculating geographic crosswalks from 2000 blocks to 2010 blocks
@@ -42,7 +48,7 @@ crosswalkPop_2000_to_2010 <- population_data_2000_wi %>%
             by = join_by(GEOID == GEOID00)) %>%
   # 3) Multiply the 2000 block counts by the crosswalk's interpolation weights, producing estimated counts for all 2000-2010 block intersections, or "atoms"
   mutate(
-    pop2000_inAtom = P001001 * WEIGHT
+    pop2000_inAtom = pop2000 * WEIGHT
   ) %>%
   # 4) Sum these atom counts for each 2010 block, join to 2010 data of interest (population_data_2010)
   group_by(GEOID10) %>%
@@ -64,20 +70,19 @@ GEOID10_2000_2005_2010_population_WI <- crosswalkPop_2000_to_2010_centroids %>%
             by = join_by(GEOID10 == GEOID)
   ) %>%
   rename(
-    totalPop2010 = P001001,
-    totalPop2000 = popIn2000_on2010blocks
+    pop2000 = popIn2000_on2010blocks
   ) %>%
   mutate(
-    totalPop2005_interpolated = ((totalPop2000 + totalPop2010) / 2)
+    pop2005_interpolated = ((pop2000 + pop2010) / 2)
   )
 
 GEOID10_2005_population_WI <- GEOID10_2000_2005_2010_population_WI %>%
-  select(-totalPop2000, -NAME, -totalPop2010)
+  select(-pop2000, -NAME, -pop2010)
 
 est_state_pop_2005 <- st_drop_geometry(GEOID10_2005_population_WI) %>%
   group_by(state) %>%
   summarize(
-    state_population = sum(totalPop2005_interpolated)
+    state_population = sum(pop2005_interpolated)
   )
 
 
@@ -89,8 +94,20 @@ population_data_2020_wi <- get_decennial(
   year = 2020,
   geometry = TRUE,  # Include geometry for spatial operations
   output = "wide"  # Outputs data in a 'wide' format, each variable as a separate column
-)
+) %>%
+  rename(
+    pop2020 = P1_001N
+  )  %>%
+  mutate(
+    state = "WI"
+  ) %>%
+  st_centroid()
 
+state_pop_2020 <- st_drop_geometry(population_data_2020_wi) %>%
+  group_by(state) %>%
+  summarize(
+    state_population = sum(pop2020)
+  )
 
 #read in utility service area spatial files -- unique utility-county pairs, and total service areas
 WI_elecUtilities_area_in_scope <- readRDS(here(
@@ -150,50 +167,62 @@ rm(crosswalkPop_2000_to_2010)
 rm(crosswalkPop_2000_to_2010_centroids)
 rm(crosswalkWI)
 
-
+#add state pop reference in mutate statement
 #Summarize to utility
-wi_pop_2005_utility <- wi_pop_2005_filtered %>%
-  group_by(utility_name, county) %>%
+wi_pop_2005_utility <- st_drop_geometry(wi_pop_2005_filtered) %>%
+  group_by(utility_name) %>%
   summarize(
-    serviceAreaPop = sum(totalPop2005_interpolated)
+    serviceAreaPop = sum(pop2005_interpolated),
+    .groups = 'keep'
   ) %>%
+  ungroup() %>%
   mutate(
     year = 2005
   )
 
-wi_pop_2021_utility <- wi_pop_2021_filtered %>%
-  group_by(utility_name, county) %>%
+wi_pop_2021_utility <- st_drop_geometry(wi_pop_2021_filtered) %>%
+  group_by(utility_name) %>%
   summarize(
-    serviceAreaPop = sum(P1_001N)
+    serviceAreaPop = sum(pop2020),
+    .groups = 'keep'
   ) %>%
+  ungroup() %>%
   mutate(
     year = 2021
   )
+
 
 #Summarize to utility-county
-wi_pop_2005_utilityCounty <- wi_pop_2005_filtered %>%
+
+wi_pop_2005_utilityCounty <- st_drop_geometry(wi_pop_2005_filtered) %>%
   group_by(utility_name, county) %>%
   summarize(
-    serviceAreaPop = sum(totalPop2005_interpolated)
+    serviceAreaPop = sum(pop2005_interpolated),
+    .groups = 'keep'
   ) %>%
+  ungroup() %>%
   mutate(
     year = 2005
   ) %>%
   filter(
     county %in% c('St. Croix', 'Pierce')
   )
-  
-wi_pop_2021_utilityCounty <- wi_pop_2021_filtered %>%
+
+
+wi_pop_2021_utilityCounty <- st_drop_geometry(wi_pop_2021_filtered) %>%
   group_by(utility_name, county) %>%
   summarize(
-    serviceAreaPop = sum(P1_001N)
+    serviceAreaPop = sum(pop2020),
+    .groups = 'keep'
   ) %>%
+  ungroup() %>%
   mutate(
     year = 2021
   ) %>%
   filter(
     county %in% c('St. Croix', 'Pierce')
   )
+
 
 #Combine tables and write to final RDS
 
