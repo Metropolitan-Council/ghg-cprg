@@ -248,7 +248,9 @@ write_rds(wi_2005_2021_utilityCounty_popProp, here("_energy",
 
 wi_2005_2021_utilityCounty_activityEmissions <- wi_2005_2021_utilityCounty_popProp %>% 
   #remove rough pop estimates used to calc county proportions of utility population
-  select(-estServiceAreaPop, -estTotalServiceAreaPop) %>%
+  rename(
+    county_name = county
+  ) %>%
   # add activity data from utility reporting to state/federal regulatory bodies (WI PSC, EIA)
   mutate(
     util_Total_mWh = case_when(
@@ -285,13 +287,13 @@ wi_2005_2021_utilityCounty_activityEmissions <- wi_2005_2021_utilityCounty_popPr
     ),
     utilityCustomer_county = case_when(
       year == 2005 & utility_name == "New Richmond Municipal Electric Utility" ~ 3987, # not in WI reporting, check EIA, use 3979 if no (avg no. cust)
-      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" & county == "Pierce" ~ 6740,
-      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" & county == "St. Croix" ~ 20357,
+      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "Pierce" ~ 6740,
+      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "St. Croix" ~ 20357,
       year == 2021 & utility_name == "New Richmond Municipal Electric Utility" ~ 5333,
-      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" & county == "Pierce" ~ 7489,
-      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" & county == "St. Croix" ~ 24850,
-      year == 2021 & utility_name == "River Falls Municipal Utility" & county == "Pierce" ~ 4901,
-      year == 2021 & utility_name == "River Falls Municipal Utility" & county == "St. Croix" ~ 2137
+      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "Pierce" ~ 7489,
+      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "St. Croix" ~ 24850,
+      year == 2021 & utility_name == "River Falls Municipal Utility" & county_name == "Pierce" ~ 4901,
+      year == 2021 & utility_name == "River Falls Municipal Utility" & county_name == "St. Croix" ~ 2137
     )
   ) %>%
   mutate(
@@ -357,7 +359,7 @@ wi_2005_2021_utilityCounty_activityEmissions <- wi_2005_2021_utilityCounty_popPr
   )
 
 WIcounty_level_electricity_emissions <- wi_2005_2021_utilityCounty_activityEmissions %>%
-  group_by(county, year) %>%
+  group_by(county_name, year) %>%
   summarise(
     total_mWh = sum(coalesced_utilityCounty_mWh, na.rm = TRUE),
     total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
@@ -381,9 +383,48 @@ WIcounty_level_electricity_emissions <- wi_2005_2021_utilityCounty_activityEmiss
   ) %>%
   mutate(
     state = "WI",
-    sector = "Electricity",
+    sector = "Electricity"
   )
 
+# regenerating these files here rather than the old processed_wi_electricUtil_activityData
+write_rds(wi_2005_2021_utilityCounty_activityEmissions, here("_energy", "data", "wisconsin_elecUtils_ActivityAndEmissions.RDS"))
+write_rds(WIcounty_level_electricity_emissions, here("_energy", "data", "wisconsin_county_ElecEmissions.RDS"))
 
 
-  
+# compare numbers we obtained to downscaled EIA numbers
+
+# read in EIA state estimate (mWh) for WI -- https://www.eia.gov/electricity/state/archive/2021/wisconsin/
+
+EIA_WI_elecRetailEst_mWh <- 69426615
+
+
+WI_currentCounty_deliveries <- read_rds(here(
+  "_energy",
+  "data",
+  "wisconsin_county_ElecEmissions.RDS"
+)) %>%
+  select(county_name, OURS_total_CO2e_emissions_lbs = total_CO2e_emissions_lbs)
+
+downscaleEIA_WI_electricRetail <- read_rds(here(
+  "_meta",
+  "data",
+  "cprg_county_proportions.RDS"
+)) %>%
+  filter(STATEFP == 55 &
+           population_data_source == "Decennial Census PL 94-171 Redistricting Data Summary File") %>%
+  select(GEOID, county_name = NAME, county_proportion_of_state_pop) %>%
+  mutate(
+    downscaled_EIA_total_CO2e_emissions_lbs =
+      EIA_WI_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1,
+    state = "WI"
+  ) %>%
+  left_join(WI_currentCounty_deliveries,
+            by = "county_name"
+  )
+
+write_rds(downscaleEIA_WI_electricRetail, here(
+  "_energy",
+  "data",
+  "wisconsin_QA_versusEIAStateProfile.RDS"
+))
+
