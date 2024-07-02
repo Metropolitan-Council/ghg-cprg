@@ -245,6 +245,53 @@ write_rds(wi_2005_2021_utilityCounty_popProp, here("_energy",
                                                    "wi_2005_2021_utilityCounty_popProp.RDS")
 )
 
-
+wi_2005_2021_utilityCounty_activity <- wi_2005_2021_utilityCounty_popProp %>% 
+  #remove rough pop estimates used to calc county proportions of utility population
+  select(-estServiceAreaPop, -estTotalServiceAreaPop) %>%
+  # add activity data from utility reporting to state/federal regulatory bodies (WI PSC, EIA)
+  mutate(
+    util_Total_mWh = case_when(
+      year == 2005 & utility_name == "Dunn Energy Cooperative" ~ 135991, # EIA-861 
+      year == 2005 & utility_name == "Polk-Burnett Electric Cooperative" ~ 221602, # EIA-861 
+      year == 2005 & utility_name == "New Richmond Municipal Electric Utility" ~ 85873, # WI reporting! number same on EIA
+      year == 2005 & utility_name == "River Falls Municipal Utility" ~ 117812, # WI reporting! number same on EIA
+      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" ~ 6142751, # WI reporting -- EIA shows smaller number (6007310)
+      year == 2005 & utility_name == "St Croix Electric Cooperative" ~ 167000, # EIA-861
+      year == 2005 & utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 115091, # EIA-861
+      year == 2021 & utility_name == "Dunn Energy Cooperative" ~ 220809, # EIA-861 long form
+      year == 2021 & utility_name == "Polk-Burnett Electric Cooperative" ~ 241590, # EIA-861 long form
+      year == 2021 & utility_name == "New Richmond Municipal Electric Utility" ~ 102201.827, # WI reporting
+      year == 2021 & utility_name == "River Falls Municipal Utility" ~ 128159.282, # WI reporting
+      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" ~ 6788131, # WI reporting
+      year == 2021 & utility_name == "St Croix Electric Cooperative" ~ 202641, # EIA-861 short form
+      year == 2021 & utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 121060 # EIA-861 short form
+    ),
+    utility_TotalCustomerCount = case_when(
+      year == 2005 & utility_name == "Dunn Energy Cooperative" ~ 8916, # EIA-861 
+      year == 2005 & utility_name == "Polk-Burnett Electric Cooperative" ~ 18881, # EIA-861 
+      year == 2005 & utility_name == "St Croix Electric Cooperative" ~ 9116, # EIA-861 
+      year == 2005 & utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 7072, # EIA-861 
+      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" ~ 230761, # reflects number reported to state; number reported to EIA is higher: 240315. Using state number since we used state numbers for county
+      year == 2005 & utility_name == "River Falls Municipal Utility" ~ 5500, # 5623 is year-round "avg. customer number (monthly)" on state reports; 5500 is federal
+      year == 2005 & utility_name == "New Richmond Municipal Electric Utility" ~ 3987 # EIA number; 3979 is avg no. cust figure reported to state
+      year == 2021 & utility_name == "Dunn Energy Cooperative" ~ 10270,
+      year == 2021 & utility_name == "Polk-Burnett Electric Cooperative" ~ 21303,
+      year == 2021 & utility_name == "St Croix Electric Cooperative" ~ 11386, # EIA-861 short form
+      year == 2021 & utility_name == "Pierce-Pepin Electric Cooperative Services" ~ 7795, # EIA-861 short form
+      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" ~ 266071,
+      year == 2021 & utility_name == "River Falls Municipal Utility" ~ 7038,
+      year == 2021 & utility_name == "New Richmond Municipal Electric Utility" ~ 5333,
+    ),
+    utilityCustomer_county = case_when(
+      year == 2005 & utility_name == "New Richmond Municipal Electric Utility" ~ 3987, # not in WI reporting, check EIA, use 3979 if no (avg no. cust)
+      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "Pierce" ~ 6740,
+      year == 2005 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "St. Croix" ~ 20357,
+      year == 2021 & utility_name == "New Richmond Municipal Electric Utility" ~ 5333,
+      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "Pierce" ~ 7489,
+      year == 2021 & utility_name == "Northern States Power Company-Wisconsin" & county_name == "St. Croix" ~ 24850,
+      year == 2021 & utility_name == "River Falls Municipal Utility" & county_name == "Pierce" ~ 4901,
+      year == 2021 & utility_name == "River Falls Municipal Utility" & county_name == "St. Croix" ~ 2137
+    )
+  )
 
   
