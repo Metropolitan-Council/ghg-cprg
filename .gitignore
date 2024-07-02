@@ -336,3 +336,13 @@ _meta/data-raw/nrel_slope/scenario_planner/
 _meta/data-raw/nrel_slope/emissions/
 
 _meta/data-raw/nrel_slope/scenario_planner.zip
+_energy/data-raw/nhgis_blk2000_blk2010_MN/co-est00int-01-27.csv
+_energy/data-raw/nhgis_blk2000_blk2010_WI/co-est00int-01-55.csv
+_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.cpg
+_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.dbf
+_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.prj
+_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.sbn
+_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.sbx
+_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.shp
+_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.shp.xml
+_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.shx
