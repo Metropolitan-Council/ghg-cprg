@@ -36,4 +36,12 @@ state_ipcc <-
               path = "_transportation/data-raw/epa/state_ghg/State-Level-GHG-data/Wisconsin.xlsx"))
     
 
-state_ipcc
+state_ipcc %>% 
+  group_by(sector_group, inventory_year, state) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
+  ungroup() %>% 
+  plot_ly(
+    y= ~inventory_year,
+    x  = ~emissions_metric_tons_co2e,
+    color = ~sector_group
+  )
