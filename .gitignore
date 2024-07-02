@@ -354,3 +354,7 @@ _meta/data-raw/nrel_slope/scenario_planner.zip
 _transportation/data-raw/ghg_protocol/Emission_Factors_for_Cross_Sector_Tools_V2.0_0.xlsx
 
 _transportation/data-raw/ghg_protocol/ghg-uncertainty.xlsx
+
+_energy/data-raw/egrid_historical_files_1996-2016
+
+_energy/data-raw/geoCrosswalk
