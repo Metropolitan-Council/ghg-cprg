@@ -5,6 +5,11 @@ library(tidycensus)
 library(tigris)
 options(tidycensus.cache = TRUE)
 
+#paths to compute-intense outcomes of block level analysis
+file1 <- here("_energy", "data-raw", "wi_popBlocks_2005_withUtility.RDS")
+file2 <- here("_energy", "data-raw", "wi_popBlocks_2021_withUtility.RDS")
+
+if (!file.exists(file1) || !file.exists(file2)) {
 
 #2005 Wisconsin population blocks
 # Fetch data for the 2000 decennial census for Wisconsin 
@@ -157,7 +162,6 @@ write_rds(wi_pop_2021_filtered, here("_energy",
                             "wi_popBlocks_2021_withUtility.RDS")
 )
 
-
 # clean up intermediate dfs/sfs before heavy duty joins to conserve memory
 rm(GEOID10_2005_population_WI)
 rm(GEOID10_2000_2005_2010_population_WI)
@@ -167,6 +171,15 @@ rm(population_data_2020_wi)
 rm(crosswalkPop_2000_to_2010)
 rm(crosswalkPop_2000_to_2010_centroids)
 rm(crosswalkWI)
+
+} else {
+  
+wi_pop_2005_filtered<- read_rds(file2)
+  
+wi_pop_2021_filtered<- read_rds(file2)
+
+            
+}
 
 #add state pop reference in mutate statement
 #Summarize to utility
