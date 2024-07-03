@@ -1224,6 +1224,19 @@
   keywords = {Regional PCAP}
 }
 
+@report{icfUserGuideIncorporating2023,
+  title = {User’s {{Guide}} to {{Incorporating Existing GHG Inventories}} for the {{Priority Climate Action Plan}} ({{PCAP}})},
+  author = {{ICF}},
+  date = {2023-10},
+  pages = {1--6},
+  institution = {{US EPA, State and Local Climate and Energy Program}},
+  location = {Arlington, VA},
+  url = {https://www.epa.gov/system/files/documents/2024-01/guide-to-incorporating-existing-ghg-inventories-into-a-pcap.pdf},
+  urldate = {2024-07-03},
+  abstract = {The purpose of this document is to provide guidance for metropolitan statistical areas (MSAs)1 developing or compiling greenhouse gas (GHG) inventories for their priority climate action plans (PCAPs) under the Climate Pollution Reduction Grant (CPRG) Program of the US Environmental Protection Agency’s (EPA). 2 Figure 1 provides an overview of the key steps for developing an MSA-wide GHG inventory. This guide provides information particularly related to defining the scale of the inventory, collecting and compiling data, and setting a base year to aid localities with incorporating existing inventories into their PCAP.},
+  langid = {english}
+}
+
 @report{icfUsersGuideMinnesota22,
   type = {Government},
   title = {Users {{Guide}}: {{Minnesota Infrastructure Carbon Estimator}} ({{MICE}}) Version 2.1},
@@ -3346,12 +3359,38 @@
   urldate = {2023-12-08}
 }
 
+@report{usepaDRAFTPriorityClimate2023,
+  type = {Government},
+  title = {{{DRAFT Priority Climate Action Plan}}: {{Helpful Resources}} for {{Scaling Emissions Data}}},
+  shorttitle = {{{PCAP Helpful Resources}} for {{Tribes}} and {{Territories}}},
+  author = {{USEPA}},
+  date = {2023-01},
+  url = {https://www.epa.gov/system/files/documents/2024-03/pcap_scaling_factors_data_guide_508_3.pdf},
+  urldate = {2024-07-03},
+  abstract = {This document provides a variety of resources to aid Climate Pollution Reduction Grant (CPRG) participants in adapting and scaling existing data sets to use in their Priority Climate Action Plans (PCAPs) and Comprehensive Climate Action Plans (CCAPs). Climate Action Plans (CAPs) exist for many states, local governments, Tribes, Territories, or regions, and may contain useful data that can be integrated into the PCAP through data scaling practices. Please note that PCAP contents are specified by the U.S. Environmental Protection Agency’s (EPA) CPRG Planning Grant Program. For more information about the required content of a PCAP, please consult EPA’s CPRG Program Guidance for Federally Recognized Tribes, Tribal Consortia, and U.S. Territories or CPRG Program Guidance for States, Municipalities, and Air Control Agencies. If you would like to suggest a resource to be included in this document, please contact CPRG@epa.gov.},
+  langid = {english}
+}
+
 @dataset{usepaEGRIDEmissionsGeneration2021,
   title = {{{eGRID}} ({{Emissions}} \& {{Generation Resource Integrated Database}}) 2021 {{Summary Data}}},
   author = {USEPA},
   date = {2021},
   url = {https://www.epa.gov/egrid/summary-data},
   urldate = {2024-01-24}
+}
+
+@report{usepaEmissionAdjustmentsOnroad2023,
+  type = {Government},
+  title = {Emission {{Adjustments}} for {{Onroad Vehicles}} in {{MOVES4}}},
+  author = {{USEPA}},
+  date = {2023-08},
+  number = {EPA-420-R-23-021},
+  pages = {1--99},
+  institution = {{Office of Transportation and Air Quality}},
+  location = {Ann Arbor, MI},
+  url = {https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P10186KX.pdf},
+  urldate = {2024-07-03},
+  abstract = {The United States Environmental Protection Agency’s Motor Vehicle Emission Simulator—commonly referred to as MOVES—is a set of modeling tools for estimating air pollution emissions produced by onroad (highway) and nonroad mobile sources. MOVES estimates the emissions of greenhouse gases (GHGs), criteria pollutants, and selected air toxics. The MOVES model is currently the official model for use for state implementation plan (SIP) submissions to EPA and for transportation conformity analyses outside of California. The model is also the primary modeling tool to estimate the impact of mobile source regulations on emission inventories. MOVES calculates emission inventories by multiplying emission rates by the appropriate emissionrelated activity, applying correction and adjustment factors as needed to simulate specific situations, and then adding up the emissions from all sources and regions. The highway vehicle emission rates in the MOVES model represent emissions under a single (base) scenario of conditions for temperature, humidity, air conditioning load and fuel properties. MOVES is designed to adjust these base emission rates to reflect the conditions for the location and time specified by the user. MOVES also includes the flexibility to adjust the base emission rates to reflect the effects of local Inspection and Maintenance (I/M) programs. This report describes how these adjustments for temperature, humidity, I/M, and air conditioning were derived. Adjustments for fuel properties are addressed in a separate report.1 This report describes MOVES adjustments that affect running exhaust, start exhaust, and extended idling exhaust emissions for Total Hydrocarbons (THC), carbon monoxide (CO), nitrogen oxides (NOx), fine particulate matter (PM2.5) and energy consumption. The temperature effects that impact these pollutants, also affect the pollutants that are calculated from these pollutants in MOVES, such as volatile organic compounds (VOC)2 and individual toxics such as benzene3 (chained to THC), NO2 (chained to NOx)4,5 , elemental carbon (chained to PM2.5) 2 , and CO2 emissions (chained to energy). 6 The definitions of these pollutants and the relationship to the primary pollutants are discussed in the cited MOVES reports. The crankcase emission processes4,5 are chained to running exhaust, engine start, and extended idling exhaust emissions, and thus are similarly affected by the temperature adjustments described in this report. The impact of fuels, temperatures, and I/M programs on vapor venting, permeation, and liquid leaks is addressed in a separate report on evaporative emissions.7 For MOVES4, this report was updated to account for adjustments needed to model energy consumption from battery and fuel-cell electric vehicles. This includes new temperature adjustments as described in Section 2.7, and adjustments to account for electric vehicle charging and battery efficiency as described in Section 6. Also, in Section 7, we describe adjustments to energy consumption and hydrocarbon and NOX emissions from internal combustion engine vehicles that account for the averaging, banking, and trading provisions of light-duty regulations in the context of a growing population of electric vehicles. We updated the temperature correction for HD diesel vehicles of model year 2027 and later (Section 2.4.3). We also updated the humidity adjustments for NOx emissions (Section 3) and reorganized the I/M section (Section 5).}
 }
 
 @dataset{usepaEmissionsFactorsGreenhouse2021,
@@ -3414,6 +3453,20 @@
   url = {https://ghgdata.epa.gov/ghgp/main.do},
   urldate = {2023-12-08},
   abstract = {FLIGHT provides information about greenhouse gas (GHG) emissions from large facilities in the U.S. These facilities are required to report annual data about GHG emissions to EPA as part of the Greenhouse Gas Reporting Program (GHGRP). Take a tour of what you can find in FLIGHT, or use one of the view options at the right to get started.}
+}
+
+@report{usepaGreenhouseGasEnergy2023,
+  type = {Government},
+  title = {Greenhouse {{Gas}} and {{Energy Consumption Rates}} for {{Onroad Vehicles}} in {{MOVES4}}},
+  author = {{USEPA}},
+  date = {2023-08},
+  number = {EPA-420-R-23-026},
+  pages = {1--57},
+  institution = {{Office of Transportation and Air Quality}},
+  location = {Ann Arbor, MI},
+  url = {https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P10186RQ.pdf},
+  urldate = {2024-07-03},
+  abstract = {This report describes the energy and greenhouse gas (GHG) rates in MOVES and documents the data sources and analyses we used to develop the energy and greenhouse gas emission rates. A timeline of the development of the energy and greenhouse gas emission rates in MOVES is presented in Appendix A. This report is divided into four major sections: 1. Energy Rates 2. Nitrous Oxide (N2O) Emission Rates 3. Carbon Dioxide (CO2) Emission Rates 4. Fuel Consumption Calculations The energy rates for light-duty vehicles are based on the work conducted for MOVES2004, 1 however, they have been significantly updated in subsequent versions of MOVES, including MOVES2009, MOVES2010, MOVES2014, and MOVES3. This report documents the changes in energy rates that were made between MOVES2010, MOVES2014, and MOVES3. We point the reader to the earlier reports that document the development of the energy rates prior to MOVES201 1,2 0. MOVES2014 incorporated the light-duty greenhouse gas emission standards affecting model years 2017 and later cars and light trucks.3 MOVES2014 also incorporated the Heavy-Duty GHG Phase 1 emissions standards for model years 2014 and later.4 In this report, we briefly discuss the impact of the HD GHG Phase 1 and Phase 2 standards implemented in MOVES2014 and MOVES3 respectively, however, the details of the energy rates for heavy-duty are documented in the MOVES heavy-duty emissions rates report.5 As explained below, energy rates were updated in MOVES3 to incorporate the 2020 Safer Affordable Fuel Efficient (SAFE) Vehicles standards6 for light-duty passenger cars and trucks and to incorporate the Greenhouse Gas Emissions and Fuel Efficiency Standards for Mediumand Heavy-Duty Engines and Vehicles—Phase 2 Rule (“HD GHG2”) published in 2016.7 . In MOVES4, we updated energy consumption rates for light-duty internal combustion engines to account for the Revised 2023 and Later Model Year Light Duty Vehicle Greenhouse Gas Emission Standards (LD GHG 2023-2026) rule. 8 We also updated running process energy consumption for light-duty electric vehicles (Section 2.1.3), and added energy consumption for heavy-duty electric and fuel-cell vehicles (Section 2.2). Additional updates relevant to GHGs and energy are described in the MOVES4 emission adjustment report.23 These include adjustments to account for charging efficiency, battery deterioration, cabin temperature control and the impact of electric vehicle fractions on the effective standards for internal combustion engine (ICE) vehicles. In MOVES4, we also updated the heavy-duty diesel emission rates to account for newer studies which show the significant impacts that selective catalytic reduction (SCR) systems have on N2O emissions (Section 3.2.2.2). The nitrous oxide (N2O) emission rates for light-duty diesel and all gasoline and CNG vehicles remain the same; they have not been updated since MOVES2010. 5  The carbon dioxide (CO2) emission rates in MOVES are calculated using the energy emission rates. The values used to convert energy to carbon dioxide emissions are presented here, along with the equation and values used to calculate carbon dioxide equivalent emission rates. The methods and data used to calculate nonroad fuel consumption and CO2 emission rates for nonroad equipment are documented in the nonroad emission rate reports. 9,10 We also present the values that MOVES uses to calculate fuel consumption in volume (gallons). MOVES currently reports fuel usage in terms of energy (e.g., kilojoules), but calculates gallons for use in internal calculators as well. The values are presented in this report, so that users can calculate fuel volumes using MOVES output in a manner consistent with the MOVES calculators. Lastly, although methane is considered one of the major greenhouse gases, the development of methane emission rates is not documented in this report. The methane emissions in MOVES are calculated as a fraction of the total hydrocarbon emissions. Both the methane fractions and total hydrocarbon emission rates in MOVES4 stay the same as in MOVES3 and are documented in the following reports: MOVES onroad speciation report11 and MOVES light-duty12 and heavyduty5 exhaust emission rate reports.}
 }
 
 @online{usepaHeatIslandEffect2014,
@@ -3860,15 +3913,6 @@
   urldate = {2024-01-24}
 }
 
-@report{WisconsinGreenhouseGas2021,
-  title = {Wisconsin {{Greenhouse Gas Emissions Inventory Report}}},
-  date = {2021-12},
-  pages = {14},
-  institution = {Wisconsin Department of Natural Resources},
-  url = {https://widnr.widen.net/view/pdf/o9xmpot5x7/AM610.pdf?t.download=true},
-  urldate = {2024-01-29}
-}
-
 @dataset{wisconsinlegislatureWisconsinCitiesTowns2023,
   title = {Wisconsin {{Cities}}, {{Towns}} and {{Villages}} ({{July}} 2023)},
   author = {{Wisconsin Legislature}},
@@ -4010,8 +4054,4 @@
   issue = {1},
   langid = {english},
   keywords = {Agroecology,Climate-change mitigation,Ecological modelling,Ecosystem services}
-}
-
-@report{zotero-3504,
-  type = {report}
 }
