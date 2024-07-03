@@ -43,6 +43,10 @@ epa_moves_meta <- tribble(
   "n2o", class(epa_moves$n2o), "Grams of nitrous oxide per vehicle mile traveled"
 )
 
+waldo::compare(epa_moves, readRDS("_transportation/data/epa_moves.RDS"))
+waldo::compare(epa_moves_meta, readRDS("_transportation/data/epa_moves_meta.RDS"))
+
+
 
 saveRDS(epa_moves, "_transportation/data/epa_moves.RDS")
 saveRDS(epa_moves_meta, "_transportation/data/epa_moves_meta.RDS")

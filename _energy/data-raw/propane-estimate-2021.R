@@ -53,7 +53,7 @@ wi_prop_use <- eia2020[64, 15] # 66.5
 #   print(n = 10000)
 
 # get number of households in each county using propane
-mn_prop_hh <- get_acs(
+mn_prop_hh <- tidycensus::get_acs(
   geography = "county",
   variables = "B25040_003",
   state = "MN",
@@ -69,7 +69,7 @@ mn_prop_hh <- get_acs(
   )
 
 # repeat for WI
-wi_prop_hh <- get_acs(
+wi_prop_hh <- tidycensus::get_acs(
   geography = "county",
   variables = "B25040_003",
   state = "WI",
@@ -93,4 +93,5 @@ total_regional_propane_emissions <- sum(prop_county$CO2e) # total regional emiss
 
 
 total_regional_propane_emissions
+waldo::compare(prop_county, readRDS("_energy/data-raw/propane_use_county.RDS"))
 saveRDS(prop_county, "_energy/data-raw/propane_use_county.RDS")
