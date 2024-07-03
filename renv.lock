@@ -109,13 +109,15 @@
     },
     "PROJ": {
       "Package": "PROJ",
-      "Version": "0.4.5",
+      "Version": "0.5.0",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
-        "R"
+        "R",
+        "lifecycle",
+        "wk"
       ],
-      "Hash": "1cc61d76dc4058622a28742c0eb362f9"
+      "Hash": "68559a7a9a83099c73928262cd8c52bb"
     },
     "R.cache": {
       "Package": "R.cache",
@@ -2637,6 +2639,27 @@
         "withr"
       ],
       "Hash": "829f27b9c4919c16b593794a6344d6c0"
+    },
+    "tidyterra": {
+      "Package": "tidyterra",
+      "Version": "0.6.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "data.table",
+        "dplyr",
+        "ggplot2",
+        "magrittr",
+        "rlang",
+        "scales",
+        "sf",
+        "terra",
+        "tibble",
+        "tidyr"
+      ],
+      "Hash": "5d9672bc78297d33c4ad8b51a8aaa48f"
     },
     "tigris": {
       "Package": "tigris",
