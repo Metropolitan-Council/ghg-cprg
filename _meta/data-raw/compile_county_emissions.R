@@ -75,7 +75,7 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
     geog_name = county,
     category = paste0(category, " energy"),
     source = source,
-    data_source = "Individual electric utilities, NREL SLOPE",
+    data_source = "Individual electric utilities, NREL SLOPE (2021)",
     factor_source = "eGRID MROW"
   ) %>%
   select(names(transportation_emissions))
@@ -193,6 +193,7 @@ emissions_all <- bind_rows(
         "Residential energy",
         "Commercial energy",
         "Industrial energy",
+        "Total energy",
         "Liquid stationary fuels",
         "Passenger vehicles",
         "Commercial vehicles",
