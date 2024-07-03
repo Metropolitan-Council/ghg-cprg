@@ -1,5 +1,4 @@
 source("R/_load_pkgs.R")
-source("R/global_warming_potential.R")
 
 wc_county <- readRDS("./_nature/data/county_landcover_2021.rds")
 land_cover_c <- readRDS("./_nature/data/land_cover_carbon.rds")
