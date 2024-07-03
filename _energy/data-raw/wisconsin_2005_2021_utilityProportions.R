@@ -174,7 +174,7 @@ rm(crosswalkWI)
 
 } else {
   
-wi_pop_2005_filtered<- read_rds(file2)
+wi_pop_2005_filtered<- read_rds(file1)
   
 wi_pop_2021_filtered<- read_rds(file2)
 
