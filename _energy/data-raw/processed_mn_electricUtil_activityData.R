@@ -88,6 +88,7 @@ processed_mn_elecUtil_activityData <- combined_MNelectUtil_activityData %>%
 MNcounty_level_electricity_emissions_2021 <- processed_mn_elecUtil_activityData %>%
   group_by(county) %>%
   summarise(
+    total_mWh = sum(mWh_delivered, na.rm = TRUE),
     total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
     total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
     total_CH4_emissions_lbs = sum(CH4_emissions, na.rm = TRUE),
@@ -115,13 +116,13 @@ MNcounty_level_electricity_emissions_2021 <- processed_mn_elecUtil_activityData 
 #add 2005 county level activity manually -- sourced from pg. 47 of the 2005 Minnesota Utility Data Book
 MNcounty_level_electricity_emissions_2005 <- data.frame(
   county = c("Anoka", "Carver", "Chisago", "Dakota", "Hennepin", "Ramsey", "Scott", "Sherburne", "Washington"),
-  mWh_delivered = c(2543436, 845549, 362915, 4717100, 13350636, 5895954, 1238844, 854350, 2187214)
+  total_mWh = c(2543436, 845549, 362915, 4717100, 13350636, 5895954, 1238844, 854350, 2187214)
 ) %>%
   #calculate emissions figures -- pounds
   mutate(
-    total_CO2_emissions_lbs = mWh_delivered * eGRID_MROW_emissionsFactor_CO2_2005,
-    total_CH4_emissions_lbs = mWh_delivered * eGRID_MROW_emissionsFactor_CH4_2005,
-    total_N2O_emissions_lbs = mWh_delivered * eGRID_MROW_emissionsFactor_N2O_2005
+    total_CO2_emissions_lbs = total_mWh * eGRID_MROW_emissionsFactor_CO2_2005,
+    total_CH4_emissions_lbs = total_mWh * eGRID_MROW_emissionsFactor_CH4_2005,
+    total_N2O_emissions_lbs = total_mWh * eGRID_MROW_emissionsFactor_N2O_2005
   ) %>%
   #calculate emissions figures -- tons
   mutate(
@@ -145,9 +146,8 @@ MNcounty_level_electricity_emissions_2005 <- data.frame(
     state = "MN",
     sector = "Electricity",
     year = 2005
-  ) %>%
+  ) 
   #drop activity data to align with 2021 -- maybe better to retain and add for long-term data model?
-  select(-mWh_delivered)
 
 MNcounty_level_electricity_emissions <- rbind(MNcounty_level_electricity_emissions_2005,
                                               MNcounty_level_electricity_emissions_2021)
