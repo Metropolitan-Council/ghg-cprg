@@ -358,3 +358,7 @@ _transportation/data-raw/ghg_protocol/ghg-uncertainty.xlsx
 _energy/data-raw/egrid_historical_files_1996-2016
 
 _energy/data-raw/geoCrosswalk
+_agriculture/data-raw/manure-ch4.csv
+_agriculture/data-raw/enteric-fermentation.csv
+_agriculture/data-raw/manure-n2o.csv
+_agriculture/data-raw/mn-feedlots.csv
