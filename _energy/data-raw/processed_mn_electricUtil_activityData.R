@@ -113,27 +113,27 @@ MNcounty_level_electricity_emissions_2021 <- processed_mn_elecUtil_activityData 
     year = 2021
   )
 
-#add 2005 county level activity manually -- sourced from pg. 47 of the 2005 Minnesota Utility Data Book
+# add 2005 county level activity manually -- sourced from pg. 47 of the 2005 Minnesota Utility Data Book
 MNcounty_level_electricity_emissions_2005 <- data.frame(
   county = c("Anoka", "Carver", "Chisago", "Dakota", "Hennepin", "Ramsey", "Scott", "Sherburne", "Washington"),
   total_mWh = c(2543436, 845549, 362915, 4717100, 13350636, 5895954, 1238844, 854350, 2187214)
 ) %>%
-  #calculate emissions figures -- pounds
+  # calculate emissions figures -- pounds
   mutate(
     total_CO2_emissions_lbs = total_mWh * eGRID_MROW_emissionsFactor_CO2_2005,
     total_CH4_emissions_lbs = total_mWh * eGRID_MROW_emissionsFactor_CH4_2005,
     total_N2O_emissions_lbs = total_mWh * eGRID_MROW_emissionsFactor_N2O_2005
   ) %>%
-  #calculate emissions figures -- tons
+  # calculate emissions figures -- tons
   mutate(
     total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
     total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
     total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000,
     total_CO2e_emissions_lbs = (
-      total_CO2_emissions_lbs + 
+      total_CO2_emissions_lbs +
         (total_CH4_emissions_lbs * gwp$ch4) +
         (total_N2O_emissions_lbs * gwp$n2o)
-       )
+    )
   ) %>%
   mutate(
     total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
@@ -146,12 +146,14 @@ MNcounty_level_electricity_emissions_2005 <- data.frame(
     state = "MN",
     sector = "Electricity",
     year = 2005
-  ) 
-  #drop activity data to align with 2021 -- maybe better to retain and add for long-term data model?
+  )
+# drop activity data to align with 2021 -- maybe better to retain and add for long-term data model?
 
-MNcounty_level_electricity_emissions <- rbind(MNcounty_level_electricity_emissions_2005,
-                                              MNcounty_level_electricity_emissions_2021)
-  
+MNcounty_level_electricity_emissions <- rbind(
+  MNcounty_level_electricity_emissions_2005,
+  MNcounty_level_electricity_emissions_2021
+)
+
 write_rds(processed_mn_elecUtil_activityData, here("_energy", "data", "minnesota_elecUtils_ActivityAndEmissions.RDS"))
 write_rds(MNcounty_level_electricity_emissions, here("_energy", "data", "minnesota_county_ElecEmissions.RDS"))
 
@@ -162,7 +164,7 @@ write_rds(MNcounty_level_electricity_emissions, here("_energy", "data", "minneso
 # 2005: https://www.eia.gov/electricity/state/archive/062905.pdf
 # 2021: https://www.eia.gov/electricity/state/archive/2021/minnesota/
 
-EIA_MN_elecRetailEst_mWh_2005 <- 66019053 
+EIA_MN_elecRetailEst_mWh_2005 <- 66019053
 EIA_MN_elecRetailEst_mWh_2021 <- 66589168
 
 MN_currentCounty_deliveries <- read_rds(here(
@@ -181,7 +183,7 @@ downscaleEIA_MN_electricRetail <- read_rds(here(
   "cprg_county_proportions.RDS"
 )) %>%
   filter(STATEFP == 27 &
-           (year %in% c(2005,2021))) %>%
+    (year %in% c(2005, 2021))) %>%
   select(GEOID, year, county_name = NAME, county_proportion_of_state_pop) %>%
   mutate(
     downscaled_EIA_total_CO2e_emissions_lbs =
@@ -195,7 +197,7 @@ downscaleEIA_MN_electricRetail <- read_rds(here(
     state = "MN"
   ) %>%
   left_join(MN_currentCounty_deliveries,
-            by = join_by(county_name, year)
+    by = join_by(county_name, year)
   )
 
 write_rds(downscaleEIA_MN_electricRetail, here(

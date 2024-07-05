@@ -180,8 +180,8 @@ WIcounty_level_electricity_emissions <- processed_wi_elecUtil_activityData %>%
   )
 
 
-#write_rds(processed_wi_elecUtil_activityData, here("_energy", "data", "wisconsin_elecUtils_ActivityAndEmissions.RDS"))
-#write_rds(WIcounty_level_electricity_emissions, here("_energy", "data", "wisconsin_county_ElecEmissions.RDS"))
+# write_rds(processed_wi_elecUtil_activityData, here("_energy", "data", "wisconsin_elecUtils_ActivityAndEmissions.RDS"))
+# write_rds(WIcounty_level_electricity_emissions, here("_energy", "data", "wisconsin_county_ElecEmissions.RDS"))
 
 
 # USE THE FOLLOWING CODE TO GET CENSUS BLOCKS FOR WISCONSIN TO IDENTIFY POPULATIONS IN UTILITY SERVICE AREAS

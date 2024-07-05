@@ -1,7 +1,7 @@
-#MN
-#2005
+# MN
+# 2005
 
-#tabulapdf read in sector table
+# tabulapdf read in sector table
 
 
 # county x utility x countyPopulation x utilityPop x utilityProportionOfCountyPop (contribution to total)
@@ -11,9 +11,9 @@
 # need to retain GRE subsidiary .shp
 
 
-# based on population in utility service area... aggregate 
+# based on population in utility service area... aggregate
 
 
 
 
-#farm is residential or maybe 50-50?
+# farm is residential or maybe 50-50?
