@@ -562,51 +562,7 @@ nex_emissions <- KN_excretion_runoff %>%
          
 
 ##### manure management system emissions
-# format csv into something usable
 
-dairy_mm <- ag_manure_mgmt[3:1603,1:7] %>% 
-  row_to_names(1) %>% 
-  mutate(year = as.numeric(substr(`Year & State`,1,4)),
-         state = substr(`Year & State`,5,6)) %>% 
-  filter(state %in% c("MN","WI"), year >=2005) %>% 
-  select(-1) %>% 
-  pivot_longer(cols = 1:6, names_to = "mgmt_system", values_to = "percentage") %>% 
-  mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
-         managed = if_else(mgmt_system %in% c("Daily Spread", "Pasture"), "No", "Yes"),
-         livestock_type = "Dairy Cows")
-
-heifers_mm <- ag_manure_mgmt[3:1603,9:12] %>% 
-  row_to_names(1) %>% 
-  mutate(year = as.numeric(substr(`Year & State`,1,4)),
-         state = substr(`Year & State`,5,6)) %>% 
-  filter(state %in% c("MN","WI"), year >=2005) %>% 
-  select(-1) %>% 
-  pivot_longer(cols = 1:3, names_to = "mgmt_system", values_to = "percentage") %>% 
-  mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
-         managed = if_else(mgmt_system %in% c("Daily Spread", "PRP"), "No", "Yes"),
-         livestock_type = "Heifers") #not sure we have data on percent that are heifers
-
-swine_mm <- ag_manure_mgmt[3:1603,20:25] %>% 
-  row_to_names(1) %>% 
-  mutate(year = as.numeric(substr(`Year & State`,1,4)),
-         state = substr(`Year & State`,5,6)) %>% 
-  filter(state %in% c("MN","WI"), year >=2005) %>% 
-  select(-1) %>% 
-  pivot_longer(cols = 1:5, names_to = "mgmt_system", values_to = "percentage") %>% 
-  mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
-         managed = if_else(mgmt_system %in% c("Daily Spread", "Pasture"), "No", "Yes"),
-         livestock_type = "Swine")
-
-layers_mm <- ag_manure_mgmt[3:1603,20:25] %>% 
-  row_to_names(1) %>% 
-  mutate(year = as.numeric(substr(`Year & State`,1,4)),
-         state = substr(`Year & State`,5,6)) %>% 
-  filter(state %in% c("MN","WI"), year >=2005) %>% 
-  select(-1) %>% 
-  pivot_longer(cols = 1:5, names_to = "mgmt_system", values_to = "percentage") %>% 
-  mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
-         managed = if_else(mgmt_system %in% c("Daily Spread", "Pasture"), "No", "Yes"),
-         livestock_type = "Swine")
 
 ### code below is beginning of MPCA feedlot permitting data. Feedlot data seemed to grossly undercount heads of livestock compared to USDA data
 ### shelving this for now but is more granular in detail and should be reconciled at later date to understand difference
