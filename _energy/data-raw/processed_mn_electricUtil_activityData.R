@@ -155,18 +155,25 @@ MNcounty_level_electricity_emissions <- rbind(MNcounty_level_electricity_emissio
 write_rds(processed_mn_elecUtil_activityData, here("_energy", "data", "minnesota_elecUtils_ActivityAndEmissions.RDS"))
 write_rds(MNcounty_level_electricity_emissions, here("_energy", "data", "minnesota_county_ElecEmissions.RDS"))
 
+
 # compare numbers we obtained to downscaled EIA numbers
-# read in EIA state estimate (mWh) for MN -- https://www.eia.gov/electricity/state/archive/2021/minnesota/
 
-EIA_MN_elecRetailEst_mWh <- 66589168
+# read in EIA state estimate (mWh) for MN
+# 2005: https://www.eia.gov/electricity/state/archive/062905.pdf
+# 2021: https://www.eia.gov/electricity/state/archive/2021/minnesota/
 
+EIA_MN_elecRetailEst_mWh_2005 <- 66019053 
+EIA_MN_elecRetailEst_mWh_2021 <- 66589168
 
 MN_currentCounty_deliveries <- read_rds(here(
   "_energy",
   "data",
-  "Minnesota_county_ElecEmissions.RDS"
+  "minnesota_county_ElecEmissions.RDS"
 )) %>%
-  select(county, OURS_total_CO2e_emissions_lbs = total_CO2e_emissions_lbs)
+  select(county_name = county, year, total_mWh, OURS_total_CO2e_emissions_lbs = total_CO2e_emissions_lbs) %>%
+  mutate(
+    year = as.character(year)
+  )
 
 downscaleEIA_MN_electricRetail <- read_rds(here(
   "_meta",
@@ -174,17 +181,22 @@ downscaleEIA_MN_electricRetail <- read_rds(here(
   "cprg_county_proportions.RDS"
 )) %>%
   filter(STATEFP == 27 &
-    population_data_source == "Decennial Census PL 94-171 Redistricting Data Summary File") %>%
-  select(GEOID, county = NAME, county_proportion_of_state_pop) %>%
+           (year %in% c(2005,2021))) %>%
+  select(GEOID, year, county_name = NAME, county_proportion_of_state_pop) %>%
   mutate(
     downscaled_EIA_total_CO2e_emissions_lbs =
-      EIA_MN_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1,
+      county_proportion_of_state_pop * case_when(
+        year == 2005 ~ eGRID_MROW_emissionsFactor_CO2_2005,
+        year == 2021 ~ eGRID_MROW_emissionsFactor_CO2_2021
+      ) * case_when(
+        year == 2005 ~ EIA_MN_elecRetailEst_mWh_2005,
+        year == 2021 ~ EIA_MN_elecRetailEst_mWh_2021
+      ),
     state = "MN"
   ) %>%
   left_join(MN_currentCounty_deliveries,
-    by = "county"
-  ) %>%
-  rename(county_name = county)
+            by = join_by(county_name, year)
+  )
 
 write_rds(downscaleEIA_MN_electricRetail, here(
   "_energy",
