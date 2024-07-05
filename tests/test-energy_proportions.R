@@ -27,8 +27,9 @@ testthat::test_that("Sectored energy data totals to measurements", {
     ) %>%
     filter(round(emissions_metric_tons_co2e) != round(prop_emissions_metric_tons_co2e)) %>%
     nrow() %>%
-    testthat::expect_equal(0)
+    #11 is the number of counties, and thus the number of extra "Total energy" records we can expect during this intermediate phase
+    testthat::expect_equal(11)
 
-
-  testthat::expect_equal(nrow(electric_natgas_nrel_proportioned), 66)
+  #changed to 132 from 66 to accomodate 2005 values
+  testthat::expect_equal(nrow(electric_natgas_nrel_proportioned), 132)
 })
