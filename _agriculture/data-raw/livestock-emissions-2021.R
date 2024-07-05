@@ -10,6 +10,8 @@ manure_n2o <- read_csv('_agriculture/data-raw/manure-n2o.csv')
 manure_ch4 <- read_csv('_agriculture/data-raw/manure-ch4.csv')
 nex <- read_csv("_agriculture/data-raw/ag_nex.csv")
 ag_control <- read_csv('_agriculture/data-raw/ag_control.csv')
+ag_constants <- read_csv('_agriculture/data-raw/ag_constants.csv')
+ag_manure_mgmt <- read_csv('_agriculture/data-raw/ag_manure_management.csv')
 
 ### mpca data on feedlots - currently unused but formatted at end of script
 mn_feedlots <- read_csv('_agriculture/data-raw/mn-feedlots.csv') %>% 
@@ -501,7 +503,8 @@ tam_other <- ag_control[50:65,1:2] %>%
   
 tam <- rows_append(tam_cattle %>% filter(livestock_type == "Calves"), #only need calves for K-N calc
                    tam_other %>% 
-                     crossing(year = 2005:2021))
+                     crossing(year = 2005:2021)) ### repeat years for non-calves (static)
+  
 
 # pull out cattle nitrogen excreted by head per year - mn and wi
 nex_cattle <- pivot_longer(nex[,14:47] %>% row_to_names(1), 
@@ -514,7 +517,8 @@ nex_cattle <- pivot_longer(nex[,14:47] %>% row_to_names(1),
     TRUE ~ Animal)) %>% 
   filter(livestock_type %in% c("Feedlot Cattle", "Beef Cows", "Dairy Cows")) %>% 
   group_by(state,year, livestock_type) %>% 
-  summarize(kg_nex_head_yr = mean(kg_nex_head_yr))
+  summarize(kg_nex_head_yr = mean(kg_nex_head_yr)) %>% 
+  mutate(year = as.numeric(year))
 
 # pull out other livestock nitrogen excreted by head per year - mn and wi. note these are in per day and per kg animal
 nex_other <- pivot_longer(nex[,53:69] %>% row_to_names(1), 
@@ -529,17 +533,85 @@ nex_other <- pivot_longer(nex[,53:69] %>% row_to_names(1),
     grepl("pullets",livestock_type) ~ "Pullets",
     grepl("turkeys",livestock_type) ~ "Turkeys",
     TRUE ~ livestock_type),
-    Year = as.numeric(Year)) %>% 
+    year = as.numeric(Year),
+    kg_nex_day_kg_animal = as.numeric(kg_nex_day_kg_animal)
+    ) %>% 
   filter(Year >= 2005) %>% 
-  left_join(., tam, by = c("Year" = "year", "livestock_type" = "livestock_type")) %>% 
-  mutate(kg_nex_head_yr = mass_kg * kg_nex_day_kg_animal * 365)
+  left_join(., tam, by = c("year" = "year", "livestock_type" = "livestock_type")) %>% 
+  mutate(kg_nex_head_yr = mass_kg/1000 * kg_nex_day_kg_animal * 365) %>% 
+  filter(!is.na(mass_kg)) %>% 
+  crossing(state = c("MN","WI")) %>%  # repeat across states (static)
+  select(year, livestock_type, state, kg_nex_head_yr)
 
-KN_excretion <- usda_census_agg 
+nex_formatted <- rows_append(nex_cattle, nex_other) 
+  
+KN_excretion_runoff <- left_join(rows_append(census_interpolated, poultry_interpolated) %>% filter(year >=2005),
+                                           as.data.frame(cprg_county) %>% select(NAME, STATE_ABB) %>% 
+                                             mutate(county_name = if_else(NAME == "St. Croix", "ST CROIX", toupper(NAME))) %>% 
+                                             select(-NAME)) %>% 
+  left_join(., nex_formatted, by = c('STATE_ABB' = 'state', "livestock_type" = "livestock_type", "year" = "year")) %>% 
+  mutate(total_kn_excretion_kg = head_count * kg_nex_head_yr)
 
+nex_emissions <- KN_excretion_runoff %>% 
+  group_by(year, county_name, data_type) %>% 
+  summarize(mt_total_kn_excretion = sum(total_kn_excretion_kg/1000)) %>% 
+  mutate(mt_n = mt_total_kn_excretion * (1-as.numeric(ag_constants[15,1])) * as.numeric(ag_constants[20,6]), # multiply total k-n excretion by volatization percent and then leaching EF
+         mt_n2o = mt_n * as.numeric(ag_constants[21,6]) * as.numeric(ag_constants[10,1]),
+         mt_co2e = mt_n2o * gwp$n2o
+         )
+         
+
+##### manure management system emissions
+# format csv into something usable
+
+dairy_mm <- ag_manure_mgmt[3:1603,1:7] %>% 
+  row_to_names(1) %>% 
+  mutate(year = as.numeric(substr(`Year & State`,1,4)),
+         state = substr(`Year & State`,5,6)) %>% 
+  filter(state %in% c("MN","WI"), year >=2005) %>% 
+  select(-1) %>% 
+  pivot_longer(cols = 1:6, names_to = "mgmt_system", values_to = "percentage") %>% 
+  mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
+         managed = if_else(mgmt_system %in% c("Daily Spread", "Pasture"), "No", "Yes"),
+         livestock_type = "Dairy Cows")
+
+heifers_mm <- ag_manure_mgmt[3:1603,9:12] %>% 
+  row_to_names(1) %>% 
+  mutate(year = as.numeric(substr(`Year & State`,1,4)),
+         state = substr(`Year & State`,5,6)) %>% 
+  filter(state %in% c("MN","WI"), year >=2005) %>% 
+  select(-1) %>% 
+  pivot_longer(cols = 1:3, names_to = "mgmt_system", values_to = "percentage") %>% 
+  mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
+         managed = if_else(mgmt_system %in% c("Daily Spread", "PRP"), "No", "Yes"),
+         livestock_type = "Heifers") #not sure we have data on percent that are heifers
+
+swine_mm <- ag_manure_mgmt[3:1603,20:25] %>% 
+  row_to_names(1) %>% 
+  mutate(year = as.numeric(substr(`Year & State`,1,4)),
+         state = substr(`Year & State`,5,6)) %>% 
+  filter(state %in% c("MN","WI"), year >=2005) %>% 
+  select(-1) %>% 
+  pivot_longer(cols = 1:5, names_to = "mgmt_system", values_to = "percentage") %>% 
+  mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
+         managed = if_else(mgmt_system %in% c("Daily Spread", "Pasture"), "No", "Yes"),
+         livestock_type = "Swine")
+
+layers_mm <- ag_manure_mgmt[3:1603,20:25] %>% 
+  row_to_names(1) %>% 
+  mutate(year = as.numeric(substr(`Year & State`,1,4)),
+         state = substr(`Year & State`,5,6)) %>% 
+  filter(state %in% c("MN","WI"), year >=2005) %>% 
+  select(-1) %>% 
+  pivot_longer(cols = 1:5, names_to = "mgmt_system", values_to = "percentage") %>% 
+  mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
+         managed = if_else(mgmt_system %in% c("Daily Spread", "Pasture"), "No", "Yes"),
+         livestock_type = "Swine")
 
 ### code below is beginning of MPCA feedlot permitting data. Feedlot data seemed to grossly undercount heads of livestock compared to USDA data
 ### shelving this for now but is more granular in detail and should be reconciled at later date to understand difference
 ### make the feedlot data long form
+### UPDATE: now understanding the USDA data better, there are many cattle not in feedlots, so the 1/3 count here seems consistent.
 mn_feedlots_long <- mn_feedlots %>% 
   mutate(start_year = year(as.Date(start_d_reg)),
          end_year = year(as.Date(end_d_reg))) %>%
