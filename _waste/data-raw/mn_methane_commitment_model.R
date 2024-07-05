@@ -1,10 +1,10 @@
 # Import necessary info
 source("R/_load_pkgs.R")
-cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 if (!exists("score_data")) {
   score_data <- readRDS("_waste/data/mpca_score.RDS")
 }
 waste_comp <- readRDS("_waste/data/mn_waste_composition.RDS")
+methane_recovery_mn <- readRDS("_waste/data/methane_recovery_mn.RDS")
 
 ## Methane Commitment model ----
 
@@ -76,8 +76,10 @@ landfill_data <- score_data %>%
 
 # placeholder data
 landfill_emissions <- landfill_data %>% 
+  filter(Year %in% c(2005, 2021)) %>% 
+  left_join(methane_recovery_mn, by = join_by(County, Year)) %>% 
   mutate(
-    total_ch4 = `Metric Tons` * l_0 * (1-ox)
+    total_ch4 = (`Metric Tons` * l_0 - total_metric_tons_ch4_recovered) * (1-ox)
   ) %>% 
   select(
     County,

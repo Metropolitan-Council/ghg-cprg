@@ -1,13 +1,10 @@
 source("R/_load_pkgs.R")
 
+cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
+
 # pull in and calculate f_rec ----
 
 # Source: EPA State Inventory Solid Waste tool, methane flaring and LFGTE data 
-
-# flaring_natl_data <- read_csv(file.path(here::here(), "_waste/data-raw/solid-waste-module-flaring.csv"))%>%  
-#   row_to_names(row_number = 1) 
-# flaring_natl_data <- data.frame(t(flaring_natl_data)) %>%  
-#   row_to_names(row_number = 1) 
 
 
 flaring_data <- readxl::read_xlsx("_waste/data-raw/solid_waste_flaring.xlsx",
@@ -43,10 +40,48 @@ lfgte_data <- lfgte_data[-1,] %>%
     lfgte_metric_tons_ch4_mn = as.numeric(lfgte_metric_tons_ch4_mn) * 10^6
   )
 
-# join dfs
+# join dfs, filter to 2021/2005, join county proportions, allocate
 
 methane_recovery_mn <- flaring_data %>% 
-  left_join(lfgte_data, by = join_by(Year))
+  left_join(lfgte_data, by = join_by(Year)) %>% 
+  filter(Year %in% c(2005,2021)) %>% 
+  select(
+    flared_metric_tons_ch4_mn,
+    lfgte_metric_tons_ch4_mn,
+    Year
+  )
 # left to do: allocate by county
+methane_recovery_counties <- cprg_county_proportions %>% 
+  rename(Year = year) %>% 
+  filter(Year %in% c(2005, 2021)) %>% 
+  left_join(methane_recovery_mn, by = join_by(Year)) %>% 
+  mutate(
+    flared_metric_tons_ch4 = flared_metric_tons_ch4_mn * county_proportion_of_state_pop,
+    lfgte_metric_tons_ch4 = lfgte_metric_tons_ch4_mn * county_proportion_of_state_pop,
+    Year = as.numeric(Year)
+  ) %>% 
+  mutate(
+    total_metric_tons_ch4_recovered = flared_metric_tons_ch4 + lfgte_metric_tons_ch4
+  ) %>% 
+  select(
+    County = NAME,
+    Year,
+    flared_metric_tons_ch4,
+    lfgte_metric_tons_ch4,
+    total_metric_tons_ch4_recovered
+  )
+
+# to test: ensure that each year adds up to total
 # write metadata
+methane_recovery_mn_meta <- 
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "County", class(methane_recovery_counties$County), "Emissions estimation county",
+    "Year", class(methane_recovery_counties$Year), "Emissions estimation year",
+    "flared_metric_tons_ch4", class(methane_recovery_counties$flared_metric_tons_ch4), "Amount of landfill gas recovered through flaring, in metric tons CH~4~",
+    "lfgte_metric_tons_ch4", class(methane_recovery_counties$lfgte_metric_tons_ch4), "Amount of landfill gas recovered through gas to energy efforts, in metric tons CH~4~",
+    "total_metric_tons_ch4_recovered", class(methane_recovery_counties$total_metric_tons_ch4_recovered), "Total metric tons CH~4~ recovered through flaring and gas to energy"
+  )
 # save as rds
+saveRDS(methane_recovery_counties, "_waste/data/methane_recovery_mn.RDS")
+saveRDS(methane_recovery_mn_meta, "_waste/data/methane_recovery_mn_meta.RDS")
