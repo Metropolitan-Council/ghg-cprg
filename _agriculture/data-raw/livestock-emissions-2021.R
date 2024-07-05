@@ -8,6 +8,8 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 enteric <- read_csv('_agriculture/data-raw/enteric-fermentation.csv')
 manure_n2o <- read_csv('_agriculture/data-raw/manure-n2o.csv')
 manure_ch4 <- read_csv('_agriculture/data-raw/manure-ch4.csv')
+nex <- read_csv("_agriculture/data-raw/ag_nex.csv")
+ag_control <- read_csv('_agriculture/data-raw/ag_control.csv')
 
 ### mpca data on feedlots - currently unused but formatted at end of script
 mn_feedlots <- read_csv('_agriculture/data-raw/mn-feedlots.csv') %>% 
@@ -300,7 +302,7 @@ manure_ch4_formatted  <- manure_ch4  %>%
   summarize(mt_ch4_per_head = mean(Emission_factor_mt_ch4_per_head))
 
 ### format n20 emissions factors
-### following the same format as for CH4
+### similarly skipping intermediate steps here like in ch4 step above
 
 manure_n2o_formatted <- manure_n2o  %>% 
   select(c(2,3,4,16)) %>% 
@@ -472,6 +474,67 @@ ggplot(county_livestock %>%
          group_by(year,source) %>% 
          summarize(CO2e = sum(CO2e)),
        aes(x = year, y = CO2e, fill = source)) + geom_area() + theme_bw()
+
+### calculating 'Total K-Nitrogen excreted' for ag-soils-animals calculation
+### this is one of the intermediate steps skipped in calculating N2O emissions from manure above, but is necessary for soil runoff/leaching calc
+
+### pull out typical animal mass by year
+tam_cattle <- pivot_longer(nex[2:40,1:11], cols = 2:11, names_to = "livestock_type", values_to = "mass_kg") %>% 
+  rename(year = `Typical Animal Mass (Kg)`) %>% 
+  mutate(mass_kg = as.numeric(mass_kg)) %>% 
+  filter(year >=2005 & year <= 2021)
+
+### pull our non-cattle weight from control data
+
+tam_other <- ag_control[50:65,1:2] %>% 
+  rename(livestock_type = `State Inventory Tool - Carbon Dioxide, Methane, and Nitrous Oxide Emissions from Agriculture Module\nVersion 2024.1`,
+         mass_kg = ...2) %>% 
+  mutate(livestock_type = case_when(
+    grepl("Swine",livestock_type) ~ "Swine",
+    grepl("Market",livestock_type) ~ "Swine",
+    grepl("Sheep",livestock_type) ~ "Sheep",
+    grepl("Chickens",livestock_type) ~ "Layers",
+    TRUE ~ livestock_type)) %>% 
+  filter(!is.na(mass_kg)) %>% 
+  group_by(livestock_type) %>% 
+  summarize(mass_kg = mean(as.numeric(mass_kg)))
+  
+tam <- rows_append(tam_cattle %>% filter(livestock_type == "Calves"), #only need calves for K-N calc
+                   tam_other %>% 
+                     crossing(year = 2005:2021))
+
+# pull out cattle nitrogen excreted by head per year - mn and wi
+nex_cattle <- pivot_longer(nex[,14:47] %>% row_to_names(1), 
+                           cols = 3:34, names_to = "year", values_to = "kg_nex_head_yr") %>% 
+  filter(state %in% c ("MN","WI")) %>% 
+  mutate(livestock_type = case_when(
+    grepl("_OF_",Animal) ~ "Feedlot Cattle",
+    grepl("Dairy_Cow",Animal) ~ "Dairy Cows",
+    grepl("Beef_NOF",Animal) ~ "Beef Cows",
+    TRUE ~ Animal)) %>% 
+  filter(livestock_type %in% c("Feedlot Cattle", "Beef Cows", "Dairy Cows")) %>% 
+  group_by(state,year, livestock_type) %>% 
+  summarize(kg_nex_head_yr = mean(kg_nex_head_yr))
+
+# pull out other livestock nitrogen excreted by head per year - mn and wi. note these are in per day and per kg animal
+nex_other <- pivot_longer(nex[,53:69] %>% row_to_names(1), 
+                          cols = 2:17, names_to = "livestock_type", values_to = "kg_nex_day_kg_animal") %>% 
+  mutate(livestock_type = case_when(
+    grepl("calf",livestock_type) ~ "Calves",
+    grepl("goats",livestock_type) ~ "Goats",
+    grepl("swine",livestock_type) ~ "Swine",
+    grepl("sheep",livestock_type) ~ "Sheep",
+    grepl("broilers",livestock_type) ~ "Broilers",
+    grepl("layers",livestock_type) ~ "Layers",
+    grepl("pullets",livestock_type) ~ "Pullets",
+    grepl("turkeys",livestock_type) ~ "Turkeys",
+    TRUE ~ livestock_type),
+    Year = as.numeric(Year)) %>% 
+  filter(Year >= 2005) %>% 
+  left_join(., tam, by = c("Year" = "year", "livestock_type" = "livestock_type")) %>% 
+  mutate(kg_nex_head_yr = mass_kg * kg_nex_day_kg_animal * 365)
+
+KN_excretion <- usda_census_agg 
 
 
 ### code below is beginning of MPCA feedlot permitting data. Feedlot data seemed to grossly undercount heads of livestock compared to USDA data

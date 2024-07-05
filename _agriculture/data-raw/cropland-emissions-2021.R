@@ -114,7 +114,7 @@ ggplot(soil_residue_emissions %>%
          summarize(CO2e = sum(mt_c2oe)),
        aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
 # quite a bit of scatter - 2013 in particular has major dip that should be investigated
-
+soil_residue_emissions %>% filter(year == 2021) %>%  pull(mt_c2oe) %>% sum()
 
 #### fertilizer data ####
 ### some creativity is required here. 
@@ -222,3 +222,13 @@ ggplot(county_fertilizer_emissions %>%
          group_by(year,county_name) %>% 
          summarize(CO2e = sum(mt_co2e)),
        aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
+county_fertilizer_emissions %>% filter(year == 2021, !county_name %in% c("SHERBURNE", "CHISAGO", "PIERCE", "ST CROIX")) %>%  pull(mt_co2e) %>% sum()
+
+
+
+### soil animals
+### ag soils animals pulls N2o emissions from x variables:
+# 1) fertilizer runoff/leaching - this was calculated above and needs to be multiplied by EF
+# 2) manure runoff/leaching - this is calculated from a K-nitrogen excretion that is derived from animal emissions. will need to pull in livestock data
+# 3) indirect n2o emissions from livestock - this is a fraction of the k-nitrogen excretion calculated in step 2
+# 4) direct n2o emissions from livestock - this is manure applied to ag soils and left in pasture/paddocks
