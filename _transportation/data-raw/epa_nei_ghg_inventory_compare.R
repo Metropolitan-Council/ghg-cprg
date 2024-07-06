@@ -3,7 +3,7 @@ source("_transportation/data-raw/epa_ghg_inventory.R")
 
 county_proportions <- read_rds("_meta/data/cprg_county_proportions.RDS")
 
-county_proportions %>% 
+county_proportions_summary <- county_proportions %>% 
   group_by(STATE, year) %>% 
   summarize(region_proportion_of_state_pop = sum(county_proportion_of_state_pop))
 
@@ -32,14 +32,34 @@ nei_summary <-  epa_nei %>%
             .groups = "keep") 
 
 
-state_economic_summary %>% 
+inventory_comp <- state_economic_summary %>% 
   left_join(nei_summary, 
             by = c("state", 
                    "inventory_year" = "nei_inventory_year")) %>% 
+  left_join(county_proportions_summary, by= c("inventory_year" = "year",
+                                      "state"= "STATE")) %>% 
+  # ungroup() %>% 
   mutate(regional_proportion = region_emissions/state_emissions)
 
 
 state_economic_summary
+
+plot_ly(
+  type = "scatter",
+  mode = "lines+markers",
+  data = inventory_comp,
+  x = ~inventory_year,
+  y = ~regional_proportion,
+  color = ~state
+) %>% 
+  add_trace(
+    type = "scatter",
+    mode = "markers",
+    data = inventory_comp,
+    x = ~inventory_year,
+    y = ~region_proportion_of_state_pop
+  )
+
 
 plot_ly(
   type = "scatter",
