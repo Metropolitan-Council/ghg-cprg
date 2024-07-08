@@ -50,7 +50,7 @@ processed_mn_gasUtil_activityData <- combined_MNgasUtil_activityData %>%
   )
 
 # Aggregate data by county, add identifiers for state and sector
-MNcounty_level_gas_emissions <- processed_mn_gasUtil_activityData %>%
+MNcounty_level_gas_emissions_2021 <- processed_mn_gasUtil_activityData %>%
   group_by(county) %>%
   summarise(
     total_mcf = sum(mcf_delivered, na.rm = TRUE),
@@ -85,7 +85,7 @@ MNcounty_level_gas_emissions <- processed_mn_gasUtil_activityData %>%
 MN_state2005_natGasMCFTotal <- 367825000 # EIA State Energy Profile; 328955000 reported in Utility Data Book
 MN_state2021_natGasMCFTotal <- 495126000 # EIA State Energy Profile
 
-
+# create downscaled county-level data for 2005 and 2021 -- we have utility reports for 2021, so 2021 data is QA only; 2005 data is to be used as actuals
 downscaleMN_gas_basedOnPopProps <- read_rds(here(
   "_meta",
   "data",
@@ -125,5 +125,35 @@ downscaleMN_gas_basedOnPopProps <- read_rds(here(
   ) %>%
   select(-county_proportion_of_state_pop)
 
-write_rds(processed_mn_gasUtil_activityData, here("_energy", "data", "minnesota_gasUtils_ActivityAndEmissions.RDS"))
+downscaleMN_gas_basedOnPopProps_2005 <- downscaleMN_gas_basedOnPopProps %>%
+  filter(year == 2005)
+
+downscaleMN_gas_basedOnPopProps_2021 <- downscaleMN_gas_basedOnPopProps %>%
+  filter(year == 2021)
+
+cprg_county_pops <- read_rds(here("_meta",
+                                         "data",
+                                         "cprg_county_proportions.RDS")
+) %>%
+  select(county = NAME, year, county_population) %>%
+  filter(year %in% c(2005,2021))
+                                    
+MNcounty_level_gas_emissionsQA = rbind(downscaleMN_gas_basedOnPopProps_2005, MNcounty_level_gas_emissions_2021) %>%
+  left_join(cprg_county_pops,
+            by = join_by(county, year)
+  ) %>%
+  mutate(
+    CO2eEmissions_PerCap_Tons = emissions_metric_tons_co2e / county_population
+  ) %>%
+  left_join(downscaleMN_gas_basedOnPopProps_2021 %>% select(county, year, EST_emissions_metric_tons_co2e = emissions_metric_tons_co2e),
+            by = join_by(county, year)
+            ) %>%
+  mutate(
+    EST_perCap_CO2e = EST_emissions_metric_tons_co2e / county_population
+  )
+
+#since we have more detailed info for 2021, save off as a separate .RDS for safekeeping
+write_rds(processed_mn_gasUtil_activityData, here("_energy", "data", "minnesota_gasUtils_ActivityAndEmissions2021.RDS"))
+
+# write combined 2005 (downscaled) and 2021 (derived from utility reports) activity/emissions data to .RDS
 write_rds(MNcounty_level_gas_emissions, here("_energy", "data", "minnesota_county_GasEmissions.RDS"))
