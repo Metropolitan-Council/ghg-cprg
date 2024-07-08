@@ -34,7 +34,8 @@ feedlot_cattle_mm <- ag_manure_mgmt[3:1603,14:15] %>%
   pivot_longer(cols = 1, names_to = "mgmt_system", values_to = "percentage") %>% 
   mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
          managed = "Yes",
-         livestock_type = "Feedlot Cattle")
+         livestock_type = "Feedlot Cattle") %>% 
+  crossing(year = 2005:2021)
 
 beef_cattle_mm <- ag_manure_mgmt[3:1603,17:18] %>% 
   row_to_names(1) %>% 
@@ -44,7 +45,8 @@ beef_cattle_mm <- ag_manure_mgmt[3:1603,17:18] %>%
   pivot_longer(cols = 1, names_to = "mgmt_system", values_to = "percentage") %>% 
   mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
          managed = "No",
-         livestock_type = "Beef Cows")
+         livestock_type = "Beef Cows") %>% 
+  crossing(year = 2005:2021)
 
 swine_mm <- ag_manure_mgmt[3:1603,20:25] %>% 
   row_to_names(1) %>% 
@@ -76,7 +78,8 @@ turkeys_mm <- ag_manure_mgmt[3:1603,36:38] %>%
   pivot_longer(cols = 1:2, names_to = "mgmt_system", values_to = "percentage") %>% 
   mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
          managed = if_else(mgmt_system %in% c("Range"), "No", "Yes"),
-         livestock_type = "Turkeys")
+         livestock_type = "Turkeys")%>% 
+  crossing(year = 2005:2021)
 
 sheep_mm <- ag_manure_mgmt[3:1603,40:42] %>% 
   row_to_names(1) %>% 
@@ -86,7 +89,8 @@ sheep_mm <- ag_manure_mgmt[3:1603,40:42] %>%
   pivot_longer(cols = 1:2, names_to = "mgmt_system", values_to = "percentage") %>% 
   mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
          managed = "Unknown",
-         livestock_type = "Sheep")
+         livestock_type = "Sheep") %>% 
+  crossing(year = 2005:2021)
 
 goats_mm <- ag_manure_mgmt[3:1603,44:45] %>% 
   row_to_names(1) %>% 
@@ -96,7 +100,8 @@ goats_mm <- ag_manure_mgmt[3:1603,44:45] %>%
   pivot_longer(cols = 1, names_to = "mgmt_system", values_to = "percentage") %>% 
   mutate(percentage = as.numeric(str_remove(percentage, "%"))/100,
          managed = "No",
-         livestock_type = "Goats")
+         livestock_type = "Goats")%>% 
+  crossing(year = 2005:2021)
 
 manure_mgmt_formatted <- bind_rows(
   dairy_mm,
