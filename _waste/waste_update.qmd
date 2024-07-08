@@ -1,0 +1,336 @@
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r, include=FALSE}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
+epa_waste_inventory <- readRDS(file.path(here::here(), "_waste/data-raw/epa_solidwaste_inventory.RDS"))
+
+federal_totals <- epa_waste_inventory %>%
+  filter(source == "Total") %>%
+  select(
+    geog_name,
+    source,
+    emissions_metric_tons_co2e,
+    data_source
+  )
+
+cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
+sw_emissions <- readRDS(file.path(here::here(), "_waste/data/mn_sw_emissions_co2e.RDS"))
+county_emissions_old <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+hookaddcap()
+```
+
+This is an in-progress document to work on documentation and data exploration for the update of the inventory without interfering with previous documentation.
+
+## Documentation
+
+**The gist**: We're switching from emissions factors as listed on the EPA Emissions Factors Hub to the IPCC/GHG Protocol methane commitment model to ensure that the inventory is aligned with best practices. Most major inventories use the IPCC's First Order Decay model, which is what the EPA and WI use, but that requires a more complex model and longer timeseries data. The IPCC accepts the methane commitment model as an alternative for inventories with limited data where waste is not a major sector. Given our time constraints and the focus of the project, a simpler model is the better choice. This does also mean that incineration and compost emissions will be calculated separately, using similar models. Recycling emissions will not be calculated, as all emissions from the recycling process should already be included in the energy section of the inventory.
+
+### Landfill
+
+CH4 emissions (tonnes) = \[(MSWx • L0 ) – R\] • (1 – OX)
+
+L0 = MCF × DOC × DOCf × F × 16/12
+
+Factors and sources:
+
+-   MSWx (MSW in given year): SCORE report (tonnes)
+
+-   MCF (methane correction factor): 0.5 - default value given by IPCC for managed, semi-aerobic landfills
+
+-   DOC (degradable organic carbon): calculated based on waste makeup (tonnes C/tonnes waste)
+
+-   Waste makeup data from MPCA [2013 Statewide Waste Characterization - Final Report](https://www.pca.state.mn.us/sites/default/files/w-sw1-60.pdf)
+
+-   Note: using more detailed breakdown from report, not this table
+
+-   2000 data is also available (as seen) but for now we're just using 2013
+
+-   DOC = ( 0.4 • paper/textiles) + ( 0.17 • non-food organics) + ( 0.15 • food waste) + ( 0.3 • wood/straw)
+
+= DOC_f (fraction of DOC degraded): 0.6 - default value given by GHG Protocol, consistent with IPCC
+
+-   F (fraction of methane in landfill gas): 0.5 - default value given by IPCC (range can vary between 0.4 and 0.6)
+
+-   R (total recovered methane): from EPA Solid Waste State Inventory Tool (metric tonnes)
+
+-   OX (oxidation factor): 01 – default value given by IPCC for well-managed landfills
+
+NOTE: methane flaring and landfill gas to energy should be counted under recovered methane. Unclear whether SCORE-counted Waste to Energy is actually all waste to energy or if it is incineration- either way, it will be in the incineration section. Flaring and LFGTE will be incorporated here.
+
+### Compost
+
+Compost emissions factors are different for aerobic and anaerobic digesters. According to [Sustainable materials management and solid waste policy report (state.mn.us)](#0)(36), only one anaerobic digester (at a wastewater treatment facility) in MN is accepting food waste, so for all past emissions we will set aerobic composting equal to 100% of waste and anaerobic to 0%.
+
+Composting also produces both CH4 and N2O, which should be calculated separately.
+
+CH4 emissions (tonnes) = (M_com × EF_com + M_ad × EF_ad) x 10\^(-3) - R
+
+N2O emissions (tonnes) = M_com × EFN_com x 10\^-3
+
+Factors and sources:
+
+-   M_com (mass of organic waste composted): SCORE report (100% of organics) (tonnes)
+
+-   EF_com (composting emissions factor for CH4): 10 - default given by IPCC for dry weight (g CH4/kg waste)
+
+-   M_ad (mass of organic waste processed anaerobically): 0
+
+-   EF_ad (anaerobic digestion emissions factor for CH4): 2 - default given by IPCC for dry weight (g CH4/kg waste)
+
+-   R (methane recovered from anaerobic digestion): 0
+
+-   EFN_com (composting emissions factor for N2O): 0.6 - default given by IPCC for dry weight (g N2O/kg waste)
+
+-   N2O emissions from anaerobic digestion assumed negligible
+
+The MPCA is currently contracting a study on the impacts of composting vs AD (see previous source). This may indicate future investment in AD, which may be worth modeling as an emissions reduction strategy for future projections.
+
+### Incineration
+
+Since incineration data is reported to SCORE as Waste to Energy, it is assumed that all incineration in the MSA is considered Waste to Energy. Thus, although incineration emissions are calculated in the waste section, they should be reported in the energy sector.
+
+Incineration of waste produces CH4, CO2, and N2O emissions. However, as per IPCC guidelines, CH4 emissions from incineration should be considered negligible (in contradiction with GHG Protocol recommendation). Also as per IPCC guidelines, given that MPCA does not have data on non-MSW waste incineration and waste is not a key source category, we will assume all waste is MSW and estimate emissions using default data.
+
+CO2 emissions (tonnes) = (MSWi × Ei + MSWob × Eob) × FCC× FFC × 44/12
+
+N2O emissions (tonnes) = (MSWi × EFi + MSWob × EFob) 10\^(-6)
+
+Factors and sources:
+
+-   MSWi: SCORE report Waste to Energy (tonnes)
+
+-   Ei (efficiency of combustion for incineration, as a fraction): 95% - IPCC default (range 95-99%) (note GHG Protocol default 100%)
+
+-   MSWob: SCORE report Onsite (tonnes)
+
+-   Eob (efficiency of combustion for onsite burning, as a fraction): 71% - GHG Protocol default
+
+-   FCC (fraction of carbon content in MSW): 40% - IPCC default wet weight (range 33-50%)
+
+-   FFC (fraction of fossil carbon in MSW): 40% - IPCC default (range 30-50%)
+
+-   EFn (aggregate N2O emission factor for MSW): 50 g N2O/ tonnes waste – GHG Protocol default for continuous and semi-continuous incinerators (wet weight)
+
+### Misc
+
+Note: "The MPCA will be completing a resource management report in the next two years that is due to the Legislature on July 15, 2025. The report will include data summarizing current and future trends for waste generation, waste prevention, reuse, recycling, and disposal."
+
+Each of the seven counties in the Metro Area must recycle a minimum of 75% (by weight) of total MSW they generate by 2030.
+
+Note onsite disposal = unmanaged burning
+
+**Note:** SCORE data is reported in short tons and must be converted to tonnes, or metric tons. All SCORE data is dry weight, as short tons are a unit of mass. No, I don't know what to do when calculations require wet weight.
+
+## Graphing
+
+Timeseries of categories over time, across the whole MN area. FOR REVIEWER: Should this be filtered to the 7-county region for RDG purposes?
+
+```{r fig-sw-timeseries}
+#| fig-cap: "Solid waste changes over time, 9-county MN region"
+#| out-width: "95%"
+sw_total_geog <- sw_emissions %>% 
+  group_by(sector, category, year, source) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e))
+
+fig_solid_waste_time <-
+  plot_ly(
+    type = "bar",
+    source = "fig-sw-timeseries",
+    data = sw_total_geog,
+    y = ~ emissions_metric_tons_co2e,
+    x = ~year,
+    color = ~source,
+    colors = unlist(management_method_colors),
+    marker = list(
+      line = list(
+        width=0
+      )
+    ),
+    hovertemplate = ~ paste0(
+      category, ", ", source, "<br>",
+      round(emissions_metric_tons_co2e / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
+  plotly_layout(
+    main_title = "Solid Waste Emissions MN Counties 2005-2021",
+    subtitle = "",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    x_title = "Year",
+    legend_title = "Category"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    ),
+    yaxis = list(categoryorder = "total ascending")
+  )
+fig_solid_waste_time
+```
+
+Total emissions appear to be decreasing to 2013 and then increasing again. This may be due to population change. A graph of emissions per capita could help explore this.
+
+Comparing 2021 waste data (this run) with previous waste data and NEI data, to test consistency. Note that this version of solid waste data excludes methane recovery, so emissions may be slightly higher in some cases than expected.
+
+```{r fig-solid-waste-versions-compare}
+#| fig-cap:  "Solid waste emissions comparison: Met Council and US GHG Inventory"
+#| out-width: "95%"
+
+solidwaste_totals_prev <- county_emissions_old %>%
+  filter(category == "Solid waste") %>%
+  group_by(geog_name) %>%
+  summarise(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  )
+
+solidwaste_totals_new <- sw_emissions %>% 
+  filter(year == 2021) %>% 
+  group_by(geog_name) %>% 
+  summarise(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  ) %>% 
+  mutate(data_source = "Met Council V2")
+
+waste_federal <- solidwaste_totals_prev %>%
+  mutate(data_source = "Met Council V1") %>%
+  bind_rows(solidwaste_totals_new) %>% 
+  bind_rows(federal_totals)
+
+fig_sw_versions_compare <- plot_ly(
+  data = waste_federal,
+  source = "fig-solid-waste-versions-compare",
+  x = ~geog_name,
+  y = ~emissions_metric_tons_co2e,
+  color = ~data_source,
+  type = "bar",
+  colors = c(
+    "Met Council V1" = colors$councilBlue,
+    "Met Council V2" = cprg_colors$cprg_green,
+    "US GHG Inventory" = cprg_colors$cprg_da_yellow
+  ),
+  hovertemplate = ~ paste0(
+    geog_name, " County", "<br>",
+    data_source, "<br>",
+    round(emissions_metric_tons_co2e * 1e-3, digits = 0),
+    " thousand metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  councilR::plotly_layout(
+    main_title = "Solid waste emissions comparison",
+    subtitle = "Met Council estimates compared to US GHG Inventory",
+    x_title = "County",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Emissions Source"
+  ) %>%
+  plotly::layout(barmode = "group")
+
+fig_sw_versions_compare
+```
+
+Total emissions per county comparing 2005 vs 2021
+
+```{r fig-solid-waste-compare-years}
+#| fig-cap:  "Solid waste emissions comparison: 2005 vs 2021"
+#| out-width: "95%"
+
+solidwaste_totals_year <- sw_emissions %>% 
+  filter(year %in% c(2005, 2021)) %>% 
+  group_by(geog_name, year) %>% 
+  summarise(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  ) %>% 
+  mutate(
+    year = as.factor(year)
+  )
+
+fig_sw_compare_years <- plot_ly(
+  data = solidwaste_totals_year,
+  source = "fig-solid-waste-compare-years",
+  x = ~geog_name,
+  y = ~emissions_metric_tons_co2e,
+  color = ~year,
+  type = "bar",
+  colors = c(
+    `2021` = colors$councilBlue,
+    `2005` = cprg_colors$cprg_green
+  ),
+  hovertemplate = ~ paste0(
+    geog_name, " County", "<br>",
+    year, "<br>",
+    round(emissions_metric_tons_co2e * 1e-3, digits = 0),
+    " thousand metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  councilR::plotly_layout(
+    main_title = "Solid waste emissions comparison 2005 vs 2021",
+    x_title = "County",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Year"
+  ) %>%
+  plotly::layout(barmode = "group")
+
+fig_sw_compare_years
+```
+
+Landfill emissions by population - graphed to diagnose issue with methane recovery data
+
+```{r fig-landfill-by-pop}
+#| fig-cap: "Landfill emissions by population"
+#| out-width: "95%"
+cprg_pop_mn <- cprg_population %>%
+  filter(STATE == "Minnesota")
+
+landfill_emissions <- sw_emissions %>%
+  filter(source == "Landfill",
+         year == 2021) %>%
+  full_join(cprg_pop_mn, by = join_by(geog_name == NAME))
+
+fig_landfill_by_pop <- plot_ly(
+  data = landfill_emissions,
+  x = ~population,
+  y = ~emissions_metric_tons_co2e,
+  source = "fig-landfill-by-pop",
+  type = "scatter",
+  mode = "markers",
+  hoverinfo = "text",
+  hovertemplate = ~ paste0(
+    "County: ", geog_name, "<br>",
+    "Waste generated: ", round(emissions_metric_tons_co2e / 1000), " thousand tons", "<br>",
+    "Population: ", round(population),
+    "<extra></extra>"
+  ),
+  marker = list(
+    size = 18,
+    color = colors$councilBlue,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "Landfill Emissions by county population, 2021",
+    x_title = "Population",
+    y_title = "Emissions (Metric Tons CO<sub>2</sub>E)"
+  )
+fig_landfill_by_pop
+
+```

@@ -3,7 +3,7 @@
 
 source("R/_load_pkgs.R")
 
-cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
+cprg_county_proportions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_proportions.RDS"))
 
 # pull in and calculate f_rec ----
 
@@ -12,7 +12,7 @@ cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
 
 # cleaning xcel data to preserve full values
 # Flaring
-flaring_data <- readxl::read_xlsx("_waste/data-raw/solid_waste_flaring.xlsx",
+flaring_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_waste_flaring.xlsx"),
                                   range = "A2:AG54") %>% 
   rename(State = 1) %>% 
   filter(State == "MN") 
@@ -29,7 +29,7 @@ flaring_data <- flaring_data[-1,] %>%
 
 # LFGTE
 
-lfgte_data <- readxl::read_xlsx("_waste/data-raw/solid_waste_lfgte.xlsx",
+lfgte_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_waste_lfgte.xlsx"),
                                   range = "A2:AG54") %>% 
   rename(State = 1) %>% 
   filter(State == "MN") 

@@ -4,7 +4,7 @@ source("R/_load_pkgs.R")
 if (!exists("score_data")) {
   score_data <- readRDS("_waste/data/mpca_score.RDS")
 }
-waste_comp <- readRDS("_waste/data/mn_waste_composition.RDS")
+waste_comp <- readRDS(file.path(here::here(), "_waste/data/mn_waste_composition.RDS"))
 # methane_recovery_mn <- readRDS("_waste/data/methane_recovery_mn.RDS")
 
 ## Methane Commitment model ----

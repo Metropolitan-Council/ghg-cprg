@@ -1,27 +1,27 @@
 # source("R/_load_pkgs.R")
 # score_data <- readRDS("_waste/data/mpca_score.RDS") #called in individual scripts
 if (!exists("gwp")) {
-  source("R/global_warming_potential.R")
+  source(file.path(here::here(), "R/global_warming_potential.R"))
 }
 
 # read in SCORE data, convert to metric tons, save as RDS
-source("_waste/data-raw/mn_read_score_data.R")
+source(file.path(here::here(), "_waste/data-raw/mn_read_score_data.R"))
 
 # read in methane recovery data, save as RDS (UNFINISHED)
 # source("_waste/data-raw/mn_methane_flaring.R")
 
 # clean tables with mn waste composition data, save as RDS
-source("_waste/data-raw/clean_tabula_tables.R")
+source(file.path(here::here(), "_waste/data-raw/clean_tabula_tables.R"))
 
 # calculate landfill emissions (UNFINISHED), return landfill_emissions df
-source("_waste/data-raw/mn_methane_commitment_model.R")
+source(file.path(here::here(), "_waste/data-raw/mn_methane_commitment_model.R"))
 
 # calculate incineration emissions, return incineration_emissions df
 # note that WTE must be listed as energy sector
-source("_waste/data-raw/mn_incineration_emissions.R")
+source(file.path(here::here(), "_waste/data-raw/mn_incineration_emissions.R"))
 
 # calculate compost emissions, return compost_emissions df
-source("_waste/data-raw/mn_compost_emissions.R")
+source(file.path(here::here(), "_waste/data-raw/mn_compost_emissions.R"))
 
 solid_waste_emissions_metric_tons <- landfill_emissions %>% 
   bind_rows(incineration_emissions, compost_emissions) %>% 
