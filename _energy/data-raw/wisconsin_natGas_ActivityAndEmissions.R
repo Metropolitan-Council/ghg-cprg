@@ -88,7 +88,7 @@ processed_wi_gasUtil_activityData <- combined_WIgasUtil_activityData %>%
 
 # Aggregate data by county, add identifiers for state and sector
 WIcounty_level_gas_emissions <- processed_wi_gasUtil_activityData %>%
-  group_by(county_name) %>%
+  group_by(county_name, year) %>%
   summarise(
     total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
     total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
@@ -100,7 +100,8 @@ WIcounty_level_gas_emissions <- processed_wi_gasUtil_activityData %>%
       CO2_emissions +
         CH4_emissions +
         N2O_emissions,
-      na.rm = TRUE
+      na.rm = TRUE,
+      .groups = "keep"
     ),
     total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
     emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
@@ -111,7 +112,6 @@ WIcounty_level_gas_emissions <- processed_wi_gasUtil_activityData %>%
   mutate(
     state = "WI",
     sector = "Natural gas",
-    year = 2021
   )
 
 
