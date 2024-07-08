@@ -69,60 +69,60 @@ wi_vmt09 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_cou
 
 
 # combine all tables
+wisconsin_vmt_raw <- purrr::map_dfr(
+  list.files("_transportation/data-raw/wisdot/vmt_by_county/", pattern = "*.csv",
+             full.names = TRUE),
+  function(x){
+    read_csv(x,
+             col_names = c("COUNTY", "Daily", "ANNUAL"),
+             skip_empty_rows = TRUE,
+             n_max = 45,
+             col_types = "ccc") %>% 
+      mutate(year = x %>% 
+               stringr::str_remove_all("_transportation/data-raw/wisdot/vmt_by_county//vmt") %>% 
+               stringr::str_remove_all("-c-2.csv") %>% 
+               stringr::str_remove_all("-c-1.csv")) %>% 
+      filter(
+        stringr::str_detect(COUNTY, "COUNTY", negate = TRUE),
+        stringr::str_detect(COUNTY, "Statewide", negate = TRUE),
+        stringr::str_detect(COUNTY, "Notes", negate = TRUE),
+        stringr::str_detect(COUNTY, "Source", negate = TRUE),
+        stringr::str_detect(COUNTY, "/", negate = TRUE))
+  }
+)
 
-wi_vmt_county <- bind_rows(wi_vmt22) %>%
-  clean_names() %>%
-  mutate(
-    year = 2022
-  ) %>%
+wisconsin_vmt <- wisconsin_vmt_raw %>% 
+  filter(!is.na(ANNUAL)) %>% 
   bind_rows(
-    bind_rows(wi_vmt21) %>%
-      clean_names() %>%
-      mutate(year = 2021),
-    bind_rows(wi_vmt20) %>%
-      clean_names() %>%
-      mutate(year = 2020),
-    bind_rows(wi_vmt19) %>%
-      clean_names() %>%
-      # clean data to remove extra characters
-      mutate(
-        year = 2019,
-        county = stringr::str_remove(county, "[:digit:]"),
-        annual = stringr::str_remove(annual, "X") %>%
-          stringr::str_remove_all("\\."),
-        daily = stringr::str_remove(daily, "X") %>%
-          stringr::str_remove_all("\\.")
-      ),
-    bind_rows(wi_vmt18) %>%
-      clean_names() %>%
-      # clean data to remove extra characters
-      mutate(
-        year = 2018,
-        county = stringr::str_remove(county, "[:digit:]"),
-        annual = stringr::str_remove(annual, "X") %>%
-          stringr::str_remove_all("\\."),
-        daily = stringr::str_remove(daily, "X") %>%
-          stringr::str_remove_all("\\.")
-      )
-  ) %>%
-  mutate(
-    daily = stringr::str_remove_all(daily, ",") %>% as.numeric(),
-    annual = stringr::str_remove_all(annual, ",") %>% as.numeric(),
-    county = stringr::str_to_title(county)
-  ) %>%
+    # the second page of 2009 reads in oddly
+    wisconsin_vmt_raw %>% 
+      filter(is.na(ANNUAL)) %>% 
+      mutate(ANNUAL = Daily,
+             Daily = stringr::str_remove_all(COUNTY, "[:alpha:]") %>% 
+               str_trim(),
+             COUNTY = stringr::str_remove_all(COUNTY, "[:digit:]") %>% 
+               stringr::str_remove_all(",") %>% 
+               str_trim())) %>% 
+  mutate(Daily = str_remove_all(Daily, "[:punct:]") %>%  as.numeric(),
+         ANNUAL = str_remove_all(ANNUAL, ",") %>% as.numeric()
+  ) %>% 
+  clean_names() %>% 
+  mutate(county = stringr::str_to_title(county),
+         county = ifelse(county == "St.croix", "St. Croix", county),
+         year = as.character(year)
+  )  %>% 
   select(year,
-    county,
-    daily_vmt = daily,
-    annual_vmt = annual
-  ) %>%
-  filter(county %in% c("Pierce", "St.croix")) %>%
-  # fix St. Croix name
-  mutate(
-    county = ifelse(county == "St.croix", "St. Croix", county),
-    year = as.character(year)
+         county,
+         daily_vmt = daily,
+         annual_vmt = annual
   )
+  
 
 
-nrow(wi_vmt_county) == 10
+wi_vmt_county <- wisconsin_vmt %>% 
+  filter(county %in% c("Pierce", "St.croix"))
+
+
+nrow(wi_vmt_county) == 14
 
 saveRDS(wi_vmt_county, "_transportation/data-raw/wisdot/wisdot_vmt_county.RDS")
