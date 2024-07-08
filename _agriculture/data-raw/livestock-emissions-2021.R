@@ -1,7 +1,6 @@
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
 
-
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 ### load in EPA Ag SIT csvs
@@ -9,9 +8,10 @@ enteric <- read_csv('_agriculture/data-raw/enteric-fermentation.csv')
 manure_n2o <- read_csv('_agriculture/data-raw/manure-n2o.csv')
 manure_ch4 <- read_csv('_agriculture/data-raw/manure-ch4.csv')
 nex <- read_csv("_agriculture/data-raw/ag_nex.csv")
-ag_control <- read_csv('_agriculture/data-raw/ag_control.csv')
-ag_constants <- read_csv('_agriculture/data-raw/ag_constants.csv')
-ag_manure_mgmt <- read_csv('_agriculture/data-raw/ag_manure_management.csv')
+
+#formatted files
+ag_constants <- readRDS('_agriculture/data/ag_constants_formatted.rds')
+ag_manure_mgmt <- readRDS('_agriculture/data/manure_management_systems.rds')
 
 ### mpca data on feedlots - currently unused but formatted at end of script
 mn_feedlots <- read_csv('_agriculture/data-raw/mn-feedlots.csv') %>% 

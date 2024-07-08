@@ -131,6 +131,20 @@ crop_residue <- ag_control[c(71,74:89), c(1,2,6,10)] %>%
   filter(!is.na(value)) %>% 
   select(value, description, short_text)
 
+tam_other <- ag_control[50:65,1:2] %>% 
+  rename(livestock_type = `State Inventory Tool - Carbon Dioxide, Methane, and Nitrous Oxide Emissions from Agriculture Module\nVersion 2024.1`,
+         mass_kg = ...2) %>% 
+  mutate(livestock_type = case_when(
+    grepl("Swine",livestock_type) ~ "Swine",
+    grepl("Market",livestock_type) ~ "Swine",
+    grepl("Sheep",livestock_type) ~ "Sheep",
+    grepl("Chickens",livestock_type) ~ "Layers",
+    TRUE ~ livestock_type)) %>% 
+  filter(!is.na(mass_kg)) %>% 
+  group_by(livestock_type) %>% 
+  summarize(mass_kg = mean(as.numeric(mass_kg)))
+
+
 ag_constants_formatted <- bind_rows(general_constants,
                                     soil_plant_constants,
                                     soil_animal_constants,
