@@ -17,30 +17,34 @@ compost_factors <- tibble(
   n2o = 10^(-3) * c(n2o_emissions_factor_compost, 0)
 )
 
-compost_data_organics <- score_data %>% 
+compost_data_organics <- score_data %>%
   filter(Method == "Organics") %>%
-  select(County,
-         Year, 
-         `Metric Tons`,
-         Method)
+  select(
+    County,
+    Year,
+    `Metric Tons`,
+    Method
+  )
 
 # anaerobic calculations scaffolding included in case we want to use it later
-compost_data_anaerobic <- compost_data_organics %>% 
+compost_data_anaerobic <- compost_data_organics %>%
   # join df with anaerobic percentages
-  mutate(`Metric Tons` = `Metric Tons` * 0, # multiply by anaerobic percent
-         Method = "Organics (Anaerobic Digestion)") 
+  mutate(
+    `Metric Tons` = `Metric Tons` * 0, # multiply by anaerobic percent
+    Method = "Organics (Anaerobic Digestion)"
+  )
 
-compost_data <- compost_data_organics %>% 
+compost_data <- compost_data_organics %>%
   # join df with compost percentages
   mutate(`Metric Tons` = `Metric Tons` * 1) # %>% # multiply by compost percent
-  # bind_rows(compost_data_anaerobic)
+# bind_rows(compost_data_anaerobic)
 
-compost_emissions <- compost_data %>% 
-  left_join(compost_factors, by = join_by(Method)) %>% 
+compost_emissions <- compost_data %>%
+  left_join(compost_factors, by = join_by(Method)) %>%
   mutate(
     total_ch4 = `Metric Tons` * ch4,
     total_n2o = `Metric Tons` * n2o # decide whether to convert to co2e
-  ) %>% 
+  ) %>%
   select(
     County,
     Method,
@@ -48,6 +52,5 @@ compost_emissions <- compost_data %>%
     total_ch4,
     total_n2o
   )
- 
-# combined and saved in mn_emissions_all
 
+# combined and saved in mn_emissions_all

@@ -13,16 +13,17 @@ cprg_county_proportions <- readRDS(file.path(here::here(), "_meta/data/cprg_coun
 # cleaning xcel data to preserve full values
 # Flaring
 flaring_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_waste_flaring.xlsx"),
-                                  range = "A2:AG54") %>% 
-  rename(State = 1) %>% 
-  filter(State == "MN") 
+  range = "A2:AG54"
+) %>%
+  rename(State = 1) %>%
+  filter(State == "MN")
 
 
-flaring_data <- data.frame(t(flaring_data)) %>% 
-  tibble::rownames_to_column("Year") %>% 
+flaring_data <- data.frame(t(flaring_data)) %>%
+  tibble::rownames_to_column("Year") %>%
   rename(flared_metric_tons_ch4_mn = t.flaring_data.) # this is currently mmt. it will be converted
 
-flaring_data <- flaring_data[-1,] %>% 
+flaring_data <- flaring_data[-1, ] %>%
   mutate(
     flared_metric_tons_ch4_mn = as.numeric(flared_metric_tons_ch4_mn) * 10^6 # converting mmt to mt
   )
@@ -30,42 +31,43 @@ flaring_data <- flaring_data[-1,] %>%
 # LFGTE
 
 lfgte_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_waste_lfgte.xlsx"),
-                                  range = "A2:AG54") %>% 
-  rename(State = 1) %>% 
-  filter(State == "MN") 
+  range = "A2:AG54"
+) %>%
+  rename(State = 1) %>%
+  filter(State == "MN")
 
-lfgte_data <- data.frame(t(lfgte_data)) %>% 
-  tibble::rownames_to_column("Year") %>% 
-  rename(lfgte_metric_tons_ch4_mn = t.lfgte_data.) 
+lfgte_data <- data.frame(t(lfgte_data)) %>%
+  tibble::rownames_to_column("Year") %>%
+  rename(lfgte_metric_tons_ch4_mn = t.lfgte_data.)
 
-lfgte_data <- lfgte_data[-1,] %>% 
+lfgte_data <- lfgte_data[-1, ] %>%
   mutate(
     lfgte_metric_tons_ch4_mn = as.numeric(lfgte_metric_tons_ch4_mn) * 10^6
   )
 
 # join dfs, filter to 2021/2005, join county proportions, allocate by population - TO CHANGE
 
-methane_recovery_mn <- flaring_data %>% 
-  left_join(lfgte_data, by = join_by(Year)) %>% 
-  filter(Year %in% c(2005,2021)) %>% 
+methane_recovery_mn <- flaring_data %>%
+  left_join(lfgte_data, by = join_by(Year)) %>%
+  filter(Year %in% c(2005, 2021)) %>%
   select(
     flared_metric_tons_ch4_mn,
     lfgte_metric_tons_ch4_mn,
     Year
   )
 
-methane_recovery_counties <- cprg_county_proportions %>% 
-  rename(Year = year) %>% 
-  filter(Year %in% c(2005, 2021)) %>% 
-  left_join(methane_recovery_mn, by = join_by(Year)) %>% 
+methane_recovery_counties <- cprg_county_proportions %>%
+  rename(Year = year) %>%
+  filter(Year %in% c(2005, 2021)) %>%
+  left_join(methane_recovery_mn, by = join_by(Year)) %>%
   mutate(
     flared_metric_tons_ch4 = flared_metric_tons_ch4_mn * county_proportion_of_state_pop,
     lfgte_metric_tons_ch4 = lfgte_metric_tons_ch4_mn * county_proportion_of_state_pop,
     Year = as.numeric(Year)
-  ) %>% 
+  ) %>%
   mutate(
     total_metric_tons_ch4_recovered = flared_metric_tons_ch4 + lfgte_metric_tons_ch4
-  ) %>% 
+  ) %>%
   select(
     County = NAME,
     Year,
@@ -76,7 +78,7 @@ methane_recovery_counties <- cprg_county_proportions %>%
 
 # to test: ensure that each year adds up to total
 # meta
-methane_recovery_mn_meta <- 
+methane_recovery_mn_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
     "County", class(methane_recovery_counties$County), "Emissions estimation county",

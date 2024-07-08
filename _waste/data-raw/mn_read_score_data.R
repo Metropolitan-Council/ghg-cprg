@@ -15,7 +15,7 @@ score_filtered <- score_summary %>%
   ) %>%
   mutate(
     "Metric Tons" = Tons * 0.90718474 # convert short tons to metric tons (for consistency with IPCC values)
-  ) %>% 
+  ) %>%
   select(
     County,
     "Management Category" = "Mangement Method",

@@ -23,13 +23,13 @@ source(file.path(here::here(), "_waste/data-raw/mn_incineration_emissions.R"))
 # calculate compost emissions, return compost_emissions df
 source(file.path(here::here(), "_waste/data-raw/mn_compost_emissions.R"))
 
-solid_waste_emissions_metric_tons <- landfill_emissions %>% 
-  bind_rows(incineration_emissions, compost_emissions) %>% 
+solid_waste_emissions_metric_tons <- landfill_emissions %>%
+  bind_rows(incineration_emissions, compost_emissions) %>%
   replace(is.na(.), 0)
 
 # meta
 
-solid_waste_emissions_mt_meta <- 
+solid_waste_emissions_mt_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
     "County", class(solid_waste_emissions_metric_tons$County), "Emissions estimation county",
@@ -44,7 +44,7 @@ saveRDS(solid_waste_emissions_metric_tons, "_waste/data/mn_sw_emissions_by_gas.R
 saveRDS(solid_waste_emissions_mt_meta, "_waste/data/mn_sw_emissions_by_gas_meta.RDS")
 
 # multiply by gwp factors and sum to find total co2e emissions
-solid_waste_emissions_co2e <- solid_waste_emissions_metric_tons %>% 
+solid_waste_emissions_co2e <- solid_waste_emissions_metric_tons %>%
   mutate(
     ch4_emissions_metric_tons_co2e = total_ch4 * gwp$ch4,
     n2o_emissions_metric_tons_co2e = total_n2o * gwp$n2o,
@@ -54,10 +54,10 @@ solid_waste_emissions_co2e <- solid_waste_emissions_metric_tons %>%
       Method == "WTE" ~ "Waste to energy",
       TRUE ~ Method
     )
-  ) %>% 
+  ) %>%
   mutate(
     emissions_metric_tons_co2e = ch4_emissions_metric_tons_co2e + n2o_emissions_metric_tons_co2e + total_co2
-  ) %>% 
+  ) %>%
   select(
     year = Year,
     geog_name = County,
@@ -68,7 +68,7 @@ solid_waste_emissions_co2e <- solid_waste_emissions_metric_tons %>%
   )
 
 # write meta
-solid_waste_emissions_co2e_meta <- 
+solid_waste_emissions_co2e_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
     "year", class(solid_waste_emissions_co2e$year), "Emissions estimation year",
@@ -82,4 +82,3 @@ solid_waste_emissions_co2e_meta <-
 # save RDS
 saveRDS(solid_waste_emissions_co2e, "_waste/data/mn_sw_emissions_co2e.RDS")
 saveRDS(solid_waste_emissions_co2e_meta, "_waste/data/mn_sw_emissions_co2e_meta.RDS")
-

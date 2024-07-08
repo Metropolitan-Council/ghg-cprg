@@ -26,16 +26,16 @@ hookaddcap()
 
 ```{r}
 # graph mpca totals by county(cat) by year
-mpca_waste_sums <- mpca_score %>% 
-  group_by(County, Year) %>% 
-  summarize(total_waste = sum(Tons)) 
+mpca_waste_sums <- mpca_score %>%
+  group_by(County, Year) %>%
+  summarize(total_waste = sum(Tons))
 
 ggplot(mpca_waste_sums) +
   geom_line(aes(Year, total_waste, color = County))
 
-mpca_score %>% 
-  group_by(Method, Year) %>% 
-  summarize(total_waste = sum(Tons)) %>% 
+mpca_score %>%
+  group_by(Method, Year) %>%
+  summarize(total_waste = sum(Tons)) %>%
   ggplot() +
   geom_line(aes(Year, total_waste, color = Method))
 ```
