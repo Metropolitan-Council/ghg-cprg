@@ -488,10 +488,11 @@ tam_cattle <- pivot_longer(nex[2:40,1:11], cols = 2:11, names_to = "livestock_ty
 
 ### pull our non-cattle weight from control data
 
-tam_other <- ag_control[50:65,1:2] %>% 
-  rename(livestock_type = `State Inventory Tool - Carbon Dioxide, Methane, and Nitrous Oxide Emissions from Agriculture Module\nVersion 2024.1`,
-         mass_kg = ...2) %>% 
-  mutate(livestock_type = case_when(
+tam_other <- ag_constants %>% 
+  filter(grepl("Typical Animal Mass", description)) %>% 
+  rename(mass_kg = value) %>% 
+  mutate(livestock_type = str_replace_all(description," Typical Animal Mass",""),
+    livestock_type = case_when(
     grepl("Swine",livestock_type) ~ "Swine",
     grepl("Market",livestock_type) ~ "Swine",
     grepl("Sheep",livestock_type) ~ "Sheep",
@@ -555,14 +556,21 @@ KN_excretion_runoff <- left_join(rows_append(census_interpolated, poultry_interp
 nex_emissions <- KN_excretion_runoff %>% 
   group_by(year, county_name, data_type) %>% 
   summarize(mt_total_kn_excretion = sum(total_kn_excretion_kg/1000)) %>% 
-  mutate(mt_n = mt_total_kn_excretion * (1-as.numeric(ag_constants[15,1])) * as.numeric(ag_constants[20,6]), # multiply total k-n excretion by volatization percent and then leaching EF
-         mt_n2o = mt_n * as.numeric(ag_constants[21,6]) * as.numeric(ag_constants[10,1]),
+  mutate(mt_n = mt_total_kn_excretion * (1-ag_constants$value[ag_constants$short_text == "VolPercent"]) * ag_constants$value[ag_constants$short_text == "LeachEF"], # multiply total k-n excretion by volatization percent and then leaching EF
+         mt_n2o = mt_n * ag_constants$value[ag_constants$short_text == "LeachEF2"] * ag_constants$value[ag_constants$short_text == "N2O_N2"],
          mt_co2e = mt_n2o * gwp$n2o
          )
          
 
 ##### manure management system emissions
 
+manure_mgmt_perc <- ag_manure_mgmt %>% group_by(year,state,livestock_type, managed) %>% summarize(percentage = sum(percentage))
+
+manure_runoff <- left_join(KN_excretion_runoff,
+                           manure_mgmt_perc %>% filter(managed == "Yes"),
+                           by = c("year" = "year",
+                                  "livestock_type" = "livestock_type",
+                                  "STATE_ABB" = "state"))
 
 ### code below is beginning of MPCA feedlot permitting data. Feedlot data seemed to grossly undercount heads of livestock compared to USDA data
 ### shelving this for now but is more granular in detail and should be reconciled at later date to understand difference
