@@ -27,23 +27,45 @@ wi_vmt19 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_cou
                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
 wi_vmt18 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2018-c.pdf",
-  output = "data.frame"
-)
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
+wi_vmt17 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2017-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
+wi_vmt16 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2016-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
+wi_vmt15 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2015-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
+wi_vmt14 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2014-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
-# the second page 2019 table does not have column headers
-# and read in a row as the column names
-# take the column names and add it to the table as a row
-wi_vmt19[[2]][32, ] <- names(wi_vmt19[[2]])
-wi_vmt18[[2]][32, ] <- names(wi_vmt18[[2]])
+wi_vmt13 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2013-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
+wi_vmt12 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2012-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
-# change column names of second table to be same as first
-names(wi_vmt19[[2]]) <- names(wi_vmt19[[1]])
-names(wi_vmt18[[2]]) <- names(wi_vmt18[[1]])
+wi_vmt11 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2011-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+
+wi_vmt10 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2010-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+
+wi_vmt09 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2009-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+
 
 
 # combine all tables
