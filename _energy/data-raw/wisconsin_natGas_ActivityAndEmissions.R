@@ -25,16 +25,16 @@ combined_WIgasUtil_activityData <- WIutilities_in_scope %>%
   st_drop_geometry(WIutilities_in_scope) %>%
   select(utility_name, county_name) %>%
   mutate(
-    # total energy delivered by each utility
+    # total energy delivered by each utility; metric is Wisconsin operations therms -- Gas sold (including interdepartmental)
     util_total_mcf = case_when(
       utility_name == "Midwest Natural Gas Incorporated" ~
-        24210191 * therms_to_MCF,
+        23181392 * therms_to_MCF,
       utility_name == "Northern States Power Company - Wisconsin" ~
-        203165849 * therms_to_MCF,
+        171102649 * therms_to_MCF, 
       utility_name == "St Croix Valley Natural Gas Company" ~
-        13266914 * therms_to_MCF,
+        11155826 * therms_to_MCF,
       utility_name == "Wisconsin Gas" ~
-        1881722450 * therms_to_MCF
+        751394716 * therms_to_MCF # previously recorded: 1881722450 -- big drop since such a large transport business
     ),
     # total customers over a utility's entire service territory
     utility_TotalCustomerCount = case_when(
@@ -108,3 +108,46 @@ WIcounty_level_gas_emissions <- processed_wi_gasUtil_activityData %>%
 
 write_rds(processed_wi_gasUtil_activityData, here("_energy", "data", "wisconsin_gasUtils_ActivityAndEmissions.RDS"))
 write_rds(WIcounty_level_gas_emissions, here("_energy", "data", "wisconsin_county_GasEmissions.RDS"))
+
+
+
+
+#draft 2005
+
+mutate(
+  # total energy delivered by each utility
+  util_total_mcf = case_when(
+    utility_name == "Midwest Natural Gas Incorporated" ~
+      18816267 * therms_to_MCF,
+    utility_name == "Northern States Power Company - Wisconsin" ~
+      147572365  * therms_to_MCF, # gas sold (incl interdepartmental) -- NOT total send out (that metric includes transport gas)
+    utility_name == "St Croix Valley Natural Gas Company" ~
+      9534249 * therms_to_MCF,
+    utility_name == "Wisconsin Gas" ~
+      728522194 * therms_to_MCF # total send out... need to make sure "transport" is not included.... final sale only.
+  ),
+  # total customers over a utility's entire service territory
+  utility_TotalCustomerCount = case_when(
+    utility_name == "Midwest Natural Gas Incorporated" ~ 13845,
+    utility_name == "Northern States Power Company - Wisconsin" ~ 93588, # WI PSC report
+    utility_name == "St Croix Valley Natural Gas Company" ~ 6939,
+    utility_name == "Wisconsin Gas" ~ 583336,
+  ),
+  # customers served by each utility in a given county
+  utilityCustomer_county = case_when(
+    utility_name == "Midwest Natural Gas Incorporated" &
+      county_name == "St. Croix" ~ 3516,
+    utility_name == "Northern States Power Company - Wisconsin" &
+      county_name == "Pierce" ~ 0,
+    utility_name == "Northern States Power Company - Wisconsin" &
+      county_name == "St. Croix" ~ 12138, # 11878 (incl city) + 260 (unallocated to a city, but within county)
+    utility_name == "St Croix Valley Natural Gas Company" &
+      county_name == "Pierce" ~ 4573,
+    utility_name == "St Croix Valley Natural Gas Company" &
+      county_name == "St. Croix" ~ 2366,
+    utility_name == "Wisconsin Gas" &
+      county_name == "Pierce" ~ 3039,
+    utility_name == "Wisconsin Gas" &
+      county_name == "St. Croix" ~ 3453
+  )
+)
