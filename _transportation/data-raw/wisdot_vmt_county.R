@@ -2,30 +2,31 @@ source("R/_load_pkgs.R")
 # NOTE: this is a run-once script. It should not be regularly re-run
 
 # NOTE
-# you may need to install a Java binary to work with tabulizer
+# you may need to install a Java binary to work with tabulapdf
 # I suggest installing the Adoptium distribution: https://adoptium.net/
 # then, go to your terminal and run `R CMD javareconf` and check for errors
-install.package("tabulizer")
-library(tabulizer)
+# install.package("tabulapdf")
+library(tabulapdf)
 # each of these calls launch a shiny app that has you manually select the table
 # areas with your mouse
-wi_vmt22 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2022-c.pdf",
-  output = "data.frame"
+wi_vmt22 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2022-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/"
 )
 
-wi_vmt21 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2021-c.pdf",
-  output = "data.frame"
-)
+wi_vmt21 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2021-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
-wi_vmt20 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2020-c.pdf",
-  output = "data.frame"
-)
+wi_vmt20 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2020-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
-wi_vmt19 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2019-c.pdf",
-  output = "data.frame"
-)
+wi_vmt19 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2019-c.pdf",
+                                     output = "csv",
+                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
-wi_vmt18 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2018-c.pdf",
+wi_vmt18 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2018-c.pdf",
   output = "data.frame"
 )
 
