@@ -120,9 +120,9 @@ wisconsin_vmt <- wisconsin_vmt_raw %>%
 
 
 wi_vmt_county <- wisconsin_vmt %>% 
-  filter(county %in% c("Pierce", "St.croix"))
+  filter(county %in% c("Pierce", "St. Croix"))
 
 
-nrow(wi_vmt_county) == 14
+nrow(wi_vmt_county) == 28
 
 saveRDS(wi_vmt_county, "_transportation/data-raw/wisdot/wisdot_vmt_county.RDS")
