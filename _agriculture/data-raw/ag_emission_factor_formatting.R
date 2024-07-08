@@ -56,13 +56,11 @@ soil_animal_constants <- data.frame(value = ag_constants[18:27,6], description =
                                      "SolidEF",
                                      "nobedEF",
                                      "PoultryNotManaged"
-                                   )) %>% filter(!is.na(Var.1)) %>% 
-  mutate(value = if_else(short_text == "PoultryNotManaged",as.numeric(str_remove(Var.1, "%"))/100,as.numeric(Var.1))) %>% 
-  select(-Var.1)
-soil_animal_constants <- mutate(soil_animal_constants, value = as.numeric(value))
+                                   )) %>% 
+  rename(value = ...6, description = ...7) %>% 
+  filter(!is.na(value)) %>% 
+  mutate(value = if_else(short_text == "PoultryNotManaged",as.numeric(str_remove(value, "%"))/100,as.numeric(value)))
 
-
-colnames(soil_animal_constants) <- c("description", "short_text","value")
 
 crop_mt_bushel <- data.frame(value = ag_constants[30:38,2],
                              description = ag_constants[30:38,1],
@@ -131,26 +129,38 @@ crop_residue <- ag_control[c(71,74:89), c(1,2,6,10)] %>%
   filter(!is.na(value)) %>% 
   select(value, description, short_text)
 
-tam_other <- ag_control[50:65,1:2] %>% 
-  rename(livestock_type = `State Inventory Tool - Carbon Dioxide, Methane, and Nitrous Oxide Emissions from Agriculture Module\nVersion 2024.1`,
-         mass_kg = ...2) %>% 
-  mutate(livestock_type = case_when(
-    grepl("Swine",livestock_type) ~ "Swine",
-    grepl("Market",livestock_type) ~ "Swine",
-    grepl("Sheep",livestock_type) ~ "Sheep",
-    grepl("Chickens",livestock_type) ~ "Layers",
-    TRUE ~ livestock_type)) %>% 
-  filter(!is.na(mass_kg)) %>% 
-  group_by(livestock_type) %>% 
-  summarize(mass_kg = mean(as.numeric(mass_kg)))
-
+animal_mass <- data.frame(value = ag_control[50:65,2],
+                          description = ag_control[50:65,1],
+                          short_text = c(
+                            "breeding_swine",
+                            "swine_under_60lbs",
+                            "swine_60_119_lbs",
+                            "swine_12_179_lbs",
+                            "swine_over_180lbs",
+                            NA, NA,
+                            "hens",
+                            "pullets",
+                            "chickens",
+                            "broilers",
+                            "turkeys",
+                            NA,
+                            "sheep_on_feed",
+                            "sheep_not_on_feed",
+                            "goats"
+                          )) %>% 
+  rename(description = State.Inventory.Tool...Carbon.Dioxide..Methane..and.Nitrous.Oxide.Emissions.from.Agriculture.Module.Version.2024.1,
+         value = ...2) %>% 
+  mutate(description = paste(description, "Typical Animal Mass"),
+         value = as.numeric(value)) %>% 
+  filter(!is.na(value)) 
 
 ag_constants_formatted <- bind_rows(general_constants,
                                     soil_plant_constants,
                                     soil_animal_constants,
                                     crop_mt_bushel,
                                     crop_residue_mass_ratio,
-                                    crop_residue)
+                                    crop_residue,
+                                    animal_mass)
 ag_constants_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
