@@ -31,13 +31,19 @@ nei_summary <-  epa_nei %>%
   summarize(region_emissions = sum(emissions_metric_tons_co2e),
             .groups = "keep") 
 
+nei_state_summary <- nei_state_emissions %>% 
+  mutate(nei_inventory_year = as.character(nei_inventory_year)) %>% 
+  group_by(nei_inventory_year, state_name) %>% 
+  summarize(region_emissions = sum(emissions_metric_tons_co2e),
+            .groups = "keep") %>% 
+  ungroup()
 
 inventory_comp <- state_economic_summary %>% 
   left_join(nei_summary, 
             by = c("state", 
                    "inventory_year" = "nei_inventory_year")) %>% 
   left_join(county_proportions_summary, by= c("inventory_year" = "year",
-                                      "state"= "STATE")) %>% 
+                                              "state"= "STATE")) %>% 
   # ungroup() %>% 
   mutate(regional_proportion = region_emissions/state_emissions)
 
@@ -67,12 +73,16 @@ plot_ly(
   data=  state_economic_summary,
   x = ~inventory_year,
   y = ~ state_emissions,
-  color = ~state
+  color = ~state,
+  name = "Economic"
 ) %>% 
   add_trace(
+    name = "NEI",
+    type = "scatter",
+    inherit = FALSE,
     mode = "lines+markers",
-    data = nei_summary,
+    data = nei_state_summary,
     x = ~nei_inventory_year,
     y = ~region_emissions,
-    color = ~state
+    color = ~state_name
   )

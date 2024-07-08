@@ -12,6 +12,62 @@ source("_meta/data-raw/epa_nei.R")
 mobile_sectors <- sectors %>%
   filter(sector_one == "Mobile")
 
+nei_state_emissions <- nei_state_multi_year %>% 
+  filter(
+    sector_code %in% mobile_sectors$sector_code,
+    pollutant_type == "GHG"
+  ) %>%
+  filter(sector_two == "On-Road") %>%
+  rowwise() %>%
+  mutate(
+    vehicle_weight_label = case_when(
+      ei_sector %in% c(
+        "Mobile - On-Road Diesel Light Duty Vehicles",
+        "Mobile - On-Road non-Diesel Light Duty Vehicles"
+      ) ~ "Light-duty",
+      ei_sector %in% c(
+        "Mobile - On-Road non-Diesel Heavy Duty Vehicles",
+        "Mobile - On-Road Diesel Heavy Duty Vehicles"
+      ) ~ "Heavy-duty"
+    ) %>%
+      factor(
+        levels = c(
+          "Light-duty",
+          "Medium-duty",
+          "Heavy-duty"
+        ),
+        ordered = TRUE
+      )) %>% 
+  mutate(emissions_grams = emissions %>%
+           units::as_units("ton") %>% # short tons/US tons
+           units::set_units("gram") %>% # convert to grams
+           as.numeric()) %>%
+  unique() %>% 
+  select(
+    vehicle_weight_label,
+    state_name, 
+    nei_inventory_year = inventory_year,
+    pollutant_code, emissions_grams
+  ) %>% 
+  unique() %>% 
+  group_by(state_name, nei_inventory_year, vehicle_weight_label, pollutant_code) %>% 
+  summarize(emissions_grams = sum(emissions_grams)) %>% 
+  pivot_wider(
+    names_from = pollutant_code,
+    values_from = emissions_grams
+  ) %>% 
+  clean_names() %>%
+  ungroup() %>% 
+  rowwise() %>%
+  # n2o and ch4 to co2 equivalency
+  mutate(
+    co2_co2_equivalent =
+      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o)),
+    emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
+  )
+
+
+
 
 # combine MN and WI
 # filter to only needed datasets
