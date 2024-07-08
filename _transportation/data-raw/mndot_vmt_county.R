@@ -15,8 +15,395 @@ if (file.exists("_transportation/data-raw/mndot/county_route_system/18_crs.xlsx"
 # read county level data and make column names consistent
 dat_ls <- list()
 
+dat_ls[["2001"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/01_crs.xls",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric"
+  ),
+  skip = 1
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2001_", "", .)) %>%
+  rename_with(~ gsub("x2002_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+
+dat_ls[["2002"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/02_crs.xls",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric"
+  ),
+  skip = 1
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2002_", "", .)) %>%
+  rename_with(~ gsub("x2003_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+
+dat_ls[["2003"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/03_crs.xls",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric"
+  ),
+  skip = 1
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2003_", "", .)) %>%
+  rename_with(~ gsub("x2004_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+
+dat_ls[["2004"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/04_crs.xls",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric"
+  ),
+  skip = 1
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2004_", "", .)) %>%
+  rename_with(~ gsub("x2005_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+
+dat_ls[["2005"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/05_crs.xls",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric"
+  ),
+  skip = 1
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2005_", "", .)) %>%
+  rename_with(~ gsub("x2006_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+
+dat_ls[["2006"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/06_crs.xls",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric"
+  ),
+  skip = 1
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2006_", "", .)) %>%
+  rename_with(~ gsub("x2007_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+
+dat_ls[["2007"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/07_crs.xls",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric"
+  ),
+  skip = 1
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2007_", "", .)) %>%
+  rename_with(~ gsub("x2008_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+
+dat_ls[["2008"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/08_crs.xls",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric"
+  ),
+  skip = 2
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2009_", "", .)) %>%
+  rename_with(~ gsub("x2008_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+dat_ls[["2009"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/09_crs.xls",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric"
+  ),
+  skip = 2
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2009_", "", .)) %>%
+  rename_with(~ gsub("x2010_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+dat_ls[["2010"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/10_crs.xls",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric"
+  ),
+  skip = 2
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2011_", "", .)) %>%
+  rename_with(~ gsub("x2010_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+dat_ls[["2011"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/11_crs.xlsx",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric"
+  ),
+  skip = 2
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2012_", "", .)) %>%
+  rename_with(~ gsub("x2011_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+dat_ls[["2012"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/12_crs.xlsx",
+  sheet = 1,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip"
+  ),
+  skip = 2
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2013_", "", .)) %>%
+  rename_with(~ gsub("x2012_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+dat_ls[["2013"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/13_crs.xlsx",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip"
+  ),
+  skip = 1
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2014_", "", .)) %>%
+  rename_with(~ gsub("x2013_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+
+dat_ls[["2014"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/14_crs.xlsx",
+  sheet = 2,
+  col_types = c(
+    "skip",
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip"
+  ),
+  skip = 1
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2014_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+
+
+dat_ls[["2016"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/16_crs.xlsx",
+  sheet = 2,
+  col_types = c(
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip"
+  ),
+  skip = 1
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2016_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+dat_ls[["2017"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/17_crs.xlsx",
+  sheet = 2,
+  col_types = c(
+    "text",
+    "text",
+    "numeric",
+    "numeric",
+    "numeric",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip"
+  ),
+  skip = 1
+) %>%
+  janitor::clean_names() %>%
+  rename_with(~ gsub("x2017_", "", .)) %>%
+  rename(route_system = route_system) %>%
+  rename(
+    daily_vmt = daily_average_vehicle_miles,
+    annual_vmt = annual_total_vehicle_miles
+  )
+
+
 dat_ls[["2018"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system//18_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/18_crs.xlsx",
   sheet = 2,
   col_types = c(
     "text",
@@ -42,7 +429,7 @@ dat_ls[["2018"]] <- readxl::read_excel(
   )
 
 dat_ls[["2019"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system//19_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/19_crs.xlsx",
   sheet = 1,
   skip = 2
 ) %>%
@@ -56,7 +443,7 @@ dat_ls[["2019"]] <- readxl::read_excel(
 
 
 dat_ls[["2020"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system//20_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/20_crs.xlsx",
   sheet = 1,
   skip = 1
 ) %>%
@@ -64,17 +451,24 @@ dat_ls[["2020"]] <- readxl::read_excel(
 
 
 dat_ls[["2021"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system//21_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/21_crs.xlsx",
   sheet = 2,
   skip = 2
 ) %>%
   janitor::clean_names()
 
 
+dat_ls[["2022"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/22_crs.xlsx",
+  sheet = 2,
+  skip = 2
+) %>%
+  janitor::clean_names()
+
 # compile ------
 
 # bind all datasets together
-vmt_county_raw <- rbindlist(dat_ls, fill = T, idcol = "year") %>%
+vmt_county_raw <- data.table::rbindlist(dat_ls, fill = T, idcol = "year") %>%
   # remove extra columns
   select(-percent_sampled, -x100_percent_due_to_rounding) %>%
   # remove any grand total rows
@@ -83,21 +477,25 @@ vmt_county_raw <- rbindlist(dat_ls, fill = T, idcol = "year") %>%
     # remove extra codes from county names
     county = gsub("[0-9][0-9] - ", "", county),
     county = stringr::str_to_title(county)
+  ) %>% 
+  mutate(
+    cprg_area = ifelse(county %in% c(
+      "Hennepin",
+      "Dakota",
+      "Carver",
+      "Ramsey",
+      "Anoka",
+      "Scott",
+      "Washington",
+      "Sherburne",
+      "Chisago"
+    ), TRUE, FALSE
+    )
   )
 
 vmt_county <- vmt_county_raw %>%
   # filter to only the 7-county metro
-  filter(county %in% c(
-    "Hennepin",
-    "Dakota",
-    "Carver",
-    "Ramsey",
-    "Anoka",
-    "Scott",
-    "Washington",
-    "Sherburne",
-    "Chisago"
-  )) %>%
+  filter(cprg_area == TRUE) %>%
   group_by(year, county) %>%
   # calculate daily, annual vmt and centerline miles
   # grouped by year
