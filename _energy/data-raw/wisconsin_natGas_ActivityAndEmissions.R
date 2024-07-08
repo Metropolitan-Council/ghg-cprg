@@ -19,50 +19,59 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 
 therms_to_MCF <- 1 / 10.38
 
-WIutilities_in_scope <- read_rds(here("_energy", "data", "WI_natGas_inScope_utilityCountyPairs.RDS"))
+WIutilities_in_scope <- read_rds(here("_energy", "data", "WI_natGas_inScope_utilityCountyPairs.RDS")) %>%
+  # Create two rows for each utility to house 2005 and 2021 activity data
+  expand_grid(year = c(2005, 2021))
+
 
 combined_WIgasUtil_activityData <- WIutilities_in_scope %>%
   st_drop_geometry(WIutilities_in_scope) %>%
-  select(utility_name, county_name) %>%
+  select(utility_name, county_name, year) %>%
+  # WI utilities report gas sales in therms -- apply EIA transformation factor to tabulate activity in mcf
   mutate(
-    # total energy delivered by each utility; metric is Wisconsin operations therms -- Gas sold (including interdepartmental)
     util_total_mcf = case_when(
-      utility_name == "Midwest Natural Gas Incorporated" ~
-        23181392 * therms_to_MCF,
-      utility_name == "Northern States Power Company - Wisconsin" ~
-        171102649 * therms_to_MCF, 
-      utility_name == "St Croix Valley Natural Gas Company" ~
-        11155826 * therms_to_MCF,
-      utility_name == "Wisconsin Gas" ~
-        751394716 * therms_to_MCF # previously recorded: 1881722450 -- big drop since such a large transport business
+      year == 2005 & utility_name == "Midwest Natural Gas Incorporated" ~ 18816267 * therms_to_MCF,
+      year == 2005 & utility_name == "Northern States Power Company - Wisconsin" ~ 147572365 * therms_to_MCF, # gas sold (incl interdepartmental) -- NOT total send out (that metric includes transport gas)
+      year == 2005 & utility_name == "St Croix Valley Natural Gas Company" ~ 9534249 * therms_to_MCF,
+      year == 2005 & utility_name == "Wisconsin Gas" ~ 728522194 * therms_to_MCF, # total send out... need to make sure "transport" is not included.... final sale only.
+      year == 2021 & utility_name == "Midwest Natural Gas Incorporated" ~ 23181392 * therms_to_MCF,
+      year == 2021 & utility_name == "Northern States Power Company - Wisconsin" ~ 171102649 * therms_to_MCF, 
+      year == 2021 & utility_name == "St Croix Valley Natural Gas Company" ~ 11155826 * therms_to_MCF,
+      year == 2021 & utility_name == "Wisconsin Gas" ~ 751394716 * therms_to_MCF # previously recorded: 1881722450 -- big drop since such a large transport business
     ),
-    # total customers over a utility's entire service territory
     utility_TotalCustomerCount = case_when(
-      utility_name == "Midwest Natural Gas Incorporated" ~ 18793,
-      utility_name == "Northern States Power Company - Wisconsin" ~ 113012,
-      utility_name == "St Croix Valley Natural Gas Company" ~ 9227,
-      utility_name == "Wisconsin Gas" ~ 645576,
+      year == 2005 & utility_name == "Midwest Natural Gas Incorporated" ~ 13845,
+      year == 2005 & utility_name == "Northern States Power Company - Wisconsin" ~ 93588, 
+      year == 2005 & utility_name == "St Croix Valley Natural Gas Company" ~ 6939,
+      year == 2005 & utility_name == "Wisconsin Gas" ~ 583336,
+      year == 2021 & utility_name == "Midwest Natural Gas Incorporated" ~ 18793,
+      year == 2021 & utility_name == "Northern States Power Company - Wisconsin" ~ 113012,
+      year == 2021 & utility_name == "St Croix Valley Natural Gas Company" ~ 9227,
+      year == 2021 & utility_name == "Wisconsin Gas" ~ 645576
     ),
-    # customers served by each utility in a given county
     utilityCustomer_county = case_when(
-      utility_name == "Midwest Natural Gas Incorporated" &
-        county_name == "St. Croix" ~ 5573,
-      utility_name == "Northern States Power Company - Wisconsin" &
-        county_name == "Pierce" ~ 107,
-      utility_name == "Northern States Power Company - Wisconsin" &
-        county_name == "St. Croix" ~ 15990,
-      utility_name == "St Croix Valley Natural Gas Company" &
-        county_name == "Pierce" ~ 5410,
-      utility_name == "St Croix Valley Natural Gas Company" &
-        county_name == "St. Croix" ~ 3817,
-      utility_name == "Wisconsin Gas" &
-        county_name == "Pierce" ~ 3320,
-      utility_name == "Wisconsin Gas" &
-        county_name == "St. Croix" ~ 4252
-    ),
+      year == 2005 & utility_name == "Midwest Natural Gas Incorporated" & county_name == "St. Croix" ~ 3516,
+      year == 2005 & utility_name == "Northern States Power Company - Wisconsin" & county_name == "Pierce" ~ 0,
+      year == 2005 & utility_name == "Northern States Power Company - Wisconsin" & county_name == "St. Croix" ~ 12138, # 11878 (incl city) + 260 (unallocated to a city, but within county)
+      year == 2005 & utility_name == "St Croix Valley Natural Gas Company" & county_name == "Pierce" ~ 4573,
+      year == 2005 & utility_name == "St Croix Valley Natural Gas Company" & county_name == "St. Croix" ~ 2366,
+      year == 2005 & utility_name == "Wisconsin Gas" & county_name == "Pierce" ~ 3039,
+      year == 2005 & utility_name == "Wisconsin Gas" & county_name == "St. Croix" ~ 3453,
+      year == 2021 & utility_name == "Midwest Natural Gas Incorporated" & county_name == "St. Croix" ~ 5573,
+      year == 2021 & utility_name == "Northern States Power Company - Wisconsin" & county_name == "Pierce" ~ 107,
+      year == 2021 & utility_name == "Northern States Power Company - Wisconsin" & county_name == "St. Croix" ~ 15990,
+      year == 2021 & utility_name == "St Croix Valley Natural Gas Company" & county_name == "Pierce" ~ 5410,
+      year == 2021 & utility_name == "St Croix Valley Natural Gas Company" & county_name == "St. Croix" ~ 3817,
+      year == 2021 & utility_name == "Wisconsin Gas" & county_name == "Pierce" ~ 3320,
+      year == 2021 & utility_name == "Wisconsin Gas" & county_name == "St. Croix" ~ 4252
+    )
+  ) %>%
+  mutate(
     # proportion of customers accounts per county
     propCustomerAccountsInCounty =
-      utilityCustomer_county / utility_TotalCustomerCount,
+      utilityCustomer_county / utility_TotalCustomerCount
+  ) %>%
+  mutate(
     # allocate activity data to in-scope counties based on proportion of customers
     mcf_delivered = util_total_mcf * propCustomerAccountsInCounty
   )
