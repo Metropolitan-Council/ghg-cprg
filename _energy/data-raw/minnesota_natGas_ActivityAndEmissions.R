@@ -53,6 +53,7 @@ processed_mn_gasUtil_activityData <- combined_MNgasUtil_activityData %>%
 MNcounty_level_gas_emissions <- processed_mn_gasUtil_activityData %>%
   group_by(county) %>%
   summarise(
+    total_mcf = sum(mcf_delivered, na.rm = TRUE),
     total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
     total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
     total_CH4_emissions_lbs = sum(CH4_emissions, na.rm = TRUE),
@@ -77,6 +78,52 @@ MNcounty_level_gas_emissions <- processed_mn_gasUtil_activityData %>%
     year = 2021
   )
 
+
+#incorporates totals numbers for Residential, Commercial, Industrial, internal use, Unaccounted For gas, and Deliveries to Transportation (i.e. deregulated competitive providers)
+# Source: 2005 MN Utility Data Book
+
+MN_state2005_natGasMCFTotal <- 367825000 # EIA State Energy Profile; 328955000 reported in Utility Data Book
+MN_state2021_natGasMCFTotal <- 495126000 # EIA State Energy Profile
+
+
+downscaleMN_gas_basedOnPopProps <- read_rds(here(
+  "_meta",
+  "data",
+  "cprg_county_proportions.RDS"
+)) %>%
+  filter(STATEFP == 27 &
+           year %in% c(2005,2021)) %>%
+  select(year, county = NAME, county_proportion_of_state_pop) %>%
+  mutate(
+    total_mcf = case_when(
+      year == 2005 ~ MN_state2005_natGasMCFTotal * county_proportion_of_state_pop,
+      year == 2021 ~ MN_state2021_natGasMCFTotal * county_proportion_of_state_pop
+    )
+  ) %>%
+  mutate(
+    total_CO2_emissions_lbs = total_mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF,
+    total_CH4_emissions_lbs = total_mcf * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF * GWP_CH4,
+    total_N2O_emissions_lbs = total_mcf * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF * GWP_N2O,
+    
+  ) %>%
+  mutate(
+    total_CO2e_emissions_lbs = total_CO2_emissions_lbs + total_CH4_emissions_lbs + total_N2O_emissions_lbs,
+    total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
+    total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
+    total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000
+    ) %>%
+  mutate(
+    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
+    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric()
+  ) %>%
+  mutate(
+    state = "MN",
+    sector = "Natural gas"
+  ) %>%
+  select(-county_proportion_of_state_pop)
 
 write_rds(processed_mn_gasUtil_activityData, here("_energy", "data", "minnesota_gasUtils_ActivityAndEmissions.RDS"))
 write_rds(MNcounty_level_gas_emissions, here("_energy", "data", "minnesota_county_GasEmissions.RDS"))
