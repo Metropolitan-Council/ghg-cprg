@@ -6,9 +6,7 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 score_summary <- read_csv(file.path(here::here(), "_waste/data-raw/score_summary.csv"))
 
-# to do: replace mn_counties with general-use list
-
-# filter to only counties in 9-county MN region, for the year 2021
+# filter to only counties in 9-county MN region, for years between 2005 and 2021
 
 score_filtered <- score_summary %>%
   filter(
@@ -16,7 +14,7 @@ score_filtered <- score_summary %>%
     Year %in% 2005:2021
   ) %>%
   mutate(
-    "Metric Tons" = Tons * 0.90718474
+    "Metric Tons" = Tons * 0.90718474 # convert short tons to metric tons (for consistency with IPCC values)
   ) %>% 
   select(
     County,

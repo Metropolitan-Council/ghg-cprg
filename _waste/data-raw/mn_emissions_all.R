@@ -8,7 +8,7 @@ if (!exists("gwp")) {
 source("_waste/data-raw/mn_read_score_data.R")
 
 # read in methane recovery data, save as RDS (UNFINISHED)
-source("_waste/data-raw/mn_methane_flaring.R")
+# source("_waste/data-raw/mn_methane_flaring.R")
 
 # clean tables with mn waste composition data, save as RDS
 source("_waste/data-raw/clean_tabula_tables.R")
@@ -43,18 +43,13 @@ solid_waste_emissions_mt_meta <-
 saveRDS(solid_waste_emissions_metric_tons, "_waste/data/mn_sw_emissions_by_gas.RDS")
 saveRDS(solid_waste_emissions_mt_meta, "_waste/data/mn_sw_emissions_by_gas_meta.RDS")
 
+# multiply by gwp factors and sum to find total co2e emissions
 solid_waste_emissions_co2e <- solid_waste_emissions_metric_tons %>% 
   mutate(
     ch4_emissions_metric_tons_co2e = total_ch4 * gwp$ch4,
     n2o_emissions_metric_tons_co2e = total_n2o * gwp$n2o,
-    sector = case_when(
-      Method == "WTE" ~ "Energy",
-      TRUE ~ "Waste"
-    ),
-    category = case_when(
-      Method == "WTE" ~ "Waste to energy",
-      TRUE ~ "Solid waste"
-    ),
+    sector = "Waste",
+    category = "Solid waste",
     source = case_when(
       Method == "WTE" ~ "Waste to energy",
       TRUE ~ Method

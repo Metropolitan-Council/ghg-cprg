@@ -1,10 +1,11 @@
-# Import necessary info
+# Calculate landfill emissions using IPCC methane commitment model
+# Data from MPCA Score
 source("R/_load_pkgs.R")
 if (!exists("score_data")) {
   score_data <- readRDS("_waste/data/mpca_score.RDS")
 }
 waste_comp <- readRDS("_waste/data/mn_waste_composition.RDS")
-methane_recovery_mn <- readRDS("_waste/data/methane_recovery_mn.RDS")
+# methane_recovery_mn <- readRDS("_waste/data/methane_recovery_mn.RDS")
 
 ## Methane Commitment model ----
 
@@ -24,7 +25,9 @@ f = 0.5
 ox = 0.1 # for well-managed landfills
 
 
-# Calculate DOC
+# Calculate DOC using IPCC equation (see documentation)
+# waste composition from MPCA report https://www.pca.state.mn.us/sites/default/files/w-sw1-60.pdf
+# cleaned in _waste/data-raw/clean_tabula_tables.R
 
 ipcc_doc_factors <- tibble(
   Category = c("Paper", "Textiles", "Organics (Non-Food)", "Organics (Food)", "Wood"),
@@ -40,25 +43,7 @@ doc <- doc_sum$doc_total
 
 l_0 = mcf * doc * doc_f * f * 16/12
 
-# function deprecated ----
-
-# calc_landfill_emissions <- function(County, Year, Tons, f_rec){
-#   mcf = 0.5
-#   # calc doc here
-#   # placeholder value:
-#   doc = 0.5 #PLACEHOLDER
-#   doc_f = 0.6
-#   f = 0.5
-#   l_0 = mcf * doc * doc_f * f * 16/12
-#   ox = 0.1
-#   msw = Tons * 0.90718474 # conversion factor short tons to metric tons
-#   
-#   emissions = msw * l_0 * (1-f_rec) * (1-ox)
-#   return(tibble(ch4_emissions = emissions, year = Year, county = County))
-# }
-
-
-# landfill data from MPCA SCORE report. Transformed to metric tons ----
+# landfill data from MPCA SCORE report. Transformed to metric tons in mn_read_score_data ----
 landfill_data <- score_data %>% 
   filter(Method == "Landfill") %>% 
   select(County,
@@ -66,20 +51,18 @@ landfill_data <- score_data %>%
          `Metric Tons`,
          Method)
 
+# rec (emissions recovered through flaring/landfill gas to energy) to be added later
 # join both lines of f_rec by county and year
 # calculate sum (flaring + lfgte = rec)
 
-# ch4_yearly <- purrr::pmap(landfill_data, calc_landfill_emissions)
-# landfill_emissions <- bind_rows(ch4_yearly)
+# calculate emissions = ((Tons * l_0) - rec) * (1-ox)
 
-# use mutate to calculate emissions = ((Tons * l_0) - rec) * (1-ox)
-
-# placeholder data
+# rec not included for this version; using emissions = (Tons * l_0) * (1-ox)
 landfill_emissions <- landfill_data %>% 
   filter(Year %in% c(2005, 2021)) %>% 
-  left_join(methane_recovery_mn, by = join_by(County, Year)) %>% 
+  # left_join(methane_recovery_mn, by = join_by(County, Year)) %>% 
   mutate(
-    total_ch4 = (`Metric Tons` * l_0 - total_metric_tons_ch4_recovered) * (1-ox)
+    total_ch4 = (`Metric Tons` * l_0) * (1-ox)
   ) %>% 
   select(
     County,

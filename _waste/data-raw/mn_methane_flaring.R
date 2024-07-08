@@ -1,12 +1,17 @@
+# Calculates landfill methane recovered through flaring and landfill gas to energy.
+# Not in use currently due to discrepancies with MPCA data.
+
 source("R/_load_pkgs.R")
 
 cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
 
 # pull in and calculate f_rec ----
 
-# Source: EPA State Inventory Solid Waste tool, methane flaring and LFGTE data 
+# Source: EPA State Inventory Solid Waste tool, methane flaring and LFGTE data
+# https://www.epa.gov/statelocalenergy/state-inventory-and-projection-tool
 
-
+# cleaning xcel data to preserve full values
+# Flaring
 flaring_data <- readxl::read_xlsx("_waste/data-raw/solid_waste_flaring.xlsx",
                                   range = "A2:AG54") %>% 
   rename(State = 1) %>% 
@@ -22,9 +27,7 @@ flaring_data <- flaring_data[-1,] %>%
     flared_metric_tons_ch4_mn = as.numeric(flared_metric_tons_ch4_mn) * 10^6 # converting mmt to mt
   )
 
-# need to:
-# multiply by population percentages to scale down
-# save both flaring and lfgte
+# LFGTE
 
 lfgte_data <- readxl::read_xlsx("_waste/data-raw/solid_waste_lfgte.xlsx",
                                   range = "A2:AG54") %>% 
@@ -40,7 +43,7 @@ lfgte_data <- lfgte_data[-1,] %>%
     lfgte_metric_tons_ch4_mn = as.numeric(lfgte_metric_tons_ch4_mn) * 10^6
   )
 
-# join dfs, filter to 2021/2005, join county proportions, allocate
+# join dfs, filter to 2021/2005, join county proportions, allocate by population - TO CHANGE
 
 methane_recovery_mn <- flaring_data %>% 
   left_join(lfgte_data, by = join_by(Year)) %>% 
@@ -50,7 +53,7 @@ methane_recovery_mn <- flaring_data %>%
     lfgte_metric_tons_ch4_mn,
     Year
   )
-# left to do: allocate by county
+
 methane_recovery_counties <- cprg_county_proportions %>% 
   rename(Year = year) %>% 
   filter(Year %in% c(2005, 2021)) %>% 
@@ -72,7 +75,7 @@ methane_recovery_counties <- cprg_county_proportions %>%
   )
 
 # to test: ensure that each year adds up to total
-# write metadata
+# meta
 methane_recovery_mn_meta <- 
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
