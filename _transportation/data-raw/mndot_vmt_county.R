@@ -495,7 +495,8 @@ vmt_county_raw <- data.table::rbindlist(dat_ls, fill = T, idcol = "year") %>%
   mutate(
     # fix St. Louis county
     county = case_when(
-      county == "St Louis" ~ "Saint Louis",
+      county %in% c("Saint Louis",
+                    "St Louis") ~ "St. Louis",
       TRUE ~ county
     )
   )
