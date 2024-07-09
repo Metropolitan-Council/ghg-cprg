@@ -19,6 +19,7 @@ dot_vmt_meta <-
     ~"Column", ~"Class", ~"Description",
     "year", class(dot_vmt$year), "VMT estimation year",
     "county", class(dot_vmt$county), "County name",
+    "cprg_area", class(dot_vmt$cprg_area), "Whether county is included in the CPRG area",
     "daily_vmt", class(dot_vmt$daily_vmt), "Vehicle miles traveled on an average day",
     "annual_vmt", class(dot_vmt$annual_vmt), "Annual vehicle miles traveled",
     "centerline miles", class(dot_vmt$centerline_miles), "Centerline miles included in VMT estimate. Minnesota only",
