@@ -5,6 +5,7 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 ## you'll need an API key to use USDA data (https://quickstats.nass.usda.gov/api)
 key <- keyring::key_get('usda_key')
 
+### load in saved SIT workbook sheets
 ag_soils_residuals <- read_csv('_agriculture/data-raw/ag_soils_residuals.csv')
 ag_soils_fertilizer <- read_csv('_agriculture/data-raw/ag_soils_fertilizer.csv')
 ag_soils_manure <- read_csv('_agriculture/data-raw/ag_soils_manure.csv')
@@ -30,6 +31,7 @@ counties <- if_else(counties == 'ST. CROIX', "ST CROIX", counties)
 
 #starting with biggest source of emissions - residuals
 
+# grab field crop production data by county
 usda_survey <- tidyUSDA::getQuickstat(
   sector="CROPS",
   group="FIELD CROPS",
@@ -48,14 +50,8 @@ usda_survey <- tidyUSDA::getQuickstat(
   weighted_by_area = T) %>% 
   as.data.frame() %>% select(-geometry)
 
-
-unique(usda_survey$short_desc)
-
-usda_survey %>% filter(grepl("HAYLAGE ",short_desc))
-usda_survey %>% filter(grepl("HAY",short_desc), county_name == "PIERCE") %>% select(year, short_desc, Value) %>% arrange(year)
-
 ### extracting crops with conversions from EPA tool (corn and soy will likely account for >90% of emissions)
-
+### this is now more neatly presented in ag_constants_formatted but code needs to be rewritten
 crop_conversions <- left_join(ag_constants[28:44,1:3] %>% 
   row_to_names(row_number = 1),
   ag_control[c(71,74:89), c(1,2,6,10)] %>% 
@@ -63,7 +59,7 @@ crop_conversions <- left_join(ag_constants[28:44,1:3] %>%
   mutate_at(c(2:6), as.numeric) %>% 
   clean_names()
 
-
+### select crops for region
 usda_survey_formatted <- usda_survey %>% 
   filter(short_desc %in% c(
     "BARLEY - PRODUCTION, MEASURED IN BU",
@@ -88,9 +84,9 @@ usda_survey_formatted <- usda_survey %>%
   )) %>% #convert all units to metric tons
   left_join(.,crop_conversions, by = c("crop_type" = "crop")) %>% 
   mutate(metric_tons = case_when(
-    grepl("Beans", crop_type) ~ Value * .0454, # 1000s of hundredweights to metric tons
-    grepl("Alfalfa", crop_type) ~ Value  * 0.9072, # 1000s of tons to metric tons
-    TRUE ~ Value * metric_tons_bushel # 1000s of bushels to metric tons
+    grepl("Beans", crop_type) ~ Value * .0454, # hundredweights to metric tons
+    grepl("Alfalfa", crop_type) ~ Value  * 0.9072, # tons to metric tons
+    TRUE ~ Value * metric_tons_bushel # bushels to metric tons
   )
          ) %>% # determine N delivered to soils
   mutate(MT_N_to_soil = if_else(
@@ -104,7 +100,6 @@ usda_survey_formatted <- usda_survey %>%
     0
     ))
 
-usda_survey_formatted %>% filter(year == 2006, crop_type == "Alfalfa") %>% pull(Value) %>% sum()
 
 soil_residue_emissions <- usda_survey_formatted %>% 
   filter(!is.na(MT_N_fixation)) %>% 
@@ -128,7 +123,7 @@ soil_residue_emissions %>% filter(year == 2021) %>%  pull(mt_c2oe) %>% sum()
 ### Fertilizer application is estimated in SIT for state, but data source is unclear
 
 ### need to extract state fertilizer application estimates by year and then multiply by year constants to convert to organic vs synthetic rates
-ag_fert_formatted <- left_join(ag_fertilizer[c(2,4:53),] %>% 
+ag_fert_formatted <- left_join(ag_fertilizer[c(2,4:53),] %>%  # begin formatting to machine readable
   mutate(`Consumption of Primary Plant Nutrients: Total Nitrogen (Metric Tons)` = replace(`Consumption of Primary Plant Nutrients: Total Nitrogen (Metric Tons)`, 
                         is.na(`Consumption of Primary Plant Nutrients: Total Nitrogen (Metric Tons)`), 
                         "state")) %>%
@@ -139,7 +134,7 @@ ag_fert_formatted <- left_join(ag_fertilizer[c(2,4:53),] %>%
   filter(state %in% c ("MN","WI")) %>% 
   mutate(value = as.numeric(str_replace_all(value,",","")),
          year = as.numeric(year)),
-  ag_fertilizer[c(2,56),2:33] %>% 
+  ag_fertilizer[c(2,56),2:33] %>%  # percentage fertilizer amount that is synthetic
     row_to_names(1) %>% 
     pivot_longer(cols = 1:32,
                  names_to = "year",
@@ -153,7 +148,7 @@ ag_fert_formatted <- left_join(ag_fertilizer[c(2,4:53),] %>%
 
 ag_fert_formatted
 
-
+### pull in county values of fertilizer purchased. Will use this to apportion fertilizer applied (above)
 usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
   sector="ECONOMICS",
   group="EXPENSES",
@@ -175,8 +170,9 @@ usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
 usda_fertilizer_mn_wi %>% filter(is.na(Value)) %>% arrange(year) %>% select(state_name, county_name, year)
 ### there are 9 missing values by county. 2 MN, 2 WI in 2002. 2 MN in 2007, 3 WI in 2017. None are counties of focus except Ramsey in 2002, which has limited ag.
 
+# get proportion of county fertilizer purchase to state
 usda_fert_prop <- usda_fertilizer_mn_wi %>% 
-  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>% 
+  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>% # remove washington co, WI
   group_by(state_name, year) %>% 
   mutate(state_total = sum(Value, na.rm = TRUE), fert_prop = Value / state_total) %>% 
   filter(county_name %in% counties) %>% 
@@ -199,7 +195,6 @@ fert_prop_interpolated <- left_join( # this creates an empty grid of all year co
   )
 
 #### merge fertilize proportion estimates with state fertilizer values
-
 county_fertilizer_emissions <- left_join(
   left_join(fert_prop_interpolated, cprg_county %>% 
                                  mutate(county_name = if_else(NAME == "St. Croix",
@@ -263,9 +258,3 @@ cropland_emissions_meta <-
 saveRDS(cropland_emissions, "./_agriculture/data/county_cropland_emissions_2005_2021.rds")
 saveRDS(cropland_emissions_meta, "./_agriculture/data/county_cropland_emissions_2005_2021_meta.rds")
 
-### soil animals
-### ag soils animals pulls N2o emissions from x variables:
-# 1) fertilizer runoff/leaching - this was calculated above and needs to be multiplied by EF
-# 2) manure runoff/leaching - this is calculated from a K-nitrogen excretion that is derived from animal emissions. will need to pull in livestock data
-# 3) indirect n2o emissions from livestock - this is a fraction of the k-nitrogen excretion calculated in step 2
-# 4) direct n2o emissions from livestock - this is manure applied to ag soils and that left in pasture/paddocks
