@@ -11,6 +11,11 @@ nex <- read_csv("_agriculture/data-raw/ag_nex.csv")
 
 #formatted files
 ag_constants <- readRDS('_agriculture/data/ag_constants_formatted.rds')
+##convert to named vector for easier indexing
+ag_constants_vec <- ag_constants %>% 
+      select(short_text, value) %>% 
+      tibble::deframe()
+
 ag_manure_mgmt <- readRDS('_agriculture/data/manure_management_systems.rds')
 
 ### mpca data on feedlots - currently unused but formatted at end of script
@@ -556,8 +561,8 @@ KN_excretion_runoff <- left_join(rows_append(census_interpolated, poultry_interp
 nex_runoff_emissions <- KN_excretion_runoff %>% 
   group_by(year, county_name, data_type) %>% 
   summarize(mt_total_kn_excretion = sum(total_kn_excretion_kg/1000)) %>% 
-  mutate(mt_n = mt_total_kn_excretion * (1-ag_constants$value[ag_constants$short_text == "VolPercent"]) * ag_constants$value[ag_constants$short_text == "LeachEF"], # multiply total k-n excretion by volatization percent and then leaching EF
-         mt_n2o = mt_n * ag_constants$value[ag_constants$short_text == "LeachEF2"] * ag_constants$value[ag_constants$short_text == "N2O_N2"],
+  mutate(mt_n = mt_total_kn_excretion * (1-ag_constants_vec["VolPercent"]) * ag_constants_vec["LeachEF"], # multiply total k-n excretion by volatization percent and then leaching EF
+         mt_n2o = mt_n * ag_constants_vec["LeachEF2"] * ag_constants_vec["N2O_N2"],
          mt_co2e = mt_n2o * gwp$n2o
          )
          
@@ -610,12 +615,12 @@ manure_soils <- left_join(KN_excretion_runoff %>% filter(year != 2022),
  
 manure_soils_emissions <- manure_soils %>% 
   mutate(MT_n2o_manure_application = (managed_nex + daily_spread_nex) * 
-                                   (1-ag_constants$value[ag_constants$short_text == "VolPercent_Indirect"]) * 
-                                    ag_constants$value[ag_constants$short_text == "NonVolEF"] /
+                                   (1-ag_constants_vec["VolPercent_Indirect"]) * 
+                                    ag_constants_vec["NonVolEF"] /
                                     1000 * 
-                                    ag_constants$value[ag_constants$short_text == "N2O_N2"],
-         MT_n2o_pasture = pasture_nex * ag_constants$value[ag_constants$short_text == "prpEF"] / 1000 * 
-                          ag_constants$value[ag_constants$short_text == "N2O_N2"],
+                                    ag_constants_vec["N2O_N2"],
+         MT_n2o_pasture = pasture_nex * ag_constants_vec["prpEF"] / 1000 * 
+                          ag_constants_vec["N2O_N2"],
          MT_co2e_manure_application = MT_n2o_manure_application * gwp$n2o,
          MT_co2e_pasture = MT_n2o_pasture * gwp$n2o
           )
@@ -626,6 +631,44 @@ manure_soils_emissions_county <- manure_soils_emissions %>%
   summarize(co2e = sum(co2e_combined))
 
 manure_soils_emissions_county %>% filter(year == 2021) %>% pull(co2e) %>% sum()
+
+
+###compile all emissions for export
+
+### pulling out 
+livestock_emissions <- bind_rows(
+  cow_burps %>% group_by(year, county_name) %>% summarize(MT_co2e = sum(CO2e), MT_gas = sum(MT_ch4)) %>% 
+    mutate(category = "livestock", source = "enteric_fermentation", gas_type = "ch4"),
+  livestock_poops %>% group_by(year, county_name) %>% summarize(MT_co2e = sum(CO2e), MT_gas = sum(MT_ch4)) %>% 
+    mutate(category = "livestock", source = "manure_management", gas_type = "ch4"),
+  livestock_poops %>% group_by(year, county_name) %>% summarize(MT_co2e = sum(CO2e), MT_gas = sum(MT_n2o)) %>% 
+    mutate(category = "livestock", source = "manure_management", gas_type = "n2o"),
+  manure_soils_emissions %>% group_by(year, county_name) %>% summarize(MT_co2e = sum(MT_co2e_manure_application + MT_co2e_pasture ), 
+                                                                       MT_gas  = sum(MT_n2o_manure_application + MT_n2o_pasture)) %>% 
+    mutate(category = "livestock", source = "direct_manure_soil_emissions", gas_type = "n2o"),
+  nex_runoff_emissions %>% group_by(year, county_name) %>% summarize(MT_co2e = sum(mt_co2e), 
+                                                                       MT_gas  = sum(mt_n2o )) %>% 
+    mutate(category = "livestock", source = "indirect_manure_runoff_emissions", gas_type = "n2o")
+) %>% 
+  filter(year != 2022) %>% 
+ replace(is.na(.), 0) %>%  ## Anoka has missing enteric fermentation data from 2018-2021. They should have some livestock according to online USDA, revisit.
+ mutate(county_name = if_else(county_name == "ST CROIX", "St. Croix", str_to_sentence(county_name))) # match case to other files
+
+livestock_emissions_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "year", class(livestock_emissions$year), "Year of survey",
+    "county_name", class(livestock_emissions$county_name), "County name",
+    "MT_co2e", class(livestock_emissions$MT_co2e), "Metric tons of CO2 equivalency", 
+    "MT_gas", class(livestock_emissions$MT_gas), "Total metric tons of gas emitted from source",
+    "category", class(livestock_emissions$category), "Subsector category",
+    "source", class(livestock_emissions$category), "Detailed description of emission source",
+    "gas_type", class(livestock_emissions$gas_type), "Greenhouse gas emitted from source",
+  )
+
+saveRDS(livestock_emissions, "./_agriculture/data/county_livestock_emissions_2005_2021.rds")
+saveRDS(livestock_emissions_meta, "./_agriculture/data/county_livestock_emissions_2005_2021_meta.rds")
+
 
 ### code below is beginning of MPCA feedlot permitting data. Feedlot data seemed to grossly undercount heads of livestock compared to USDA data
 ### shelving this for now but is more granular in detail and should be reconciled at later date to understand difference
