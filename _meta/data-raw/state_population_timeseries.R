@@ -46,22 +46,24 @@ state_pop_acs <- purrr::map_dfr(
 state_pop_decennial <- 
   bind_rows(
     purrr::map_dfr(
-      c(2010, 2020),
+      c(2020),
       function(x){
         tidycensus::get_decennial(
           geography = "state",
           state = "MN",
+          year = x,
           variables = c(total_pop = "P1_001N")
         ) %>% 
           mutate(decennial_year = x)
       }
     ),
     purrr::map_dfr(
-      c(2010, 2020),
+      c(2020),
       function(x){
         tidycensus::get_decennial(
           geography = "state",
           state = "WI",
+          year = x,
           variables = c(total_pop = "P1_001N")
         ) %>% 
           mutate(decennial_year = x)
@@ -89,16 +91,17 @@ state_population_timeseries <-
   select(GEOID, state = NAME, 
          population_year = acs_year, population, population_data_source) %>% 
   # remove 2010 and 2020 from acs 1 year
-  filter(!population_year %in% c(2010, 2020)) %>% 
+  filter(!population_year %in% state_pop_decennial$decennial_year) %>% 
   # bind pop decennial
   bind_rows(state_pop_decennial %>% 
               select(GEOID, 
                      state = NAME,
                      population_year = decennial_year,
                      population, population_data_source)) %>% 
-  arrange(state) %>% 
+  arrange(state, population_year) %>% 
   select(state,
-         population_year, population, population_data_source)
+         population_year, population, population_data_source) %>% 
+  unique()
 
 
 # create metadata

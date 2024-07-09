@@ -47,25 +47,62 @@ pop_acs <- purrr::map_dfr(
   )
 
 
+
+pop_acs5 <- purrr::map_dfr(
+  c(2009:2019, 2021:2022),
+  function(x){
+    tidycensus::get_acs(
+      survey = "acs5",
+      year = x,
+      state = "MN",
+      geography = "county",
+      variables = c(total_pop = "DP05_0001E")
+    ) %>% 
+      mutate(acs_year = x)
+  }
+) %>% 
+  bind_rows(
+    purrr::map_dfr(
+      c(2009:2019, 2021:2022),
+      function(x){
+        tidycensus::get_acs(
+          survey = "acs5",
+          year = x,
+          state = "WI",
+          geography = "county",
+          variables = c(total_pop = "DP05_0001E")
+        ) %>% 
+          mutate(acs_year = x)
+      }
+    )) %>% 
+  filter(GEOID %in% cprg_county$GEOID) %>% 
+  mutate(
+    population_data_source = "ACS 5-Year Estimates, Table DP05",
+    population = estimate
+  )
+
+
 pop_decennial <- 
   bind_rows(
     purrr::map_dfr(
-      c(2010, 2020),
+      c(2020),
       function(x){
         tidycensus::get_decennial(
           geography = "county",
           state = "MN",
+          year = x,
           variables = c(total_pop = "P1_001N")
         ) %>% 
           mutate(decennial_year = x)
       }
     ),
     purrr::map_dfr(
-      c(2010, 2020),
+      c(2020),
       function(x){
         tidycensus::get_decennial(
           geography = "county",
           state = "WI",
+          year = x,
           variables = c(total_pop = "P1_001N")
         ) %>% 
           mutate(decennial_year = x)
@@ -91,8 +128,15 @@ pop_decennial %>%
 cprg_population_timeseries <- 
   pop_acs %>% 
   select(GEOID, population_year = acs_year, population, population_data_source) %>% 
+  # bind ACS 5 year estimates to get Pierce and Chisago counties
+  bind_rows(
+    pop_acs5 %>% 
+      select(GEOID, population_year = acs_year, population, population_data_source) %>% 
+      filter(GEOID %in%  c(55093,
+                           27025))
+  ) %>% 
   # remove 2010 and 2020 from acs 1 year
-  filter(!population_year %in% c(2010, 2020)) %>% 
+  filter(!population_year %in% pop_decennial$decennial_year) %>% 
   # bind pop decennial
   bind_rows(pop_decennial %>% 
               select(GEOID, 
