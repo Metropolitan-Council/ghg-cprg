@@ -9,62 +9,62 @@ source("R/_load_pkgs.R")
 library(tabulapdf)
 # each of these calls launch a shiny app that has you manually select the table
 # areas with your mouse
-wi_vmt22 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2022-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/"
-)
-
-wi_vmt21 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2021-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt20 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2020-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt19 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2019-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt18 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2018-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt17 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2017-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt16 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2016-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt15 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2015-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt14 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2014-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt13 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2013-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt12 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2012-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt11 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2011-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt10 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2010-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
-
-wi_vmt09 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2009-c.pdf",
-                                     output = "csv",
-                                     outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# wi_vmt22 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2022-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/"
+# )
+# 
+# wi_vmt21 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2021-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt20 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2020-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt19 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2019-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt18 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2018-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt17 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2017-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt16 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2016-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt15 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2015-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt14 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2014-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt13 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2013-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt12 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2012-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt11 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2011-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt10 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2010-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+# 
+# wi_vmt09 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2009-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
 
 
