@@ -553,7 +553,7 @@ KN_excretion_runoff <- left_join(rows_append(census_interpolated, poultry_interp
   left_join(., nex_formatted, by = c('STATE_ABB' = 'state', "livestock_type" = "livestock_type", "year" = "year")) %>% 
   mutate(total_kn_excretion_kg = head_count * kg_nex_head_yr)
 
-nex_emissions <- KN_excretion_runoff %>% 
+nex_runoff_emissions <- KN_excretion_runoff %>% 
   group_by(year, county_name, data_type) %>% 
   summarize(mt_total_kn_excretion = sum(total_kn_excretion_kg/1000)) %>% 
   mutate(mt_n = mt_total_kn_excretion * (1-ag_constants$value[ag_constants$short_text == "VolPercent"]) * ag_constants$value[ag_constants$short_text == "LeachEF"], # multiply total k-n excretion by volatization percent and then leaching EF
@@ -564,13 +564,68 @@ nex_emissions <- KN_excretion_runoff %>%
 
 ##### manure management system emissions
 
-manure_mgmt_perc <- ag_manure_mgmt %>% group_by(year,state,livestock_type, managed) %>% summarize(percentage = sum(percentage))
+manure_mgmt_perc <- ag_manure_mgmt %>% 
+  mutate(management_type = case_when(
+    managed == "Yes" ~ "Managed",
+    mgmt_system %in% c("Pasture","PRP","Dry Lot", "Range", "Pasture, Range & Paddock") ~ "Pasture_range",
+    mgmt_system == "Daily Spread" ~ "Daily_spread"
+  )) %>% 
+  group_by(year,state,livestock_type, management_type) %>% summarize(percentage = sum(percentage)) 
+  
 
-manure_runoff <- left_join(KN_excretion_runoff,
-                           manure_mgmt_perc %>% filter(managed == "Yes"),
+manure_soils <- left_join(KN_excretion_runoff %>% filter(year != 2022),
+                           manure_mgmt_perc %>% filter(management_type  == "Managed") %>% 
+                             select(-management_type) %>% 
+                             rename(percent_managed = percentage),
                            by = c("year" = "year",
                                   "livestock_type" = "livestock_type",
-                                  "STATE_ABB" = "state"))
+                                  "STATE_ABB" = "state")) %>% 
+  left_join(.,  manure_mgmt_perc %>% filter(management_type  == "Daily_spread") %>% 
+              select(-management_type) %>% 
+              rename(percent_daily_spread = percentage),
+            by = c("year" = "year",
+                   "livestock_type" = "livestock_type",
+                   "STATE_ABB" = "state")) %>% 
+  left_join(.,  manure_mgmt_perc %>% filter(management_type  == "Pasture_range") %>% 
+              select(-management_type) %>% 
+              rename(percent_pasture = percentage),
+            by = c("year" = "year",
+                   "livestock_type" = "livestock_type",
+                   "STATE_ABB" = "state")) %>% 
+  ### some livestock_type have manure mangement determined from other sources or within SIT workbook
+ mutate(percent_managed = case_when(
+   livestock_type %in% c("Broilers", "Pullets") ~  1,
+   livestock_type %in% c("Sheep") ~ 0.5, # sheep have unclear math happening in SIT, with ratio flipping from 1/3 to 2/3 depending on whether on feed. Taking middle value.
+   TRUE ~ percent_managed
+   ), 
+   percent_pasture = case_when(
+     livestock_type %in% c("Calves") ~ 1,
+     livestock_type %in% c("Sheep") ~ 0.5, # sheep have unclear math happening in SIT, with ratio flipping from 1/3 to 2/3 depending on whether on feed. Taking middle value.
+     TRUE ~ percent_pasture
+   ),
+   managed_nex = total_kn_excretion_kg * percent_managed,
+   pasture_nex = total_kn_excretion_kg * percent_pasture, 
+   daily_spread_nex = total_kn_excretion_kg * percent_daily_spread)  %>% 
+  replace(is.na(.), 0) ## lots of NAs for livestock without certain manure management, need it to be zero for next step
+ 
+manure_soils_emissions <- manure_soils %>% 
+  mutate(MT_n2o_manure_application = (managed_nex + daily_spread_nex) * 
+                                   (1-ag_constants$value[ag_constants$short_text == "VolPercent_Indirect"]) * 
+                                    ag_constants$value[ag_constants$short_text == "NonVolEF"] /
+                                    1000 * 
+                                    ag_constants$value[ag_constants$short_text == "N2O_N2"],
+         MT_n2o_pasture = pasture_nex * ag_constants$value[ag_constants$short_text == "prpEF"] / 1000 * 
+                          ag_constants$value[ag_constants$short_text == "N2O_N2"],
+         MT_co2e_manure_application = MT_n2o_manure_application * gwp$n2o,
+         MT_co2e_pasture = MT_n2o_pasture * gwp$n2o
+          )
+
+manure_soils_emissions_county <- manure_soils_emissions %>% 
+  mutate(co2e_combined = MT_co2e_manure_application + MT_co2e_pasture) %>% 
+  group_by(year, county_name) %>% 
+  summarize(co2e = sum(co2e_combined))
+
+manure_soils_emissions_county %>% filter(year == 2021) %>% pull(co2e) %>% sum()
 
 ### code below is beginning of MPCA feedlot permitting data. Feedlot data seemed to grossly undercount heads of livestock compared to USDA data
 ### shelving this for now but is more granular in detail and should be reconciled at later date to understand difference
