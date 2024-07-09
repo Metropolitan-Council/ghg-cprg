@@ -115,12 +115,20 @@ wisconsin_vmt <- wisconsin_vmt_raw %>%
          county,
          daily_vmt = daily,
          annual_vmt = annual
+  ) %>% 
+  mutate(
+    cprg_area = ifelse(county %in% c(
+      "St. Croix",
+      "Pierce"
+    ), TRUE, FALSE
+    )
   )
+
   
 
 
 wi_vmt_county <- wisconsin_vmt %>% 
-  filter(county %in% c("Pierce", "St. Croix"))
+  filter(cprg_area == TRUE)
 
 
 nrow(wi_vmt_county) == 28
