@@ -11,10 +11,17 @@ ag_soils_manure <- read_csv('_agriculture/data-raw/ag_soils_manure.csv')
 ag_residual_burning_ch4 <- read_csv('_agriculture/data-raw/ag_residual_burning_ch4.csv')
 ag_residual_burning_n2o <- read_csv('_agriculture/data-raw/ag_residual_burning_n2o.csv')
 ag_soils_liming <- read_csv('_agriculture/data-raw/ag_soils_liming.csv')
-ag_constants <- read_csv('_agriculture/data-raw/ag_constants.csv')
+ag_constants <- read_csv('_agriculture/data-raw/ag_constants.csv')  
 ag_control <- read_csv('_agriculture/data-raw/ag_control.csv')
 ag_fertilizer <- read_csv('_agriculture/data-raw/ag_fertilizer.csv')
 
+# code should be revamped throughout to use the formatted ag constants data for cleaner analysis, but for now using at end of script
+#formatted files
+ag_constants_formatted <- readRDS('_agriculture/data/ag_constants_formatted.rds')
+##convert to named vector for easier indexing
+ag_constants_vec <- ag_constants_formatted %>% 
+  select(short_text, value) %>% 
+  tibble::deframe()
 
 ### create county names matched to USDA format
 counties <- toupper(cprg_county$NAME)
@@ -106,9 +113,7 @@ soil_residue_emissions <- usda_survey_formatted %>%
   mutate(mt_n2o = mt_n_soils * 0.01 * (44/28),
          mt_c2oe = mt_n2o * gwp$n2o)
 
-soil_residue_emissions %>% filter(year == 2021) %>% pull(mt_n2o) %>% sum()
-# 450056.4 
-
+### check
 ggplot(soil_residue_emissions %>% 
          group_by(year,county_name) %>% 
          summarize(CO2e = sum(mt_c2oe)),
@@ -216,7 +221,7 @@ county_fertilizer_emissions <- left_join(
                       as.numeric(ag_constants[23,1]) * as.numeric(ag_constants[10,1]),  ## multiplied by the EF of volatized N and N2O N: N2O
          mt_n2o = n2o_direct + n2o_indirect,
          mt_co2e = mt_n2o * gwp$n2o) %>% 
-  select(year, county_name, data_type, mt_n_synthetic, mt_n_organic, mt_n2o, mt_co2e)
+  select(year, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty, mt_n2o, mt_co2e)
 
 ggplot(county_fertilizer_emissions %>% 
          group_by(year,county_name) %>% 
@@ -224,11 +229,43 @@ ggplot(county_fertilizer_emissions %>%
        aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
 county_fertilizer_emissions %>% filter(year == 2021, !county_name %in% c("SHERBURNE", "CHISAGO", "PIERCE", "ST CROIX")) %>%  pull(mt_co2e) %>% sum()
 
+### there is an additional estimate from the ag soils-animal worksheet that uses fertilizer data to estimate emissions from runoff and leaching.
+### we should seek out additional documentation to better described these direct and indirect emissions, 
+### but language seems to imply fertilizer that stays on field vs that transported (into waterways, off cropland vegetation) perhaps
+county_fertilizer_runoff_emissions <- county_fertilizer_emissions %>% 
+  select("year", "county_name", "data_type", "mt_n_synthetic_cty", "mt_n_organic_cty") %>% 
+  mutate(mt_n2o =  (mt_n_synthetic_cty + mt_n_organic_cty) * ag_constants_vec["LeachEF"] * ag_constants_vec["LeachEF2"] * ag_constants_vec["N2O_N2"],
+         mt_co2e = mt_n2o * gwp$n2o)
 
+cropland_emissions <- bind_rows(
+  soil_residue_emissions %>% select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_c2oe) %>% 
+    mutate(category = "cropland", source = "crop_residue_emissions", gas_type = "n2o"),
+  county_fertilizer_emissions %>% select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_co2e) %>% 
+    mutate(category = "cropland", source = "crop_fertilizer_emissions", gas_type = "n2o"),
+  county_fertilizer_runoff_emissions %>% select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_co2e) %>% 
+    mutate(category = "cropland", source = "runoff_fertilizer_emissions", gas_type = "n2o")
+) %>% 
+  filter(year != 2022) %>% 
+  mutate(county_name = if_else(county_name == "ST CROIX", "St. Croix", str_to_sentence(county_name))) # match case to other files
+
+cropland_emissions_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "year", class(cropland_emissions$year), "Year of survey",
+    "county_name", class(cropland_emissions$county_name), "County name",
+    "MT_co2e", class(cropland_emissions$MT_co2e), "Metric tons of CO2 equivalency", 
+    "MT_gas", class(cropland_emissions$MT_gas), "Total metric tons of gas emitted from source",
+    "category", class(cropland_emissions$category), "Subsector category",
+    "source", class(cropland_emissions$category), "Detailed description of emission source",
+    "gas_type", class(cropland_emissions$gas_type), "Greenhouse gas emitted from source",
+  )
+
+saveRDS(cropland_emissions, "./_agriculture/data/county_cropland_emissions_2005_2021.rds")
+saveRDS(cropland_emissions_meta, "./_agriculture/data/county_cropland_emissions_2005_2021_meta.rds")
 
 ### soil animals
 ### ag soils animals pulls N2o emissions from x variables:
 # 1) fertilizer runoff/leaching - this was calculated above and needs to be multiplied by EF
 # 2) manure runoff/leaching - this is calculated from a K-nitrogen excretion that is derived from animal emissions. will need to pull in livestock data
 # 3) indirect n2o emissions from livestock - this is a fraction of the k-nitrogen excretion calculated in step 2
-# 4) direct n2o emissions from livestock - this is manure applied to ag soils and left in pasture/paddocks
+# 4) direct n2o emissions from livestock - this is manure applied to ag soils and that left in pasture/paddocks

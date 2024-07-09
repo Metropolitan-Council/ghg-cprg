@@ -635,7 +635,6 @@ manure_soils_emissions_county %>% filter(year == 2021) %>% pull(co2e) %>% sum()
 
 ###compile all emissions for export
 
-### pulling out 
 livestock_emissions <- bind_rows(
   cow_burps %>% group_by(year, county_name) %>% summarize(MT_co2e = sum(CO2e), MT_gas = sum(MT_ch4)) %>% 
     mutate(category = "livestock", source = "enteric_fermentation", gas_type = "ch4"),
