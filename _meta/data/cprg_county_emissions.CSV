@@ -130,18 +130,18 @@
 2005,"county","093","Pierce","Energy","Commercial energy","Electricity",NA,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",NA
 2005,"county","093","Pierce","Energy","Industrial energy","Electricity",NA,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",NA
 2005,"county","093","Pierce","Energy","Residential energy","Electricity",NA,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",NA
-2021,"county","093","Pierce","Energy","Total energy","Electricity",175926.787442229,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",4.17
-2021,"county","093","Pierce","Energy","Commercial energy","Electricity",49807.5090680142,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",1.18
-2021,"county","093","Pierce","Energy","Industrial energy","Electricity",44964.9603479871,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",1.07
-2021,"county","093","Pierce","Energy","Residential energy","Electricity",81154.318026228,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",1.92
+2021,"county","093","Pierce","Energy","Total energy","Electricity",177392.022093167,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",4.2
+2021,"county","093","Pierce","Energy","Commercial energy","Electricity",50222.338948241,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",1.19
+2021,"county","093","Pierce","Energy","Industrial energy","Electricity",45339.4582794152,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",1.07
+2021,"county","093","Pierce","Energy","Residential energy","Electricity",81830.2248655108,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",42204,"ACS 5-Year Estimates 2021, Table DP05",1.94
 2005,"county","109","St. Croix","Energy","Total energy","Electricity",693239.007097241,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",7.49
 2005,"county","109","St. Croix","Energy","Commercial energy","Electricity",NA,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",NA
 2005,"county","109","St. Croix","Energy","Industrial energy","Electricity",NA,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",NA
 2005,"county","109","St. Croix","Energy","Residential energy","Electricity",NA,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",NA
-2021,"county","109","St. Croix","Energy","Total energy","Electricity",456300.045395855,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",4.93
-2021,"county","109","St. Croix","Energy","Commercial energy","Electricity",175146.659301971,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",1.89
-2021,"county","109","St. Croix","Energy","Industrial energy","Electricity",123590.197848111,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",1.34
-2021,"county","109","St. Croix","Energy","Residential energy","Electricity",157563.188245773,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",1.7
+2021,"county","109","St. Croix","Energy","Total energy","Electricity",453105.734596098,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",4.9
+2021,"county","109","St. Croix","Energy","Commercial energy","Electricity",173920.551895244,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",1.88
+2021,"county","109","St. Croix","Energy","Industrial energy","Electricity",122725.009453515,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",1.33
+2021,"county","109","St. Croix","Energy","Residential energy","Electricity",156460.173247339,"Individual electric utilities, NREL SLOPE (2021)","eGRID MROW",92495,"ACS 5-Year Estimates 2021, Table DP05",1.69
 2021,"county","003","Anoka","Energy","Total energy","Natural gas",845918.428538194,"Individual natural gas utilities, NREL SLOPE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",2.34
 2021,"county","003","Anoka","Energy","Commercial energy","Natural gas",214040.220503855,"Individual natural gas utilities, NREL SLOPE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.59
 2021,"county","003","Anoka","Energy","Industrial energy","Natural gas",281212.870917928,"Individual natural gas utilities, NREL SLOPE","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates 2021, Table DP05",0.78
