@@ -152,6 +152,9 @@ MNcounty_level_gas_emissionsQA = rbind(downscaleMN_gas_basedOnPopProps_2005, MNc
     EST_perCap_CO2e = EST_emissions_metric_tons_co2e / county_population
   )
 
+MNcounty_level_gas_emissions <- MNcounty_level_gas_emissionsQA %>%
+  select(-county_population, -CO2eEmissions_PerCap_Tons, EST_emissions_metric_tons_co2e, EST_perCap_CO2e)
+
 #since we have more detailed info for 2021, save off as a separate .RDS for safekeeping
 write_rds(processed_mn_gasUtil_activityData, here("_energy", "data", "minnesota_gasUtils_ActivityAndEmissions2021.RDS"))
 
