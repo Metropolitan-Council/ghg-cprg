@@ -130,7 +130,8 @@ wisconsin_vmt <- wisconsin_vmt_raw %>%
 wi_vmt_county <- wisconsin_vmt %>% 
   filter(cprg_area == TRUE)
 
-
+# double check that there are the right number of observations
+# 2 counties, 14 years = 28
 nrow(wi_vmt_county) == 28
 
 saveRDS(wi_vmt_county, "_transportation/data-raw/wisdot/wisdot_vmt_county.RDS")
