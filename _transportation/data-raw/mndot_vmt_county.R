@@ -491,12 +491,62 @@ vmt_county_raw <- data.table::rbindlist(dat_ls, fill = T, idcol = "year") %>%
       "Chisago"
     ), TRUE, FALSE
     )
+  ) %>% 
+  mutate(
+    # fix St. Louis county
+    county = case_when(
+      county == "St Louis" ~ "Saint Louis",
+      TRUE ~ county
+    )
   )
 
-vmt_county <- vmt_county_raw %>%
+
+vmt_county_raw_summary <- 
+  vmt_county_raw %>% 
+  group_by(year, county, cprg_area) %>% 
+  summarize(
+    daily_vmt = sum(daily_vmt),
+    annual_vmt = sum(annual_vmt),
+    centerline_miles = sum(centerline_miles),
+    .groups = "keep"
+  )
+
+# attempt interpolation of 2015 data
+
+vmt_interp <- vmt_county_raw_summary %>% 
+  # first create an NA 2015 dataset
+  ungroup() %>% 
+  select(county, cprg_area) %>% 
+  unique() %>% 
+  mutate(year = "2015",
+         daily_vmt = NA,
+         annual_vmt = NA) %>% 
+  # bind with original
+  bind_rows(vmt_county_raw_summary) %>% 
+  arrange(year) %>% 
+  group_by(county) %>%
+  # interpolate using midpoint method 
+  # for missing values
+  # grouped by county
+  mutate(annual_approx = zoo::na.approx(annual_vmt),
+         daily_approx = zoo::na.approx(daily_vmt),
+         centerline_approx = zoo::na.approx(centerline_miles)) 
+  
+# review and check that values make sense for all counties
+
+# re-assign column values to match original data
+vmt_county_raw_interp <- vmt_interp %>% 
+  mutate(daily_vmt = daily_approx,
+         annual_vmt = annual_approx,
+         centerline_miles = centerline_approx) %>% 
+  select(-daily_approx, -annual_approx, -centerline_approx)
+
+
+# save county data for our CPRG counties only -----
+vmt_county <- vmt_county_raw_interp %>%
   # filter to only the 7-county metro
   filter(cprg_area == TRUE) %>%
-  group_by(year, county) %>%
+  group_by(year, county, cprg_area) %>%
   # calculate daily, annual vmt and centerline miles
   # grouped by year
   dplyr::summarize(
@@ -505,5 +555,6 @@ vmt_county <- vmt_county_raw %>%
     centerline_miles = sum(centerline_miles),
     .groups = "keep"
   )
+
 
 saveRDS(vmt_county, "_transportation/data-raw/mndot/mndot_vmt_county.RDS")
