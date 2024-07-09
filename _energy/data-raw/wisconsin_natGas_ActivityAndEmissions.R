@@ -6,16 +6,20 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 
 # maybe make an appendix with ALL report links of relevant utilities across NG and elec
 # Midwest Natural Gas Incorporated
-# https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_3670.pdf
+# 2005: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2005_3670.pdf
+# 2021: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_3670.pdf
 
 # Northern States Power Company - Wisconsin
-# https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_4220.pdf
+# 2005: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2005_4220.pdf
+# 2021: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_4220.pdf
 
 # St Croix Valley Natural Gas Company
-# https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_5230.pdf
+# 2005: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2005_5230.pdf
+# 2021: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_5230.pdf
 
 # Wisconsin Gas
-# https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_6650.pdf
+# 2005: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2005_6650.pdf
+# 2021: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_6650.pdf
 
 therms_to_MCF <- 1 / 10.38
 
