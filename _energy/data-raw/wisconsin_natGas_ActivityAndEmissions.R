@@ -4,7 +4,6 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 # One thousand cubic feet (Mcf) of natural gas equals 1.038 MMBtu, or 10.38 therms.
 # https://www.eia.gov/tools/faqs/faq.php?id=45&t=8
 
-# maybe make an appendix with ALL report links of relevant utilities across NG and elec
 # Midwest Natural Gas Incorporated
 # 2005: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2005_3670.pdf
 # 2021: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_2021_3670.pdf
@@ -104,14 +103,14 @@ WIcounty_level_gas_emissions <- processed_wi_gasUtil_activityData %>%
       CO2_emissions +
         CH4_emissions +
         N2O_emissions,
-      na.rm = TRUE,
-      .groups = "keep"
+      na.rm = TRUE
     ),
     total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
     emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
       units::as_units("pound") %>%
       units::set_units("metric_ton") %>%
-      as.numeric()
+      as.numeric(),
+    .groups = "keep"
   ) %>%
   mutate(
     state = "WI",
