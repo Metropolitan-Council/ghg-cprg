@@ -3,18 +3,20 @@ state_population_timeseries <- readRDS("_meta/data/state_population_timeseries.R
 cprg_population_timeseries <- readRDS("_meta/data/cprg_population_timeseries.RDS")
 
 cprg_county_proportions_timeseries <- cprg_population_timeseries %>% 
+  mutate(county_population = population) %>% 
   ungroup() %>% 
   left_join(state_population_timeseries %>% 
-              select(state, population_year, statewide_population = population) %>% 
+              select(state, population_year, state_population = population) %>% 
               ungroup(),
             by = c("population_year",
                    "STATE" = "state")) %>% 
   rowwise() %>% 
-  mutate(county_proportion_population = population/statewide_population %>% 
+  mutate(county_proportion_population = county_population/state_population %>% 
            round(digits = 6)) %>% 
   arrange(population_year, NAME)
 
 
+# plots checking trends -----
 cprg_county_proportions_timeseries %>% 
   plot_ly(
     type = "scatter",
@@ -44,3 +46,21 @@ cprg_county_proportions_timeseries %>%
   layout(xaxis = list(
     tickformat = "1%"
   ))
+
+# finish and save -----
+
+cprg_county_proportions_timeseries_meta <- bind_rows(
+  cprg_county_meta,
+  tribble(
+    ~Column, ~Class, ~Description,
+    "year", class(cprg_county_proportions_timeseries$year), "Estimate year",
+    "county_population", class(cprg_county_proportions_timeseries$county_population), "Total county population estimate",
+    "state_population", class(cprg_county_proportions_timeseries$state_population), "Total state population estimate",
+    "county_proportion_of_state_pop", class(cprg_county_proportions_timeseries$county_proportion_of_state_pop), "Proportion of the county population relative to the total state population",
+    "population_data_source", class(cprg_county_proportions_timeseries$population_data_source), "Population estimate data source"
+  )
+) %>%
+  filter(Column %in% names(cprg_county_proportions_timeseries))
+
+
+
