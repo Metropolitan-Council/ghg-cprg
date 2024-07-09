@@ -61,7 +61,6 @@ usda_cattle <- usda_survey %>%
   as.data.frame() %>% select(-geometry) #Don't need this to be a spatial object
 
 ## there is no non-cattle survey data past 2013. Will need to use inventory data to in-fill other livestock
-unique(usda_cattle$short_desc)
 
 #### need to standardize livestock category naming between enteric fermentation data and USDA livestock head count data
 enteric_formatted <- enteric  %>% 
@@ -165,28 +164,6 @@ usda_census <- tidyUSDA::getQuickstat(
   weighted_by_area = T) %>% 
   as.data.frame() %>% select(-geometry)
 
-### the following code was used to determine which variables and factors were needed to acquire head counts of livestock types
-# ### what are the various descriptors that are needed here (metadata is lacking or hard to find)
-# unique(usda_census$unit_desc) # "HEAD"       "OPERATIONS"
-# unique(usda_census$short_desc) # 32 categories, broadly broken down into operations vs inventory; types of cattle, hogs, sheep, goats
-# unique(usda_census$class_desc) # just the species modifier (e.g. 'cows, beef', 'ewes, breeding')
-# unique(usda_census$group_desc) #all "LIVESTOCK"
-# unique(usda_census$commodity_desc) #"CATTLE" "GOATS"  "HOGS"   "SHEEP" 
-# unique(usda_census$statisticcat_desc) #all "INVENTORY"
-# unique(usda_census$domaincat_desc) # like short_desc but with range of number of head, e.g. "INVENTORY OF CATTLE ON FEED: (1 TO 19 HEAD)"  
-# unique(usda_census$domain_desc) # 8 inventory types (e.g. cattle on feed) and "TOTAL" 
-# usda_census %>% filter(domain_desc == "TOTAL", Value != "NA") %>% distinct(short_desc) # "NOT SPECFIED"
-# usda_census %>% filter(unit_desc == "HEAD", Value != "NA") %>% distinct(short_desc) # "NOT SPECFIED"
-# 
-# usda_census %>% filter(county_name == "DAKOTA", year == 2017, commodity_desc == "CATTLE", unit_desc == "HEAD", Value != "NA",
-#                        domain_desc == "TOTAL") %>% 
-#   group_by(short_desc) %>% 
-#   summarize(value = sum(Value))
-# comparing to USDA county profile, CATTLE, INCL CALVES - INVENTORY is the total number of cattle, other categories are subsets
-# So CATTLE, (EXCL COWS) - INVENTORY is a calf inventory, CATTLE, COWS, BEEF - INVENTORY is adult beef cows, CATTLE, COWS, MILK - INVENTORY
-# are dairy cows, and CATTLE, ON FEED - INVENTORY are calves on feed (documentation says explicitly these are not COWS)
-# We'll create four categories - dairy cows, beef cows, calves, feedlot cattle
-
 
 ### rename and aggregate variables from short_dec to matchable labels with EPA emissions data
 usda_census_agg <- usda_census %>%
@@ -252,6 +229,7 @@ ggplot(animal_burps %>%
        aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
 
 animal_burps %>% filter(year == 2021) %>% ungroup %>%  summarize(CO2e = sum(CO2e))
+#480014
 
 # save RDS file
 
@@ -286,6 +264,7 @@ saveRDS(animal_burps_census_meta, "./_agriculture/data/county_enteric_fermentati
 ### it's opaque in the SIT where these intermediate values are coming from in the Excel workbook, so we're taking a shortcut and dividing the 
 ### calculated emission total by the head count to get a de facto emission factor. The effect should be the same even if using the intermediate data
 ### If it becomes apparent counties have unique manure management systems relative to the rest of the state, this should be revisited.
+### UPDATE: Better understanding now of where values are coming from in Excel Workbook so this shortcut can be revised to be more explicit and therefore flexible
 
 manure_ch4_formatted  <- manure_ch4  %>% 
   select(c(2,3,4,18)) %>% 
@@ -433,7 +412,7 @@ bird_poops <- left_join(
          CO2e = (MT_ch4 * gwp$ch4) + (MT_n2o * gwp$n2o)) %>% 
   ungroup()
 
-## here we can see the negligible impact of poultry overall relative to regional emissions
+## here we can see the negligible impact of poultry overall relative to regional emissions (y-axis)
 ggplot(bird_poops %>% 
          group_by(year,county_name) %>% 
          summarize(CO2e = sum(CO2e)),
@@ -475,7 +454,9 @@ ggplot(county_livestock %>%
        aes(x = year, y = CO2e, col = county_name)) + geom_line(size = 1.5) + theme_bw()
 
 county_livestock %>% filter(year == 2021) %>% summarize(CO2e = sum(CO2e))
+#784599
 county_livestock %>% filter(year == 2021, !county_name %in% c("ST CROIX", "SHERBURNE", "PIERCE", "CHISAGO")) %>% summarize(CO2e = sum(CO2e))
+#401422
 
 ggplot(county_livestock %>% 
          group_by(year,source) %>% 
@@ -631,7 +612,7 @@ manure_soils_emissions_county <- manure_soils_emissions %>%
   summarize(co2e = sum(co2e_combined))
 
 manure_soils_emissions_county %>% filter(year == 2021) %>% pull(co2e) %>% sum()
-
+# 90788
 
 ###compile all emissions for export
 
