@@ -24,18 +24,18 @@ testthat::test_that("County population is as expected", {
   # check that they are correct
 
   cprg_population %>%
-    dplyr::filter(NAME == "Hennepin") %>%
+    dplyr::filter(NAME == "Hennepin" & year == 2021) %>%
     magrittr::extract2("population") %>%
     testthat::expect_equal(1270283)
 
 
   cprg_population %>%
-    dplyr::filter(NAME == "Ramsey") %>%
+    dplyr::filter(NAME == "Ramsey" & year == 2021) %>%
     magrittr::extract2("population") %>%
     testthat::expect_equal(549377)
 
   cprg_population %>%
-    dplyr::filter(NAME == "Pierce") %>%
+    dplyr::filter(NAME == "Pierce" & year == 2021) %>%
     magrittr::extract2("population") %>%
     testthat::expect_equal(42204)
 })
