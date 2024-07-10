@@ -1,8 +1,7 @@
 testthat::test_that("state DOT VMT", {
   dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS"))
 
-  testthat::expect_equal(nrow(dot_vmt), 217)
-
+  testthat::expect_equal(nrow(dot_vmt), 226)
 
   # check match with PDFs
   dot_vmt %>%
