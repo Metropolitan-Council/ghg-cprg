@@ -1,6 +1,6 @@
 source("R/_load_pkgs.R")
 
-# ALL VMT
+# load VMT from both MnDOT and WisDOT
 mndot_vmt <- readRDS(file.path(here::here(), "_transportation/data-raw/mndot/mndot_vmt_county.RDS")) %>%
   mutate(data_source = "MnDOT")
 wisdot_vmt <- readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wisdot_vmt_county.RDS")) %>%
