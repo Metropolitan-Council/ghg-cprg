@@ -1,7 +1,7 @@
 testthat::test_that("County population is as expected", {
   cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 
-  testthat::expect_equal(nrow(cprg_population), 22)
+  testthat::expect_equal(nrow(cprg_population), -11)
   testthat::expect_equal(
     cprg_population$NAME,
     c(
