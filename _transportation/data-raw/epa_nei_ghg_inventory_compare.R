@@ -7,50 +7,53 @@ county_proportions_summary <- county_proportions %>%
   group_by(STATE, year) %>%
   summarize(region_proportion_of_state_pop = sum(county_proportion_of_state_pop))
 
-state_ipcc_summary <- state_ipcc %>%
-  filter(
-    # inventory_year %in% epa_nei$nei_inventory_year,
-    Sector == "Mobile Combustion"
-  ) %>%
-  group_by(state, inventory_year) %>%
-  summarize(state_emissions = sum(emissions_metric_tons_co2e))
+# state_ipcc_summary <- state_ipcc %>%
+#   filter(
+#     # inventory_year %in% epa_nei$nei_inventory_year,
+#     Sector == "Mobile Combustion"
+#   ) %>%
+#   group_by(state, inventory_year) %>%
+#   summarize(state_emissions = sum(emissions_metric_tons_co2e))
 
 state_economic_summary <- state_economic %>%
   filter(
     # inventory_year %in% epa_nei$nei_inventory_year,
-    sector_group == "Transportation"
+    sector_group == "Transportation",
+    `Sector/Source` %in% c("Mobile Combustion",
+                           "CO2 from Fossil Fuel Combustion",
+                           "Non-Energy Use of Fuels")
   ) %>%
-  group_by(state, inventory_year) %>%
-  summarize(state_emissions = sum(emissions_metric_tons_co2e))
+  group_by(inventory_year) %>%
+  summarize(state_emissions = sum(emissions_metric_tons_co2e, na.rm = T))
 
-nei_summary <- epa_nei %>%
-  mutate(nei_inventory_year = as.character(nei_inventory_year)) %>%
-  left_join(
-    cprg_county %>%
-      mutate(state = STATE) %>%
-      sf::st_drop_geometry(),
-    by = c("county_name" = "NAME")
-  ) %>%
-  group_by(nei_inventory_year, state) %>%
-  summarize(
-    region_emissions = sum(emissions_metric_tons_co2e),
-    .groups = "keep"
-  )
+# nei_summary <- epa_nei %>%
+#   mutate(nei_inventory_year = as.character(nei_inventory_year)) %>%
+#   left_join(
+#     cprg_county %>%
+#       mutate(state = STATE) %>%
+#       sf::st_drop_geometry(),
+#     by = c("county_name" = "NAME")
+#   ) %>%
+#   group_by(nei_inventory_year) %>%
+#   summarize(
+#     region_emissions = sum(emissions_metric_tons_co2e, na.rm = T),
+#     .groups = "keep"
+#   )
 
 nei_state_summary <- nei_state_emissions %>%
   mutate(nei_inventory_year = as.character(nei_inventory_year)) %>%
-  group_by(nei_inventory_year, state_name) %>%
+  group_by(nei_inventory_year) %>%
   summarize(
-    region_emissions = sum(emissions_metric_tons_co2e),
+    region_emissions = sum(emissions_metric_tons_co2e,na.rm = T),
     .groups = "keep"
   ) %>%
   ungroup()
 
 inventory_comp <- state_economic_summary %>%
   left_join(nei_summary,
-    by = c("state",
-      "inventory_year" = "nei_inventory_year"
-    )
+            by = c("state",
+                   "inventory_year" = "nei_inventory_year"
+            )
   ) %>%
   left_join(county_proportions_summary, by = c(
     "inventory_year" = "year",
@@ -63,42 +66,31 @@ inventory_comp <- state_economic_summary %>%
 state_economic_summary
 
 plot_ly(
+  name = "Inventory",
   type = "scatter",
   mode = "lines+markers",
-  data = inventory_comp,
+  data = state_economic_summary %>% 
+    filter(inventory_year >= 2008),
   x = ~inventory_year,
-  y = ~regional_proportion,
-  color = ~state
+  y = ~state_emissions
 ) %>%
   add_trace(
-    type = "scatter",
-    mode = "markers",
-    data = inventory_comp,
-    x = ~inventory_year,
-    y = ~region_proportion_of_state_pop
-  )
-
-
-# based on this plot, I'm still not convinced I am comparing 
-# apples to apples
-# will look into this more Thursday
-plot_ly(
-  type = "scatter",
-  mode = "lines+markers",
-  data = state_economic_summary,
-  x = ~inventory_year,
-  y = ~state_emissions,
-  color = ~state
-) %>%
-  add_trace(
+    name = "NEI",
     type = "scatter",
     inherit = FALSE,
     mode = "lines+markers",
     data = nei_state_summary,
     x = ~nei_inventory_year,
     y = ~region_emissions,
-    color = ~state_name,
     line = list(
       dash = "dot"
     )
-  )
+  ) %>% 
+  plotly_layout(
+    main_title = "Significant differences in NEI and Inventory underlying datasets",
+    subtitle = "MN + WI state-level summary")
+
+# if we are going to do territorial emissions, then using the NEI will result in 
+# choppier data, less responsive to immediate changes, lag continuing further into the future.
+# if we use the EPA Inventory, we get the year over year but only at the state
+# level. However, we can adjust the state level data using population or VMT

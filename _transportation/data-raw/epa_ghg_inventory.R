@@ -1,5 +1,6 @@
 # uses AR5 GWP values
 # https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks-1990-2022
+# already converted to CO2e
 # IPCC categories -----
 source("R/_load_pkgs.R")
 clean_ipcc <- function(state, path) {
@@ -57,6 +58,17 @@ state_ipcc %>%
     color = ~sector_group
   )
 
+state_ipcc %>% 
+  select(Sector, sector_group) %>% 
+  unique() %>% View
+
+state_ipcc %>% 
+  mutate(transportation_related = case_when(
+    Sector %in% c(
+      "Fossil Fuel Combustion",
+      "Mobile Combustion"
+    )
+  ))
 
 # Economic sectors -----
 
