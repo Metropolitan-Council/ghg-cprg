@@ -14,9 +14,11 @@ cprg_county_meta <- readRDS("_meta/data/cprg_county_meta.RDS")
 # Minnesota and Wisconsin
 # This will give us GEOID, NAME, STATE, and other identifying columns
 county_geography <- bind_rows(tigris::counties(state = "MN") %>% 
-                                mutate(STATE = "Minnesota"),
+                                mutate(STATE = "Minnesota",
+                                       STATE_ABB = "MN"),
                               tigris::counties(state = "WI") %>% 
-                                mutate(STATE = "Wisconsin")) %>% 
+                                mutate(STATE = "Wisconsin",
+                                       STATE_ABB = "WI")) %>% 
   sf::st_drop_geometry()
 
 # 2001-2009 ----
@@ -240,11 +242,12 @@ census_county_population <- county_pop_intercensal %>%
   bind_rows(county_pop_acs) %>% 
   select(-NAME, -NAMELSAD, -estimate, -moe, -variable, -value) %>% 
   left_join(county_geography %>%
-              select(GEOID, NAME, STATE, COUNTYFP, NAMELSAD)) %>% 
+              select(GEOID, NAME, STATE, STATE_ABB, COUNTYFP, NAMELSAD)) %>% 
   # add variable discerning whether the county is in our study area
   mutate(cprg_area = ifelse(GEOID %in% cprg_county$GEOID, TRUE, FALSE)
   ) %>% 
-  select(STATE, GEOID, NAME, population_year, population, population_data_source) 
+  select(STATE, STATE_ABB, GEOID, NAME, population_year, population, population_data_source, cprg_area) %>% 
+  arrange(STATE, population_year)
 
 # review aggregations ------
 
@@ -263,7 +266,8 @@ tribble(
   ~Column, ~Class, ~Description,
   "population_year", class(census_county_population$population_year), "Population estimate year",
   "population", class(census_county_population$population), "Total county population estimate (persons)",
-  "population_data_source", class(census_county_population$population_data_source), "Population estimate data source"
+  "population_data_source", class(census_county_population$population_data_source), "Population estimate data source",
+  "cprg_area",  class(census_county_population$cprg_area), "Whether county is included in the CPRG area"
 )) %>% 
   filter(Column %in% names(census_county_population))
 
