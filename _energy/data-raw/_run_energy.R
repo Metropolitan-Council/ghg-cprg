@@ -22,7 +22,7 @@ source("_energy/data-raw/wisconsin_natGas_ActivityAndEmissions.R")
 source("_energy/data-raw/processed_mn_electricUtil_activityData.R")
 source("_energy/data-raw/wisconsin_2005_2021_utilityProportions.R")
 
-source("_energy/data-raw/nrel_slope.R")
+source("_energy/data-raw/nrel_slope_energy.R")
 
 # Done!
 
@@ -56,4 +56,5 @@ electric_natgas_nrel_proportioned <- electric_raw %>%
   ) %>%
   mutate(category = str_to_sentence(category))
 
+waldo::compare(electric_natgas_nrel_proportioned, readRDS("_energy/data/electric_natgas_nrel_proportioned.RDS"))
 saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_proportioned.RDS")
