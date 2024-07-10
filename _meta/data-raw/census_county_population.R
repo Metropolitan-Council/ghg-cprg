@@ -44,7 +44,7 @@ if (!file.exists("_meta/data-raw/population/co-est00int-01-27.xls")) {
 }
 
 
-
+# if below code fails, try manually downloading xls files above. PW experiencd a partially corrupted download file using above code
 county_pop_intercensal1 <-
   # start with Minnesota
   readxl::read_xls("_meta/data-raw/population/co-est00int-01-27.xls",

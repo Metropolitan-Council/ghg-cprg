@@ -2,6 +2,7 @@
 # https://www.epa.gov/ghgemissions/state-ghg-emissions-and-removals
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+source("R/global_warming_potential.R")
 
 
 # ipcc sectors -----
@@ -27,16 +28,9 @@ ipcc <- ipcc_sectors %>%
     values_to = "value"
   ) %>%
   # reported in millions of metric tons
-  mutate(emissions_metric_tons = value * 1000000) %>%
+  mutate(ghg_equiv = value * 1000000) %>% # this value is CO2e according to documentation
   # select(-subcategory2, -subcategory3, -subcategory4) %>%
   mutate(
-    gwp_factor = case_when(
-      ghg == "CH4" ~ gwp$ch4,
-      ghg == "CO2" ~ gwp$co2,
-      ghg == "N2O" ~ gwp$n2o,
-      ghg == "HFC-152a" ~ gwp$`HFC-152a`
-    ),
-    ghg_equiv = emissions_metric_tons * gwp_factor,
     inventory_year = stringr::str_remove(year, "y")
   )
 
