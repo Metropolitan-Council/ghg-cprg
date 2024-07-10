@@ -40,10 +40,11 @@ cprg_population_2021 <- tidycensus::get_acs(
   select(
     names(cprg_county),
     population,
+    year,
     population_data_source,
     -geometry
   ) %>%
-  arrange(STATE, NAME)
+  arrange(STATE, NAME, year)
 
 
 
