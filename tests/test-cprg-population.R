@@ -1,15 +1,17 @@
 testthat::test_that("County population is as expected", {
   cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 
-  testthat::expect_equal(nrow(cprg_population), 11)
+  testthat::expect_equal(nrow(cprg_population), 22)
   testthat::expect_equal(
     cprg_population$NAME,
     c(
       "Anoka", "Carver", "Chisago", "Dakota", "Hennepin", "Ramsey",
-      "Scott", "Sherburne", "Washington", "Pierce", "St. Croix"
+      "Scott", "Sherburne", "Washington", "Pierce", "St. Croix",
+      "Anoka", "Carver", "Chisago", "Dakota", "Hennepin", "Ramsey",
+      "Scott", "Sherburne", "Washington", "Pierce", "St. Croix",
     )
   )
-
+  
   testthat::expect_equal(names(cprg_population), c(
     "STATE", "STATEFP", "COUNTYFP", "GEOID",
     "NAME", "NAMELSAD", "population", "population_data_source"

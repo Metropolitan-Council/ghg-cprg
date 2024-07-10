@@ -145,11 +145,13 @@ intercensal_pop_2005_MNWI <- rbind(intercensal_pop_2005_MN, intercensal_pop_2005
 # for population source of truth (cprg_population.RDS)
 cprg_population_2005 <- cprg_county %>%
   left_join((intercensal_pop_2005_MNWI),
-            by = join_by(NAMELSAD == county_name, STATE_ABB == state)
+    by = join_by(NAMELSAD == county_name, STATE_ABB == state)
   ) %>%
   st_drop_geometry() %>%
-  select(-state_population,
-         -county_proportion_of_state_pop) %>%
+  select(
+    -state_population,
+    -county_proportion_of_state_pop
+  ) %>%
   rename(population = county_population)
 
 # for proportions
@@ -160,11 +162,12 @@ cprg_county_population2005 <- cprg_county %>%
   st_drop_geometry() %>%
   select(-NAMELSAD)
 
-# save off 2005 base year 
-write_rds(cprg_population_2005, here("_meta",
-                                          "data",
-                                          "cprg_population_2005.RDS")
-)
+# save off 2005 base year
+write_rds(cprg_population_2005, here(
+  "_meta",
+  "data",
+  "cprg_population_2005.RDS"
+))
 
 cprg_county_proportions <-
   bind_rows(
