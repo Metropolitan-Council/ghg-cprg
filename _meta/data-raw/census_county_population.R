@@ -12,7 +12,7 @@ cprg_county_meta <- readRDS("_meta/data/cprg_county_meta.RDS")
 
 # fetch county geographies for all counties in 
 # Minnesota and Wisconsin
-# This will give us GEOID, name, STATE, and other identifying columns
+# This will give us GEOID, NAME, STATE, and other identifying columns
 county_geography <- bind_rows(tigris::counties(state = "MN") %>% 
                                 mutate(STATE = "Minnesota",
                                        STATE_ABB = "MN"),
@@ -76,7 +76,7 @@ county_pop_intercensal1 <-
                                          "US Census County Intercensal Tables (CO-EST00INT-01)")) %>% 
   left_join(county_geography %>% 
               select(STATE, STATEFP, COUNTYFP, GEOID, 
-                     NAMELSAD, name))
+                     NAMELSAD, NAME))
 
 # 2011-2019 -----
 
@@ -94,9 +94,9 @@ county_pop_intercensal2 <- read_csv("_meta/data-raw/population/co-est2020.csv",
                                     )) %>% 
   clean_names() %>% 
   # filter for only our states 
-  filter(stname %in% state_pop_intercensal$STATE,
+  filter(stname %in% county_pop_intercensal1$STATE,
          # remove state level totals
-         ! ctyname %in% state_pop_intercensal$STATE) %>% 
+         ! ctyname %in% county_pop_intercensal1$STATE) %>% 
   mutate(census2010pop = as.numeric(census2010pop)) %>% 
   # pivot longer
   pivot_longer(cols = 8:21,
@@ -106,7 +106,7 @@ county_pop_intercensal2 <- read_csv("_meta/data-raw/population/co-est2020.csv",
     GEOID = paste0(state, county),
     STATE = stname,
     NAMELSAD = ctyname,
-    name  = str_remove(ctyname, " County"),
+    NAME  = str_remove(ctyname, " County"),
     # extract the year from the population_source_year
     population_year = str_extract(population_source_year, "[:digit:][:digit:][:digit:][:digit:]"),
     population_data_source = ifelse(population_year %in% c(2000, 2010, 2020), 
@@ -123,7 +123,7 @@ county_pop_intercensal2 <- read_csv("_meta/data-raw/population/co-est2020.csv",
 county_pop_intercensal <- bind_rows(county_pop_intercensal1, 
                                     county_pop_intercensal2) %>% 
   arrange(population_year) %>% 
-  select(1:5, GEOID, name)
+  select(1:5, GEOID, NAME)
 
 # 2000, 2010, 2020 -----
 # Decennial census years
@@ -246,7 +246,7 @@ census_county_population <- county_pop_intercensal %>%
   # add variable discerning whether the county is in our study area
   mutate(cprg_area = ifelse(GEOID %in% cprg_county$GEOID, TRUE, FALSE)
   ) %>% 
-  select(STATE, STATE_ABB, GEOID, NAME, population_year, population, population_data_source, cprg_area) %>% 
+  select(STATE, STATE_ABB, GEOID, COUNTYFP, NAME, population_year, population, population_data_source, cprg_area) %>% 
   arrange(STATE, population_year)
 
 # review aggregations ------

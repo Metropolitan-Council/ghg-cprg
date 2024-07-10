@@ -11,7 +11,7 @@ testthat::test_that("County population is as expected", {
   )
 
   testthat::expect_equal(names(cprg_population), c(
-    "STATE", "STATE_ABB", "GEOID",
+    "STATE", "STATE_ABB", "GEOID", "COUNTYFP",
     "NAME", "population", "population_data_source"
   ))
 
