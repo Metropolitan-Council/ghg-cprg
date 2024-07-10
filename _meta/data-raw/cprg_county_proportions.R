@@ -148,9 +148,9 @@ cprg_population_2005 <- cprg_county %>%
             by = join_by(NAMELSAD == county_name, STATE_ABB == state)
   ) %>%
   st_drop_geometry() %>%
-  select(population = county_population,
-         -state_population,
-         -county_proportion_of_state_pop)
+  select(-state_population,
+         -county_proportion_of_state_pop) %>%
+  rename(population = county_population)
 
 # for proportions
 cprg_county_population2005 <- cprg_county %>%
