@@ -30,7 +30,9 @@ Vehicle miles traveled (VMT) is a standardized measure created by multiplying av
 
 MnDOT and WisDOT derive VMT using traffic counts from continuous and short term traffic monitoring sites. These raw counts are adjusted by multiplying seasonal, day-of-week, and axle adjustment factors [@mndotTFADataCollection2023, @wisdotTransportationPlanningManual2023]. Data is not collected for every site every year, but the data are sufficient for year-over-year comparisons. 
 
-These data were compiled from MnDOT and WisDOT county level reports. MnDOT provides Excel workbooks with VMT by county and route system on their [website](https://www.dot.state.mn.us/roadway/data/data-products.html). These were downloaded, filtered to include the relevant counties, and aggregated to the county level by summing VMT by county/route system. Processing code can be found in [mndot_vmt_county.R](data-raw/mndot_vmt_county.R).
+These data were compiled from MnDOT and WisDOT county level reports. MnDOT provides Excel workbooks with VMT by county and route system on their [website](https://www.dot.state.mn.us/roadway/data/data-products.html). These were downloaded, filtered to include the relevant counties, and aggregated to the county level by summing VMT by county/route system. Processing code can be found in [mndot_vmt_county.R](data-raw/mndot_vmt_county.R). 
+
+<!-- VMT data for 2015 were interpolated at the county and year level using the midpoint method.[^ MnDOT VMT for year 2015 is unavailable due to significant and fundamental changes in underlying data structure that make directly comparing data prior and post 2015 inappropriate. However, our interpolation here is based on the county level summary of all VMT. We used the midpoint method, which is the average of the observation directly before and directly after the missing data point.]  -->
 
 WisDOT publishes PDF tables with county-level VMT. These were downloaded and data was extracted using [`{tabulizer}`](https://github.com/ropensci/tabulizer), an R package interfacing with the Tabula PDF extractor library. Processing code can be found in [wisdot_vmt_county.R](data-raw/wisdot_vmt_county.R). 
 
