@@ -134,9 +134,9 @@ downscaleEIA_MN_electricRetail <- read_rds(here(
   "data",
   "cprg_county_proportions.RDS"
 )) %>%
-  filter(STATEFP == 27 &
+  filter(STATE == 'Minnesota' &
     population_data_source == "Decennial Census PL 94-171 Redistricting Data Summary File") %>%
-  select(GEOID, county = NAME, county_proportion_of_state_pop) %>%
+  select(GEOID, county = name, county_proportion_of_state_pop) %>%
   mutate(
     downscaled_EIA_total_CO2e_emissions_lbs =
       EIA_MN_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1,
