@@ -67,9 +67,13 @@ multi_year <-
   )
 
 nei_county_multi_year <- multi_year %>%
+  mutate(GEOID = paste0(state_fips, county_fips)) %>%
+  filter(
+    GEOID %in% cprg_county$GEOID
+  ) %>%
   group_by(
     state_name, inventory_year,
-    state_fips, county_fips, pollutant_type, uom, emissions,
+    state_fips, county_fips, GEOID, pollutant_type, uom, emissions,
     sector_code, pollutant_code, st_abbrv
   ) %>%
   summarise(emissions = sum(emissions), .groups = "keep") %>%
@@ -79,10 +83,7 @@ nei_county_multi_year <- multi_year %>%
     units::as_units("ton") %>% # short tons/US tons
     units::set_units("metric_ton") %>% # convert to grams
     as.numeric()) %>%
-  mutate(GEOID = paste0(state_fips, county_fips)) %>%
-  filter(
-    GEOID %in% cprg_county$GEOID
-  ) %>%
+ 
   rowwise()
 
 nei_state_multi_year <- multi_year %>%

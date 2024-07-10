@@ -15,9 +15,9 @@ mobile_sectors <- sectors %>%
 nei_state_emissions <- nei_state_multi_year %>%
   filter(
     sector_code %in% mobile_sectors$sector_code,
-    pollutant_type == "GHG"
+    pollutant_type == "GHG",
+    sector_two == "On-Road"
   ) %>%
-  filter(sector_two == "On-Road") %>%
   rowwise() %>%
   mutate(
     vehicle_weight_label = case_when(
