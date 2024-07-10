@@ -1,7 +1,12 @@
 # compile emissions from all sectors into a single data table
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
-cprg_county_pop <- readRDS("_meta/data/cprg_population.RDS")
+cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
+  filter(cprg_area == TRUE) %>%
+  mutate(
+    population_year = as.numeric(population_year)
+  ) %>%
+  select(-cprg_area)
 
 # transportation -----
 transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
@@ -210,11 +215,11 @@ emissions_all <- bind_rows(
     cprg_county_pop %>%
       select(
         geog_id = COUNTYFP,
-        year,
+        population_year,
         county_total_population = population,
         population_data_source
       ),
-    by = join_by(geog_id, year)
+    by = join_by(geog_id, year == population_year)
   ) %>%
   rowwise() %>%
   mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
