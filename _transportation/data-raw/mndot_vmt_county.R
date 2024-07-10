@@ -477,7 +477,7 @@ vmt_county_raw <- data.table::rbindlist(dat_ls, fill = T, idcol = "year") %>%
     # remove extra codes from county names
     county = gsub("[0-9][0-9] - ", "", county),
     county = stringr::str_to_title(county)
-  ) %>% 
+  ) %>%
   mutate(
     cprg_area = ifelse(county %in% c(
       "Hennepin",
@@ -489,22 +489,23 @@ vmt_county_raw <- data.table::rbindlist(dat_ls, fill = T, idcol = "year") %>%
       "Washington",
       "Sherburne",
       "Chisago"
-    ), TRUE, FALSE
-    )
-  ) %>% 
+    ), TRUE, FALSE)
+  ) %>%
   mutate(
     # fix St. Louis county
     county = case_when(
-      county %in% c("Saint Louis",
-                    "St Louis") ~ "St. Louis",
+      county %in% c(
+        "Saint Louis",
+        "St Louis"
+      ) ~ "St. Louis",
       TRUE ~ county
     )
   )
 
 
-vmt_county_raw_summary <- 
-  vmt_county_raw %>% 
-  group_by(year, county, cprg_area) %>% 
+vmt_county_raw_summary <-
+  vmt_county_raw %>%
+  group_by(year, county, cprg_area) %>%
   summarize(
     daily_vmt = sum(daily_vmt),
     annual_vmt = sum(annual_vmt),
@@ -514,32 +515,38 @@ vmt_county_raw_summary <-
 
 # attempt interpolation of 2015 data
 
-vmt_interp <- vmt_county_raw_summary %>% 
+vmt_interp <- vmt_county_raw_summary %>%
   # first create an NA 2015 dataset
-  ungroup() %>% 
-  select(county, cprg_area) %>% 
-  unique() %>% 
-  mutate(year = "2015",
-         daily_vmt = NA,
-         annual_vmt = NA) %>% 
+  ungroup() %>%
+  select(county, cprg_area) %>%
+  unique() %>%
+  mutate(
+    year = "2015",
+    daily_vmt = NA,
+    annual_vmt = NA
+  ) %>%
   # bind with original
-  bind_rows(vmt_county_raw_summary) %>% 
-  arrange(year) %>% 
+  bind_rows(vmt_county_raw_summary) %>%
+  arrange(year) %>%
   group_by(county) %>%
-  # interpolate using midpoint method 
+  # interpolate using midpoint method
   # for missing values
   # grouped by county
-  mutate(annual_approx = zoo::na.approx(annual_vmt),
-         daily_approx = zoo::na.approx(daily_vmt),
-         centerline_approx = zoo::na.approx(centerline_miles)) 
-  
+  mutate(
+    annual_approx = zoo::na.approx(annual_vmt),
+    daily_approx = zoo::na.approx(daily_vmt),
+    centerline_approx = zoo::na.approx(centerline_miles)
+  )
+
 # review and check that values make sense for all counties
 
 # re-assign column values to match original data
-vmt_county_raw_interp <- vmt_interp %>% 
-  mutate(daily_vmt = daily_approx,
-         annual_vmt = annual_approx,
-         centerline_miles = centerline_approx) %>% 
+vmt_county_raw_interp <- vmt_interp %>%
+  mutate(
+    daily_vmt = daily_approx,
+    annual_vmt = annual_approx,
+    centerline_miles = centerline_approx
+  ) %>%
   select(-daily_approx, -annual_approx, -centerline_approx)
 
 

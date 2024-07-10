@@ -20,7 +20,7 @@ sectors <- req_base %>%
   )
 
 
-fetch_nei <- function(year, state){
+fetch_nei <- function(year, state) {
   req_base %>%
     # county sector summary table, all rows
     httr2::req_url_path_append("COUNTY_SECTOR_SUMMARY/ROWS/") %>%
@@ -40,27 +40,33 @@ fetch_nei <- function(year, state){
     )
 }
 
-multi_year <- 
+multi_year <-
   bind_rows(
     purrr::map_dfr(
-      c(2020,
+      c(
+        2020,
         2017,
         2014,
         2011,
-        2008),
+        2008
+      ),
       fetch_nei,
-      state = "Minnesota"),
+      state = "Minnesota"
+    ),
     purrr::map_dfr(
-      c(2020,
+      c(
+        2020,
         2017,
         2014,
         2011,
-        2008),
+        2008
+      ),
       fetch_nei,
-      state = "Wisconsin")
-  ) 
+      state = "Wisconsin"
+    )
+  )
 
-nei_county_multi_year <- multi_year %>% 
+nei_county_multi_year <- multi_year %>%
   group_by(
     state_name, inventory_year,
     state_fips, county_fips, pollutant_type, uom, emissions,
@@ -70,16 +76,16 @@ nei_county_multi_year <- multi_year %>%
   filter(pollutant_type == "GHG") %>%
   left_join(sectors, by = c("sector_code")) %>%
   mutate(emissions_grams = emissions %>%
-           units::as_units("ton") %>% # short tons/US tons
-           units::set_units("metric_ton") %>% # convert to grams
-           as.numeric()) %>% 
+    units::as_units("ton") %>% # short tons/US tons
+    units::set_units("metric_ton") %>% # convert to grams
+    as.numeric()) %>%
   mutate(GEOID = paste0(state_fips, county_fips)) %>%
   filter(
     GEOID %in% cprg_county$GEOID
   ) %>%
   rowwise()
 
-nei_state_multi_year <- multi_year %>% 
+nei_state_multi_year <- multi_year %>%
   group_by(
     state_name, inventory_year,
     state_fips, pollutant_type, uom, emissions,
@@ -89,9 +95,9 @@ nei_state_multi_year <- multi_year %>%
   filter(pollutant_type == "GHG") %>%
   left_join(sectors, by = c("sector_code")) %>%
   mutate(emissions_grams = emissions %>%
-           units::as_units("ton") %>% # short tons/US tons
-           units::set_units("metric_ton") %>% # convert to grams
-           as.numeric()) %>% 
+    units::as_units("ton") %>% # short tons/US tons
+    units::set_units("metric_ton") %>% # convert to grams
+    as.numeric()) %>%
   rowwise()
 
 
@@ -109,9 +115,9 @@ nei_state <- bind_rows(
   filter(pollutant_type == "GHG") %>%
   left_join(sectors, by = c("sector_code")) %>%
   mutate(emissions_grams = emissions %>%
-           units::as_units("ton") %>% # short tons/US tons
-           units::set_units("metric_ton") %>% # convert to grams
-           as.numeric())
+    units::as_units("ton") %>% # short tons/US tons
+    units::set_units("metric_ton") %>% # convert to grams
+    as.numeric())
 
 
 

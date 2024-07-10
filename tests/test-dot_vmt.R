@@ -5,9 +5,11 @@ testthat::test_that("state DOT VMT", {
 
   # check match with PDFs
   dot_vmt %>%
-    filter(county == "Pierce",
-           year >= 2018) %>%
-    arrange(desc(year)) %>% 
+    filter(
+      county == "Pierce",
+      year >= 2018
+    ) %>%
+    arrange(desc(year)) %>%
     magrittr::extract2("daily_vmt") %>%
     testthat::expect_equal(c(1067675, 1074726, 949687, 1099233, 1068300))
 

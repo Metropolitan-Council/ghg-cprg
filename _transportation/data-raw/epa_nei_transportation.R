@@ -12,7 +12,7 @@ source("_meta/data-raw/epa_nei.R")
 mobile_sectors <- sectors %>%
   filter(sector_one == "Mobile")
 
-nei_state_emissions <- nei_state_multi_year %>% 
+nei_state_emissions <- nei_state_multi_year %>%
   filter(
     sector_code %in% mobile_sectors$sector_code,
     pollutant_type == "GHG"
@@ -37,27 +37,28 @@ nei_state_emissions <- nei_state_multi_year %>%
           "Heavy-duty"
         ),
         ordered = TRUE
-      )) %>% 
+      )
+  ) %>%
   mutate(emissions_grams = emissions %>%
-           units::as_units("ton") %>% # short tons/US tons
-           units::set_units("gram") %>% # convert to grams
-           as.numeric()) %>%
-  unique() %>% 
+    units::as_units("ton") %>% # short tons/US tons
+    units::set_units("gram") %>% # convert to grams
+    as.numeric()) %>%
+  unique() %>%
   select(
     vehicle_weight_label,
-    state_name, 
+    state_name,
     nei_inventory_year = inventory_year,
     pollutant_code, emissions_grams
-  ) %>% 
-  unique() %>% 
-  group_by(state_name, nei_inventory_year, vehicle_weight_label, pollutant_code) %>% 
-  summarize(emissions_grams = sum(emissions_grams)) %>% 
+  ) %>%
+  unique() %>%
+  group_by(state_name, nei_inventory_year, vehicle_weight_label, pollutant_code) %>%
+  summarize(emissions_grams = sum(emissions_grams)) %>%
   pivot_wider(
     names_from = pollutant_code,
     values_from = emissions_grams
-  ) %>% 
+  ) %>%
   clean_names() %>%
-  ungroup() %>% 
+  ungroup() %>%
   rowwise() %>%
   # n2o and ch4 to co2 equivalency
   mutate(
@@ -71,8 +72,8 @@ nei_state_emissions <- nei_state_multi_year %>%
 
 # combine MN and WI
 # filter to only needed datasets
-nei_county <- nei_county_multi_year %>% 
-  left_join(cprg_county, by = c("county_fips" = "COUNTYFP")) %>% 
+nei_county <- nei_county_multi_year %>%
+  left_join(cprg_county, by = c("county_fips" = "COUNTYFP")) %>%
   filter(
     sector_code %in% mobile_sectors$sector_code,
     pollutant_type == "GHG"
@@ -82,23 +83,24 @@ nei_county <- nei_county_multi_year %>%
   mutate(
     county_name = NAME,
     vehicle_weight_label = case_when(
-    ei_sector %in% c(
-      "Mobile - On-Road Diesel Light Duty Vehicles",
-      "Mobile - On-Road non-Diesel Light Duty Vehicles"
-    ) ~ "Light-duty",
-    ei_sector %in% c(
-      "Mobile - On-Road non-Diesel Heavy Duty Vehicles",
-      "Mobile - On-Road Diesel Heavy Duty Vehicles"
-    ) ~ "Heavy-duty"
-  ) %>%
-    factor(
-      levels = c(
-        "Light-duty",
-        "Medium-duty",
-        "Heavy-duty"
-      ),
-      ordered = TRUE
-    ))
+      ei_sector %in% c(
+        "Mobile - On-Road Diesel Light Duty Vehicles",
+        "Mobile - On-Road non-Diesel Light Duty Vehicles"
+      ) ~ "Light-duty",
+      ei_sector %in% c(
+        "Mobile - On-Road non-Diesel Heavy Duty Vehicles",
+        "Mobile - On-Road Diesel Heavy Duty Vehicles"
+      ) ~ "Heavy-duty"
+    ) %>%
+      factor(
+        levels = c(
+          "Light-duty",
+          "Medium-duty",
+          "Heavy-duty"
+        ),
+        ordered = TRUE
+      )
+  )
 
 # check unit of measurement
 # https://www.epa.gov/air-emissions-inventories/what-are-units-nei-emissions-data
