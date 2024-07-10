@@ -17,7 +17,7 @@ cprg_county_proportions <- census_county_population %>%
             by = c("STATE", "population_year")) %>% 
   mutate(
     year = population_year,
-    county_proportion_of_state_pop = county_population/state_population,
+    county_proportion_of_state_pop = county_population/state_population %>% round(digits = 6),
     name = NAME) %>% 
   select(STATE, GEOID, name, year, county_population, state_population, county_proportion_of_state_pop,
          population_data_source)
