@@ -182,7 +182,7 @@ downscaleEIA_MN_electricRetail <- read_rds(here(
   "data",
   "cprg_county_proportions.RDS"
 )) %>%
-  filter(STATEFP == 27 &
+  filter(STATE = 'Minnesota' &
     (year %in% c(2005, 2021))) %>%
   select(GEOID, year, county_name = NAME, county_proportion_of_state_pop) %>%
   mutate(
