@@ -93,6 +93,13 @@ decennial_proportions <- tidycensus::get_decennial("county",
     population_data_source
   )
 
+# paths to compute-intense outcomes of block level analysis
+interCensalFile <- here("_energy",
+                        "data-raw",
+                        "intercensal_pop_2005_MNWI.RDS")
+
+if (!file.exists(interCensalFile) {
+
 # intercensal population estimates provided by US Census for 2005 at county level
 # downloaded from https://www.census.gov/data/tables/time-series/demo/popest/intercensal-2000-2010-counties.html and cleaned to read/save as CSV
 
@@ -140,6 +147,20 @@ intercensal_pop_2005_MNWI <- rbind(intercensal_pop_2005_MN, intercensal_pop_2005
     county_proportion_of_state_pop = county_population / state_population,
     population_data_source = "US Census County Intercensal Tables: 2000-2010 (2005)"
   )
+
+write_rds(intercensal_pop_2005_MNWI, here("_energy",
+                                          "data-raw",
+                                          "intercensal_pop_2005_MNWI.RDS")
+)
+                                          
+
+} else {
+  
+  intercensal_pop_2005_MNWI <- read_rds(interCensalFile)
+  
+  wi_pop_2021_filtered <- read_rds(file2)
+}
+
 
 cprg_county_population2005 <- cprg_county %>%
   left_join((intercensal_pop_2005_MNWI),
