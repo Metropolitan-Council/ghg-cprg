@@ -12,7 +12,7 @@ cprg_county_meta <- readRDS("_meta/data/cprg_county_meta.RDS")
 
 # fetch county geographies for all counties in 
 # Minnesota and Wisconsin
-# This will give us GEOID, NAME, STATE, and other identifying columns
+# This will give us GEOID, name, STATE, and other identifying columns
 county_geography <- bind_rows(tigris::counties(state = "MN") %>% 
                                 mutate(STATE = "Minnesota",
                                        STATE_ABB = "MN"),
@@ -76,7 +76,7 @@ county_pop_intercensal1 <-
                                          "US Census County Intercensal Tables (CO-EST00INT-01)")) %>% 
   left_join(county_geography %>% 
               select(STATE, STATEFP, COUNTYFP, GEOID, 
-                     NAMELSAD, NAME))
+                     NAMELSAD, name))
 
 # 2011-2019 -----
 
@@ -106,7 +106,7 @@ county_pop_intercensal2 <- read_csv("_meta/data-raw/population/co-est2020.csv",
     GEOID = paste0(state, county),
     STATE = stname,
     NAMELSAD = ctyname,
-    NAME  = str_remove(ctyname, " County"),
+    name  = str_remove(ctyname, " County"),
     # extract the year from the population_source_year
     population_year = str_extract(population_source_year, "[:digit:][:digit:][:digit:][:digit:]"),
     population_data_source = ifelse(population_year %in% c(2000, 2010, 2020), 
@@ -123,7 +123,7 @@ county_pop_intercensal2 <- read_csv("_meta/data-raw/population/co-est2020.csv",
 county_pop_intercensal <- bind_rows(county_pop_intercensal1, 
                                     county_pop_intercensal2) %>% 
   arrange(population_year) %>% 
-  select(1:5, GEOID, NAME)
+  select(1:5, GEOID, name)
 
 # 2000, 2010, 2020 -----
 # Decennial census years
@@ -229,8 +229,8 @@ names(county_pop_intercensal)
 # check that the decennial census data we pulled using tidycensus
 # matches that from the intercensal 
 county_pop_decennial %>% 
-  left_join(county_pop_intercensal, by = c("GEOID", "NAME", "population_year")) %>% 
-  filter(value != population.y) %>% 
+  left_join(county_pop_intercensal, by = c("GEOID", "population_year")) %>% 
+  filter(value != population.x) %>% 
   nrow() %>% 
   testthat::expect_equal(0)
 
