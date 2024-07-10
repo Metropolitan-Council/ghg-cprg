@@ -55,7 +55,7 @@ cprg_population_2005 <- read_rds(here(
     year = as.numeric(year)
   ) %>%
   arrange(STATE, NAME)
-  
+
 
 cprg_population <-
   bind_rows(

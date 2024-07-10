@@ -11,8 +11,8 @@ testthat::test_that("County population is as expected", {
       "Scott", "Sherburne", "Washington", "Pierce", "St. Croix"
     )
   )
-  
-  #Added STATE_ABB and year during 2005 baselining
+
+  # Added STATE_ABB and year during 2005 baselining
   testthat::expect_equal(names(cprg_population), c(
     "STATE", "STATE_ABB", "STATEFP", "COUNTYFP", "GEOID",
     "NAME", "NAMELSAD", "population", "year", "population_data_source"
