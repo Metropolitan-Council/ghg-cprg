@@ -30,5 +30,5 @@ testthat::test_that("Sectored energy data totals to measurements", {
     testthat::expect_equal(0)
 
 
-  testthat::expect_equal(nrow(electric_natgas_nrel_proportioned), 66)
+  testthat::expect_equal(nrow(electric_natgas_nrel_proportioned), 132)
 })
