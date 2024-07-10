@@ -12,9 +12,10 @@ testthat::test_that("County population is as expected", {
     )
   )
   
+  #Added STATE_ABB and year during 2005 baselining
   testthat::expect_equal(names(cprg_population), c(
-    "STATE", "STATEFP", "COUNTYFP", "GEOID",
-    "NAME", "NAMELSAD", "population", "population_data_source"
+    "STATE", "STATE_ABB", "STATEFP", "COUNTYFP", "GEOID",
+    "NAME", "NAMELSAD", "population", "year", "population_data_source"
   ))
 
   testthat::expect_equal(cprg_population$STATE %>% unique(), c("Minnesota", "Wisconsin"))
