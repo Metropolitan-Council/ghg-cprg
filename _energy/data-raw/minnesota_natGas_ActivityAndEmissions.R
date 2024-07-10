@@ -93,7 +93,7 @@ downscaleMN_gas_basedOnPopProps <- read_rds(here(
 )) %>%
   filter(STATE == 'Minnesota' &
     year %in% c(2005, 2021)) %>%
-  select(year, county = NAME, county_proportion_of_state_pop) %>%
+  select(year, county = name, county_proportion_of_state_pop) %>%
   mutate(
     total_mcf = case_when(
       year == 2005 ~ MN_state2005_natGasMCFTotal * county_proportion_of_state_pop,
@@ -135,7 +135,7 @@ cprg_county_pops <- read_rds(here(
   "data",
   "cprg_county_proportions.RDS"
 )) %>%
-  select(county = NAME, year, county_population) %>%
+  select(county = name, year, county_population) %>%
   filter(year %in% c(2005, 2021))
 
 MNcounty_level_gas_emissionsQA <- rbind(downscaleMN_gas_basedOnPopProps_2005, MNcounty_level_gas_emissions_2021) %>%
