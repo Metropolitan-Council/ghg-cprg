@@ -93,13 +93,6 @@ decennial_proportions <- tidycensus::get_decennial("county",
     population_data_source
   )
 
-# paths to compute-intense outcomes of block level analysis
-interCensalFile <- here("_energy",
-                        "data-raw",
-                        "intercensal_pop_2005_MNWI.RDS")
-
-if (!file.exists(interCensalFile)) {
-
 # intercensal population estimates provided by US Census for 2005 at county level
 # downloaded from https://www.census.gov/data/tables/time-series/demo/popest/intercensal-2000-2010-counties.html and cleaned to read/save as CSV
 
@@ -148,11 +141,6 @@ intercensal_pop_2005_MNWI <- rbind(intercensal_pop_2005_MN, intercensal_pop_2005
     population_data_source = "US Census County Intercensal Tables: 2000-2010 (2005)"
   )
 
-} else {
-  
-  intercensal_pop_2005_MNWI <- read_rds(interCensalFile)
-  
-}
 
 # for population source of truth (cprg_population.RDS)
 cprg_population_2005 <- cprg_county %>%
@@ -173,8 +161,8 @@ cprg_county_population2005 <- cprg_county %>%
   select(-NAMELSAD)
 
 # save off 2005 base year 
-write_rds(cprg_population_2005, here("_energy",
-                                          "data-raw",
+write_rds(cprg_population_2005, here("_meta",
+                                          "data",
                                           "cprg_population_2005.RDS")
 )
 
