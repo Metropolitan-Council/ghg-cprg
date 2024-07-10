@@ -4,11 +4,15 @@ cprg_county_meta <- readRDS("_meta/data/cprg_county_meta.RDS")
 
 census_county_population <- readRDS("_meta/data/census_county_population.RDS")
 
-cprg_population <- census_county_population %>% 
-  filter(cprg_area == TRUE,
-         population_year == 2021) %>% 
-  select(STATE, STATE_ABB, GEOID, COUNTYFP,
-         NAME, population, population_data_source)
+cprg_population <- census_county_population %>%
+  filter(
+    cprg_area == TRUE,
+    population_year == 2021
+  ) %>%
+  select(
+    STATE, STATE_ABB, GEOID, COUNTYFP,
+    NAME, population, population_data_source
+  )
 
 
 cprg_population_meta <- bind_rows(

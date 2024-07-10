@@ -203,7 +203,7 @@ NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and pr
 epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei.RDS"))
 
 nei_emissions_all <- epa_nei %>%
-  filter(nei_inventory_year == 2020) %>% 
+  filter(nei_inventory_year == 2020) %>%
   group_by(zone = county_name) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
@@ -217,11 +217,11 @@ We expect that the NEI data will show higher emissions, because it is based on o
 #| out-width: "95%"
 
 nei_cprg_combine <- left_join(
-  vmt_emissions_all %>% 
-    mutate(cprg_emissions = emissions_metric_tons_co2e) %>% 
+  vmt_emissions_all %>%
+    mutate(cprg_emissions = emissions_metric_tons_co2e) %>%
     select(-emissions_metric_tons_co2e),
-  nei_emissions_all %>% 
-    mutate(nei_emissions = emissions_metric_tons_co2e) %>% 
+  nei_emissions_all %>%
+    mutate(nei_emissions = emissions_metric_tons_co2e) %>%
     select(-emissions_metric_tons_co2e)
 )
 
@@ -267,7 +267,7 @@ fig_nei_council_emissions
 fig_activity_vs_nei <- plot_ly(
   data = vmt_emissions_all,
   source = "fig-activity-vs-nei",
-  x = ~reorder(zone, -emissions_metric_tons_co2e),
+  x = ~ reorder(zone, -emissions_metric_tons_co2e),
   y = ~emissions_metric_tons_co2e,
   type = "scatter",
   mode = "markers",

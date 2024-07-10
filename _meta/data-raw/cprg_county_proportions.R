@@ -5,17 +5,21 @@ cprg_county_meta <- readRDS("_meta/data/cprg_county_meta.RDS")
 state_population <- readRDS("_meta/data/state_population.RDS")
 census_county_population <- readRDS("_meta/data/census_county_population.RDS")
 
-cprg_county_proportions <- census_county_population %>% 
-  filter(cprg_area == TRUE) %>% 
-  mutate(county_population = population) %>% 
+cprg_county_proportions <- census_county_population %>%
+  filter(cprg_area == TRUE) %>%
+  mutate(county_population = population) %>%
   left_join(state_population,
-            by = c("STATE", "population_year", "population_data_source")) %>% 
+    by = c("STATE", "population_year", "population_data_source")
+  ) %>%
   mutate(
     year = population_year,
-    county_proportion_of_state_pop = county_population/state_population %>% round(digits = 6),
-    name = NAME) %>% 
-  select(STATE, GEOID, name, year, county_population, state_population, county_proportion_of_state_pop,
-         population_data_source)
+    county_proportion_of_state_pop = county_population / state_population %>% round(digits = 6),
+    name = NAME
+  ) %>%
+  select(
+    STATE, GEOID, name, year, county_population, state_population, county_proportion_of_state_pop,
+    population_data_source
+  )
 
 
 cprg_county_proportions_meta <- bind_rows(
