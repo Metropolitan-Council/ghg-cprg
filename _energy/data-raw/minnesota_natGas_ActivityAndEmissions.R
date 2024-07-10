@@ -79,7 +79,7 @@ MNcounty_level_gas_emissions_2021 <- processed_mn_gasUtil_activityData %>%
   )
 
 
-#incorporates totals numbers for Residential, Commercial, Industrial, internal use, Unaccounted For gas, and Deliveries to Transportation (i.e. deregulated competitive providers)
+# incorporates totals numbers for Residential, Commercial, Industrial, internal use, Unaccounted For gas, and Deliveries to Transportation (i.e. deregulated competitive providers)
 # Source: 2005 MN Utility Data Book
 
 MN_state2005_natGasMCFTotal <- 367825000 # EIA State Energy Profile; 328955000 reported in Utility Data Book
@@ -92,7 +92,7 @@ downscaleMN_gas_basedOnPopProps <- read_rds(here(
   "cprg_county_proportions.RDS"
 )) %>%
   filter(STATEFP == 27 &
-           year %in% c(2005,2021)) %>%
+    year %in% c(2005, 2021)) %>%
   select(year, county = NAME, county_proportion_of_state_pop) %>%
   mutate(
     total_mcf = case_when(
@@ -104,14 +104,13 @@ downscaleMN_gas_basedOnPopProps <- read_rds(here(
     total_CO2_emissions_lbs = total_mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF,
     total_CH4_emissions_lbs = total_mcf * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF * GWP_CH4,
     total_N2O_emissions_lbs = total_mcf * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF * GWP_N2O,
-    
   ) %>%
   mutate(
     total_CO2e_emissions_lbs = total_CO2_emissions_lbs + total_CH4_emissions_lbs + total_N2O_emissions_lbs,
     total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
     total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
     total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000
-    ) %>%
+  ) %>%
   mutate(
     total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
     emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
@@ -131,23 +130,24 @@ downscaleMN_gas_basedOnPopProps_2005 <- downscaleMN_gas_basedOnPopProps %>%
 downscaleMN_gas_basedOnPopProps_2021 <- downscaleMN_gas_basedOnPopProps %>%
   filter(year == 2021)
 
-cprg_county_pops <- read_rds(here("_meta",
-                                         "data",
-                                         "cprg_county_proportions.RDS")
-) %>%
+cprg_county_pops <- read_rds(here(
+  "_meta",
+  "data",
+  "cprg_county_proportions.RDS"
+)) %>%
   select(county = NAME, year, county_population) %>%
-  filter(year %in% c(2005,2021))
-                                    
-MNcounty_level_gas_emissionsQA = rbind(downscaleMN_gas_basedOnPopProps_2005, MNcounty_level_gas_emissions_2021) %>%
+  filter(year %in% c(2005, 2021))
+
+MNcounty_level_gas_emissionsQA <- rbind(downscaleMN_gas_basedOnPopProps_2005, MNcounty_level_gas_emissions_2021) %>%
   left_join(cprg_county_pops,
-            by = join_by(county, year)
+    by = join_by(county, year)
   ) %>%
   mutate(
     CO2eEmissions_PerCap_Tons = emissions_metric_tons_co2e / county_population
   ) %>%
   left_join(downscaleMN_gas_basedOnPopProps_2021 %>% select(county, year, EST_emissions_metric_tons_co2e = emissions_metric_tons_co2e),
-            by = join_by(county, year)
-            ) %>%
+    by = join_by(county, year)
+  ) %>%
   mutate(
     EST_perCap_CO2e = EST_emissions_metric_tons_co2e / county_population
   )
@@ -158,7 +158,7 @@ MNcounty_level_gas_emissions <- MNcounty_level_gas_emissionsQA %>%
     year = as.numeric(year)
   )
 
-#since we have more detailed info for 2021, save off as a separate .RDS for safekeeping
+# since we have more detailed info for 2021, save off as a separate .RDS for safekeeping
 write_rds(processed_mn_gasUtil_activityData, here("_energy", "data", "minnesota_gasUtils_ActivityAndEmissions2021.RDS"))
 
 # write combined 2005 (downscaled) and 2021 (derived from utility reports) activity/emissions data to .RDS

@@ -38,13 +38,13 @@ combined_WIgasUtil_activityData <- WIutilities_in_scope %>%
       year == 2005 & utility_name == "St Croix Valley Natural Gas Company" ~ 9534249 * therms_to_MCF,
       year == 2005 & utility_name == "Wisconsin Gas" ~ 728522194 * therms_to_MCF, # total send out... need to make sure "transport" is not included.... final sale only.
       year == 2021 & utility_name == "Midwest Natural Gas Incorporated" ~ 23181392 * therms_to_MCF,
-      year == 2021 & utility_name == "Northern States Power Company - Wisconsin" ~ 171102649 * therms_to_MCF, 
+      year == 2021 & utility_name == "Northern States Power Company - Wisconsin" ~ 171102649 * therms_to_MCF,
       year == 2021 & utility_name == "St Croix Valley Natural Gas Company" ~ 11155826 * therms_to_MCF,
       year == 2021 & utility_name == "Wisconsin Gas" ~ 751394716 * therms_to_MCF # previously recorded: 1881722450 -- big drop since such a large transport business
     ),
     utility_TotalCustomerCount = case_when(
       year == 2005 & utility_name == "Midwest Natural Gas Incorporated" ~ 13845,
-      year == 2005 & utility_name == "Northern States Power Company - Wisconsin" ~ 93588, 
+      year == 2005 & utility_name == "Northern States Power Company - Wisconsin" ~ 93588,
       year == 2005 & utility_name == "St Croix Valley Natural Gas Company" ~ 6939,
       year == 2005 & utility_name == "Wisconsin Gas" ~ 583336,
       year == 2021 & utility_name == "Midwest Natural Gas Incorporated" ~ 18793,

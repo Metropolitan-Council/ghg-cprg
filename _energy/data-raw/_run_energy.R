@@ -42,7 +42,7 @@ electric_natgas_nrel_proportioned <- electric_raw %>%
   select(county, source = sector, year, emissions_metric_tons_co2e) %>%
   mutate(source = str_to_sentence(source)) %>%
   left_join(nrel_slope_proportions,
-            by = join_by(county, source, year)
+    by = join_by(county, source, year)
   ) %>%
   mutate(
     commercial = commercial * emissions_metric_tons_co2e,
@@ -51,8 +51,8 @@ electric_natgas_nrel_proportioned <- electric_raw %>%
   ) %>%
   rename(total = emissions_metric_tons_co2e) %>%
   pivot_longer(4:7,
-               names_to = "category",
-               values_to = "emissions_metric_tons_co2e"
+    names_to = "category",
+    values_to = "emissions_metric_tons_co2e"
   ) %>%
   mutate(category = str_to_sentence(category))
 
