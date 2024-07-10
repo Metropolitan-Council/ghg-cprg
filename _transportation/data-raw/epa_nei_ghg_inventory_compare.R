@@ -79,22 +79,26 @@ plot_ly(
   )
 
 
+# based on this plot, I'm still not convinced I am comparing 
+# apples to apples
+# will look into this more Thursday
 plot_ly(
   type = "scatter",
   mode = "lines+markers",
   data = state_economic_summary,
   x = ~inventory_year,
   y = ~state_emissions,
-  color = ~state,
-  name = "Economic"
+  color = ~state
 ) %>%
   add_trace(
-    name = "NEI",
     type = "scatter",
     inherit = FALSE,
     mode = "lines+markers",
     data = nei_state_summary,
     x = ~nei_inventory_year,
     y = ~region_emissions,
-    color = ~state_name
+    color = ~state_name,
+    line = list(
+      dash = "dot"
+    )
   )
