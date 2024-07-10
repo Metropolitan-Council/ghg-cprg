@@ -10,7 +10,7 @@ options(tidycensus.cache = TRUE)
 # we will pull 2021 ACS 5-Year estimates for total population
 # county level
 
-cprg_population <- tidycensus::get_acs(
+cprg_population_2021 <- tidycensus::get_acs(
   survey = "acs5",
   year = 2021,
   state = "MN",
@@ -34,7 +34,8 @@ cprg_population <- tidycensus::get_acs(
   sf::st_drop_geometry() %>%
   mutate(
     population = estimate,
-    population_data_source = "ACS 5-Year Estimates 2021, Table DP05"
+    population_data_source = "ACS 5-Year Estimates 2021, Table DP05",
+    year = 2021
   ) %>%
   select(
     names(cprg_county),
@@ -44,7 +45,15 @@ cprg_population <- tidycensus::get_acs(
   ) %>%
   arrange(STATE, NAME)
 
-cprg_population
+
+
+cprg_population <-
+  bind_rows(
+    cprg_population_2021,
+    cprg_county_population2005
+  )
+
+
 
 cprg_population_meta <- bind_rows(
   cprg_county_meta,
