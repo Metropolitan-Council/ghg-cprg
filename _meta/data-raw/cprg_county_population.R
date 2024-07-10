@@ -1,66 +1,17 @@
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_county_meta <- readRDS("_meta/data/cprg_county_meta.RDS")
-library(tidycensus)
-options(tidycensus.cache = TRUE)
-# To get started working with tidycensus, users should set their Census API key.
-# A key can be obtained from http://api.census.gov/data/key_signup.html.
-# census_api_key("YOUR API KEY GOES HERE")
 
-# we will pull 2021 ACS 5-Year estimates for total population
-# county level
+census_county_population <- readRDS("_meta/data/census_county_population.RDS")
 
-cprg_population_2021 <- tidycensus::get_acs(
-  survey = "acs5",
-  year = 2021,
-  state = "MN",
-  geography = "county",
-  variables = c(total_pop = "DP05_0001E")
-) %>%
-  bind_rows(
-    tidycensus::get_acs(
-      survey = "acs5",
-      year = 2021,
-      state = "WI",
-      geography = "county",
-      variables = c(total_pop = "DP05_0001E")
-    )
-  ) %>%
-  select(-NAME, -moe) %>%
-  right_join(
-    cprg_county,
-    by = c("GEOID")
-  ) %>%
-  sf::st_drop_geometry() %>%
-  mutate(
-    population = estimate,
-    population_data_source = "ACS 5-Year Estimates 2021, Table DP05",
-    year = 2021
+cprg_population <- census_county_population %>%
+  filter(
+    cprg_area == TRUE,
+    population_year == 2021
   ) %>%
   select(
-    names(cprg_county),
-    population,
-    year,
-    population_data_source,
-    -geometry
-  ) %>%
-  arrange(STATE, NAME)
-
-cprg_population_2005 <- read_rds(here(
-  "_meta",
-  "data",
-  "cprg_population_2005.RDS"
-)) %>%
-  mutate(
-    year = as.numeric(year)
-  ) %>%
-  arrange(STATE, NAME)
-
-
-cprg_population <-
-  bind_rows(
-    cprg_population_2005,
-    cprg_population_2021
+    STATE, STATE_ABB, GEOID, COUNTYFP,
+    NAME, population, population_data_source
   )
 
 
