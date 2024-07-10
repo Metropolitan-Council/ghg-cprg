@@ -210,10 +210,11 @@ emissions_all <- bind_rows(
     cprg_county_pop %>%
       select(
         geog_id = COUNTYFP,
+        year,
         county_total_population = population,
         population_data_source
       ),
-    by = "geog_id"
+    by = join_by(geog_id, year)
   ) %>%
   rowwise() %>%
   mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
