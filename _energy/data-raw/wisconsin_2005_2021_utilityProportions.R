@@ -429,9 +429,9 @@ downscaleEIA_WI_electricRetail <- read_rds(here(
   "data",
   "cprg_county_proportions.RDS"
 )) %>%
-  filter(STATEFP == 55 &
+  filter(STATE == 'Wisconsin' &
     (year %in% c(2005, 2021))) %>%
-  select(GEOID, year, county_name = NAME, county_proportion_of_state_pop) %>%
+  select(GEOID, year, county_name = name, county_proportion_of_state_pop) %>%
   mutate(
     downscaled_EIA_total_CO2e_emissions_lbs =
       county_proportion_of_state_pop * case_when(
