@@ -46,16 +46,18 @@ cprg_population_2021 <- tidycensus::get_acs(
   ) %>%
   arrange(STATE, NAME, year)
 
-cprg_population_2005 <- read_rds(here("_energy",
+cprg_population_2005 <- read_rds(here("_meta",
                                     "data",
-                                    "cprg_population_2005.RDS"))
+                                    "cprg_population_2005.RDS")) %>%
+  mutate(
+    year = as.numeric(year)
+  )
 
 cprg_population <-
   bind_rows(
     cprg_population_2005,
     cprg_population_2021
   )
-
 
 
 cprg_population_meta <- bind_rows(
