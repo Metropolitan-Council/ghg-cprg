@@ -6,8 +6,6 @@ testthat::test_that("County population is as expected", {
     cprg_population$NAME,
     c(
       "Anoka", "Carver", "Chisago", "Dakota", "Hennepin", "Ramsey",
-      "Scott", "Sherburne", "Washington", "Pierce", "St. Croix",
-      "Anoka", "Carver", "Chisago", "Dakota", "Hennepin", "Ramsey",
       "Scott", "Sherburne", "Washington", "Pierce", "St. Croix"
     )
   )
