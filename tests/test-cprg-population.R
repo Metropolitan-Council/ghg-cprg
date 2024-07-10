@@ -8,7 +8,7 @@ testthat::test_that("County population is as expected", {
       "Anoka", "Carver", "Chisago", "Dakota", "Hennepin", "Ramsey",
       "Scott", "Sherburne", "Washington", "Pierce", "St. Croix",
       "Anoka", "Carver", "Chisago", "Dakota", "Hennepin", "Ramsey",
-      "Scott", "Sherburne", "Washington", "Pierce", "St. Croix",
+      "Scott", "Sherburne", "Washington", "Pierce", "St. Croix"
     )
   )
   
