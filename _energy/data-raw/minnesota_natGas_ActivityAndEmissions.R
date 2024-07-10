@@ -91,7 +91,7 @@ downscaleMN_gas_basedOnPopProps <- read_rds(here(
   "data",
   "cprg_county_proportions.RDS"
 )) %>%
-  filter(STATE == 'Minnesota' &
+  filter(STATE == "Minnesota" &
     year %in% c(2005, 2021)) %>%
   select(year, county = name, county_proportion_of_state_pop) %>%
   mutate(

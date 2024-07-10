@@ -134,7 +134,7 @@ downscaleEIA_MN_electricRetail <- read_rds(here(
   "data",
   "cprg_county_proportions.RDS"
 )) %>%
-  filter(STATE == 'Minnesota' &
+  filter(STATE == "Minnesota" &
     population_data_source == "Decennial Census PL 94-171 Redistricting Data Summary File") %>%
   select(GEOID, county = name, county_proportion_of_state_pop) %>%
   mutate(
