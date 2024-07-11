@@ -18,7 +18,7 @@ nlcd_county_c <- nlcd_county %>%
     x = expand.grid(
       year = seq(2001, 2021, by = 1),
       county = unique(nlcd_county$county) %>% sort(),
-      land_cover_type = unique(nlcd_county$land_cover_type)
+      land_cover_type = unique(land_cover_c$land_cover_type)
     ),
     y = ., by = join_by(year, county, land_cover_type)
   ) %>%
@@ -39,7 +39,7 @@ nlcd_county_c <- nlcd_county %>%
     stock_potential = stock_potential3
   ) %>%
   dplyr::select(year, county, land_cover_type, area, sequestration_potential, stock_potential, source) %>%
-  filter(land_cover_type %in% c("Grassland", "Tree", "Wetland", "Urban_Grassland", "Urban_Tree")) %>%
+
   arrange(year, county, land_cover_type) %>%
   # Now that we've extrapolated sequestration/stock values despite having no area estimates,
   # we need to calculate area based on the extrapolated sequestration.
