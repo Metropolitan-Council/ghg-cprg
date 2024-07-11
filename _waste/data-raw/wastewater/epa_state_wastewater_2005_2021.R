@@ -1,5 +1,5 @@
 source("R/_load_pkgs.R")
-cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_county_proportions.RDS"))
 
 
@@ -39,13 +39,14 @@ wi_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-wi-wastewater.csv"
 # bind files and convert CO2e from MMTCO2e to metric tonnes CO2e
 wastewater_epa <- bind_rows(mn_epa, wi_epa) %>%
   filter(!CO2e == "-") %>%
-  group_by(Year, STATE) %>% 
+  group_by(Year, STATE) %>%
   summarize(co2e_state = sum(as.numeric(CO2e)) * 10^6)
 
 wastewater_2005_2021 <- left_join(cprg_county_proportions %>% filter(year >= 2005 & year <= 2021),
-                                  wastewater_epa,
-                                  by = c("year" = "Year", "STATE" = "STATE")) %>% 
-  mutate(co2e = county_proportion_of_state_pop * co2e_state) %>% 
+  wastewater_epa,
+  by = c("year" = "Year", "STATE" = "STATE")
+) %>%
+  mutate(co2e = county_proportion_of_state_pop * co2e_state) %>%
   select(STATE, name, year, co2e)
 
 # and save
