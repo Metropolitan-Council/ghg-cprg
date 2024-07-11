@@ -1,4 +1,6 @@
 # get data from the 2020 national emissions inventory
+# NEI data prior to 2008 are unavailable
+# 
 # graphic model here: https://www.epa.gov/enviro/nei-model
 source("R/_load_pkgs.R")
 library(httr2)
@@ -18,7 +20,6 @@ sectors <- req_base %>%
     delim = ",",
     show_col_types = FALSE
   )
-
 
 fetch_nei <- function(year, state) {
   req_base %>%
