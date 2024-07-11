@@ -318,24 +318,13 @@ _transportation/data-raw/epa/metc_lggit_11.28.23.xlsm
 _waste/data-raw/wastewater/GHGEmissions_2019-2021_CorrectedWSCA.xlsx
 
 _transportation/data-raw/epa/community_ghg_inventorytool_11.28.23 2/
-_nature/data-raw/ESA_WorldCover_10m_2021_v200_N42W093_Map.tif
-_nature/data-raw/ESA_WorldCover_10m_2021_v200_N42W096_Map.tif
-_nature/data-raw/ESA_WorldCover_10m_2021_v200_N45W093_Map.tif
-_nature/data-raw/ESA_WorldCover_10m_2021_v200_N45W096_Map.tif
-_nature/data-raw/land_cover_seq_rates.csv
-_nature/data-raw/DBO_RPTAdministrativeBoundary.dbf
-_nature/data-raw/DBO_RPTAdministrativeBoundary.cpg
-_nature/data-raw/DBO_RPTAdministrativeBoundary.prj
-_nature/data-raw/DBO_RPTAdministrativeBoundary.sbx
-_nature/data-raw/DBO_RPTAdministrativeBoundary.sbn
-_nature/data-raw/DBO_RPTAdministrativeBoundary.shp
-_nature/data-raw/DBO_RPTAdministrativeBoundary.shp.xml
-_nature/data-raw/DBO_RPTAdministrativeBoundary.shx
-_nature/data-raw/land_cover_stock.csv
-/_nature/_natural_systems_files
 
+<<<<<<< HEAD
+_energy/data-raw/geoCrosswalk/
+=======
 site_libs/
 _nature/_natural_systems_files/*
+>>>>>>> dev-2005-baseline
 
 _energy/data-raw/nhgis_blk2000_blk2010_MN/
 
@@ -345,6 +334,11 @@ _energy/data-raw/EIA861
 
 _energy/data-raw/libraryDocs_2005
 
+<<<<<<< HEAD
+_energy/data-raw/egrid_historical_files_1996-2016
+
+_energy/data-raw/local-tool-january-2024
+=======
 _meta/data-raw/nrel_slope/scenario_planner/
 
 _meta/data-raw/nrel_slope/scenario_planner.zip
@@ -372,3 +366,4 @@ _meta/data-raw/population/co-est00int-01-27.xls
 _meta/data-raw/population/co-est00int-01-55.xls
 
 _meta/data-raw/population/
+>>>>>>> dev-2005-baseline
