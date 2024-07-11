@@ -55,15 +55,22 @@ econ_sectors <- readxl::read_xlsx("_transportation/data-raw/epa/state_ghg/allsta
 
 econ <- econ_sectors %>%
   filter(state %in% c("MN", "WI")) %>%
+  select(-subcategory4) %>% 
   pivot_longer(starts_with("y"),
-    names_to = "year",
-    values_to = "value"
+    names_to = "inventory_year",
+    values_to = "emission_grams"
   ) %>%
-  filter(econ_sector == "Transportation") %>%
-  # reported in millions of metric tons
-  mutate(emissions_metric_tons = value * 1000000)
+  mutate(inventory_year = str_remove(inventory_year, "y"),
+         # reported in millions of metric tons
+         # so convert to metric tons then to grams
+         emission_grams = as.numeric(emission_grams) * 1000000 %>% 
+           units::as_units("metric_ton") %>% 
+           units::set_units("gram") %>% 
+           as.numeric()) %>% 
+  pivot_wider(names_from = "ghg",
+              values_from = "emission_grams")
 
-# compare line numbers, sectors
+# compare line numbers, sectors -----
 
 ipcc_econ_mapping <- econ_sectors %>% 
   select(econ_sector, subsector, 

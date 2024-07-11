@@ -1,3 +1,10 @@
+# this was ultimately a moot exercise in comparing the data sources
+# As noted in the on-road documentation for the NEI (@usepa2020NationalEmissions2023),
+# NEI is bottom up,
+# GHG Inventory is top-down (starting from fuel consumption,
+# which is then apportioned to vehicle and fuel types). 
+# They cannot be reconciled, regardless of whether they are aggregated to the state level.  
+
 source("_transportation/data-raw/epa_nei_transportation.R")
 source("_transportation/data-raw/epa_ghg_inventory.R")
 
@@ -7,13 +14,9 @@ county_proportions_summary <- county_proportions %>%
   group_by(STATE, year) %>%
   summarize(region_proportion_of_state_pop = sum(county_proportion_of_state_pop))
 
-# state_ipcc_summary <- state_ipcc %>%
-#   filter(
-#     # inventory_year %in% epa_nei$nei_inventory_year,
-#     Sector == "Mobile Combustion"
-#   ) %>%
-#   group_by(state, inventory_year) %>%
-#   summarize(state_emissions = sum(emissions_metric_tons_co2e))
+state_ipcc_summary <- ipcc_transportation %>%
+  group_by(inventory_year) %>%
+  summarize(state_emissions = sum(emissions_metric_tons_co2e))
 
 state_economic_summary <- state_economic %>%
   filter(
@@ -69,7 +72,7 @@ plot_ly(
   name = "Inventory",
   type = "scatter",
   mode = "lines+markers",
-  data = state_economic_summary %>% 
+  data = state_ipcc_summary %>% 
     filter(inventory_year >= 2008),
   x = ~inventory_year,
   y = ~state_emissions
@@ -89,8 +92,3 @@ plot_ly(
   plotly_layout(
     main_title = "Significant differences in NEI and Inventory underlying datasets",
     subtitle = "MN + WI state-level summary")
-
-# if we are going to do territorial emissions, then using the NEI will result in 
-# choppier data, less responsive to immediate changes, lag continuing further into the future.
-# if we use the EPA Inventory, we get the year over year but only at the state
-# level. However, we can adjust the state level data using population or VMT
