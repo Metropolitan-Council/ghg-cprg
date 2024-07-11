@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Twin Cities MSA Greenhouse Gas Inventory - 6&nbsp; Mobile combustion</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../_transportation/data_transportation.html" rel="next">
+<link href="../_energy/qc_energy.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="../site_libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+<body class="nav-sidebar docked fullcontent"><section id="navigation" class="navigation standalone-navigation">
+  	<link href="style/standalone_header_footer.css" type="text/css" rel="stylesheet">
+</section>
+
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_transportation/_transportation.html">Transportation</a></li><li class="breadcrumb-item"><a href="../_transportation/_transportation.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Mobile combustion</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Twin Cities MSA Greenhouse Gas Inventory</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/Metropolitan-Council/ghg-cprg" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Executive summary</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Energy</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/_energy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Stationary Energy</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/data_electricity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Electricity</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/data_natural_gas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Natural gas</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/data_propane_kerosene.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Propane and kerosene</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/qc_energy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Deliverables</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Transportation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_transportation/_transportation.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Mobile combustion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_transportation/data_transportation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Data sources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_transportation/qc_transportation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Deliverables</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Waste and Wastewater</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Waste and wastewater</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/data_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Data sources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/qc_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Deliverables (Landfill)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/qc_waste_other.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Deliverables (Other sources)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Natural Systems</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_nature/_natural_systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Natural Systems</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_nature/data_land_area_sequestration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Data Sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/supplementary_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Supplementary data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/supplementary_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Supplementary tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/additional_resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Additional resources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/utility_service_area_maps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Utility service area maps</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/lidac_maps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Low-Income and Disadvantaged Communities</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../figures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">List of Figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">G</span>&nbsp; <span class="chapter-title">List of Tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../changelog.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">H</span>&nbsp; <span class="chapter-title">Release notes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">6.1</span> Introduction</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">6.2</span> Methods</a>
+  <ul class="collapse">
+  <li><a href="#vehicle-miles-traveled" id="toc-vehicle-miles-traveled" class="nav-link" data-scroll-target="#vehicle-miles-traveled"><span class="header-section-number">6.2.1</span> Vehicle Miles Traveled</a></li>
+  <li><a href="#emissions-factors" id="toc-emissions-factors" class="nav-link" data-scroll-target="#emissions-factors"><span class="header-section-number">6.2.2</span> Emissions factors</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">6.3</span> Results</a>
+  <ul class="collapse">
+  <li><a href="#correlation-with-related-data" id="toc-correlation-with-related-data" class="nav-link" data-scroll-target="#correlation-with-related-data"><span class="header-section-number">6.3.1</span> Correlation with related data</a></li>
+  <li><a href="#comparison-with-other-inventories" id="toc-comparison-with-other-inventories" class="nav-link" data-scroll-target="#comparison-with-other-inventories"><span class="header-section-number">6.3.2</span> Comparison with other inventories</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Metropolitan-Council/ghg-cprg/blob/main/_transportation/_transportation.qmd" class="toc-action">View source</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Mobile combustion</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">6.1</span> Introduction</h2>
+<p>This is the transportation section for estimating on-road emissions.</p>
+<p>Note that this does not include buses, trains, freight rail, light rail, and other transportation emissions.</p>
+</section>
+<section id="methods" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="methods"><span class="header-section-number">6.2</span> Methods</h2>
+<p>The general workflow for transportation emissions is to find vehicle miles traveled for a given geography,</p>
+<p><span class="math display">\[Emissions = miles \times \frac{\text{GHG grams}}{mile}\]</span></p>
+<section id="vehicle-miles-traveled" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="vehicle-miles-traveled"><span class="header-section-number">6.2.1</span> Vehicle Miles Traveled</h3>
+<p>To find the estimated number of vehicle miles traveled (VMT), we used the estimated number of vehicles and the average trip length in miles for all origin - destination pairs and vehicle types (passenger, medium-duty, and heavy-duty). VMT is calculated as follows:</p>
+<p><span class="math display">\[VMT = trips \times length\]</span> where</p>
+<p><span class="math display">\[trips = \text{number of trips}\]</span> <span class="math display">\[length = \text{average trip length in miles}\]</span></p>
+</section>
+<section id="emissions-factors" class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="emissions-factors"><span class="header-section-number">6.2.2</span> Emissions factors</h3>
+<p>You can read more about emissions factors we used in <a href="data_transportation.html#sec-epa-moves"><span>Section&nbsp;7.3</span></a>.</p>
+<p><span class="math display">\[Emissions=\frac{1}{2}T_{o} + \frac{1}{2}T_{d}  + T{_s}\]</span></p>
+<p>where</p>
+<p><span class="math display">\[T_o=\textrm{grams of emissions for each GHG from all trips originating in the county}\]</span></p>
+<p><span class="math display">\[T_d=\textrm{grams of emissions for each GHG from all trips ending in the county}\]</span></p>
+<p>and</p>
+<p><span class="math display">\[T_s=\textrm{grams of emissions for each GHG for trips originating and ending within the county}\]</span></p>
+<p>Transportation VMT and emissions were calculated in <a href="data-raw/vmt_emissions.R">vmt_emissions.R</a>, using functions <a href="data-raw/_calculate_emissions.R"><code>calculate_emissions()</code></a> and <a href="data-raw/_calculate_vmt.R"><code>calculate_vmt()</code></a>.</p>
+</section>
+</section>
+<section id="results" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="results"><span class="header-section-number">6.3</span> Results</h2>
+<div class="cell">
+<div id="fig-transportation-county-emissions" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;6.1: Transportation county emissions</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-d33deb038d5000bac671" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-d33deb038d5000bac671">{"x":{"visdat":{"5008706430f1":["function () ","plotlyVisDat"]},"cur_data":"5008706430f1","attrs":{"5008706430f1":{"x":{},"y":{},"marker":{"line":{"width":0}},"hovertemplate":{},"color":{},"colors":["#8e440b","#163c6a","#8d0c3b"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"stack","title":{"text":"Transportation emissions","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"reversed"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16},"categoryorder":"total ascending","type":"category","categoryarray":["Pierce","Chisago","Sherburne","Carver","St. Croix","Scott","Washington","Anoka","Dakota","Ramsey","Hennepin"]},"yaxis2":{"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-transportation-county-emissions","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":[955750.30849138205,277585.99858347303,184637.89573635376,1077718.3681022371,2578205.2948811445,104250.84698326126,1186822.1294863157,439319.31861730129,260426.4931382655,315375.75849310053,823507.42019610829,41396.512839568255,9899.3994628782493,8984.1624702647496,57580.733183444507,142716.22564494275,3079.0838490935002,60902.823918223752,18784.278423175252,12337.855659937,10825.683408233501,26271.739590501504,11640.3630704187,1305.8721006811199,1394.5920648283798,62505.671739744706,43494.091305721464,832.83297663513008,10266.856515699841,5549.1523194583797,3006.3827528611801,10600.516844106631,10987.337674696319],"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington","Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington","Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"marker":{"color":"rgba(142,68,11,1)","line":{"color":"rgba(142,68,11,1)","width":0}},"hovertemplate":["Anoka County<br>Transportation - Passenger vehicles, Light-duty vehicles<br>956 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Transportation - Passenger vehicles, Light-duty vehicles<br>278 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Transportation - Passenger vehicles, Light-duty vehicles<br>185 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Transportation - Passenger vehicles, Light-duty vehicles<br>1.08 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Transportation - Passenger vehicles, Light-duty vehicles<br>2.58 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Transportation - Passenger vehicles, Light-duty vehicles<br>104 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Transportation - Passenger vehicles, Light-duty vehicles<br>1.19 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Transportation - Passenger vehicles, Light-duty vehicles<br>439 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Transportation - Passenger vehicles, Light-duty vehicles<br>260 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Transportation - Passenger vehicles, Light-duty vehicles<br>315 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Transportation - Passenger vehicles, Light-duty vehicles<br>824 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Anoka County<br>Transportation - Commercial vehicles, Medium-duty vehicles<br>41 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Transportation - Commercial vehicles, Medium-duty vehicles<br>10 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Transportation - Commercial vehicles, Medium-duty vehicles<br>9 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Transportation - Commercial vehicles, Medium-duty vehicles<br>58 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Transportation - Commercial vehicles, Medium-duty vehicles<br>143 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Transportation - Commercial vehicles, Medium-duty vehicles<br>3 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Transportation - Commercial vehicles, Medium-duty vehicles<br>61 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Transportation - Commercial vehicles, Medium-duty vehicles<br>19 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Transportation - Commercial vehicles, Medium-duty vehicles<br>12 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Transportation - Commercial vehicles, Medium-duty vehicles<br>11 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Transportation - Commercial vehicles, Medium-duty vehicles<br>26 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Anoka County<br>Transportation - Commercial vehicles, Heavy-duty vehicles<br>12 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Transportation - Commercial vehicles, Heavy-duty vehicles<br>1 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Transportation - Commercial vehicles, Heavy-duty vehicles<br>1 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Transportation - Commercial vehicles, Heavy-duty vehicles<br>63 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Transportation - Commercial vehicles, Heavy-duty vehicles<br>43 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Transportation - Commercial vehicles, Heavy-duty vehicles<br>1 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Transportation - Commercial vehicles, Heavy-duty vehicles<br>10 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Transportation - Commercial vehicles, Heavy-duty vehicles<br>6 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Transportation - Commercial vehicles, Heavy-duty vehicles<br>3 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Transportation - Commercial vehicles, Heavy-duty vehicles<br>11 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Transportation - Commercial vehicles, Heavy-duty vehicles<br>11 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Transportation","textfont":{"color":"rgba(142,68,11,1)"},"error_y":{"color":"rgba(142,68,11,1)"},"error_x":{"color":"rgba(142,68,11,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</figure>
+</div>
+</div>
+<p>We can also view this data broken out by vehicle weight in <a href="#fig-transportation-county-emissions-by-weight">Figure&nbsp;<span>6.2</span></a>.</p>
+<div class="cell">
+<div id="fig-transportation-county-emissions-by-weight" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;6.2: 2021 annual emissions by vehicle weight</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-6b4010a89b2715c2401e" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-6b4010a89b2715c2401e">{"x":{"visdat":{"500836b6559e":["function () ","plotlyVisDat"]},"cur_data":"500836b6559e","attrs":{"500836b6559e":{"y":{},"x":{},"hovertemplate":{},"color":{},"colors":["#993404","#fe9929","#fee391","#993404","#fe9929","#fee391"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"stack","title":{"text":"2021 annual emissions by vehicle weight","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Vehicle weight","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"reversed"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16},"type":"category","categoryorder":"array","categoryarray":["Pierce","Chisago","Sherburne","Carver","St. Croix","Scott","Washington","Anoka","Dakota","Ramsey","Hennepin"]},"yaxis2":{"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-transportation-county-emissions-by-weight","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[11640.3630704187,1305.8721006811199,1394.5920648283798,62505.671739744706,43494.091305721464,832.83297663513008,10266.856515699841,5549.1523194583797,3006.3827528611801,10600.516844106631,10987.337674696319],"hovertemplate":["Anoka County<br>Heavy-duty<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Heavy-duty<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Heavy-duty<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Heavy-duty<br>0.06 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Heavy-duty<br>0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Heavy-duty<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Heavy-duty<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Heavy-duty<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Heavy-duty<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Heavy-duty<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Heavy-duty<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Heavy-duty","marker":{"color":"rgba(254,227,145,1)","line":{"color":"rgba(254,227,145,1)"}},"textfont":{"color":"rgba(254,227,145,1)"},"error_y":{"color":"rgba(254,227,145,1)"},"error_x":{"color":"rgba(254,227,145,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[41396.512839568255,9899.3994628782493,8984.1624702647496,57580.733183444507,142716.22564494275,3079.0838490935002,60902.823918223752,18784.278423175252,12337.855659937,10825.683408233501,26271.739590501504],"hovertemplate":["Anoka County<br>Medium-duty<br>0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Medium-duty<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Medium-duty<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Medium-duty<br>0.06 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Medium-duty<br>0.14 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Medium-duty<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Medium-duty<br>0.06 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Medium-duty<br>0.02 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Medium-duty<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Medium-duty<br>0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Medium-duty<br>0.03 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Medium-duty","marker":{"color":"rgba(254,153,41,1)","line":{"color":"rgba(254,153,41,1)"}},"textfont":{"color":"rgba(254,153,41,1)"},"error_y":{"color":"rgba(254,153,41,1)"},"error_x":{"color":"rgba(254,153,41,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[955750.30849138205,277585.99858347303,184637.89573635376,1077718.3681022371,2578205.2948811445,104250.84698326126,1186822.1294863157,439319.31861730129,260426.4931382655,315375.75849310053,823507.42019610829],"hovertemplate":["Anoka County<br>Light-duty<br>0.96 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Light-duty<br>0.28 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Light-duty<br>0.18 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Light-duty<br>1.08 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Light-duty<br>2.58 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Light-duty<br>0.1 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Light-duty<br>1.19 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Light-duty<br>0.44 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Light-duty<br>0.26 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Light-duty<br>0.32 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Light-duty<br>0.82 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Light-duty","marker":{"color":"rgba(153,52,4,1)","line":{"color":"rgba(153,52,4,1)"}},"textfont":{"color":"rgba(153,52,4,1)"},"error_y":{"color":"rgba(153,52,4,1)"},"error_x":{"color":"rgba(153,52,4,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</figure>
+</div>
+</div>
+<section id="correlation-with-related-data" class="level3" data-number="6.3.1">
+<h3 data-number="6.3.1" class="anchored" data-anchor-id="correlation-with-related-data"><span class="header-section-number">6.3.1</span> Correlation with related data</h3>
+<p>We would expect counties with higher population to have higher emissions and VMT.</p>
+<div class="cell">
+<div id="fig-emissions-population-transportation" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;6.3: County population and transportation emissions</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-8c31151bccc2c3e4c947" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-8c31151bccc2c3e4c947">{"x":{"visdat":{"50085f8c728d":["function () ","plotlyVisDat"]},"cur_data":"50085f8c728d","attrs":{"50085f8c728d":{"x":{},"y":{},"mode":"markers","hovertemplate":{},"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County population and emissions","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"2021 ACS 5-year population estimates. Strong positive correlation","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"h"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-emissions-population-transportation","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":[360773,105694,56328,435863,1270283,42204,549377,149568,96295,92495,264818],"y":[1008787.184401369,288791.2701470324,195016.65027144688,1197804.7730254263,2764415.6118318089,108162.7638089899,1257991.8099202393,463652.74935993494,275770.73155106371,336801.95874544064,860766.49746130616],"mode":"markers","hovertemplate":["Anoka County<br>Population: 360,773<br>Emissions: 1.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Population: 105,694<br>Emissions: 0.29 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Population: 56,328<br>Emissions: 0.2 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Population: 435,863<br>Emissions: 1.2 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Population: 1,270,283<br>Emissions: 2.76 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Population: 42,204<br>Emissions: 0.11 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Population: 549,377<br>Emissions: 1.26 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Population: 149,568<br>Emissions: 0.46 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Population: 96,295<br>Emissions: 0.28 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Population: 92,495<br>Emissions: 0.34 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Population: 264,818<br>Emissions: 0.86 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</figure>
+</div>
+</div>
+</section>
+<section id="comparison-with-other-inventories" class="level3" data-number="6.3.2">
+<h3 data-number="6.3.2" class="anchored" data-anchor-id="comparison-with-other-inventories"><span class="header-section-number">6.3.2</span> Comparison with other inventories</h3>
+<section id="national-emissions-inventory" class="level4" data-number="6.3.2.1">
+<h4 data-number="6.3.2.1" class="anchored" data-anchor-id="national-emissions-inventory"><span class="header-section-number">6.3.2.1</span> National Emissions Inventory</h4>
+<p>The National Emissions Inventory (NEI) is a comprehensive and detailed estimate of air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants from air emissions sources. The county-level GHG emissions included in the NEI for this category are calculated by running the MOVES model with State-, Local-, and Tribal-submitted activity data and EPA-developed activity inputs based on data from FHWA and other sources <span class="citation" data-cites="usepa2020NationalEmissions2023">(<a href="../references.html#ref-usepa2020NationalEmissions2023" role="doc-biblioref">USEPA 2023</a>)</span>.</p>
+<p>NEI data were pulled using the <a href="https://enviro.epa.gov/">EnviroFacts</a> API and processed in R scripts: <a href="../_meta/data-raw/epa_nei.R">epa_nei.R</a> and <a href="data-raw/epa_nei_transportation.R">epa_nei_transportation.R</a></p>
+<p>We expect that the NEI data will show higher emissions, because it is based on overall activity, not explicit origin-destination travel.</p>
+<div class="cell">
+<div id="fig-activity-vs-nei" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;6.4: County estimated emissions, NEI and calculated</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-d40e25c84f9ecb1c5572" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-d40e25c84f9ecb1c5572">{"x":{"visdat":{"500872a9b4e":["function () ","plotlyVisDat"],"50083ec26872":["function () ","data"]},"cur_data":"50083ec26872","attrs":{"500872a9b4e":{"x":{},"y":{},"mode":"markers","hovertemplate":{},"opacity":0.80000000000000004,"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"name":"2021 Met Council estimate","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"50083ec26872":{"x":{},"y":{},"mode":"markers","hovertemplate":{},"opacity":0.80000000000000004,"marker":{"color":"#faa819","size":18,"line":{"color":"lightgray","width":2}},"name":"2020 NEI on-road estimate","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","inherit":true}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County estimated vehicle emissions by data source","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Data source","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["Hennepin","Ramsey","Dakota","Anoka","Washington","Scott","St. Croix","Carver","Sherburne","Chisago","Pierce"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-activity-vs-nei","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"y":[1008787.184401369,288791.2701470324,195016.65027144688,1197804.7730254263,2764415.6118318089,108162.7638089899,1257991.8099202393,463652.74935993494,275770.73155106371,336801.95874544064,860766.49746130616],"mode":"markers","hovertemplate":["Anoka County<br>Council estimate: 1.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Council estimate: 0.29 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Council estimate: 0.2 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Council estimate: 1.2 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Council estimate: 2.76 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Council estimate: 0.11 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Council estimate: 1.26 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Council estimate: 0.46 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Council estimate: 0.28 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Council estimate: 0.34 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Council estimate: 0.86 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"opacity":0.80000000000000004,"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"name":"2021 Met Council estimate","type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"y":[1373765.6367964759,388534.70499258803,364004.06674909202,1786668.2310902039,4872735.0856045401,175732.20748098398,2137897.0501751942,631269.58156354399,432424.75630615809,785001.28904089204,1041350.10556808],"mode":"markers","hovertemplate":["Anoka County<br>NEI estimate: 1.37 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>NEI estimate: 0.39 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>NEI estimate: 0.36 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>NEI estimate: 1.79 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>NEI estimate: 4.87 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>NEI estimate: 0.18 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>NEI estimate: 2.14 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>NEI estimate: 0.63 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>NEI estimate: 0.43 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>NEI estimate: 0.79 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>NEI estimate: 1.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"opacity":0.80000000000000004,"marker":{"color":"#faa819","size":18,"line":{"color":"lightgray","width":2}},"name":"2020 NEI on-road estimate","type":"scatter","error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</figure>
+</div>
+</div>
+</section>
+<section id="sec-epa-lggit-transportation" class="level4" data-number="6.3.2.2">
+<h4 data-number="6.3.2.2" class="anchored" data-anchor-id="sec-epa-lggit-transportation"><span class="header-section-number">6.3.2.2</span> Local Greenhouse Gas Inventory Tool (LGGIT)</h4>
+<p>EPA’s Local Greenhouse Gas Inventory Tool (LGGIT) was developed to help communities across the United States to evaluate their greenhouse gas emissions. We used the LGGIT to validate our calculations and datasets <span class="citation" data-cites="usepaLocalGreenhouseGas2017">(<a href="../references.html#ref-usepaLocalGreenhouseGas2017" role="doc-biblioref">US EPA 2017</a>)</span>.</p>
+<p>We used the LGGIT Excel workbook tool with the following inputs in the “Mobile-Data” sheet. Several calculations and assumptions were made</p>
+<ul>
+<li>Passenger VMT was split between gasoline and diesel powered vehicles based on regional fleet composition in the Travel Behavior Inventory (TBI).</li>
+<li>Passenger vehicle age was determined from the median vehicle model year in the TBI. See <a href="data_transportation.html#sec-regional-fleet"><span>Section&nbsp;7.4.1</span></a> for more detail.</li>
+<li>Fuel consumption was calculated by dividing VMT by average vehicle miles per gallon (MPG), specific to vehicle type and fuel type.</li>
+<li>Fuel efficiency data were taken from the LGGIT tool and verified with the EPA Emission Factors Hub (2021 edition) <span class="citation" data-cites="usepaGHGEmissionFactors2021">(<a href="../references.html#ref-usepaGHGEmissionFactors2021" role="doc-biblioref">USEPA 2021</a>)</span>.<br>
+</li>
+<li>All medium-duty VMT were classified as “Light Truck”, while all heavy-duty VMT were classified as “Heavy-Duty Vehicle”.<br>
+</li>
+<li>Commercial trucks were assumed to be year 2007, based on a 2018 report that found the average age of trucks in the US to be 14.2 years <span class="citation" data-cites="brusseauAgingTrucksCreate2019">(<a href="../references.html#ref-brusseauAgingTrucksCreate2019" role="doc-biblioref">Brusseau 2019</a>)</span> (<code>2021 - 14 = 2007</code>).</li>
+</ul>
+<p>LGGIT entries and resulting output tables were generated and processed in <a href="data-raw/epa_lggit.R">epa_lggit.R</a>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-lggit-entries" class="anchored">
+
+<div id="tldnqagrla" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+  
+  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF"><caption>Table&nbsp;6.1:  <p>Mobile data entered into LGGIT</p> </caption>
+  <thead style="border-style: none;">
+    <tr class="gt_col_headings" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums; font-weight: bold;" scope="col" id="ID" bgcolor="#FFFFFF" valign="bottom" align="right">ID</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left; font-weight: bold;" scope="col" id="Unit Description" bgcolor="#FFFFFF" valign="bottom" align="left">Unit Description</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left; font-weight: bold;" scope="col" id="Sector" bgcolor="#FFFFFF" valign="bottom" align="left">Sector</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums; font-weight: bold;" scope="col" id="Vehicle Year" bgcolor="#FFFFFF" valign="bottom" align="right">Vehicle Year</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left; font-weight: bold;" scope="col" id="Vehicle Type" bgcolor="#FFFFFF" valign="bottom" align="left">Vehicle Type</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums; font-weight: bold;" scope="col" id="Vehicle Model (optional)" bgcolor="#FFFFFF" valign="bottom" align="right">Vehicle Model (optional)</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left; font-weight: bold;" scope="col" id="Fuel Type" bgcolor="#FFFFFF" valign="bottom" align="left">Fuel Type</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums; font-weight: bold;" scope="col" id="Fuel Consumption" bgcolor="#FFFFFF" valign="bottom" align="right">Fuel Consumption</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="border-style: none; color: #333333; background-color: #FFFFFF; font-size: 100%; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums; font-weight: bold;" scope="col" id="VMT" bgcolor="#FFFFFF" valign="bottom" align="right">VMT</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body" style="border-style: none; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3;">
+    <tr style="border-style: none;"><td headers="ID" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">1</td>
+<td headers="Unit Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Passenger Car Gasoline</td>
+<td headers="Sector" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Residential</td>
+<td headers="Vehicle Year" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">2013</td>
+<td headers="Vehicle Type" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Passenger Car</td>
+<td headers="Vehicle Model (optional)" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right"></td>
+<td headers="Fuel Type" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Gasoline</td>
+<td headers="Fuel Consumption" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">943,537,473</td>
+<td headers="VMT" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">22,739,253,097</td></tr>
+    <tr style="border-style: none;"><td headers="ID" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">2</td>
+<td headers="Unit Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Passenger Car Diesel</td>
+<td headers="Sector" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Residential</td>
+<td headers="Vehicle Year" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">2014</td>
+<td headers="Vehicle Type" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Passenger Car</td>
+<td headers="Vehicle Model (optional)" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right"></td>
+<td headers="Fuel Type" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Diesel</td>
+<td headers="Fuel Consumption" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">8,524,236</td>
+<td headers="VMT" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">276,185,260</td></tr>
+    <tr style="border-style: none;"><td headers="ID" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">3</td>
+<td headers="Unit Description" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Medium-duty</td>
+<td headers="Sector" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Commercial/Institutional</td>
+<td headers="Vehicle Year" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">2007</td>
+<td headers="Vehicle Type" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Light Truck</td>
+<td headers="Vehicle Model (optional)" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right"></td>
+<td headers="Fuel Type" class="gt_row gt_left" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">Diesel</td>
+<td headers="Fuel Consumption" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">37,318,257</td>
+<td headers="VMT" class="gt_row gt_right" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">824,733,487</td></tr>
+    <tr style="border-style: none;"><td headers="ID" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">4</td>
+<td headers="Unit Description" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Heavy-duty</td>
+<td headers="Sector" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Commercial/Institutional</td>
+<td headers="Vehicle Year" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">2007</td>
+<td headers="Vehicle Type" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Heavy-Duty Vehicle</td>
+<td headers="Vehicle Model (optional)" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right"></td>
+<td headers="Fuel Type" class="gt_row gt_left gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">Diesel</td>
+<td headers="Fuel Consumption" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">10,186,928</td>
+<td headers="VMT" class="gt_row gt_right gt_striped" style="border-style: none; padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">132,022,580</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+</div>
+<p>The results from the LGGIT tool estimate a regional emissions total of <strong>8,891,741 metric tons CO<sub>2</sub>e</strong>, while our calculations estimate <strong>8,757,962 metric tons CO<sub>2</sub>e</strong>. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. Additionally, LGGIT uses global warming potential (GWP) values from the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5) <span class="citation" data-cites="ipccClimateChange2014">(<a href="../references.html#ref-ipccClimateChange2014" role="doc-biblioref">IPCC and Core Writing Team 2014</a>)</span>, while our calculations use slightly higher values from the 6th Assessment Report (AR6) <span class="citation" data-cites="ipccAR62021">(<a href="../references.html#ref-ipccAR62021" role="doc-biblioref">IPCC 2023</a>)</span>. See <a href="data_transportation.html#sec-epa-moves"><span>Section&nbsp;7.3</span></a> for a more detailed comparison.</p>
+<div style="page-break-after: always;"></div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-brusseauAgingTrucksCreate2019" class="csl-entry" role="listitem">
+Brusseau, Dawn. 2019. <span>“Aging Trucks Create More Service Opportunities.”</span> Industry. NTEA. January 11, 2019. <a href="https://www.ntea.com/NTEA/NTEA/Member_benefits/Industry_leading_news/NTEANewsarticles/Aging_trucks_create_more_service_opportunities.aspx">https://www.ntea.com/NTEA/NTEA/Member_benefits/Industry_leading_news/NTEANewsarticles/Aging_trucks_create_more_service_opportunities.aspx</a>.
+</div>
+<div id="ref-ipccAR62021" class="csl-entry" role="listitem">
+IPCC. 2023. <em>Climate <span>Change</span> 2021 – <span>The Physical Science Basis</span>: <span>Working Group I Contribution</span> to the <span>Sixth Assessment Report</span> of the <span>Intergovernmental Panel</span> on <span>Climate Change</span></em>. 1st ed. Cambridge University Press. <a href="https://doi.org/10.1017/9781009157896">https://doi.org/10.1017/9781009157896</a>.
+</div>
+<div id="ref-ipccClimateChange2014" class="csl-entry" role="listitem">
+IPCC, and Core Writing Team. 2014. <span>“Climate <span>Change</span> 2014: <span>Synthesis Report</span>. <span>Contribution</span> of <span>Working Groups I</span>, <span>II</span> and <span>III</span> to the <span>Fifth Assessment Report</span> of the <span>Intergovernmental Panel</span> on <span>Climate Change</span>.”</span> Edited by R.K. Pachauri and L.A. Meyer. Geneva, Switzerland: Intergovernmental Panel on Climate Change. <a href="https://www.ipcc.ch/assessment-report/ar5/">https://www.ipcc.ch/assessment-report/ar5/</a>.
+</div>
+<div id="ref-usepaLocalGreenhouseGas2017" class="csl-entry" role="listitem">
+US EPA, OAR. 2017. <span>“Local <span>Greenhouse Gas Inventory Tool</span>.”</span> Data and Tools. June 30, 2017. <a href="https://www.epa.gov/statelocalenergy/local-greenhouse-gas-inventory-tool">https://www.epa.gov/statelocalenergy/local-greenhouse-gas-inventory-tool</a>.
+</div>
+<div id="ref-usepaGHGEmissionFactors2021" class="csl-entry" role="listitem">
+USEPA. 2021. <span>“<span>GHG Emission Factors Hub</span>.”</span> <a href="https://www.epa.gov/system/files/documents/2023-04/emission-factors_sept2021.pdf">https://www.epa.gov/system/files/documents/2023-04/emission-factors_sept2021.pdf</a>.
+</div>
+<div id="ref-usepa2020NationalEmissions2023" class="csl-entry" role="listitem">
+———. 2023. <span>“2020 <span>National Emissions Inventory Technical Support Document</span>.”</span> Government EPA-454/R-23-001a. Office of Air Quality Planning; Standards. <a href="https://www.epa.gov/air-emissions-inventories/2020-national-emissions-inventory-nei-technical-support-document-tsd">https://www.epa.gov/air-emissions-inventories/2020-national-emissions-inventory-nei-technical-support-document-tsd</a>.
+</div>
+</div>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp("metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          // default icon
+          link.classList.add("external");
+      }
+    }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../_energy/qc_energy.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Deliverables</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../_transportation/data_transportation.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Data sources</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+<section class="footer-social standalone-footer">
+  <div class="wrapper1 cf">
+    <nav class="footer-columns" aria-label="Footer">
+      <div>
+        <div class="footer-col">
+          <div class="wysiwyg">
+            <div class="footer-textblue"><a href="https://metrocouncil.org/"><img src="style/footer-logo.png" alt="Met Council Logo "></a></div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-divider-small"></div>
+            <h4 class="footer-textblue">390 Robert Street North<br>
+              St. Paul, MN 55101<br>
+              <a href="tel:651-602-1000">651-602-1000</a></h4>
+            <p>&nbsp;</p>
+            <p><span class="copyright">© Metropolitan Council</span></p>
+        </div>
+        <div class="footer-col">
+          <div class="footer-divider-small"></div>
+            <h4 class="footer-textblue"><a href="https://metrocouncil.org/About-Us/Contact-Us-(1).aspx">Contact Us</a></h4>
+          <h4 class="footer-textblue"><a href="https://metrocouncil.org/Terms-Conditions.aspx">Terms &amp; Conditions</a></h4>
+          <h4 class="footer-textblue"><a href="https://metrocouncil.org/Privacy-Policy.aspx">Privacy Policy</a></h4>
+        </div>
+      </div>
+    </nav>
+  </div>
+</section>
+
+
+
+</body></html>

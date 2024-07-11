@@ -1,7 +1,12 @@
 # compile emissions from all sectors into a single data table
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
-cprg_county_pop <- readRDS("_meta/data/cprg_population.RDS")
+cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
+  filter(cprg_area == TRUE) %>%
+  mutate(
+    population_year = as.numeric(population_year)
+  ) %>%
+  select(-cprg_area)
 
 # transportation -----
 transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
@@ -91,7 +96,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
     geog_name = county,
     category = paste0(category, " energy"),
     source = source,
-    data_source = "Individual natural gas utilities, NREL SLOPE",
+    data_source = "Individual natural gas utilities, NREL SLOPE (2021)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
   select(names(transportation_emissions))
@@ -193,6 +198,7 @@ emissions_all <- bind_rows(
         "Residential energy",
         "Commercial energy",
         "Industrial energy",
+        "Total energy",
         "Liquid stationary fuels",
         "Passenger vehicles",
         "Commercial vehicles",
@@ -209,10 +215,11 @@ emissions_all <- bind_rows(
     cprg_county_pop %>%
       select(
         geog_id = COUNTYFP,
+        population_year,
         county_total_population = population,
         population_data_source
       ),
-    by = "geog_id"
+    by = join_by(geog_id, year == population_year)
   ) %>%
   rowwise() %>%
   mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
