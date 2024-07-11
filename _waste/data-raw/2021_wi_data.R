@@ -10,6 +10,7 @@ wi_total_emissions <- 2.2 * 10^6 # in mtco2e
 
 cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
+cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 wi_pop <- cprg_county_proportions %>%
   filter(
@@ -22,8 +23,8 @@ wi_emissions <- wi_pop %>%
   dplyr::mutate(
     emissions_metric_tons_co2e = county_proportion_of_state_pop * wi_total_emissions
   ) %>%
-  left_join(cprg_county, by = "GEOID") %>%
-  select(NAME = NAME.y, county_population, county_proportion_of_state_pop, emissions_metric_tons_co2e)
+  left_join(cprg_county, by = c("GEOID", "STATE")) %>%
+  select(NAME = name, county_population, county_proportion_of_state_pop, emissions_metric_tons_co2e)
 
 wi_emissions_meta <- tribble(
   ~Column, ~Class, ~Description,

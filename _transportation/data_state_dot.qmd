@@ -38,7 +38,7 @@ WisDOT publishes PDF tables with county-level VMT. These were downloaded and dat
 #| fig-cap: "County vehicle miles traveled"
 #| out-width: "95%"
 dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
-  filter(year < 2022) %>%
+  filter(year < 2022, year >= 2018) %>%
   group_by(county)
 
 

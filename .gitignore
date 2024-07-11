@@ -366,3 +366,9 @@ _transportation/data-raw/ghg_protocol/ghg-uncertainty.xlsx
 _energy/data-raw/egrid_historical_files_1996-2016
 
 _energy/data-raw/geoCrosswalk
+
+_meta/data-raw/population/co-est00int-01-27.xls
+
+_meta/data-raw/population/co-est00int-01-55.xls
+
+_meta/data-raw/population/
