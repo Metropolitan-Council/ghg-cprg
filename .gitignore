@@ -10,8 +10,16 @@
 **/desktop.ini
 
 _transportation/report_transportation_files/figure-html/
+
+_waste/data-raw/tabula-waste-characterization-table.csv
+
 _waste/data-raw/score_summary.csv
+
 _waste/data-raw/ghg-emission-factors-hub-2021.xlsx
+
+_waste/data-raw/solid_waste_flaring.xlsx
+
+_waste/data-raw/solid_waste_lfgte.xlsx
 
 R/WI_Cities%2C_Towns_and_Villages_(July_2023)/
 
@@ -374,3 +382,9 @@ _agriculture/data-raw/ag_soils_manure.csv
 _agriculture/data-raw/ag_soils_residuals.csv
 _agriculture/data-raw/ag_manure_management.csv
 _agriculture/data-raw/ag_nex.csv
+
+_meta/data-raw/population/co-est00int-01-27.xls
+
+_meta/data-raw/population/co-est00int-01-55.xls
+
+_meta/data-raw/population/

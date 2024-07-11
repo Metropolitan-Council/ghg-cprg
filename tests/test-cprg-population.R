@@ -11,8 +11,8 @@ testthat::test_that("County population is as expected", {
   )
 
   testthat::expect_equal(names(cprg_population), c(
-    "STATE", "STATEFP", "COUNTYFP", "GEOID",
-    "NAME", "NAMELSAD", "population", "population_data_source"
+    "STATE", "STATE_ABB", "GEOID", "COUNTYFP",
+    "NAME", "population", "population_data_source"
   ))
 
   testthat::expect_equal(cprg_population$STATE %>% unique(), c("Minnesota", "Wisconsin"))
