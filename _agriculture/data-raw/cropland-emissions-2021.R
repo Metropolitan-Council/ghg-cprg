@@ -115,20 +115,20 @@ soil_residue_emissions <- usda_survey_formatted %>%
     mt_c2oe = mt_n2o * gwp$n2o
   )
 
-### check
-ggplot(
-  soil_residue_emissions %>%
-    group_by(year, county_name) %>%
-    summarize(CO2e = sum(mt_c2oe)),
-  aes(x = year, y = CO2e, col = county_name)
-) +
-  geom_line(size = 1.5) +
-  theme_bw()
-# quite a bit of scatter - 2013 in particular has major dip that should be investigated
-soil_residue_emissions %>%
-  filter(year == 2021) %>%
-  pull(mt_c2oe) %>%
-  sum()
+# ### check
+# ggplot(
+#   soil_residue_emissions %>%
+#     group_by(year, county_name) %>%
+#     summarize(CO2e = sum(mt_c2oe)),
+#   aes(x = year, y = CO2e, col = county_name)
+# ) +
+#   geom_line(size = 1.5) +
+#   theme_bw()
+# # quite a bit of scatter - 2013 in particular has major dip that should be investigated
+# soil_residue_emissions %>%
+#   filter(year == 2021) %>%
+#   pull(mt_c2oe) %>%
+#   sum()
 
 #### fertilizer data ####
 ### some creativity is required here.
@@ -174,7 +174,7 @@ ag_fert_formatted <- left_join(
   ) %>%
   filter(!is.na(value))
 
-ag_fert_formatted
+# ag_fert_formatted # check your dataframe
 
 ### pull in county values of fertilizer purchased. Will use this to apportion fertilizer applied (above)
 usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
@@ -197,10 +197,10 @@ usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
   as.data.frame() %>%
   select(-geometry)
 
-usda_fertilizer_mn_wi %>%
-  filter(is.na(Value)) %>%
-  arrange(year) %>%
-  select(state_name, county_name, year)
+# usda_fertilizer_mn_wi %>%
+#   filter(is.na(Value)) %>%
+#   arrange(year) %>%
+#   select(state_name, county_name, year)
 ### there are 9 missing values by county. 2 MN, 2 WI in 2002. 2 MN in 2007, 3 WI in 2017. None are counties of focus except Ramsey in 2002, which has limited ag.
 
 # get proportion of county fertilizer purchase to state
@@ -258,18 +258,19 @@ county_fertilizer_emissions <- left_join(
   ) %>%
   select(year, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty, mt_n2o, mt_co2e)
 
-ggplot(
-  county_fertilizer_emissions %>%
-    group_by(year, county_name) %>%
-    summarize(CO2e = sum(mt_co2e)),
-  aes(x = year, y = CO2e, col = county_name)
-) +
-  geom_line(size = 1.5) +
-  theme_bw()
-county_fertilizer_emissions %>%
-  filter(year == 2021, !county_name %in% c("SHERBURNE", "CHISAGO", "PIERCE", "ST CROIX")) %>%
-  pull(mt_co2e) %>%
-  sum()
+### check
+# ggplot(
+#   county_fertilizer_emissions %>%
+#     group_by(year, county_name) %>%
+#     summarize(CO2e = sum(mt_co2e)),
+#   aes(x = year, y = CO2e, col = county_name)
+# ) +
+#   geom_line(size = 1.5) +
+#   theme_bw()
+# county_fertilizer_emissions %>%
+#   filter(year == 2021, !county_name %in% c("SHERBURNE", "CHISAGO", "PIERCE", "ST CROIX")) %>%
+#   pull(mt_co2e) %>%
+#   sum()
 
 ### there is an additional estimate from the ag soils-animal worksheet that uses fertilizer data to estimate emissions from runoff and leaching.
 ### we should seek out additional documentation to better described these direct and indirect emissions,
