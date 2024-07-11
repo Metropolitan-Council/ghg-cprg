@@ -1,7 +1,6 @@
 # get data from the 2020 national emissions inventory
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
-library(httr2)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 epa_moves <- readRDS("_transportation/data/epa_moves.RDS")
@@ -40,9 +39,9 @@ nei_state_emissions <- nei_state_multi_year %>%
       )
   ) %>%
   mutate(emissions_grams = emissions %>%
-    units::as_units("ton") %>% # short tons/US tons
-    units::set_units("gram") %>% # convert to grams
-    as.numeric()) %>%
+           units::as_units("ton") %>% # short tons/US tons
+           units::set_units("gram") %>% # convert to grams
+           as.numeric()) %>%
   unique() %>%
   select(
     vehicle_weight_label,
@@ -66,8 +65,6 @@ nei_state_emissions <- nei_state_multi_year %>%
       sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o)),
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
   )
-
-
 
 
 # combine MN and WI
@@ -106,9 +103,9 @@ nei_county <- nei_county_multi_year %>%
 # https://www.epa.gov/air-emissions-inventories/what-are-units-nei-emissions-data
 nei_county_emissisons <- nei_county %>%
   mutate(emissions_grams = emissions %>%
-    units::as_units("ton") %>% # short tons/US tons
-    units::set_units("gram") %>% # convert to grams
-    as.numeric()) %>%
+           units::as_units("ton") %>% # short tons/US tons
+           units::set_units("gram") %>% # convert to grams
+           as.numeric()) %>%
   select(
     ei_sector, vehicle_weight_label,
     county_name, county_fips,
@@ -161,3 +158,32 @@ waldo::compare(epa_nei_meta, readRDS("_transportation/data/epa_nei_meta.RDS"))
 
 saveRDS(epa_nei, "_transportation/data/epa_nei.RDS")
 saveRDS(epa_nei_meta, "_transportation/data/epa_nei_meta.RDS")
+
+
+
+# combine state and county to get proportions -----
+nei_county_proportions <- nei_state_emissions %>% 
+  select(state_name, nei_inventory_year, vehicle_weight_label,
+         state_emissions_metric_tons_co2e = emissions_metric_tons_co2e) %>% 
+  left_join(
+    epa_nei %>% 
+      select(county_fips, county_name, nei_inventory_year, 
+             vehicle_weight_label, 
+             county_emissions_metric_tons_co2e = emissions_metric_tons_co2e) %>% 
+      left_join(cprg_county %>% 
+                  select(state_name = STATE, 
+                         GEOID,
+                         county_fips = COUNTYFP) %>% 
+                  sf::st_drop_geometry(),
+                by = join_by(county_fips)),
+    by = join_by(state_name, nei_inventory_year,
+                 vehicle_weight_label)) %>% 
+  group_by(state_name, GEOID, county_name, nei_inventory_year) %>% 
+  summarize(county_emissions_metric_tons_co2e = sum(county_emissions_metric_tons_co2e),
+            state_emissions_metric_tons_co2e = sum(state_emissions_metric_tons_co2e)) %>% 
+  mutate(
+    county_proportion_emissions = county_emissions_metric_tons_co2e/state_emissions_metric_tons_co2e %>% 
+      round(digits = 6)
+  )
+
+saveRDS(nei_county_proportions, "_transportation/data/epa_nei_county_proportions.RDS")

@@ -3,6 +3,7 @@
 source("_transportation/data-raw/wisdot_vmt_county.R")
 source("_transportation/data-raw/mndot_vmt_county.R")
 source("_meta/data-raw/cprg_county_proportions.R")
+cprg_county_meta <- readRDS("_meta/data/cprg_county_meta.RDS")
 dot_vmt <- readRDS("_transportation/data/dot_vmt.RDS")
 
 state_vmt <-
@@ -38,11 +39,23 @@ dot_vmt_county_proportions <- dot_vmt %>%
   )) %>%
   mutate(county_proportion_annual_vmt = (annual_vmt / state_annual_vmt) %>%
            round(digits = 6)) %>% 
-  select(year, county, cprg_area, state, daily_vmt, annual_vmt, state_daily_vmt,
-         state_annual_vmt, county_proportion_annual_vmt, data_source)
+  left_join(cprg_county %>% 
+              select(state_name = STATE,
+                     county = NAME,
+                     GEOID, 
+                     county_fips = COUNTYFP) %>% 
+              sf::st_drop_geometry(),
+            by = join_by(county)) %>% 
+  select(year, GEOID, 
+         county, cprg_area, state, daily_vmt, annual_vmt, state_daily_vmt,
+         state_annual_vmt, county_proportion_annual_vmt, data_source) 
+  
 
 
 dot_vmt_county_proportions_meta <-
+  bind_rows(
+    cprg_county_meta,
+  
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
     "year", class(dot_vmt_county_proportions$year), "VMT estimation year",
@@ -55,11 +68,12 @@ dot_vmt_county_proportions_meta <-
     "state_annual_vmt", class(dot_vmt_county_proportions$state_annual_vmt), "Statewide vehicle miles traveled on an average day",
     "county_proportion_annual_vmt", class(dot_vmt_county_proportions$county_proportion_annual_vmt), "County annual vehicle miles traveled relative to statewide total",
     "data_source", class(dot_vmt_county_proportions$data_source), "State DOT. Either \"MnDOT\" or \"WisDOT\""
-  )
+  )) %>% 
+  filter(`Column` %in% names(dot_vmt_county_proportions))
 
 
-saveRDS(dot_vmt_county_proportions, "_transportation/data/dot_vmt_proportions.RDS")
-saveRDS(dot_vmt_county_proportions_meta, "_transportation/data/dot_vmt_proportions_meta.RDS")
+saveRDS(dot_vmt_county_proportions, "_transportation/data/dot_vmt_county_proportions.RDS")
+saveRDS(dot_vmt_county_proportions_meta, "_transportation/data/dot_vmt_county_proportions_meta.RDS")
 
 
 # plots -----
