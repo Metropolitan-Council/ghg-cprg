@@ -42,12 +42,14 @@ wastewater_epa <- bind_rows(mn_epa, wi_epa) %>%
   group_by(Year, STATE) %>%
   summarize(co2e_state = sum(as.numeric(CO2e)) * 10^6)
 
-wastewater_2005_2021 <- left_join(cprg_county_proportions %>% filter(year >= 2005 & year <= 2021),
+wastewater_2005_2021 <- left_join(cprg_population %>% filter(year >= 2005 & year <= 2021),
   wastewater_epa,
   by = c("year" = "Year", "STATE" = "STATE")
 ) %>%
   mutate(co2e = county_proportion_of_state_pop * co2e_state) %>%
-  select(STATE, STATEFP, NAME, GEOG_UNIT_ID = COUNTYFP, year, co2e)
+  left_join(., cprg_county %>% st_drop_geometry() %>% select(NAME, STATEFP, COUNTYFP),
+            by = c("name" = "NAME")) %>% 
+  select(STATE, STATEFP, NAME = name, GEOG_UNIT_ID = COUNTYFP, year, co2e)
 
 # and save
 saveRDS(wastewater_2005_2021, "_waste/data/epa_county_wastewater_2005_2021.RDS")
