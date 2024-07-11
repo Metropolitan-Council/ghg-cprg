@@ -47,7 +47,7 @@ wastewater_2005_2021 <- left_join(cprg_county_proportions %>% filter(year >= 200
   by = c("year" = "Year", "STATE" = "STATE")
 ) %>%
   mutate(co2e = county_proportion_of_state_pop * co2e_state) %>%
-  select(STATE, name, year, co2e)
+  select(STATE, STATEFP, NAME, GEOG_UNIT_ID = COUNTYFP, year, co2e)
 
 # and save
 saveRDS(wastewater_2005_2021, "_waste/data/epa_county_wastewater_2005_2021.RDS")
@@ -56,9 +56,11 @@ wastewater_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
     "STATE", class(wastewater_2005_2021$STATE), "State",
-    "name", class(wastewater_2005_2021$name), "Name of county",
+    "STATEFP", class(wastewater_2005_2021$STATEFP), "State FIPS code",
+    "NAME", class(wastewater_2005_2021$NAME), "Name of county",
+    "GEOG_UNIT_ID", class(wastewater_2005_2021$GEOG_UNIT_ID), "County FIPS code",
     "year", class(wastewater_2005_2021$year), "Year",
-    "co2e", class(wastewater_2005_2021$epa_co2e), "Metric tons of CO2 equivalency generated from municipal wastewater treatment"
+    "co2e", class(wastewater_2005_2021$co2e), "Metric tons of CO2 equivalency generated from municipal wastewater treatment"
   )
 
 saveRDS(wastewater_meta, "_waste/data/epa_county_wastewater_2005_2021_meta.RDS")
