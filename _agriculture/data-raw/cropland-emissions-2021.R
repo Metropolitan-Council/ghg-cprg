@@ -52,8 +52,10 @@ usda_survey <- tidyUSDA::getQuickstat(
   as.data.frame() %>%
   select(-geometry)
 
-### extracting crops with conversions from EPA tool (corn and soy will likely account for >90% of emissions)
-### this is now more neatly presented in ag_constants_formatted but code needs to be rewritten
+### extracting crops with conversions from EPA tool
+### (corn and soy will likely account for >90% of emissions)
+### this is now more neatly presented in ag_constants_formatted 
+### but code needs to be rewritten
 crop_conversions <- left_join(
   ag_constants[28:44, 1:3] %>%
     row_to_names(row_number = 1),
@@ -100,7 +102,8 @@ usda_survey_formatted <- usda_survey %>%
     ),
     MT_N_fixation = if_else(
       crop_type %in% c("Alfalfa", "Soybeans", "Dry Edible Beans"),
-      metric_tons * (1 + residue_crop_mass_ratio) * residue_dry_matter_fraction * 0.03, # last value is constant of N content of N-fixer biomass
+      metric_tons * (1 + residue_crop_mass_ratio) * residue_dry_matter_fraction * 0.03,
+      # last value is constant of N content of N-fixer biomass
       0
     )
   )
@@ -132,11 +135,13 @@ soil_residue_emissions <- usda_survey_formatted %>%
 
 #### fertilizer data ####
 ### some creativity is required here.
-### Fertilizer purchases are recorded by MN Dept of Ag - waiting to see if data exists outside of pdfs
+### Fertilizer purchases are recorded by MN Dept of Ag - 
+### waiting to see if data exists outside of pdfs
 ### Fertilizer expenses are recorded in USDA 5 year census
 ### Fertilizer application is estimated in SIT for state, but data source is unclear
 
-### need to extract state fertilizer application estimates by year and then multiply by year constants to convert to organic vs synthetic rates
+### need to extract state fertilizer application estimates by year 
+### and then multiply by year constants to convert to organic vs synthetic rates
 ag_fert_formatted <- left_join(
   ag_fertilizer[c(2, 4:53), ] %>% # begin formatting to machine readable
     mutate(`Consumption of Primary Plant Nutrients: Total Nitrogen (Metric Tons)` = replace(
@@ -176,7 +181,8 @@ ag_fert_formatted <- left_join(
 
 # ag_fert_formatted # check your dataframe
 
-### pull in county values of fertilizer purchased. Will use this to apportion fertilizer applied (above)
+### pull in county values of fertilizer purchased.
+###  Will use this to apportion fertilizer applied (above)
 usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
   sector = "ECONOMICS",
   group = "EXPENSES",
@@ -201,11 +207,14 @@ usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
 #   filter(is.na(Value)) %>%
 #   arrange(year) %>%
 #   select(state_name, county_name, year)
-### there are 9 missing values by county. 2 MN, 2 WI in 2002. 2 MN in 2007, 3 WI in 2017. None are counties of focus except Ramsey in 2002, which has limited ag.
+### there are 9 missing values by county. 
+### 2 MN, 2 WI in 2002. 2 MN in 2007, 3 WI in 2017.
+###  None are counties of focus except Ramsey in 2002, which has limited ag.
 
 # get proportion of county fertilizer purchase to state
 usda_fert_prop <- usda_fertilizer_mn_wi %>%
-  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>% # remove washington co, WI
+  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>% 
+  # remove washington co, WI
   group_by(state_name, year) %>%
   mutate(state_total = sum(Value, na.rm = TRUE), fert_prop = Value / state_total) %>%
   filter(county_name %in% counties) %>%
