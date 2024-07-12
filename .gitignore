@@ -369,3 +369,27 @@ _meta/data-raw/population/
 >>>>>>> dev-2005-baseline
 
 _transportation/data-raw/epa/nei_pre_2008/
+
+_agriculture/data-raw/ag_constants.csv
+
+_agriculture/data-raw/ag_control.csv
+
+_agriculture/data-raw/ag_fertilizer.csv
+
+_agriculture/data-raw/ag_manure_management.csv
+
+_agriculture/data-raw/ag_nex.csv
+
+_agriculture/data-raw/ag_residual_burning_ch4.csv
+
+_agriculture/data-raw/ag_residual_burning_n2o.csv
+
+_agriculture/data-raw/ag_soils_fertilizer_production.csv
+
+_agriculture/data-raw/ag_soils_fertilizer.csv
+
+_agriculture/data-raw/ag_soils_liming.csv
+
+_agriculture/data-raw/ag_soils_manure.csv
+
+_agriculture/data-raw/ag_soils_residuals.csv
