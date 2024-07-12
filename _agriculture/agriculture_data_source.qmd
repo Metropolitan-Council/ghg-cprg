@@ -1,0 +1,150 @@
+## {Data Source}
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+hookaddcap()
+```
+
+Agricultural emissions are derived from two primary sources. First is the USDA agricultural census which provides county level livestock head counts, crop production, and fertilizer sales. Second is the EPA State Inventory Tool (SIT) that provides state specific values for emission factors as well as activity data such as state-wide fertilizer application (different from sales). These are both the highest rank of data.
+
+The USDA census is conducted once every five years (years ending in '2 and '7). For interstitial years we used linear interpolation to fill in county level values.
+
+The SIT provides guidance on how to translate livestock counts, crop production, and fertilizer use into emission factors. A brief description of the major emitters in this sector is listed here, but please refer to the SIT documentation for more detail information.
+
+#Livestock
+
+##Enteric fermentation
+
+Enteric fermentation is methane emitted from livestock during digestion.
+Emissions (MMTCO2E) = Animal Population × Emission Factor (kg CH4/head) × 28 (GWP) ÷ 1,000,000,000 (kg/MMTCO2E)
+
+##Manure management
+
+Manure in lagoons and holding facilities emits methane and nitrous oxide.
+
+###methane
+VS ProducedCattle, excluding calves = Animal Population (‘000 head) × 1,000 × VS (kg/head/yr)
+VS ProducedCalves and all other livestock = Animal Population (‘000 head) × TAM × VS (kg/1,000 kg animal mass/day) × 365 (days/yr)
+Emissions (MMTCO2E) = VS Produced (kg) × Bo (m3 CH4/kg VS) × MCF × 0.678 kg/m3 × 28 (GWP) ÷ 1,000,000,000 (MMTCO2E)
+
+### n2o
+
+K-Nitrogen ExcretedCattle, excluding calves = Animal Population × 1,000 × K-Nitrogen (kg/head/day)
+K-Nitrogen ExcretedCalves and all other livestock = Animal Population  × TAM × K-Nitrogen (kg/1,000 kg animal mass/day) × 365 (days/yr)
+Emissions (MMTCO2E) = K-Nitrogen Excreted × Emission Factor (liquid or dry) 
+
+##Manure runoff
+
+Manure from managed and unmanaged systems runoff into soil and cause additional nitrous oxide emissions.
+
+The SIT calculates emissions by multiplying each animal population (entered in the manure management worksheet) by the rate of N excreted by animal type, provided in kg/head/year for cattle (excluding calves), and kg/1,000 kg animal mass/day for calves and all other livestock (i.e., swine, poultry, sheep, goats, and horses). For cattle (excluding calves), animal population is multiplied by the K-nitrogen excretion rate (kg/head/year) for total K-nitrogen excreted. For calves and all other livestock, animal population is multiplied by the TAM (kg), the K-nitrogen excretion rate (kg/1,000 kg animal mass/day), and 365 days per year for total K-nitrogen excreted. Next, the total K-nitrogen is disaggregated into manure handled in managed systems, manure applied as daily spread, and manure deposited directly into pastures, ranges, or paddocks, based on default percentages obtained from the U.S. Inventory (EPA 2023a).
+Direct emissions from manure handled in management systems and applied as daily spread is multiplied by the volatilization factor (0.8) to obtain the total unvolatilized N. Additionally, for poultry an adjustment must be made for the small portion of waste used as animal feed. For all poultry categories (i.e., layers (hens, pullets, and chickens), broilers, and turkeys), the total K-nitrogen in managed systems is multiplied by 0.958, as it is assumed that 4.2 percent of all poultry manure is used as animal feed and not applied to agricultural soils (Carpenter 1992). The total unvolatilized N is multiplied by the emission factor for direct emissions of N2O (1.0 percent) to obtain the amount of emissions in N2O-N/yr.
+For animal waste deposited directly onto pasture, range, and paddock the total K-nitrogen is multiplied by the percent of manure deposited on pasture, range, and paddocks and the IPCC default emission factor for direct emissions (0.02 kg N2O-N/kg N excreted) (IPCC 1997, EPA 2023a) to obtain the amount of emissions in N2O-N/yr.
+
+#Cropland - 
+
+##Plant residue
+
+Croplands emit nitrous oxide when via legumes (i.e. soybeans, alfalfa, beans) that fix atmospheric N2 in the soil, some of which is converted to nitrous oxide via soil biochemical processes. Additionally, non-legume crops have residues that are left on soils and breakdown into the soil, emitting further nitrous oxide.
+
+###Legumes: 
+Emissions (MTCO2E) = Crop Production (MT) × Mass ratio (residue/crop) × Dry Matter Fraction × N content × Emission Factor (1.0%) × 44/28 (Ratio of N2O to N2O-N) 
+
+###Residues: 
+Emissions (MTCO2E) = Crop Production (MT) × Mass ratio (residue/crop) × Dry Matter Fraction × Fraction Residue Applied × N content × Emission Factor (1.0%) × 44/28 (Ratio of N2O to N2O-N)
+
+## Fertilizer application
+
+Synthetic and organic fertilizers breakdown to provide N to crops, but some fraction of this is converted to nitrous oxide that is emitted to the atmosphere.
+
+### Direct
+Emissions (MMTCO2E) = Total N × fraction unvolatilized (0.9 synthetic or 0.8 organic) × 0.01 (kg N2O-N/kg N) × 44/28 (Ratio of N2O to N2O-N) × 265 (GWP) ÷ 1,000,000,000 (kg/MMTCO2E)
+
+### Indirect
+Emissions (MMTCO2E) = Total N × fraction volatilized (0.1 synthetic or 0.2 organic) × 0.001 (kg N2O-N/kg N) × 44/28 (Ratio of N2O to N2O-N) × 265 (GWP) ÷ 1,000,000,000 (kg/MMTCO2E)
+
+## Fertilizer runoff
+
+Some proportion of applied fertilized is leached into the soil and runs off into streams and adjacent soils, where it further is chemically converted to nitrous oxide.  
+
+
+
+
+### remaining work
+
+Small emission sources not currently accounted for: liming, indirect N2O from livestock/soils-animal sheet, residue burning, urea production.
+Calculation fixes - Fertilizer runoff (from ag soils-animals) sheet is currently calculated from total fertilizer but should only be from volatized, leading to a likely small over estimation.
+Coding fixes - update cropland emissions code to reference cleaner ag_constants_formatted RDS.
+
+
+
+- Quality rank (See @tbl-quality-rank)
+- How, when, and why was the data collected?
+- If this is a modeled dataset, what is the sample?
+- What is the raw unit of measurement? 
+- How was this data accessed? Include any relevant links/citations, code, or downloads.
+- What data cleaning or wrangling was completed? How did you test these processes and outputs?
+- What is the geographic and temporal scope? Did you complete any aggregation?
+- What version is the data? Were there other versions available? If so, why did you choose this version?
+- What assumptions are made when we use this dataset?
+- Which subject matter expert (SME) reviewed this data?
+- Describe testing used to verify data
+
+Be sure to add a citation of this dataset to the Zotero shared library.
+
+### Data characteristics
+
+- Were there any missing data? How did you handle missing data?
+- Plots, tables, and description of data distribution
+- Variance, Z-Score, quantiles
+- Facet views by categorical variables
+
+```{r fig-scatter}
+#| fig-cap: "A scatter plot"
+#| out-width: "95%"
+#| include: false
+shinipsum::random_ggplotly(type = "point") %>%
+  councilR::plotly_layout(
+    main_title = "Scatter"
+  )
+```
+
+
+```{r fig-boxplot}
+#| fig-cap: "A boxplot"
+#| out-width: "95%"
+#| include: false
+shinipsum::random_ggplotly(type = "boxplot") %>%
+  councilR::plotly_layout(
+    main_title = "Boxplot"
+  )
+```
+
+
+```{r fig-density}
+#| fig-cap: "A density plot"
+#| out-width: "95%"
+#| include: false
+shinipsum::random_ggplotly(type = "density") %>%
+  councilR::plotly_layout(
+    main_title = "Density"
+  )
+```
+
+
+### Limitations
+
+### Comparison with similar datasets
+
+### Data dictionary
+
+Table with detailed description of columns and definitions for each data table.
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}

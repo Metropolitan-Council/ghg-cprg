@@ -111,7 +111,7 @@
       "Package": "PROJ",
       "Version": "0.5.0",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "lifecycle",
@@ -342,6 +342,16 @@
       ],
       "Hash": "d7421bb5dfeb2676b9e4a5a60c2fcfd2"
     },
+    "backports": {
+      "Package": "backports",
+      "Version": "1.5.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "e1e1b9d75c37401117b636b7ae50827a"
+    },
     "base64enc": {
       "Package": "base64enc",
       "Version": "0.1-3",
@@ -472,6 +482,18 @@
         "tibble"
       ],
       "Hash": "f61dbaec772ccd2e17705c1e872e9e7c"
+    },
+    "checkmate": {
+      "Package": "checkmate",
+      "Version": "2.3.1",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "backports",
+        "utils"
+      ],
+      "Hash": "c01cab1cb0f9125211a6fc99d540e315"
     },
     "class": {
       "Package": "class",
@@ -852,6 +874,23 @@
       ],
       "Hash": "15aeb8c27f5ea5161f9f6a641fafd93a"
     },
+    "fuzzyjoin": {
+      "Package": "fuzzyjoin",
+      "Version": "0.1.6",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "dplyr",
+        "geosphere",
+        "purrr",
+        "stringdist",
+        "stringr",
+        "tibble",
+        "tidyr"
+      ],
+      "Hash": "24af5fc67dbeaac6d776a8e6630aacd9"
+    },
     "generics": {
       "Package": "generics",
       "Version": "0.1.3",
@@ -872,6 +911,18 @@
         "Rcpp"
       ],
       "Hash": "a722b946e99fd7a006ab1239c0d1b2bc"
+    },
+    "geosphere": {
+      "Package": "geosphere",
+      "Version": "1.5-18",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "sp"
+      ],
+      "Hash": "45aa4def70a402e7d20efde490c13ecb"
     },
     "ggnewscale": {
       "Package": "ggnewscale",
@@ -2281,6 +2332,17 @@
       ],
       "Hash": "c48526786c25833673e3e29606a4b12d"
     },
+    "stringdist": {
+      "Package": "stringdist",
+      "Version": "0.9.12",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "parallel"
+      ],
+      "Hash": "f360720fa3feb7db9d4133b31ebb067f"
+    },
     "stringi": {
       "Package": "stringi",
       "Version": "1.8.4",
@@ -2471,6 +2533,26 @@
       ],
       "Hash": "646895a33d57984ce7534249bd9adf64"
     },
+    "tidyUSDA": {
+      "Package": "tidyUSDA",
+      "Version": "0.4.1",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "checkmate",
+        "crayon",
+        "dplyr",
+        "fuzzyjoin",
+        "ggplot2",
+        "httr",
+        "jsonlite",
+        "magrittr",
+        "sf",
+        "tigris"
+      ],
+      "Hash": "da3fbc1bf70b7d93cf6b106274a85592"
+    },
     "tidycensus": {
       "Package": "tidycensus",
       "Version": "1.6.3",
@@ -2564,7 +2646,7 @@
       "Package": "tidyterra",
       "Version": "0.6.1",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "cli",
