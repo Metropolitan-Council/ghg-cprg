@@ -255,13 +255,16 @@ emissions_all <- emissions_all %>% filter(category != "Stock")
 mean(emissions_all$emissions_per_capita[!emissions_all$category == "Stock"])
 sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"]) / sum(cprg_county_pop$population)
 
-#### remove later
-emissions_graph <- emissions_all %>% 
-  filter(year %in% c(2005, 2021), !geog_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce")) %>% 
+### break out desired years and data sources for RDG 90%
+emissions_rdg_90_baseline <- emissions_all %>% 
+  filter(year %in% c(2005,2021), !geog_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce")) %>% 
   group_by(year, sector) %>% 
   summarize(MT_CO2e = sum(emissions_metric_tons_co2e), MT_CO2e_per_capita = sum(emissions_per_capita))
 
-baseline_comparison <- ggplot(emissions_graph %>% filter(year %in% c(2005, 2021)),
+
+#### remove later
+
+baseline_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2005, 2021)),
                                                      aes(x = sector, y = MT_CO2e, fill = as.factor(year))) +
   geom_bar(stat = 'identity', position = position_dodge()) +
   labs(fill = "Year")
