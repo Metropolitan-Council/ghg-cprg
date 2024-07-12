@@ -74,13 +74,14 @@ electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_
 
 electric_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Electricity") %>%
+  filter((year == 2005 & category == "Total") | (year == 2021 & category != "Total")) %>% #avoid duplication and NAs until category is infilled later
   mutate(
     sector = "Energy",
     geog_level = "county",
     geog_name = county,
     category = paste0(category, " energy"),
     source = source,
-    data_source = "Individual electric utilities, NREL SLOPE",
+    data_source = "Individual electric utilities, NREL SLOPE (2021)",
     factor_source = "eGRID MROW"
   ) %>%
   select(names(transportation_emissions))
