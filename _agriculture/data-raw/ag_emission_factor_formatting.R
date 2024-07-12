@@ -1,12 +1,21 @@
 source("R/_load_pkgs.R")
+# note that the CSV imports will be replace with more direct connection
+# from the SIT tool
+
+# check that needed data are available locally
+if(!file.exists("_agriculture/data-raw/ag_constants.csv")){
+  cli::cli_abort("Download agriculture data from MS Team")
+}
 
 # emission factors and constants are located in two places
 ag_constants <- read_csv("_agriculture/data-raw/ag_constants.csv")
 ag_control <- read_csv("_agriculture/data-raw/ag_control.csv")
 
-### breaking constants down to categories, adding syntax friendly descriptor - matched to EPA SIT short_text where possible
+### breaking constants down to categories, adding syntax friendly descriptor 
+### - matched to EPA SIT short_text where possible
 general_constants <- data.frame(
-  value = ag_constants[2:16, 1], description = ag_constants[2:16, 2],
+  value = ag_constants[2:16, 1],
+  description = ag_constants[2:16, 2],
   short_text = c(
     "MT_ton",
     "lbs_ton",
@@ -24,12 +33,16 @@ general_constants <- data.frame(
     "VolPercent_Indirect",
     "VolPercent"
   )
-)
-colnames(general_constants) <- c("value", "description", "short_text")
-general_constants <- mutate(general_constants, value = as.numeric(value))
+) %>% 
+  select(value = Constants,
+         description = `...2`,
+         short_text) %>% 
+  mutate(value = as.numeric(value))
+
 
 soil_plant_constants <- data.frame(
-  value = ag_constants[18:27, 1], description = ag_constants[18:27, 2],
+  value = ag_constants[18:27, 1],
+  description = ag_constants[18:27, 2],
   short_text = c(
     "NMan",
     "NOrg",
@@ -42,14 +55,16 @@ soil_plant_constants <- data.frame(
     "TropHistEF",
     "N_content_legume"
   )
-)
-
-colnames(soil_plant_constants) <- c("value", "description", "short_text")
-soil_plant_constants <- mutate(soil_plant_constants, value = as.numeric(value))
+) %>% 
+  select(value = Constants,
+         description = `...2`,
+         short_text) %>% 
+  mutate(value = as.numeric(value))
 
 
 soil_animal_constants <- data.frame(
-  value = ag_constants[18:27, 6], description = ag_constants[18:27, 7],
+  value = ag_constants[18:27, 6],
+  description = ag_constants[18:27, 7],
   short_text = c(
     "NonVolEF",
     "prpEF",
@@ -65,7 +80,9 @@ soil_animal_constants <- data.frame(
 ) %>%
   rename(value = ...6, description = ...7) %>%
   filter(!is.na(value)) %>%
-  mutate(value = if_else(short_text == "PoultryNotManaged", as.numeric(str_remove(value, "%")) / 100, as.numeric(value)))
+  mutate(value = if_else(short_text == "PoultryNotManaged",
+                         as.numeric(str_remove(value, "%")) / 100,
+                         as.numeric(value)))
 
 
 crop_mt_bushel <- data.frame(
@@ -120,7 +137,8 @@ crop_residue_mass_ratio <- data.frame(
     value = as.numeric(value)
   )
 
-crop_residue <- ag_control[c(71, 74:89), c(1, 2, 6, 10)] %>%
+crop_residue <- ag_control[c(71, 74:89),
+                           c(1, 2, 6, 10)] %>%
   row_to_names(row_number = 1) %>%
   pivot_longer(cols = 2:4, values_to = "value") %>%
   mutate(
@@ -184,6 +202,7 @@ ag_constants_formatted <- bind_rows(
   crop_residue,
   animal_mass
 )
+
 ag_constants_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
