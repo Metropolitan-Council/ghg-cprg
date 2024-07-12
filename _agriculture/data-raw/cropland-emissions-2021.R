@@ -15,7 +15,8 @@ ag_constants <- read_csv("_agriculture/data-raw/ag_constants.csv")
 ag_control <- read_csv("_agriculture/data-raw/ag_control.csv")
 ag_fertilizer <- read_csv("_agriculture/data-raw/ag_fertilizer.csv")
 
-# code should be revamped throughout to use the formatted ag constants data for cleaner analysis, but for now using at end of script
+# code should be revamped throughout to use the formatted 
+# ag constants data for cleaner analysis, but for now using at end of script
 # formatted files
 ag_constants_formatted <- readRDS("_agriculture/data/ag_constants_formatted.rds")
 ## convert to named vector for easier indexing
@@ -27,8 +28,7 @@ ag_constants_vec <- ag_constants_formatted %>%
 counties <- toupper(cprg_county$NAME)
 counties <- if_else(counties == "ST. CROIX", "ST CROIX", counties)
 
-
-# starting with biggest source of emissions - residuals
+# starting with biggest source of emissions - residuals -----
 
 # grab field crop production data by county
 usda_survey <- tidyUSDA::getQuickstat(
@@ -38,7 +38,7 @@ usda_survey <- tidyUSDA::getQuickstat(
   category = "PRODUCTION",
   domain = NULL,
   county = counties,
-  key = key,
+  key = usda_key,
   program = "SURVEY",
   data_item = NULL,
   geographic_level = "COUNTY",
@@ -46,7 +46,7 @@ usda_survey <- tidyUSDA::getQuickstat(
   state = c("MINNESOTA", "WISCONSIN"),
   geometry = TRUE,
   lower48 = TRUE,
-  weighted_by_area = T
+  weighted_by_area = TRUE
 ) %>%
   as.data.frame() %>%
   select(-geometry)
@@ -92,8 +92,9 @@ usda_survey_formatted <- usda_survey %>%
     grepl("Beans", crop_type) ~ Value * .0454, # hundredweights to metric tons
     grepl("Alfalfa", crop_type) ~ Value * 0.9072, # tons to metric tons
     TRUE ~ Value * metric_tons_bushel # bushels to metric tons
-  )) %>% # determine N delivered to soils
+  )) %>% 
   mutate(
+    # determine N delivered to soils
     MT_N_to_soil = if_else(
       crop_type == "Alfalfa",
       0, # no N to soil via residue for alfalfa
@@ -113,6 +114,7 @@ soil_residue_emissions <- usda_survey_formatted %>%
   group_by(county_name, year) %>%
   summarize(mt_n_soils = sum(MT_N_to_soil + MT_N_fixation)) %>%
   mutate(
+    # clarify how this is being converted
     mt_n2o = mt_n_soils * 0.01 * (44 / 28),
     mt_c2oe = mt_n2o * gwp$n2o
   )
@@ -189,7 +191,7 @@ usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
   category = "EXPENSE",
   domain = NULL,
   county = NULL,
-  key = key,
+  key = usda_key,
   program = "CENSUS",
   data_item = "FERTILIZER TOTALS, INCL LIME & SOIL CONDITIONERS - EXPENSE, MEASURED IN $",
   geographic_level = "COUNTY",
@@ -228,23 +230,29 @@ fert_prop_interpolated <- left_join( # this creates an empty grid of all year co
   ),
   usda_fert_prop
 ) %>% # merged with our populated fertilizer proportion data, it creates NAs wherever data is missing
-  mutate(fert_prop = if_else(year %in% c(2002, 2007, 2012, 2017, 2022) & is.na(fert_prop), 0, fert_prop)) %>% # add 0 as Ramsey value in 2002
+  mutate(fert_prop = if_else(year %in% c(2002, 2007, 2012, 2017, 2022) & is.na(fert_prop), 
+                             0,
+                             fert_prop)) %>% # add 0 as Ramsey value in 2002
   group_by(county_name) %>%
   arrange(year) %>%
   mutate(
-    fert_prop = zoo::na.approx(fert_prop, na.rm = FALSE), # this function linearly interpolates NAs between known values, following the group_by
-    data_type = ifelse(year %in% c(2002, 2007, 2012, 2017, 2022), "census", "interpolated") # marking whether values are from the census or interpolation
+    # this function linearly interpolates NAs between known values, 
+    # following the group_by
+    fert_prop = zoo::na.approx(fert_prop, na.rm = FALSE),
+    # marking whether values are from the census or interpolation
+    data_type = ifelse(year %in% c(2002, 2007, 2012, 2017, 2022),
+                       "census", "interpolated") 
   )
 
 #### merge fertilize proportion estimates with state fertilizer values
 county_fertilizer_emissions <- left_join(
   left_join(fert_prop_interpolated, cprg_county %>%
-    mutate(county_name = if_else(NAME == "St. Croix",
-      "ST CROIX",
-      toupper(NAME)
-    )) %>%
-    as.data.frame() %>%
-    select(county_name, STATE_ABB)),
+              mutate(county_name = if_else(NAME == "St. Croix",
+                                           "ST CROIX",
+                                           toupper(NAME)
+              )) %>%
+              as.data.frame() %>%
+              select(county_name, STATE_ABB)),
   ag_fert_formatted,
   by = c("STATE_ABB" = "state", "year" = "year")
 ) %>%
@@ -253,14 +261,21 @@ county_fertilizer_emissions <- left_join(
     mt_n_synthetic_cty = fert_prop * mt_n_synthetic,
     mt_n_organic_cty = fert_prop * mt_n_organic
   ) %>%
-  #### separating mutate as this is where we will calculate emissions from estimated fertilizer application
+  #### separating mutate as this is where we will calculate emissions
+  ####  from estimated fertilizer application
   mutate(
-    n2o_direct = (mt_n_synthetic_cty * (1 - as.numeric(ag_constants[21, 1])) + # unvolatilized N from synthetic fertilizer
-      mt_n_organic_cty * as.numeric(ag_constants[19, 1]) * (1 - as.numeric(ag_constants[20, 1]))) * # unvolatilized N from organic fertilizer
-      as.numeric(ag_constants[22, 1]) * as.numeric(ag_constants[10, 1]), ## multiplied by the EF of unvolatilized N and N2O N: N2O
-    n2o_indirect = (mt_n_synthetic_cty * as.numeric(ag_constants[21, 1]) + # volatilized N from synthetic fertilizer
-      mt_n_organic_cty * as.numeric(ag_constants[19, 1]) * as.numeric(ag_constants[20, 1])) * # volatized N from organic fertilizer
-      as.numeric(ag_constants[23, 1]) * as.numeric(ag_constants[10, 1]), ## multiplied by the EF of volatized N and N2O N: N2O
+    # unvolatilized N from synthetic fertilizer
+    n2o_direct = (mt_n_synthetic_cty * (1 - as.numeric(ag_constants[21, 1])) + 
+                    # un-volatilized N from organic fertilizer
+                    mt_n_organic_cty * as.numeric(ag_constants[19, 1]) * (1 - as.numeric(ag_constants[20, 1]))) * 
+      ## multiplied by the EF of un-volatilized N and N2O N: N2O
+      as.numeric(ag_constants[22, 1]) * as.numeric(ag_constants[10, 1]), 
+    # volatilized N from synthetic fertilizer
+    n2o_indirect = (mt_n_synthetic_cty * as.numeric(ag_constants[21, 1]) + 
+                      # volatized N from organic fertilizer
+                      mt_n_organic_cty * as.numeric(ag_constants[19, 1]) * as.numeric(ag_constants[20, 1])) * 
+      ## multiplied by the EF of volatized N and N2O N: N2O
+      as.numeric(ag_constants[23, 1]) * as.numeric(ag_constants[10, 1]), 
     mt_n2o = n2o_direct + n2o_indirect,
     mt_co2e = mt_n2o * gwp$n2o
   ) %>%
@@ -286,16 +301,21 @@ county_fertilizer_emissions <- left_join(
 county_fertilizer_runoff_emissions <- county_fertilizer_emissions %>%
   select("year", "county_name", "data_type", "mt_n_synthetic_cty", "mt_n_organic_cty") %>%
   mutate(
-    mt_n2o = (mt_n_synthetic_cty + mt_n_organic_cty) * ag_constants_vec["LeachEF"] * ag_constants_vec["LeachEF2"] * ag_constants_vec["N2O_N2"],
+    mt_n2o = (mt_n_synthetic_cty + mt_n_organic_cty) *
+      ag_constants_vec["LeachEF"] * ag_constants_vec["LeachEF2"] *
+      ag_constants_vec["N2O_N2"],
     mt_co2e = mt_n2o * gwp$n2o
   )
 
 cropland_emissions <- bind_rows(
-  soil_residue_emissions %>% select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_c2oe) %>%
+  soil_residue_emissions %>%
+    select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_c2oe) %>%
     mutate(category = "cropland", source = "crop_residue_emissions", gas_type = "n2o"),
-  county_fertilizer_emissions %>% select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_co2e) %>%
+  county_fertilizer_emissions %>% 
+    select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_co2e) %>%
     mutate(category = "cropland", source = "crop_fertilizer_emissions", gas_type = "n2o"),
-  county_fertilizer_runoff_emissions %>% select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_co2e) %>%
+  county_fertilizer_runoff_emissions %>%
+    select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_co2e) %>%
     mutate(category = "cropland", source = "runoff_fertilizer_emissions", gas_type = "n2o")
 ) %>%
   filter(year != 2022) %>%
