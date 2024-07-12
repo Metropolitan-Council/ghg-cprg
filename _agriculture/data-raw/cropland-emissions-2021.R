@@ -1,9 +1,8 @@
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
+source("_agriculture/data-raw/_fetch_usda_key.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
-## you'll need an API key to use USDA data (https://quickstats.nass.usda.gov/api)
-key <- keyring::key_get("usda_key")
 
 ### load in saved SIT workbook sheets
 ag_soils_residuals <- read_csv("_agriculture/data-raw/ag_soils_residuals.csv")

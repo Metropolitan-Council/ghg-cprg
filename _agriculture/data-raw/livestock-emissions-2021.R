@@ -1,6 +1,6 @@
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
-
+source("_agriculture/data-raw/_fetch_usda_key.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 ### load in EPA Ag SIT csvs
@@ -21,9 +21,6 @@ ag_manure_mgmt <- readRDS("_agriculture/data/manure_management_systems.rds")
 ### mpca data on feedlots - currently unused but formatted at end of script
 mn_feedlots <- read_csv("_agriculture/data-raw/mn-feedlots.csv") %>%
   filter(county_name %in% cprg_county$NAME)
-
-## you'll need an API key to use USDA data (https://quickstats.nass.usda.gov/api)
-key <- keyring::key_get("usda_key")
 
 ### create county names matched to USDA format
 counties <- toupper(cprg_county$NAME)
