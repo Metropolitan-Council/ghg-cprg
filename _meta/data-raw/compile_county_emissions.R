@@ -35,7 +35,7 @@ transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.R
 
 # waste -----
 ## wastewater ----
-ww_emissions <- readRDS("_waste/data/epa_county_wastewater.RDS") %>%
+ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
   mutate(
     sector = "Waste",
     geog_level = "county",
@@ -44,23 +44,24 @@ ww_emissions <- readRDS("_waste/data/epa_county_wastewater.RDS") %>%
     source = "Wastewater",
     data_source = "EPA State GHG Inventory and Projection Tool",
     factor_source = data_source,
-    emissions_metric_tons_co2e = epa_co2e,
-    year = 2021
+    emissions_metric_tons_co2e = co2e,
+    year = as.numeric(year)
   ) %>%
   select(names(transportation_emissions))
 
 
 ## solid waste -----
-solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
+solid_waste <- readRDS("_waste/data/mn_sw_emissions_co2e.RDS") %>%
   ungroup() %>%
   mutate(
     sector = "Waste",
     geog_level = "county",
-    geog_name = county,
+    geog_name = geog_name,
     category = "Solid waste",
     source = str_to_sentence(source),
-    data_source,
-    factor_source = "EPA GHG Emission Factors Hub (2021)"
+    data_source = "MPCA SCORE",
+    factor_source = "EPA GHG Emission Factors Hub (2021)",
+    year = as.numeric(year)
   ) %>%
   select(names(transportation_emissions))
 
@@ -76,13 +77,14 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Electricity") %>%
   filter((year == 2005 & category == "Total") | (year == 2021 & category != "Total")) %>% #avoid duplication and NAs until category is infilled later
   mutate(
-    sector = "Energy",
+    sector = "Electricity",
     geog_level = "county",
     geog_name = county,
     category = paste0(category, " energy"),
     source = source,
     data_source = "Individual electric utilities, NREL SLOPE (2021)",
-    factor_source = "eGRID MROW"
+    factor_source = "eGRID MROW",
+    year = as.numeric(year)
   ) %>%
   select(names(transportation_emissions))
 
@@ -91,14 +93,16 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
 
 natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Natural gas") %>%
+  filter((year == 2005 & category == "Total") | (year == 2021 & category != "Total")) %>% #avoid duplication and NAs until category is infilled later
   mutate(
-    sector = "Energy",
+    sector = "Building Fuel",
     geog_level = "county",
     geog_name = county,
     category = paste0(category, " energy"),
     source = source,
     data_source = "Individual natural gas utilities, NREL SLOPE (2021)",
-    factor_source = "EPA GHG Emission Factors Hub (2021)"
+    factor_source = "EPA GHG Emission Factors Hub (2021)",
+    year = as.numeric(year)
   ) %>%
   select(names(transportation_emissions))
 
@@ -106,7 +110,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
 
 propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
   mutate(
-    sector = "Energy",
+    sector = "Building Fuel",
     geog_level = "county",
     geog_name = NAME,
     category = "Liquid stationary fuels",
@@ -118,7 +122,8 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
 
 ## natural systems ----
 
-natural_systems_sequestration <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
+# further work to be done reconciling ESA and NLCD data
+natural_systems_sequestration_esa <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
   mutate(
     sector = "Nature",
     geog_level = "county",
@@ -129,9 +134,26 @@ natural_systems_sequestration <- readRDS("_nature/data/county_landcover_sequestr
     factor_source = "Various primary literature",
     year = 2021,
     emissions_metric_tons_co2e = sequestration_potential,
+    year = as.numeric(year)
   ) %>%
   ungroup() %>%
   select(names(transportation_emissions))
+
+natural_systems_sequestration_nlcd <- readRDS("_nature/data/nlcd_county_landcover_sequestration_2001_2021.RDS") %>%
+  mutate(
+    sector = "Nature",
+    geog_level = "county",
+    geog_name = county,
+    category = "Sequestration",
+    source = stringr::str_to_sentence(str_replace_all(land_cover_type, "_", " ")),
+    data_source = "NLCD 2021",
+    factor_source = "Various primary literature",
+    emissions_metric_tons_co2e = sequestration_potential,
+    year = as.numeric(year)
+  ) %>%
+  ungroup() %>%
+  select(names(transportation_emissions))
+
 
 natural_systems_stock <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
   mutate(
@@ -157,7 +179,7 @@ emissions_all <- bind_rows(
   natural_gas_emissions,
   ww_emissions,
   solid_waste,
-  natural_systems_sequestration,
+  natural_systems_sequestration_nlcd,
   natural_systems_stock
 ) %>%
   left_join(
@@ -232,6 +254,26 @@ emissions_all <- emissions_all %>% filter(category != "Stock")
 
 mean(emissions_all$emissions_per_capita[!emissions_all$category == "Stock"])
 sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"]) / sum(cprg_county_pop$population)
+
+#### remove later
+emissions_graph <- emissions_all %>% 
+  filter(year %in% c(2005, 2021), !geog_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce")) %>% 
+  group_by(year, sector) %>% 
+  summarize(MT_CO2e = sum(emissions_metric_tons_co2e), MT_CO2e_per_capita = sum(emissions_per_capita))
+
+baseline_comparison <- ggplot(emissions_graph %>% filter(year %in% c(2005, 2021)),
+                                                     aes(x = sector, y = MT_CO2e, fill = as.factor(year))) +
+  geom_bar(stat = 'identity', position = position_dodge()) +
+  labs(fill = "Year")
+
+baseline_comparison
+
+baseline_comparison_per_capita <- ggplot(emissions_graph %>% filter(year %in% c(2005, 2021)),
+                              aes(x = sector, y = MT_CO2e_per_capita, fill = as.factor(year))) +
+  geom_bar(stat = 'identity', position = position_dodge()) +
+  labs(fill = "Year")
+
+baseline_comparison_per_capita
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
