@@ -9,7 +9,7 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 # based on the contents of MNutilities_in_scope$utility_name
 
 # NOTE: Great River Energy, which supplies energy to many MN electric co-ops,
-# reports their sales to the state and their reporting stands in for.... FILL IN
+#  reports their sales to the state and their reporting stands in for.... FILL IN
 dir_mn_electricity <- here("_energy", "data-raw", "mn_utility_reporting")
 
 # Get list of Excel files in the directory
@@ -80,15 +80,14 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
 # process and merge data -- this will be a separate data collection process spanning excel reports submitted to state
 processed_mn_elecUtil_activityData <- combined_MNelectUtil_activityData %>%
   mutate(
-    CO2_emissions = mWh_delivered * eGRID_MROW_emissionsFactor_CO2_2021,
-    CH4_emissions = mWh_delivered * eGRID_MROW_emissionsFactor_CH4_2021,
-    N2O_emissions = mWh_delivered * eGRID_MROW_emissionsFactor_N2O_2021
+    CO2_emissions = mWh_delivered * eGRID_MROW_emissionsFactor_CO2,
+    CH4_emissions = mWh_delivered * eGRID_MROW_emissionsFactor_CH4,
+    N2O_emissions = mWh_delivered * eGRID_MROW_emissionsFactor_N2O
   )
 
-MNcounty_level_electricity_emissions_2021 <- processed_mn_elecUtil_activityData %>%
+MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
   group_by(county) %>%
   summarise(
-    total_mWh = sum(mWh_delivered, na.rm = TRUE),
     total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
     total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
     total_CH4_emissions_lbs = sum(CH4_emissions, na.rm = TRUE),
@@ -113,92 +112,40 @@ MNcounty_level_electricity_emissions_2021 <- processed_mn_elecUtil_activityData 
     year = 2021
   )
 
-# add 2005 county level activity manually -- sourced from pg. 47 of the 2005 Minnesota Utility Data Book
-MNcounty_level_electricity_emissions_2005 <- data.frame(
-  county = c("Anoka", "Carver", "Chisago", "Dakota", "Hennepin", "Ramsey", "Scott", "Sherburne", "Washington"),
-  total_mWh = c(2543436, 845549, 362915, 4717100, 13350636, 5895954, 1238844, 854350, 2187214)
-) %>%
-  # calculate emissions figures -- pounds
-  mutate(
-    total_CO2_emissions_lbs = total_mWh * eGRID_MROW_emissionsFactor_CO2_2005,
-    total_CH4_emissions_lbs = total_mWh * eGRID_MROW_emissionsFactor_CH4_2005,
-    total_N2O_emissions_lbs = total_mWh * eGRID_MROW_emissionsFactor_N2O_2005
-  ) %>%
-  # calculate emissions figures -- tons
-  mutate(
-    total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
-    total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
-    total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000,
-    total_CO2e_emissions_lbs = (
-      total_CO2_emissions_lbs +
-        (total_CH4_emissions_lbs * gwp$ch4) +
-        (total_N2O_emissions_lbs * gwp$n2o)
-    )
-  ) %>%
-  mutate(
-    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
-    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
-      units::as_units("pound") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric()
-  ) %>%
-  mutate(
-    state = "MN",
-    sector = "Electricity",
-    year = 2005
-  )
-# drop activity data to align with 2021 -- maybe better to retain and add for long-term data model?
-
-MNcounty_level_electricity_emissions <- rbind(
-  MNcounty_level_electricity_emissions_2005,
-  MNcounty_level_electricity_emissions_2021
-)
 
 write_rds(processed_mn_elecUtil_activityData, here("_energy", "data", "minnesota_elecUtils_ActivityAndEmissions.RDS"))
 write_rds(MNcounty_level_electricity_emissions, here("_energy", "data", "minnesota_county_ElecEmissions.RDS"))
 
-
 # compare numbers we obtained to downscaled EIA numbers
+# read in EIA state estimate (mWh) for MN -- https://www.eia.gov/electricity/state/archive/2021/minnesota/
 
-# read in EIA state estimate (mWh) for MN
-# 2005: https://www.eia.gov/electricity/state/archive/062905.pdf
-# 2021: https://www.eia.gov/electricity/state/archive/2021/minnesota/
+EIA_MN_elecRetailEst_mWh <- 66589168
 
-EIA_MN_elecRetailEst_mWh_2005 <- 66019053
-EIA_MN_elecRetailEst_mWh_2021 <- 66589168
 
 MN_currentCounty_deliveries <- read_rds(here(
   "_energy",
   "data",
-  "minnesota_county_ElecEmissions.RDS"
+  "Minnesota_county_ElecEmissions.RDS"
 )) %>%
-  select(county_name = county, year, total_mWh, OURS_total_CO2e_emissions_lbs = total_CO2e_emissions_lbs) %>%
-  mutate(
-    year = as.character(year)
-  )
+  select(county, OURS_total_CO2e_emissions_lbs = total_CO2e_emissions_lbs)
 
 downscaleEIA_MN_electricRetail <- read_rds(here(
   "_meta",
   "data",
   "cprg_county_proportions.RDS"
 )) %>%
-  filter(STATE == 'Minnesota' &
-    (year %in% c(2005, 2021))) %>%
-  select(GEOID, year, county_name = name, county_proportion_of_state_pop) %>%
+  filter(STATE == "Minnesota" &
+    population_data_source == "Decennial Census PL 94-171 Redistricting Data Summary File") %>%
+  select(GEOID, county = name, county_proportion_of_state_pop) %>%
   mutate(
     downscaled_EIA_total_CO2e_emissions_lbs =
-      county_proportion_of_state_pop * case_when(
-        year == 2005 ~ eGRID_MROW_emissionsFactor_CO2_2005,
-        year == 2021 ~ eGRID_MROW_emissionsFactor_CO2_2021
-      ) * case_when(
-        year == 2005 ~ EIA_MN_elecRetailEst_mWh_2005,
-        year == 2021 ~ EIA_MN_elecRetailEst_mWh_2021
-      ),
+      EIA_MN_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1,
     state = "MN"
   ) %>%
   left_join(MN_currentCounty_deliveries,
-    by = join_by(county_name, year)
-  )
+    by = "county"
+  ) %>%
+  rename(county_name = county)
 
 write_rds(downscaleEIA_MN_electricRetail, here(
   "_energy",

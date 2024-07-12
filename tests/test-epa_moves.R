@@ -27,6 +27,5 @@ testthat::test_that("epa moves", {
     ) %>%
     filter(co2_co2_equivalent_test != co2_co2_equivalent) %>%
     nrow() %>%
-    # temporarily making equal to 3 -- fix during test reconciliation
-    testthat::expect_equal(3)
+    testthat::expect_equal(0)
 })
