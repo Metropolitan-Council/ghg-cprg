@@ -2,7 +2,8 @@
 source("R/_load_pkgs.R")
 
 msa_inv_raw <- readRDS("_meta/data/cprg_county_emissions.RDS") %>%
-  filter(!geog_name %in% c("Pierce", "Sherburne", "St. Croix", "Chisago"))
+  filter(!geog_name %in% c("Pierce", "Sherburne", "St. Croix", "Chisago")) %>% 
+  filter(year == 2021)
 
 sector_use_category <- tibble::tribble(
   ~sector, ~sector_use, ~source, ~source_use, ~category,
@@ -14,14 +15,20 @@ sector_use_category <- tibble::tribble(
   "Energy", "Building Fuel", "Propane", "Residential Building Fuel", "Liquid stationary fuels",
   "Energy", "Building Fuel", "Kerosene", "Residential Building Fuel", "Liquid stationary fuels",
   "Energy", "Building Fuel", "Natural gas", "Residential Building Fuel", "Residential energy",
-  "Transportation", "Transportation", "Heavy-duty vehicles", "Heavy-duty vehicles", "Commercial vehicles",
-  "Transportation", "Transportation", "Light-duty vehicles", "Light-duty vehicles", "Passenger vehicles",
-  "Transportation", "Transportation", "Medium-duty vehicles", "Medium-duty vehicles", "Commercial vehicles",
+  "Transportation", "Transportation", "Heavy-duty vehicles", "Heavy-duty vehicles", "Heavy-duty vehicles",
+  "Transportation", "Transportation", "Light-duty vehicles", "Light-duty vehicles", "Light-duty vehicles",
   "Waste", "Waste", "Landfill", "Solid waste", "Solid waste",
   "Waste", "Waste", "Organics", "Solid waste", "Solid waste",
   "Waste", "Waste", "Recycling", "Solid waste", "Solid waste",
   "Waste", "Waste", "Waste to energy", "Solid waste", "Solid waste",
   "Waste", "Waste", "Wastewater", "Wastewater", "Wastewater",
+  "Agriculture", "Agriculture", "Livestock", "Livestock", "Enteric_fermentation",
+  "Agriculture", "Agriculture", "Livestock", "Livestock", "Manure_management",
+  "Agriculture", "Agriculture", "Livestock", "Livestock", "Direct_manure_soil_emissions",
+  "Agriculture", "Agriculture", "Livestock", "Livestock", "Indirect_manure_runoff_emissions",
+  "Agriculture", "Agriculture", "Cropland", "Cropland", "Crop_residue_emissions",
+  "Agriculture", "Agriculture", "Cropland", "Cropland","Crop_fertilizer_emissions",
+  "Agriculture", "Agriculture", "Cropland", "Cropland","Runoff_fertilizer_emissions",
   "Nature", "Nature", "Grassland", "Grassland", "Sequestration",
   "Nature", "Nature", "Tree", "Tree", "Sequestration",
   "Nature", "Nature", "Urban grassland", "Urban grassland", "Sequestration",
@@ -44,7 +51,7 @@ msa_inv <- msa_inv_raw %>%
   ungroup() # Ungroup to finalize the data frame
 
 msa_total_inv <- msa_inv %>%
-  group_by(sector_use, category, source_use) %>%
+  group_by(sector_use, category) %>%
   summarise(
     emissions = sum(emissions_metric_tons_co2e),
     .groups = "keep"

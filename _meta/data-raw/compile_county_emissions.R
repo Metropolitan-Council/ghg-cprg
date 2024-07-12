@@ -9,17 +9,21 @@ cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
   select(-cprg_area)
 
 # transportation -----
-transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
+
+#sloppy shortcut
+
+transportation_emissions <- read_csv("C:\\Users\\WilfahPA\\Documents\\CPRG\\transportation_subsector_rdg.csv") %>% 
+#transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
   ungroup() %>%
   rowwise() %>%
   mutate(
     sector = "Transportation",
     geog_level = "county",
-    geog_name = zone,
-    category = paste0(stringr::str_to_sentence(vehicle_type), " vehicles"),
+    geog_name = county_name,
+    category = paste0(stringr::str_to_sentence(vehicle_weight_label), " vehicles"),
     source = paste0(vehicle_weight_label, " vehicles"),
-    data_source = "StreetLight Data",
-    factor_source = paste0("EPA MOVES (", moves_year, ")")
+    data_source = "NEI",
+    factor_source = paste0("EPA MOVES (", nei_inventory_year , ")")
   ) %>%
   select(
     year,
@@ -120,6 +124,35 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
   ) %>%
   select(names(transportation_emissions))
 
+## agriculture ----
+
+livestock_emissions <- readRDS("_agriculture/data/county_livestock_emissions_2005_2021.rds") %>% 
+  mutate(
+    sector = "Agriculture",
+    geog_level = "county",
+    geog_name = county_name,
+    category = "Livestock",
+    emissions_metric_tons_co2e = MT_co2e,
+    source = stringr::str_to_sentence(source),
+    data_source = "USDA Census",
+    factor_source = "EPA State Inventory Tool"
+  )  %>%
+  select(names(transportation_emissions))
+
+cropland_emissions <- readRDS("_agriculture/data/county_cropland_emissions_2005_2021.rds") %>% 
+  ungroup() %>% 
+  mutate(
+    sector = "Agriculture",
+    geog_level = "county",
+    geog_name = county_name,
+    category = "Cropland",
+    emissions_metric_tons_co2e = MT_co2e,
+    source = stringr::str_to_sentence(source),
+    data_source = "USDA Census",
+    factor_source = "EPA State Inventory Tool"
+  )  %>%
+  select(names(transportation_emissions))
+
 ## natural systems ----
 
 # further work to be done reconciling ESA and NLCD data
@@ -170,6 +203,8 @@ natural_systems_stock <- readRDS("_nature/data/county_landcover_sequestration_20
   ungroup() %>%
   select(names(transportation_emissions))
 
+
+
 # combine and write metadata----
 
 emissions_all <- bind_rows(
@@ -179,6 +214,8 @@ emissions_all <- bind_rows(
   natural_gas_emissions,
   ww_emissions,
   solid_waste,
+  livestock_emissions,
+  cropland_emissions,
   natural_systems_sequestration_nlcd,
   natural_systems_stock
 ) %>%
@@ -206,6 +243,14 @@ emissions_all <- bind_rows(
         "Natural gas",
         "Propane",
         "Kerosene",
+        # agriculture levels
+        "Enteric_fermentation",
+        "Manure_management",
+        "Direct_manure_soil_emissions",
+        "Indirect_manure_runoff_emissions",
+        "Crop_residue_emissions",
+        "Crop_fertilizer_emissions",
+        "Runoff_fertilizer_emissions",
         # nature levels
         "Urban grassland",
         "Urban tree",
@@ -223,10 +268,12 @@ emissions_all <- bind_rows(
         "Industrial energy",
         "Total energy",
         "Liquid stationary fuels",
-        "Passenger vehicles",
-        "Commercial vehicles",
+        "Light-duty vehicles",
+        "Heavy-duty vehicles",
         "Wastewater",
         "Solid waste",
+        "Livestock",
+        "Cropland",
         "Sequestration",
         "Stock"
       ),
@@ -248,6 +295,7 @@ emissions_all <- bind_rows(
   mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
   select(year, geog_level, geog_id, geog_name, everything())
 
+
 # splitting off carbon stock here as it is a capacity, not a rate
 carbon_stock <- emissions_all %>% filter(category == "Stock")
 emissions_all <- emissions_all %>% filter(category != "Stock")
@@ -259,7 +307,7 @@ sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"]
 emissions_rdg_90_baseline <- emissions_all %>% 
   filter(year %in% c(2005,2021), !geog_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce")) %>% 
   group_by(year, sector) %>% 
-  summarize(MT_CO2e = sum(emissions_metric_tons_co2e), MT_CO2e_per_capita = sum(emissions_per_capita))
+  summarize(MT_CO2e = sum(emissions_metric_tons_co2e))
 
 
 #### remove later
@@ -301,8 +349,8 @@ emissions_all_meta <- tibble::tribble(
 saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
 write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)
+write.csv(emissions_rdg_90_baseline, "_meta/data/baseline_emissions_rdg.csv", row.names = FALSE)
 
-county_emissions <- emissions_all
 
 saveRDS(carbon_stock, "_meta/data/cprg_county_carbon_stock.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_carbon_stock_meta.RDS")
@@ -313,3 +361,40 @@ saveRDS(emissions_all_meta, "_meta/data/cprg_county_carbon_stock_meta.RDS")
 # if (fs::dir_exists(fetch_path())) {
 #   write.csv(emissions_all, paste0(fetch_path(), "/cprg_county_emissions.CSV"), row.names = FALSE)
 # }
+
+msa_subsector_inv <- emissions_all %>% 
+  filter(year  == 2021, !geog_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce"), sector != "Nature") %>% 
+  group_by(year,geog_name,sector, category,county_total_population ) %>%
+  summarise(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  ) %>% 
+  mutate(emissions_per_capita = emissions_metric_tons_co2e / county_total_population) %>% 
+  ungroup() %>% 
+  select(-county_total_population)
+
+write.csv(msa_subsector_inv, "_meta/data/subsector_emissions_rdg.csv", row.names = FALSE)
+
+
+
+### sequestration by area
+
+cprg_area <- cprg_county %>%
+  mutate(area_sq_mi = sf::st_area(cprg_county) %>% units::set_units("mi^2") %>%
+           as.numeric()) %>% select(NAME, area_sq_mi) %>% st_drop_geometry()
+
+msa_sequestration <- left_join(emissions_all %>% 
+  filter(year  == 2021, !geog_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce"), sector == "Nature"),
+  cprg_area, 
+  by = c("geog_name" = "NAME")) %>% 
+  group_by(year,geog_name,sector, source,area_sq_mi) %>%
+  summarise(
+    sequestration_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  ) %>% 
+  mutate(sequestration_per_sq_mi = sequestration_metric_tons_co2e / area_sq_mi) %>% 
+  ungroup() %>% 
+  select(-area_sq_mi)
+  
+
+write.csv(msa_sequestration, "_meta/data/natural_systems_sequestration_rdg.csv", row.names = FALSE)
