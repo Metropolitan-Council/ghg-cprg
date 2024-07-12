@@ -11,27 +11,14 @@ if (exists("eGRID_MROW_emissionsFactor_CO2") == FALSE) {
   # which covers our study area)
   # figures in lbs./mWh
 
-  # if more years are added, refactor this into a fucntion or dedicated dataframe
-  # 2021
-  eGRID_MROW_emissionsFactor_CO2_2021 <- mrow_factors %>%
-    filter(emission == "lb CO2" & year == 2021) %>%
+  eGRID_MROW_emissionsFactor_CO2 <- mrow_factors %>%
+    filter(emission == "lb CO2") %>%
     magrittr::extract2("value")
-  eGRID_MROW_emissionsFactor_CH4_2021 <- mrow_factors %>%
-    filter(emission == "lb CH4" & year == 2021) %>%
+  eGRID_MROW_emissionsFactor_CH4 <- mrow_factors %>%
+    filter(emission == "lb CH4") %>%
     magrittr::extract2("value")
-  eGRID_MROW_emissionsFactor_N2O_2021 <- mrow_factors %>%
-    filter(emission == "lb N2O" & year == 2021) %>%
-    magrittr::extract2("value")
-
-  # 2005
-  eGRID_MROW_emissionsFactor_CO2_2005 <- mrow_factors %>%
-    filter(emission == "lb CO2" & year == 2005) %>%
-    magrittr::extract2("value")
-  eGRID_MROW_emissionsFactor_CH4_2005 <- mrow_factors %>%
-    filter(emission == "lb CH4" & year == 2005) %>%
-    magrittr::extract2("value")
-  eGRID_MROW_emissionsFactor_N2O_2005 <- mrow_factors %>%
-    filter(emission == "lb N2O" & year == 2005) %>%
+  eGRID_MROW_emissionsFactor_N2O <- mrow_factors %>%
+    filter(emission == "lb N2O") %>%
     magrittr::extract2("value")
 
   # Natural Gas emissions factor from https://www.epa.gov/system/files/documents/2023-04/emission-factors_sept2021.pdf

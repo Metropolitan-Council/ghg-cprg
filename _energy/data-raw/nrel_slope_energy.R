@@ -46,15 +46,15 @@ nrel_emissions <- bind_rows(
       # convert mmbtu to Mwh
       consumption_mwh = consumption_mm_btu * mmbtu_to_mwh,
       # apply emission factor and convert to metric tons
-      co2 = (consumption_mwh * eGRID_MROW_emissionsFactor_CO2_2021) %>%
+      co2 = (consumption_mwh * eGRID_MROW_emissionsFactor_CO2) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      ch4 = (consumption_mwh * eGRID_MROW_emissionsFactor_CH4_2021) %>%
+      ch4 = (consumption_mwh * eGRID_MROW_emissionsFactor_CH4) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      n2o = (consumption_mwh * eGRID_MROW_emissionsFactor_N2O_2021) %>%
+      n2o = (consumption_mwh * eGRID_MROW_emissionsFactor_N2O) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
