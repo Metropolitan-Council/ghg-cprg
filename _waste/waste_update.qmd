@@ -36,105 +36,70 @@ hookaddcap()
 
 This is an in-progress document to work on documentation and data exploration for the update of the inventory without interfering with previous documentation.
 
-## Documentation
+## Methods
 
-**The gist**: We're switching from emissions factors as listed on the EPA Emissions Factors Hub to the IPCC/GHG Protocol methane commitment model to ensure that the inventory is aligned with best practices. Most major inventories use the IPCC's First Order Decay model, which is what the EPA and WI use, but that requires a more complex model and longer timeseries data. The IPCC accepts the methane commitment model as an alternative for inventories with limited data where waste is not a major sector. Given our time constraints and the focus of the project, a simpler model is the better choice. This does also mean that incineration and compost emissions will be calculated separately, using similar models. Recycling emissions will not be calculated, as all emissions from the recycling process should already be included in the energy section of the inventory.
+The previous iteration of this inventory calculated solid waste emissions by multiplying activity totals by emissions factors from the EPA's Emissions Factor Hub. This update instead uses methodologies recommended by the Intergovernmental Panel on Climate Change.
 
 ### Landfill
 
-CH4 emissions (tonnes) = \[(MSWx • L0 ) – R\] • (1 – OX)
+The IPCC suggests two alternatives for calculating landfill emissions, a first order decay model and a methane commitment model. The first order decay model is often used for larger-scale inventories, such as the US Federal Inventory, and requires waste data going back to 1950. Given the data available and the scope of this inventory, we chose to instead use the simpler methane commitment model to calculate county-level emissions for Minnesota.
 
-L0 = MCF × DOC × DOCf × F × 16/12
+The methane commitment model calculates methane emissions from landfills for a given year by multiplying municipal solid waste totals by a methane generation potential and adjusting for methane recovery and oxidation,
 
-Factors and sources:
+$$Emissions_{CH_4} = [(MSW \times L_0 ) – rec] \times (1 – OX) $$
 
--   MSWx (MSW in given year): SCORE report (tonnes)
+where MSW is the municipal solid waste disposed of in landfills (in metric tons), from MPCA SCORE data; rec is the amount of methane recovered by flaring or landfill gas to energy programs, also in metric tons, from the EPA's State Inventory Tools, and OX is the oxidation factor, assumed to be 0.1 in line with IPCC default values. \[REWRITE FOR CLARITY AND EXPLANATION OF RECOVERY CALCULATIONS\]
 
--   MCF (methane correction factor): 0.5 - default value given by IPCC for managed, semi-aerobic landfills
+$L_0$ is a methane generation potential calculated as follows:
 
--   DOC (degradable organic carbon): calculated based on waste makeup (tonnes C/tonnes waste)
+$$L_0 = MCF × DOC_f × F × 16/12 \times DOC$$ where
 
--   Waste makeup data from MPCA [2013 Statewide Waste Characterization - Final Report](https://www.pca.state.mn.us/sites/default/files/w-sw1-60.pdf)
-
--   Note: using more detailed breakdown from report, not this table
-
--   2000 data is also available (as seen) but for now we're just using 2013
-
--   DOC = ( 0.4 • paper/textiles) + ( 0.17 • non-food organics) + ( 0.15 • food waste) + ( 0.3 • wood/straw)
-
-= DOC_f (fraction of DOC degraded): 0.6 - default value given by GHG Protocol, consistent with IPCC
-
--   F (fraction of methane in landfill gas): 0.5 - default value given by IPCC (range can vary between 0.4 and 0.6)
-
--   R (total recovered methane): from EPA Solid Waste State Inventory Tool (metric tonnes)
-
--   OX (oxidation factor): 01 – default value given by IPCC for well-managed landfills
-
-NOTE: methane flaring and landfill gas to energy should be counted under recovered methane. Unclear whether SCORE-counted Waste to Energy is actually all waste to energy or if it is incineration- either way, it will be in the incineration section. Flaring and LFGTE will be incorporated here.
+-   $MCF$ = methane commitment factor. Assigned IPCC default of 0.5 for managed, semi-aerobic landfills.
+-   $DOC_f$ = fraction of degradable organic carbon degraded. Assigned IPCC default of 0.6.
+-   $F$ = fraction of methane in landfill gas. Assigned IPCC default of 0.5.
+-   $16/12$ = ??
+-   $DOC$ = degradable organic carbon. Calculated based on local waste makeup data from MPCA's [2013 Statewide Waste Characterization study](https://www.pca.state.mn.us/sites/default/files/w-sw1-60.pdf), using the equation $DOC = ( 0.4 \times \text{paper/textiles}) + ( 0.17 \times \text{non-food organics}) + ( 0.15 \times \text{food waste}) + ( 0.3 \times \text{wood/straw})$.
 
 ### Compost
 
-Compost emissions factors are different for aerobic and anaerobic digesters. According to [Sustainable materials management and solid waste policy report (state.mn.us)](#0)(36), only one anaerobic digester (at a wastewater treatment facility) in MN is accepting food waste, so for all past emissions we will set aerobic composting equal to 100% of waste and anaerobic to 0%.
+Compost produces both methane and nitrous oxide. Emissions are calculated by multiplying waste activity totals by emissions factors divided between aerobic and anaerobic digesters. Since Minnesota only has one anaerobic digester, we assumed 0% anaerobic digestion in the inventory area (source).
 
-Composting also produces both CH4 and N2O, which should be calculated separately.
+$$Emissions_{CH_4} = MSW_{compost} \times 10 \times 10^{-3}$$
 
-CH4 emissions (tonnes) = (M_com × EF_com + M_ad × EF_ad) x 10\^(-3) - R
+$$Emissions_{N_2O} = MSW_{compost} \times 0.6 \times 10^{-3}$$
 
-N2O emissions (tonnes) = M_com × EFN_com x 10\^-3
-
-Factors and sources:
-
--   M_com (mass of organic waste composted): SCORE report (100% of organics) (tonnes)
-
--   EF_com (composting emissions factor for CH4): 10 - default given by IPCC for dry weight (g CH4/kg waste)
-
--   M_ad (mass of organic waste processed anaerobically): 0
-
--   EF_ad (anaerobic digestion emissions factor for CH4): 2 - default given by IPCC for dry weight (g CH4/kg waste)
-
--   R (methane recovered from anaerobic digestion): 0
-
--   EFN_com (composting emissions factor for N2O): 0.6 - default given by IPCC for dry weight (g N2O/kg waste)
-
--   N2O emissions from anaerobic digestion assumed negligible
-
-The MPCA is currently contracting a study on the impacts of composting vs AD (see previous source). This may indicate future investment in AD, which may be worth modeling as an emissions reduction strategy for future projections.
+The emissions factors of 10 and 0.6 come from IPCC default values.
 
 ### Incineration
 
-Since incineration data is reported to SCORE as Waste to Energy, it is assumed that all incineration in the MSA is considered Waste to Energy. Thus, although incineration emissions are calculated in the waste section, they should be reported in the energy sector.
+Since incineration data is reported to SCORE as Waste to Energy, it is assumed that all incineration in the MSA is considered Waste to Energy. 
 
-Incineration of waste produces CH4, CO2, and N2O emissions. However, as per IPCC guidelines, CH4 emissions from incineration should be considered negligible (in contradiction with GHG Protocol recommendation). Also as per IPCC guidelines, given that MPCA does not have data on non-MSW waste incineration and waste is not a key source category, we will assume all waste is MSW and estimate emissions using default data.
+Incineration of waste produces CH~4~, CO~2~, and N~2~O emissions. However, the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories reports negligible CH~4~ emissions for continuous incineration facilities. [CHECK IF WE USE STOKERS OR FLUIDIZED BEDS - STOKER EF ~0.2]
 
-CO2 emissions (tonnes) = (MSWi × Ei + MSWob × Eob) × FCC× FFC × 44/12
+$$Emissions_{CO_2} = (MSW_{incinerated} \times E_i + MSW_{onsite} \times E_o) \times FCC
+\times FFC \times 44/12$$
 
-N2O emissions (tonnes) = (MSWi × EFi + MSWob × EFob) 10\^(-6)
+$$Emissions_{N_2O} = MSW_{incinerated} \times EF_{N_2O} \times 10^{-6}$$
 
-Factors and sources:
+where:
 
--   MSWi: SCORE report Waste to Energy (tonnes)
+-   $MSW_{incinerated}$ = municipal solid waste incinerated, as reported by SCORE
 
--   Ei (efficiency of combustion for incineration, as a fraction): 95% - IPCC default (range 95-99%) (note GHG Protocol default 100%)
+-   $E_i$ = efficiency of combustion for incineration. Assigned IPCC default of 95%.
 
--   MSWob: SCORE report Onsite (tonnes)
+-   $MSW_{onsite}$ = municipal solid waste burned onsite, as reported by SCORE
 
--   Eob (efficiency of combustion for onsite burning, as a fraction): 71% - GHG Protocol default
+-   $E_o$ = efficiency of combustion for onsite burning. Assigned Greenhouse Gas Protocol default of 71%.
 
--   FCC (fraction of carbon content in MSW): 40% - IPCC default wet weight (range 33-50%)
+-   $FCC$ = fraction of carbon content in MSW. Assigned IPCC default of 40%.
 
--   FFC (fraction of fossil carbon in MSW): 40% - IPCC default (range 30-50%)
+-   $FFC$ = fraction of fossil carbon in MSW. Assigned IPCC default of 40%.
 
--   EFn (aggregate N2O emission factor for MSW): 50 g N2O/ tonnes waste – GHG Protocol default for continuous and semi-continuous incinerators (wet weight)
+-   $EF_{N_2O}$ = aggregate N~2~O emission factor for MSW. Assigned GHG Protocol default of 50 g N~2~O/ tonnes waste for continuous and semi-continuous incinerators.
 
 ### Misc
 
-Note: "The MPCA will be completing a resource management report in the next two years that is due to the Legislature on July 15, 2025. The report will include data summarizing current and future trends for waste generation, waste prevention, reuse, recycling, and disposal."
-
-Each of the seven counties in the Metro Area must recycle a minimum of 75% (by weight) of total MSW they generate by 2030.
-
-Note onsite disposal = unmanaged burning
-
-**Note:** SCORE data is reported in short tons and must be converted to tonnes, or metric tons. All SCORE data is dry weight, as short tons are a unit of mass. No, I don't know what to do when calculations require wet weight.
+note lack of industry data
 
 ## Graphing
 
