@@ -44,11 +44,11 @@ The previous iteration of this inventory calculated solid waste emissions by mul
 
 The IPCC suggests two alternatives for calculating landfill emissions, a first order decay model and a methane commitment model. The first order decay model is often used for larger-scale inventories, such as the US Federal Inventory, and requires waste data going back to 1950. Given the data available and the scope of this inventory, we chose to instead use the simpler methane commitment model to calculate county-level emissions for Minnesota.
 
-The methane commitment model calculates methane emissions from landfills for a given year by multiplying municipal solid waste totals by a methane generation potential and adjusting for methane recovery and oxidation,
+The methane commitment model calculates methane emissions from landfills for a given year by multiplying municipal solid waste totals by a methane generation potential and adjusting for oxidation,
 
-$$Emissions_{CH_4} = [(MSW \times L_0 ) – rec] \times (1 – OX) $$
+$$Emissions_{CH_4} = (MSW \times L_0 ) \times (1 – ox) $$
 
-where MSW is the municipal solid waste disposed of in landfills (in metric tons), from MPCA SCORE data; rec is the amount of methane recovered by flaring or landfill gas to energy programs, also in metric tons, from the EPA's State Inventory Tools, and OX is the oxidation factor, assumed to be 0.1 in line with IPCC default values. \[REWRITE FOR CLARITY AND EXPLANATION OF RECOVERY CALCULATIONS\]
+[basically, here is also where you would incorporate methane recovered, BUT I DON'T TRUST THOSE NUMBERS]
 
 $L_0$ is a methane generation potential calculated as follows:
 
@@ -72,9 +72,9 @@ The emissions factors of 10 and 0.6 come from IPCC default values.
 
 ### Incineration
 
-Since incineration data is reported to SCORE as Waste to Energy, it is assumed that all incineration in the MSA is considered Waste to Energy. 
+Since incineration data is reported to SCORE as Waste to Energy, it is assumed that all incineration in the MSA is considered Waste to Energy.
 
-Incineration of waste produces CH~4~, CO~2~, and N~2~O emissions. However, the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories reports negligible CH~4~ emissions for continuous incineration facilities. [CHECK IF WE USE STOKERS OR FLUIDIZED BEDS - STOKER EF ~0.2]
+Incineration of waste produces CH~4~, CO~2~, and N~2~O emissions. However, the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories reports negligible CH~4~ emissions for continuous incineration facilities. \[CHECK IF WE USE STOKERS OR FLUIDIZED BEDS - STOKER EF \~0.2\]
 
 $$Emissions_{CO_2} = (MSW_{incinerated} \times E_i + MSW_{onsite} \times E_o) \times FCC
 \times FFC \times 44/12$$
@@ -83,11 +83,11 @@ $$Emissions_{N_2O} = MSW_{incinerated} \times EF_{N_2O} \times 10^{-6}$$
 
 where:
 
--   $MSW_{incinerated}$ = municipal solid waste incinerated, as reported by SCORE
+-   $MSW_{incinerated}$ = municipal solid waste incinerated, as reported by SCORE.
 
 -   $E_i$ = efficiency of combustion for incineration. Assigned IPCC default of 95%.
 
--   $MSW_{onsite}$ = municipal solid waste burned onsite, as reported by SCORE
+-   $MSW_{onsite}$ = municipal solid waste burned onsite, as reported by SCORE.
 
 -   $E_o$ = efficiency of combustion for onsite burning. Assigned Greenhouse Gas Protocol default of 71%.
 
@@ -99,11 +99,13 @@ where:
 
 ### Misc
 
-note lack of industry data
+note lack of industry data 
+
+no recycling emissions calculated because they are accounted for in energy
 
 ## Graphing
 
-Timeseries of categories over time, across the whole MN area. FOR REVIEWER: Should this be filtered to the 7-county region for RDG purposes?
+Timeseries of categories over time, across the whole MN area.
 
 ```{r fig-sw-timeseries}
 #| fig-cap: "Solid waste changes over time, 9-county MN region"

@@ -61,8 +61,7 @@ landfill_data <- score_data %>%
 
 # rec not included for this version; using emissions = (Tons * l_0) * (1-ox)
 landfill_emissions <- landfill_data %>%
-  filter(Year %in% c(2005, 2021)) %>%
-  # left_join(methane_recovery_mn, by = join_by(County, Year)) %>%
+  # left_join(methane_recovery_mn, by = join_by(County, Year, Method)) %>%
   mutate(
     total_ch4 = (`Metric Tons` * l_0) * (1 - ox)
   ) %>%
