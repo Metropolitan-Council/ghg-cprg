@@ -307,7 +307,12 @@ sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"]
 emissions_rdg_90_baseline <- emissions_all %>% 
   filter(year %in% c(2005,2021), !geog_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce")) %>% 
   group_by(year, sector) %>% 
-  summarize(MT_CO2e = sum(emissions_metric_tons_co2e))
+  summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
+  left_join(., cprg_county_pop %>% group_by(population_year) %>% summarize(population = sum(population)),
+            by = c('year' = 'population_year')
+            ) %>% 
+  mutate(emissions_per_capita = MT_CO2e / population) %>%
+  mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building Fuel", "Waste", "Agriculture", "Nature")))
 
 
 #### remove later
@@ -317,14 +322,71 @@ baseline_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2
   geom_bar(stat = 'identity', position = position_dodge()) +
   labs(fill = "Year")
 
+# Define custom colors for sectors and tones for years
+sector_colors <- c("Electricity" = "#1f77b4", 
+                   "Transportation" = "#8c564b", 
+                   "Building Fuel" = "#9467bd", 
+                   "Waste" = "#d62728", 
+                   "Agriculture" = "#ff7f0e", 
+                   "Nature" = "#2ca02c")
+
+# Function to lighten colors for different years
+lighten <- function(color, factor=1.4){
+  col <- col2rgb(color)
+  col <- col + (255 - col) * (factor - 1)
+  col[col > 255] <- 255
+  rgb(col[1], col[2], col[3], maxColorValue=255)
+}
+
+# Custom palette for years
+custom_palette <- c(
+  "Electricity.2005" = lighten(sector_colors["Electricity"], 1.4),
+  "Electricity.2021" = unname(sector_colors["Electricity"]),
+  "Transportation.2005" = lighten(sector_colors["Transportation"], 1.4),
+  "Transportation.2021" = unname(sector_colors["Transportation"]),
+  "Building Fuel.2005" = lighten(sector_colors["Building Fuel"], 1.4),
+  "Building Fuel.2021" = unname(sector_colors["Building Fuel"]),
+  "Waste.2005" = lighten(sector_colors["Waste"], 1.4),
+  "Waste.2021" = unname(sector_colors["Waste"]),
+  "Agriculture.2005" = lighten(sector_colors["Agriculture"], 1.4),
+  "Agriculture.2021" = unname(sector_colors["Agriculture"]),
+  "Nature.2005" = lighten(sector_colors["Nature"], 1.4),
+  "Nature.2021" = unname(sector_colors["Nature"])
+)
+
+emissions_rdg_90_baseline <- emissions_rdg_90_baseline %>%
+  mutate(sector_year = interaction(sector, as.factor(year), sep = "."))
+
+# Plot with custom settings
+baseline_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2005, 2021)),
+                              aes(x = sector, y = MT_CO2e, fill = sector_year)) +
+  geom_bar(stat = 'identity', position = position_dodge()) +
+  labs(fill = "Sector and Year") +
+  scale_fill_manual(values = custom_palette) +
+  theme_minimal()
+
+
 baseline_comparison
 
-baseline_comparison_per_capita <- ggplot(emissions_graph %>% filter(year %in% c(2005, 2021)),
-                              aes(x = sector, y = MT_CO2e_per_capita, fill = as.factor(year))) +
+baseline_comparison_per_capita <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2005, 2021)),
+                              aes(x = sector, y = emissions_per_capita, fill = as.factor(year))) +
   geom_bar(stat = 'identity', position = position_dodge()) +
   labs(fill = "Year")
 
 baseline_comparison_per_capita
+
+
+#quick calcs
+emissions_rdg_90_baseline %>% filter(year == 2021, sector == "Transportation") %>% pull(MT_CO2e) %>% sum() /
+  emissions_rdg_90_baseline %>% filter(year == 2005, sector != "Nature") %>% pull(MT_CO2e) %>% sum()
+
+emissions_rdg_90_baseline %>% filter(year == 2021, sector == "Waste") %>% pull(MT_CO2e) %>% sum() /
+  emissions_rdg_90_baseline %>% filter(year == 2005, sector != "Nature") %>% pull(MT_CO2e) %>% sum()
+
+emissions_rdg_90_baseline %>% filter(year == 2021, sector == "Nature") %>% pull(MT_CO2e) %>% sum() /
+  emissions_rdg_90_baseline %>% filter(year == 2005, sector != "Nature") %>% pull(MT_CO2e) %>% sum()
+
+
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
@@ -375,6 +437,9 @@ msa_subsector_inv <- emissions_all %>%
 
 write.csv(msa_subsector_inv, "_meta/data/subsector_emissions_rdg.csv", row.names = FALSE)
 
+msa_subsector_inv %>% filter(year == 2021, sector == "Transportation", category == "Light-duty vehicles") %>% pull(emissions_metric_tons_co2e) %>% sum() / 
+msa_subsector_inv %>% filter(year == 2021, sector == "Transportation") %>% pull(emissions_metric_tons_co2e) %>% sum() 
+
 
 
 ### sequestration by area
@@ -396,5 +461,22 @@ msa_sequestration <- left_join(emissions_all %>%
   ungroup() %>% 
   select(-area_sq_mi)
   
+county_seq <- ggplot(
+  msa_sequestration,
+  aes(x = geog_name, y = sequestration_per_sq_mi / 1000000, fill = source)
+) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = color_palette_vector) +
+  theme_bw() +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.45, size = 14),
+    axis.title.y = element_text(size = 16)
+  ) +
+  ylab("Millions of metric tons of CO2e") +
+  xlab("") +
+  labs(fill = "Subsector")
+
 
 write.csv(msa_sequestration, "_meta/data/natural_systems_sequestration_rdg.csv", row.names = FALSE)
