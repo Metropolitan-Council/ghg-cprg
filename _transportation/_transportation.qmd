@@ -176,6 +176,23 @@ fig_emissions_pop_transportation
 
 ### Comparison with other inventories
 
+### Activity-induced and geographic calculation approaches
+
+Different allocation principle
+
+Though both geographic and activity-induced methods fulfill Scope 1 requirements [@fongGlobalProtocolCommunityScale2021], the resulting values are significantly different.
+
+Activity-induced methods (as we have used here) estimate the emissions from trips that begin, end, or are entirely contained within a given city. All passthrough trips (those that neither begin or end in the city, but pass through without stopping) are excluded. 
+
+Territorial or geographic methods represent "all traffic occurring within city boundaries, regardless of origin or destination" [@fongGlobalProtocolCommunityScale2021]. 
+
+The GPC recommends the induced activity method for cities, as it provides results more suited to local policy making. 
+
+However, the Twin Cities metropolitan area includes over 250 individual jurisdictions, with cities ranging from over 400,000 people to under 500 people. The entirety of the 11-county CPRG study area is larger than some US states. 
+
+
+The origin-destination activity method is used in regional PCAPs, including metro areas such as Santa Clara MSA [@countyofsanbenitoCountySanBenito2024], 
+
 #### National Emissions Inventory 
 
 The National Emissions Inventory (NEI) is a comprehensive and detailed estimate of air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants from air emissions sources. The county-level GHG emissions included in the NEI for this category are calculated by running the MOVES model with State-, Local-, and Tribal-submitted activity data and EPA-developed activity inputs based on data from FHWA and other sources [@usepa2020NationalEmissions2023]. 
@@ -186,6 +203,7 @@ NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and pr
 epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei.RDS"))
 
 nei_emissions_all <- epa_nei %>%
+  filter(nei_inventory_year == 2020) %>%
   group_by(zone = county_name) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
@@ -194,8 +212,56 @@ nei_emissions_all <- epa_nei %>%
 
 We expect that the NEI data will show higher emissions, because it is based on overall activity, not explicit origin-destination travel. 
 
+```{r fig-emissions-council-nei}
+#| fig-cap: "Council county emissions estimate correlation with NEI estimate"
+#| out-width: "95%"
+
+nei_cprg_combine <- left_join(
+  vmt_emissions_all %>%
+    mutate(cprg_emissions = emissions_metric_tons_co2e) %>%
+    select(-emissions_metric_tons_co2e),
+  nei_emissions_all %>%
+    mutate(nei_emissions = emissions_metric_tons_co2e) %>%
+    select(-emissions_metric_tons_co2e)
+)
+
+fig_nei_council_emissions <- plot_ly(
+  data = nei_cprg_combine,
+  source = "fig-nei-council-emissions",
+  x = ~nei_emissions,
+  y = ~cprg_emissions,
+  type = "scatter",
+  mode = "markers",
+  hovertemplate = ~ paste0(
+    zone, " County", "<br>",
+    "NEI estimate: ", round(nei_emissions * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "Met Council estimate: ", round(cprg_emissions * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue,
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "Calculated county emissions correlation with NEI emissions",
+    # subtitle = "2021 ACS 5-year population estimates. Strong positive correlation",
+    x_title = "NEI estimate (metric tons CO<sub>2</sub>e)",
+    y_title = "Met Council estimate (metric tons CO<sub>2</sub>e)",
+    legend_title = "",
+    legend = list(orientation = "h")
+  )
+
+fig_nei_council_emissions
+```
+
+
 ```{r fig-activity-vs-nei}
-#| fig-cap: "County estimated emissions, NEI and calculated "
+#| fig-cap: "County estimated emissions, NEI and calculated"
 #| out-width: "95%"
 
 fig_activity_vs_nei <- plot_ly(
@@ -249,7 +315,10 @@ fig_activity_vs_nei <- plot_ly(
 fig_activity_vs_nei
 ```
 
-#### Local Greenhouse Gas Inventory Tool (LGGIT)
+
+
+
+#### Local Greenhouse Gas Inventory Tool (LGGIT) {#sec-epa-lggit-transportation}
 
 EPA’s Local Greenhouse Gas Inventory Tool (LGGIT) was developed to help communities across the United States to evaluate their greenhouse gas emissions. We used the LGGIT to validate our calculations and datasets [@usepaLocalGreenhouseGas2017].
 
@@ -297,7 +366,7 @@ lggit_totals <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lg
 lggit_total_emiss <- (lggit_totals$total %>% sum()) %>% scales::comma()
 ```
 
-The results from the LGGIT tool estimate a regional emissions total of **`r lggit_total_emiss` metric tons CO~2~e**, while our calculations estimate **`r cprg_total_emiss` metric tons CO~2~e**. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. See @sec-epa-moves for a more detailed comparison.
+The results from the LGGIT tool estimate a regional emissions total of **`r lggit_total_emiss` metric tons CO~2~e**, while our calculations estimate **`r cprg_total_emiss` metric tons CO~2~e**. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. Additionally, LGGIT uses global warming potential (GWP) values from the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5) [@ipccClimateChange2014], while our calculations use slightly higher values from the 6th Assessment Report (AR6) [@ipccAR62021]. See @sec-epa-moves for a more detailed comparison.
 
 
 ```{r echo=FALSE}

@@ -71,8 +71,8 @@ mn_2021 <- cprg_county_proportions %>%
 
 # bind WI and MN
 ww_epa_2021 <- rows_append(
-  wi_2021 %>% dplyr::select(GEOID, NAME, epa_co2e),
-  mn_2021 %>% dplyr::select(GEOID, NAME, epa_co2e)
+  wi_2021 %>% dplyr::select(GEOID, NAME = name, epa_co2e),
+  mn_2021 %>% dplyr::select(GEOID, NAME = name, epa_co2e)
 )
 
 # and save

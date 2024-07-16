@@ -7,9 +7,19 @@
 *_cache
 .DS_Store
 
+**/desktop.ini
+
 _transportation/report_transportation_files/figure-html/
+
+_waste/data-raw/tabula-waste-characterization-table.csv
+
 _waste/data-raw/score_summary.csv
+
 _waste/data-raw/ghg-emission-factors-hub-2021.xlsx
+
+_waste/data-raw/solid_waste_flaring.xlsx
+
+_waste/data-raw/solid_waste_lfgte.xlsx
 
 R/WI_Cities%2C_Towns_and_Villages_(July_2023)/
 
@@ -327,6 +337,18 @@ _nature/data-raw/land_cover_stock.csv
 site_libs/
 _nature/_natural_systems_files/*
 
+_energy/data-raw/nhgis_blk2000_blk2010_MN/
+
+_energy/data-raw/nhgis_blk2000_blk2010_WI/
+
+_energy/data-raw/EIA861
+
+_energy/data-raw/libraryDocs_2005
+
+_meta/data-raw/nrel_slope/scenario_planner/
+
+_meta/data-raw/nrel_slope/scenario_planner.zip
+
 _meta/data-raw/nrel_slope_emissions/scenario_planner/
 
 _meta/data-raw/nrel_slope_emissions/
@@ -336,13 +358,35 @@ _meta/data-raw/nrel_slope/scenario_planner/
 _meta/data-raw/nrel_slope/emissions/
 
 _meta/data-raw/nrel_slope/scenario_planner.zip
-_energy/data-raw/nhgis_blk2000_blk2010_MN/co-est00int-01-27.csv
-_energy/data-raw/nhgis_blk2000_blk2010_WI/co-est00int-01-55.csv
-_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.cpg
-_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.dbf
-_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.prj
-_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.sbn
-_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.sbx
-_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.shp
-_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.shp.xml
-_nature/data-raw/DBO_RPTAdministrativeBoundaryDraft.shx
+
+_transportation/data-raw/ghg_protocol/Emission_Factors_for_Cross_Sector_Tools_V2.0_0.xlsx
+
+_transportation/data-raw/ghg_protocol/ghg-uncertainty.xlsx
+
+_energy/data-raw/egrid_historical_files_1996-2016
+
+_energy/data-raw/geoCrosswalk
+_agriculture/data-raw/manure-ch4.csv
+_agriculture/data-raw/enteric-fermentation.csv
+_agriculture/data-raw/manure-n2o.csv
+_agriculture/data-raw/mn-feedlots.csv
+_agriculture/data-raw/ag_constants.csv
+_agriculture/data-raw/ag_control.csv
+_agriculture/data-raw/ag_fertilizer.csv
+_agriculture/data-raw/ag_residual_burning_ch4.csv
+_agriculture/data-raw/ag_residual_burning_n2o.csv
+_agriculture/data-raw/ag_soils_fertilizer.csv
+_agriculture/data-raw/ag_soils_fertilizer_production.csv
+_agriculture/data-raw/ag_soils_liming.csv
+_agriculture/data-raw/ag_soils_manure.csv
+_agriculture/data-raw/ag_soils_residuals.csv
+_agriculture/data-raw/ag_manure_management.csv
+_agriculture/data-raw/ag_nex.csv
+
+_meta/data-raw/population/co-est00int-01-27.xls
+
+_meta/data-raw/population/co-est00int-01-55.xls
+
+_meta/data-raw/population/
+
+_transportation/data-raw/epa/nei_pre_2008/

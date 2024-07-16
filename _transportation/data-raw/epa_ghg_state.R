@@ -2,6 +2,7 @@
 # https://www.epa.gov/ghgemissions/state-ghg-emissions-and-removals
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+source("R/global_warming_potential.R")
 
 
 # ipcc sectors -----
@@ -10,18 +11,36 @@ ipcc_sectors <- readxl::read_xlsx("_transportation/data-raw/epa/state_ghg/allsta
 ) %>%
   clean_names()
 
+ipcc_sector_category <- ipcc_sectors %>%
+  select(
+    sector, subsector, category, subcategory1, subcategory2,
+    subcategory3, subcategory4
+  ) %>%
+  unique()
 
 ipcc <- ipcc_sectors %>%
   filter(
-    state %in% c("MN", "WI"),
-    category == "Transportation"
+    state %in% c("MN", "WI")
+    # category == "Transportation"
   ) %>%
   pivot_longer(starts_with("y"),
     names_to = "year",
     values_to = "value"
   ) %>%
   # reported in millions of metric tons
-  mutate(emissions_metric_tons_co2e = value * 1000000)
+  mutate(ghg_equiv = value * 1000000) %>% # this value is CO2e according to documentation
+  # select(-subcategory2, -subcategory3, -subcategory4) %>%
+  mutate(
+    inventory_year = stringr::str_remove(year, "y")
+  )
+
+
+ipcc %>%
+  group_by(
+    inventory_year, state, sector, category, subsector, subcategory1, subcategory2,
+    subcategory3, subcategory4, fuel
+  ) %>%
+  summarize(emissions_metric_tons_co2e = sum(ghg_equiv))
 
 
 # economic sectors -----
@@ -38,4 +57,4 @@ econ <- econ_sectors %>%
   ) %>%
   filter(econ_sector == "Transportation") %>%
   # reported in millions of metric tons
-  mutate(emissions_metric_tons_co2e = value * 1000000)
+  mutate(emissions_metric_tons = value * 1000000)

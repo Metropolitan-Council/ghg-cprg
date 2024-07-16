@@ -39,8 +39,10 @@ city_emissions <- raw_city_emissions %>%
       stringr::str_remove(" village, WI")
   ) %>%
   # filter to our states, our cities
-  filter(state_name %in% c("MN", "WI"),
-         city %in% cprg_city$CTU_NAME)
+  filter(
+    state_name %in% c("MN", "WI"),
+    city %in% cprg_city$CTU_NAME
+  )
 
 
 city_emissions

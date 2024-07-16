@@ -8,7 +8,7 @@ testthat::test_that("EPA wastewater", {
   # double check manual calculation
   cprg_county_proportions %>%
     filter(year == 2021) %>%
-    select(STATE, NAME, county_proportion_of_state_pop) %>%
+    select(STATE, NAME = name, county_proportion_of_state_pop) %>%
     left_join(epa_state_wastewater_by_year %>%
       filter(Year == 2021) %>%
       group_by(STATE) %>%

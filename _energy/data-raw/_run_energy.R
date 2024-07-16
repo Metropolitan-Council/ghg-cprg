@@ -49,11 +49,12 @@ electric_natgas_nrel_proportioned <- electric_raw %>%
     industrial = industrial * emissions_metric_tons_co2e,
     residential = residential * emissions_metric_tons_co2e
   ) %>%
-  select(-emissions_metric_tons_co2e) %>%
-  pivot_longer(4:6,
+  rename(total = emissions_metric_tons_co2e) %>%
+  pivot_longer(4:7,
     names_to = "category",
     values_to = "emissions_metric_tons_co2e"
   ) %>%
   mutate(category = str_to_sentence(category))
 
+waldo::compare(electric_natgas_nrel_proportioned, readRDS("_energy/data/electric_natgas_nrel_proportioned.RDS"))
 saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_proportioned.RDS")
