@@ -1,5 +1,6 @@
 # compile territorial, historical emissions for the 7-county metro
 source("R/_load_pkgs.R")
+library(imputeTS)
 # read in pre-processed proportions
 dot_vmt_county_proportions <- readRDS("_transportation/data/dot_vmt_county_proportions.RDS")
 cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
@@ -17,13 +18,15 @@ county_vmt_pop_emissions <- cprg_county_proportions %>%
   left_join(epa_nei_county_proportions %>% 
               mutate(nei_inventory_year = as.character(nei_inventory_year)),
             by = c("year" = "nei_inventory_year",
-                   "GEOID",
+                   # "GEOID",
                    "name" = "county_name",
                    "STATE" = "state_name")) %>% 
   mutate(
+    GEOID = GEOID.x,
     vmt_per_capita = annual_vmt/county_population,
     emissions_per_capita = county_emissions_metric_tons_co2e/county_population
-  )
+  ) %>% 
+  select(-GEOID.y)
 
 
 county_prop_long <- county_vmt_pop_emissions %>% 
@@ -39,10 +42,6 @@ county_prop_long <- county_vmt_pop_emissions %>%
   ))
 
 
-
-
-
-cor(county_vmt_pop_emissions)
 
 
 
@@ -67,27 +66,21 @@ county_vmt_pop_emissions %>%
     color = ~name
   )
 
-lm1 <- lm(county_emissions_metric_tons_co2e
-          ~  year + county_population + annual_vmt, data = county_vmt_pop_emissions)
-
-summary(lm1)
-ggplot(data = county_vmt_pop_emissions) +
-  aes(x = year,
-      y = emissions_per_capita,
-      color = name,
-      group = name) +
-  geom_point() +
-  geom_smooth(method = "lm")
-
-plot(lm1)
-library(mice)
+# impute using imputeTS
 
 county_vmt_pop_emissions %>% 
-  mice::mice(seed = 123) %>% 
-  with(lm(county_emissions_metric_tons_co2e ~ 
-            county_population + annual_vmt))
-
-predict.lm(lm1)
-
+  group_by(name) %>% 
+  mutate(emis_interp = imputeTS::na_kalman(county_emissions_metric_tons_co2e,
+                                           smooth = TRUE),
+         is_interp = ifelse(is.na(county_emissions_metric_tons_co2e), TRUE, FALSE)) %>% 
+  ggplot() +
+  aes(x = year,
+      y = emis_interp,
+      shape = is_interp,
+      color = name,
+      group = name) +
+  geom_point(size =2) +
+  geom_line() +
+  theme_minimal()
 
 
