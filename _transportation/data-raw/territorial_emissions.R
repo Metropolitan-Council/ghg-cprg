@@ -26,11 +26,13 @@ county_vmt_pop_emissions <- cprg_county_proportions %>%
     vmt_per_capita = annual_vmt/county_population,
     emissions_per_capita = county_emissions_metric_tons_co2e/county_population
   ) %>% 
-  select(-GEOID.y)
+  select(-GEOID.y) %>% 
+  filter(year >= 2005)
 
 
 county_prop_long <- county_vmt_pop_emissions %>% 
-  select(GEOID, name, year, county_proportion_annual_vmt, county_proportion_of_state_pop, 
+  select(GEOID, name, year, county_proportion_annual_vmt, 
+         county_proportion_of_state_pop, 
          county_proportion_emissions) %>% 
   pivot_longer(4:6,
                names_to = "proportion_base",
@@ -67,12 +69,46 @@ county_vmt_pop_emissions %>%
   )
 
 # impute using imputeTS
+# basic interpolation between years, grouped by county name
 
-county_vmt_pop_emissions %>% 
+county_interp <- county_vmt_pop_emissions %>% 
   group_by(name) %>% 
-  mutate(emis_interp = imputeTS::na_kalman(county_emissions_metric_tons_co2e,
-                                           smooth = TRUE),
-         is_interp = ifelse(is.na(county_emissions_metric_tons_co2e), TRUE, FALSE)) %>% 
+  arrange(desc(year)) %>% 
+  mutate(emis_interp = imputeTS::na_kalman(
+    county_emissions_metric_tons_co2e,
+    smooth = TRUE,
+    type = "trend"),
+    is_interp = ifelse(is.na(county_emissions_metric_tons_co2e), 
+                       TRUE, FALSE),
+    emissions_per_capita_interp = emis_interp/county_population,
+    emissions_proportion_interp = emis_interp/state_emissions_metric_tons_co2e)
+
+
+county_interp %>% 
+  plot_ly(
+    type = "scatter",
+    mode = "lines",
+    x = ~year,
+    y = ~emis_interp,
+    color = ~name
+  ) %>% 
+  add_trace(
+    mode = "markers",
+    y = ~county_emissions_metric_tons_co2e,
+    color = ~name
+  )
+  
+county_interp %>% 
+  plot_ly(
+    type = "scatter",
+    mode = "lines",
+    x = ~year,
+    y = ~emissions_per_capita_interp,
+    color = ~name
+  )  
+
+
+county_interp %>% 
   ggplot() +
   aes(x = year,
       y = emis_interp,
