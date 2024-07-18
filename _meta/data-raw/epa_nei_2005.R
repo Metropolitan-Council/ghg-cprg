@@ -12,10 +12,8 @@
 
 source("R/_load_pkgs.R")
 
-
-cap <- data.table::fread("_transportation/data-raw/epa/nei_2005/CAP/ALL_NEI_CAP_ANNUAL.txt")
-
 # Source Classification Codes (SCCs) categories -----
+# quick download from https://sor-scc-api.epa.gov/sccwebservices/sccsearch/
 scc_codes <- data.table::fread("_transportation/data-raw/epa/SCCDownload-2024-0718-132502.csv",
                                header = TRUE,
                                colClasses = "character") %>% 

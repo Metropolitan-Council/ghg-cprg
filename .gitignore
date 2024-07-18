@@ -592,3 +592,7 @@ _agriculture/data-raw/ag_soils_liming.csv
 _agriculture/data-raw/ag_soils_manure.csv
 
 _agriculture/data-raw/ag_soils_residuals.csv
+
+_transportation/data-raw/epa/nei_2005/
+
+_transportation/data-raw/epa/SCCDownload-2024-0718-132502.csv
