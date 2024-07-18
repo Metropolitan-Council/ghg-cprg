@@ -117,3 +117,16 @@ state_economic <- bind_rows(
     path = "_transportation/data-raw/epa/state_ghg/State-Level-GHG-data/Wisconsin-Economic.xlsx"
   )
 )
+
+
+state_economic %>% 
+  filter(sector_group == "Transportation",
+         `Sector/Source` == "CO2 from Fossil Fuel Combustion",
+         inventory_year > 2004) %>% 
+  plot_ly(
+    type = "scatter",
+    mode = "markers+lines",
+    x = ~inventory_year,
+    y = ~emissions_metric_tons_co2e,
+    color = ~state
+  )
