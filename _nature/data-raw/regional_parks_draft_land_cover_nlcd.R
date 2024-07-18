@@ -272,5 +272,24 @@ geog_c <- left_join(lc_geog, land_cover_c) %>%
 out <- left_join(areas, geog_c) %>% 
   left_join(., park_c)
 
-write_csv(out,
-          "_nature/data/implementing_agency_park_c_nlcd_2021.csv")
+# write_csv(out,
+#           "_nature/data/implementing_agency_park_c_nlcd_2021.csv")
+
+### wetlands
+
+park_wetland_acres <- lc_park %>% filter(land_cover_type == "Wetland") %>% mutate(area = area * 247.1) %>% pull(area) %>% sum()
+county_wetland_acres <- county_lc %>% filter(land_cover_type == "Wetland") %>% mutate(area = area * 247.1) %>% pull(area) %>% sum()
+park_wetland_acres / county_wetland_acres
+
+mn <- tigris::states() %>% filter(NAME == "Minnesota")
+
+nlcd_lc_mn <- get_nlcd(
+  mn,
+  "state",
+  year = 2021,
+  dataset = "landcover"
+) %>%
+  terra::project(., crs_use)
+
+area_values_mn <- terra::extract(nlcd_lc_mn, mn)
+mn_values <- terra::extract(nlcd_lc_mn, mn)
