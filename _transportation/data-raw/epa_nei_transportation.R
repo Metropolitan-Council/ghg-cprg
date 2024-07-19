@@ -194,3 +194,67 @@ nei_county_proportions <- nei_state_emissions %>%
   )
 
 saveRDS(nei_county_proportions, "_transportation/data/epa_nei_county_proportions.RDS")
+
+# create imputed data values -----
+library(imputeTS)
+
+epa_nei_full <- epa_nei %>% 
+  select(-starts_with("total")) %>% 
+  group_by(GEOID,county_name, county_fips, vehicle_weight_label) %>% 
+  complete(nei_inventory_year = 2005:2022) %>% 
+  mutate(interp_emissions = na_kalman(emissions_metric_tons_co2e,
+                                      smooth = TRUE,
+                                      type = "trend")) %>% 
+  mutate(nei_data_source = ifelse(is.na(emissions_metric_tons_co2e), "Interpolated",
+                                  "NEI value"))
+
+
+
+
+
+# quickly plot original and interpolated values
+epa_nei_full %>% 
+  group_by(nei_inventory_year, GEOID, county_name, county_fips) %>% 
+  summarize(interp_emissions = sum(interp_emissions) %>% 
+              round(digits = 0),
+            emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e) %>% 
+              round(digits = 0),
+            .groups = "keep") %>% 
+  ungroup() %>% 
+  plot_ly(
+    type = "scatter",
+    mode = "lines+markers",
+    x = ~nei_inventory_year,
+    y = ~interp_emissions,
+    color = ~county_name
+  ) %>% 
+  add_trace(
+    type = "scatter",
+    mode = "markers",
+    y = ~emissions_metric_tons_co2e,
+    marker = list(
+      color = "black"
+    )
+  )
+
+
+
+epa_nei_complete <- epa_nei_full %>% 
+  select(GEOID, county_fips, county_name, nei_inventory_year, nei_data_source,
+         vehicle_weight_label,
+         emissions_metric_tons_co2e = interp_emissions)
+
+epa_nei_complete_meta <- tibble::tribble(
+  ~"Column", ~"Class", ~"Description",
+  "GEOID", class(epa_nei_complete$GEOID), "County ID",
+  "county_fips", class(epa_nei_complete$county_fips), "County FIPS",
+  "county_name", class(epa_nei_complete$county_name), "County name",
+  "nei_inventory_year", class(epa_nei_complete$nei_inventory_year), "NEI inventory year",
+  "nei_data_source", class(epa_nei_complete$nei_data_source), "Emissions esimtate data source, either reported NEI value or interplated value",
+  "vehicle_weight_label", class(epa_nei_complete$vehicle_weight_label), "\"Light-duty\", \"Medium-duty\", or \"Heavy-duty\"",
+  "emissions_metric_tons_co2e", class(epa_nei_complete$emissions_metric_tons_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given county"
+)
+
+
+saveRDS(epa_nei_complete, "_transportation/data/epa_nei_complete.RDS")
+saveRDS(epa_nei_complete_meta, "_transportation/data/epa_nei_complete_meta.RDS")
