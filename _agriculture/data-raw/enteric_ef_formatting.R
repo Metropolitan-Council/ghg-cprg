@@ -9,220 +9,98 @@ if(!file.exists("_agriculture/data-raw/ag-module.xlsx")){
 
 # enteric fermentation rates - 
 # not all of these are needed, just loading in livestock in usda census
-# rates is kg CH4 / head / day
-enteric_dairy <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
+# rates is kg CH4 / head 
+# The data sheet says per day, but this is never scaled up by 365 anywhere, 
+# and would result in huge numbers, so probably an error
+enteric_dairy_cows <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
                                sheet = "enteric EFsNEW",
                                range = "A3:AK53") %>% 
   rename(state = `Dairy Cows`) %>% 
   filter(state %in% c("Minnesota", "Wisconsin")) %>% 
-  pivot_longer(cols = -1, names_to = "year", values_to = "kgch4_head_day")
+  pivot_longer(cols = -1, names_to = "year", values_to = "kgch4_head_yr") %>% 
+  mutate(mt_ch4_head_yr = kgch4_head_yr  / 1000,
+         livestock_type = "Dairy Cows",
+         year = as.numeric(year))
 
-enteric_dairy <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
+enteric_dairy_calves <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
                                    sheet = "enteric EFsNEW",
-                                   range = "A3:AK53") %>% 
-  rename(state = `Dairy Cows`) %>% 
+                                   range = "A159:AK209") %>% 
+  rename(state = `Dairy Replacements Total`) %>% 
   filter(state %in% c("Minnesota", "Wisconsin")) %>% 
-  pivot_longer(cols = -1, names_to = "year", values_to = "kgch4_head_day")
+  pivot_longer(cols = -1, names_to = "year", values_to = "kgch4_head_yr") %>% 
+  mutate(mt_ch4_head_yr = kgch4_head_yr  / 1000,
+         livestock_type = "Calves",
+         year = as.numeric(year))
 
-### breaking constants down to categories, adding syntax friendly descriptor 
-### - matched to EPA SIT short_text where possible
-general_constants <- data.frame(
-  value = ag_constants[2:16, 1],
-  description = ag_constants[2:16, 2],
-  short_text = c(
-    "MT_ton",
-    "lbs_ton",
-    "kg_lb",
-    "kg_MT",
-    "ft3_m3",
-    "kg_m3",
-    "kg_ton",
-    "days_yr",
-    "N2O_N2",
-    "CH4GWP",
-    "N2OGWP",
-    "C_CO2",
-    "lbs_hundredweight",
-    "VolPercent_Indirect",
-    "VolPercent"
-  )
-) %>% 
-  select(value = Constants,
-         description = `...2`,
-         short_text) %>% 
-  mutate(value = as.numeric(value))
+enteric_beef_cows <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
+                                         sheet = "enteric EFsNEW",
+                                         range = "A211:AK261") %>% 
+  rename(state = `Beef Cows`) %>% 
+  filter(state %in% c("Minnesota", "Wisconsin")) %>% 
+  pivot_longer(cols = -1, names_to = "year", values_to = "kgch4_head_yr") %>% 
+  mutate(mt_ch4_head_yr = kgch4_head_yr  / 1000,
+         livestock_type = "Beef Cows",
+         year = as.numeric(year))
 
+enteric_beef_calves <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
+                                          sheet = "enteric EFsNEW",
+                                          range = "A367:AK417") %>% 
+  rename(state = `Beef Replacements Total`) %>% 
+  filter(state %in% c("Minnesota", "Wisconsin")) %>% 
+  pivot_longer(cols = -1, names_to = "year", values_to = "kgch4_head_yr") %>% 
+  mutate(mt_ch4_head_yr = kgch4_head_yr  / 1000,
+         livestock_type = "Calves",
+         year = as.numeric(year))
 
-soil_plant_constants <- data.frame(
-  value = ag_constants[18:27, 1],
-  description = ag_constants[18:27, 2],
-  short_text = c(
-    "NMan",
-    "NOrg",
-    "VolOrg",
-    "VolSyn",
-    "EF_Dir",
-    "Vol_EF",
-    "ac_ha",
-    "HistEF",
-    "TropHistEF",
-    "N_content_legume"
-  )
-) %>% 
-  select(value = Constants,
-         description = `...2`,
-         short_text) %>% 
-  mutate(value = as.numeric(value))
+enteric_feedlot_steer <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
+                                         sheet = "enteric EFsNEW",
+                                         range = "A523:AK573") %>% 
+  rename(state = `Steer Feedlot`) %>% 
+  filter(state %in% c("Minnesota", "Wisconsin")) %>% 
+  pivot_longer(cols = -1, names_to = "year", values_to = "kgch4_head_yr") %>% 
+  mutate(mt_ch4_head_yr = kgch4_head_yr / 1000,
+         livestock_type = "Feedlot Cattle",
+         year = as.numeric(year))
 
+enteric_feedlot_heifer <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
+                                           sheet = "enteric EFsNEW",
+                                           range = "A575:AK625") %>% 
+  rename(state = `Heifer Feedlot`) %>% 
+  filter(state %in% c("Minnesota", "Wisconsin")) %>% 
+  pivot_longer(cols = -1, names_to = "year", values_to = "kgch4_head_yr") %>% 
+  mutate(mt_ch4_head_yr = kgch4_head_yr / 1000,
+         livestock_type = "Feedlot Cattle",
+         year = as.numeric(year))
 
-soil_animal_constants <- data.frame(
-  value = ag_constants[18:27, 6],
-  description = ag_constants[18:27, 7],
-  short_text = c(
-    "NonVolEF",
-    "prpEF",
-    "LeachEF",
-    "LeachEF2",
-    "NH3_NOxEF",
-    NA,
-    "LiquidEF",
-    "SolidEF",
-    "nobedEF",
-    "PoultryNotManaged"
-  )
-) %>%
-  rename(value = ...6, description = ...7) %>%
-  filter(!is.na(value)) %>%
-  mutate(value = if_else(short_text == "PoultryNotManaged",
-                         as.numeric(str_remove(value, "%")) / 100,
-                         as.numeric(value)))
+# constants for sheep, goats, swine, horses in control data sheet
+enteric_other <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
+                                                             sheet = "Control",
+                                                             range = "A26:B30") %>% 
+  rename(livestock_type = `Other`,
+         kgch4_head_yr = `...2`) %>% 
+  mutate(mt_ch4_head_yr = kgch4_head_yr / 1000) %>% 
+  crossing(year = 2005:2021,
+           state = c("Minnesota", "Wisconsin"))
+
+enteric_out <-  bind_rows(enteric_dairy_cows,
+                          enteric_dairy_calves,
+                          enteric_beef_cows,
+                          enteric_beef_calves,
+                          enteric_feedlot_steer,
+                          enteric_feedlot_heifer,
+                          enteric_other) %>% 
+  group_by(state, year, livestock_type) %>% 
+  summarize(mt_ch4_head_yr = mean(mt_ch4_head_yr))
 
 
-crop_mt_bushel <- data.frame(
-  value = ag_constants[30:38, 2],
-  description = ag_constants[30:38, 1],
-  short_text = c(
-    "corn_mtb",
-    "wheat_mtb",
-    "barley_mtb",
-    "sorghum_mtb",
-    "oats_mtb",
-    "rye_mtb",
-    "millet_mtb",
-    NA,
-    "soybeans_mtb"
-  )
-) %>%
-  filter(!is.na(short_text)) %>%
-  rename(value = ...2, description = Constants) %>%
-  mutate(
-    value = as.numeric(value),
-    description = paste(description, "MT to bushels")
-  )
-
-
-
-crop_residue_mass_ratio <- data.frame(
-  value = ag_constants[29:44, c(3)],
-  descriptor = ag_constants[29:44, c(1)],
-  short_text = c(
-    "alfalfa_rcmr",
-    "corn_rcmr",
-    "wheat_rcmr",
-    "barley_rcmr",
-    "sorghum_rcmr",
-    "oats_rcmr",
-    "rye_rcmr",
-    "millet_rcmr",
-    "rice_mcmr",
-    "soybeans_rcmr",
-    "peanuts_rcmr",
-    "beans_rcmr",
-    "dry_peas_rcmr",
-    "winter_peas_rcmr",
-    "lentils_rcmr",
-    "wrinkled_peas_rcmr"
-  )
-) %>%
-  rename(value = ...3, description = Constants) %>%
-  mutate(
-    description = paste(description, "residue to crop mass ratio"),
-    value = as.numeric(value)
-  )
-
-crop_residue <- ag_control[c(71, 74:89),
-                           c(1, 2, 6, 10)] %>%
-  row_to_names(row_number = 1) %>%
-  pivot_longer(cols = 2:4, values_to = "value") %>%
-  mutate(
-    Crop = case_when(
-      Crop == "Corn for Grain" ~ "corn",
-      Crop == "All Wheat" ~ "wheat",
-      Crop == "Dry Edible Beans" ~ "beans",
-      Crop == "Dry Edible Peas" ~ "dry_peas",
-      Crop == "Austrian Winter Peas" ~ "winter_peas",
-      Crop == "Wrinkled Seed Peas" ~ "wrinkled_peas",
-      TRUE ~ Crop
-    ),
-    short_text = case_when(
-      name == "Residue Dry Matter Fraction" ~ tolower(paste0(Crop, "_rdmf")),
-      name == "Fraction Residue Applied" ~ tolower(paste0(Crop, "_fra")),
-      name == "Nitrogen Content of Residue" ~ tolower(paste0(Crop, "_ncr"))
-    ),
-    description = paste(Crop, name),
-    value = as.numeric(value)
-  ) %>%
-  filter(!is.na(value)) %>%
-  select(value, description, short_text)
-
-animal_mass <- data.frame(
-  value = ag_control[50:65, 2],
-  description = ag_control[50:65, 1],
-  short_text = c(
-    "breeding_swine",
-    "swine_under_60lbs",
-    "swine_60_119_lbs",
-    "swine_120_179_lbs", # KS: fixed minor typo here
-    "swine_over_180lbs",
-    NA, NA,
-    "hens",
-    "pullets",
-    "chickens",
-    "broilers",
-    "turkeys",
-    NA,
-    "sheep_on_feed",
-    "sheep_not_on_feed",
-    "goats"
-  )
-) %>%
-  rename(
-    description = State.Inventory.Tool...Carbon.Dioxide..Methane..and.Nitrous.Oxide.Emissions.from.Agriculture.Module.Version.2024.1,
-    value = ...2
-  ) %>%
-  mutate(
-    description = paste(description, "Typical Animal Mass"),
-    value = as.numeric(value)
-  ) %>%
-  filter(!is.na(value))
-
-ag_constants_formatted <- bind_rows(
-  general_constants,
-  soil_plant_constants,
-  soil_animal_constants,
-  crop_mt_bushel,
-  crop_residue_mass_ratio,
-  crop_residue,
-  animal_mass
-)
-
-ag_constants_meta <-
+enteric_out_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "value", class(ag_constants_formatted$value), "Multiplier constant for agricultural emissions calculations",
-    "description", class(ag_constants_formatted$description), "Description of use case for multiplier constant",
-    "short_text", class(ag_constants_formatted$short_text), "Syntax friendly classifier for coding"
+    "state", class(enteric_out$state), "State",
+    "year", class(enteric_out$year), "Year",
+    "livestock_type", class(enteric_out$livestock_type), "Formatted livestock classification - matches USDA census labels",
+    "mt_ch4_head_yr", class(enteric_out$mt_ch4_head_yr), "Metric tons of CH4 emitted per animal per year"
   )
 
-saveRDS(ag_constants_formatted, "./_agriculture/data/ag_constants_formatted.rds")
-saveRDS(ag_constants_meta, "./_agriculture/data/ag_constants_formatted.rds_meta.rds")
+saveRDS(enteric_out, "./_agriculture/data/enteric_fermentation_emission_factors.rds")
+saveRDS(enteric_out_meta, "./_agriculture/data/enteric_fermentation_emission_factors_meta.rds")
