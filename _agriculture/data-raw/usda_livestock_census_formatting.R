@@ -177,7 +177,8 @@ poultry_interpolated <- left_join( # this creates an empty grid of all desired y
 
 ## stack mammals and poultry
 
-livestock_interpolated <- bind_rows(census_interpolated, poultry_interpolated)
+livestock_interpolated <- bind_rows(census_interpolated, poultry_interpolated) %>% 
+  mutate(county_name = if_else(county_name == "ST CROIX", "St. Croix", str_to_sentence(county_name))) #homogenize county case to other data
 
 # create metadata
 livestock_census_meta <-
