@@ -40,3 +40,4 @@ source("_waste/data-raw/wi_data.R") # run all WI emissions processing
 
 ## MN and WI combined ----
 source("_waste/data-raw/combine_waste_data.R")
+# create county_sw_emissions.RDS

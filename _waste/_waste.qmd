@@ -64,7 +64,7 @@ Wastewater emissions account for direct CH~4~ and N~2~O emissions from the treat
 
 ### Solid Waste
 
-The process for calculating solid waste emissions slightly differs between Minnesota and Wisconsin counties, due to a difference in data availability. Both state's use state or federal data sources, the highest quality data rank (@tbl-quality-rank).
+The process for calculating solid waste emissions slightly differs between Minnesota and Wisconsin counties, due to a difference in data availability. Both states use state or federal data sources, the highest quality data rank (@tbl-quality-rank).
 
 For Minnesota counties, waste generation totals are allocated by sector from Minnesota Pollution Control Agency (MPCA) SCORE data [@mpcaMPCASCOREGuidebook2022]. Totals for each sector are multiplied by the appropriate EPA-provided emissions factor to provide an estimate of emissions from that source and county. Learn more about MPCA SCORE in @sec-mpca-score. 
 
