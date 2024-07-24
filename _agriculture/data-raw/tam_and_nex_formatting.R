@@ -64,10 +64,11 @@ saveRDS(tam, "./_agriculture/data/typical_animal_mass.rds")
 saveRDS(tam_meta, "./_agriculture/data/typical_animal_mass_meta.rds")
 
 # pull out cattle nitrogen excreted by head per year - mn and wi
-nex_cattle <- pivot_longer(nex[, 14:47] %>% row_to_names(1),
-                           cols = 3:34, names_to = "year", 
-                           values_to = "kg_nex_head_yr"
-) %>%
+nex_cattle <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
+                                sheet = "TAM and NEx Rates",
+                                range = "N2:AY460") %>% 
+  pivot_longer(cols = 3:38, names_to = "year", 
+                values_to = "kg_nex_head_yr") %>%
   filter(state %in% c("MN", "WI")) %>%
   mutate(livestock_type = case_when(
     grepl("_OF_", Animal) ~ "Feedlot Cattle",
@@ -80,11 +81,12 @@ nex_cattle <- pivot_longer(nex[, 14:47] %>% row_to_names(1),
   summarize(kg_nex_head_yr = mean(kg_nex_head_yr)) %>%
   mutate(year = as.numeric(year))
 
-# pull out other livestock nitrogen excreted by head per year - mn and wi. note these are in per day and per kg animal
-nex_other <- pivot_longer(nex[, 53:69] %>% row_to_names(1),
-                          cols = 2:17, names_to = "livestock_type", 
-                          values_to = "kg_nex_day_kg_animal"
-) %>%
+# pull out other livestock nitrogen excreted by head per year - mn and wi. note these are in per day and per kg animal, so bring in TAM at end to calc
+nex_other <-  readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
+                                sheet = "TAM and NEx Rates",
+                                range = "BA2:BQ38") %>% 
+  pivot_longer(cols = 2:17, names_to = "livestock_type", 
+               values_to = "kg_nex_day_kg_animal") %>%
   mutate(
     livestock_type = case_when(
       grepl("calf", livestock_type) ~ "Calves",
@@ -108,3 +110,15 @@ nex_other <- pivot_longer(nex[, 53:69] %>% row_to_names(1),
   dplyr::select(year, livestock_type, state, kg_nex_head_yr)
 
 nex_formatted <- rows_append(nex_cattle, nex_other)
+
+nex_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "state", class(nex_formatted), "State",
+    "year", class(nex_formatted$year), "Year",
+    "livestock_type", class(nex_formatted$livestock_type), "Formatted livestock classification - matches USDA census labels",
+    "kg_nex_head_yr", class(nex_formatted$kg_nex_head_yr), "Kilograms of nitrogen excreted per animal per year"
+  )
+
+saveRDS(nex_formatted, "./_agriculture/data/nitrogen_excretion.rds")
+saveRDS(nex_meta, "./_agriculture/data/nitrogen_excretion_meta.rds")
