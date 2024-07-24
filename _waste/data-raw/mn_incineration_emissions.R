@@ -40,4 +40,19 @@ incineration_emissions <- score_data %>%
     total_n2o
   )
 
-# combined and saved in mn_emissions_all
+# write meta
+incineration_emissions_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "County", class(incineration_emissions$County), "Name of county",
+    "Method", class(incineration_emissions$Method), "Subcategory-specific source (e.g., Landfill)",
+    "Year", class(incineration_emissions$Year), "Emissions estimation year",
+    "total_co2", class(incineration_emissions$total_co2), 
+    "Annual total emissions, in metric tons CO~2~, attributed to the given county",
+    "total_n2o", class(incineration_emissions$total_n2o), 
+    "Annual total emissions, in metric tons N~2~O, attributed to the given county"
+  )
+
+# save RDS
+saveRDS(incineration_emissions, "_waste/data/mn_incineration_emissions.RDS")
+saveRDS(incineration_emissions_meta, "_waste/data/mn_incineration_emissions_meta.RDS")

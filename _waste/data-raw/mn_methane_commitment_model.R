@@ -71,3 +71,17 @@ landfill_emissions <- landfill_data %>%
     Year,
     total_ch4
   )
+
+# write meta
+landfill_emissions_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "County", class(landfill_emissions$County), "Name of county",
+    "Method", class(landfill_emissions$Method), "Subcategory-specific source (e.g., Landfill)",
+    "Year", class(landfill_emissions$Year), "Emissions estimation year",
+    "total_ch4", class(landfill_emissions$total_ch4), "Annual total landfill emissions, in metric tons CH~4~, attributed to the given county"
+  )
+
+# save RDS
+saveRDS(landfill_emissions, "_waste/data/mn_landfill_emissions.RDS")
+saveRDS(landfill_emissions_meta, "_waste/data/mn_landfill_emissions_meta.RDS")

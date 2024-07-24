@@ -53,4 +53,20 @@ compost_emissions <- compost_data %>%
     total_n2o
   )
 
-# combined and saved in mn_emissions_all
+# write meta
+compost_emissions_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "County", class(compost_emissions$County), "Name of county",
+    "Method", class(compost_emissions$Method), "Subcategory-specific source (e.g., Landfill)",
+    "Year", class(compost_emissions$Year), "Emissions estimation year",
+    "total_ch4", class(compost_emissions$total_ch4), 
+    "Annual total emissions, in metric tons CH~4~, attributed to the given county",
+    "total_n2o", class(compost_emissions$total_n2o), 
+    "Annual total emissions, in metric tons N~2~O, attributed to the given county"
+  )
+
+# save RDS
+saveRDS(compost_emissions, "_waste/data/mn_compost_emissions.RDS")
+saveRDS(compost_emissions_meta, "_waste/data/mn_compost_emissions_meta.RDS")
+
