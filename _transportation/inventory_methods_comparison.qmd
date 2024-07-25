@@ -20,6 +20,15 @@ hookaddcap()
 ```
 
 
+- Review GPC scope definitions
+- Consumption based emissions inventories (CBEI)
+- Pros and cons
+- Why we changed
+
+## EPA data sources
+
+Discuss differences between NEI and GHG Inventory (yes they sound like the same thing but they are different)
+
 <!-- chapter content -->
 
 
