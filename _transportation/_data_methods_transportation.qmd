@@ -21,6 +21,8 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
+{{< include data_epa_nei.qmd >}}
+
 {{< include data_streetlight.qmd >}}
 
 {{< include data_state_dot.qmd >}}
