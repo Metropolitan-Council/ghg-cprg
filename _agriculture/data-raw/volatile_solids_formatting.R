@@ -7,6 +7,12 @@ if(!file.exists("_agriculture/data-raw/ag-module.xlsx")){
   cli::cli_abort("Download agriculture data from MS Team")
 }
 
+if(!file.exists("_agriculture/data/typical_animal_mass.rds")){
+  cli::cli_abort("Run _agriculture/data-raw/tam_and_nex_formatting.R script first")
+}
+
+tam <- read_rds("_agriculture/data/typical_animal_mass.rds")
+
 # enteric fermentation rates - 
 # not all of these are needed, just loading in livestock in usda census
 # rates is kg CH4 / head 
@@ -91,21 +97,24 @@ vs_other <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
            grepl("sheep", livestock_type_temp) ~ "Sheep",
            TRUE ~ NA
          )) %>% 
-  filter(!is.na(livestock_type)) %>% 
+  left_join(., tam, by = c("year" = "year", "livestock_type" = "livestock_type")) %>%
+  mutate(mt_vs_head_yr = (mass_kg / 1000) * mt_vs_1000kg_animal * 365) %>% 
+  filter(!is.na(mass_kg)) %>%
   crossing(state = c("Minnesota", "Wisconsin")) %>% 
-  select(-c(kg_vs_1000kg_animal , livestock_type_temp, Year))
+  select(-c(kg_vs_1000kg_animal , livestock_type_temp, Year, mt_vs_1000kg_animal))
 
-vs_cows <-  bind_rows(vs_dairy_cows,
+vs_livestock <-  bind_rows(vs_dairy_cows,
                           vs_dairy_calves,
                           vs_beef_cows,
                           vs_beef_calves,
                           vs_feedlot_steer,
-                          vs_feedlot_heifer) %>% 
+                          vs_feedlot_heifer,
+                          vs_other) %>% 
   group_by(state, year, livestock_type) %>% 
   summarize(mt_vs_head_yr = mean(mt_vs_head_yr))
 
 
-vs_cows_meta <-
+vs_livestock_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
     "state", class(vs_cows$state), "State",
@@ -114,17 +123,5 @@ vs_cows_meta <-
     "mt_vs_head_yr", class(vs_cows$mt_vs_head_yr), "Metric tons of volatile solids produced per animal per year"
   )
 
-saveRDS(vs_cows, "./_agriculture/data/volatile_solids_cows.rds")
-saveRDS(vs_cows_meta, "./_agriculture/data/vs_fermentation_emission_factors_meta.rds")
-
-vs_other_meta <-
-  tibble::tribble(
-    ~"Column", ~"Class", ~"Description",
-    "state", class(vs_other$state), "State",
-    "year", class(vs_other$year), "Year",
-    "livestock_type", class(vs_other$livestock_type), "Formatted livestock classification - matches USDA census labels",
-    "mt_vs_1000kg_animal ", class(vs_other$mt_vs_1000kg_animal ), "Metric tons of volatile solids produced per 1000kg of animal per year"
-  )
-
-saveRDS(vs_other, "./_agriculture/data/volatile_solids_by_animal_weight.rds")
-saveRDS(vs_other_meta, "./_agriculture/data/volatile_solids_by_animal_weight.rds_meta.rds")
+saveRDS(vs_livestock, "./_agriculture/data/volatile_solids.rds")
+saveRDS(vs_livestock_meta, "./_agriculture/data/volatile_solids_meta.rds")
