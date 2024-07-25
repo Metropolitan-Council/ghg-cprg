@@ -1,6 +1,7 @@
 # get data from the 2020 national emissions inventory
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
+library(imputeTS)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 epa_moves <- readRDS("_transportation/data/epa_moves.RDS")
@@ -9,15 +10,7 @@ source("_meta/data-raw/epa_nei.R")
 
 # mobile sectors only
 mobile_sectors <- sectors %>%
-  filter(sector_one == "Mobile")
-
-nei_state_emissions <- nei_state_multi_year %>%
-  filter(
-    sector_code %in% mobile_sectors$sector_code,
-    pollutant_type == "GHG",
-    sector_two == "On-Road"
-  ) %>%
-  rowwise() %>%
+  filter(sector_one == "Mobile") %>% 
   mutate(
     vehicle_weight_label = case_when(
       ei_sector %in% c(
@@ -27,110 +20,103 @@ nei_state_emissions <- nei_state_multi_year %>%
       ei_sector %in% c(
         "Mobile - On-Road non-Diesel Heavy Duty Vehicles",
         "Mobile - On-Road Diesel Heavy Duty Vehicles"
-      ) ~ "Heavy-duty"
+      ) ~ "Heavy-duty",
+      TRUE ~ "Other or not applicable"
     ) %>%
       factor(
         levels = c(
           "Light-duty",
           "Medium-duty",
-          "Heavy-duty"
+          "Heavy-duty",
+          "Other or not applicable"
         ),
         ordered = TRUE
+      ),
+    vehicle_fuel_label = 
+      case_when(str_detect(sector_three, "Diesel")  ~ "Diesel",
+                str_detect(sector_three, "Gasoline") ~ "Gasoline",
+                TRUE ~ "Other or not applicable"),
+    vehicle_group = 
+      case_when(
+        sector_two == "On-Road" ~ "On-Road",
+        sector_two == "Non-Road" ~ "Non-Road Equipment",
+        TRUE ~ sector_two
       )
-  ) %>%
-  mutate(emissions_grams = emissions %>%
-           units::as_units("ton") %>% # short tons/US tons
-           units::set_units("gram") %>% # convert to grams
-           as.numeric()) %>%
-  unique() %>%
-  select(
-    vehicle_weight_label,
-    state_name,
-    nei_inventory_year = inventory_year,
-    pollutant_code, emissions_grams
-  ) %>%
-  unique() %>%
-  group_by(state_name, nei_inventory_year, vehicle_weight_label, pollutant_code) %>%
-  summarize(emissions_grams = sum(emissions_grams)) %>%
+  )
+
+nei_state_emissions <- nei_county_multi_year %>% 
+  filter(sector_code %in% mobile_sectors$sector_code,
+         pollutant_type == "GHG") %>% 
+  left_join(mobile_sectors,
+            by = join_by(sector_code, ei_sector, 
+                         sector_one, sector_two, sector_three)) %>% 
+  group_by(state_name,
+           nei_inventory_year, sector_code,
+           pollutant_type,
+           vehicle_group, vehicle_fuel_label, vehicle_weight_label,
+           sector_three, 
+           pollutant_code) %>%
+  summarize(emissions_grams = sum(emissions_grams),
+            .groups = "keep") %>%
   pivot_wider(
     names_from = pollutant_code,
     values_from = emissions_grams
   ) %>%
-  clean_names() %>%
-  ungroup() %>%
-  rowwise() %>%
-  # n2o and ch4 to co2 equivalency
+  ungroup() %>% 
+  clean_names() %>% 
   mutate(
     co2_co2_equivalent =
-      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o)),
+      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = T),
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
-  )
-
-
-# combine MN and WI
-# filter to only needed datasets
-nei_county <- nei_county_multi_year %>%
-  left_join(cprg_county, by = c("county_fips" = "COUNTYFP",
-                                "GEOID")) %>%
-  filter(
-    sector_code %in% mobile_sectors$sector_code,
-    pollutant_type == "GHG",
-    sector_two == "On-Road"
-  ) %>%
-  rowwise() %>%
-  mutate(
-    county_name = NAME,
-    vehicle_weight_label = case_when(
-      ei_sector %in% c(
-        "Mobile - On-Road Diesel Light Duty Vehicles",
-        "Mobile - On-Road non-Diesel Light Duty Vehicles"
-      ) ~ "Light-duty",
-      ei_sector %in% c(
-        "Mobile - On-Road non-Diesel Heavy Duty Vehicles",
-        "Mobile - On-Road Diesel Heavy Duty Vehicles"
-      ) ~ "Heavy-duty"
-    ) %>%
-      factor(
-        levels = c(
-          "Light-duty",
-          "Medium-duty",
-          "Heavy-duty"
-        ),
-        ordered = TRUE
-      )
   )
 
 # check unit of measurement
 # https://www.epa.gov/air-emissions-inventories/what-are-units-nei-emissions-data
-nei_county_emissisons <- nei_county %>%
-  mutate(emissions_grams = emissions %>%
-           units::as_units("ton") %>% # short tons/US tons
-           units::set_units("gram") %>% # convert to grams
-           as.numeric()) %>%
-  select(
-    ei_sector, vehicle_weight_label,
-    county_name, county_fips, GEOID,
-    nei_inventory_year = inventory_year,
-    pollutant_code, emissions_grams
-  ) %>%
+nei_county_emissisons <- nei_county_multi_year %>%
+  filter(sector_code %in% mobile_sectors$sector_code,
+         pollutant_type == "GHG") %>% 
+  left_join(mobile_sectors,
+            by = join_by(sector_code, ei_sector, 
+                         sector_one, sector_two, sector_three)) %>% 
   pivot_wider(
     names_from = pollutant_code,
-    values_from = emissions_grams
+    values_from = emissions_grams,
+    id_cols = c(state_name,
+                GEOID,
+                cprg_area,
+                ei_sector,
+                nei_inventory_year,
+                sector_code,
+                pollutant_type,
+                vehicle_group, 
+                vehicle_fuel_label, 
+                vehicle_weight_label,
+                sector_three)
   ) %>%
   clean_names() %>%
   rowwise() %>%
   # n2o and ch4 to co2 equivalency
   mutate(
     co2_co2_equivalent =
-      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o)),
+      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = T),
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000,
     GEOID = geoid
   )
 
 # aggregate by vehicle weight and county
 epa_nei <- nei_county_emissisons %>%
-  group_by(vehicle_weight_label,  GEOID, 
-           county_name, county_fips, nei_inventory_year) %>%
+  left_join(county_geography %>% 
+              select(GEOID, 
+                     county_name = NAME,
+                     county_fips = COUNTYFP)) %>% 
+  group_by(GEOID, county_name,
+           vehicle_weight_label,
+           vehicle_group,
+           vehicle_fuel_label,
+           sector_code,
+           state_name, cprg_area,
+           county_fips,
+           nei_inventory_year) %>%
   summarize(
     total_co2 = sum(co2),
     total_ch4 = sum(ch4),
@@ -138,12 +124,12 @@ epa_nei <- nei_county_emissisons %>%
     total_co2_w_equiv = sum(co2_co2_equivalent),
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     .groups = "keep"
-  )
+  ) %>% 
+  ungroup()
 
 
 epa_nei_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
-  "vehicle_weight_label", class(epa_nei$vehicle_weight_label), "\"Light-duty\", \"Medium-duty\", or \"Heavy-duty\"",
   "GEOID", class(epa_nei$GEOID), "County ID",
   "county_name", class(epa_nei$county_name), "County name",
   "county_fips", class(epa_nei$county_fips), "County FIPS",
@@ -151,9 +137,15 @@ epa_nei_meta <- tibble::tribble(
   "total_co2", class(epa_nei$total_co2), "Annual total grams of CO~2~  attributed to the given county",
   "total_ch4", class(epa_nei$total_ch4), "Annual total grams of CH~4~  attributed to the given county",
   "total_n2o", class(epa_nei$total_n2o), "Annual total grams of N~2~O  attributed to the given county",
+  "vehicle_weight_label", paste0(class(epa_nei$vehicle_weight_label), collapse = " "), "\"Light-duty\", \"Medium-duty\", \"Heavy-duty\", or \"Other or not applicable\"",
+  "vehicle_fuel_label", class(epa_nei_complete$vehicle_fuel_label), "Diesel or gasoline fuel",
+  "vehicle_group", class(epa_nei_complete$vehicle_group), "Vehicle group",
+  "sector_code", class(epa_nei_complete$sector_code), "NEI sector code",
   "total_co2_w_equiv", class(epa_nei$total_co2_w_equiv), "Annual total grams of CO~2~ and CO~2~ equivalent attributed to the given county",
   "emissions_metric_tons_co2e", class(epa_nei$emissions_metric_tons_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given county"
-)
+) %>% 
+  bind_rows(cprg_county_meta) %>% 
+  filter(Column %in% names(epa_nei))
 
 
 waldo::compare(epa_nei, readRDS("_transportation/data/epa_nei.RDS"))
@@ -165,38 +157,9 @@ saveRDS(epa_nei_meta, "_transportation/data/epa_nei_meta.RDS")
 
 
 
-# combine state and county to get proportions -----
-nei_county_proportions <- nei_state_emissions %>% 
-  select(state_name, nei_inventory_year, vehicle_weight_label,
-         state_emissions_metric_tons_co2e = emissions_metric_tons_co2e) %>% 
-  left_join(
-    epa_nei %>% 
-      select(county_fips, county_name, GEOID,  nei_inventory_year, 
-             vehicle_weight_label, 
-             county_emissions_metric_tons_co2e = emissions_metric_tons_co2e) %>% 
-      left_join(cprg_county %>% 
-                  select(state_name = STATE, 
-                         GEOID,
-                         county_fips = COUNTYFP) %>% 
-                  sf::st_drop_geometry(),
-                by = join_by(county_fips,
-                             GEOID)),
-    by = join_by(state_name, 
-                 nei_inventory_year,
-                 vehicle_weight_label)) %>% 
-  group_by(state_name, GEOID, county_name, nei_inventory_year) %>% 
-  summarize(county_emissions_metric_tons_co2e = sum(county_emissions_metric_tons_co2e),
-            state_emissions_metric_tons_co2e = sum(state_emissions_metric_tons_co2e),
-            .groups = "keep") %>% 
-  mutate(
-    county_proportion_emissions = county_emissions_metric_tons_co2e/state_emissions_metric_tons_co2e %>% 
-      round(digits = 6)
-  )
 
-saveRDS(nei_county_proportions, "_transportation/data/epa_nei_county_proportions.RDS")
 
 # create imputed data values -----
-library(imputeTS)
 
 epa_nei_full <- epa_nei %>% 
   select(-starts_with("total")) %>% 
@@ -258,3 +221,31 @@ epa_nei_complete_meta <- tibble::tribble(
 
 saveRDS(epa_nei_complete, "_transportation/data/epa_nei_complete.RDS")
 saveRDS(epa_nei_complete_meta, "_transportation/data/epa_nei_complete_meta.RDS")
+# combine state and county to get  -----
+nei_county_proportions <- nei_state_emissions %>% 
+  select(state_name, nei_inventory_year,
+         vehicle_weight_label,
+         vehicle_group, vehicle_fuel_label,
+         state_emissions_metric_tons_co2e = emissions_metric_tons_co2e) %>% 
+  left_join(
+    epa_nei %>% 
+      ungroup() %>% 
+      select(county_fips, state_name, county_name, GEOID,  nei_inventory_year, 
+             cprg_area, 
+             vehicle_weight_label, vehicle_fuel_label, vehicle_group,
+             county_emissions_metric_tons_co2e = emissions_metric_tons_co2e) %>% 
+      unique(),
+    relationship = "many-to-many") %>% 
+  filter(vehicle_group == "On-Road") %>% 
+  group_by(state_name, GEOID, county_name, nei_inventory_year) %>% 
+  summarize(county_emissions_metric_tons_co2e = sum(county_emissions_metric_tons_co2e),
+            state_emissions_metric_tons_co2e = sum(state_emissions_metric_tons_co2e),
+            .groups = "keep") %>% 
+  mutate(
+    county_proportion_emissions = county_emissions_metric_tons_co2e/state_emissions_metric_tons_co2e %>% 
+      round(digits = 6)
+  )
+
+saveRDS(nei_county_proportions, "_transportation/data/epa_nei_county_proportions.RDS")
+
+
