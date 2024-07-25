@@ -1,6 +1,7 @@
 # EPA NEI pre-2008 data -----
+# # !IMPORTANT! This script is left as is for potential future use.
 # Note that this 2005 data does NOT include CO2 or note distinct
-# GHGs. This script is left as is for potential future use.
+# GHGs. 
 # 
 # NEI pre-2008 data were downloaded individually from ___
 # Downloads are in .mdb (Microsoft Access) format, which is not easily opened
@@ -14,13 +15,13 @@ source("R/_load_pkgs.R")
 
 # Source Classification Codes (SCCs) categories -----
 # quick download from https://sor-scc-api.epa.gov/sccwebservices/sccsearch/
-scc_codes <- data.table::fread("_transportation/data-raw/epa/SCCDownload-2024-0718-132502.csv",
+scc_codes <- data.table::fread("_meta/data-raw/epa/SCCDownload-2024-0718-132502.csv",
                                header = TRUE,
                                colClasses = "character") %>% 
   clean_names()
 
 scc_onroad_county <- data.table::fread(
-  "_transportation/data-raw/epa/nei_2005/SCC onroad/SCC County.txt",
+  "_meta/data-raw/epa/nei_2005/SCC onroad/SCC County.txt",
   sep = ",",
   header = TRUE,
   colClasses = c("character",
@@ -30,7 +31,7 @@ scc_onroad_county <- data.table::fread(
   clean_names()
 
 scc_nonroad <-  data.table::fread(
-  "_transportation/data-raw/epa/nei_2005/SCC nonroad/SCC County 1.txt",
+  "_meta/data-raw/epa/nei_2005/SCC nonroad/SCC County 1.txt",
   sep = ",",
   header = TRUE,
   colClasses = c("character",
@@ -40,14 +41,14 @@ scc_nonroad <-  data.table::fread(
   clean_names()
 
 scc_point <-  data.table::fread(
-  "_transportation/data-raw/epa/nei_2005/SCC point/POINT05_V2_SCC_SUMMARY_COUNTY.txt",
+  "_meta/data-raw/epa/nei_2005/SCC point/POINT05_V2_SCC_SUMMARY_COUNTY.txt",
   sep = ",",
   header = TRUE,
   colClasses = c(rep("character", 13),
                  "numeric")) %>% 
   clean_names()
 
-scc_nonpoint <-  data.table::fread( "_transportation/data-raw/epa/nei_2005/SCC nonpoint/NONPOINT05_V2_SCC_SUMMARY_COUNTY.txt",
+scc_nonpoint <-  data.table::fread( "_meta/data-raw/epa/nei_2005/SCC nonpoint/NONPOINT05_V2_SCC_SUMMARY_COUNTY.txt",
                                     sep = ",",
                                     header = TRUE,
                                     colClasses = c(rep("character", 12),
@@ -56,7 +57,7 @@ scc_nonpoint <-  data.table::fread( "_transportation/data-raw/epa/nei_2005/SCC n
   clean_names()
 
 # by tiers -----
-tier1_county  <- data.table::fread( "_transportation/data-raw/epa/nei_2005/Tier1/Tier1 County.txt",
+tier1_county  <- data.table::fread( "_meta/data-raw/epa/nei_2005/Tier1/Tier1 County.txt",
                                     sep = ",",
                                     header = TRUE,
                                     colClasses = c(rep("character", 9),
@@ -64,14 +65,14 @@ tier1_county  <- data.table::fread( "_transportation/data-raw/epa/nei_2005/Tier1
   clean_names()
 
 tier2_county  <- data.table::fread(
-  "_transportation/data-raw/epa/nei_2005/Tier2/Tier2 County (00-30).txt",
+  "_meta/data-raw/epa/nei_2005/Tier2/Tier2 County (00-30).txt",
   sep = ",",
   header = TRUE,
   colClasses = c(rep("character", 12),
                  "numeric")) %>% 
   rbind(
     data.table::fread(
-      "_transportation/data-raw/epa/nei_2005/Tier2/Tier2 County (31-78).txt",
+      "_meta/data-raw/epa/nei_2005/Tier2/Tier2 County (31-78).txt",
       sep = ",",
       header = TRUE,
       colClasses = c(rep("character", 12),
@@ -80,13 +81,13 @@ tier2_county  <- data.table::fread(
   clean_names()
 
 tier3_county <- data.table::fread(
-  "_transportation/data-raw/epa/nei_2005/Tier3/Tier3 County (00-30).txt",
+  "_meta/data-raw/epa/nei_2005/Tier3/Tier3 County (00-30).txt",
   sep = ",",
   header = TRUE,
   colClasses = c(rep("character", 14),
                  "numeric")) %>% 
   rbind(data.table::fread(
-    "_transportation/data-raw/epa/nei_2005/Tier3/Tier3 County (31-78).txt",
+    "_meta/data-raw/epa/nei_2005/Tier3/Tier3 County (31-78).txt",
     sep = ",",
     header = TRUE,
     colClasses = c(rep("character", 14),
@@ -100,7 +101,7 @@ tier3_county <- data.table::fread(
 scc_pollutant_desc <- 
   scc_onroad_county %>% 
   select(pollutant_code) %>% 
-  bind_rows(scc_nonroad %>% 
+  bind_rows(scc_nonroad
   )
 
 tier_desc <- tier3_county %>% 
@@ -156,4 +157,4 @@ onroad <- mn_wi_scc_onroad %>%
   )
 
 
-nei_county_multi_year %>% View
+nei_county_multi_year 
