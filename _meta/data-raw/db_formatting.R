@@ -7,11 +7,16 @@ library(dplyr)
 
 sectors <- select(cprg_county_emissions, sector, category, source) %>% unique() %>%
   mutate(sector_desc = sector,
-         sector = case_when(sector_desc == 'Energy' ~ 'stationary_energy',
-                            sector_desc == 'Waste' ~ 'waste_wastewater',
-                            sector_desc == 'Transportation' ~ 'transportation',
-                            .default = NA)
-         )
+         sector_code = case_match(sector_desc,
+                                  'Transportation' ~ 'transportation',
+                                  'Energy' ~ 'stationary_energy',
+                                  'Waste' ~ 'waste_wastewater',
+                                  .default = sector_desc)
+         ) %>%
+  add_row(sector = 'transportation', sector_desc = 'Transportation', 
+          category = 'Passenger vehicles', source = 'Transit', .after = 3)
+
+save(sectors, file = '_meta/data/sectors_inventory.RDS')
 
 sectors_tbl <- sectors %>% select(sector, sector_desc) %>% unique()
 
@@ -42,10 +47,11 @@ source_tbl <- categories %>%
                             source_desc == 'Organics' ~ 'organics',
                             source_desc == 'Recycling' ~ 'recycling',
                             source_desc == 'Waste to energy' ~ 'waste_to_energy',
+                            source_desc == 'Transit' ~ 'transit',
                             .default = NA
                             )) %>%
   select(source, source_desc, sector) %>% unique() %>% 
-  add_row(source = 'transit', source_desc = 'Transit', sector = 'transportation') # maybe???
+  add_row(source = 'transit', source_desc = 'Transit', sector = 'transportation') # moved this up to sectors object
 
 write.csv(sectors_tbl, '_meta/data-raw/CD_Emissions/sectors_tbl.csv', row.names = FALSE)
 write.csv(source_tbl, '_meta/data-raw/CD_Emissions/source_tbl.csv', row.names = FALSE)
