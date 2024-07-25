@@ -157,14 +157,23 @@ saveRDS(epa_nei_meta, "_transportation/data/epa_nei_meta.RDS")
 
 
 
-
-
 # create imputed data values -----
 
 epa_nei_full <- epa_nei %>% 
-  select(-starts_with("total")) %>% 
-  group_by(GEOID,county_name, county_fips, vehicle_weight_label) %>% 
+  ungroup() %>% 
+  select(-starts_with("total"),
+         -state_name) %>% 
+  filter(cprg_area == TRUE) %>% 
+  group_by(GEOID, county_name, cprg_area, county_fips,
+           vehicle_weight_label, vehicle_group, 
+           vehicle_fuel_label, sector_code) %>% 
   complete(nei_inventory_year = 2005:2022) %>% 
+  # we only have a full-ish series for onroad and 
+  # nonroad equipment. 
+  filter(!vehicle_group %in% c("Aircraft",
+                              "Locomotives",
+                              "Commercial Marine Vessels")) %>% 
+  unique() %>% 
   mutate(interp_emissions = na_kalman(emissions_metric_tons_co2e,
                                       smooth = TRUE,
                                       type = "trend")) %>% 
@@ -203,24 +212,33 @@ epa_nei_full %>%
 
 
 epa_nei_complete <- epa_nei_full %>% 
-  select(GEOID, county_fips, county_name, nei_inventory_year, nei_data_source,
+  select(GEOID, county_fips, county_name, cprg_area,
+         nei_inventory_year, nei_data_source,
          vehicle_weight_label,
+         vehicle_fuel_label,
+         vehicle_group,
+         sector_code,
          emissions_metric_tons_co2e = interp_emissions)
 
 epa_nei_complete_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
-  "GEOID", class(epa_nei_complete$GEOID), "County ID",
-  "county_fips", class(epa_nei_complete$county_fips), "County FIPS",
-  "county_name", class(epa_nei_complete$county_name), "County name",
   "nei_inventory_year", class(epa_nei_complete$nei_inventory_year), "NEI inventory year",
   "nei_data_source", class(epa_nei_complete$nei_data_source), "Emissions esimtate data source, either reported NEI value or interplated value",
-  "vehicle_weight_label", class(epa_nei_complete$vehicle_weight_label), "\"Light-duty\", \"Medium-duty\", or \"Heavy-duty\"",
+  "vehicle_weight_label", paste0(class(epa_nei_complete$vehicle_weight_label), collapse = " "), "\"Light-duty\", \"Medium-duty\", \"Heavy-duty\", or \"Other or not applicable\"",
+  "vehicle_fuel_label", class(epa_nei_complete$vehicle_fuel_label), "Diesel or gasoline fuel",
+  "vehicle_group", class(epa_nei_complete$vehicle_group), "Vehicle group",
+  "sector_code", class(epa_nei_complete$sector_code), "NEI sector code",
   "emissions_metric_tons_co2e", class(epa_nei_complete$emissions_metric_tons_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given county"
-)
+) %>% 
+  bind_rows(cprg_county_meta) %>% 
+  filter(Column %in% names(epa_nei_complete))
 
 
 saveRDS(epa_nei_complete, "_transportation/data/epa_nei_complete.RDS")
 saveRDS(epa_nei_complete_meta, "_transportation/data/epa_nei_complete_meta.RDS")
+
+
+
 # combine state and county to get  -----
 nei_county_proportions <- nei_state_emissions %>% 
   select(state_name, nei_inventory_year,
