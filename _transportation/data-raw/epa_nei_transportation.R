@@ -1,6 +1,7 @@
 # get data from the 2020 national emissions inventory
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
+source("_meta/data-raw/county_geography.R")
 library(imputeTS)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
