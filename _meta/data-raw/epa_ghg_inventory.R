@@ -38,12 +38,12 @@ clean_ipcc <- function(state, path) {
 state_ipcc <-
   bind_rows(
     clean_ipcc(
-      path = "_transportation/data-raw/epa/state_ghg/State-Level-GHG-data/Minnesota.xlsx",
+      path = "_meta/data-raw/epa/state_ghg/State-Level-GHG-data/Minnesota.xlsx",
       state = "Minnesota"
     ),
     clean_ipcc(
       state = "Wisconsin",
-      path = "_transportation/data-raw/epa/state_ghg/State-Level-GHG-data/Wisconsin.xlsx"
+      path = "_meta/data-raw/epa/state_ghg/State-Level-GHG-data/Wisconsin.xlsx"
     )
   )
 
@@ -109,12 +109,12 @@ clean_economic <- function(state, path) {
 
 state_economic <- bind_rows(
   clean_economic(
-    path = "_transportation/data-raw/epa/state_ghg/State-Level-GHG-data/Minnesota-Economic.xlsx",
+    path = "_meta/data-raw/epa/state_ghg/State-Level-GHG-data/Minnesota-Economic.xlsx",
     state = "Minnesota"
   ),
   clean_economic(
     state = "Wisconsin",
-    path = "_transportation/data-raw/epa/state_ghg/State-Level-GHG-data/Wisconsin-Economic.xlsx"
+    path = "_meta/data-raw/epa/state_ghg/State-Level-GHG-data/Wisconsin-Economic.xlsx"
   )
 )
 
