@@ -58,11 +58,12 @@ state_ipcc %>%
     color = ~sector_group
   )
 
-state_ipcc %>% 
-  select(Sector, sector_group) %>% 
-  unique() %>% View
+state_ipcc %>%
+  select(Sector, sector_group) %>%
+  unique() %>%
+  View()
 
-state_ipcc %>% 
+state_ipcc %>%
   mutate(transportation_related = case_when(
     Sector %in% c(
       "Fossil Fuel Combustion",
@@ -119,10 +120,12 @@ state_economic <- bind_rows(
 )
 
 
-state_economic %>% 
-  filter(sector_group == "Transportation",
-         `Sector/Source` == "CO2 from Fossil Fuel Combustion",
-         inventory_year > 2004) %>% 
+state_economic %>%
+  filter(
+    sector_group == "Transportation",
+    `Sector/Source` == "CO2 from Fossil Fuel Combustion",
+    inventory_year > 2004
+  ) %>%
   plot_ly(
     type = "scatter",
     mode = "markers+lines",
