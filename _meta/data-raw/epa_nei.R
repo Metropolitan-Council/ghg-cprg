@@ -28,7 +28,8 @@ sectors <- req_base %>%
     show_col_types = FALSE
   )
 
-fetch_nei <- function(year, state) {
+# fetch emissions data -----
+fetch_nei_county_sector <- function(year, state) {
   req_base %>%
     # county sector summary table, all rows
     httr2::req_url_path_append("COUNTY_SECTOR_SUMMARY/ROWS/") %>%
@@ -73,7 +74,7 @@ multi_year <-
         2011,
         2008
       ),
-      fetch_nei,
+      fetch_nei_county_sector,
       state = "Minnesota"
     ),
     purrr::map_dfr(
@@ -84,7 +85,7 @@ multi_year <-
         2011,
         2008
       ),
-      fetch_nei,
+      fetch_nei_county_sector,
       state = "Wisconsin"
     )
   )
@@ -100,7 +101,7 @@ nei_county_multi_year <- multi_year %>%
     sector_code, pollutant_code, st_abbrv, cprg_area
   ) %>%
   summarise(emissions = sum(emissions), .groups = "keep") %>%
-  filter(pollutant_type == "GHG") %>%
+  # filter(pollutant_type == "GHG") %>%
   left_join(sectors, by = c("sector_code")) %>%
   mutate(emissions_grams = emissions %>%
            units::as_units("ton") %>% # short tons/US tons
@@ -123,7 +124,7 @@ nei_state_multi_year <- multi_year %>%
     sector_code, pollutant_code, st_abbrv
   ) %>%
   summarise(emissions = sum(emissions), .groups = "keep") %>%
-  filter(pollutant_type == "GHG") %>%
+  # filter(pollutant_type == "GHG") %>%
   left_join(sectors, by = c("sector_code")) %>%
   mutate(emissions_grams = emissions %>%
            units::as_units("ton") %>% # short tons/US tons
@@ -137,3 +138,56 @@ nei_state_multi_year <- multi_year %>%
 nei_state <- nei_state_multi_year %>%
   ungroup() %>% 
   filter(nei_inventory_year == max(nei_inventory_year))
+
+
+# # Tier summaries -----
+# # Another option is to pull tier level summaries
+# # sectors work for what we need to do for now, 
+# # but this is how you would go about pulling these directly
+# 
+# tiers <- req_base %>%
+#   httr2::req_url_path_append("TIERS/CSV") %>%
+#   httr2::req_method("GET") %>%
+#   httr2::req_perform() %>%
+#   httr2::resp_body_string(encoding = "UTF-8") %>%
+#   readr::read_delim(
+#     delim = ",",
+#     col_types =  "c",
+#     show_col_types = FALSE
+#   )
+# 
+# 
+# fetch_nei_county_tier <- function(year, state) {
+#   req_base %>%
+#     # county sector summary table, all rows
+#     httr2::req_url_path_append("EMISSIONS_TIER/ROWS/") %>%
+#     # Minnesota only
+#     httr2::req_url_path_append(paste0("STATE_NAME/", state)) %>%
+#     # year 2020 inventory only
+#     httr2::req_url_path_append("INVENTORY_YEAR/", year, "/") %>%
+#     # in CSV format
+#     httr2::req_url_path_append("CSV") %>%
+#     # Go!
+#     httr2::req_perform() %>%
+#     # read response as CSV
+#     httr2::resp_body_string(encoding = "UTF-8") %>%
+#     readr::read_delim(
+#       delim = ",",
+#       # col_types = 
+#       #   # specify each column type
+#       #   list(col_character(), # "state_name",
+#       #        col_number(),    # "inventory_year",
+#       #        col_character(), # "state_fips",
+#       #        col_character(), # "pollutant_type", 
+#       #        col_character(), # "uom", 
+#       #        col_character(), # "county_name",
+#       #        col_character(), # "county_fips", 
+#       #        col_number(),    # "emissions", 
+#       #        col_character(), # "sector_code", 
+#       #        col_character(), # "pollutant_code",
+#       #        col_character()  # "st_abbrv"
+#       #   ),
+#       show_col_types = FALSE
+#     )
+# }
+# 
