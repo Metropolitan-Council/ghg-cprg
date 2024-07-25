@@ -44,6 +44,20 @@ fetch_nei <- function(year, state) {
     httr2::resp_body_string(encoding = "UTF-8") %>%
     readr::read_delim(
       delim = ",",
+      col_types = 
+        # specify each column type
+        list(col_character(), # "state_name",
+             col_number(),    # "inventory_year",
+             col_character(), # "state_fips",
+             col_character(), # "pollutant_type", 
+             col_character(), # "uom", 
+             col_character(), # "county_name",
+             col_character(), # "county_fips", 
+             col_number(),    # "emissions", 
+             col_character(), # "sector_code", 
+             col_character(), # "pollutant_code",
+             col_character()  # "st_abbrv"
+        ),
       show_col_types = FALSE
     )
 }
