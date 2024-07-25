@@ -47,7 +47,7 @@ cprg_county_meta <- tribble(
   "STATEFP", class(cprg_county$STATEFP), "State FIPS code",
   "STATE_ABB", class(cprg_county$STATE_ABB), "Abbreviated state name",
   "COUNTYFP", class(cprg_county$COUNTYFP), "County FIPS code",
-  "GEOID", class(cprg_county$GEOID), "County GEOID",
+  "GEOID", class(cprg_county$GEOID), "Five digit county GEOID",
   "NAME", class(cprg_county$NAME), "County name",
   "NAMELSAD", class(cprg_county$NAMELSAD), "Full county name",
   "geometry", class(cprg_county$geometry)[1], "Simple feature geometry"
