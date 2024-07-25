@@ -90,25 +90,38 @@ multi_year <-
     )
   )
 
+id_cols <- multi_year %>% 
+  mutate(GEOID = paste0(state_fips, county_fips),
+         cprg_area = ifelse(GEOID %in% cprg_county$GEOID, TRUE, FALSE),
+         nei_inventory_year = inventory_year) %>%
+  select(
+    state_name, nei_inventory_year,
+    state_fips, county_fips, GEOID, pollutant_type, uom,
+    sector_code, pollutant_code, st_abbrv, cprg_area
+  ) %>% 
+unique()
+
 # county level aggregations ----------
 nei_county_multi_year <- multi_year %>%
   mutate(GEOID = paste0(state_fips, county_fips),
          cprg_area = ifelse(GEOID %in% cprg_county$GEOID, TRUE, FALSE),
          nei_inventory_year = inventory_year) %>%
   group_by(
-    state_name, nei_inventory_year,
-    state_fips, county_fips, GEOID, pollutant_type, uom, emissions,
-    sector_code, pollutant_code, st_abbrv, cprg_area
+   nei_inventory_year,
+    GEOID, pollutant_type, uom,
+    sector_code, pollutant_code
   ) %>%
   summarise(emissions = sum(emissions), .groups = "keep") %>%
-  # filter(pollutant_type == "GHG") %>%
+  ungroup() %>% 
   left_join(sectors, by = c("sector_code")) %>%
+  left_join(id_cols, by = join_by(nei_inventory_year, GEOID, 
+                                  pollutant_type, uom, sector_code,
+                                  pollutant_code)) %>% 
   mutate(emissions_grams = emissions %>%
            units::as_units("ton") %>% # short tons/US tons
            units::set_units("metric_ton") %>% 
            units::set_units("gram") %>% # convert to grams
-           as.numeric()) %>%
-  rowwise()
+           as.numeric())
 
 nei_county <- nei_county_multi_year %>% 
   filter(nei_inventory_year == max(nei_inventory_year),
@@ -120,12 +133,18 @@ nei_state_multi_year <- multi_year %>%
   mutate(nei_inventory_year = inventory_year) %>% 
   group_by(
     state_name, nei_inventory_year,
-    state_fips, pollutant_type, uom, emissions,
-    sector_code, pollutant_code, st_abbrv
+    pollutant_type, uom, emissions,
+    sector_code, pollutant_code
   ) %>%
   summarise(emissions = sum(emissions), .groups = "keep") %>%
-  # filter(pollutant_type == "GHG") %>%
+  ungroup() %>% 
   left_join(sectors, by = c("sector_code")) %>%
+  left_join(id_cols %>% 
+              select(-GEOID, -county_fips, -cprg_area) %>% 
+              unique(),
+            by = join_by(state_name, nei_inventory_year, 
+                         pollutant_type, uom, sector_code,
+                         pollutant_code)) %>% 
   mutate(emissions_grams = emissions %>%
            units::as_units("ton") %>% # short tons/US tons
            units::set_units("metric_ton") %>% 
