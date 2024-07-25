@@ -5,6 +5,7 @@ source("_meta/data-raw/county_geography.R")
 library(imputeTS)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+cprg_county_meta <- read_rds("_meta/data/cprg_county_meta.RDS")
 epa_moves <- readRDS("_transportation/data/epa_moves.RDS")
 
 source("_meta/data-raw/epa_nei.R")
@@ -131,22 +132,20 @@ epa_nei <- nei_county_emissisons %>%
 
 epa_nei_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
-  "GEOID", class(epa_nei$GEOID), "County ID",
-  "county_name", class(epa_nei$county_name), "County name",
-  "county_fips", class(epa_nei$county_fips), "County FIPS",
   "nei_inventory_year", class(epa_nei$nei_inventory_year), "NEI inventory year",
   "total_co2", class(epa_nei$total_co2), "Annual total grams of CO~2~  attributed to the given county",
   "total_ch4", class(epa_nei$total_ch4), "Annual total grams of CH~4~  attributed to the given county",
   "total_n2o", class(epa_nei$total_n2o), "Annual total grams of N~2~O  attributed to the given county",
   "vehicle_weight_label", paste0(class(epa_nei$vehicle_weight_label), collapse = " "), "\"Light-duty\", \"Medium-duty\", \"Heavy-duty\", or \"Other or not applicable\"",
-  "vehicle_fuel_label", class(epa_nei_complete$vehicle_fuel_label), "Diesel or gasoline fuel",
-  "vehicle_group", class(epa_nei_complete$vehicle_group), "Vehicle group",
-  "sector_code", class(epa_nei_complete$sector_code), "NEI sector code",
+  "vehicle_fuel_label", class(epa_nei$vehicle_fuel_label), "Diesel or gasoline fuel",
+  "vehicle_group", class(epa_nei$vehicle_group), "Vehicle group",
+  "sector_code", class(epa_nei$sector_code), "NEI sector code",
   "total_co2_w_equiv", class(epa_nei$total_co2_w_equiv), "Annual total grams of CO~2~ and CO~2~ equivalent attributed to the given county",
   "emissions_metric_tons_co2e", class(epa_nei$emissions_metric_tons_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given county"
 ) %>% 
   bind_rows(cprg_county_meta) %>% 
-  filter(Column %in% names(epa_nei))
+  filter(Column %in% names(epa_nei)) %>% 
+  unique()
 
 
 waldo::compare(epa_nei, readRDS("_transportation/data/epa_nei.RDS"))
@@ -180,8 +179,6 @@ epa_nei_full <- epa_nei %>%
                                       type = "trend")) %>% 
   mutate(nei_data_source = ifelse(is.na(emissions_metric_tons_co2e), "Interpolated",
                                   "NEI value"))
-
-
 
 
 
@@ -223,16 +220,13 @@ epa_nei_complete <- epa_nei_full %>%
 
 epa_nei_complete_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
-  "nei_inventory_year", class(epa_nei_complete$nei_inventory_year), "NEI inventory year",
-  "nei_data_source", class(epa_nei_complete$nei_data_source), "Emissions esimtate data source, either reported NEI value or interplated value",
-  "vehicle_weight_label", paste0(class(epa_nei_complete$vehicle_weight_label), collapse = " "), "\"Light-duty\", \"Medium-duty\", \"Heavy-duty\", or \"Other or not applicable\"",
-  "vehicle_fuel_label", class(epa_nei_complete$vehicle_fuel_label), "Diesel or gasoline fuel",
-  "vehicle_group", class(epa_nei_complete$vehicle_group), "Vehicle group",
-  "sector_code", class(epa_nei_complete$sector_code), "NEI sector code",
-  "emissions_metric_tons_co2e", class(epa_nei_complete$emissions_metric_tons_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given county"
+  "nei_data_source", class(epa_nei_complete$nei_data_source), "Emissions esimtate data source, either reported NEI value or interplated value"
 ) %>% 
-  bind_rows(cprg_county_meta) %>% 
-  filter(Column %in% names(epa_nei_complete))
+  bind_rows(cprg_county_meta,
+            epa_nei_meta) %>% 
+  filter(Column %in% names(epa_nei_complete)) %>% 
+  unique()
+  
 
 
 saveRDS(epa_nei_complete, "_transportation/data/epa_nei_complete.RDS")
@@ -240,7 +234,7 @@ saveRDS(epa_nei_complete_meta, "_transportation/data/epa_nei_complete_meta.RDS")
 
 
 
-# combine state and county to get  -----
+# combine state and county to get relative proportions  -----
 nei_county_proportions <- nei_state_emissions %>% 
   select(state_name, nei_inventory_year,
          vehicle_weight_label,
