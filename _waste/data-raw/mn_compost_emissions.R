@@ -1,7 +1,7 @@
 # calculate emissions from aerobic composting using IPCC equations and MPCA data.
 source("R/_load_pkgs.R")
 if (!exists("score_data")) {
-  score_data <- readRDS("_waste/data/mpca_score.RDS")
+  score_data <- readRDS("_waste/data-raw/mpca_score_allyrs.RDS")
 }
 
 ch4_emissions_factor_compost <- 10 # aggregate emissions factor for aerobic composting, metric tons CH4/thousand metric tons waste, IPCC default

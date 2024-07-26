@@ -1,7 +1,7 @@
 # calculate emissions from WTE and onsite burning using IPCC equations and MPCA data
 source("R/_load_pkgs.R")
 if (!exists("score_data")) {
-  score_data <- readRDS("_waste/data/mpca_score.RDS")
+  score_data <- readRDS("_waste/data-raw/mpca_score_allyrs.RDS")
 }
 
 # assign factors

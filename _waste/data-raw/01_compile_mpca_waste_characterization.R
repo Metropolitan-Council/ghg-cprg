@@ -35,14 +35,14 @@ wb_list[[8]] <- slice(waste_breakdown, 67:72) %>%
 waste_breakdown_bind <- bind_rows(wb_list) %>%
   mutate(across(c(Mean, Lower, Upper), ~ as.numeric(gsub("%", "", ., fixed = TRUE)) / 100))
 
-waste_comp_meta <- tribble(
-  ~Column, ~Class, ~Description,
-  "Material", class(waste_breakdown_bind$Material), "Material category",
-  "Mean", class(waste_breakdown_bind$Mean), "Mean fraction of solid waste contributed by this material",
-  "Lower", class(waste_breakdown_bind$Lower), "Lower 90% cofidence interval fraction of solid waste",
-  "Upper", class(waste_breakdown_bind$Upper), "Upper 90% cofidence interval fraction of solid waste",
-  "Category", class(waste_breakdown_bind$Category), "Category of waste materials type"
-)
+# waste_comp_meta <- tribble(
+#   ~Column, ~Class, ~Description,
+#   "Material", class(waste_breakdown_bind$Material), "Material category",
+#   "Mean", class(waste_breakdown_bind$Mean), "Mean fraction of solid waste contributed by this material",
+#   "Lower", class(waste_breakdown_bind$Lower), "Lower 90% cofidence interval fraction of solid waste",
+#   "Upper", class(waste_breakdown_bind$Upper), "Upper 90% cofidence interval fraction of solid waste",
+#   "Category", class(waste_breakdown_bind$Category), "Category of waste materials type"
+# )
 
-saveRDS(waste_breakdown_bind, paste0("_waste/data/mn_waste_composition.RDS"))
-saveRDS(waste_comp_meta, paste0("_waste/data/mn_waste_composition_meta.RDS"))
+saveRDS(waste_breakdown_bind, paste0("_waste/data-raw/mpca_waste_composition.RDS"))
+# saveRDS(waste_comp_meta, paste0("_waste/data/mn_waste_composition_meta.RDS"))

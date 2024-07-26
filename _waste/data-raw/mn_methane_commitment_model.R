@@ -2,9 +2,9 @@
 # Data from MPCA Score
 source("R/_load_pkgs.R")
 if (!exists("score_data")) {
-  score_data <- readRDS("_waste/data/mpca_score.RDS")
+  score_data <- readRDS("_waste/data-raw/mpca_score_allyrs.RDS")
 }
-waste_comp <- readRDS(file.path(here::here(), "_waste/data/mn_waste_composition.RDS"))
+mpca_waste_composition <- readRDS(file.path(here::here(), "_waste/data-raw/mpca_waste_composition.RDS"))
 # methane_recovery_mn <- readRDS("_waste/data/methane_recovery_mn.RDS")
 
 ## Methane Commitment model ----
@@ -34,7 +34,7 @@ ipcc_doc_factors <- tibble(
   Factor = c(0.4, 0.4, 0.17, 0.15, 0.3)
 )
 
-doc_sum <- waste_comp %>%
+doc_sum <- mpca_waste_composition %>%
   inner_join(ipcc_doc_factors, by = join_by(Category)) %>%
   mutate(doc_content = Mean * Factor) %>%
   summarize(doc_total = sum(doc_content), degradable_fraction = sum(Mean))

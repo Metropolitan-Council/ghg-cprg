@@ -15,12 +15,12 @@ source("_waste/data-raw/wastewater/epa_state_wastewater.R")
 
 ## MN ----
 ### source data ----
-source("_waste/data-raw/mn_read_score_data.R") # MPCA SCORE activity data
-# generates mpca_score.RDS
-source("_waste/data-raw/clean_tabula_tables.R") # MPCA waste composition data (2013)
-# generates mn_waste_composition.RDS
+source("_waste/data-raw/01_compile_mpca_score_allyrs.R") # MPCA SCORE activity data
+# RDS lives in data-raw
+source("_waste/data-raw/01_compile_mpca_waste_characterization.R") # MPCA waste composition data (2013)
+# RDS lives in data-raw
 source("_waste/data-raw/mn_methane_flaring.R") # EPA methane recovery data (not used)
-# generates methane_recovery_mn.RDS
+# RDS lives in data-raw
 
 ### emissions calculations ----
 source("_waste/data-raw/mn_methane_commitment_model.R") # landfill
