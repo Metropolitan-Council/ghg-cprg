@@ -6,16 +6,17 @@ load("_meta/data/sector_category.RDS")
 library(dplyr)
 
 ### Create sector/category/source breakdowns from 2021 inventory
-sectors <- select(cprg_county_emissions, sector, category, source) %>% unique() %>%
+sectors <- select(cprg_county_emissions, sector, category, source) %>% 
+  add_row(sector = 'Transportation', 
+          category = 'Passenger vehicles', source = 'Transit') %>%
+  unique() %>% ungroup() %>%
   mutate(sector_desc = sector,
          sector_code = case_match(sector_desc,
                                   'Transportation' ~ 'transportation',
                                   'Energy' ~ 'stationary_energy',
                                   'Waste' ~ 'waste_wastewater',
                                   .default = sector_desc)
-         ) %>%
-  add_row(sector = 'transportation', sector_desc = 'Transportation', 
-          category = 'Passenger vehicles', source = 'Transit', .after = 3)
+         ) 
 
 save(sectors, file = '_meta/data/sectors_inventory.RDS')
 
