@@ -82,7 +82,8 @@ As in other sections, MSW activity data comes from MPCA's SCORE report. The emis
 
 Since incineration data is reported to SCORE as Waste to Energy, it is assumed that all incineration in the MSA is considered Waste to Energy.
 
-Incineration of waste produces CH~4~, CO~2~, and N~2~O emissions. However, the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories reports negligible CH~4~ emissions for continuous incineration facilities. \[CHECK IF WE USE STOKERS OR FLUIDIZED BEDS - STOKER EF \~0.2\]
+Incineration of waste produces CH~4~, CO~2~, and N~2~O emissions. However, the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories reports negligible CH~4~ emissions for continuous incineration facilities. 
+<!-- \[CHECK IF WE USE STOKERS OR FLUIDIZED BEDS - STOKER EF \~0.2\] -->
 
 $$Emissions_{CO_2} = (MSW_{incinerated} \times E_i + MSW_{onsite} \times E_o) \times FCC
 \times FFC \times 44/12$$
@@ -109,7 +110,8 @@ where:
 
 Because the methane commitment method for landfill emissions calculates emissions slightly differently than the IPCC-encouraged First Order Decay model, landfill results may differ slightly from sources that use First Order Decay, such as the EPA's National Inventory and its State Inventory Tools. Both methods are accepted as valid ways to estimate solid waste emissions.
 
-MPCA SCORE does not report activity data for waste generated and processed by industry. [check SIT tool - what % does EPA assign industry?]
+MPCA SCORE does not report activity data for waste generated and processed by industry. 
+<!-- [check SIT tool - what % does EPA assign industry?] -->
 
 Emissions are not calculated for waste that is recycled, as any emissions generated in the recycling process come from the energy use of the facilities or transportation and are accounted for in other sectors of this inventory.
 
@@ -121,13 +123,29 @@ This 2021 inventory estimates landfill and waste-to-energy emissions for the yea
 
 ## Data Sources
 
-### MPCA SCORE
+{{< include data_mpca_score_2021.qmd >}}
 
 ### MPCA Waste Characterization Study
 
-### Wisconsin DNR Emissions Inventory
+In 2013, the MPCA contracted with Burns & McDonnell Engineering Company, Inc. to conduct a waste characterization study of landfill waste, an update to an earlier study in the year 2000. For simplicity, we have chosen to set waste proportions equal to those 2013 values for all years in this inventory.
 
-### EPA Methane Recovery Data
+The study sampled waste makeup from six waste disposal facilities across the state and used the results to model statewide totals. More details can be found in study documentation, (cite).
+
+This data is a high-quality state-level dataset.
+
+For consistency, the values in this study have been compared to the IPCC default waste breakdown for North America. Relevant values were found to be consistent within 90% confidence intervals (as reported in the MPCA study), with the exception of food waste. IPCC values attribute 33.9% of landfill waste to food waste, while the 2013 report only finds that 17.8% of landfill waste is food waste. There are many possible explanations for this discrepancy, including differences in waste breakdown across the North American region and the possibility that the IPCC's numbers reflect additional food waste processed in organics facilities, which would not be included in the MPCA study.
+
+Due to the fact that it is more recent and more specific to the Minnesota region, we have chosen the MPCA study as the source of truth in this case.
+
+<!-- If necessary, display final breakdown of percentages aligned with DOC calculation categories here. -->
+
+{{< include data_wi_emissions.qmd >}}
+
+### EPA Methane Recovery Data {#sec-epa-methane}
+
+The EPA generates methane flaring and landfill gas to energy data for each state as part of its State Inventory Tool for solid waste. This data is collected as part of the [Landfill Methane Outreach Program](https://www.epa.gov/lmop). 
+
+However, since this data is collected on a national level, there are potential discrepancies with state-level and especially regional breakdowns of methane recovery. Due to these concerns, we have chosen to exclude this data source from our inventory and instead use the IPCC default of 0 methane recovery. This means that our inventory may overestimate emissions from solid waste landfills.
 
 ## Graphing
 
