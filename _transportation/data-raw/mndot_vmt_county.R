@@ -465,6 +465,13 @@ dat_ls[["2022"]] <- readxl::read_excel(
 ) %>%
   janitor::clean_names()
 
+dat_ls[["2023"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/county_route_system/23_crs.xlsx",
+  sheet = 2,
+  skip = 2
+) %>%
+  janitor::clean_names()
+
 # compile ------
 
 # bind all datasets together
