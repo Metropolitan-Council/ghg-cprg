@@ -19,18 +19,39 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
+- Which method we chose is inextricably linked to the data sources available. 
+
 
 - Review GPC scope definitions
 - Consumption based emissions inventories (CBEI)
 - Pros and cons
 - Why we changed
+- Other regions/states/CPRG recipients, findings from TAFs
 
-## EPA data sources
+## EPA emissions data sources
+
+The EPA provides many datasets and tools for estimating and forecasting greenhouse gas emissions. For our purposes, we want data disaggregated to the county level, though we can work with state-level data if necessary.
+
+The National Emissions Inventory (NEI) 
+
+The NEI is discussed further in @sec-epa-nei. 
+
+Inventory of US Greenhouse Gas Emissions and Sinks (US GHGI) is an annual report 
+
+More information on the US GHGI is available on the [EPA website](https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks). 
+
+
+
 
 Discuss differences between NEI and GHG Inventory (yes they sound like the same thing but they are different)
 
-<!-- chapter content -->
+Most importantly, 
 
+## Looking forward
+
+The Metropolitan Council is obligated under @sec473145 to provide support to communities in their climate mitigation and adaptation efforts. We plan to provide city-level activity-based GHG inventories to communities as they develop comprehensive plans. 
+
+There are efforts to harmonize and improve emissions inventory reporting at the federal level [@iwgGHGMMIS2023], though implications for the CPRG and Met Council's efforts are unclear. 
 
 
 ```{r echo=FALSE}
