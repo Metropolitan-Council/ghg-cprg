@@ -38,37 +38,43 @@ dot_vmt_county_proportions <- dot_vmt %>%
     "data_source"
   )) %>%
   mutate(county_proportion_annual_vmt = (annual_vmt / state_annual_vmt) %>%
-           round(digits = 6)) %>% 
-  left_join(cprg_county %>% 
-              select(state_name = STATE,
-                     county = NAME,
-                     GEOID, 
-                     county_fips = COUNTYFP) %>% 
-              sf::st_drop_geometry(),
-            by = join_by(county)) %>% 
-  select(year, GEOID, 
-         county, cprg_area, state, daily_vmt, annual_vmt, state_daily_vmt,
-         state_annual_vmt, county_proportion_annual_vmt, data_source) 
-  
+    round(digits = 6)) %>%
+  left_join(
+    cprg_county %>%
+      select(
+        state_name = STATE,
+        county = NAME,
+        GEOID,
+        county_fips = COUNTYFP
+      ) %>%
+      sf::st_drop_geometry(),
+    by = join_by(county)
+  ) %>%
+  select(
+    year, GEOID,
+    county, cprg_area, state, daily_vmt, annual_vmt, state_daily_vmt,
+    state_annual_vmt, county_proportion_annual_vmt, data_source
+  )
+
 
 
 dot_vmt_county_proportions_meta <-
   bind_rows(
     cprg_county_meta,
-  
-  tibble::tribble(
-    ~"Column", ~"Class", ~"Description",
-    "year", class(dot_vmt_county_proportions$year), "VMT estimation year",
-    "county", class(dot_vmt_county_proportions$county), "County name",
-    "cprg_area", class(dot_vmt_county_proportions$cprg_area), "Whether county is included in the CPRG area",
-    "state", class(dot_dot_vmt_county_proportions$state), "County state",
-    "daily_vmt", class(dot_vmt_county_proportions$daily_vmt), "County vehicle miles traveled on an average day",
-    "annual_vmt", class(dot_vmt_county_proportions$annual_vmt), "County annual vehicle miles traveled",
-    "state_daily_vmt", class(dot_vmt_county_proportions$state_daily_vmt), "Statewide annual vehicle miles traveled",
-    "state_annual_vmt", class(dot_vmt_county_proportions$state_annual_vmt), "Statewide vehicle miles traveled on an average day",
-    "county_proportion_annual_vmt", class(dot_vmt_county_proportions$county_proportion_annual_vmt), "County annual vehicle miles traveled relative to statewide total",
-    "data_source", class(dot_vmt_county_proportions$data_source), "State DOT. Either \"MnDOT\" or \"WisDOT\""
-  )) %>% 
+    tibble::tribble(
+      ~"Column", ~"Class", ~"Description",
+      "year", class(dot_vmt_county_proportions$year), "VMT estimation year",
+      "county", class(dot_vmt_county_proportions$county), "County name",
+      "cprg_area", class(dot_vmt_county_proportions$cprg_area), "Whether county is included in the CPRG area",
+      "state", class(dot_dot_vmt_county_proportions$state), "County state",
+      "daily_vmt", class(dot_vmt_county_proportions$daily_vmt), "County vehicle miles traveled on an average day",
+      "annual_vmt", class(dot_vmt_county_proportions$annual_vmt), "County annual vehicle miles traveled",
+      "state_daily_vmt", class(dot_vmt_county_proportions$state_daily_vmt), "Statewide annual vehicle miles traveled",
+      "state_annual_vmt", class(dot_vmt_county_proportions$state_annual_vmt), "Statewide vehicle miles traveled on an average day",
+      "county_proportion_annual_vmt", class(dot_vmt_county_proportions$county_proportion_annual_vmt), "County annual vehicle miles traveled relative to statewide total",
+      "data_source", class(dot_vmt_county_proportions$data_source), "State DOT. Either \"MnDOT\" or \"WisDOT\""
+    )
+  ) %>%
   filter(`Column` %in% names(dot_vmt_county_proportions))
 
 
@@ -111,7 +117,7 @@ dot_vmt_county_proportions %>%
   ))
 
 
-county_proportions %>% 
+county_proportions %>%
   plot_ly(
     type = "box",
     x = ~county_proportion_of_state_pop,
