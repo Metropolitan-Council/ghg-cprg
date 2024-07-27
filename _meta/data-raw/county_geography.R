@@ -15,4 +15,5 @@ county_geography <- bind_rows(
       STATE_ABB = "WI"
     )
 ) %>%
+  mutate(cprg_area = ifelse(GEOID %in% cprg_county$GEOID, TRUE, FALSE)) %>% 
   sf::st_drop_geometry()
