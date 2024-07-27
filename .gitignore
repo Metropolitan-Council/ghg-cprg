@@ -600,3 +600,21 @@ _transportation/data-raw/epa/SCCDownload-2024-0718-132502.csv
 _meta/data-raw/epa/state_ghg/
 
 _meta/data-raw/epa/nei_2005/
+
+_meta/data-raw/epa/SCCDownload-2024-0718-132502.csv
+
+_transportation/data-raw/epa/nei/2020NEI_onroad/inputs/onroad/
+
+_transportation/data-raw/epa/nei/2020_Documentation_of_CDB_Input_Data_20230118.xlsx
+
+_transportation/data-raw/epa/nei/2020_RepCounty_Runspecs.zip
+
+_transportation/data-raw/epa/nei/2020_Representative_Counties_Analysis_20220720.xlsx
+
+_transportation/data-raw/epa/nei/2020NEI_onroad_activity_final_20230112.zip
+
+_transportation/data-raw/epa/nei/onroad_activity_data_SCC_descriptions.xlsx
+
+_transportation/data-raw/epa/nei/~$2020_Documentation_of_CDB_Input_Data_20230118.xlsx
+
+_transportation/data-raw/epa/nei/~$2020_Representative_Counties_Analysis_20220720.xlsx
