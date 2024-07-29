@@ -92,7 +92,7 @@ vs_other <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
            grepl("poultry_broilers", livestock_type_temp) ~ "Broilers",
            grepl("poultry_layers", livestock_type_temp) ~ "Layers",
            grepl("poultry_pullets", livestock_type_temp) ~ "Pullets",
-           grepl("poultry_turkeys", livestock_type_temp) ~ "Turkey",
+           grepl("poultry_turkeys", livestock_type_temp) ~ "Turkeys",
            grepl("swine", livestock_type_temp) ~ "Swine",
            grepl("sheep", livestock_type_temp) ~ "Sheep",
            TRUE ~ NA
@@ -117,10 +117,10 @@ vs_livestock <-  bind_rows(vs_dairy_cows,
 vs_livestock_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "state", class(vs_cows$state), "State",
-    "year", class(vs_cows$year), "Year",
-    "livestock_type", class(vs_cows$livestock_type), "Formatted livestock classification - matches USDA census labels",
-    "mt_vs_head_yr", class(vs_cows$mt_vs_head_yr), "Metric tons of volatile solids produced per animal per year"
+    "state", class(vs_livestock$state), "State",
+    "year", class(vs_livestock$year), "Year",
+    "livestock_type", class(vs_livestock$livestock_type), "Formatted livestock classification - matches USDA census labels",
+    "mt_vs_head_yr", class(vs_livestock$mt_vs_head_yr), "Metric tons of volatile solids produced per animal per year"
   )
 
 saveRDS(vs_livestock, "./_agriculture/data/volatile_solids.rds")
