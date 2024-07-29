@@ -679,6 +679,20 @@
       ],
       "Hash": "8ee9ac56ef633d0c7cab8b2ca87d683e"
     },
+    "datapasta": {
+      "Package": "datapasta",
+      "Version": "3.1.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "clipr",
+        "methods",
+        "readr",
+        "rstudioapi"
+      ],
+      "Hash": "a0e4431f2a837af520e0cabe760061b2"
+    },
     "dbplyr": {
       "Package": "dbplyr",
       "Version": "2.5.0",
