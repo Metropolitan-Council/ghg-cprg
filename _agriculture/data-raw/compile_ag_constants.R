@@ -257,5 +257,5 @@ ag_constants_meta <-
     "short_text", class(ag_constants_formatted$short_text), "Syntax friendly classifier for coding"
   )
 
-saveRDS(ag_constants_formatted, "./_agriculture/data/ag_constants_formatted.rds")
-saveRDS(ag_constants_meta, "./_agriculture/data/ag_constants_formatted_meta.rds")
+saveRDS(ag_constants_formatted, "./_agriculture/data/ag_constants.rds")
+saveRDS(ag_constants_meta, "./_agriculture/data/ag_constants_meta.rds")
