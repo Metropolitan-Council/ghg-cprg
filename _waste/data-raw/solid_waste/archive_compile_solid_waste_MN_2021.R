@@ -4,7 +4,7 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 ## MPCA SCORE ----
 # Summary data collected from https://public.tableau.com/app/profile/mpca.data.services/viz/SCOREOverview/1991-2021SCORE
 
-score_summary <- read_csv(file.path(here::here(), "_waste/data-raw/score_summary.csv"))
+score_summary <- read_csv(file.path(here::here(), "_waste/data-raw/solid_waste/score_summary.csv"))
 
 # to do: replace mn_counties with general-use list
 
@@ -15,27 +15,27 @@ score_filtered_2021 <- score_summary %>%
     County %in% cprg_county$NAME,
     Year == "2021"
   ) %>%
+  left_join(cprg_county, by = join_by(County == NAME)) %>% 
   select(
-    County,
-    "Management Category" = "Mangement Method",
-    Method,
-    Year,
-    Tons
+    geoid = GEOID,
+    source = Method,
+    inventory_year = Year,
+    value_activity = Tons
   )
 
 # add score metadata
-mpca_score_2021_meta <- tribble(
-  ~Column, ~Class, ~Description,
-  "County", class(score_filtered_2021$County), "MN county of waste origin",
-  "Management Category", class(score_filtered_2021$`Management Category`), "Waste category
-  (either M__ Municipal Solid Waste or Combined Recycling and Organics)",
-  "Method", class(score_filtered_2021$Method), "Waste disposal method",
-  "Year", class(score_filtered_2021$Year), "MPCA SCORE data collection year (this version of the dataset only includes 2021)",
-  "Tons", class(score_filtered_2021$Tons), "Tons of waste collected"
-)
-
-saveRDS(score_filtered_2021, paste0("_waste/data/mpca_score_2021.RDS"))
-saveRDS(mpca_score_2021_meta, paste0("_waste/data/mpca_score_2021_meta.RDS"))
+# mpca_score_2021_meta <- tribble(
+#   ~Column, ~Class, ~Description,
+#   "County", class(score_filtered_2021$County), "MN county of waste origin",
+#   "Management Category", class(score_filtered_2021$`Management Category`), "Waste category
+#   (either M__ Municipal Solid Waste or Combined Recycling and Organics)",
+#   "source", class(score_filtered_2021$source), "Waste disposal source",
+#   "Year", class(score_filtered_2021$Year), "MPCA SCORE data collection year (this version of the dataset only includes 2021)",
+#   "Tons", class(score_filtered_2021$Tons), "Tons of waste collected"
+# )
+# 
+# saveRDS(score_filtered_2021, paste0("_waste/data/mpca_score_2021.RDS"))
+# saveRDS(mpca_score_2021_meta, paste0("_waste/data/mpca_score_2021_meta.RDS"))
 
 ## Emissions Factors ----
 
@@ -58,36 +58,29 @@ score_final_2021 <- score_filtered_2021 %>%
   mutate( # emissions factor in metric tons co2/short tons waste
     emissions_factor =
       case_when(
-        Method == "Landfill" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Landfilled") %>%
+        source == "Landfill" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Landfilled") %>%
           magrittr::extract2("value")), # 0.52
-        Method == "MSW Compost" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Composted") %>%
+        source == "MSW Compost" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Composted") %>%
           magrittr::extract2("value")), # NA
-        Method == "Onsite" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Landfilled") %>%
+        source == "Onsite" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Landfilled") %>%
           magrittr::extract2("value")), # 0.52
-        Method == "Organics" ~ as.numeric(filter(waste_factors, Material == "Mixed Organics", name == "Composted") %>%
+        source == "Organics" ~ as.numeric(filter(waste_factors, Material == "Mixed Organics", name == "Composted") %>%
           magrittr::extract2("value")), # 0.17
-        Method == "Recycling" ~ as.numeric(filter(waste_factors, Material == "Mixed Recyclables", name == "Recycled") %>%
+        source == "Recycling" ~ as.numeric(filter(waste_factors, Material == "Mixed Recyclables", name == "Recycled") %>%
           magrittr::extract2("value")), # 0.09
-        Method == "WTE" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Combusted") %>%
+        source == "WTE" ~ as.numeric(filter(waste_factors, Material == "Mixed MSW", name == "Combusted") %>%
           magrittr::extract2("value")), # 0.43
       ),
     # emissions in metric tons co2e
-    emissions_metric_tons_co2e = Tons * emissions_factor
+    value_emissions = value_activity * emissions_factor,
+    units_emissions = "Tonnes CO2e",
+    units_activity = "Tons MSW",
+    data_source = "MPCA SCORE",
+    factor_source = "EPA Emissions Factors Hub"
   ) %>%
-  filter(!Method == "MSW Compost") # removing rows filled with 0s and NAs
+  filter(!source == "MSW Compost") # removing rows filled with 0s and NAs
 
-mn_emissions_2021_meta <- tribble(
-  ~Column, ~Class, ~Description,
-  "County", class(score_final_2021$County), "MN county of waste origin",
-  "Management Category", class(score_final_2021$`Management Category`), "Waste category
-  (either Mixed Municipal Solid Waste or Combined Recycling and Organics)",
-  "Method", class(score_final_2021$Method), "Waste disposal method",
-  "Year", class(score_final_2021$Year), "MPCA SCORE data collection year",
-  "Tons", class(score_final_2021$Tons), "Tons of waste collected",
-  "emissions_factor", class(score_final_2021$emissions_factor), "Appropriate emissions factor from EPA",
-  "emissions_metric_tons_co2e", class(score_final_2021$emissions_metric_tons_co2e),
-  "Calculated emissions in metric tons CO2e"
-)
+mn_emissions_2021_meta <- readRDS("_waste/data/solid_waste_MN_allyrs.RDS")
 
 # export
 saveRDS(score_final_2021, paste0("_waste/data/mn_emissions_2021.RDS"))

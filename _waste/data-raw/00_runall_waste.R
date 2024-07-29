@@ -8,8 +8,8 @@ source("_waste/data-raw/wastewater/epa_state_wastewater.R")
 # solid waste ----
 
 # 2021 ----
-# source("_waste/data-raw/2021_mpca_score.R")
-# source("_waste/data-raw/2021_combine_waste_data.R")
+# source("_waste/data-raw/solid_waste/archive_compile_solid_waste_mn_2021.R")
+# source("_waste/data-raw/solid_waste/archive_compile_solid_waste_2021.R")
 
 # 2005-2021 ----
 
@@ -24,21 +24,16 @@ source("_waste/data-raw/solid_waste/01_epa_mn_methane_recovery.R") # EPA methane
 # RDS lives in data-raw
 
 ### emissions calculations ----
-source("_waste/data-raw/solid_waste/02_compile_landfill_MN_allyrs.R") # landfill
-# generates landfill_MN_allyrs.RDS
-source("_waste/data-raw/solid_waste/02_compile_organics_MN_allyrs.R") # compost
-# generates organics_MN_allyrs.RDS
-source("_waste/data-raw/solid_waste/02_compile_incineration_MN_allyrs.R") # incineration
-# generates incineration_MN_allyrs.RDS
+source("_waste/data-raw/solid_waste/02_compile_landfill_MN_allyrs.R") 
+source("_waste/data-raw/solid_waste/02_compile_organics_MN_allyrs.R") 
+source("_waste/data-raw/solid_waste/02_compile_incineration_MN_allyrs.R") 
 
 ### combine emissions ----
 source("_waste/data-raw/solid_waste/03_compile_solid_waste_MN_allyrs.R") 
 # create solid_waste_MN_by_gas.RDS and solid_waste_MN_allyrs.RDS
 
 ## WI ----
-source("_waste/data-raw/solid_waste/03_compile_solid_waste_WI_allyrs.R") # run all WI emissions processing
-# create wi_emissions.RDS
+source("_waste/data-raw/solid_waste/03_compile_solid_waste_WI_allyrs.R") 
 
 ## MN and WI combined ----
 source("_waste/data-raw/solid_waste/04_compile_final_solid_waste_allyrs.R")
-# create final_solid_waste_allyrs.RDS

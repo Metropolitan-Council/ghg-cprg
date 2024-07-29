@@ -18,7 +18,7 @@ score_filtered <- score_summary %>%
     Year %in% 2005:2021
   ) %>%
   mutate(
-    value_activity = Tons * 0.90718474, # convert short tons to metric tons (for consistency with IPCC values)
+    value_activity = Tons * mt_conversion_factor, # convert short tons to metric tons (for consistency with IPCC values)
     units_activity = "metric tons MSW"
     ) %>%
   left_join(cprg_county, by = join_by(County == NAME)) %>% 

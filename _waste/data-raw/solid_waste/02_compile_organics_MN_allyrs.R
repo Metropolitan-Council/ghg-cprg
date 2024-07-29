@@ -14,8 +14,8 @@ n2o_factor_compost <- 0.6 # aggregate emissions factor for aerobic composting, m
 organics_emissions <- mpca_score %>%
   filter(source == "Organics") %>% 
   mutate(
-    "Tonnes CH4" = value_activity * ch4_factor_compost,
-    "Tonnes N2O" = value_activity * n2o_factor_compost # decide whether to convert to co2e
+    "Tonnes CH4" = value_activity * ch4_factor_compost * 1/1000,
+    "Tonnes N2O" = value_activity * n2o_factor_compost * 1/1000
   ) %>%
   pivot_longer(
     c("Tonnes CH4", "Tonnes N2O"),

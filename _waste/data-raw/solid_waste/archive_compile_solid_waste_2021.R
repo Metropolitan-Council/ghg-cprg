@@ -6,39 +6,39 @@ wi_emissions <- readRDS(file.path(here::here(), "_waste/data/solid_waste_WI_ally
 mn_cleaned <- mn_emissions %>%
   mutate(
     source = case_when(
-      Method == "Landfill" ~ "Landfill",
-      Method == "Onsite" ~ "Landfill",
-      Method == "WTE" ~ "Waste to energy",
-      Method == "Organics" ~ "Organics",
-      Method == "Recycling" ~ "Recycling"
+      source == "Landfill" ~ "Landfill",
+      source == "Onsite" ~ "Landfill",
+      source == "WTE" ~ "Waste to energy",
+      source == "Organics" ~ "Organics",
+      source == "Recycling" ~ "Recycling"
     )
   ) %>%
-  group_by(County, source) %>%
+  group_by(geoid, source) %>%
   mutate(
-    sectorized_emissions = sum(emissions_metric_tons_co2e),
+    sectorized_emissions = sum(value_emissions),
     data_source = "MPCA SCORE"
   ) %>%
   select(
-    county = County,
-    year = Year,
-    emissions_metric_tons_co2e = sectorized_emissions,
+    geoid,
+    inventory_year,
+    value_emissions = sectorized_emissions,
     source,
-    data_source
+    data_source,
+    units_emissions
   ) %>%
   distinct(.keep_all = TRUE)
 
 wi_cleaned <- wi_emissions %>%
-  mutate(
-    source = "Landfill",
-    year = 2021,
-    data_source = "Wisconsin DNR"
+  filter(
+    inventory_year == 2021
   ) %>%
   select(
-    county = NAME,
-    emissions_metric_tons_co2e,
+    geoid,
+    value_emissions,
     source,
-    year,
-    data_source
+    inventory_year,
+    data_source,
+    units_emissions
   )
 
 # combine data
@@ -47,12 +47,14 @@ emissions_total <- mn_cleaned %>%
 
 emissions_total_meta <- tribble(
   ~Column, ~Class, ~Description,
-  "county", class(emissions_total$county), "County of waste origin",
-  "year", class(emissions_total$year), "Year for which emissions were calculated",
-  "emissions_metric_tons_co2e", class(emissions_total$emissions_metric_tons_co2e),
+  "geoid", class(emissions_total$geoid), "FIPS code for county of waste origin",
+  "inventory_year", class(emissions_total$inventory_year), "Year for which emissions were calculated",
+  "value_emissions", class(emissions_total$value_emissions),
   "Emissions estimate in metric tons co2e",
-  "source", class(emissions_total$source), "Waste processing method (Landfill, Recycling, Organics)"
+  "units_emissions", class(emissions_total$units_emissions), "Emissions units",
+  "source", class(emissions_total$source), "Waste processing source (Landfill, Recycling, Organics)",
+  "data_source", class(emissions_total$source), "Original source of data"
 )
 
 saveRDS(emissions_total, file.path(here::here(), "_waste/data/solid_waste_2021.RDS"))
-saveRDS(emissions_total_meta, file.path(here::here(), "_waste/data/solid_waste_2021.RDS"))
+saveRDS(emissions_total_meta, file.path(here::here(), "_waste/data/solid_waste_2021_meta.RDS"))
