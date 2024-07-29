@@ -7,7 +7,7 @@ if(!file.exists("_agriculture/data-raw/ag-module.xlsx")){
   cli::cli_abort("Download agriculture data from MS Team")
 }
 
-ag_constants <- read_rds("_agriculture/data/ag_constants_formatted.rds")
+ag_constants <- read_rds("_agriculture/data/ag_constants.rds")
 
 ### pull out typical animal mass by year
 tam_cattle <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",

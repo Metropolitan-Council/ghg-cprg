@@ -1,3 +1,15 @@
+source("R/_load_pkgs.R")
+# note that the CSV imports will be replace with more direct connection
+# from the SIT tool
+
+# check that needed data are available locally
+if(!file.exists("_agriculture/data-raw/ag-module.xlsx")){
+  cli::cli_abort("Download agriculture data from MS Team")
+}
+
+tam <- read_rds("_agriculture/data/typical_animal_mass.rds")
+
+
 # pull out cattle nitrogen excreted by head per year - mn and wi
 nex_cattle <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
                                 sheet = "TAM and NEx Rates",
