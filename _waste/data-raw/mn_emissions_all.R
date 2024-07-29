@@ -4,9 +4,9 @@ if (!exists("gwp")) {
 }
 
 # rather than sourcing, call in RDSes
-landfill_emissions <- readRDS(file.path(here::here(), "_waste/data/mn_landfill_emissions.RDS"))
-incineration_emissions <- readRDS(file.path(here::here(), "_waste/data/mn_incineration_emissions.RDS"))
-compost_emissions <- readRDS(file.path(here::here(), "_waste/data/mn_compost_emissions.RDS"))
+landfill_emissions <- readRDS(file.path(here::here(), "_waste/data/landfill_MN_allyrs.RDS"))
+incineration_emissions <- readRDS(file.path(here::here(), "_waste/data/incineration_MN_allyrs.RDS"))
+compost_emissions <- readRDS(file.path(here::here(), "_waste/data/organics_MN_allyrs.RDS"))
 
 solid_waste_emissions_metric_tons <- landfill_emissions %>%
   bind_rows(incineration_emissions, compost_emissions) %>%

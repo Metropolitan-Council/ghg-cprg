@@ -15,20 +15,20 @@ source("_waste/data-raw/wastewater/epa_state_wastewater.R")
 
 ## MN ----
 ### source data ----
-source("_waste/data-raw/01_compile_mpca_score_allyrs.R") # MPCA SCORE activity data
+source("_waste/data-raw/01_mpca_score_allyrs.R") # MPCA SCORE activity data
 # RDS lives in data-raw
-source("_waste/data-raw/01_compile_mpca_waste_characterization.R") # MPCA waste composition data (2013)
+source("_waste/data-raw/01_mpca_waste_characterization.R") # MPCA waste composition data (2013)
 # RDS lives in data-raw
-source("_waste/data-raw/mn_methane_flaring.R") # EPA methane recovery data (not used)
+source("_waste/data-raw/01_epa_mn_methane_recovery.R") # EPA methane recovery data (not used)
 # RDS lives in data-raw
 
 ### emissions calculations ----
-source("_waste/data-raw/mn_methane_commitment_model.R") # landfill
-# generates mn_landfill_emissions.RDS
-source("_waste/data-raw/mn_compost_emissions.R") # compost
-# generates mn_compost_emissions.RDS
-source("_waste/data-raw/mn_incineration_emissions.R") # incineration
-# generates mn_incineration_emissions.RDS
+source("_waste/data-raw/02_compile_landfill_MN_allyrs.R") # landfill
+# generates landfill_MN_allyrs.RDS
+source("_waste/data-raw/02_compile_organics_MN_allyrs.R") # compost
+# generates organics_MN_allyrs.RDS
+source("_waste/data-raw/02_compile_incineration_MN_allyrs.R") # incineration
+# generates incineration_MN_allyrs.RDS
 
 ### combine emissions ----
 source("_waste/data-raw/mn_emissions_all.R") 

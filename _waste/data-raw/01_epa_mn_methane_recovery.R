@@ -4,8 +4,9 @@
 source("R/_load_pkgs.R")
 
 #cprg_county_proportions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_proportions.RDS"))
-mpca_score <- readRDS(file.path(here::here(), "_waste/data-raw/mpca_score_allyrs.RDS"))
-
+if (!exists("mpca_score")) {
+  mpca_score <- readRDS(file.path(here::here, "_waste/data-raw/mpca_score_allyrs.RDS"))
+}
 # pull in and calculate f_rec ----
 
 # Source: EPA State Inventory Solid Waste tool, methane flaring and LFGTE data
@@ -22,11 +23,11 @@ flaring_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid
 
 flaring_data <- data.frame(t(flaring_data)) %>%
   tibble::rownames_to_column("Year") %>%
-  rename(flared_metric_tons_ch4_mn = t.flaring_data.) # this is currently mmt. it will be converted
+  rename(mt_ch4_mn_flared = t.flaring_data.) # this is currently mmt. it will be converted
 
 flaring_data <- flaring_data[-1, ] %>%
   mutate(
-    flared_metric_tons_ch4_mn = as.numeric(flared_metric_tons_ch4_mn) * 10^6 # converting mmt to mt
+    mt_ch4_mn_flared = as.numeric(mt_ch4_mn_flared) * 10^6 # converting mmt to mt
   )
 
 # LFGTE
@@ -39,11 +40,11 @@ lfgte_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_w
 
 lfgte_data <- data.frame(t(lfgte_data)) %>%
   tibble::rownames_to_column("Year") %>%
-  rename(lfgte_metric_tons_ch4_mn = t.lfgte_data.)
+  rename(mt_ch4_mn_lfgte = t.lfgte_data.)
 
 lfgte_data <- lfgte_data[-1, ] %>%
   mutate(
-    lfgte_metric_tons_ch4_mn = as.numeric(lfgte_metric_tons_ch4_mn) * 10^6
+    mt_ch4_mn_lfgte = as.numeric(mt_ch4_mn_lfgte) * 10^6
   )
 
 # join dfs, filter to 2021/2005, join county proportions, allocate by population - TO CHANGE
@@ -51,34 +52,34 @@ lfgte_data <- lfgte_data[-1, ] %>%
 
 methane_recovery_state <- flaring_data %>%
   left_join(lfgte_data, by = join_by(Year)) %>%
-  mutate(Year = as.numeric(Year)) %>% 
+  mutate(inventory_year = as.numeric(Year)) %>% 
   select(
-    flared_metric_tons_ch4_mn,
-    lfgte_metric_tons_ch4_mn,
-    Year
+    mt_ch4_mn_flared,
+    mt_ch4_mn_lfgte,
+    inventory_year
   )
 
 # calculate county proportions of landfill waste, join methane recovery numbers, allocate
 methane_recovery_counties <- mpca_score %>% 
-  filter(Method == "Landfill") %>% 
+  filter(source == "Landfill") %>% 
   mutate(
-    landfill_proportion = `Metric Tons`/`Statewide Total`
+    landfill_proportion = value_activity/state_total
   ) %>% 
-  left_join(methane_recovery_state, by = join_by(Year)) %>% 
+  left_join(methane_recovery_state, by = join_by(inventory_year)) %>% 
   mutate(
-    flared_ch4 = flared_metric_tons_ch4_mn * landfill_proportion,
-    lfgte_ch4 = lfgte_metric_tons_ch4_mn * landfill_proportion
+    mt_ch4_flared = mt_ch4_mn_flared * landfill_proportion,
+    mt_ch4_lfgte = mt_ch4_mn_lfgte * landfill_proportion
   ) %>% 
   mutate(
-    total_ch4_recovered = flared_ch4 + lfgte_ch4
+    mt_ch4_recovered = mt_ch4_flared + mt_ch4_lfgte
   ) %>% 
   select(
-    County,
-    Method,
-    Year,
-    flared_ch4,
-    lfgte_ch4,
-    total_ch4_recovered
+    geoid,
+    source,
+    inventory_year,
+    mt_ch4_flared,
+    mt_ch4_lfgte,
+    mt_ch4_recovered
   )
 
   
@@ -105,16 +106,16 @@ methane_recovery_counties <- mpca_score %>%
 
 # to test: ensure that each year adds up to total
 # meta
-methane_recovery_mn_meta <-
-  tibble::tribble(
-    ~"Column", ~"Class", ~"Description",
-    "County", class(methane_recovery_counties$County), "Emissions estimation county",
-    "Method", class(methane_recovery_counties$Method), "Method category of emissions (for methane recovery data this should be Landfill)",
-    "Year", class(methane_recovery_counties$Year), "Emissions estimation year",
-    "flared_ch4", class(methane_recovery_counties$flared_ch4), "Amount of landfill gas recovered through flaring, in metric tons CH~4~",
-    "lfgte_ch4", class(methane_recovery_counties$lfgte_ch4), "Amount of landfill gas recovered through gas to energy efforts, in metric tons CH~4~",
-    "total_ch4_recovered", class(methane_recovery_counties$total_ch4_recovered), "Total metric tons CH~4~ recovered through flaring and gas to energy"
-  )
+# methane_recovery_mn_meta <-
+#   tibble::tribble(
+#     ~"Column", ~"Class", ~"Description",
+#     "County", class(methane_recovery_counties$County), "Emissions estimation county",
+#     "Method", class(methane_recovery_counties$Method), "Method category of emissions (for methane recovery data this should be Landfill)",
+#     "Year", class(methane_recovery_counties$Year), "Emissions estimation year",
+#     "flared_ch4", class(methane_recovery_counties$flared_ch4), "Amount of landfill gas recovered through flaring, in metric tons CH~4~",
+#     "lfgte_ch4", class(methane_recovery_counties$lfgte_ch4), "Amount of landfill gas recovered through gas to energy efforts, in metric tons CH~4~",
+#     "total_ch4_recovered", class(methane_recovery_counties$total_ch4_recovered), "Total metric tons CH~4~ recovered through flaring and gas to energy"
+#   )
 # save as rds
-saveRDS(methane_recovery_counties, "_waste/data/methane_recovery_mn.RDS")
-saveRDS(methane_recovery_mn_meta, "_waste/data/methane_recovery_mn_meta.RDS")
+saveRDS(methane_recovery_counties, "_waste/data-raw/epa_mn_methane_recovery.RDS")
+# saveRDS(methane_recovery_mn_meta, "_waste/data/methane_recovery_mn_meta.RDS")
