@@ -6,10 +6,9 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 # pull data here
 mpca_score <- readRDS(file.path(here::here(), "_waste/data-raw/solid_waste/mpca_score_allyrs.RDS")) %>%
-  mutate(Method = ifelse(Method == "WTE", "Waste-to-Energy", Method)) %>%
-  mutate(Method = factor(Method,
+  mutate(source = factor(source,
     levels = c(
-      "Waste-to-Energy",
+      "Waste to energy",
       "Organics",
       "Recycling",
       "Landfill",
@@ -18,7 +17,7 @@ mpca_score <- readRDS(file.path(here::here(), "_waste/data-raw/solid_waste/mpca_
     ),
     ordered = TRUE
   ))
-mpca_score_meta <- readRDS(file.path(here::here(), "_waste/data/mpca_score_meta.RDS"))
+# mpca_score_meta <- readRDS(file.path(here::here(), "_waste/data/mpca_score_meta.RDS"))
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 cprg_pop <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 hookaddcap()
@@ -27,17 +26,17 @@ hookaddcap()
 ```{r}
 # graph mpca totals by county(cat) by year
 mpca_waste_sums <- mpca_score %>%
-  group_by(County, Year) %>%
-  summarize(total_waste = sum(Tons))
+  group_by(geoid, inventory_year) %>%
+  summarize(total_waste = sum(value_activity))
 
 ggplot(mpca_waste_sums) +
-  geom_line(aes(Year, total_waste, color = County))
+  geom_line(aes(inventory_year, total_waste, color = geoid))
 
 mpca_score %>%
-  group_by(Method, Year) %>%
-  summarize(total_waste = sum(Tons)) %>%
+  group_by(source, inventory_year) %>%
+  summarize(total_waste = sum(value_activity)) %>%
   ggplot() +
-  geom_line(aes(Year, total_waste, color = Method))
+  geom_line(aes(inventory_year, total_waste, color = source))
 ```
 
 

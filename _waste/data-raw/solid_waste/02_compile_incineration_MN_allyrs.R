@@ -20,15 +20,11 @@ incin_factors <- tibble(
 )
 
 incineration_emissions <- mpca_score %>%
-  filter(source %in% c("WTE", "Onsite")) %>%
+  filter(source %in% c("Waste to energy", "Onsite")) %>%
   left_join(incin_factors, by = join_by(source)) %>%
   mutate(
     "Tonnes CO2" = value_activity * co2,
-    "Tonnes N2O" = value_activity * n2o,
-    source = case_when(
-      source == "WTE" ~ "Waste to energy",
-      TRUE ~ source
-    )
+    "Tonnes N2O" = value_activity * n2o
   ) %>%
   pivot_longer(
     c("Tonnes CO2", "Tonnes N2O"),

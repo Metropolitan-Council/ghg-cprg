@@ -21,7 +21,8 @@ score_filtered <- score_summary %>%
     value_activity = Tons * mt_conversion_factor, # convert short tons to metric tons (for consistency with IPCC values)
     units_activity = "metric tons MSW"
     ) %>%
-  left_join(cprg_county, by = join_by(County == NAME)) %>% 
+  left_join(cprg_county, by = join_by(County == NAME)) %>%
+  mutate(Method = ifelse(Method == "WTE", "Waste to energy", Method)) %>% 
   select(
     geoid = GEOID,
     source = Method,
