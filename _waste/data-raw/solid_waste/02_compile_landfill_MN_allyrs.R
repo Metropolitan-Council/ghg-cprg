@@ -2,9 +2,9 @@
 # Data from MPCA Score
 source("R/_load_pkgs.R")
 if (!exists("mpca_score")) {
-  mpca_score <- readRDS("_waste/data-raw/mpca_score_allyrs.RDS")
+  mpca_score <- readRDS("_waste/data-raw/solid_waste/mpca_score_allyrs.RDS")
 }
-mpca_waste_composition <- readRDS(file.path(here::here(), "_waste/data-raw/mpca_waste_composition.RDS"))
+mpca_waste_composition <- readRDS(file.path(here::here(), "_waste/data-raw/solid_waste/mpca_waste_composition.RDS"))
 # methane_recovery_mn <- readRDS("_waste/data-raw/epa_mn_methane_recovery.RDS")
 
 ## Methane Commitment model ----

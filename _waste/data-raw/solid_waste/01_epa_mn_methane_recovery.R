@@ -5,7 +5,7 @@ source("R/_load_pkgs.R")
 
 #cprg_county_proportions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_proportions.RDS"))
 if (!exists("mpca_score")) {
-  mpca_score <- readRDS(file.path(here::here, "_waste/data-raw/mpca_score_allyrs.RDS"))
+  mpca_score <- readRDS(file.path(here::here, "_waste/data-raw/solid_waste/mpca_score_allyrs.RDS"))
 }
 # pull in and calculate f_rec ----
 
@@ -14,7 +14,7 @@ if (!exists("mpca_score")) {
 
 # cleaning xcel data to preserve full values
 # Flaring
-flaring_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_waste_flaring.xlsx"),
+flaring_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_waste/solid_waste_flaring.xlsx"),
   range = "A2:AG54"
 ) %>%
   rename(State = 1) %>%
@@ -32,7 +32,7 @@ flaring_data <- flaring_data[-1, ] %>%
 
 # LFGTE
 
-lfgte_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_waste_lfgte.xlsx"),
+lfgte_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_waste/solid_waste_lfgte.xlsx"),
   range = "A2:AG54"
 ) %>%
   rename(State = 1) %>%
@@ -117,5 +117,5 @@ methane_recovery_counties <- mpca_score %>%
 #     "total_ch4_recovered", class(methane_recovery_counties$total_ch4_recovered), "Total metric tons CH~4~ recovered through flaring and gas to energy"
 #   )
 # save as rds
-saveRDS(methane_recovery_counties, "_waste/data-raw/epa_mn_methane_recovery.RDS")
+saveRDS(methane_recovery_counties, "_waste/data-raw/solid_waste/epa_mn_methane_recovery.RDS")
 # saveRDS(methane_recovery_mn_meta, "_waste/data/methane_recovery_mn_meta.RDS")

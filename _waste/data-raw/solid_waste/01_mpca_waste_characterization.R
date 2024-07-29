@@ -4,7 +4,7 @@ source("R/_load_pkgs.R")
 # Waste Breakdown ----
 ## From https://www.pca.state.mn.us/sites/default/files/w-sw1-60.pdf, a 2013 MPCA report on the composition of Municipal Solid Waste.
 
-waste_breakdown <- read_csv(file.path(here::here(), "_waste/data-raw/tabula-waste-characterization-table.csv"))
+waste_breakdown <- read_csv(file.path(here::here(), "_waste/data-raw/solid_waste/tabula-waste-characterization-table.csv"))
 
 wb_list <- vector(mode = "list", length = 8)
 
@@ -44,5 +44,5 @@ waste_breakdown_bind <- bind_rows(wb_list) %>%
 #   "Category", class(waste_breakdown_bind$Category), "Category of waste materials type"
 # )
 
-saveRDS(waste_breakdown_bind, paste0("_waste/data-raw/mpca_waste_composition.RDS"))
+saveRDS(waste_breakdown_bind, paste0("_waste/data-raw/solid_waste/mpca_waste_composition.RDS"))
 # saveRDS(waste_comp_meta, paste0("_waste/data/mn_waste_composition_meta.RDS"))

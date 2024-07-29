@@ -1,6 +1,6 @@
 source("R/_load_pkgs.R")
-mn_emissions <- readRDS(file.path(here::here(), "_waste/data/mn_emissions.RDS"))
-wi_emissions <- readRDS(file.path(here::here(), "_waste/data/wi_emissions.RDS"))
+mn_emissions <- readRDS(file.path(here::here(), "_waste/data/mn_emissions_2021.RDS"))
+wi_emissions <- readRDS(file.path(here::here(), "_waste/data/solid_waste_WI_allyrs.RDS"))
 
 # cleaning emissions data: make sure each has county, year, emissions, source
 mn_cleaned <- mn_emissions %>%
@@ -54,5 +54,5 @@ emissions_total_meta <- tribble(
   "source", class(emissions_total$source), "Waste processing method (Landfill, Recycling, Organics)"
 )
 
-saveRDS(emissions_total, file.path(here::here(), "_waste/data/county_sw_emissions.RDS"))
-saveRDS(emissions_total_meta, file.path(here::here(), "_waste/data/county_sw_emissions_meta.RDS"))
+saveRDS(emissions_total, file.path(here::here(), "_waste/data/solid_waste_2021.RDS"))
+saveRDS(emissions_total_meta, file.path(here::here(), "_waste/data/solid_waste_2021.RDS"))

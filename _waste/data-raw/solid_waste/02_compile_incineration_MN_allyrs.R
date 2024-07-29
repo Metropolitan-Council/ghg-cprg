@@ -1,7 +1,7 @@
 # calculate emissions from WTE and onsite burning using IPCC equations and MPCA data
 source("R/_load_pkgs.R")
 if (!exists("mpca_score")) {
-  mpca_score <- readRDS("_waste/data-raw/mpca_score_allyrs.RDS")
+  mpca_score <- readRDS("_waste/data-raw/solid_waste/mpca_score_allyrs.RDS")
 }
 
 # assign factors
@@ -24,7 +24,11 @@ incineration_emissions <- mpca_score %>%
   left_join(incin_factors, by = join_by(source)) %>%
   mutate(
     "Tonnes CO2" = value_activity * co2,
-    "Tonnes N2O" = value_activity * n2o
+    "Tonnes N2O" = value_activity * n2o,
+    source = case_when(
+      source == "WTE" ~ "Waste to energy",
+      TRUE ~ source
+    )
   ) %>%
   pivot_longer(
     c("Tonnes CO2", "Tonnes N2O"),

@@ -29,7 +29,7 @@ federal_totals <- epa_waste_inventory %>%
   )
 
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
-sw_emissions <- readRDS(file.path(here::here(), "_waste/data/mn_sw_emissions_co2e.RDS"))
+sw_emissions <- readRDS(file.path(here::here(), "_waste/data/solid_waste_MN_allyrs.RDS"))
 county_emissions_old <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 hookaddcap()
 ```

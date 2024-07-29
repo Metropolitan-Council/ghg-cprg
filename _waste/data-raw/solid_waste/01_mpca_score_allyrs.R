@@ -4,7 +4,7 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 # Summary data collected from https://public.tableau.com/app/profile/mpca.data.services/viz/SCOREOverview/1991-2021SCORE
 
 
-score_summary <- read_csv(file.path(here::here(), "_waste/data-raw/score_summary.csv"))
+score_summary <- read_csv(file.path(here::here(), "_waste/data-raw/solid_waste/score_summary.csv"))
 
 # filter to only counties in 9-county MN region, for years between 2005 and 2021
 
@@ -45,5 +45,5 @@ score_filtered <- score_summary %>%
 #   "Statewide total metric tons collected for given disposal method and year"
 # )
 
-saveRDS(score_filtered, paste0("_waste/data-raw/mpca_score_allyrs.RDS"))
+saveRDS(score_filtered, paste0("_waste/data-raw/solid_waste/mpca_score_allyrs.RDS"))
 # saveRDS(mpca_score_meta, paste0("_waste/data/mpca_score_meta.RDS"))
