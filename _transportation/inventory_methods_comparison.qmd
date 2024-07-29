@@ -40,13 +40,16 @@ Inventory of US Greenhouse Gas Emissions and Sinks (US GHGI) is an annual report
 More information on the US GHGI is available on the [EPA website](https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks). 
 
 
-Discuss differences between NEI and GHG Inventory (yes they sound like the same thing but they are different)
+The US GHGI is a top-down method, starting from fuel sale information. 
+
+Discuss differences between NEI and GHG Inventory (yes they sound like the same thing but they are different).
 
 We chose the NEI for our baseline because
 
 - time series
 - consistent definitions over time
 - compatible with forecasts using our regional travel demand model
+- Based on MOVES, and therefore easier to (hopefully) reproduce/replicate with our own MOVES runs
 - compatible with MOVES emissions estimates
 
 
