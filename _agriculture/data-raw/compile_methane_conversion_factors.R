@@ -67,7 +67,12 @@ mcf_constant <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
 
 mcf_livestock <- bind_rows(mcf_livestock,
                            mcf_livestock_pasture,
-                           mcf_constant)
+                           mcf_constant) %>% 
+  mutate(state = case_when(
+    state == "MN" ~ "Minnesota",
+    state == "WI" ~ "Wisconsin",
+    TRUE ~ state
+  ))
 
 mcf_livestock_meta <-
   tibble::tribble(
