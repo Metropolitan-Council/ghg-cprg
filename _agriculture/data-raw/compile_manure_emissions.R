@@ -11,6 +11,7 @@ livestock <- read_rds("_agriculture/data/usda_census_data.rds") %>%
 ### load in formatted activity data connecting livestock to manure emissions
 vs <- read_rds("_agriculture/data/volatile_solids.rds")
 nex <- read_rds("_agriculture/data/nitrogen_excretion.rds")
+mcf <- read_rds("_agriculture/data/methane_conversion_factor_livestock.rds")
 
 # formatted files
 ag_constants <- readRDS("_agriculture/data/ag_constants.rds")
@@ -21,7 +22,6 @@ ag_constants_vec <- ag_constants %>%
   tibble::deframe()
 
 ag_manure_mgmt <- readRDS("_agriculture/data/manure_management_systems.rds")
-
 
 
 #### manure and lagoons ####
@@ -45,44 +45,55 @@ ag_manure_mgmt <- readRDS("_agriculture/data/manure_management_systems.rds")
 
 ### pull out and format Bo (max potential emissions (ch4/ kg vs))
 
+Bo <- ag_constants %>% 
+  filter(grepl("Bo",description)) %>% 
+  mutate(
+    livestock_type = case_when(
+      grepl("swine", short_text) ~ "Swine",
+      grepl("Feedlot", short_text) ~ "Feedlot Cattle",
+      grepl("pullets", short_text) ~ "Pullets",
+      grepl("broilers", short_text) ~ "Broilers",
+      grepl("hens", short_text) ~ "Layers",
+      grepl("sheep", short_text) ~ "Sheep",
+      grepl("turkeys", short_text) ~ "Turkeys",
+      grepl("goats", short_text) ~ "Goats",
+      TRUE ~ short_text
+    )
+  ) %>%
+  group_by(livestock_type) %>%
+  summarize(Bo = mean(as.numeric(value)))
 
 manure_ch4 <- left_join(livestock,
                         vs,
                         by = c("year" = "year",
                                "livestock_type" = "livestock_type",
                                "STATE" ="state")) %>% 
-  filter(year >= 2005 & year <= 2021)
+  filter(year >= 2005 & year <= 2021) %>% 
+  left_join(., Bo) %>% 
+  left_join(., mcf,
+            by = c("year" = "year", "STATE" = "state", "livestock_type" = "livestock_type")) %>% 
+  mutate(mt_ch4 = head_count * mt_vs_head_yr * Bo * mcf_percent * ag_constants_vec["kg_m3"],
+         mt_co2e = mt_ch4 * gwp$ch4) %>% 
+  group_by(year, county_name) %>% 
+  summarize(mt_ch4 = sum(mt_ch4), mt_co2e = sum(mt_co2e))
 
 
- 
-  
-  manure_ch4 %>%
-  dplyr::select(c(2, 3, 4, 18)) %>%
-  setNames(c("Year", "Livestock", "Heads_thousands", "Metric_tons_ch4")) %>%
-  filter(!(is.na(Year) | is.na(Metric_tons_ch4) | Livestock == "TOTAL")) %>% # filter out formatting and summary rows
-  filter(Year >= 2005) %>%
-  mutate(
-    heads = as.numeric(str_remove_all(Heads_thousands, ",")) * 1000, mt_ch4 = as.numeric(str_remove_all(Metric_tons_ch4, ",")),
-    Emission_factor_mt_ch4_per_head = mt_ch4 / heads
-  ) %>% # here is where the de facto emission factor per year-livestock is calculated
-  mutate(
-    livestock_type =
-      case_when(
-        grepl("Replacement", Livestock) ~ "Calves",
-        grepl("Feedlot", Livestock) ~ "Feedlot Cattle",
-        grepl("Hens", Livestock) ~ "Layers",
-        grepl("Chickens", Livestock) ~ "Layers",
-        grepl("Sheep", Livestock) ~ "Sheep",
-        grepl("Swine", Livestock) ~ "Swine",
-        grepl("Market", Livestock) ~ "Swine",
-        TRUE ~ Livestock
-      )
-  ) %>%
-  group_by(Year, livestock_type) %>%
-  summarize(mt_ch4_per_head = mean(Emission_factor_mt_ch4_per_head))
+
 
 ### format n20 emissions factors
 ### similarly skipping intermediate steps here like in ch4 step above
+
+manure_n2o <- left_join(livestock %>% 
+                          filter(year >= 2005 & year <= 2021),
+                        nex %>% 
+                          filter(year >= 2005 & year <= 2021) %>% 
+                          mutate(state = if_else(state == "MN",
+                                                 "Minnesota",
+                                                 "Wisconsin")),
+                        by = c("STATE" = "state", "year" = "year", 
+                               "livestock_type" = "livestock_type")) %>% 
+  mutate(kg_nex_yr = head_count * kg_nex_head_yr,
+         unvol_n_lagoon = kg_nex_head_yr * (1 - ag_constants_vec["VolPercent"]) * co)
 
 manure_n2o_formatted <- manure_n2o %>%
   dplyr::select(c(2, 3, 4, 16)) %>%
