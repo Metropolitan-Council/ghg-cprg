@@ -448,3 +448,7 @@ _transportation/data-raw/epa/nei/~$2020_Representative_Counties_Analysis_2022072
 _transportation/data-raw/epa/nei/2020NEI_spdist.zip
 
 _transportation/data-raw/~$source_method_compare.xlsx
+
+_transportation/data-raw/epa/nei/2020NEI_spdist/
+
+_transportation/data-raw/epa/nei/2020NEI_RepCounty_Temperatures.zip
