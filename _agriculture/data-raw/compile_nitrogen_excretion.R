@@ -54,7 +54,10 @@ nex_other <-  readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   mutate(kg_nex_head_yr = mass_kg / 1000 * kg_nex_day_kg_animal * 365) %>%
   filter(!is.na(mass_kg)) %>%
   crossing(state = c("MN", "WI")) %>% # repeat across states (static)
-  dplyr::select(year, livestock_type, state, kg_nex_head_yr)
+  dplyr::select(year, livestock_type, state, kg_nex_head_yr)  %>%
+  group_by(state, year, livestock_type) %>%
+  summarize(kg_nex_head_yr = mean(kg_nex_head_yr)) %>%
+  mutate(year = as.numeric(year))
 
 nex_formatted <- rows_append(nex_cattle, nex_other)
 
