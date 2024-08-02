@@ -63,7 +63,7 @@ Ultimately, any estimation framework or method will have advantages and limitati
 Most emissions inventories fall into two approaches
 
 - **Top-down** approaches start with fuel consumption or sales data as a proxy for transportation activity [@fongGlobalProtocolCommunityScale2021]. These approaches will then attempt to disaggregate by vehicle types and other identifiable fuel users. Examples include the US GHGI.
-- **Bottom-up** approaches begin with activity data, such as vehicle miles traveled or trip counts, and use additional data, like mode-share, energy intensity, and fuel factors to estimate emissions [@schipperTransportCarbonDioxide2009.
+- **Bottom-up** approaches begin with activity data, such as vehicle miles traveled or trip counts, and use additional data, like mode-share, energy intensity, and fuel factors to estimate emissions [@schipperTransportCarbonDioxide2009].
 
 ::: 
 
@@ -73,7 +73,7 @@ Both territorial and activity-induced methods are detailed as valid methods for 
 
 ### Geographic
 
-Geographic or territorial methods account for any transportation emissions taking place within a city boundary, regardless of origin or destination [@fongGlobalProtocolCommunityScale2021].
+Geographic or territorial methods account for any transportation emissions taking place within a geographic boundary, regardless of origin or destination [@fongGlobalProtocolCommunityScale2021].
 
 Geographic emissions are essential for quantifying air pollution experienced by people living in the area, but they do not give information on the logistic decisions of individuals.
 
@@ -85,9 +85,9 @@ Met Council researchers chose to use an activity-induced method to provide the m
 
 Induced activity, or city-induced activity, methods remedy the responsibility gap left in geographic methods. 
 
-Activity-induced methods estimate the emissions from trips that begin, end, or both begin and end within given city. All passthrough trips (those that neither begin or end in the city, but pass through without stopping) are excluded. 
+Activity-induced methods estimate the emissions from trips that begin, end, or both begin and end within a given geographic boundary. All passthrough trips (those that neither begin or end in the geographic boundary, but pass through without stopping) are excluded. 
 
-This method most comprehensively covers the emissions caused by the city (and those that live and/or work in the city), thus within its area of influence [@dunnebeilBalancingTransportGreenhouse2012]. 
+This method most comprehensively covers the emissions caused by a given city or county (and those that live and/or work therein), thus within its area of influence [@dunnebeilBalancingTransportGreenhouse2012]. 
 
 Though both geographic and activity-induced methods fulfill Scope 1 requirements [@fongGlobalProtocolCommunityScale2021], the resulting values are significantly different.
 
@@ -95,15 +95,15 @@ Ultimately, the GPC recommends the induced activity method for cities, as it pro
 
 However, the Twin Cities metropolitan area includes over 250 individual jurisdictions, with cities ranging from over 400,000 people to under 500 people. The entirety of the 11-county CPRG study area is larger than some US states. 
 
-The origin-destination activity method is used in regional PCAPs, including metro areas such as Santa Clara MSA [@countyofsanbenitoCountySanBenito2024], 
+The origin-destination activity method is used in regional PCAPs, including metro areas such as Santa Clara MSA [@countyofsanbenitoCountySanBenito2024] and the Southern California Association of Governments [@scagAngelesLongBeachAnaheimPCAPCA2024]. 
 
- [^With the exception of heavy commercial vehicle traffic, which only includes trips that begin and end in the same city]
+ [^With the exception of heavy commercial vehicle traffic, which only includes trips that begin and end in the same geographic boundary]
 
 ### Consumption-based 
 
 Consumption-based emissions inventories (CBEIs) are a calculation of all of the greenhouse gas emissions associated with the production, transportation, use and disposal of products and services consumed by a particular community or entity in a given time period [@broekhoffEstimatingConsumptionbasedGreenhouse2019]. CBEIs are frequently referred to as city carbon footprints. Emissions are modeled from massive datasets containing demographic, economic, and consumer information [@ecodatalabNYCHouseholdConsumption2023]. 
 
-Several cities have conducted CBEIs, including Seattle, New York City, and Bristol, UK, among others [@jonesSFConsumptionBasedGreenhouse2020, @ecodatalabNYCHouseholdConsumption2023, @hopkinsUncoveringBlindSpots2017]. CBEIs are particularly useful for comparing cities across the globe. 
+Several cities have conducted CBEIs, including Seattle, New York City, and Bristol, UK, among others [@jonesSFConsumptionBasedGreenhouse2020, @ecodatalabNYCHouseholdConsumption2023, @millwardHopkinsUncoveringBlindSpots2017]. CBEIs are particularly useful for comparing cities across the globe. 
 
 Consumption-based methods require significant data access and are not easily translated into IPCC sectors or GPC Scopes. A typical CBEI would not meet the standards required for the CCAP. 
 

@@ -24,7 +24,7 @@ The [National Emissions Inventory](https://www.epa.gov/air-emissions-inventories
 
 NEI data for aircraft and locomotives in our region are unavailable prior to 2017. 
 
-we are assuming that all light-duty vehicles are passenger vehicles, and all heavy-duty are commercial. 
+We are assuming that all light-duty vehicles are passenger vehicles, and all heavy-duty are commercial. 
 
 NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and processed in R scripts: [epa_nei.R](../_meta/data-raw/epa_nei.R) and [epa_nei_transportation.R](data-raw/epa_nei_transportation.R)
 
@@ -148,8 +148,10 @@ fig_activity_vs_nei
 
 ## Limitations 
 
-The NEI is based on MOVES, which does nto 
-
+- The NEI is based on MOVES, which does not account for activity on local roads. 
+- To reduce run times, the NEI uses fuel months to represent summer and winter fuels. The month of January represents October through April (winter), while July represents May through September (summer) [@usepa2020NationalEmissions2023onroad, section 5.6.6.2]. Variation within the summer and winter months is not accounted for using this method.
+- Minnesota did not submit custom data inputs for the 2020 NEI, meaning that inputs to MOVES were based on national default values. Wisconsin did submit custom data for VMT, vehicle population, and road type distribution. Both Minnesota and Wisconsin submitted data for 2017, 2014, and 2011 [@usepa2017NationalEmissions2021, @usepa2014NationalEmissions2018, @usepa2011NationalEmissions2015]. 
+- To reduce runtime, the NEI groups counties together and only runs MOVES on a single representative county. The resulting MOVES emissions factors are multiplied by county-specific activity data (including VMT, vehicle population, hourly speed distribution, among others) to get county-specific emissions [@usepa2020NationalEmissions2023onroad, section 5.6.2.1]. Effectively, emissions factors are generated on a single representative county, and are then applied to similar counties. 
 
 
 ```{r echo=FALSE}
