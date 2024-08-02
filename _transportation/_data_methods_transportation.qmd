@@ -21,6 +21,12 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
+## Methodological framework
+
+We are following these guidelines:
+
+## Data sources
+
 {{< include data_epa_nei.qmd >}}
 
 {{< include data_streetlight.qmd >}}
