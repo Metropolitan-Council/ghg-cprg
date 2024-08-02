@@ -2,6 +2,7 @@
 source("R/download_read_table.R")
 source("_meta/data-raw/county_geography.R")
 source("R/_load_pkgs.R")
+dot_vmt <- readRDS("_transportation/data/dot_vmt.RDS")
 options(timeout = 130)
 
 # find which counties were used as representatives for all others  -----
@@ -190,4 +191,26 @@ download.file("https://gaftp.epa.gov/Air/nei/2020/doc/supporting_data/onroad/202
 # download.file("https://gaftp.epa.gov/Air/nei/2020/doc/supporting_data/onroad/2020NEI_spdist.zip",
 #               "_transportation/data-raw/epa/nei/2020NEI_spdist.zip"
 # )
+
+# compare VMT data ------
+
+vmt_summary <- vmt %>% 
+  mutate(GEOID = region_cd,
+         year = calc_year) %>% 
+  filter(cprg_area == TRUE) %>% 
+  group_by(NAME, cprg_area, GEOID,  year) %>% 
+  summarize(ann_parm_value = sum(ann_parm_value, na.rm = T))
+
+# close-ish? Ramsey County has the biggest disparity, for some reason
+dot_vmt %>% 
+  right_join(vmt_summary,
+            by = c("GEOID", "cprg_area",
+                   "year")) %>% 
+  mutate(vmt_diff = annual_vmt - ann_parm_value,
+         vmt_pct_diff = (vmt_diff/annual_vmt)) %>% 
+  arrange(-annual_vmt)
+
+readRDS("_transportation/data/county_vmt_emissions.RDS") %>% 
+  group_by(zone, year) %>% 
+  summarize(vmt_total = sum(vmt_total))
 
