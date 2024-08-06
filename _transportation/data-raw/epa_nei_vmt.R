@@ -89,31 +89,79 @@ read_nei_vmt <- function(vmt_path){
               by = c("region_cd" = "GEOID")) %>% 
     mutate(across(ends_with("value"), as.numeric)) %>% 
     rowwise() %>% 
-    select(-tribal_code, -census_tract_cd)
+    select(-tribal_code, -census_tract_cd,
+           -shape_id, -CD, -MSR, -country_cd)
   
 }
 
 
 nei_vmt <- purrr::map_dfr(
-  c("_transportation/data-raw/epa/nei/2008NEI/section4-mobile/onroad/VMT_NEI_2008_updated2_18jan2012_v3",
+  c("_transportation/data-raw/epa/nei/2008NEI/section4-mobile/onroad/activity_data_2008/VMT_NEI_2008_updated2_18jan2012_v3",
     "_transportation/data-raw/epa/nei/2011NEI/VMT_NEI_v2_2011_no_E85_30sep2014_v1.csv",
     "_transportation/data-raw/epa/nei/2014NEI/2014v2_onroad_activity_final/inputs/onroad/VMT_NEI_v2_2014_from_CDBs_06dec2017_nf_v4.csv",
     "_transportation/data-raw/epa/nei/2017NEI/2017NEI_onroad_activity_final/VMT_2017NEI_final_from_CDBs_month_redist_27mar2020_v3.csv",
     "_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/onroad/VMT_2020NEI_full_monthly_run3_09jan2023_v0.csv"),
   read_nei_vmt
 ) %>% 
-  arrange(desc(calc_year))
+  arrange(desc(calc_year)) %>% 
+  tidyr::separate_wider_position(
+    scc, widths = c(
+      "mobile_source" = 2,
+      "fuel_type" = 2,
+      "vehicle_type" = 2,
+      "road_type" = 2,
+      "process_type" = 2
+    ), 
+    cols_remove = FALSE
+  ) %>% 
+  select(-c("jan_value",
+            "feb_value", "mar_value", "apr_value", "may_value", 
+            "jun_value", "jul_value", "aug_value", "sep_value", 
+            "oct_value", "nov_value", "dec_value"))
 
+
+
+nei_vmt %>% 
+  # filter(calc_year == "2008") %>% 
+  # mutate(process_group_id = case_when(
+  #   process_type %in% c("50", #  rural?
+  #                       "70", # 
+  #                       "90",
+  #                       "10",
+  #                       "30"
+  #                       ) ~ "00",
+  #   TRUE ~ NA
+  # ),
+  # scc_new = paste0(mobile_source, fuel_type, vehicle_type, road_type, 
+  #                  process_group_id)) %>% 
+  group_by(scc, calc_year,
+           # mobile_source, fuel_type,
+           # vehicle_type, road_type,process_type,
+           region_cd, cprg_area, NAME) %>% 
+  summarize(ann_parm_value = sum(ann_parm_value)) %>% 
+  left_join(scc_mobile, join_by(scc)) %>% 
+  left_join(scc_codes20)
+  # inner_join(scc_moves_smoke$process_types$process_types_agg,
+  #           by = c("process_type" = "scc")) %>% 
+  View
+
+  
+nei_vmt %>% 
+  filter(calc_year %in% c("2020",
+                          "2017",
+                          "2014")) %>% 
+  left_join(scc_codes20 %>% 
+              select(-calc_year)) %>% 
+  filter(is.na(scc_level_two),
+         NAME == "Hennepin") %>% View
+  View
+  
 
 # read and harmonize scc codes------
+# find unique scc codes per year
 scc_year <- nei_vmt %>% 
   select(calc_year, scc) %>% 
-  unique() %>% 
-  mutate(scc_length = nchar(scc))
-
-scc_complete <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-0805-165321.csv",
-                         col_types = "c") %>% 
-  clean_names()
+  unique()
 
 
 scc_complete_map <- scc_complete %>% 
@@ -129,35 +177,6 @@ nei_vmt %>%
 
 scc_year %>% 
   left_join(scc_complete) %>% View
-
-
-scc_codes20 <- read_xlsx("_transportation/data-raw/epa/nei/2020NEI/onroad_activity_data_SCC_descriptions.xlsx",
-                         sheet = 1,
-                         col_types = "text"
-) %>%
-  clean_names() %>% 
-  mutate(calc_year = "2020")
-
-
-scc_codes14 <- read_xlsx("_transportation/data-raw/epa/nei/2014NEI/2014v1_EICtoEPA_SCCmapping.xlsx",
-                         sheet = 3,
-                         col_types = "text") %>% 
-  clean_names() %>% 
-  mutate(calc_year = "2014")
-
-scc_codes11 <- read_xlsx("_transportation/data-raw/epa/nei/2011NEI/MOVES2014_SCC_List_v8.xlsx",
-                         sheet = 2,
-                         col_types = "text") %>% 
-  clean_names() %>% 
-  mutate(calc_year = "2011")
-
-scc_codes08 <- read_xlsx("_transportation/data-raw/epa/nei/2008NEI/scc_eissector_xwalk_2008neiv3.xlsx",
-                         sheet = 2,
-                         col_types = "text") %>% 
-  clean_names() %>% 
-  mutate(calc_year = "2008",
-         scc = code)
-
 
 
 nei_vmt %>% 
