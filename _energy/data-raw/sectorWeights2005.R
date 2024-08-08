@@ -15,8 +15,9 @@ MN_elecUtils_2005 <- read_rds(here("_energy",
 mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
   mutate(
     year = 2005,
+    unit = "mwh",
     #reported as "non-farm residential"
-    res_consumption_mwh = case_when(
+    res_consumption = case_when(
       utility_name == "Connexus Energy" ~ 1145680,
       utility_name == "Dakota Electric Assn" ~ 930505,
       utility_name == "East Central Energy" ~ 490578,
@@ -38,7 +39,7 @@ mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
       TRUE ~ NA_real_
     ),
     #reported as "commercial"
-    com_consumption_mwh = case_when(
+    com_consumption = case_when(
       utility_name == "Connexus Energy" ~ 664655,
       utility_name == "Dakota Electric Assn" ~ 62921,
       utility_name == "East Central Energy" ~ 235498,
@@ -61,27 +62,51 @@ mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
     ),
     #Includes values reported as "farm" and "industrial" 
     #assumption is that residential energy use is massively outnumbered by farm "productive" uses
+    farm_consumption = case_when(
+      utility_name == "Connexus Energy" ~ 7988,
+      utility_name == "Dakota Electric Assn" ~ 9885,
+      utility_name == "East Central Energy" ~ 3343,
+      utility_name == "Goodhue County Coop Electric Assn" ~ 50532,
+      utility_name == "McLeod Coop Power Assn" ~ 104879,
+      utility_name == "Minnesota Valley Electric Coop" ~ 0,
+      utility_name == "Stearns Coop Electric Assn" ~ 131462,
+      utility_name == "Wright-Hennepin Coop Electric Assn" ~ 48814,
+      utility_name == "Xcel Energy" ~ 0,
+      utility_name == "City of Anoka" ~ 0,
+      utility_name == "City of Chaska" ~ 0,
+      utility_name == "City of North St Paul" ~ 0,
+      utility_name == "Delano Municipal Utilities" ~ 0,
+      utility_name == "Elk River Municipal Utilities" ~ 203,
+      utility_name == "New Prague Utilities Commission" ~ 0,
+      utility_name == "North Branch Municipal Water & Light" ~ 0,
+      utility_name == "Princeton Public Utilities" ~ 0,
+      utility_name == "Shakopee Public Utilities" ~ 29,
+      TRUE ~ NA_real_
+    ),
     ind_consumption = case_when(
-      utility_name == "Connexus Energy" ~ (7988 + 121961),
-      utility_name == "Dakota Electric Assn" ~ (9885 + 791563),
-      utility_name == "East Central Energy" ~ (3343 + 114731),
-      utility_name == "Goodhue County Coop Electric Assn" ~ (50532 + 1115),
-      utility_name == "McLeod Coop Power Assn" ~ (104879 + 44438),
-      utility_name == "Minnesota Valley Electric Coop" ~ (0 + 0),
-      utility_name == "Stearns Coop Electric Assn" ~ (131462 + 20263),
-      utility_name == "Wright-Hennepin Coop Electric Assn" ~ (48814 + 68717),
-      utility_name == "Xcel Energy" ~ (0 + 8993804),
-      utility_name == "City of Anoka" ~ (0 + 98114),
-      utility_name == "City of Chaska" ~ (0 + 193934),
-      utility_name == "City of North St Paul" ~ (0 + 0),
-      utility_name == "Delano Municipal Utilities" ~ (0 + 26746),
-      utility_name == "Elk River Municipal Utilities" ~ (203 + 89014),
-      utility_name == "New Prague Utilities Commission" ~ (0 + 21642), # used statewide figures to allocate to unreported industrial New Prague figure (Farm was reported as 0)
-      utility_name == "North Branch Municipal Water & Light" ~ (0 + 4827),
-      utility_name == "Princeton Public Utilities" ~ (0 + 18055),
-      utility_name == "Shakopee Public Utilities" ~ (29 + 419),
+      utility_name == "Connexus Energy" ~ 121961,
+      utility_name == "Dakota Electric Assn" ~ 791563,
+      utility_name == "East Central Energy" ~ 114731,
+      utility_name == "Goodhue County Coop Electric Assn" ~ 1115,
+      utility_name == "McLeod Coop Power Assn" ~ 44438,
+      utility_name == "Minnesota Valley Electric Coop" ~ 0,
+      utility_name == "Stearns Coop Electric Assn" ~ 20263,
+      utility_name == "Wright-Hennepin Coop Electric Assn" ~ 68717,
+      utility_name == "Xcel Energy" ~ 8993804,
+      utility_name == "City of Anoka" ~ 98114,
+      utility_name == "City of Chaska" ~ 193934,
+      utility_name == "City of North St Paul" ~ 0,
+      utility_name == "Delano Municipal Utilities" ~ 26746,
+      utility_name == "Elk River Municipal Utilities" ~ 89014,
+      utility_name == "New Prague Utilities Commission" ~ 21642,
+      utility_name == "North Branch Municipal Water & Light" ~ 4827,
+      utility_name == "Princeton Public Utilities" ~ 18055,
+      utility_name == "Shakopee Public Utilities" ~ 419,
       TRUE ~ NA_real_
     )
+  ) %>%
+  mutate(
+    indFarm_consumption = ind_consumption + farm_consumption
   )
 
 
