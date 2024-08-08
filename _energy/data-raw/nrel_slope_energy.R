@@ -26,7 +26,10 @@ nrel_slope_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_ex
   clean_names()
 
 nrel_slope_city <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>%
-  clean_names()
+  clean_names() %>%
+  filter(city_name %in% cprg_ctu$CTU_NAME 
+         & state_name %in% c("Minnesota", "Wisconsin") 
+  )
 
 
 
