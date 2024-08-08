@@ -2,6 +2,7 @@ source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 source("R/plot_county_emissions.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 # NREL SLOPE energy consumption and expenditure data download, cleaning, and viz
 
 # 1 Mmbtu is 0.293071 MWH
@@ -20,13 +21,19 @@ unzip("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_us
   exdir = "_energy/data-raw/nrel_slope/"
 )
 
-# nrel_slope_city <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>%
-#   clean_names()
+
 nrel_slope_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.csv") %>%
   clean_names()
+
+nrel_slope_city <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>%
+  clean_names()
+
+
+
 # nrel_slope_state <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_state.csv") %>%
 #   clean_names()
 
+# pulls back data out to 2050 -- for emissions inventory purposes (nrel_emissions), filter to < 2025
 nrel_slope_cprg <- nrel_slope_county %>%
   inner_join(cprg_county,
     by = c(
@@ -34,12 +41,13 @@ nrel_slope_cprg <- nrel_slope_county %>%
       "county_name" = "NAME"
     )
   ) %>%
-  filter(year < 2025) %>%
   mutate(source = ifelse(source == "ng", "Natural gas", "Electricity"))
 
 nrel_emissions <- bind_rows(
   # electricity emissions
   nrel_slope_cprg %>%
+    #Emission INVENTORY is < 2025, forecasts is >= 2025
+    filter(year < 2025) %>%
     filter(source == "Electricity") %>%
     rowwise() %>%
     mutate(
