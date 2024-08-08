@@ -137,39 +137,13 @@ manure_n2o <- left_join(livestock %>%
            ag_constants_vec["N2O_N2"] / #N2O emissions (kg)
            1000, # to mt
          mt_n2o = mt_n2o_lagoon + mt_n2o_solid,# total
-         mt_co2e = mt_n2o * gwp$n2o) %>% 
-  group_by(year, county_name) %>% 
-  summarize(mt_n2o = sum(mt_n2o), mt_co2e = sum(mt_co2e))
+         mt_co2e = mt_n2o * gwp$n2o) 
+# %>% 
+#   group_by(year, county_name) %>% 
+#   summarize(mt_n2o = sum(mt_n2o), mt_co2e = sum(mt_co2e))
            
-manure_n2o_formatted <- manure_n2o %>%
-  dplyr::select(c(2, 3, 4, 16)) %>%
-  setNames(c("Year", "Livestock", "Heads_thousands", "kg_n2o")) %>%
-  filter(!(is.na(Year) | is.na(kg_n2o) | Livestock == "TOTAL")) %>%
-  filter(Year >= 2005) %>%
-  mutate(
-    heads = as.numeric(str_remove_all(Heads_thousands, ",")) * 1000, kg_n2o = as.numeric(str_remove_all(kg_n2o, ",")),
-    Emission_factor_kg_n2o_per_head = kg_n2o / heads
-  ) %>%
-  mutate(
-    livestock_type =
-      case_when(
-        grepl("Replacement", Livestock) ~ "Calves",
-        grepl("Feedlot", Livestock) ~ "Feedlot Cattle",
-        grepl("Hens", Livestock) ~ "Layers",
-        grepl("Chickens", Livestock) ~ "Layers",
-        grepl("Sheep", Livestock) ~ "Sheep",
-        grepl("Swine", Livestock) ~ "Swine",
-        grepl("Market", Livestock) ~ "Swine",
-        TRUE ~ Livestock
-      )
-  ) %>%
-  group_by(Year, livestock_type) %>%
-  summarize(kg_n2o_per_head = mean(Emission_factor_kg_n2o_per_head))
-
-
 ### calculating 'Total K-Nitrogen excreted' for ag-soils-animals calculation
 ### this is one of the intermediate steps skipped in calculating N2O emissions from manure above, but is necessary for soil runoff/leaching calc
-
 
 KN_excretion_runoff <- left_join(
   livestock %>% filter(year >= 2005),
@@ -192,7 +166,6 @@ nex_runoff_emissions <- KN_excretion_runoff %>%
     mt_co2e = mt_n2o * gwp$n2o
   )
 
-
 ##### manure management system emissions
 
 manure_mgmt_perc <- ag_manure_mgmt %>%
@@ -204,6 +177,9 @@ manure_mgmt_perc <- ag_manure_mgmt %>%
   group_by(year, state, livestock_type, management_type) %>%
   summarize(percentage = sum(percentage))
 
+manure_mgmt_perc <- manure_mgmt_perc %>% 
+  mutate(state = if_else(state == "MN", "Minnesota", "Wisconsin"))
+  
 
 manure_soils <- left_join(KN_excretion_runoff %>% filter(year != 2022),
                           manure_mgmt_perc %>% filter(management_type == "Managed") %>%
@@ -256,6 +232,7 @@ manure_soils <- left_join(KN_excretion_runoff %>% filter(year != 2022),
   replace(is.na(.), 0) 
 ## lots of NAs for livestock without certain manure management, need it to be zero for next step
 
+
 manure_soils_emissions <- manure_soils %>%
   mutate(
     MT_n2o_manure_application = (managed_nex + daily_spread_nex) *
@@ -278,7 +255,7 @@ manure_soils_emissions_county %>%
   filter(year == 2021) %>%
   pull(co2e) %>%
   sum()
-# 90788
+# 86113
 # for later: make test for this value
 
 ### compile all emissions for export
@@ -308,7 +285,7 @@ manure_emissions <- bind_rows(
   replace(is.na(.), 0)  ## Anoka has missing enteric fermentation data from 2018-2021. They should have some livestock according to online USDA, revisit.
 
 
-livestock_emissions_meta <-
+manure_emissions_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
     "year", class(livestock_emissions$year), "Year of survey",
@@ -323,35 +300,3 @@ livestock_emissions_meta <-
 saveRDS(livestock_emissions, "./_agriculture/data/county_livestock_emissions_2005_2021.rds")
 saveRDS(livestock_emissions_meta, "./_agriculture/data/county_livestock_emissions_2005_2021_meta.rds")
 
-# MPCA feedlot permitting data -----
-### code below is beginning of MPCA feedlot permitting data. Feedlot data seemed
-###  to grossly undercount heads of livestock compared to USDA data
-### shelving this for now but is more granular in detail and should be reconciled
-###  at later date to understand difference
-### make the feedlot data long form
-### UPDATE: now understanding the USDA data better, there are many cattle
-###  not in feedlots, so the 1/3 count here seems consistent.
-mn_feedlots_long <- mn_feedlots %>%
-  mutate(
-    start_year = year(as.Date(start_d_reg)),
-    end_year = year(as.Date(end_d_reg))
-  ) %>%
-  filter(!is.na(start_year)) %>%
-  rowwise() %>%
-  mutate(years = list(seq(start_year, end_year))) %>%
-  unnest(years) %>%
-  pivot_longer(
-    cols = c(
-      "cattle_dl", "heifer_d", "calf_d", "cattle_db", "steer_b", "heifer_b", "cow_calf_b", "calf_b",
-      "bull_mature", "veal_calf", "swine_big", "swine_medium", "swine_little", "horse", "sheep",
-      "chx_lm", "chx_b_big", "chx_b_little", "chx_l_big", "chx_l_little", "turkey_big", "turkey_little", "duck", "duck_lm",
-      "alpacas", "bison", "bison_calf", "camels", "deer", "donkey_mule", "elk", "emus_ostriches", "peacocks", "fowl",
-      "foxes", "geese", "goats", "goats_small", "ponies", "llamas", "mink", "rabbits", "reindeer_caribou", "unknown"
-    ),
-    names_to = "animal",
-    values_to = "count",
-    values_drop_na = TRUE
-  ) %>%
-  filter(count > 0) %>%
-  group_by(county_name, years, animal) %>%
-  summarize(county_count = sum(count))
