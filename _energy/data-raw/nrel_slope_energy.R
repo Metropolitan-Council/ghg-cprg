@@ -37,7 +37,7 @@ nrel_slope_city <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expe
 #   clean_names()
 
 # pulls back data out to 2050 -- for emissions inventory purposes (nrel_emissions), filter to < 2025
-nrel_slope_cprg <- nrel_slope_county %>%
+nrel_slope_cprg_county <- nrel_slope_county %>%
   inner_join(cprg_county,
     by = c(
       "state_name" = "STATE",
@@ -46,9 +46,9 @@ nrel_slope_cprg <- nrel_slope_county %>%
   ) %>%
   mutate(source = ifelse(source == "ng", "Natural gas", "Electricity"))
 
-nrel_emissions <- bind_rows(
+nrel_emissions_inv_county <- bind_rows(
   # electricity emissions
-  nrel_slope_cprg %>%
+  nrel_slope_cprg_county %>%
     #Emission INVENTORY is < 2025, forecasts is >= 2025
     filter(year < 2025) %>%
     filter(source == "Electricity") %>%
@@ -75,7 +75,7 @@ nrel_emissions <- bind_rows(
           (n2o * gwp$n2o)
     ),
   # natural gas emissions
-  nrel_slope_cprg %>%
+  nrel_slope_cprg_county %>%
     filter(source == "Natural gas") %>%
     rowwise() %>%
     mutate(
@@ -107,7 +107,7 @@ nrel_emissions <- bind_rows(
   )
 
 # find county proportions by year and source
-nrel_emissions_region <- nrel_emissions %>%
+nrel_emissions_region <- nrel_emissions_inv_county %>%
   group_by(year, sector, sector_raw, category, source) %>%
   summarize(
     consumption_mm_btu = sum(consumption_mm_btu),
@@ -132,7 +132,7 @@ nrel_emissions_region %>%
 # )
 
 
-nrel_slope_proportions <- nrel_emissions %>%
+nrel_slope_proportions <- nrel_emissions_inv_county %>%
   group_by(county_name, year, source) %>%
   select(county_name, year, source, sector_raw, co2e) %>%
   pivot_wider(
@@ -152,7 +152,7 @@ nrel_slope_proportions <- nrel_emissions %>%
   mutate(county = county_name) %>%
   select(-total, -county_name)
 
-saveRDS(nrel_emissions, "_energy/data-raw/nrel_slope/nrel_emissions.RDS")
+saveRDS(nrel_emissions_inv_county, "_energy/data-raw/nrel_slope/nrel_emissions_inv_county.RDS")
 saveRDS(nrel_slope_proportions, "_energy/data-raw/nrel_slope/nrel_slope_proportions.RDS")
 
 # plot_ly(
