@@ -1,5 +1,6 @@
 # uses AR5 GWP values
 # https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks-1990-2022
+# already converted to CO2e
 # IPCC categories -----
 source("R/_load_pkgs.R")
 clean_ipcc <- function(state, path) {
@@ -37,12 +38,12 @@ clean_ipcc <- function(state, path) {
 state_ipcc <-
   bind_rows(
     clean_ipcc(
-      path = "_transportation/data-raw/epa/state_ghg/State-Level-GHG-data/Minnesota.xlsx",
+      path = "_meta/data-raw/epa/state_ghg/State-Level-GHG-data/Minnesota.xlsx",
       state = "Minnesota"
     ),
     clean_ipcc(
       state = "Wisconsin",
-      path = "_transportation/data-raw/epa/state_ghg/State-Level-GHG-data/Wisconsin.xlsx"
+      path = "_meta/data-raw/epa/state_ghg/State-Level-GHG-data/Wisconsin.xlsx"
     )
   )
 
@@ -57,6 +58,18 @@ state_ipcc %>%
     color = ~sector_group
   )
 
+state_ipcc %>%
+  select(Sector, sector_group) %>%
+  unique() %>%
+  View()
+
+state_ipcc %>%
+  mutate(transportation_related = case_when(
+    Sector %in% c(
+      "Fossil Fuel Combustion",
+      "Mobile Combustion"
+    )
+  ))
 
 # Economic sectors -----
 
@@ -97,11 +110,26 @@ clean_economic <- function(state, path) {
 
 state_economic <- bind_rows(
   clean_economic(
-    path = "_transportation/data-raw/epa/state_ghg/State-Level-GHG-data/Minnesota-Economic.xlsx",
+    path = "_meta/data-raw/epa/state_ghg/State-Level-GHG-data/Minnesota-Economic.xlsx",
     state = "Minnesota"
   ),
   clean_economic(
     state = "Wisconsin",
-    path = "_transportation/data-raw/epa/state_ghg/State-Level-GHG-data/Wisconsin-Economic.xlsx"
+    path = "_meta/data-raw/epa/state_ghg/State-Level-GHG-data/Wisconsin-Economic.xlsx"
   )
 )
+
+
+state_economic %>%
+  filter(
+    sector_group == "Transportation",
+    `Sector/Source` == "CO2 from Fossil Fuel Combustion",
+    inventory_year > 2004
+  ) %>%
+  plot_ly(
+    type = "scatter",
+    mode = "markers+lines",
+    x = ~inventory_year,
+    y = ~emissions_metric_tons_co2e,
+    color = ~state
+  )

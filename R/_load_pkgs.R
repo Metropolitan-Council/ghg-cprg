@@ -13,6 +13,8 @@ if (exists("load_packages") == FALSE) {
   # suppressMessages(library(tidycensus, quietly = TRUE))
   suppressMessages(library(councilR, quietly = TRUE))
   suppressMessages(library(lubridate, quietly = TRUE))
+  suppressMessages(library(datapasta, quietly = TRUE))
+  
 
   # Workflow ------
   # suppressMessages(library(keyring, quietly = TRUE))

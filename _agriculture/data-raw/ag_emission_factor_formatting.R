@@ -3,7 +3,7 @@ source("R/_load_pkgs.R")
 # from the SIT tool
 
 # check that needed data are available locally
-if(!file.exists("_agriculture/data-raw/ag_constants.csv")){
+if (!file.exists("_agriculture/data-raw/ag_constants.csv")) {
   cli::cli_abort("Download agriculture data from MS Team")
 }
 
@@ -11,7 +11,7 @@ if(!file.exists("_agriculture/data-raw/ag_constants.csv")){
 ag_constants <- read_csv("_agriculture/data-raw/ag_constants.csv")
 ag_control <- read_csv("_agriculture/data-raw/ag_control.csv")
 
-### breaking constants down to categories, adding syntax friendly descriptor 
+### breaking constants down to categories, adding syntax friendly descriptor
 ### - matched to EPA SIT short_text where possible
 general_constants <- data.frame(
   value = ag_constants[2:16, 1],
@@ -33,10 +33,12 @@ general_constants <- data.frame(
     "VolPercent_Indirect",
     "VolPercent"
   )
-) %>% 
-  select(value = Constants,
-         description = `...2`,
-         short_text) %>% 
+) %>%
+  select(
+    value = Constants,
+    description = `...2`,
+    short_text
+  ) %>%
   mutate(value = as.numeric(value))
 
 
@@ -55,10 +57,12 @@ soil_plant_constants <- data.frame(
     "TropHistEF",
     "N_content_legume"
   )
-) %>% 
-  select(value = Constants,
-         description = `...2`,
-         short_text) %>% 
+) %>%
+  select(
+    value = Constants,
+    description = `...2`,
+    short_text
+  ) %>%
   mutate(value = as.numeric(value))
 
 
@@ -81,8 +85,9 @@ soil_animal_constants <- data.frame(
   rename(value = ...6, description = ...7) %>%
   filter(!is.na(value)) %>%
   mutate(value = if_else(short_text == "PoultryNotManaged",
-                         as.numeric(str_remove(value, "%")) / 100,
-                         as.numeric(value)))
+    as.numeric(str_remove(value, "%")) / 100,
+    as.numeric(value)
+  ))
 
 
 crop_mt_bushel <- data.frame(
@@ -137,8 +142,10 @@ crop_residue_mass_ratio <- data.frame(
     value = as.numeric(value)
   )
 
-crop_residue <- ag_control[c(71, 74:89),
-                           c(1, 2, 6, 10)] %>%
+crop_residue <- ag_control[
+  c(71, 74:89),
+  c(1, 2, 6, 10)
+] %>%
   row_to_names(row_number = 1) %>%
   pivot_longer(cols = 2:4, values_to = "value") %>%
   mutate(
