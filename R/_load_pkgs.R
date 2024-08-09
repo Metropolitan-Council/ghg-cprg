@@ -14,6 +14,8 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(councilR, quietly = TRUE))
   suppressMessages(library(lubridate, quietly = TRUE))
   suppressMessages(library(datapasta, quietly = TRUE))
+  suppressMessages(library(data.table, quietly = TRUE))
+  
   
 
   # Workflow ------
