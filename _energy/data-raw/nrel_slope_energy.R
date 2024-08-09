@@ -22,29 +22,44 @@ unzip("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_us
 )
 
 
-nrel_slope_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.csv") %>%
-  clean_names()
-
-nrel_slope_city <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>%
+nrel_slope_cprg_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.csv") %>%
   clean_names() %>%
-  filter(city_name %in% cprg_ctu$CTU_NAME 
-         & state_name %in% c("Minnesota", "Wisconsin") 
-  )
+  inner_join(cprg_county,
+             by = c(
+               "state_name" = "STATE",
+               "county_name" = "NAME"
+             )
+  ) %>%
+  mutate(source = ifelse(source == "ng", "Natural gas", "Electricity"))
+
+nrel_slope_cprg_city <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>%
+  clean_names() %>%
+  inner_join(cprg_ctu,
+             by = c(
+               "state_name" = "STATE",
+               "city_name" = "CTU_NAME"
+             )
+  ) %>%
+  mutate(source = ifelse(source == "ng", "Natural gas", "Electricity"))
 
 
+write.csv(nrel_slope_cprg_county, here("_energy",
+                                       "data-raw",
+                                       "nrel_slope_cprg_county.csv")
+          )
+
+write.csv(nrel_slope_cprg_city, here("_energy",
+                 "data-raw",
+                 "nrel_slope_cprg_city.csv")
+          )
+
+
+
+# city-level
 
 # nrel_slope_state <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_state.csv") %>%
 #   clean_names()
 
-# pulls back data out to 2050 -- for emissions inventory purposes (nrel_emissions), filter to < 2025
-nrel_slope_cprg_county <- nrel_slope_county %>%
-  inner_join(cprg_county,
-    by = c(
-      "state_name" = "STATE",
-      "county_name" = "NAME"
-    )
-  ) %>%
-  mutate(source = ifelse(source == "ng", "Natural gas", "Electricity"))
 
 nrel_emissions_inv_county <- bind_rows(
   # electricity emissions

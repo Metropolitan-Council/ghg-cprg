@@ -392,3 +392,6 @@ _meta/data-raw/population/
 _transportation/data-raw/epa/nei_pre_2008/
 
 _energy/data-raw/USDA_ERS_AgriculturalResourceManagementSurvey
+_energy/data-raw/dataExplorer.twb
+
+_energy/data-raw/nrel_slope/MNWI
