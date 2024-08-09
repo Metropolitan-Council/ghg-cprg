@@ -1,5 +1,6 @@
 
 # scc/smoke/MOVES tables -----
+# https://www.cmascenter.org/smoke/documentation/3.6/html/ch02s08s04.html
 
 ## fuel types 
 fuel_types <- tibble::tribble(
@@ -24,8 +25,6 @@ fuel_types_agg <- tibble::tribble(
   select(fuel_type_agg = scc,
          fuel_type_agg_desc = 2,
          3)
-
-
 
 ## vehicle types 
 vehicle_types <- tibble::tribble(
