@@ -319,7 +319,7 @@ scc_mobile <- scc_complete %>%
                                     "2005")) %>% 
   select(
     scc, data_category, map_to, status,
-    last_inventory_year,
+    last_inventory_year, sector, 
     starts_with("scc")
   ) %>% 
   tidyr::separate_wider_position(
@@ -333,9 +333,8 @@ scc_mobile <- scc_complete %>%
     cols_remove = FALSE
   ) %>% 
   mutate(
-    # 2005 listed the road type and process type
-    # in a different order than other years
-    # for some reason
+    # various years listed the road type and process type
+    # differently, for some reason
     scc_split_1 = stringr::str_split(
       scc_level_four, 
       pattern = ":", simplify = TRUE)[,1] %>% 
@@ -358,7 +357,6 @@ scc_mobile <- scc_complete %>%
                            scc_split_1,
       TRUE ~ scc_split_2),
     scc_process = case_when(
-      
       scc_split_1 %in% c( "Rural Interstate", 
                           "Rural Other Principal Arterial",
                           "Rural Minor Arterial", "Rural Major Collector", 
@@ -372,22 +370,3 @@ scc_mobile <- scc_complete %>%
       TRUE ~ scc_split_1
     )) %>% 
   select(-scc_split_1, -scc_split_2)
-
-# compare scc tables -----
-
-scc_codes08 %>% 
-  bind_rows(scc_codes11) %>% 
-  select(calc_year, process_type) %>% 
-  unique() %>% 
-  left_join(scc_moves_smoke$process_types$process_types_agg,
-            by = c("process_type" = "scc")) %>% 
-  left_join(scc_moves_smoke$process_types$process_types,
-            by = c("process_type" = "moves_process")) %>% View
-
-
-anti_join(
-  scc_mobile,
-  scc_codes08
-)
-
-
