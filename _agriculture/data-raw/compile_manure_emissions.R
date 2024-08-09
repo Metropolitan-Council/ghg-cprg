@@ -284,19 +284,42 @@ manure_emissions <- bind_rows(
   filter(year != 2022) %>%
   replace(is.na(.), 0)  ## Anoka has missing enteric fermentation data from 2018-2021. They should have some livestock according to online USDA, revisit.
 
+### format to match style guide
+
+manure_emissions_out <- manure_emissions %>% 
+  left_join(., cprg_county %>% select(GEOID, NAME) %>% st_drop_geometry(),
+            by = c("county_name" = "NAME")) %>% 
+  rename(inventory_year = year, 
+         value_emissions = mt_gas, 
+         units_emissions = gas_type,
+         geoid = GEOID) %>% 
+  mutate(sector = "Agriculture",
+         category = str_to_sentence(category),
+         source = str_to_sentence(gsub("_", " ", source)),
+         units_emissions = case_when(
+           units_emissions == "ch4" ~ "Metric tons CH4",
+           units_emissions == "n2o" ~ "Metric tons N2O",
+           units_emissions == "co2" ~ "Metric tons CO2"
+         ),
+         data_source = "USDA livestock census",
+         factor_source = "EPA SIT") %>% 
+  select(geoid, inventory_year, sector, category, source,
+         data_source, factor_source, value_emissions, units_emissions)
 
 manure_emissions_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "year", class(livestock_emissions$year), "Year of survey",
-    "county_name", class(livestock_emissions$county_name), "County name",
-    "MT_co2e", class(livestock_emissions$MT_co2e), "Metric tons of CO2 equivalency",
-    "MT_gas", class(livestock_emissions$MT_gas), "Total metric tons of gas emitted from source",
-    "category", class(livestock_emissions$category), "Subsector category",
-    "source", class(livestock_emissions$category), "Detailed description of emission source",
-    "gas_type", class(livestock_emissions$gas_type), "Greenhouse gas emitted from source",
+    "inventory_year", class(manure_emissions_out$inventory_year), "Year of survey",
+    "geoid", class(manure_emissions_out$geoid), "County GEOID",
+    "sector", class(manure_emissions_out$sector), "Emissions sector. One of Transportation, Energy, Waste, Nature, Agriculture",
+    "category", class(manure_emissions_out$category), "Category of emissions within given sector",
+    "source", class(manure_emissions_out$source), "Source of emissions. Most detailed sub-category in this table",
+    "data_source", class(manure_emissions_out$data_source), "Activity data source",
+    "factor_source", class(manure_emissions_out$factor_source), "Emissions factor data source",
+    "value_emissions", class(manure_emissions_out$value_emissions), "Numerical value of emissions",
+    "units_emissions", class(manure_emissions_out$units_emissions), "Units and gas type of emissions"
   )
 
-saveRDS(livestock_emissions, "./_agriculture/data/county_livestock_emissions_2005_2021.rds")
-saveRDS(livestock_emissions_meta, "./_agriculture/data/county_livestock_emissions_2005_2021_meta.rds")
+saveRDS(manure_emissions_out, "./_agriculture/data/manure_emissions.rds")
+saveRDS(manure_emissions_meta, "./_agriculture/data/manure_emissions_meta.rds")
 
