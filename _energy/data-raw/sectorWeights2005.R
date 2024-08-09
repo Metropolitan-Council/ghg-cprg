@@ -1,10 +1,6 @@
 # MN
 # 2005
 
-# tabulapdf read in sector table
-
-
-
 # STATE LEVEL residential, commercial, industrial (industrial + farm) proportions BY utility type
 
 MN_elecUtils_2005 <- read_rds(here("_energy", 
