@@ -1,8 +1,25 @@
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 source("R/plot_county_emissions.R")
+
+#add to lockfile once finalized
+library(stringr)
+
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
-cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
+cprg_ctu_point <- readRDS("_meta/data/cprg_ctu.RDS") %>%
+  st_make_valid() %>%
+  mutate(geometry = st_simplify(geometry, preserveTopology = TRUE),
+         CTU_NAME = str_to_title(CTU_NAME)
+         ) %>%
+  clean_names() %>%
+  group_by(ctu_name,
+           county_nam,
+           #ctu_class,
+           state) %>%
+  summarize(geometry = st_centroid(st_union(geometry))) %>%
+  ungroup() 
+  
+
 # NREL SLOPE energy consumption and expenditure data download, cleaning, and viz
 
 # 1 Mmbtu is 0.293071 MWH
@@ -30,14 +47,16 @@ nrel_slope_cprg_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumpti
                "county_name" = "NAME"
              )
   ) %>%
-  mutate(source = ifelse(source == "ng", "Natural gas", "Electricity"))
+  mutate(source = ifelse(source == "ng", "Natural gas", "Electricity")) %>%
+  select(-geometry)
 
-nrel_slope_cprg_city <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>%
-  clean_names() %>%
-  inner_join(cprg_ctu,
+nrel_slope_cprg_city <- cprg_ctu_point %>%
+  left_join(read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>% 
+              clean_names() %>%
+              mutate(city_name = str_replace_all(city_name, "St\\.", "Saint")),
              by = c(
-               "state_name" = "STATE",
-               "city_name" = "CTU_NAME"
+               "state" = "state_name",
+               "ctu_name" = "city_name"
              )
   ) %>%
   mutate(source = ifelse(source == "ng", "Natural gas", "Electricity"))
@@ -45,14 +64,25 @@ nrel_slope_cprg_city <- read.csv("_energy/data-raw/nrel_slope/energy_consumption
 
 write.csv(nrel_slope_cprg_county, here("_energy",
                                        "data-raw",
+                                       "nrel_slope",
+                                       "MNWI",
                                        "nrel_slope_cprg_county.csv")
           )
 
 write.csv(nrel_slope_cprg_city, here("_energy",
                  "data-raw",
+                 "nrel_slope",
+                 "MNWI",
                  "nrel_slope_cprg_city.csv")
           )
 
+st_write(nrel_slope_cprg_city %>% select(-expenditure_us_dollars), here("_energy",
+                                    "data-raw",
+                                    "nrel_slope",
+                                    "MNWI",
+                                    "nrel_slope_cprg_city.shp"),
+         append = FALSE
+         )
 
 
 # city-level
