@@ -27,6 +27,7 @@ county_geography <- bind_rows(
 ) %>%
   sf::st_drop_geometry()
 
+
 # 2001-2009 ----
 # 2001-2009: intercensal year table
 # directly download intercensal data years from census.gov
@@ -289,16 +290,30 @@ census_county_population <- county_pop_intercensal %>%
   bind_rows(county_pop_acs) %>%
   select(-NAME, -NAMELSAD, -estimate, -moe, -variable, -value) %>%
   left_join(county_geography %>%
-    select(GEOID, NAME, STATE, STATE_ABB, COUNTYFP, NAMELSAD)) %>%
+    select(GEOID, NAME, STATE, STATE_ABB, COUNTYFP, NAMELSAD)) %>% 
   # add variable discerning whether the county is in our study area
-  mutate(cprg_area = ifelse(GEOID %in% cprg_county$GEOID, TRUE, FALSE)) %>%
-  select(STATE, STATE_ABB, GEOID, COUNTYFP, NAME, population_year, population, population_data_source, cprg_area) %>%
-  arrange(STATE, population_year)
+  mutate(cprg_area = ifelse(GEOID %in% cprg_county$geoid, TRUE, FALSE)) %>%
+  select(STATE, STATE_ABB, GEOID, COUNTYFP, NAME, 
+         population_year, population, population_data_source, cprg_area) %>%
+  arrange(STATE, population_year) %>% 
+  clean_names() %>% 
+  select(
+    geoid,
+    county_name = name,
+    state_name = state,
+    state_abb,
+    population_year, 
+    population_data_source,
+    cprg_area,
+    population
+  ) %>% 
+  unique()
+
 
 # review aggregations ------
 
 census_county_population %>%
-  group_by(STATE, population_year) %>%
+  group_by(state_name, population_year) %>%
   summarize(population = sum(population)) %>%
   filter(population_year == 2000)
 
@@ -312,8 +327,7 @@ census_county_population_meta <- bind_rows(
     ~Column, ~Class, ~Description,
     "population_year", class(census_county_population$population_year), "Population estimate year",
     "population", class(census_county_population$population), "Total county population estimate (persons)",
-    "population_data_source", class(census_county_population$population_data_source), "Population estimate data source",
-    "cprg_area", class(census_county_population$cprg_area), "Whether county is included in the CPRG area"
+    "population_data_source", class(census_county_population$population_data_source), "Population estimate data source"
   )
 ) %>%
   filter(Column %in% names(census_county_population))
