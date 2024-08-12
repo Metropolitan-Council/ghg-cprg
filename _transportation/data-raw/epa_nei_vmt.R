@@ -1,7 +1,7 @@
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
 counties_light <- county_geography %>% 
-  select(GEOID, STATE, NAME, cprg_area)
+  select(geoid, state_name, county_name, cprg_area)
 
 # download files if they don't already exist ----- 
 if(!file.exists("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/onroad/VMT_2020NEI_full_monthly_run3_09jan2023_v0.csv")){
@@ -20,7 +20,7 @@ if(!file.exists("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/
   
   ## 2017 ----- 
   # https://gaftp.epa.gov/air/nei/2017/doc/supporting_data/
-  download.file("https://gaftp.epa.gov/air/nei/2017/doc/supporting_data/2017NEI_onroad_activity_final.zip",
+  download.file("https://gaftp.epa.gov/air/nei/2017/doc/supporting_data/onroad/2017NEI_onroad_activity_final.zip",
                 destfile = "_transportation/data-raw/epa/nei/2017NEI//2017NEI_onroad_activity_final.zip")
   
   unzip(zipfile = "_transportation/data-raw/epa/nei/2017NEI/2017NEI_onroad_activity_final.zip",
@@ -63,7 +63,8 @@ if(!file.exists("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/
         exdir = "_transportation/data-raw/epa/nei/2008NEI/")
   unzip("_transportation/data-raw/epa/nei/2008NEI/section4-mobile/onroad/VMT_NEI_2008_updated2_18jan2012_v3.zip",
         exdir = "_transportation/data-raw/epa/nei/2008NEI/section4-mobile/onroad/")
-  
+  unzip("_transportation/data-raw/epa/nei/2008NEI/section4-mobile/onroad/activity_data_2008.zip",
+      exdir = "_transportation/data-raw/epa/nei/2008NEI/section4-mobile/onroad/activity_data_2008/")
   download.file("https://gaftp.epa.gov/air/nei/2008/doc/2008v3_supportingdata/scc_eissector_xwalk_2008neiv3.xlsx",
                 "_transportation/data-raw/epa/nei/2008NEI/scc_eissector_xwalk_2008neiv3.xlsx")
 }
@@ -86,9 +87,9 @@ read_nei_vmt <- function(vmt_path){
                     colClasses = "character",
                     col.names =  onroad_input_colnames
   ) %>% 
-    filter(region_cd %in% county_geography$GEOID) %>% 
+    filter(region_cd %in% county_geography$geoid) %>% 
     left_join(counties_light, 
-              by = c("region_cd" = "GEOID")) %>% 
+              by = c("region_cd" = "geoid")) %>% 
     mutate(across(ends_with("value"), as.numeric)) %>% 
     rowwise() %>% 
     select(-tribal_code, -census_tract_cd,
