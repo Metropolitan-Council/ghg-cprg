@@ -123,31 +123,21 @@ nei_vmt <- purrr::map_dfr(
 
 
 
-nei_vmt %>% 
-  # filter(calc_year == "2008") %>% 
-  # mutate(process_group_id = case_when(
-  #   process_type %in% c("50", #  rural?
-  #                       "70", # 
-  #                       "90",
-  #                       "10",
-  #                       "30"
-  #                       ) ~ "00",
-  #   TRUE ~ NA
-  # ),
-  # scc_new = paste0(mobile_source, fuel_type, vehicle_type, road_type, 
-  #                  process_group_id)) %>% 
+missing_values <- nei_vmt %>% 
   group_by(scc, calc_year,
-           # mobile_source, fuel_type,
-           # vehicle_type, road_type,process_type,
            region_cd, cprg_area, NAME) %>% 
   summarize(ann_parm_value = sum(ann_parm_value)) %>% 
-  left_join(scc_mobile, join_by(scc)) %>% 
-  left_join(scc_codes20)
-# inner_join(scc_moves_smoke$process_types$process_types_agg,
-#           by = c("process_type" = "scc")) %>% 
-View
+  left_join(scc_onroad) %>% 
+  filter(is.na(road_type)) %>% 
+  ungroup() %>% 
+  select(scc, calc_year, category, fuel_type, vehicle_type, road_type) %>% 
+  unique()
 
+write.csv(missing_values,
+          "_transportation/data-raw/epa/scc_missing_values.csv",
+          row.names = FALSE)
 
+# 
 nei_vmt %>% 
   filter(calc_year %in% c("2020",
                           "2017",
@@ -195,26 +185,30 @@ scc_all_process <- scc_year %>%
               unique()) %>% 
   left_join(scc_moves_smoke$road_types$road_types,
             by = c("road_type" = "moves_road_type")) %>%
-  # mutate(
-  #   scc_road_type = case_when(
-  #     is.na(scc_road_type)  ~ paste0(road_type_description, " (MOVES/SMOKE)"),
-  #     TRUE ~ scc_road_type
-  #   ),
-  #   scc_process = case_when(
-  #     is.na(scc_process) ~ paste0(process_type_agg_desc, " (Aggregate MOVES/SMOKE)"),
-  #     TRUE ~ scc_process)
-  # ) %>% 
+  mutate(
+    scc_road_type = case_when(
+      is.na(scc_road_type)  ~ paste0(road_type_description, " (MOVES/SMOKE)"),
+      TRUE ~ scc_road_type
+    ),
+    scc_process = case_when(
+      is.na(scc_process) ~ paste0(process_type_agg_desc, " (Aggregate MOVES/SMOKE)"),
+      TRUE ~ scc_process)
+  ) %>%
   select(-calc_year, -process_type_agg_desc,
          -road_type_description) %>% 
   unique()
 
 
-scc_mobile_aggregate <- bind_rows(scc_mobile,
-                                  scc_all_process)
+
+scc_year %>% 
+  filter(process_type != "00")
 
 
-left_join(nei_vmt,
-          scc_mobile_aggregate) %>% View
+nei_vmt %>% 
+  left_join(scc_all_process,
+            by = join_by(mobile_source, fuel_type, vehicle_type, road_type, process_type, scc)) %>% 
+  filter(NAME == "Hennepin") %>% 
+  View
 
 
 nei_vmt %>% 
