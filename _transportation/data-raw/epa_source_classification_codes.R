@@ -178,7 +178,7 @@ rm(fuel_types, fuel_types_agg,
 
 
 # scc tables by year ----
-scc_codes20 <- read_xlsx("_transportation/data-raw/epa/nei/2020NEI/onroad_activity_data_SCC_descriptions.xlsx",
+scc_codes20 <- read_xlsx("_transportation/data-raw/epa/onroad_activity_data_SCC_descriptions.xlsx",
                          sheet = 1,
                          col_types = "text"
 ) %>%
@@ -308,7 +308,7 @@ scc_codes08 <- read_xlsx("_transportation/data-raw/epa/nei/2008NEI/scc_eissector
 
 
 
-scc_complete <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-0805-165321.csv",
+scc_complete <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-0812-144242.csv",
                          col_types = "c") %>% 
   clean_names()
 

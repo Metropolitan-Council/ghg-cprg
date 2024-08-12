@@ -24,7 +24,7 @@ if(!file.exists("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/
                 destfile = "_transportation/data-raw/epa/nei/2017NEI//2017NEI_onroad_activity_final.zip")
   
   unzip(zipfile = "_transportation/data-raw/epa/nei/2017NEI/2017NEI_onroad_activity_final.zip",
-        exdir = "_transportation/data-raw/epa/nei/2017NEI/",
+        exdir = "_transportation/data-raw/epa/nei/2017NEI/2017NEI_onroad_activity_final/",
         overwrite = TRUE)
   
   ## 2014 -----
@@ -126,7 +126,7 @@ nei_vmt <- purrr::map_dfr(
 
 missing_values <- nei_vmt %>% 
   group_by(scc, calc_year,
-           region_cd, cprg_area, NAME) %>% 
+           region_cd, cprg_area, county_name) %>% 
   summarize(ann_parm_value = sum(ann_parm_value)) %>% 
   left_join(scc_onroad) %>% 
   filter(is.na(road_type)) %>% 
@@ -147,7 +147,7 @@ nei_vmt %>%
               select(-calc_year)) %>% 
   # left_join(scc_mobile) %>% 
   filter(is.na(scc_level_two),
-         NAME == "Hennepin")
+         county_name == "Hennepin")
 
 
 # read and harmonize scc codes------
@@ -208,7 +208,7 @@ scc_year %>%
 nei_vmt %>% 
   left_join(scc_all_process,
             by = join_by(mobile_source, fuel_type, vehicle_type, road_type, process_type, scc)) %>% 
-  filter(NAME == "Hennepin") %>% 
+  filter(county_name == "Hennepin") %>% 
   View
 
 
