@@ -1,4 +1,9 @@
 
+# from Janice Godfry at EPA
+scc_onroad <- readxl::read_xlsx("_transportation/data-raw/epa/onroad_activity_data_SCC_descriptions.xlsx",
+                                col_types = "text") %>% 
+  clean_names()
+
 # scc/smoke/MOVES tables -----
 # https://www.cmascenter.org/smoke/documentation/3.6/html/ch02s08s04.html
 
