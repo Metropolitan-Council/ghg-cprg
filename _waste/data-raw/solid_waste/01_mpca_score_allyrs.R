@@ -14,17 +14,17 @@ score_filtered <- score_summary %>%
   group_by(Year, Method) %>% 
   mutate(state_total = sum(Tons) * mt_conversion_factor) %>% 
   filter(
-    County %in% cprg_county$NAME,
+    County %in% cprg_county$county_name,
     Year %in% 2005:2021
   ) %>%
   mutate(
     value_activity = Tons * mt_conversion_factor, # convert short tons to metric tons (for consistency with IPCC values)
     units_activity = "metric tons MSW"
     ) %>%
-  left_join(cprg_county, by = join_by(County == NAME)) %>%
+  left_join(cprg_county, by = join_by(County == county_name)) %>%
   mutate(Method = ifelse(Method == "WTE", "Waste to energy", Method)) %>% 
   select(
-    geoid = GEOID,
+    geoid,
     source = Method,
     inventory_year = Year,
     value_activity,

@@ -42,16 +42,16 @@ wi_inventory <- read.csv(file.path(here::here(), "_waste/data-raw/solid_waste/ta
 
 wi_pop <- cprg_county_proportions %>%
   filter(
-    STATE == "Wisconsin",
-    year %in% 2005:2021
+    state_name == "Wisconsin",
+    population_year %in% 2005:2021
   )
 # names will need to be fixed later
 
 solid_waste_wi <- wi_pop %>%
-  mutate(inventory_year = as.numeric(year)) %>% 
+  mutate(population_year = as.numeric(population_year)) %>%
   left_join(
     wi_inventory, 
-    by = join_by(inventory_year), 
+    by = join_by(population_year == inventory_year), 
     relationship = "many-to-many"
     ) %>% 
   mutate(
@@ -68,8 +68,8 @@ solid_waste_wi <- wi_pop %>%
     units_emissions = "Tonnes CO2e"
   ) %>% 
   select(
-    geoid = GEOID,
-    inventory_year,
+    geoid,
+    inventory_year = population_year,
     sector,
     category,
     source,

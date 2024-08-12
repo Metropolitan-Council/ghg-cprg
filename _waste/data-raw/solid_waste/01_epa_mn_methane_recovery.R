@@ -5,7 +5,7 @@ source("R/_load_pkgs.R")
 
 #cprg_county_proportions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_proportions.RDS"))
 if (!exists("mpca_score")) {
-  mpca_score <- readRDS(file.path(here::here, "_waste/data-raw/solid_waste/mpca_score_allyrs.RDS"))
+  mpca_score <- readRDS(file.path(here::here(), "_waste/data-raw/solid_waste/mpca_score_allyrs.RDS"))
 }
 # pull in and calculate f_rec ----
 
