@@ -12,7 +12,7 @@ testthat::test_that("County data is as expected", {
   )
   testthat::expect_equal(names(cprg_county),
                          c("geoid", "county_name", "county_name_full", "state_name", "statefp", 
-                           "state_abb", "geometry"))
+                           "state_abb", "cprg_area", "geometry"))
   testthat::expect_equal(cprg_county$state_name %>% unique(), c("Minnesota", "Wisconsin"))
 })
 
@@ -23,7 +23,7 @@ testthat::test_that("CTU data is as expected", {
   testthat::expect_equal(nrow(cprg_ctu), 288)
   testthat::expect_equal(names(cprg_ctu), c(
     "ctu_name", "ctu_class", "county_name", "state_name", "statefp", 
-    "state_abb", "geoid_wis", "gnis", "geometry"))
+    "state_abb", "geoid_wis", "gnis",  "cprg_area", "geometry"))
   
   testthat::expect_equal(cprg_ctu$state_name %>% unique(), c("Minnesota", "Wisconsin"))
   testthat::expect_equal(nrow(filter(ctu_co_crosswalk, is.na(geog_unit_id.parent))), 0)

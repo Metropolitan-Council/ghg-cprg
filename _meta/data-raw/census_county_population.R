@@ -294,6 +294,14 @@ census_county_population <- county_pop_intercensal %>%
   mutate(cprg_area = ifelse(GEOID %in% cprg_county$GEOID, TRUE, FALSE)) %>%
   select(STATE, STATE_ABB, GEOID, COUNTYFP, NAME, population_year, population, population_data_source, cprg_area) %>%
   arrange(STATE, population_year)
+  clean_names() %>% 
+  select(
+    geoid,
+    county_name = name,
+    state_name = state,
+    population_year, 
+    population_data_source,
+    cprg_area
 
 # review aggregations ------
 
