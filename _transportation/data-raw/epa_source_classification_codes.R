@@ -223,15 +223,15 @@ scc_codes14 <- read_xlsx("_transportation/data-raw/epa/nei/2014NEI/2014v1_EICtoE
 
 
 scc_codes11 <- read_xlsx("_transportation/data-raw/epa/nei/2011NEI/MOVES2014_SMOKE_SCCs_with_descriptions.xlsx",
-          sheet = 2,
-          col_types = "text") %>% 
+                         sheet = 2,
+                         col_types = "text") %>% 
   clean_names() %>% 
   tidyr::separate_wider_delim(scc_desc, delim = ";",
                               names = c(
-                              "scc_level_one",
-                              "scc_level_two",
-                              "scc_level_three",
-                              "scc_level_four"
+                                "scc_level_one",
+                                "scc_level_two",
+                                "scc_level_three",
+                                "scc_level_four"
                               )) %>% 
   mutate(scc_process = stringr::str_split(
     scc_level_four, 
@@ -247,11 +247,11 @@ scc_codes11 <- read_xlsx("_transportation/data-raw/epa/nei/2011NEI/MOVES2014_SMO
     ), 
     cols_remove = FALSE
   )
-  
+
 
 scc_codes11_alt <- read_xlsx("_transportation/data-raw/epa/nei/2011NEI/MOVES2014_SCC_List_v8.xlsx",
-                         sheet = 2,
-                         col_types = "text") %>% 
+                             sheet = 2,
+                             col_types = "text") %>% 
   clean_names() %>% 
   mutate(calc_year = "2011",
          scc_level_one = "Mobile Sources",
@@ -279,8 +279,8 @@ scc_codes11_alt %>%
     process_type %in% c("01", "02", "09",
                         "10", "11", "12", "13", "15", "16", 
                         "17", "18", "19", "90", "91"
-) ~ "00",
-TRUE ~ NA
+    ) ~ "00",
+    TRUE ~ NA
   ))
 
 scc_codes08 <- read_xlsx("_transportation/data-raw/epa/nei/2008NEI/scc_eissector_xwalk_2008neiv3.xlsx",
@@ -314,6 +314,7 @@ scc_complete <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-0812-144
 
 scc_mobile <- scc_complete %>% 
   filter(stringr::str_starts(scc, "22"),
+         data_category == "Onroad",
          last_inventory_year %in% c(NA,
                                     "2020",
                                     "2017",
@@ -348,29 +349,41 @@ scc_mobile <- scc_complete %>%
       pattern = ":", simplify = TRUE)[,2] %>% 
       str_trim(),
     scc_road_type = case_when(
-      scc_split_1 %in% c( "Rural Interstate", 
-                          "Rural Other Principal Arterial",
-                          "Rural Minor Arterial", "Rural Major Collector", 
-                          "Rural Minor Collector", 
-                          "Rural Local", "Urban Interstate",
-                          "Urban Other Freeways and Expressways", 
-                          "Urban Other Principal Arterial", 
-                          "Urban Minor Arterial", "Urban Collector", 
-                          "Urban Local", "Parking Area",
-                          "All Road Types") ~ 
-                           scc_split_1,
+      scc_split_1 %in% c("Rural Interstate", 
+                         "Rural Other Principal Arterial",
+                         "Rural Minor Arterial", "Rural Major Collector", 
+                         "Rural Minor Collector", 
+                         "Rural Local", "Urban Interstate",
+                         "Urban Other Freeways and Expressways", 
+                         "Urban Other Principal Arterial", 
+                         "Urban Minor Arterial", "Urban Collector", 
+                         "Urban Local", "Parking Area",
+                         "All Road Types") ~ 
+        scc_split_1,
       TRUE ~ scc_split_2),
     scc_process = case_when(
-      scc_split_1 %in% c( "Rural Interstate", 
-                          "Rural Other Principal Arterial",
-                          "Rural Minor Arterial", "Rural Major Collector", 
-                          "Rural Minor Collector", 
-                          "Rural Local", "Urban Interstate",
-                          "Urban Other Freeways and Expressways", 
-                          "Urban Other Principal Arterial", 
-                          "Urban Minor Arterial", "Urban Collector", 
-                          "Urban Local", "Parking Area",
-                          "All Road Types") ~ scc_split_2,
+      scc_split_1 %in% c("Rural Interstate", 
+                         "Rural Other Principal Arterial",
+                         "Rural Minor Arterial", "Rural Major Collector", 
+                         "Rural Minor Collector", 
+                         "Rural Local", "Urban Interstate",
+                         "Urban Other Freeways and Expressways", 
+                         "Urban Other Principal Arterial", 
+                         "Urban Minor Arterial", "Urban Collector", 
+                         "Urban Local", "Parking Area",
+                         "All Road Types") ~ scc_split_2,
       TRUE ~ scc_split_1
     )) %>% 
-  select(-scc_split_1, -scc_split_2)
+  rowwise() %>% 
+  mutate(
+    fuel_type_detect = case_when(
+      scc_level_two == "Highway Vehicles - Liquefied Petroleum Gas (LPG)"~ "Liquefied Petroleum Gas (LPG)",
+      scc_level_two == "Highway Vehicles - Compressed Natural Gas (CNG)" ~ "Compressed Natural Gas (CNG)",
+      str_detect(scc_level_three, "Gasoline") | str_detect(scc_level_two, "Gasoline") ~ "Gasoline",
+      str_detect(scc_level_three, "Diesel") | str_detect(scc_level_two, "Diesel")  ~ "Diesel",
+      str_detect(scc_level_two, "Electricity") | str_detect(scc_level_three, "Electricity") ~ "Electricity",
+      str_detect(scc_level_two, "Ethanol") |  str_detect(scc_level_three, "Ethanol") ~ "Ethanol"
+      
+    )) %>% 
+  select(-scc_split_1, -scc_split_2) %>% 
+  mutate(scc_short = stringr::str_sub(scc, 1, 6 ))
