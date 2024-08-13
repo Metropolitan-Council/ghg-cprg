@@ -120,7 +120,8 @@ nei_vmt <- purrr::map_dfr(
   select(-c("jan_value",
             "feb_value", "mar_value", "apr_value", "may_value", 
             "jun_value", "jul_value", "aug_value", "sep_value", 
-            "oct_value", "nov_value", "dec_value"))
+            "oct_value", "nov_value", "dec_value", "comment",
+            "date_updated", "data_set_id"))
 
 
 
@@ -138,17 +139,6 @@ write.csv(missing_values,
           "_transportation/data-raw/epa/scc_missing_values.csv",
           row.names = FALSE)
 
-# 
-nei_vmt %>% 
-  filter(calc_year %in% c("2020",
-                          "2017",
-                          "2014")) %>% 
-  left_join(scc_codes20 %>% 
-              select(-calc_year)) %>% 
-  # left_join(scc_mobile) %>% 
-  filter(is.na(scc_level_two),
-         county_name == "Hennepin")
-
 
 # read and harmonize scc codes------
 # find unique scc codes per year
@@ -156,7 +146,15 @@ scc_year <- nei_vmt %>%
   select(calc_year,
          scc, mobile_source, fuel_type, vehicle_type, road_type, 
          process_type) %>% 
-  unique()
+  unique() %>% 
+  mutate(scc_short = stringr::str_sub(scc, 1, 6 ))
+
+
+scc_year %>% 
+  left_join(scc_sector) %>% 
+  unique() %>% 
+  View
+
 
 scc_all_process <- scc_year %>% 
   filter(process_type == "00") %>% 
@@ -173,42 +171,46 @@ scc_all_process <- scc_year %>%
               unique(),
             by = c("vehicle_type",
                    "scc_level_two")) %>% 
-  left_join(scc_mobile %>%
-              select(process_type, scc_process, scc_road_type,
-                     scc_level_one, scc_level_two) %>%
-              unique()
-            # by = join_by(process_type, scc_level_one, scc_level_two)
-  ) %>% 
-  left_join(scc_moves_smoke$process_types$process_types_agg,
-            by = c("process_type" = "process_type_agg")) %>%
+  # left_join(scc_mobile %>%
+  #             select(process_type, scc_process, scc_road_type,
+  #                    scc_level_one, scc_level_two) %>%
+  #             unique()
+  #           # by = join_by(process_type, scc_level_one, scc_level_two)
+  # ) %>% 
+  # left_join(scc_moves_smoke$process_types$process_types_agg,
+  #           by = c("process_type" = "process_type_agg")) %>%
   left_join(scc_mobile %>%
               select(road_type, scc_road_type, scc_level_two) %>%
               unique()) %>% 
-  left_join(scc_moves_smoke$road_types$road_types,
-            by = c("road_type" = "moves_road_type")) %>%
-  mutate(
-    scc_road_type = case_when(
-      is.na(scc_road_type)  ~ paste0(road_type_description, " (MOVES/SMOKE)"),
-      TRUE ~ scc_road_type
-    ),
-    scc_process = case_when(
-      is.na(scc_process) ~ paste0(process_type_agg_desc, " (Aggregate MOVES/SMOKE)"),
-      TRUE ~ scc_process)
-  ) %>%
-  select(-calc_year, -process_type_agg_desc,
-         -road_type_description) %>% 
-  unique()
+  # left_join(scc_moves_smoke$road_types$road_types,
+  #           by = c("road_type" = "moves_road_type")) %>%
+  # mutate(
+  #   scc_road_type = case_when(
+  #     is.na(scc_road_type)  ~ paste0(road_type_description, " (MOVES/SMOKE)"),
+  #     TRUE ~ scc_road_type
+  #   ),
+  #   scc_process = case_when(
+  #     is.na(scc_process) ~ paste0(process_type_agg_desc, " (Aggregate MOVES/SMOKE)"),
+  #     TRUE ~ scc_process)
+  # ) %>%
+  # select(-calc_year, -process_type_agg_desc,
+  #        -road_type_description) %>% 
+  unique() %>% 
+  bind_rows(scc_mobile) %>% 
+  unique() %>% 
+  mutate(scc_short = stringr::str_sub(scc, 1, 6 ))
 
 
 
 scc_year %>% 
-  filter(process_type != "00")
-
+  left_join(scc_all_process) %>% 
+  unique() %>% 
+  View
 
 nei_vmt %>% 
-  left_join(scc_all_process,
-            by = join_by(mobile_source, fuel_type, vehicle_type, road_type, process_type, scc)) %>% 
-  filter(county_name == "Hennepin") %>% 
+  left_join(scc_all_process) %>%
+  # left_join(scc_onroad) %>% 
+  filter(county_name == "Hennepin")%>% 
   View
 
 
