@@ -13,3 +13,10 @@ if(file.exists("")){
   download.file("https://gaftp.epa.gov/Air/emismod/2022/v1/2022emissions/CDBs_2022_20240214.zip",
                 "_transportation/data-raw/epa/air_emissions_modeling/2022v1/CDBs_2022_20240214.zip")
 }
+
+
+mod22 <- fread("_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/onroad/2022hc_onroad_SMOKE_MOVES_MOVES4_forAQ_27jun2024_v0.csv",
+      colClasses = "character")
+
+
+names(mod22)
