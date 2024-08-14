@@ -111,7 +111,7 @@ nei_county_emissisons <- nei_county_multi_year %>%
     values_from = emissions_grams,
     id_cols = c(
       state_name,
-      GEOID,
+      geoid,
       cprg_area,
       ei_sector,
       nei_inventory_year,
@@ -130,19 +130,18 @@ nei_county_emissisons <- nei_county_multi_year %>%
   mutate(
     co2_co2_equivalent =
       sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = T),
-    emissions_metric_tons_co2e = co2_co2_equivalent / 1000000,
-    GEOID = geoid
+    emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
   )
 
 # aggregate by vehicle weight and county
 epa_nei <- nei_county_emissisons %>%
   left_join(county_geography %>%
-              select(GEOID,
-                     county_name = NAME,
-                     county_fips = COUNTYFP
+              select(geoid,
+                     county_name,
+                     county_fips = countyfp
               )) %>%
   group_by(
-    GEOID, county_name,
+    geoid, county_name,
     vehicle_weight_label,
     vehicle_type,
     vehicle_group,
@@ -201,7 +200,7 @@ epa_nei_full <- epa_nei %>%
   ) %>%
   filter(cprg_area == TRUE) %>%
   group_by(
-    GEOID, county_name, cprg_area, county_fips,
+    geoid, county_name, cprg_area, county_fips,
     vehicle_type,
     vehicle_weight_label, vehicle_group,
     vehicle_fuel_label, nei_sector_code
@@ -228,7 +227,7 @@ epa_nei_full <- epa_nei %>%
 
 # quickly plot original and interpolated values
 epa_nei_full %>%
-  group_by(nei_inventory_year, GEOID, county_name, county_fips) %>%
+  group_by(nei_inventory_year, geoid, county_name, county_fips) %>%
   summarize(
     interp_emissions = sum(interp_emissions) %>%
       round(digits = 0),
