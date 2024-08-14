@@ -93,13 +93,13 @@ multi_year <-
 
 id_cols <- multi_year %>%
   mutate(
-    GEOID = paste0(state_fips, county_fips),
-    cprg_area = ifelse(GEOID %in% cprg_county$GEOID, TRUE, FALSE),
+    geoid = paste0(state_fips, county_fips),
+    cprg_area = ifelse(geoid %in% cprg_county$geoid, TRUE, FALSE),
     nei_inventory_year = inventory_year
   ) %>%
   select(
     state_name, nei_inventory_year,
-    state_fips, county_fips, GEOID, pollutant_type, uom,
+    state_fips, county_fips, geoid, pollutant_type, uom,
     sector_code, pollutant_code, st_abbrv, cprg_area
   ) %>%
   unique()
@@ -107,20 +107,20 @@ id_cols <- multi_year %>%
 # county level aggregations ----------
 nei_county_multi_year <- multi_year %>%
   mutate(
-    GEOID = paste0(state_fips, county_fips),
-    cprg_area = ifelse(GEOID %in% cprg_county$GEOID, TRUE, FALSE),
+    geoid = paste0(state_fips, county_fips),
+    cprg_area = ifelse(geoid %in% cprg_county$geoid, TRUE, FALSE),
     nei_inventory_year = inventory_year
   ) %>%
   group_by(
     nei_inventory_year,
-    GEOID, pollutant_type, uom,
+    geoid, pollutant_type, uom,
     sector_code, pollutant_code
   ) %>%
   summarise(emissions = sum(emissions), .groups = "keep") %>%
   ungroup() %>%
   left_join(sectors, by = c("sector_code")) %>%
   left_join(id_cols, by = join_by(
-    nei_inventory_year, GEOID,
+    nei_inventory_year, geoid,
     pollutant_type, uom, sector_code,
     pollutant_code
   )) %>%
@@ -150,7 +150,7 @@ nei_state_multi_year <- multi_year %>%
   left_join(sectors, by = c("sector_code")) %>%
   left_join(
     id_cols %>%
-      select(-GEOID, -county_fips, -cprg_area) %>%
+      select(-geoid, -county_fips, -cprg_area) %>%
       unique(),
     by = join_by(
       state_name, nei_inventory_year,
