@@ -305,10 +305,6 @@ manure_emissions_out <- manure_emissions %>%
   select(geoid, inventory_year, sector, category, source,
          data_source, factor_source, value_emissions, units_emissions, mt_co2e)
 
-manure_emissions_out %>% filter(inventory_year == 2021) %>% group_by(source, units_emissions) %>% summarize(value_emissions = sum(value_emissions))
-manure_emissions_old %>% filter(inventory_year == 2021) %>% group_by(source, units_emissions) %>% summarize(value_emissions = sum(value_emissions))
-
-
 manure_emissions_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
@@ -320,7 +316,8 @@ manure_emissions_meta <-
     "data_source", class(manure_emissions_out$data_source), "Activity data source",
     "factor_source", class(manure_emissions_out$factor_source), "Emissions factor data source",
     "value_emissions", class(manure_emissions_out$value_emissions), "Numerical value of emissions",
-    "units_emissions", class(manure_emissions_out$units_emissions), "Units and gas type of emissions"
+    "units_emissions", class(manure_emissions_out$units_emissions), "Units and gas type of emissions".
+    "mt_co2e", class(manure_emissions_out$mt_co2e), "Metric tons of gas in CO2 equivalency"
   )
 
 saveRDS(manure_emissions_out, "./_agriculture/data/manure_emissions.rds")
