@@ -8,7 +8,7 @@ if(!file.exists("_agriculture/data-raw/ag-module.xlsx")){
 }
 
 if(!file.exists("_agriculture/data/typical_animal_mass.rds")){
-  cli::cli_abort("Run _agriculture/data-raw/tam_and_nex_formatting.R script first")
+  cli::cli_abort("Run _agriculture/data-raw/01_compile_typical_animal_mass.R script first")
 }
 
 tam <- read_rds("_agriculture/data/typical_animal_mass.rds")

@@ -5,8 +5,8 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 ### load in livestock count data
 livestock <- read_rds("_agriculture/data/usda_census_data.rds") %>% 
-  left_join(., cprg_county %>% select(STATE, NAME) %>% st_drop_geometry(),
-            by = c("county_name" = "NAME"))
+  left_join(., cprg_county %>% select(state_name, county_name) %>% st_drop_geometry(),
+            by = c("county_name"))
 
 ### load in formatted activity data connecting livestock to manure emissions
 vs <- read_rds("_agriculture/data/volatile_solids.rds")
@@ -69,11 +69,11 @@ manure_ch4 <- left_join(livestock,
                         vs,
                         by = c("year" = "year",
                                "livestock_type" = "livestock_type",
-                               "STATE" ="state")) %>% 
+                               "state_name" ="state")) %>% 
   filter(year >= 2005 & year <= 2021) %>% 
   left_join(., Bo) %>% 
   left_join(., mcf,
-            by = c("year" = "year", "STATE" = "state", "livestock_type" = "livestock_type")) %>% 
+            by = c("year" = "year", "state_name" = "state", "livestock_type" = "livestock_type")) %>% 
   mutate(mt_ch4 = head_count * mt_vs_head_yr * Bo * mcf_percent * ag_constants_vec["kg_m3"],
          mt_co2e = mt_ch4 * gwp$ch4) %>% 
   group_by(year, county_name) %>% 
@@ -115,11 +115,11 @@ manure_n2o <- left_join(livestock %>%
                           mutate(state = if_else(state == "MN",
                                                  "Minnesota",
                                                  "Wisconsin")),
-                        by = c("STATE" = "state", "year" = "year", 
+                        by = c("state_name" = "state", "year" = "year", 
                                "livestock_type" = "livestock_type")) %>% 
-  left_join(., lagoon, by = c("STATE" = "state", "year" = "year", 
+  left_join(., lagoon, by = c("state_name" = "state", "year" = "year", 
                               "livestock_type" = "livestock_type")) %>% 
-  left_join(., solids, by = c("STATE" = "state", "year" = "year", 
+  left_join(., solids, by = c("state_name" = "state", "year" = "year", 
                               "livestock_type" = "livestock_type")) %>% 
   replace(is.na(.), 0) %>%
   mutate(mt_n2o_lagoon = head_count * 
@@ -151,7 +151,7 @@ KN_excretion_runoff <- left_join(
     filter(year >= 2005 & year <= 2021) %>% 
     mutate(state = if_else(state == "MN",
                            "Minnesota",
-                           "Wisconsin")), by = c("STATE" = "state",
+                           "Wisconsin")), by = c("state_name" = "state",
               "livestock_type" = "livestock_type",
                "year" = "year")) %>%
   mutate(total_kn_excretion_kg = head_count * kg_nex_head_yr)
@@ -188,7 +188,7 @@ manure_soils <- left_join(KN_excretion_runoff %>% filter(year != 2022),
                           by = c(
                             "year" = "year",
                             "livestock_type" = "livestock_type",
-                            "STATE" = "state"
+                            "state_name" = "state"
                           )
 ) %>%
   left_join(., manure_mgmt_perc %>% filter(management_type == "Daily_spread") %>%
@@ -197,7 +197,7 @@ manure_soils <- left_join(KN_excretion_runoff %>% filter(year != 2022),
             by = c(
               "year" = "year",
               "livestock_type" = "livestock_type",
-              "STATE" = "state"
+              "state_name" = "state"
             )
   ) %>%
   left_join(., manure_mgmt_perc %>% filter(management_type == "Pasture_range") %>%
@@ -206,7 +206,7 @@ manure_soils <- left_join(KN_excretion_runoff %>% filter(year != 2022),
             by = c(
               "year" = "year",
               "livestock_type" = "livestock_type",
-              "STATE" = "state"
+              "state_name" = "state"
             )
   ) %>%
   ### some livestock_type have manure management determined from other sources or within SIT workbook
@@ -287,12 +287,11 @@ manure_emissions <- bind_rows(
 ### format to match style guide
 
 manure_emissions_out <- manure_emissions %>% 
-  left_join(., cprg_county %>% select(GEOID, NAME) %>% st_drop_geometry(),
-            by = c("county_name" = "NAME")) %>% 
+  left_join(., cprg_county %>% select(geoid, county_name) %>% st_drop_geometry(),
+            by = c("county_name")) %>% 
   rename(inventory_year = year, 
          value_emissions = mt_gas, 
-         units_emissions = gas_type,
-         geoid = GEOID) %>% 
+         units_emissions = gas_type) %>% 
   mutate(sector = "Agriculture",
          category = str_to_sentence(category),
          source = str_to_sentence(gsub("_", " ", source)),
@@ -304,7 +303,11 @@ manure_emissions_out <- manure_emissions %>%
          data_source = "USDA livestock census",
          factor_source = "EPA SIT") %>% 
   select(geoid, inventory_year, sector, category, source,
-         data_source, factor_source, value_emissions, units_emissions)
+         data_source, factor_source, value_emissions, units_emissions, mt_co2e)
+
+manure_emissions_out %>% filter(inventory_year == 2021) %>% group_by(source, units_emissions) %>% summarize(value_emissions = sum(value_emissions))
+manure_emissions_old %>% filter(inventory_year == 2021) %>% group_by(source, units_emissions) %>% summarize(value_emissions = sum(value_emissions))
+
 
 manure_emissions_meta <-
   tibble::tribble(
