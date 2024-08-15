@@ -19,3 +19,6 @@ county_geography <- bind_rows(
   mutate(cprg_area = ifelse(geoid %in% cprg_county$geoid, TRUE, FALSE),
          county_name = name) %>% 
   sf::st_drop_geometry()
+
+counties_light <- county_geography %>% 
+  select(geoid, state_name, county_name, cprg_area)
