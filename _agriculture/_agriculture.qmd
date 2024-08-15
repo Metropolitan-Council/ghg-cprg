@@ -1,0 +1,23 @@
+# Agriculture {#sec-agriculture}
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+hookaddcap()
+```
+
+## Introduction
+
+Agricultural systems are major emitters of methane and nitrous oxide, both from livestock and croplands. Livestock emissions come primarily from enteric fermentation, the formation of methane in ruminants stomachs during digestion, and secondarily from manure emissions of both methane and nitrous oxides. Cropland emissions are predominantly nitrous oxide that is formed from biogeochemical processes related to crop-soil interactions and the direct application of synthetic fertilizers. Carbon dioxide emissions are a smaller share of agricultural emissions, arising predominantly from operation of agricultural equipment, liming of soils, and production of urea used for fertilizer.
