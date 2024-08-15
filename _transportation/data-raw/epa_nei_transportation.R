@@ -255,7 +255,7 @@ epa_nei_full %>%
 
 
 epa_nei_complete <- epa_nei_full %>%
-  select(GEOID, county_fips, county_name, cprg_area,
+  select(geoid, county_fips, county_name, cprg_area,
          nei_inventory_year, nei_data_source,
          vehicle_weight_label,
          vehicle_fuel_label,
@@ -294,7 +294,7 @@ nei_county_proportions <- nei_state_emissions %>%
   left_join(
     epa_nei %>%
       ungroup() %>%
-      select(county_fips, state_name, county_name, GEOID, nei_inventory_year,
+      select(county_fips, state_name, county_name, geoid, nei_inventory_year,
              cprg_area,
              vehicle_weight_label, vehicle_fuel_label, vehicle_group,
              county_emissions_metric_tons_co2e = emissions_metric_tons_co2e
@@ -303,7 +303,7 @@ nei_county_proportions <- nei_state_emissions %>%
     relationship = "many-to-many"
   ) %>%
   filter(vehicle_group == "On-Road") %>%
-  group_by(state_name, GEOID, county_name, nei_inventory_year) %>%
+  group_by(state_name, geoid, county_name, nei_inventory_year) %>%
   summarize(
     county_emissions_metric_tons_co2e = sum(county_emissions_metric_tons_co2e),
     state_emissions_metric_tons_co2e = sum(state_emissions_metric_tons_co2e),
