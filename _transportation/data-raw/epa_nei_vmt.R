@@ -1,7 +1,5 @@
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
-counties_light <- county_geography %>% 
-  select(geoid, state_name, county_name, cprg_area)
 
 # download files if they don't already exist ----- 
 if(!file.exists("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/onroad/VMT_2020NEI_full_monthly_run3_09jan2023_v0.csv")){
@@ -70,31 +68,31 @@ if(!file.exists("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/
 }
 
 
-onroad_input_colnames <- c(
-  "country_cd", "region_cd", "tribal_code", "census_tract_cd", 
-  "shape_id", "scc", "CD", "MSR", "activity_type", "ann_parm_value",
-  "calc_year", "date_updated", "data_set_id", "jan_value",
-  "feb_value", "mar_value", "apr_value", "may_value", 
-  "jun_value", "jul_value", "aug_value", "sep_value", 
-  "oct_value", "nov_value", "dec_value", "comment")
-
-
 read_nei_vmt <- function(vmt_path){
   
   data.table::fread(vmt_path,
                     skip = 16,
                     header = FALSE,
                     colClasses = "character",
-                    col.names =  onroad_input_colnames
+                    col.names =  c(
+                      "country_cd", "region_cd", "tribal_code", "census_tract_cd", 
+                      "shape_id", "scc", "CD", "MSR", "activity_type", "ann_parm_value",
+                      "calc_year", "date_updated", "data_set_id", "jan_value",
+                      "feb_value", "mar_value", "apr_value", "may_value", 
+                      "jun_value", "jul_value", "aug_value", "sep_value", 
+                      "oct_value", "nov_value", "dec_value", "comment")
   ) %>% 
     filter(region_cd %in% county_geography$geoid) %>% 
     left_join(counties_light, 
               by = c("region_cd" = "geoid")) %>% 
-    mutate(across(ends_with("value"), as.numeric)) %>% 
+    mutate(across(ends_with("value"), as.numeric),
+           scc6 = str_sub(scc, 1, 6)) %>% 
     rowwise() %>% 
     select(-tribal_code, -census_tract_cd,
-           -shape_id, -CD, -MSR, -country_cd)
-  
+           -shape_id, -CD, -MSR, -country_cd,
+           -date_updated, -data_set_id,
+           -starts_with(tolower(month.abb))
+    )
 }
 
 
@@ -116,23 +114,19 @@ nei_vmt <- purrr::map_dfr(
       "process_type" = 2
     ), 
     cols_remove = FALSE
-  ) %>% 
-  select(-c("jan_value",
-            "feb_value", "mar_value", "apr_value", "may_value", 
-            "jun_value", "jul_value", "aug_value", "sep_value", 
-            "oct_value", "nov_value", "dec_value", "comment",
-            "date_updated", "data_set_id"))
+  )
 
 
 
 missing_values <- nei_vmt %>% 
-  group_by(scc, calc_year,
+  group_by(scc, scc6, calc_year,
            region_cd, cprg_area, county_name) %>% 
   summarize(ann_parm_value = sum(ann_parm_value)) %>% 
   left_join(scc_onroad) %>% 
   filter(is.na(road_type)) %>% 
   ungroup() %>% 
-  select(scc, calc_year, category, fuel_type, vehicle_type, road_type) %>% 
+  select(scc, scc6, calc_year, category,
+         fuel_type, vehicle_type, road_type) %>% 
   unique()
 
 write.csv(missing_values,
@@ -144,17 +138,10 @@ write.csv(missing_values,
 # find unique scc codes per year
 scc_year <- nei_vmt %>% 
   select(calc_year,
+         scc6,
          scc, mobile_source, fuel_type, vehicle_type, road_type, 
          process_type) %>% 
-  unique() %>% 
-  mutate(scc_short = stringr::str_sub(scc, 1, 6 ))
-
-
-scc_year %>% 
-  left_join(scc_sector) %>% 
-  unique() %>% 
-  View
-
+  unique() 
 
 scc_all_process <- scc_year %>% 
   filter(process_type == "00") %>% 
@@ -198,7 +185,7 @@ scc_all_process <- scc_year %>%
   unique() %>% 
   bind_rows(scc_mobile) %>% 
   unique() %>% 
-  mutate(scc_short = stringr::str_sub(scc, 1, 6 ))
+  mutate(scc6 = stringr::str_sub(scc, 1, 6 ))
 
 
 
