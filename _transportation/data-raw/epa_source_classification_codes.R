@@ -1,8 +1,22 @@
 
 # from Janice Godfry at EPA
+
+scc6_desc <- read_xlsx("_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022v1 onroad comparisons 22-26-32-38 10aug2024.xlsx",
+                       col_types = "text",
+                       sheet = 4) %>% 
+  clean_names() %>% 
+  select(scc6, scc6_desc) %>% 
+  unique()
+
 scc_onroad <- readxl::read_xlsx("_transportation/data-raw/epa/onroad_activity_data_SCC_descriptions.xlsx",
                                 col_types = "text") %>% 
-  clean_names()
+  clean_names() %>% 
+  mutate(scc6 = stringr::str_sub(scc, 1, 6)) %>% 
+  left_join(scc6_desc) %>% 
+  left_join(mobile_sectors,
+             by = c("sector" = "ei_sector"))
+
+
 
 # scc/smoke/MOVES tables -----
 # https://www.cmascenter.org/smoke/documentation/3.6/html/ch02s08s04.html
@@ -178,135 +192,135 @@ rm(fuel_types, fuel_types_agg,
 
 
 # scc tables by year ----
-scc_codes20 <- read_xlsx("_transportation/data-raw/epa/onroad_activity_data_SCC_descriptions.xlsx",
-                         sheet = 1,
-                         col_types = "text"
-) %>%
-  clean_names() %>% 
-  mutate(calc_year = "2020") %>% 
-  mutate(scc_level_one = category,
-         scc_level_two = fuel_type,
-         scc_level_three = vehicle_type,
-         scc_level_four = road_type) %>% 
-  select(calc_year, scc, 
-         starts_with("scc")) %>% 
-  tidyr::separate_wider_position(
-    scc, widths = c(
-      "mobile_source" = 2,
-      "fuel_type" = 2,
-      "vehicle_type" = 2,
-      "road_type" = 2,
-      "process_type" = 2
-    ), 
-    cols_remove = FALSE
-  )
-
-
-
-scc_codes14 <- read_xlsx("_transportation/data-raw/epa/nei/2014NEI/2014v1_EICtoEPA_SCCmapping.xlsx",
-                         sheet = 3,
-                         col_types = "text") %>% 
-  clean_names() %>% 
-  mutate(calc_year = "2014") %>% 
-  select(calc_year, scc, 
-         starts_with("scc")) %>% 
-  tidyr::separate_wider_position(
-    scc, widths = c(
-      "mobile_source" = 2,
-      "fuel_type" = 2,
-      "vehicle_type" = 2,
-      "road_type" = 2,
-      "process_type" = 2
-    ), 
-    cols_remove = FALSE
-  )
-
-
-scc_codes11 <- read_xlsx("_transportation/data-raw/epa/nei/2011NEI/MOVES2014_SMOKE_SCCs_with_descriptions.xlsx",
-                         sheet = 2,
-                         col_types = "text") %>% 
-  clean_names() %>% 
-  tidyr::separate_wider_delim(scc_desc, delim = ";",
-                              names = c(
-                                "scc_level_one",
-                                "scc_level_two",
-                                "scc_level_three",
-                                "scc_level_four"
-                              )) %>% 
-  mutate(scc_process = stringr::str_split(
-    scc_level_four, 
-    pattern = ":", simplify = TRUE)[,2]) %>% 
-  mutate(calc_year = "2011") %>% 
-  tidyr::separate_wider_position(
-    scc, widths = c(
-      "mobile_source" = 2,
-      "fuel_type" = 2,
-      "vehicle_type" = 2,
-      "road_type" = 2,
-      "process_type" = 2
-    ), 
-    cols_remove = FALSE
-  )
-
-
-scc_codes11_alt <- read_xlsx("_transportation/data-raw/epa/nei/2011NEI/MOVES2014_SCC_List_v8.xlsx",
-                             sheet = 2,
-                             col_types = "text") %>% 
-  clean_names() %>% 
-  mutate(calc_year = "2011",
-         scc_level_one = "Mobile Sources",
-         scc_level_two = paste0(sourcetypename, " - ", fueltypedesc),
-         scc_level_three = sourcetypename,
-         scc_level_four = roaddesc
-  ) %>% 
-  select(calc_year, scc, 
-         starts_with("scc")) %>% 
-  tidyr::separate_wider_position(
-    scc, widths = c(
-      "mobile_source" = 2,
-      "fuel_type" = 2,
-      "vehicle_type" = 2,
-      "road_type" = 2,
-      "process_type" = 2
-    ), 
-    cols_remove = FALSE
-  ) %>% 
-  unique()
-
-
-scc_codes11_alt %>% 
-  mutate(process_group_id = case_when(
-    process_type %in% c("01", "02", "09",
-                        "10", "11", "12", "13", "15", "16", 
-                        "17", "18", "19", "90", "91"
-    ) ~ "00",
-    TRUE ~ NA
-  ))
-
-scc_codes08 <- read_xlsx("_transportation/data-raw/epa/nei/2008NEI/scc_eissector_xwalk_2008neiv3.xlsx",
-                         sheet = 2,
-                         col_types = "text") %>% 
-  clean_names() %>% 
-  mutate(calc_year = "2008",
-         scc = code) %>% 
-  filter(stringr::str_starts(scc, "22")) %>% 
-  select(calc_year, scc, 
-         starts_with("scc")) %>% 
-  mutate(scc_process = stringr::str_split(
-    scc_level_four, 
-    pattern = ":", simplify = TRUE)[,2]) %>% 
-  tidyr::separate_wider_position(
-    scc, widths = c(
-      "mobile_source" = 2,
-      "fuel_type" = 2,
-      "vehicle_type" = 2,
-      "road_type" = 2,
-      "process_type" = 2
-    ), 
-    cols_remove = FALSE
-  )
-
-
+# scc_codes20 <- read_xlsx("_transportation/data-raw/epa/onroad_activity_data_SCC_descriptions.xlsx",
+#                          sheet = 1,
+#                          col_types = "text"
+# ) %>%
+#   clean_names() %>% 
+#   mutate(calc_year = "2020") %>% 
+#   mutate(scc_level_one = category,
+#          scc_level_two = fuel_type,
+#          scc_level_three = vehicle_type,
+#          scc_level_four = road_type) %>% 
+#   select(calc_year, scc, 
+#          starts_with("scc")) %>% 
+#   tidyr::separate_wider_position(
+#     scc, widths = c(
+#       "mobile_source" = 2,
+#       "fuel_type" = 2,
+#       "vehicle_type" = 2,
+#       "road_type" = 2,
+#       "process_type" = 2
+#     ), 
+#     cols_remove = FALSE
+#   )
+# 
+# 
+# 
+# scc_codes14 <- read_xlsx("_transportation/data-raw/epa/nei/2014NEI/2014v1_EICtoEPA_SCCmapping.xlsx",
+#                          sheet = 3,
+#                          col_types = "text") %>% 
+#   clean_names() %>% 
+#   mutate(calc_year = "2014") %>% 
+#   select(calc_year, scc, 
+#          starts_with("scc")) %>% 
+#   tidyr::separate_wider_position(
+#     scc, widths = c(
+#       "mobile_source" = 2,
+#       "fuel_type" = 2,
+#       "vehicle_type" = 2,
+#       "road_type" = 2,
+#       "process_type" = 2
+#     ), 
+#     cols_remove = FALSE
+#   )
+# 
+# 
+# scc_codes11 <- read_xlsx("_transportation/data-raw/epa/nei/2011NEI/MOVES2014_SMOKE_SCCs_with_descriptions.xlsx",
+#                          sheet = 2,
+#                          col_types = "text") %>% 
+#   clean_names() %>% 
+#   tidyr::separate_wider_delim(scc_desc, delim = ";",
+#                               names = c(
+#                                 "scc_level_one",
+#                                 "scc_level_two",
+#                                 "scc_level_three",
+#                                 "scc_level_four"
+#                               )) %>% 
+#   mutate(scc_process = stringr::str_split(
+#     scc_level_four, 
+#     pattern = ":", simplify = TRUE)[,2]) %>% 
+#   mutate(calc_year = "2011") %>% 
+#   tidyr::separate_wider_position(
+#     scc, widths = c(
+#       "mobile_source" = 2,
+#       "fuel_type" = 2,
+#       "vehicle_type" = 2,
+#       "road_type" = 2,
+#       "process_type" = 2
+#     ), 
+#     cols_remove = FALSE
+#   )
+# 
+# 
+# scc_codes11_alt <- read_xlsx("_transportation/data-raw/epa/nei/2011NEI/MOVES2014_SCC_List_v8.xlsx",
+#                              sheet = 2,
+#                              col_types = "text") %>% 
+#   clean_names() %>% 
+#   mutate(calc_year = "2011",
+#          scc_level_one = "Mobile Sources",
+#          scc_level_two = paste0(sourcetypename, " - ", fueltypedesc),
+#          scc_level_three = sourcetypename,
+#          scc_level_four = roaddesc
+#   ) %>% 
+#   select(calc_year, scc, 
+#          starts_with("scc")) %>% 
+#   tidyr::separate_wider_position(
+#     scc, widths = c(
+#       "mobile_source" = 2,
+#       "fuel_type" = 2,
+#       "vehicle_type" = 2,
+#       "road_type" = 2,
+#       "process_type" = 2
+#     ), 
+#     cols_remove = FALSE
+#   ) %>% 
+#   unique()
+# 
+# 
+# scc_codes11_alt %>% 
+#   mutate(process_group_id = case_when(
+#     process_type %in% c("01", "02", "09",
+#                         "10", "11", "12", "13", "15", "16", 
+#                         "17", "18", "19", "90", "91"
+#     ) ~ "00",
+#     TRUE ~ NA
+#   ))
+# 
+# scc_codes08 <- read_xlsx("_transportation/data-raw/epa/nei/2008NEI/scc_eissector_xwalk_2008neiv3.xlsx",
+#                          sheet = 2,
+#                          col_types = "text") %>% 
+#   clean_names() %>% 
+#   mutate(calc_year = "2008",
+#          scc = code) %>% 
+#   filter(stringr::str_starts(scc, "22")) %>% 
+#   select(calc_year, scc, 
+#          starts_with("scc")) %>% 
+#   mutate(scc_process = stringr::str_split(
+#     scc_level_four, 
+#     pattern = ":", simplify = TRUE)[,2]) %>% 
+#   tidyr::separate_wider_position(
+#     scc, widths = c(
+#       "mobile_source" = 2,
+#       "fuel_type" = 2,
+#       "vehicle_type" = 2,
+#       "road_type" = 2,
+#       "process_type" = 2
+#     ), 
+#     cols_remove = FALSE
+#   )
+# 
+# 
 
 scc_complete <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-0812-144242.csv",
                          col_types = "c") %>% 
@@ -386,4 +400,4 @@ scc_mobile <- scc_complete %>%
       
     )) %>% 
   select(-scc_split_1, -scc_split_2) %>% 
-  mutate(scc_short = stringr::str_sub(scc, 1, 6 ))
+  mutate(scc6 = stringr::str_sub(scc, 1, 6 ))
