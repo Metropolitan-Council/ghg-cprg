@@ -71,14 +71,8 @@ nei_scc_emissions <- bind_rows(nei_onroad_emissions %>%
 nei_emissions_summary <- nei_scc_emissions %>% 
   group_by(geoid, county_name, cprg_area, nei_year, data_category,
            pollutant_code, pollutant_desc, emissions_uom,
-           # sector,
-           # fuel_type_detect, scc6,
-           # scc_level_one, scc_level_two,
-           # scc_level_three,
-           # alt_mode,
            alt_mode_truck
-           # scc6_desc_broad
-           ) %>% 
+  ) %>% 
   summarize(total_emissions = sum(total_emissions),
             .groups = "keep")
 
