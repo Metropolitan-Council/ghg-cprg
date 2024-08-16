@@ -97,15 +97,11 @@ nei_nonroad_emissions <- bind_rows(
          -uom, -st_usps_cd, -state, -data_category_cd, -fips_state_code,
          -state_and_county_fips_code, -county_name, -description, -emissions_op_type_code,
          -data_set_short_name, -epa_region_code, -fips_code, -emission_operating_type, -sector,
-         -emissions_type_code) %>%
+         -emissions_type_code, -reporting_period, -aetc, -pollutant_type_s, -emissions_operating_type) %>%
   select(geoid, scc, nei_year, everything()) %>% 
-  mutate(total_emissions = as.numeric(total_emissions))
-
-
-nonroad_scc <- nei_nonroad_emissions %>% 
-  select(nei_year, scc, pollutant_code, pollutant_desc) %>% 
-  unique()
-
-nei_nonroad_summary <- nei_nonroad_emissions %>% 
-  group_by(geoid, pollutant_code, emissions_uom, nei_year, sector, fuel_type_detect) %>% 
-  summarize(total_emissions = sum(total_emissions))
+  mutate(total_emissions = as.numeric(total_emissions)) %>% 
+  mutate(data_category = "Nonroad") %>% 
+  left_join(counties_light)
+  
+  
+saveRDS(nei_nonroad_emissions, "_transportation/data-raw/epa/nei_nonroad_emissions.RDS")
