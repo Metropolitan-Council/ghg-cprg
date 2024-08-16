@@ -1,5 +1,6 @@
 # fetch more detailed emissions data than what is available in EnviroFacts
 source("R/_load_pkgs.R")
+source("_meta/data-raw/county_geography.R")
 
 if(!file.exists("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byregions/2008NEIv3_onroad5.csv")){
   # 2020 
@@ -33,7 +34,7 @@ if(!file.exists("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byreg
         exdir = "_transportation/data-raw/epa/nei/2008NEI/")
 }
 
-v2008 <- read.csv("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byregions/2008NEIv3_onroad5.csv",
+v_or_2008 <- read.csv("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byregions/2008NEIv3_onroad5.csv",
                   colClasses = "character") %>% 
   clean_names() %>% 
   mutate(geoid = state_and_county_fips_code,
@@ -47,7 +48,7 @@ v2008 <- read.csv("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byr
   filter(geoid %in% county_geography$geoid,
          pollutant_code %in% c("CO2", "CH4", "N2O", "CO", "PM25-PRI", "PM10-PRI"))
 
-v2011 <- read.csv("_transportation/data-raw/epa/nei/2011NEI/2011neiv2_onroad_byregions/onroad_5.csv",
+v_or_2011 <- read.csv("_transportation/data-raw/epa/nei/2011NEI/2011neiv2_onroad_byregions/onroad_5.csv",
                   colClasses = "character") %>% 
   clean_names() %>% 
   mutate(geoid = state_and_county_fips_code,
@@ -61,7 +62,7 @@ v2011 <- read.csv("_transportation/data-raw/epa/nei/2011NEI/2011neiv2_onroad_byr
   filter(geoid %in% county_geography$geoid,
          pollutant_code %in% c("CO2", "CH4", "N2O", "CO", "PM25-PRI", "PM10-PRI"))
 
-v2014 <- read.csv("_transportation/data-raw/epa/nei/2014NEI/2014neiv2_onroad_byregions/onroad_5.csv",
+v_or_2014 <- read.csv("_transportation/data-raw/epa/nei/2014NEI/2014neiv2_onroad_byregions/onroad_5.csv",
                   colClasses = "character") %>% 
   clean_names() %>% 
   mutate(geoid = state_and_county_fips_code,
@@ -72,7 +73,7 @@ v2014 <- read.csv("_transportation/data-raw/epa/nei/2014NEI/2014neiv2_onroad_byr
   filter(geoid %in% county_geography$geoid,
          pollutant_code %in% c("CO2", "CH4", "N2O", "CO", "PM25-PRI", "PM10-PRI"))
 
-v2017 <- read.csv("_transportation/data-raw/epa/nei/2017NEI/2017neiApr_onroad_byregions/onroad_5.csv",
+v_or_2017 <- read.csv("_transportation/data-raw/epa/nei/2017NEI/2017neiApr_onroad_byregions/onroad_5.csv",
                   colClasses = "character") %>% 
   clean_names() %>% 
   mutate(geoid = fips_code,
@@ -81,7 +82,7 @@ v2017 <- read.csv("_transportation/data-raw/epa/nei/2017NEI/2017neiApr_onroad_by
   filter(geoid %in% county_geography$geoid,
          pollutant_code %in% c("CO2", "CH4", "N2O", "CO", "PM25-PRI", "PM10-PRI"))
 
-v2020 <- read.csv("_transportation/data-raw/epa/nei/2020NEI/2020nei_onroad_byregion/onroad_5.csv",
+v_or_2020 <- read.csv("_transportation/data-raw/epa/nei/2020NEI/2020nei_onroad_byregion/onroad_5.csv",
                   colClasses = "character") %>% 
   clean_names() %>% 
   mutate(geoid = fips_code,
@@ -91,23 +92,17 @@ v2020 <- read.csv("_transportation/data-raw/epa/nei/2020NEI/2020nei_onroad_byreg
 
 # combine all 
 nei_onroad_emissions <- bind_rows(
-  v2008, v2011, v2014, v2017, v2020
+  v_or_2008, v_or_2011, v_or_2014, v_or_2017, v_or_2020
 ) %>% 
   select(-aircraft_engine_type_cd, -tribal_name, -pollutant_cd, -county,
          -uom, -st_usps_cd, -state, -data_category_cd, -fips_state_code,
          -state_and_county_fips_code, -county_name, -description, -emissions_op_type_code,
          -data_set_short_name, -epa_region_code, -fips_code, -emission_operating_type, -sector,
-         -emissions_type_code) %>% 
+         -emissions_type_code, -pollutant_type_s, -aetc, -reporting_period) %>% 
   select(geoid, scc, nei_year, everything()) %>% 
   mutate(total_emissions = as.numeric(total_emissions)) %>% 
   left_join(counties_light) %>% 
-  left_join(scc_mobile %>% 
-              select(scc, scc6, sector, scc_level_one, 
-                     scc_level_two, scc_level_three, scc_level_four,
-                     fuel_type_detect, scc_road_type) %>% 
-              unique())
+  mutate(data_category = "Onroad")
 
 
-nei_onroad_summary <- nei_onroad_emissions %>% 
-  group_by(geoid, pollutant_code, emissions_uom, nei_year, sector, fuel_type_detect) %>% 
-  summarize(total_emissions = sum(total_emissions))
+saveRDS(nei_onroad_emissions, "_transportation/data-raw/epa/nei_onroad_emissions.RDS")
