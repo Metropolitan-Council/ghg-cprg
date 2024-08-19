@@ -1,5 +1,4 @@
 source("R/_load_pkgs.R")
-source("R/global_warming_potential.R")
 source("_agriculture/data-raw/_fetch_usda_key.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
