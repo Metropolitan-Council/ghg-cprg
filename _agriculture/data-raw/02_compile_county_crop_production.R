@@ -7,6 +7,17 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 ag_constants <- readRDS("_agriculture/data/ag_constants.rds")
 
 ## convert to named vector for easier indexing
+ag_mtb <- ag_constants %>% 
+  filter(grepl("mtb", short_text)) %>% 
+mutate(crop_type = case_when(
+  grepl("barley", short_text) ~ "barley",
+  grepl("corn", short_text) ~ "corn",
+  grepl("oats", short_text) ~ "oats",
+  grepl("soybeans", short_text) ~ "soybeans",
+  grepl("wheat", short_text) ~ "wheat",
+  TRUE ~ short_text
+))
+
 ag_constants_vec <- ag_constants %>%
   select(short_text, value) %>%
   tibble::deframe()
@@ -50,33 +61,46 @@ usda_survey_formatted <- usda_survey %>%
   select(year, county_name, short_desc, Value) %>%
   ### convert names to match ag conversions
   mutate(crop_type = case_when(
-    grepl("BARLEY", short_desc) ~ "Barley",
-    grepl("BEANS", short_desc) ~ "Dry Edible Beans",
-    grepl("CORN", short_desc) ~ "Corn for Grain",
-    grepl("ALFALFA", short_desc) ~ "Alfalfa",
-    grepl("OATS", short_desc) ~ "Oats",
-    grepl("SOYBEANS", short_desc) ~ "Soybeans",
-    grepl("WHEAT", short_desc) ~ "All Wheat",
+    grepl("BARLEY", short_desc) ~ "barley",
+    grepl("BEANS, DRY", short_desc) ~ "dry beans",
+    grepl("CORN", short_desc) ~ "corn",
+    grepl("ALFALFA", short_desc) ~ "alfalfa",
+    grepl("OATS", short_desc) ~ "oats",
+    grepl("SOYBEANS", short_desc) ~ "soybeans",
+    grepl("WHEAT", short_desc) ~ "wheat",
     TRUE ~ short_desc
   )) %>% # convert all units to metric tons
-  left_join(., crop_conversions, by = c("crop_type" = "crop")) %>%
+  left_join(., ag_mtb, by = c("crop_type")) %>%
   mutate(metric_tons = case_when(
-    grepl("Beans", crop_type) ~ Value * .0454, # hundredweights to metric tons
-    grepl("Alfalfa", crop_type) ~ Value * 0.9072, # tons to metric tons
-    TRUE ~ Value * metric_tons_bushel # bushels to metric tons
+    grepl("dry beans", crop_type) ~ Value *  
+      ag_constants_vec["lbs_hundredweight"] * 
+      ag_constants_vec["kg_lb"] / 
+      ag_constants_vec["kg_MT"], # hundredweights to metric tons
+    grepl("alfalfa", crop_type) ~ Value * ag_constants_vec["MT_ton"], # tons to metric tons
+    TRUE ~ Value * value # bushels to metric tons
   )) %>% 
   mutate(
-    # determine N delivered to soils
-    MT_N_to_soil = if_else(
-      crop_type == "Alfalfa",
-      0, # no N to soil via residue for alfalfa
-      metric_tons * residue_crop_mass_ratio * residue_dry_matter_fraction * fraction_residue_applied * nitrogen_content_of_residue
-    ),
-    MT_N_fixation = if_else(
-      crop_type %in% c("Alfalfa", "Soybeans", "Dry Edible Beans"),
-      metric_tons * (1 + residue_crop_mass_ratio) * residue_dry_matter_fraction * 0.03,
-      # last value is constant of N content of N-fixer biomass
-      0
-    )
+    # there are three missing alfalfa values in 2013 in Dakota, Carver, and Scott, interpolating
+    metric_tons = zoo::na.approx(metric_tons, na.rm = FALSE),
+  ) %>% 
+  mutate(county_name = if_else(county_name == "ST CROIX",
+                               "St. Croix",
+                               str_to_sentence(county_name))) %>% 
+  left_join(., cprg_county %>% select(county_name, geoid)) %>% 
+  select(inventory_year = year, geoid,county_name,crop_type, metric_tons)
+  #bring back geoid from cprg_county
+ 
+# create metadata
+crop_production_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "inventory_year", class(usda_survey_formatted$inventory_year), "Year of survey",
+    "geoid", class(usda_survey_formatted$geoid), "County GEOID",
+    "county_name", class(usda_survey_formatted$county_name), "County name",
+    "crop_type ", class(usda_survey_formatted$crop_type), "Crop type",
+    "metric_tons", class(usda_survey_formatted$metric_tons), "Metric tons of crop produced"
   )
+
+saveRDS(usda_survey_formatted, "./_agriculture/data/county_crop_production.rds")
+saveRDS(crop_production_meta, "./_agriculture/data/county_crop_production_meta.rds")
 
