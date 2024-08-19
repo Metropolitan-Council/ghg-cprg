@@ -37,7 +37,7 @@ v2008 <- read.csv("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_nonroad_by
                   colClasses = "character") %>% 
   clean_names() %>% 
   mutate(geoid = state_and_county_fips_code,
-         nei_year = "2008",
+         nei_inventory_year = "2008",
          pollutant_code = pollutant_cd,
          data_category = data_category_cd,
          emissions_uom = uom,
@@ -51,7 +51,7 @@ v2011 <- read.csv("_transportation/data-raw/epa/nei/2011NEI/2011neiv2_nonroad_by
                   colClasses = "character") %>% 
   clean_names() %>% 
   mutate(geoid = state_and_county_fips_code,
-         nei_year = "2011",
+         nei_inventory_year = "2011",
          pollutant_code = pollutant_cd,
          emissions_uom = uom,
          data_category = data_category_cd,
@@ -65,7 +65,7 @@ v2014 <- read.csv("_transportation/data-raw/epa/nei/2014NEI/2014neiv2_nonroad_by
                   colClasses = "character") %>% 
   clean_names() %>% 
   mutate(geoid = state_and_county_fips_code,
-         nei_year = "2014",
+         nei_inventory_year = "2014",
          pollutant_code = pollutant_cd,
          emissions_uom = uom,
          data_category = data_category) %>% 
@@ -76,7 +76,7 @@ v2017 <- read.csv("_transportation/data-raw/epa/nei/2017NEI/2017neiApr_nonroad_b
                   colClasses = "character") %>% 
   clean_names() %>% 
   mutate(geoid = fips_code,
-         nei_year = "2017",
+         nei_inventory_year = "2017",
          data_category = data_category) %>% 
   filter(geoid %in% county_geography$geoid,
          pollutant_code %in% c("CO2", "CH4", "N2O", "CO", "PM25-PRI", "PM10-PRI"))
@@ -85,7 +85,7 @@ v2020 <- read.csv("_transportation/data-raw/epa/nei/2020NEI/2020nei_nonroad_byre
                   colClasses = "character") %>% 
   clean_names() %>% 
   mutate(geoid = fips_code,
-         nei_year = "2020") %>% 
+         nei_inventory_year = "2020") %>% 
   filter(geoid %in% county_geography$geoid,
          pollutant_code %in% c("CO2", "CH4", "N2O", "CO", "PM25-PRI", "PM10-PRI"))
 
@@ -98,7 +98,7 @@ nei_nonroad_emissions <- bind_rows(
          -state_and_county_fips_code, -county_name, -description, -emissions_op_type_code,
          -data_set_short_name, -epa_region_code, -fips_code, -emission_operating_type, -sector,
          -emissions_type_code, -reporting_period, -aetc, -pollutant_type_s, -emissions_operating_type) %>%
-  select(geoid, scc, nei_year, everything()) %>% 
+  select(geoid, scc, nei_inventory_year, everything()) %>% 
   mutate(total_emissions = as.numeric(total_emissions)) %>% 
   mutate(data_category = "Nonroad") %>% 
   left_join(counties_light)
