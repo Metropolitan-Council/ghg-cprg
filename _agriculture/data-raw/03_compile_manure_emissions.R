@@ -24,25 +24,6 @@ ag_constants_vec <- ag_constants %>%
 ag_manure_mgmt <- readRDS("_agriculture/data/manure_management_systems.rds")
 
 
-#### manure and lagoons ####
-
-### get labels from N2O and CH4 emissions
-
-### format ch4 emissions factors
-### additional poultry categories that need inventory data
-### manure data requires intermediate data between head count and an
-###  emission factor such as volatile solids per kg of animal, max potential emissions
-###  
-### it's opaque in the SIT where these intermediate values are coming from
-###  in the Excel workbook, so we're taking a shortcut and dividing the
-### calculated emission total by the head count to get a de facto emission factor. 
-### The effect should be the same even if using the intermediate data
-### 
-### If it becomes apparent counties have unique manure management systems 
-### relative to the rest of the state, this should be revisited.
-### UPDATE: Better understanding now of where values are coming from in Excel 
-### Workbook so this shortcut can be revised to be more explicit and therefore flexible
-
 ### pull out and format Bo (max potential emissions (ch4/ kg vs))
 
 Bo <- ag_constants %>% 
@@ -143,7 +124,6 @@ manure_n2o <- left_join(livestock %>%
 #   summarize(mt_n2o = sum(mt_n2o), mt_co2e = sum(mt_co2e))
            
 ### calculating 'Total K-Nitrogen excreted' for ag-soils-animals calculation
-### this is one of the intermediate steps skipped in calculating N2O emissions from manure above, but is necessary for soil runoff/leaching calc
 
 KN_excretion_runoff <- left_join(
   livestock %>% filter(year >= 2005),
