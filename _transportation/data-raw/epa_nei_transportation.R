@@ -43,6 +43,7 @@ mobile_sectors <- sectors %>%
     ),
     vehicle_fuel_label =
       case_when(
+        str_detect(sector_three, "non-Diesel") ~ "Non-Diesel",
         str_detect(sector_three, "Diesel") ~ "Diesel",
         str_detect(sector_three, "Gasoline") ~ "Gasoline",
         TRUE ~ "Other or not applicable"
@@ -140,6 +141,7 @@ epa_nei <- nei_county_emissisons %>%
                      county_name,
                      county_fips = countyfp
               )) %>%
+  unique() %>% 
   group_by(
     geoid, county_name,
     vehicle_weight_label,
@@ -152,11 +154,11 @@ epa_nei <- nei_county_emissisons %>%
     nei_inventory_year
   ) %>%
   summarize(
-    total_co2 = sum(co2),
-    total_ch4 = sum(ch4),
-    total_n2o = sum(n2o),
-    total_co2_w_equiv = sum(co2_co2_equivalent),
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    total_co2 = sum(co2, na.rm = T),
+    total_ch4 = sum(ch4, na.rm = T),
+    total_n2o = sum(n2o, na.rm = T),
+    total_co2_w_equiv = sum(co2_co2_equivalent, na.rm = T),
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e, na.rm = T),
     .groups = "keep"
   ) %>%
   ungroup()
@@ -169,7 +171,7 @@ epa_nei_meta <- tibble::tribble(
   "total_ch4", class(epa_nei$total_ch4), "Annual total grams of CH~4~  attributed to the given county",
   "total_n2o", class(epa_nei$total_n2o), "Annual total grams of N~2~O  attributed to the given county",
   "vehicle_weight_label", paste0(class(epa_nei$vehicle_weight_label), collapse = " "), "\"Light-duty\", \"Medium-duty\", \"Heavy-duty\", or \"Other or not applicable\"",
-  "vehicle_fuel_label", class(epa_nei$vehicle_fuel_label), "Diesel or gasoline fuel",
+  "vehicle_fuel_label", class(epa_nei$vehicle_fuel_label), "Diesel, non-diesel, gasoline, or other fuel",
   "vehicle_type", class(epa_nei$vehicle_type), "\"passenger\" or \"commercial\"",
   "vehicle_group", class(epa_nei$vehicle_group), "Vehicle group",
   "nei_sector_code", class(epa_nei$nei_sector_code), "NEI sector code",
