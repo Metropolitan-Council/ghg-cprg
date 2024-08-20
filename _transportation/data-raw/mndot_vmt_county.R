@@ -475,7 +475,8 @@ dat_ls[["2023"]] <- readxl::read_excel(
 # compile ------
 
 # bind all datasets together
-vmt_county_raw <- data.table::rbindlist(dat_ls, fill = T, idcol = "year") %>%
+vmt_county_raw <- data.table::rbindlist(dat_ls, fill = TRUE,
+                                        idcol = "year") %>%
   # remove extra columns
   select(-percent_sampled, -x100_percent_due_to_rounding) %>%
   # remove any grand total rows
@@ -509,9 +510,53 @@ vmt_county_raw <- data.table::rbindlist(dat_ls, fill = T, idcol = "year") %>%
     )
   )
 
+# better define route systems
+# as labels have changed over time
 
+route_system_reference <-  vmt_county_raw %>% 
+  select(route_system, year) %>% 
+  filter(year == 2023) %>% 
+  select(route_system) %>% 
+  unique() %>% 
+  tidyr::separate_wider_delim(route_system, delim = "-",
+                              names =  c("route_system_id",
+                                         "route_system_desc"),
+                              too_many = "merge") %>% 
+  mutate(route_system_id = str_pad(route_system_id %>% 
+                                     str_trim(),
+                                   side = "left",
+                                   pad = "0",
+                                   width = 2)) %>% 
+  arrange(route_system_id)
+
+route_system_year_all <- vmt_county_raw %>% 
+  select(route_system, year) %>% 
+  unique() %>% 
+  tidyr::separate_wider_delim(route_system, delim = "-",
+                              names =  c("route_system_id",
+                                         "route_system"),
+                              too_many = "merge",
+                              cols_remove = FALSE) %>%
+  mutate(route_system_id = str_pad(route_system_id %>% 
+                                     str_trim(),
+                                   side = "left",
+                                   pad = "0",
+                                   width = 2)) %>% 
+  left_join(route_system_reference,
+            by = c("route_system_id"))
+
+# join back with VMT
+vmt_county_raw_route_system <- vmt_county_raw %>%
+  left_join(route_system_year_all,
+             by = c("year", "route_system"))
+
+# remove from environment
+rm(route_system_reference, route_system_year_all)
+
+# summarize by year and county only
+# removing the route system distinction
 vmt_county_raw_summary <-
-  vmt_county_raw %>%
+  vmt_county_raw_route_system %>% 
   group_by(year, county, cprg_area) %>%
   summarize(
     daily_vmt = sum(daily_vmt),
