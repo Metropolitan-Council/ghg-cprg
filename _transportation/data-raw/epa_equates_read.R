@@ -147,17 +147,7 @@ equates_cprg <- equates %>%
   mutate(geoid = region_cd) %>% 
   left_join(counties_light) %>% 
   filter(poll %in% c("CH4", "N2O", "CO2", "PM10-PRI", "PM25-PRI"),
-         emis_type %in% c("RPD", "RPV")) %>% 
-  tidyr::separate_wider_position(
-    scc, widths = c(
-      "mobile_source" = 2,
-      "fuel_type" = 2,
-      "vehicle_type" = 2,
-      "road_type" = 2,
-      "process_type" = 2
-    ),
-    cols_remove = FALSE
-  )
+         emis_type %in% c("RPD", "RPV")) 
 
 saveRDS(equates, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS")
 saveRDS(equates_cprg, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cprg.RDS")
