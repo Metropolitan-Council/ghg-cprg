@@ -551,7 +551,7 @@ vmt_county_raw_route_system <- vmt_county_raw %>%
              by = c("year", "route_system"))
 
 # remove from environment
-rm(route_system_reference, route_system_year_all)
+rm(route_system_reference, route_system_year_all, dat_ls)
 
 # summarize by year and county only
 # removing the route system distinction
