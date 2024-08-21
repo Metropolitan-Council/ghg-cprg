@@ -1,3 +1,4 @@
+source("R/_load_pkgs.R")
 
 # from Janice Godfry at EPA
 
@@ -6,19 +7,34 @@ scc6_desc <- read_xlsx("_transportation/data-raw/epa/air_emissions_modeling/2022
                        sheet = 4) %>%
   clean_names() %>%
   select(scc6, scc6_desc) %>%
-  unique()
+  unique() %>% 
+  bind_rows(
+    tibble(scc6 = "220354",
+           scc6_desc = "Compressed natural gas (CNG); Motor homes")
+  )
 
+# these are used specifically for onroad SCCs 
+# in VMT and other supplementary calculations
 scc_onroad <- readxl::read_xlsx("_transportation/data-raw/epa/onroad_activity_data_SCC_descriptions.xlsx",
                                 col_types = "text") %>%
   clean_names() %>%
   mutate(scc6 = stringr::str_sub(scc, 1, 6)) %>%
-  left_join(scc6_desc)
-  # left_join(mobile_sectors,
-  #            by = c("sector" = "ei_sector"))
-
-
+  left_join(scc6_desc) %>% 
+  mutate(fuel_type_detail = stringr::str_split(
+    fuel_type, 
+    pattern = "-",
+    simplify = TRUE)[,2] %>% 
+      stringr::str_trim(),
+    fuel_type_detail = ifelse(fuel_type_detail == "Ethanol (E",
+                              "Ethanol (E-85)",
+                              fuel_type_detail)) %>% 
+  mutate(scc6_desc = ifelse(is.na(scc6_desc),
+                            paste0(fuel_type_detail, "; ",
+                                   str_to_sentence(vehicle_type)),
+                            scc6_desc))
 
 # scc complete -----
+# these are used in the official NEI
 
 scc6_desc_manual <- read.csv("_transportation/data-raw/epa/nei/scc6_descriptions_all.csv",
                              colClasses = "character")
@@ -103,6 +119,7 @@ scc_complete_road <-  read_csv("_transportation/data-raw/epa/SCCDownload-2024-08
                         TRUE ~ map_to),
     scc6_new = str_sub(scc_new, 1, 6)
   ) %>% 
-  left_join(scc6_desc_manual)
+  left_join(scc6_desc_manual,
+            join_by(scc_level_one, scc_level_two, scc_level_three, fuel_type_detect, scc6_new))
 
 
