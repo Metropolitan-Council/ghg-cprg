@@ -3,18 +3,6 @@ source("R/global_warming_potential.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 crops <- read_rds("_agriculture/data/county_crop_production.rds")
-# 
-# ### load in saved SIT workbook sheets
-# ag_soils_residuals <- read_csv("_agriculture/data-raw/ag_soils_residuals.csv")
-# ag_soils_fertilizer <- read_csv("_agriculture/data-raw/ag_soils_fertilizer.csv")
-# ag_soils_manure <- read_csv("_agriculture/data-raw/ag_soils_manure.csv")
-# ag_residual_burning_ch4 <- read_csv("_agriculture/data-raw/ag_residual_burning_ch4.csv")
-# ag_residual_burning_n2o <- read_csv("_agriculture/data-raw/ag_residual_burning_n2o.csv")
-# ag_soils_liming <- read_csv("_agriculture/data-raw/ag_soils_liming.csv")
-# ag_constants <- read_csv("_agriculture/data-raw/ag_constants.csv")
-# ag_control <- read_csv("_agriculture/data-raw/ag_control.csv")
-# ag_fertilizer <- read_csv("_agriculture/data-raw/ag_fertilizer.csv")
-
 
 ag_constants <- readRDS("_agriculture/data/ag_constants_formatted.rds")
 ## convert to named vector for easier indexing
