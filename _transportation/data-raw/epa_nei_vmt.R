@@ -83,8 +83,9 @@ read_nei_vmt <- function(vmt_path){
                       "oct_value", "nov_value", "dec_value", "comment")
   ) %>% 
     filter(region_cd %in% county_geography$geoid) %>% 
+    mutate(geoid = region_cd) %>% 
     left_join(counties_light, 
-              by = c("region_cd" = "geoid")) %>% 
+              by = c("geoid")) %>% 
     mutate(across(ends_with("value"), as.numeric),
            scc6 = str_sub(scc, 1, 6)) %>% 
     rowwise() %>% 
@@ -105,129 +106,18 @@ nei_vmt <- purrr::map_dfr(
   read_nei_vmt
 ) %>% 
   arrange(desc(calc_year)) %>% 
-  tidyr::separate_wider_position(
-    scc, widths = c(
-      "mobile_source" = 2,
-      "fuel_type" = 2,
-      "vehicle_type" = 2,
-      "road_type" = 2,
-      "process_type" = 2
-    ), 
-    cols_remove = FALSE
-  )
+  left_join(scc_onroad,
+            by= c("scc", "scc6"))
 
 
-
-missing_values <- nei_vmt %>% 
-  group_by(scc, scc6, calc_year,
-           region_cd, cprg_area, county_name) %>% 
-  summarize(ann_parm_value = sum(ann_parm_value)) %>% 
-  left_join(scc_onroad) %>% 
-  filter(is.na(road_type)) %>% 
-  ungroup() %>% 
-  select(scc, scc6, calc_year, category,
-         fuel_type, vehicle_type, road_type) %>% 
-  unique()
-
-write.csv(missing_values,
-          "_transportation/data-raw/epa/scc_missing_values.csv",
-          row.names = FALSE)
-
-
-# read and harmonize scc codes------
-# find unique scc codes per year
-scc_year <- nei_vmt %>% 
-  select(calc_year,
-         scc6,
-         scc, mobile_source, fuel_type, vehicle_type, road_type, 
-         process_type) %>% 
-  unique() 
-
-scc_all_process <- scc_year %>% 
-  filter(process_type == "00") %>% 
-  left_join(scc_mobile %>% 
-              select(mobile_source, scc_level_one) %>% 
-              unique(),
-            by = c("mobile_source")) %>% 
-  left_join(scc_mobile %>% 
-              select(fuel_type, scc_level_two) %>% 
-              unique(),
-            by = c("fuel_type")) %>% 
-  left_join(scc_mobile %>% 
-              select(vehicle_type, scc_level_two, scc_level_three) %>% 
-              unique(),
-            by = c("vehicle_type",
-                   "scc_level_two")) %>% 
-  # left_join(scc_mobile %>%
-  #             select(process_type, scc_process, scc_road_type,
-  #                    scc_level_one, scc_level_two) %>%
-  #             unique()
-  #           # by = join_by(process_type, scc_level_one, scc_level_two)
-  # ) %>% 
-  # left_join(scc_moves_smoke$process_types$process_types_agg,
-  #           by = c("process_type" = "process_type_agg")) %>%
-  left_join(scc_mobile %>%
-              select(road_type, scc_road_type, scc_level_two) %>%
-              unique()) %>% 
-  # left_join(scc_moves_smoke$road_types$road_types,
-  #           by = c("road_type" = "moves_road_type")) %>%
-  # mutate(
-  #   scc_road_type = case_when(
-  #     is.na(scc_road_type)  ~ paste0(road_type_description, " (MOVES/SMOKE)"),
-  #     TRUE ~ scc_road_type
-  #   ),
-  #   scc_process = case_when(
-  #     is.na(scc_process) ~ paste0(process_type_agg_desc, " (Aggregate MOVES/SMOKE)"),
-  #     TRUE ~ scc_process)
-  # ) %>%
-  # select(-calc_year, -process_type_agg_desc,
-  #        -road_type_description) %>% 
-  unique() %>% 
-  bind_rows(scc_mobile) %>% 
-  unique() %>% 
-  mutate(scc6 = stringr::str_sub(scc, 1, 6 ))
-
-
-
-scc_year %>% 
-  left_join(scc_all_process) %>% 
-  unique() %>% 
-  View
+# how does the total by road type compare with 
+# the values we have from MnDOT?
+# 
+# If we total ALL VMT, we get almost identical values
+# 
+# totaling (roughly) by (functional class -> MOVES road type)
+# we get values in the same ballpark
 
 nei_vmt %>% 
-  left_join(scc_all_process) %>%
-  # left_join(scc_onroad) %>% 
-  filter(county_name == "Hennepin")%>% 
-  View
-
-
-nei_vmt %>% 
-  filter(calc_year == "2020") %>% 
-  left_join(scc_codes20) %>% View
-left_join(scc_complete) %>% 
-  select(scc, map_to, calc_year, last_inventory_year) %>% 
-  unique() %>% View
-
-scc_year %>% 
-  left_join(scc_complete) %>% View
-
-
-codes_year_unique <- 
-  bind_rows(scc_codes08, 
-            scc_codes11, 
-            scc_codes14,
-            scc_codes20) %>% 
-  select(scc, data_category, calc_year,
-         road_type,
-         fuel_type, 
-         category, 
-         vehicle_type,
-         scc_level_one,
-         scclevel) %>%
-  unique()
-
-scc_year %>% 
-  left_join(scc_codes14) 
-# filter(is.na(road_type))
-inner_join(scc_codes08)
-
+  group_by(geoid, county_name, calc_year, road_type) %>%
+  summarize(total_vmt = sum(ann_parm_value)) %>% View
