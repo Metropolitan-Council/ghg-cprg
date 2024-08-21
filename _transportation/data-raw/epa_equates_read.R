@@ -98,8 +98,11 @@ read_equates <- function(equates_path){
                                   "55103", "55141", "55139", "55069", "55091", "55049", "55075", 
                                   "55099", "55043", "55021", "55019", "55109", "55057", "55107", 
                                   "55133", "55011", "55078", "55071", "55029"), 
-                         poll %in% c("CH4", "N2O", "CO2",
-                                     "PM10-PRI", "PM25-PRI")
+                         poll %in% c("CH4", "N2O",
+                                     "CO2", "NO", "NOX",
+                                     "HFC", "VOC", "O3", "CO",
+                                     "PM10-PRI", "PM25-PRI"),
+                  emis_type %in% c("RPD", "RPV")
     ) %>% 
     dplyr::mutate(dplyr::across(tidyr::ends_with("value"), as.numeric),
                   scc6 = stringr::str_sub(scc, 1, 6),
@@ -145,9 +148,7 @@ equates <-
 
 equates_cprg <- equates %>%
   mutate(geoid = region_cd) %>% 
-  left_join(counties_light) %>% 
-  filter(poll %in% c("CH4", "N2O", "CO2", "PM10-PRI", "PM25-PRI"),
-         emis_type %in% c("RPD", "RPV")) 
+  left_join(counties_light) 
 
 saveRDS(equates, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS")
 saveRDS(equates_cprg, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cprg.RDS")
