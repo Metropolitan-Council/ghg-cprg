@@ -121,3 +121,6 @@ nei_vmt <- purrr::map_dfr(
 nei_vmt %>% 
   group_by(geoid, county_name, calc_year, road_type) %>%
   summarize(total_vmt = sum(ann_parm_value)) %>% View
+
+
+saveRDS(nei_vmt, "_transportation/data-raw/epa/nei/nei_vmt.RDS")
