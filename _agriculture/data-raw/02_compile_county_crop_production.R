@@ -44,6 +44,7 @@ usda_survey <- tidyUSDA::getQuickstat(
   weighted_by_area = TRUE
 ) %>%
   as.data.frame() %>% 
+  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>% 
   st_drop_geometry()
 
 

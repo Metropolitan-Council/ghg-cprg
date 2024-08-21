@@ -29,6 +29,7 @@ usda_census <- tidyUSDA::getQuickstat(
   weighted_by_area = T
 ) %>%
   as.data.frame() %>%
+  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>% 
   dplyr::select(-geometry)
 
 
@@ -123,6 +124,7 @@ usda_poultry <- tidyUSDA::getQuickstat(
   weighted_by_area = T
 ) %>%
   as.data.frame() %>%
+  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>% 
   dplyr::select(-geometry)
 
 ### rename and aggregate
