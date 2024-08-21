@@ -1,4 +1,4 @@
-@dataset{usepaLocalGreenhouseGas2017,
+@dataset{usepaLocalGreenhouseGas2017dataset,
   title = {Local {{Greenhouse Gas Inventory Tool}} ({{LGGIT}})},
   author = {{USEPA}},
   date = {2017-06-30T23:32:23-04:00},
@@ -8062,4 +8062,48 @@ Last Modified: 2017-11-16T02:18+08:00}
   urldate = {2024-08-09},
   abstract = {The 2022 Emissions Modeling Platform is based on the 2020 National Emissions Inventory released in the spring of 2023 with updates to better represent 2022.  It is being created as a product of the National Emissions Inventory Collaborative and will support multiple regulatory and non-regulatory applications. The modeling platform will contain emissions inventories for 2022, spatial surrogates, temporal profiles, and other ancillary files. The platform will include projection years as well.  Version 1 of the 2022 platform is currently being developed.  Version 2 of the platform is scheduled to be developed in 2025. 2022v1 Data Files and Summaries 2022v1 Summary Documentation 2022 National Emissions Collaborative Wiki View the 2022v1 Emissions Data Retrieval Tool Comment on the 2022v1 EMP [comment window closes 5/17] If you would like to provide EPA with a comment on the 2022v1 EMP and have not received an invite to “collaborate on Comments on the 2022v1 EMP,” please use the Contact Us link below (include “2022v1 EMP Comment Access” and your email address in the “Comments” box). Following this request, you will receive an email with a link to the “Comments on the 2022v1 EMP” SharePoint site.},
   langid = {english}
+}
+
+@report{usepaUpdatesAirEmissions2024,
+  type = {Government},
+  title = {Updates to {{Air Emissions Trends Methodology}}, 2002-2023: {{February}} 2024},
+  author = {{USEPA}},
+  date = {2024-02},
+  pages = {1--7},
+  url = {https://www.epa.gov/system/files/documents/2024-02/trends_feb2024.pdf},
+  urldate = {2024-08-21},
+  abstract = {Each year, the EPA updates data for air emissions trends for Criteria Air Pollutants (CAPs) except for Lead from 1970 the latest available year (usually one year before the current calendar year). For example, the version published in the spring of 2023 included data for the years 1970-2022. These data include carbon monoxide (CO), ammonia (NH3), nitrogen oxides (NOX), particulate matter 10 microns or less in diameter (PM10), particulate matter 2.5 microns or less in diameter (PM2.5), sulfur dioxide (SO2), and volatile organic compounds (VOC). EPA provides these emissions trends data as aggregated sectors (called Tier 1 categories) for both state and national trends. This document describes the spring 2024 trends data release, including the improvements that EPA has made in the emission trends estimation process for the years 2002-2023. In the prior release (spring 2023), EPA implemented these changes for years 2002 through 2020 to minimize the effects of emissions estimation methodological changes during this period, so that the data are more reflective of actual emission changes that occurred. Compared to the spring 2023 release, the spring 2024 release adds year 2023 and updates year 2021 and 2022 estimates; all estimates prior to 2021 are unchanged from the spring 2023 release. These data rely on the National Emissions Inventory (NEI) and year-specific data. For the interim years and years after the latest NEI year, EPA includes data from its emissions modeling platforms, provided on EPA’s Air Emissions Modeling website, which includes extensive Technical Support Documents. In many cases, EPA has created year-specific emissions estimates that can be included from these platforms. For years after the latest NEI year, EPA uses available data collections from continuous monitoring for electricity generating units. For mobile source emissions in years after the latest NEI year (i.e., 2020 for the current release), EPA uses a mix of year-specific model runs projected emissions from emissions modeling platforms and submitted data to estimate emissions for interim years after the latest NEI year. Otherwise, for years after the latest (2020) NEI year, EPA holds emissions constant from the latest (2020) NEI or year-specific-emissions modeling platform value. For the trends data released in the spring of 2024, EPA has added the year 2023 as the most recent year provided, and where emissions modeling platform (such as fires, mobile and point sources, and many nonpoint sources) or Clean Air Markets Program Data are not available, have incorporated data from the 2020 NEI estimates for the years 2021 through 2023. For years 2002 through 2019, we have also incorporated data from the recently published methodology called EPA’s Air QUAlity TimE Series project (EQUATES), as discussed below. Another enhancement in trends data, first introduced for the spring 2023 release, is for years 2002 through 2023, the availability of elemental carbon (abbreviated “EC” and synonymous with “black carbon”) and organic carbon (abbreviated “OC”) components of PM2.5 and data for the 60 EIS sectors in addition to the traditional Tier 1 categories. We also provide trends data by both EIS sector and Tier 1 category together to highlight the overlap between EIS sectors and Tier 1 categories. EIS sectors (listed in Table 2 below) provide additional details on the types of sources that contribute to each Tier 1 category; however, an EIS sector can contribute emissions to multiple Tier 1 categories. 1},
+  langid = {english}
+}
+
+@dataset{epaEQUATESv1InventoryEmissions2023,
+  title = {{{EQUATESv1}}.0: {{Inventory Emissions}} ({{SMOKE}} Inputs) -- 2002-2017 {{US}}\_12km},
+  shorttitle = {{{EQUATESv1}}.0},
+  author = {EPA, US},
+  date = {2023-03-03},
+  publisher = {UNC Dataverse},
+  doi = {10.15139/S3/MW9OLB},
+  url = {https://dataverse.unc.edu/dataset.xhtml?persistentId=doi:10.15139/S3/MW9OLB},
+  urldate = {2024-08-21},
+  abstract = {Data Summary: Emissions Inventory and Summary Files from the EQUATES Project The EQUATES base year emissions are from the 2017 NEI. For each sector in the 2017 NEI one of four approaches was applied to estimate emissions for the entire 2002-2017 time period: Develop new methods for creating consistent emissions for all years, Use 2016 or 2017 model platform emissions and create scaling factors based on activity data and/or emission control information, Use existing modeling platform data for earlier years (2002-2015), or Leave emissions flat at 2017 NEI levels. See Foley et al. (2023) for information on the emissions modeling methods used for each sector. Data Files in This Repository A Unix-based utility is used to package the emissions files together into tar files and then compress them into .GZ files with GNU Zip compression for easier download. Available data files include: Monthly and annual emissions totals for the Contiguous United States (CONUS) for 9 pollutants: NOX, SO2, CO, PM2.5, primary organic carbon (POC), primary elemental carbon (PEC), VOC, non-methane organic gases (NMOG), NH3. Files are located in the emission\_summary\_files folder. This folder also includes a README\_EQUATES\_v1.0\_emissions\_summaries.txt file with additional information about the different emissions summaries. Emissions inventory files (EQUATES\_INV\_\_version1.0.tar.gz) and meteorology files (met.tar.gz) for the CONUS for 2002-2017 suitable for input into the Sparse Matrix Operator Kernel Emissions (SMOKE) emission processor. In addition to the year-specific data files users should also download the ancillary\_data\_version1.0.tar.gz file which includes general ancillary files needed for SMOKE processing related to speciation, spatial allocation (gridding), and temporalization. These file are needed for all the emission inventory years. A README file describing the inventory data is available HERE. Downloading Files Using Wget See the file README\_EQUATES\_v1.0\_download\_via\_wget.txt in this repository for instructions on downloading the tar packages using GNU Wget. User Support Please direct questions about the EQUATES datasets to the CMAS User Forum EQUATES category.},
+  langid = {english},
+  version = {4},
+  keywords = {Earth and Environmental Sciences}
+}
+
+@article{foley20022017Anthropogenic2023,
+  title = {2002–2017 Anthropogenic Emissions Data for Air Quality Modeling over the {{United States}}},
+  shorttitle = {{{EQUATES}} 2002-2017},
+  author = {Foley, Kristen M. and Pouliot, George A. and Eyth, Alison and Aldridge, Michael F. and Allen, Christine and Appel, K. Wyat and Bash, Jesse O. and Beardsley, Megan and Beidler, James and Choi, David and Farkas, Caroline and Gilliam, Robert C. and Godfrey, Janice and Henderson, Barron H. and Hogrefe, Christian and Koplitz, Shannon N. and Mason, Rich and Mathur, Rohit and Misenis, Chris and Possiel, Norm and Pye, Havala O. T. and Reynolds, Lara and Roark, Matthew and Roberts, Sarah and Schwede, Donna B. and Seltzer, Karl M. and Sonntag, Darrell and Talgo, Kevin and Toro, Claudia and Vukovich, Jeff and Xing, Jia and Adams, Elizabeth},
+  date = {2023-04-01},
+  journaltitle = {Data in Brief},
+  shortjournal = {Data in Brief},
+  volume = {47},
+  pages = {109022},
+  issn = {2352-3409},
+  doi = {10.1016/j.dib.2023.109022},
+  url = {https://www.sciencedirect.com/science/article/pii/S2352340923001403},
+  urldate = {2024-08-21},
+  abstract = {The United States Environmental Protection Agency (US EPA) has developed a set of annual North American emissions data for multiple air pollutants across 18 broad source categories for 2002 through 2017. The sixteen new annual emissions inventories were developed using consistent input data and methods across all years. When a consistent method or tool was not available for a source category, emissions were estimated by scaling data from the EPA's 2017 National Emissions Inventory with scaling factors based on activity data and/or emissions control information. The emissions datasets are designed to support regional air quality modeling for a wide variety of human health and ecological applications. The data were developed to support simulations of the EPA's Community Multiscale Air Quality model but can also be used by other regional scale air quality models. The emissions data are one component of EPA's Air Quality Time Series Project which also includes air quality modeling inputs (meteorology, initial conditions, boundary conditions) and outputs (e.g., ozone, PM2.5 and constituent species, wet and dry deposition) for the Conterminous US at a 12~km horizontal grid spacing.},
+  keywords = {Air quality modeling,CMAQ,Emissions inventory,Emissions trends,MOVES,SMOKE}
 }
