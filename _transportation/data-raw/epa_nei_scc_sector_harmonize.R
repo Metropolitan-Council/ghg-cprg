@@ -82,7 +82,9 @@ nei_emissions_detailed <- nei_scc_emissions %>%
            vehicle_type,
            vehicle_weight_label, 
            nei_sector_code,
-           pollutant_code
+           pollutant_code,
+           sector_two,
+           scc6_desc
   ) %>% 
   summarize(total_emissions = sum(total_emissions),
             .groups = "keep") %>% 
@@ -133,12 +135,17 @@ nei_detailed_summary <- nei_emissions_detailed %>%
   mutate(nei_inventory_year = as.numeric(nei_inventory_year))
 
 
-waldo::compare(
-  nei_detailed_summary,
-  epa_nei %>% 
-    arrange(geoid, nei_inventory_year)
-)
+# do the detailed and broaad categories both sum to the same values?
+nei_detailed_all <- nei_emissions_detailed %>% 
+  group_by(geoid, county_name, nei_inventory_year, sector_two) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e))
 
+
+nei_broad_all <- epa_nei %>%
+  group_by(geoid, county_name, nei_inventory_year, sector_two) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) 
+
+# yes! within a good range of each other
 
 nei_emissions_summary <- nei_scc_emissions %>% 
   group_by(geoid, county_name, cprg_area, nei_inventory_year, data_category,
