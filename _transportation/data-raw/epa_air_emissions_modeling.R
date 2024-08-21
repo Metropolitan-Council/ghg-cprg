@@ -38,6 +38,10 @@ if(file.exists("_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022h
   
   unzip("_transportation/data-raw/epa/air_emissions_modeling/2021/onroad_emissions_SMOKE-MOVES_FF10_2021hb_26mar2024.zip",
         exdir = "_transportation/data-raw/epa/air_emissions_modeling/2021/")
+  
+  
+  download.file("https://gaftp.epa.gov/Air/emismod/2020/2020emissions/2020ha2_onroad_SMOKE-MOVES_emissions_FF10_22sep2023.zip",
+                "_transportation/data-raw/epa/air_emissions_modeling/2020/2020ha2_onroad_SMOKE-MOVES_emissions_FF10_22sep2023.zip")
 }
 
 
