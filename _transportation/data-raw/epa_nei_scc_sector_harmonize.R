@@ -1,6 +1,7 @@
 # scc sector mappings
 source("R/_load_pkgs.R")
 source("_transportation/data-raw/epa_source_classification_codes.R")
+source("_transportation/data-raw/epa_nei_transportation.R")
 nei_onroad_emissions <- readRDS("_transportation/data-raw/epa/nei_onroad_emissions.RDS")
 nei_nonroad_emissions <- readRDS("_transportation/data-raw/epa/nei_nonroad_emissions.RDS")
 
@@ -26,10 +27,6 @@ scc_ei_sectors <- scc_sector %>%
 scc_sector %>% 
   filter(is.na(sector)) %>% 
   nrow()
-
-scc_forward <- scc_sector %>% 
-  filter(scc_new != scc)
-
 
 scc_forward_combine <- scc_sector %>% 
   select(scc = scc_new, 
@@ -142,10 +139,6 @@ waldo::compare(
     arrange(geoid, nei_inventory_year)
 )
 
-anti_join(nei_detailed_summary,
-          epa_nei,
-          by = join_by(geoid, county_name, vehicle_weight_label, vehicle_type, vehicle_group,
-                       vehicle_fuel_label, nei_sector_code, state_name, cprg_area, county_fips, nei_inventory_year)) %>% View
 
 nei_emissions_summary <- nei_scc_emissions %>% 
   group_by(geoid, county_name, cprg_area, nei_inventory_year, data_category,
