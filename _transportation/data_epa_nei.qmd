@@ -147,6 +147,9 @@ fig_activity_vs_nei
 
 ## Comparison of underlying activity data
 
+### Vehicle miles traveled
+
+
 
 
 
