@@ -122,7 +122,8 @@ nei_county_emissisons <- nei_county_multi_year %>%
       vehicle_group,
       vehicle_fuel_label,
       vehicle_weight_label,
-      sector_three
+      sector_three,
+      sector_two
     )
   ) %>%
   clean_names() %>%
@@ -149,6 +150,7 @@ epa_nei <- nei_county_emissisons %>%
     vehicle_group,
     vehicle_fuel_label,
     nei_sector_code,
+    sector_two,
     state_name, cprg_area,
     county_fips,
     nei_inventory_year
