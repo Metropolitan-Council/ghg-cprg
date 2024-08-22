@@ -1,5 +1,4 @@
 source("R/_load_pkgs.R")
-cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 # fetch county geographies for all counties in
 # Minnesota and Wisconsin
 # This will give us GEOID, NAME, STATE, and other identifying columns
