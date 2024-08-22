@@ -85,7 +85,7 @@ county_fertilizer_emissions <- left_join(fert_prop, cprg_county %>%
     mt_n2o = n2o_direct + n2o_indirect,
     mt_co2e = mt_n2o * gwp$n2o
   ) %>%
-  select(inventory_year, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty, mt_n2o, mt_co2e)
+  select(inventory_year, geoid, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty, mt_n2o, mt_co2e)
 
 ### check
 ggplot(
@@ -106,7 +106,7 @@ county_fertilizer_emissions %>%
 ### we should seek out additional documentation to better described these direct and indirect emissions,
 ### but language seems to imply fertilizer that stays on field vs that transported (into waterways, off cropland vegetation) perhaps
 county_fertilizer_runoff_emissions <- county_fertilizer_emissions %>%
-  select("inventory_year", "county_name", "data_type", "mt_n_synthetic_cty", "mt_n_organic_cty") %>%
+  select(inventory_year, geoid, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty) %>%
   mutate(
     mt_n2o = (mt_n_synthetic_cty + mt_n_organic_cty) *
       ag_constants_vec["LeachEF"] * ag_constants_vec["LeachEF2"] *
@@ -114,31 +114,37 @@ county_fertilizer_runoff_emissions <- county_fertilizer_emissions %>%
     mt_co2e = mt_n2o * gwp$n2o
   )
 
-cropland_emissions <- bind_rows(
-  soil_residue_emissions %>%
-    select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_c2oe) %>%
-    mutate(category = "cropland", source = "crop_residue_emissions", gas_type = "n2o"),
-  county_fertilizer_emissions %>% 
-    select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_co2e) %>%
-    mutate(category = "cropland", source = "crop_fertilizer_emissions", gas_type = "n2o"),
-  county_fertilizer_runoff_emissions %>%
-    select(year, county_name, MT_gas = mt_n2o, MT_co2e = mt_co2e) %>%
-    mutate(category = "cropland", source = "runoff_fertilizer_emissions", gas_type = "n2o")
+fertilizer_emissions <- bind_rows(
+  county_fertilizer_emissions %>% ungroup() %>% 
+    select(inventory_year, geoid, value_emissions = mt_n2o, mt_co2e) %>%
+    mutate(category = "cropland", source = "Onsite_fertilizer_emissions", units_emissions = "Metric tons N2O"),
+  county_fertilizer_runoff_emissions %>% ungroup() %>% 
+    select(inventory_year, geoid, value_emissions = mt_n2o, mt_co2e) %>%
+    mutate(category = "cropland", source = "Runoff_fertilizer_emissions", units_emissions = "Metric tons N2O")
 ) %>%
-  filter(year != 2022) %>%
-  mutate(county_name = if_else(county_name == "ST CROIX", "St. Croix", str_to_sentence(county_name))) # match case to other files
+  filter(inventory_year != 2022) %>%
+  mutate(sector = "Agriculture",
+         category = str_to_sentence(category),
+         source = str_to_sentence(gsub("_", " ", source)),
+         data_source = "USDA fertilizer purchase census and EPA SIT fertilizer application data",
+         factor_source = "EPA SIT") %>% 
+  select(geoid, inventory_year, sector, category, source,
+         data_source, factor_source, value_emissions, units_emissions, mt_co2e)
 
-cropland_emissions_meta <-
+fertilizer_emissions_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "year", class(cropland_emissions$year), "Year of survey",
-    "county_name", class(cropland_emissions$county_name), "County name",
-    "MT_co2e", class(cropland_emissions$MT_co2e), "Metric tons of CO2 equivalency",
-    "MT_gas", class(cropland_emissions$MT_gas), "Total metric tons of gas emitted from source",
-    "category", class(cropland_emissions$category), "Subsector category",
-    "source", class(cropland_emissions$category), "Detailed description of emission source",
-    "gas_type", class(cropland_emissions$gas_type), "Greenhouse gas emitted from source",
+    "inventory_year", class(fertilizer_emissions$inventory_year), "Year of survey",
+    "geoid", class(fertilizer_emissions$geoid), "County GEOID",
+    "sector", class(fertilizer_emissions$sector), "Emissions sector. One of Transportation, Energy, Waste, Nature, Agriculture",
+    "category", class(fertilizer_emissions$category), "Category of emissions within given sector",
+    "source", class(fertilizer_emissions$source), "Source of emissions. Most detailed sub-category in this table",
+    "data_source", class(fertilizer_emissions$data_source), "Activity data source",
+    "factor_source", class(fertilizer_emissions$factor_source), "Emissions factor data source",
+    "value_emissions", class(fertilizer_emissions$value_emissions), "Numerical value of emissions",
+    "units_emissions", class(fertilizer_emissions$units_emissions), "Units and gas type of emissions",
+    "mt_co2e", class(fertilizer_emissions$mt_co2e), "Metric tons of gas in CO2 equivalency"
   )
 
-saveRDS(cropland_emissions, "./_agriculture/data/county_cropland_emissions_2005_2021.rds")
-saveRDS(cropland_emissions_meta, "./_agriculture/data/county_cropland_emissions_2005_2021_meta.rds")
+saveRDS(fertilizer_emissions, "./_agriculture/data/fertilizer_emissions.rds")
+saveRDS(fertilizer_emissions_meta, "./_agriculture/data/fertilizer_emissions_meta.rds")
