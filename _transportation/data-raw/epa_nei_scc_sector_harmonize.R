@@ -135,7 +135,7 @@ nei_detailed_summary <- nei_emissions_detailed %>%
   mutate(nei_inventory_year = as.numeric(nei_inventory_year))
 
 
-# do the detailed and broaad categories both sum to the same values?
+# do the detailed and broad categories both sum to the same values?
 nei_detailed_all <- nei_emissions_detailed %>% 
   group_by(geoid, county_name, nei_inventory_year, sector_two) %>% 
   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e))
@@ -168,7 +168,3 @@ nei_emissions_summary %>%
   )
 
 
-# try to summarize based on sectors provided in the NEI API
-
-
-epa_nei
