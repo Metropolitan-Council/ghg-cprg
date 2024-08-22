@@ -3,8 +3,9 @@ source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
 source("R/download_read_table.R")
 source("_transportation/data-raw/epa_source_classification_codes.R")
-source("_transportation/data-raw/epa_nei_vmt.R")
 source("_transportation/data-raw/epa_nei_transportation.R")
+
+nei_vmt <- readRDS("_transportation/data-raw/epa/nei/nei_vmt.RDS")
 
 equates <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS")
 equates_cprg <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cprg.RDS") %>% 
@@ -15,7 +16,7 @@ equates_cprg <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/EQ
 
 equates_cprg_summary <- equates_cprg %>% 
   group_by(geoid, county_name, cprg_area, 
-           emis_type, poll, calc_year,
+           poll, calc_year,
   ) %>% 
   summarize(emissions_short_tons = sum(emissions_short_tons),
             .groups = "keep") %>% 
@@ -43,6 +44,7 @@ epa_nei %>%
       sum(total_co2, (total_ch4 * gwp$ch4), na.rm = T),
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
   ) %>% 
+  ungroup() %>% 
   group_by(geoid, county_name, nei_inventory_year) %>% 
   summarize(total_ch4 = sum(total_ch4),
             total_co2 = sum(total_co2),
@@ -71,7 +73,4 @@ equates_cprg %>%
            scc_level_three) %>% 
   summarize(ann_value = sum(ann_value)) %>% 
   filter(geoid == "27053") %>% View
-
-
-
 

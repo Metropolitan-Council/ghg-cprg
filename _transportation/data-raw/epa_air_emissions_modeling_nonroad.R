@@ -32,7 +32,7 @@ if(!file.exists("_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022
 }
 
 
-read_equates <- function(equates_path){
+read_emismod_nonroad <- function(equates_path){
   
   data.table::fread(equates_path,
                     skip = 31,
@@ -105,7 +105,7 @@ emis_modeled_nonroad <-
       "_transportation/data-raw/epa/air_emissions_modeling/2020/2020ha2_cb6_20k 2/inputs/nonroad/2020NEI_nonroad_from_MOVES_aggSCC_10may2023_v4.csv",
       "_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k 3/inputs/nonroad/nonroad_ff10_2021hb_MOVES_ROC_AE6_10nov2023_nf_v2.csv",
       "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m 2/inputs/nonroad/nonroad_ff10_2022hc_MOVES_ROC_AE6_13mar2024_v1.csv"),
-    read_equates) %>% 
+    read_emismod_nonroad) %>% 
   bind_rows()
 
 
