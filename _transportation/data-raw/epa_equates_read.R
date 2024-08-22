@@ -106,7 +106,8 @@ read_equates <- function(equates_path){
     ) %>% 
     dplyr::mutate(dplyr::across(tidyr::ends_with("value"), as.numeric),
                   scc6 = stringr::str_sub(scc, 1, 6),
-                  equates_path = equates_path) %>% 
+                  equates_path = equates_path,
+                  emissions_short_tons = ann_value) %>% 
     dplyr::select(-tribal_code, -census_tract_cd,
                   -shape_id, -country_cd,
                   -date_updated, -data_set_id,
