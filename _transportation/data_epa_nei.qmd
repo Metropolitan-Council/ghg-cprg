@@ -1,0 +1,173 @@
+## National Emissions Inventory {#sec-epa-nei}
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+veh21 <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/veh21.RDS")) %>%
+  mutate(
+    fuel_orig = forcats::fct_rev(fuel_orig),
+    fuel = forcats::fct_rev(fuel)
+  )
+trip21 <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/trip21.RDS"))
+regional_trip_length_avg <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_regional_trip_length_avg.RDS"))
+tbi_od_ordered_trip_length <- readRDS(file.path(here(), "_transportation/data-raw/tbi/tbi_od_ordered_trip_length.RDS"))
+tbi_vehicle_fuel_age <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_vehicle_fuel_age.RDS"))
+tbi_home_county <- readRDS(file.path(here::here(), "_transportation/data-raw/tbi/tbi_home_county.RDS"))
+
+
+hookaddcap()
+```
+
+
+The [National Emissions Inventory](https://www.epa.gov/air-emissions-inventories/national-emissions-inventory-nei) (NEI) is a comprehensive and detailed estimate of air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants from air emissions sources. The county-level GHG emissions included in the NEI for this category are calculated by running the MOVES model with State-, Local-, and Tribal-submitted activity data and EPA-developed activity inputs based on data from FHWA and other sources [@usepa2020NationalEmissions2023]. 
+
+NEI data for aircraft and locomotives in our region are unavailable prior to 2017. 
+
+We are assuming that all light-duty vehicles are passenger vehicles, and all heavy-duty are commercial. 
+
+NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and processed in R scripts: [epa_nei.R](../_meta/data-raw/epa_nei.R) and [epa_nei_transportation.R](data-raw/epa_nei_transportation.R)
+
+```{r read-nei}
+epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei.RDS"))
+
+nei_emissions_all <- epa_nei %>%
+  filter(nei_inventory_year == 2020) %>%
+  group_by(zone = county_name) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  )
+```
+
+We expect that the NEI data will show higher emissions, because it is based on overall activity, not explicit origin-destination travel. 
+
+```{r fig-emissions-council-nei}
+#| fig-cap: "Council county emissions estimate correlation with NEI estimate"
+#| out-width: "95%"
+
+nei_cprg_combine <- left_join(
+  vmt_emissions_all %>%
+    mutate(cprg_emissions = emissions_metric_tons_co2e) %>%
+    select(-emissions_metric_tons_co2e),
+  nei_emissions_all %>%
+    mutate(nei_emissions = emissions_metric_tons_co2e) %>%
+    select(-emissions_metric_tons_co2e)
+)
+
+fig_nei_council_emissions <- plot_ly(
+  data = nei_cprg_combine,
+  source = "fig-nei-council-emissions",
+  x = ~nei_emissions,
+  y = ~cprg_emissions,
+  type = "scatter",
+  mode = "markers",
+  hovertemplate = ~ paste0(
+    zone, " County", "<br>",
+    "NEI estimate: ", round(nei_emissions * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "Met Council estimate: ", round(cprg_emissions * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue,
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "Calculated county emissions correlation with NEI emissions",
+    # subtitle = "2021 ACS 5-year population estimates. Strong positive correlation",
+    x_title = "NEI estimate (metric tons CO<sub>2</sub>e)",
+    y_title = "Met Council estimate (metric tons CO<sub>2</sub>e)",
+    legend_title = "",
+    legend = list(orientation = "h")
+  )
+
+fig_nei_council_emissions
+```
+
+
+```{r fig-activity-vs-nei}
+#| fig-cap: "County estimated emissions, NEI and calculated"
+#| out-width: "95%"
+
+fig_activity_vs_nei <- plot_ly(
+  data = vmt_emissions_all,
+  source = "fig-activity-vs-nei",
+  x = ~ reorder(zone, -emissions_metric_tons_co2e),
+  y = ~emissions_metric_tons_co2e,
+  type = "scatter",
+  mode = "markers",
+  name = "2021 Met Council estimate",
+  hovertemplate = ~ paste0(
+    zone, " County<br>",
+    "Council estimate: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  opacity = 0.8,
+  marker = list(
+    color = colors$councilBlue,
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  add_trace(
+    data = nei_emissions_all,
+    name = "2020 NEI on-road estimate",
+    marker = list(
+      color = cprg_colors$cprg_da_yellow,
+      size = 18,
+      line = list(
+        color = "lightgray",
+        width = 2
+      )
+    ),
+    hovertemplate = ~ paste0(
+      zone, " County<br>",
+      "NEI estimate: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
+  plotly_layout(
+    main_title = "County estimated vehicle emissions by data source",
+    subtitle = "", # "2020 NEI, all on-road emissions",
+    x_title = "County",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Data source"
+  )
+
+fig_activity_vs_nei
+```
+
+
+## Comparison of underlying activity data
+
+### Vehicle miles traveled
+
+
+
+
+
+
+## Limitations 
+
+- The NEI is based on MOVES, which does not account for activity on local roads. 
+- To reduce run times, the NEI uses fuel months to represent summer and winter fuels. The month of January represents October through April (winter), while July represents May through September (summer) [@usepa2020NationalEmissions2023onroad, section 5.6.6.2]. Variation within the summer and winter months is not accounted for using this method. 
+- The 2020 NEI had particular challenges due to the COVID-19 pandemic
+    - Minnesota did not submit custom data inputs for the 2020 NEI, meaning that inputs to MOVES were based on national default values. Wisconsin submitted custom data for VMT, vehicle population, and road type distribution. Both Minnesota and Wisconsin submitted data for 2017, 2014, and 2011 [@usepa2017NationalEmissions2021, @usepa2014NationalEmissions2018, @usepa2011NationalEmissions2015]. 
+    - The NEI augmented vehicle miles traveled (VMT) data for Minnesota and Wisconsin in 2020 using federal and state-level datasets due to data availability issues [@usepaDevelopment2020DefaultData2022]. 
+- To reduce model run-time, the NEI groups counties together and only runs MOVES on a single representative county. The resulting MOVES emissions factors are multiplied by county-specific activity data (including VMT, vehicle population, hourly speed distribution, among others) to get county-specific emissions [@usepa2020NationalEmissions2023onroad, section 5.6.2.1]. Effectively, emissions factors are generated on a single representative county, and are then applied to similar counties. 
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}

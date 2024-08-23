@@ -5,7 +5,7 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 
 # ipcc sectors -----
-ipcc_sectors <- readxl::read_xlsx("_transportation/data-raw/epa/state_ghg/allstateghgdatapy2023readme_100323_0/AllStateGHGDataPY2023_100323.xlsx",
+ipcc_sectors <- readxl::read_xlsx("_meta/data-raw/epa/state_ghg/allstateghgdatapy2023readme_100323_0/AllStateGHGDataPY2023_100323.xlsx",
   sheet = 2
 ) %>%
   clean_names()
