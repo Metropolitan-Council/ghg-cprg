@@ -29,7 +29,9 @@ animal_burps <- left_join(
     mt_gas = mt_ch4_head_yr * head_count,
     mt_co2e = mt_gas * gwp$ch4,
   ) %>% 
-  select(year, county_name, livestock_type,gas_type, mt_gas, mt_co2e)
+  group_by(year,county_name,gas_type) %>% 
+  summarize(mt_gas = sum(mt_gas), mt_co2e = sum(mt_co2e)) %>% 
+  select(year, county_name,gas_type, mt_gas, mt_co2e)
 
 animal_burps_out <- animal_burps %>% 
   left_join(., cprg_county %>% select(geoid, county_name) %>% st_drop_geometry(),
@@ -47,6 +49,7 @@ animal_burps_out <- animal_burps %>%
          ),
          data_source = "USDA livestock census",
          factor_source = "EPA SIT") %>% 
+  ungroup() %>% 
   select(geoid, inventory_year, sector, category, source,
          data_source, factor_source, value_emissions, units_emissions, mt_co2e)
 
