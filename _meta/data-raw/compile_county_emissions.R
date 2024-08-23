@@ -126,30 +126,18 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
 
 ## agriculture ----
 
-livestock_emissions <- readRDS("_agriculture/data/county_livestock_emissions_2005_2021.rds") %>% 
+agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds") %>% 
+  left_join(cprg_county %>% select(county_name,geoid)) %>% 
   mutate(
+    year = inventory_year,
     sector = "Agriculture",
     geog_level = "county",
     geog_name = county_name,
-    category = "Livestock",
-    emissions_metric_tons_co2e = MT_co2e,
+    category = category,
+    emissions_metric_tons_co2e = mt_co2e,
     source = stringr::str_to_sentence(source),
-    data_source = "USDA Census",
-    factor_source = "EPA State Inventory Tool"
-  )  %>%
-  select(names(transportation_emissions))
-
-cropland_emissions <- readRDS("_agriculture/data/county_cropland_emissions_2005_2021.rds") %>% 
-  ungroup() %>% 
-  mutate(
-    sector = "Agriculture",
-    geog_level = "county",
-    geog_name = county_name,
-    category = "Cropland",
-    emissions_metric_tons_co2e = MT_co2e,
-    source = stringr::str_to_sentence(source),
-    data_source = "USDA Census",
-    factor_source = "EPA State Inventory Tool"
+    data_source = data_source,
+    factor_source = factor_source
   )  %>%
   select(names(transportation_emissions))
 
@@ -214,16 +202,15 @@ emissions_all <- bind_rows(
   natural_gas_emissions,
   ww_emissions,
   solid_waste,
-  livestock_emissions,
-  cropland_emissions,
+  agriculture_emissions,
   natural_systems_sequestration_nlcd,
   natural_systems_stock
 ) %>%
   left_join(
     cprg_county %>%
       sf::st_drop_geometry() %>%
-      select(NAME, geog_id = COUNTYFP),
-    by = c("geog_name" = "NAME")
+      select(county_name, geog_id = geoid),
+    by = c("geog_name" = "county_name")
   ) %>%
   mutate(
     source = factor(source,
@@ -284,7 +271,7 @@ emissions_all <- bind_rows(
   left_join(
     cprg_county_pop %>%
       select(
-        geog_id = COUNTYFP,
+        geog_id = geoid,
         population_year,
         county_total_population = population,
         population_data_source
@@ -305,7 +292,6 @@ sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"]
 
 ### break out desired years and data sources for RDG 90%
 emissions_rdg_90_baseline <- emissions_all %>% 
-  filter(year %in% c(2005,2021), !geog_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce")) %>% 
   group_by(year, sector) %>% 
   summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
   left_join(., cprg_county_pop %>% group_by(population_year) %>% summarize(population = sum(population)),
@@ -358,22 +344,34 @@ emissions_rdg_90_baseline <- emissions_rdg_90_baseline %>%
   mutate(sector_year = interaction(sector, as.factor(year), sep = "."))
 
 # Plot with custom settings
-baseline_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2005, 2021)),
-                              aes(x = sector, y = MT_CO2e, fill = sector_year)) +
+baseline_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2021)),
+                              aes(x = sector, y = MT_CO2e/1000000, fill = sector)) +
   geom_bar(stat = 'identity', position = position_dodge()) +
-  labs(fill = "Sector and Year") +
-  scale_fill_manual(values = custom_palette) +
-  theme_minimal()
+  labs(fill = "sector") +
+  scale_fill_manual(values = sector_colors, guide = "none") +
+  theme_minimal() + xlab("") + ylab("Million metric tons \n of CO2e")
 
 
 baseline_comparison
 
 baseline_comparison_per_capita <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2005, 2021)),
-                              aes(x = sector, y = emissions_per_capita, fill = as.factor(year))) +
-  geom_bar(stat = 'identity', position = position_dodge()) +
-  labs(fill = "Year")
+                              aes(x = year, y = MT_CO2e/1000000, col = as.factor(sector))) +
+  scale_color_manual(values = sector_colors) +
+  geom_hline(yintercept = 0, col = "black", lty = 2, size = 1.3) +
+  geom_line(size = 1.5) + geom_point(size = 4) + theme_minimal() + xlab("Year") + ylab("Million metric tons \n of CO2e")
 
 baseline_comparison_per_capita
+
+msa_subsector_inv <- emissions_all %>% 
+  filter(year  == 2021) %>% 
+  group_by(year,geog_name,sector, category,county_total_population ) %>%
+  summarise(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  ) %>% 
+  mutate(emissions_per_capita = emissions_metric_tons_co2e / county_total_population) %>% 
+  ungroup() %>% 
+  select(-county_total_population)
 
 
 #quick calcs
@@ -425,7 +423,7 @@ saveRDS(emissions_all_meta, "_meta/data/cprg_county_carbon_stock_meta.RDS")
 # }
 
 msa_subsector_inv <- emissions_all %>% 
-  filter(year  == 2021, !geog_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce"), sector != "Nature") %>% 
+  filter(year  == 2021) %>% 
   group_by(year,geog_name,sector, category,county_total_population ) %>%
   summarise(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
