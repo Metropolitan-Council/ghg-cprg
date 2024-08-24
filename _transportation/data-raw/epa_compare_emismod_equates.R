@@ -5,6 +5,18 @@ source("R/global_warming_potential.R")
 source("_transportation/data-raw/epa_source_classification_codes.R")
 source("_meta/data-raw/county_geography.R")
 
+
+epa_nei <- readRDS("_transportation/data/epa_nei.RDS")
+
+
+nei_summary <- epa_nei %>% 
+  filter(vehicle_group == "On-Road") %>% 
+  group_by(geoid, county_name, nei_inventory_year) %>% 
+  summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  mutate(calc_year = as.character(nei_inventory_year)) %>% 
+  select(-nei_inventory_year)
+  
+
 equates_cprg <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cprg.RDS") %>% 
   select(-equates_path) %>% 
   left_join(scc_equates,
@@ -34,8 +46,7 @@ equates_cprg_summary <- equates_cprg %>%
       sum(co2, (ch4 * gwp$ch4), na.rm = T),
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
   ) %>% 
-  select(calc_year, geoid, county_name, co2, emissions_metric_tons_co2e) %>% 
-  filter(county_name == "Hennepin")
+  select(calc_year, geoid, county_name, co2, emissions_metric_tons_co2e)
 
 
 emis_onroad_summary <- emis_onroad %>% 
@@ -55,6 +66,35 @@ emis_onroad_summary <- emis_onroad %>%
       sum(co2, (ch4 * gwp$ch4), na.rm = T),
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
   ) %>% 
-  select(calc_year, geoid, county_name, co2, emissions_metric_tons_co2e) %>% 
-  filter(county_name == "Hennepin")
-  
+  select(calc_year, geoid, county_name, co2, emissions_metric_tons_co2e)
+
+
+equates_onroad_compare <- 
+  emis_onroad_summary %>% 
+  mutate(source = "AirEmis") %>% 
+  bind_rows(equates_cprg_summary %>% 
+              mutate(source = "EQUATES")) %>% 
+  bind_rows(nei_summary %>% 
+              mutate(source = "NEI")) %>% 
+  left_join(counties_light) %>% 
+  filter(cprg_area == TRUE) 
+
+equates_onroad_compare %>% 
+  select(-co2) %>% 
+  group_by(calc_year, geoid, county_name) %>% 
+  pivot_wider(names_from = source,
+              values_from = emissions_metric_tons_co2e) %>%
+  filter(!is.na(EQUATES),
+         !is.na(AirEmis))
+
+
+equates_onroad_compare %>% 
+  filter(calc_year == "2017") %>% 
+ggplot() +
+  aes(y = reorder(county_name, emissions_metric_tons_co2e),
+      x = emissions_metric_tons_co2e,
+      colour = source) +
+  geom_point(
+    size = 3,
+    alpha =  0.5
+  ) 
