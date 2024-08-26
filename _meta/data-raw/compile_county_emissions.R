@@ -161,6 +161,7 @@ natural_systems_sequestration_esa <- readRDS("_nature/data/county_landcover_sequ
   select(names(transportation_emissions))
 
 natural_systems_sequestration_nlcd <- readRDS("_nature/data/nlcd_county_landcover_sequestration_2001_2021.RDS") %>%
+  filter(year >= 2005) %>% 
   mutate(
     sector = "Nature",
     geog_level = "county",
@@ -316,6 +317,16 @@ sector_colors <- c("Electricity" = "#1f77b4",
                    "Agriculture" = "#ff7f0e", 
                    "Nature" = "#2ca02c")
 
+palette_names <- c(
+  Electricity = "Blues",
+  `Building Fuel` = "Purples",
+  Transportation = "Browns",
+  Waste = "Reds",
+  Agriculture = "Oranges",
+  Nature = "Greens"
+)
+
+
 # Function to lighten colors for different years
 lighten <- function(color, factor=1.4){
   col <- col2rgb(color)
@@ -343,24 +354,88 @@ custom_palette <- c(
 emissions_rdg_90_baseline <- emissions_rdg_90_baseline %>%
   mutate(sector_year = interaction(sector, as.factor(year), sep = "."))
 
+
 # Plot with custom settings
-baseline_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2021)),
+sector_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2021)),
                               aes(x = sector, y = MT_CO2e/1000000, fill = sector)) +
   geom_bar(stat = 'identity', position = position_dodge()) +
   labs(fill = "sector") +
   scale_fill_manual(values = sector_colors, guide = "none") +
-  theme_minimal() + xlab("") + ylab("Million metric tons \n of CO2e")
+  theme_minimal() + xlab("") + ylab("Million metric tons of CO2e") +
+  theme(panel.grid.major.x = element_blank(),
+        axis.text.x = element_text(size = 20),
+        text = element_text(size = 20, family="sans"))
 
 
-baseline_comparison
+sector_comparison
 
-baseline_comparison_per_capita <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2005, 2021)),
-                              aes(x = year, y = MT_CO2e/1000000, col = as.factor(sector))) +
+## subsector graph example ####
+
+electricity_subsector <- emissions_all %>% 
+  group_by(year, geog_name , sector, category ) %>% 
+  summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
+  left_join(., cprg_county_pop %>% group_by(county_name, population_year) %>% summarize(population = sum(population)),
+            by = c('year' = 'population_year', "geog_name" = "county_name")
+  ) %>% 
+  mutate(emissions_per_capita = MT_CO2e / population) %>%
+  #mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building Fuel", "Waste", "Agriculture", "Nature"))) %>% 
+  filter(sector == "Electricity", year == 2021)
+
+subsector_county_comparison <- ggplot(electricity_subsector,
+                              aes(x = MT_CO2e/1000000, y = reorder(geog_name, desc(geog_name)), 
+                                  fill = category)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#9DB9F1", "#4479E4", "#16439C"), guide = FALSE) +
+  theme(panel.grid.major.y = element_blank(),
+        axis.text.x = element_text(size = 20),
+        text = element_text(size = 20, family="sans")
+  ) +
+  ylab("") +
+  xlab("Millions of metric tons of CO2e") +
+  labs(fill = "Subsector")
+
+subsector_county_comparison
+
+### per capita
+
+subsector_county_comparison_per_capita <- ggplot(electricity_subsector,
+                                      aes(x = emissions_per_capita, y = reorder(geog_name, desc(geog_name)), 
+                                          fill = category)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#9DB9F1", "#4479E4", "#16439C")) +
+  theme(panel.grid.major.y = element_blank(),
+        axis.text.x = element_text(size = 20),
+        text = element_text(size = 20, family="sans")
+  ) +
+  xlab("Metric tons CO2e per capita") +
+  ylab("") +
+  labs(fill = "Subsector")
+
+subsector_county_comparison_per_capita
+
+### baseline comparison ####
+
+baseline_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2005, 2021)),
+                              aes(x = year, y = MT_CO2e/1000000, 
+                                  col = as.factor(sector),
+                                  shape = as.factor(sector))) +
+  theme_minimal() +
   scale_color_manual(values = sector_colors) +
   geom_hline(yintercept = 0, col = "black", lty = 2, size = 1.3) +
-  geom_line(size = 1.5) + geom_point(size = 4) + theme_minimal() + xlab("Year") + ylab("Million metric tons \n of CO2e")
+  geom_line(size = 1) + geom_point(size = 4) + theme_minimal() + 
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        axis.text.x = element_text(size = 20),
+        text = element_text(size = 20, family="sans")
+  ) +
+  xlab("Year") + 
+  ylab("Million metric tons of CO2e") +
+  labs(col = "Sector",
+       shape = "Sector")
 
-baseline_comparison_per_capita
+baseline_comparison
 
 msa_subsector_inv <- emissions_all %>% 
   filter(year  == 2021) %>% 
