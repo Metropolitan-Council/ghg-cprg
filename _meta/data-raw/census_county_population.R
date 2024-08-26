@@ -290,23 +290,25 @@ census_county_population <- county_pop_intercensal %>%
   bind_rows(county_pop_acs) %>%
   select(-NAME, -NAMELSAD, -estimate, -moe, -variable, -value) %>%
   left_join(county_geography %>%
-    select(GEOID, NAME, STATE, STATE_ABB, COUNTYFP, NAMELSAD)) %>% 
+    select(GEOID, NAME, STATE, STATE_ABB, COUNTYFP, NAMELSAD)) %>%
   # add variable discerning whether the county is in our study area
   mutate(cprg_area = ifelse(GEOID %in% cprg_county$geoid, TRUE, FALSE)) %>%
-  select(STATE, STATE_ABB, GEOID, COUNTYFP, NAME, 
-         population_year, population, population_data_source, cprg_area) %>%
-  arrange(STATE, population_year) %>% 
-  clean_names() %>% 
+  select(
+    STATE, STATE_ABB, GEOID, COUNTYFP, NAME,
+    population_year, population, population_data_source, cprg_area
+  ) %>%
+  arrange(STATE, population_year) %>%
+  clean_names() %>%
   select(
     geoid,
     county_name = name,
     state_name = state,
     state_abb,
-    population_year, 
+    population_year,
     population_data_source,
     cprg_area,
     population
-  ) %>% 
+  ) %>%
   unique()
 
 

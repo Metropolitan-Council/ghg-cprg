@@ -59,7 +59,7 @@ l_0 <- mcf * doc * doc_f * f * 16 / 12
 
 # rec not included for this version; using emissions = (Tons * l_0) * (1-ox)
 landfill_emissions <- mpca_score %>%
-  filter(source == "Landfill") %>% 
+  filter(source == "Landfill") %>%
   # left_join(methane_recovery_mn, by = join_by(County, Year, Method)) %>%
   mutate(
     value_emissions = (value_activity * l_0) * (1 - ox),

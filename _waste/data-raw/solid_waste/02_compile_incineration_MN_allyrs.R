@@ -30,7 +30,7 @@ incineration_emissions <- mpca_score %>%
     c("Tonnes CO2", "Tonnes N2O"),
     names_to = "units_emissions",
     values_to = "value_emissions"
-  ) %>% 
+  ) %>%
   select(
     -c(state_total, co2, n2o)
   )

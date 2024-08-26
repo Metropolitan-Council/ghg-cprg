@@ -24,16 +24,16 @@ source("_waste/data-raw/solid_waste/01_epa_mn_methane_recovery.R") # EPA methane
 # RDS lives in data-raw
 
 ### emissions calculations ----
-source("_waste/data-raw/solid_waste/02_compile_landfill_MN_allyrs.R") 
-source("_waste/data-raw/solid_waste/02_compile_organics_MN_allyrs.R") 
-source("_waste/data-raw/solid_waste/02_compile_incineration_MN_allyrs.R") 
+source("_waste/data-raw/solid_waste/02_compile_landfill_MN_allyrs.R")
+source("_waste/data-raw/solid_waste/02_compile_organics_MN_allyrs.R")
+source("_waste/data-raw/solid_waste/02_compile_incineration_MN_allyrs.R")
 
 ### combine emissions ----
-source("_waste/data-raw/solid_waste/03_compile_solid_waste_MN_allyrs.R") 
+source("_waste/data-raw/solid_waste/03_compile_solid_waste_MN_allyrs.R")
 # create solid_waste_MN_by_gas.RDS and solid_waste_MN_allyrs.RDS
 
 ## WI ----
-source("_waste/data-raw/solid_waste/03_compile_solid_waste_WI_allyrs.R") 
+source("_waste/data-raw/solid_waste/03_compile_solid_waste_WI_allyrs.R")
 
 ## MN and WI combined ----
 source("_waste/data-raw/solid_waste/04_compile_final_solid_waste_allyrs.R")

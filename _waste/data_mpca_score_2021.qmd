@@ -207,10 +207,10 @@ Uncertainty was not included in the dataset given.
 ```{r tbl-solid-waste-management-classifications}
 # #| tbl-cap: "Solid waste management classifications by data source, including emissions factors"
 # #| out-width: "95%"
-# 
+#
 # # waste_factors <- epa_ghg_factor_hub$waste
 # # TODO fix table here with actual epa_ghg_factor_hub values used
-# 
+#
 # waste_management_comp <-
 #   tribble(
 #     ~`MPCA Management Method`, ~`MPCA Method`, ~`Our Category`, ~`Emissions Factor Name`, ~`Emissions Factor`,
@@ -221,7 +221,7 @@ Uncertainty was not included in the dataset given.
 #     "Combined Recycling and Organics", "Organics", "Organics", "Mixed Organics Composted", "0.17",
 #     "Combined Recycling and Organics", "Recycling", "Recycling", "Mixed Recyclables Recycled", "0.09"
 #   )
-# 
+#
 # gt::gt(waste_management_comp,
 #   row_group_as_column = FALSE
 # ) %>%

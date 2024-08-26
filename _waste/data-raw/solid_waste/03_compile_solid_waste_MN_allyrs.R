@@ -8,7 +8,7 @@ incineration <- readRDS(file.path(here::here(), "_waste/data/incineration_MN_all
 organics <- readRDS(file.path(here::here(), "_waste/data/organics_MN_allyrs.RDS"))
 
 solid_waste_mn_by_gas <- landfill %>%
-  bind_rows(incineration, organics) 
+  bind_rows(incineration, organics)
 
 # meta
 
@@ -32,8 +32,8 @@ solid_waste_mn <- solid_waste_mn_by_gas %>%
   pivot_wider(
     names_from = units_emissions,
     values_from = value_emissions
-  )%>%
-  replace(is.na(.), 0) %>% 
+  ) %>%
+  replace(is.na(.), 0) %>%
   mutate(
     ch4_co2e = `Tonnes CH4` * gwp$ch4,
     n2o_co2e = `Tonnes N2O` * gwp$n2o,
@@ -46,7 +46,7 @@ solid_waste_mn <- solid_waste_mn_by_gas %>%
     value_emissions = ch4_co2e + n2o_co2e + `Tonnes CO2`,
     units_emissions = "Tonnes CO2e"
   ) %>%
-  ungroup() %>% 
+  ungroup() %>%
   select(
     geoid,
     inventory_year,

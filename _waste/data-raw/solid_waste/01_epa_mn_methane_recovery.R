@@ -3,7 +3,7 @@
 
 source("R/_load_pkgs.R")
 
-#cprg_county_proportions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_proportions.RDS"))
+# cprg_county_proportions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_proportions.RDS"))
 if (!exists("mpca_score")) {
   mpca_score <- readRDS(file.path(here::here(), "_waste/data-raw/solid_waste/mpca_score_allyrs.RDS"))
 }
@@ -52,7 +52,7 @@ lfgte_data <- lfgte_data[-1, ] %>%
 
 methane_recovery_state <- flaring_data %>%
   left_join(lfgte_data, by = join_by(Year)) %>%
-  mutate(inventory_year = as.numeric(Year)) %>% 
+  mutate(inventory_year = as.numeric(Year)) %>%
   select(
     mt_ch4_mn_flared,
     mt_ch4_mn_lfgte,
@@ -60,19 +60,19 @@ methane_recovery_state <- flaring_data %>%
   )
 
 # calculate county proportions of landfill waste, join methane recovery numbers, allocate
-methane_recovery_counties <- mpca_score %>% 
-  filter(source == "Landfill") %>% 
+methane_recovery_counties <- mpca_score %>%
+  filter(source == "Landfill") %>%
   mutate(
-    landfill_proportion = value_activity/state_total
-  ) %>% 
-  left_join(methane_recovery_state, by = join_by(inventory_year)) %>% 
+    landfill_proportion = value_activity / state_total
+  ) %>%
+  left_join(methane_recovery_state, by = join_by(inventory_year)) %>%
   mutate(
     mt_ch4_flared = mt_ch4_mn_flared * landfill_proportion,
     mt_ch4_lfgte = mt_ch4_mn_lfgte * landfill_proportion
-  ) %>% 
+  ) %>%
   mutate(
     mt_ch4_recovered = mt_ch4_flared + mt_ch4_lfgte
-  ) %>% 
+  ) %>%
   select(
     geoid,
     source,
@@ -82,7 +82,7 @@ methane_recovery_counties <- mpca_score %>%
     mt_ch4_recovered
   )
 
-  
+
 
 # methane_recovery_counties <- cprg_county_proportions %>%
 #   rename(Year = year) %>%

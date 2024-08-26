@@ -11,30 +11,30 @@ source("R/_load_pkgs.R")
 cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
 
 names <- c(source = "X", `2005` = "X2005", `2018` = "X2018")
-wi_inventory <- read.csv(file.path(here::here(), "_waste/data-raw/solid_waste/tabula-wi_inventory_2005_2018.csv")) %>% 
-  rename(all_of(names)) %>% 
+wi_inventory <- read.csv(file.path(here::here(), "_waste/data-raw/solid_waste/tabula-wi_inventory_2005_2018.csv")) %>%
+  rename(all_of(names)) %>%
   filter(
     source %in% c("Landfills", "Waste Combustion")
-  ) %>% 
+  ) %>%
   pivot_longer(
     cols = !source,
     names_to = "inventory_year",
     values_to = "value_emissions" # still in mmt co2e
-  ) %>% 
+  ) %>%
   mutate(
     inventory_year = as.numeric(inventory_year),
     value_emissions = as.numeric(value_emissions) * 10^6
-  ) %>% 
-  #add 2021 with values == 2018
+  ) %>%
+  # add 2021 with values == 2018
   rbind(
     tibble(
-      source = c("Landfills", "Waste Combustion"), 
-      inventory_year = c(2021, 2021), 
+      source = c("Landfills", "Waste Combustion"),
+      inventory_year = c(2021, 2021),
       value_emissions = c(2.1, 0.1) * 10^6
-      )
-    ) %>%  
-  complete(source, inventory_year = 2005:2021) %>% 
-  group_by(source) %>% 
+    )
+  ) %>%
+  complete(source, inventory_year = 2005:2021) %>%
+  group_by(source) %>%
   mutate(
     value_emissions = zoo::na.approx(value_emissions, na.rm = FALSE)
   )
@@ -50,10 +50,10 @@ wi_pop <- cprg_county_proportions %>%
 solid_waste_wi <- wi_pop %>%
   mutate(population_year = as.numeric(population_year)) %>%
   left_join(
-    wi_inventory, 
-    by = join_by(population_year == inventory_year), 
+    wi_inventory,
+    by = join_by(population_year == inventory_year),
     relationship = "many-to-many"
-    ) %>% 
+  ) %>%
   mutate(
     value_emissions = value_emissions * county_proportion_of_state_pop,
     sector = "Waste",
@@ -66,7 +66,7 @@ solid_waste_wi <- wi_pop %>%
     data_source = "Wisconsin GHG Inventory",
     factor_source = "Wisconsin GHG Inventory",
     units_emissions = "Tonnes CO2e"
-  ) %>% 
+  ) %>%
   select(
     geoid,
     inventory_year = population_year,
@@ -77,7 +77,7 @@ solid_waste_wi <- wi_pop %>%
     factor_source,
     value_emissions,
     units_emissions
-  ) 
+  )
 
 solid_waste_wi_meta <-
   tibble::tribble(

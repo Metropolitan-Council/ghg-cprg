@@ -34,8 +34,6 @@ waste_emissions_old <- readRDS(file.path(here::here(), "_waste/data/solid_waste_
 hookaddcap()
 ```
 
-This is an in-progress document to work on documentation and data exploration for the update of the inventory without interfering with previous documentation.
-
 ## Methods
 
 Solid waste emissions for Minnesota and Wisconsin are calculated using two different methods due to a difference in data availability. 
@@ -121,33 +119,8 @@ Wisconsin emissions are calculated by interpolating and scaling down state-level
 
 This 2021 inventory estimates landfill and waste-to-energy emissions for the years 2005 and 2018, including methane recovery offsets. In order to fill in missing years, emissions between 2005 and 2018 were linearly interpolated. Due to the small amount of change in emissions, it was assumed that emissions from 2018 to 2021 were constant. These emissions were then allocated to counties based on population.
 
-## Data Sources
 
-{{< include data_mpca_score_2021.qmd >}}
-
-### MPCA Waste Characterization Study
-
-In 2013, the MPCA contracted with Burns & McDonnell Engineering Company, Inc. to conduct a waste characterization study of landfill waste, an update to an earlier study in the year 2000. For simplicity, we have chosen to set waste proportions equal to those 2013 values for all years in this inventory.
-
-The study sampled waste makeup from six waste disposal facilities across the state and used the results to model statewide totals. More details can be found in study documentation, (cite).
-
-This data is a high-quality state-level dataset.
-
-For consistency, the values in this study have been compared to the IPCC default waste breakdown for North America. Relevant values were found to be consistent within 90% confidence intervals (as reported in the MPCA study), with the exception of food waste. IPCC values attribute 33.9% of landfill waste to food waste, while the 2013 report only finds that 17.8% of landfill waste is food waste. There are many possible explanations for this discrepancy, including differences in waste breakdown across the North American region and the possibility that the IPCC's numbers reflect additional food waste processed in organics facilities, which would not be included in the MPCA study.
-
-Due to the fact that it is more recent and more specific to the Minnesota region, we have chosen the MPCA study as the source of truth in this case.
-
-<!-- If necessary, display final breakdown of percentages aligned with DOC calculation categories here. -->
-
-{{< include data_wi_emissions.qmd >}}
-
-### EPA Methane Recovery Data {#sec-epa-methane}
-
-The EPA generates methane flaring and landfill gas to energy data for each state as part of its State Inventory Tool for solid waste. This data is collected as part of the [Landfill Methane Outreach Program](https://www.epa.gov/lmop). 
-
-However, since this data is collected on a national level, there are potential discrepancies with state-level and especially regional breakdowns of methane recovery. Due to these concerns, we have chosen to exclude this data source from our inventory and instead use the IPCC default of 0 methane recovery. This means that our inventory may overestimate emissions from solid waste landfills.
-
-## Graphing
+## Validation Graphs
 
 Timeseries of categories over time, across the whole MN area.
 
@@ -325,7 +298,7 @@ fig_landfill_by_pop <- plot_ly(
   hoverinfo = "text",
   hovertemplate = ~ paste0(
     "County: ", NAME, "<br>",
-    "Waste generated: ", round(value_emissions/ 1000), " thousand tons", "<br>",
+    "Waste generated: ", round(value_emissions / 1000), " thousand tons", "<br>",
     "Population: ", round(population),
     "<extra></extra>"
   ),

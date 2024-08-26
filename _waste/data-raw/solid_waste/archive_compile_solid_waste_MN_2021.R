@@ -15,7 +15,7 @@ score_filtered_2021 <- score_summary %>%
     County %in% cprg_county$NAME,
     Year == "2021"
   ) %>%
-  left_join(cprg_county, by = join_by(County == NAME)) %>% 
+  left_join(cprg_county, by = join_by(County == NAME)) %>%
   select(
     geoid = GEOID,
     source = Method,
@@ -33,7 +33,7 @@ score_filtered_2021 <- score_summary %>%
 #   "Year", class(score_filtered_2021$Year), "MPCA SCORE data collection year (this version of the dataset only includes 2021)",
 #   "Tons", class(score_filtered_2021$Tons), "Tons of waste collected"
 # )
-# 
+#
 # saveRDS(score_filtered_2021, paste0("_waste/data/mpca_score_2021.RDS"))
 # saveRDS(mpca_score_2021_meta, paste0("_waste/data/mpca_score_2021_meta.RDS"))
 

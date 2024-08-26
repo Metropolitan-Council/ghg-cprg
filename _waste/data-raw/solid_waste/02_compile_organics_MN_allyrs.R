@@ -12,16 +12,16 @@ n2o_factor_compost <- 0.6 # aggregate emissions factor for aerobic composting, m
 # N2O emissions from anaerobic digestion are assumed negligible
 
 organics_emissions <- mpca_score %>%
-  filter(source == "Organics") %>% 
+  filter(source == "Organics") %>%
   mutate(
-    "Tonnes CH4" = value_activity * ch4_factor_compost * 1/1000,
-    "Tonnes N2O" = value_activity * n2o_factor_compost * 1/1000
+    "Tonnes CH4" = value_activity * ch4_factor_compost * 1 / 1000,
+    "Tonnes N2O" = value_activity * n2o_factor_compost * 1 / 1000
   ) %>%
   pivot_longer(
     c("Tonnes CH4", "Tonnes N2O"),
     names_to = "units_emissions",
     values_to = "value_emissions"
-  ) %>% 
+  ) %>%
   select(
     -state_total
   )
@@ -42,4 +42,3 @@ organics_emissions_meta <-
 # save RDS
 saveRDS(organics_emissions, "_waste/data/organics_MN_allyrs.RDS")
 saveRDS(organics_emissions_meta, "_waste/data/organics_MN_allyrs_meta.RDS")
-

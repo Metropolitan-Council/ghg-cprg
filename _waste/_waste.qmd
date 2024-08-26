@@ -56,23 +56,11 @@ hookaddcap()
 
 ## Introduction
 
-In 2021, waste activities over the entire United States generated emissions of 169.2 MMTCO~2~e, or 2.7 percent of total U.S. greenhouse gas emissions [@usepaInventoryGreenhouseGas2023]. Solid waste emissions primarily consist of CH~4~, emitted in large part by landfills and organics composting, but also include CO~2~ and N~2~O generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. This inventory also includes emissions generated in the management of recyclables.
+In 2021, waste activities over the entire United States generated emissions of 169.2 MMTCO~2~e, or 2.7 percent of total U.S. greenhouse gas emissions [@usepaInventoryGreenhouseGas2023]. Solid waste emissions primarily consist of CH~4~, emitted in large part by landfills and organics composting, but also include CO~2~ and N~2~O generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. 
 
 Wastewater emissions account for direct CH~4~ and N~2~O emissions from the treatment of municipal wastewater, and not additional indirect anthropogenic emissions such as the electricity needed to operate processing plants.
 
-## Methods {#sec-waste-methods}
 
-### Solid Waste
-
-The process for calculating solid waste emissions slightly differs between Minnesota and Wisconsin counties, due to a difference in data availability. Both states use state or federal data sources, the highest quality data rank (@tbl-quality-rank).
-
-For Minnesota counties, waste generation totals are allocated by sector from Minnesota Pollution Control Agency (MPCA) SCORE data [@mpcaMPCASCOREGuidebook2022]. Totals for each sector are multiplied by the appropriate EPA-provided emissions factor to provide an estimate of emissions from that source and county. Learn more about MPCA SCORE in @sec-mpca-score. 
-
-For Wisconsin counties, state-level emissions data as calculated by the Wisconsin DNR is allocated to the relevant counties by population [@wisconsindnrGreenhouseGas2021].
-
-The emissions for each county $c$ are proportional to its fractional share of Wisconsin's population.
-
-$$Emissions_c = Emissions_{total} \times \frac{Pop_c}{Pop_{total}}$$
 
 ### Wastewater
 
