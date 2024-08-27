@@ -353,7 +353,7 @@ custom_palette <- c(
 
 emissions_rdg_90_baseline <- emissions_rdg_90_baseline %>%
   mutate(sector_year = interaction(sector, as.factor(year), sep = "."))
-
+ylab(expression(paste("µg ", CO[2], " - C ", m^-2, " ", h^-1, sep="")))
 
 # Plot with custom settings
 sector_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2021)),
@@ -361,7 +361,7 @@ sector_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(202
   geom_bar(stat = 'identity', position = position_dodge()) +
   labs(fill = "sector") +
   scale_fill_manual(values = sector_colors, guide = "none") +
-  theme_minimal() + xlab("") + ylab("Million metric tons of CO2e") +
+  theme_minimal() + xlab("") + ylab(expression(paste("Million metric tons of ",CO[2],"e"))) +
   theme(panel.grid.major.x = element_blank(),
         axis.text.x = element_text(size = 20),
         text = element_text(size = 20, family="sans"))
@@ -392,7 +392,7 @@ subsector_county_comparison <- ggplot(electricity_subsector,
         text = element_text(size = 20, family="sans")
   ) +
   ylab("") +
-  xlab("Millions of metric tons of CO2e") +
+  xlab(expression(paste("Million metric tons of ",CO[2],"e"))) +
   labs(fill = "Subsector")
 
 subsector_county_comparison
@@ -409,7 +409,7 @@ subsector_county_comparison_per_capita <- ggplot(electricity_subsector,
         axis.text.x = element_text(size = 20),
         text = element_text(size = 20, family="sans")
   ) +
-  xlab("Metric tons CO2e per capita") +
+  xlab(expression(paste("Metric tons of ",CO[2],"e per capita"))) +
   ylab("") +
   labs(fill = "Subsector")
 
@@ -431,7 +431,7 @@ baseline_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2
         text = element_text(size = 20, family="sans")
   ) +
   xlab("Year") + 
-  ylab("Million metric tons of CO2e") +
+  ylab(expression(paste("Million metric tons of ",CO[2],"e"))) +
   labs(col = "Sector",
        shape = "Sector")
 
