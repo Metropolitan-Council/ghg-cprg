@@ -115,6 +115,23 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
   ) %>%
   select(names(transportation_emissions))
 
+## agriculture ----
+
+agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds") %>% 
+  left_join(cprg_county %>% select(county_name,geoid)) %>% 
+  mutate(
+    year = inventory_year,
+    sector = "Agriculture",
+    geog_level = "county",
+    geog_name = county_name,
+    category = category,
+    emissions_metric_tons_co2e = mt_co2e,
+    source = stringr::str_to_sentence(source),
+    data_source = data_source,
+    factor_source = factor_source
+  )  %>%
+  select(names(transportation_emissions))
+
 ## natural systems ----
 
 natural_systems_sequestration <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
@@ -156,14 +173,15 @@ emissions_all <- bind_rows(
   natural_gas_emissions,
   ww_emissions,
   solid_waste,
+  agriculture_emissions,
   natural_systems_sequestration,
   natural_systems_stock
 ) %>%
   left_join(
     cprg_county %>%
       sf::st_drop_geometry() %>%
-      select(NAME, geog_id = COUNTYFP),
-    by = c("geog_name" = "NAME")
+      select(county_name, geog_id = geoid ),
+    by = c("geog_name" = "county_name")
   ) %>%
   mutate(
     source = factor(source,
@@ -183,6 +201,14 @@ emissions_all <- bind_rows(
         "Natural gas",
         "Propane",
         "Kerosene",
+        # agriculture levels
+        "Enteric fermentation",
+        "Manure management",
+        "Direct manure soil emissions",
+        "Indirect manure runoff emissions",
+        "Soil residue emissions",
+        "Onsite fertilizer emissions",
+        "Runoff fertilizer emissions",
         # nature levels
         "Urban grassland",
         "Urban tree",
@@ -204,6 +230,8 @@ emissions_all <- bind_rows(
         "Commercial vehicles",
         "Wastewater",
         "Solid waste",
+        "Livestock",
+        "Cropland",
         "Sequestration",
         "Stock"
       ),
@@ -214,7 +242,7 @@ emissions_all <- bind_rows(
   left_join(
     cprg_county_pop %>%
       select(
-        geog_id = COUNTYFP,
+        geog_id = geoid,
         population_year,
         county_total_population = population,
         population_data_source
