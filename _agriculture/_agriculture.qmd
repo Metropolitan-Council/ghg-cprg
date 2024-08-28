@@ -16,6 +16,8 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/_agricultural_emissions.RDS"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 
 hookaddcap()
 ```
@@ -111,4 +113,45 @@ fig_ag_baseline <- plot_ly(
   )
 
 fig_ag_baseline
+```
+
+
+```{r fig-ag-county-emissions-by-gas-type}
+#| fig-cap: "2021 county agricultural emissions"
+#| out-width: "95%"
+
+fig_ag_gas_type <- plot_ly(
+  type = "bar",
+  source = "fig-ag-county-emissions-by-gas-type",
+  data = ag_emissions %>%
+    left_join(.,cprg_county) %>% 
+    filter(inventory_year == 2021),
+  y = ~ reorder(county_name , value_emissions),
+  x = ~ value_emissions ,
+  color = ~units_emissions,
+  hovertemplate = ~ paste0(
+    county_name , "<br>",
+    source, "<br>",
+    round(value_emissions , digits = 2), "  metric tons of gas", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county agricultural emissions by gas type",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    ),
+    hoverlabel = list(
+      font = list(
+        color = "black"  # Set hovertext color to black
+      )
+    )
+  )
+
+fig_ag_gas_type
 ```
