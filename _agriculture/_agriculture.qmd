@@ -15,9 +15,100 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
 hookaddcap()
 ```
 
 ## Introduction
 
 Agricultural systems are major emitters of methane and nitrous oxide, both from livestock and croplands. Livestock emissions come primarily from enteric fermentation, the formation of methane in ruminants stomachs during digestion, and secondarily from manure emissions of both methane and nitrous oxides. Cropland emissions are predominantly nitrous oxide that is formed from biogeochemical processes related to crop-soil interactions and the direct application of synthetic fertilizers. Carbon dioxide emissions are a smaller share of agricultural emissions, arising predominantly from operation of agricultural equipment, liming of soils, and production of urea used for fertilizer.
+
+
+## Results
+
+### 2021 county and subsector breakdown
+
+```{r fig-ag-county-emissions}
+#| fig-cap: "2021 county agricultural emissions"
+#| out-width: "95%"
+
+fig_ag_county_emissions <- plot_ly(
+  type = "bar",
+  source = "fig-ag-county-emissions",
+  data = county_emissions %>%
+    filter(sector == "Agriculture",
+           year == 2021),
+  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
+  color = ~source,
+  colors = unlist(source_colors),
+  hovertemplate = ~ paste0(
+    geog_name, "<br>",
+    source, "<br>",
+    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county agricultural emissions",
+    x_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    ),
+    hoverlabel = list(
+      font = list(
+        color = "black"  # Set hovertext color to black
+      )
+    )
+  )
+
+fig_ag_county_emissions
+```
+
+
+### Baseline emissions
+
+```{r fig-ag-baseline-emissions}
+#| fig-cap: "Baseline agricultural emissions"
+#| out-width: "95%"
+fig_ag_baseline <- plot_ly(
+  source = "fig-ag-baseline-emissions",
+  data = county_emissions %>%
+    filter(sector == "Agriculture") %>% 
+    group_by(year, category) %>% 
+    summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
+  x = ~year,
+  y = ~emissions_metric_tons_co2e,
+  color = ~category,
+  colors = unlist(category_colors),
+  type = "scatter",
+  mode = "none",  # No points or lines, just fill
+  fill = "tonexty",  # Fill to the next y value (stacking)
+  hovertemplate = ~ paste0(
+   "%{x}", "<br>",
+    "%{color}", "<br>",
+    "%{y:.2f} million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "County Agricultural Emissions Over Time",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hoverlabel = list(
+      font = list(
+        color = "black"  # Set hovertext color to black
+      )
+    )
+  )
+
+fig_ag_baseline
+```
