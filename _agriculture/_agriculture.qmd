@@ -97,22 +97,22 @@ fig_ag_baseline <- plot_ly(
   data = county_emissions %>%
     filter(sector == "Agriculture") %>% 
     group_by(year, category) %>% 
-    summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e))%>%
-    arrange(year, category),
+    summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
   x = ~year,
   y = ~emissions_metric_tons_co2e,
-  color = ~category,
+  
   colors = unlist(category_colors),
   type = "scatter",
   mode = "none",  # No points or lines, just fill
-  fill = "tonexty",  # Fill to the next y value (stacking)
+  stackgroup = 'one',  # Fill to the next y value (stacking)
+  fillcolor = ~category,
   hovertemplate = ~ paste0(
    "%{x}", "<br>",
     "%{color}", "<br>",
     "%{y:.2f} million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
-) %>%
+) %>% 
   plotly_layout(
     main_title = "County Agricultural Emissions Over Time",
     x_title = "Year",
