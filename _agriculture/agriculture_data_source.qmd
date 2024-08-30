@@ -1,14 +1,32 @@
-## {Data Source}
-```{r}
+# Agriculture methods and data sources
+```{r include=FALSE}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
+
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/_agricultural_emissions.RDS"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+landcover <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_2001_2021.RDS"))
+
+county_area <- cprg_county %>%
+  mutate(county_area_sqkm = as.numeric(st_area(.)/ 10^6)) %>%
+  select(county_name, county_area_sqkm) %>% 
+  st_drop_geometry()
+
+county_agriculture <- landcover %>% 
+  filter(!is.na(area), land_cover_type == "Cropland") %>% 
+  left_join(., county_area,
+            by = c("county" = "county_name")) %>% 
+  group_by(year, county) %>% 
+  mutate(percent_area = area / county_area_sqkm)
+ 
 ```
 
 Agricultural emissions are derived from two primary sources. First is the USDA agricultural census which provides county level livestock head counts, crop production, and fertilizer sales. Second is the EPA State Inventory Tool (SIT) that provides state specific values for emission factors as well as activity data such as state-wide fertilizer application (different from sales). These are both the highest rank of data.
 
-The USDA census is conducted once every five years (years ending in '2 and '7). For interstitial years we used linear interpolation to fill in county level values.
+The USDA census is conducted once every five years (years ending in '2 and '7). For interstitial years we used linear interpolation to provide county level estimates.
 
 The SIT provides guidance on how to translate livestock counts, crop production, and fertilizer use into emission factors. A brief description of the major emitters in this sector is listed here, but please refer to the SIT documentation for more detail information.
 
@@ -17,26 +35,27 @@ The SIT provides guidance on how to translate livestock counts, crop production,
 ##Enteric fermentation
 
 Enteric fermentation is methane emitted from livestock during digestion.
-Emissions (MMTCO2E) = Animal Population × Emission Factor (kg CH4/head) × 28 (GWP) ÷ 1,000,000,000 (kg/MMTCO2E)
 
+$$\text{Emissions (Metric tons CO}_2 \text{ equivalency)} =  \text{Animal Population} \times  \text{Emission Factor (MT CH4/head)} \times \text{28 (GWP)}$$
 ##Manure management
 
-Manure in lagoons and holding facilities emits methane and nitrous oxide.
+Manure in lagoons and holding facilities emits methane and nitrous oxide. Both gaseous emissions depend on the amount of volatile solids produced by livestock, which varies by livestock type. Adult cattle volatile solids are calculated using a variable based on heads of cattle; other livestock (including cattle calves) volatiles solids are calculated based on animal mass, which is itself calculated by multiplying number of livestock by the typical animal mass of that livestock type.
 
-###methane
-VS ProducedCattle, excluding calves = Animal Population (‘000 head) × 1,000 × VS (kg/head/yr)
-VS ProducedCalves and all other livestock = Animal Population (‘000 head) × TAM × VS (kg/1,000 kg animal mass/day) × 365 (days/yr)
-Emissions (MMTCO2E) = VS Produced (kg) × Bo (m3 CH4/kg VS) × MCF × 0.678 kg/m3 × 28 (GWP) ÷ 1,000,000,000 (MMTCO2E)
+Methane emissions are calculated as follows:
 
-### n2o
+$$\text{Emissions (Metric tons CO}_2 \text{ equivalency)} =  \sum_{i}(\text{Animal Population}_i \times  \text{Volatile solids per head (kg/head/yr)}_i \times \text{Maximum Potential Emissions (m3 CH4/kg VS)}_i \times \text{Methane conversion factor}_i \times \text{28 (GWP)})$$
+where *i* represents livestock from the following categories: Dairy Cows, Beef Cows, Feedlot Cattle, Calves, Swine, Sheep, Goats, Chickens (Broilers, Pullets, and Layers), and Turkeys.
 
-K-Nitrogen ExcretedCattle, excluding calves = Animal Population × 1,000 × K-Nitrogen (kg/head/day)
-K-Nitrogen ExcretedCalves and all other livestock = Animal Population  × TAM × K-Nitrogen (kg/1,000 kg animal mass/day) × 365 (days/yr)
-Emissions (MMTCO2E) = K-Nitrogen Excreted × Emission Factor (liquid or dry) 
+
+
+Nitrous oxide emissions are calculated as follows:
+
+$$\text{Emissions (Metric tons CO}_2 \text{ equivalency)} =  \sum_{i,j}(\text{Animal Population}_{i,j} \times  \text{Volatile solids per head (kg/head/yr)}_{i,j} \times \text{Percentage manure management}_{i,j} \times \text{Manure management emission factor}_{i,j} \times \text{273 (GWP)})$$
+where *i* represents livestock from the following categories: Dairy Cows, Beef Cows, Feedlot Cattle, Calves, Swine, Sheep, Goats, Chickens (Broilers, Pullets, and Layers), and Turkeys; and *j* is dry or wet manure management systems. In other words, total nitrous oxide emissions are the sum of manure managed in wet systems or dry systems, each of which have different emission factors.
 
 ##Manure runoff
 
-Manure from managed and unmanaged systems runoff into soil and cause additional nitrous oxide emissions.
+Manure from managed and unmanaged systems enter soil via application or runoff and cause additional nitrous oxide emissions.
 
 The SIT calculates emissions by multiplying each animal population (entered in the manure management worksheet) by the rate of N excreted by animal type, provided in kg/head/year for cattle (excluding calves), and kg/1,000 kg animal mass/day for calves and all other livestock (i.e., swine, poultry, sheep, goats, and horses). For cattle (excluding calves), animal population is multiplied by the K-nitrogen excretion rate (kg/head/year) for total K-nitrogen excreted. For calves and all other livestock, animal population is multiplied by the TAM (kg), the K-nitrogen excretion rate (kg/1,000 kg animal mass/day), and 365 days per year for total K-nitrogen excreted. Next, the total K-nitrogen is disaggregated into manure handled in managed systems, manure applied as daily spread, and manure deposited directly into pastures, ranges, or paddocks, based on default percentages obtained from the U.S. Inventory (EPA 2023a).
 Direct emissions from manure handled in management systems and applied as daily spread is multiplied by the volatilization factor (0.8) to obtain the total unvolatilized N. Additionally, for poultry an adjustment must be made for the small portion of waste used as animal feed. For all poultry categories (i.e., layers (hens, pullets, and chickens), broilers, and turkeys), the total K-nitrogen in managed systems is multiplied by 0.958, as it is assumed that 4.2 percent of all poultry manure is used as animal feed and not applied to agricultural soils (Carpenter 1992). The total unvolatilized N is multiplied by the emission factor for direct emissions of N2O (1.0 percent) to obtain the amount of emissions in N2O-N/yr.
@@ -100,37 +119,59 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
 
-```{r fig-scatter}
+```{r fig-cropland-area-emissions}
 #| fig-cap: "A scatter plot"
 #| out-width: "95%"
-#| include: false
-shinipsum::random_ggplotly(type = "point") %>%
-  councilR::plotly_layout(
-    main_title = "Scatter"
+
+
+cropland_2021 <- county_agriculture %>% 
+  filter(year == 2021) %>% 
+  left_join(., county_emissions %>% 
+              filter(sector == 'Agriculture',
+                     year == 2021) %>% 
+              group_by(geog_name) %>% 
+              summarize(ag_emissions = sum(emissions_metric_tons_co2e)),
+            by = c("county" = "geog_name"))
+
+fig_cropland_area_emissions <- plot_ly(
+  type = "scatter",
+  mode = "markers",
+  source = "fig-cropland-area-emissions",
+  data = cropland_2021,
+  y = ~ag_emissions,
+  x = ~area,
+  hovertemplate = ~ paste0(
+    county, " County", "<br>",
+    "Area: ", scales::comma(area), " square kilometers", "<br>",
+    "Emissions: ", round(ag_emissions, digits = 2), "  metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue,
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
   )
+) %>%
+  plotly_layout(
+    main_title = "Area of county cropland and county agricultural emissions",
+    x_title = "Area km<sup>2",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_cropland_area_emissions
+  
 ```
 
-
-```{r fig-boxplot}
-#| fig-cap: "A boxplot"
-#| out-width: "95%"
-#| include: false
-shinipsum::random_ggplotly(type = "boxplot") %>%
-  councilR::plotly_layout(
-    main_title = "Boxplot"
-  )
-```
-
-
-```{r fig-density}
-#| fig-cap: "A density plot"
-#| out-width: "95%"
-#| include: false
-shinipsum::random_ggplotly(type = "density") %>%
-  councilR::plotly_layout(
-    main_title = "Density"
-  )
-```
 
 
 ### Limitations
@@ -141,10 +182,3 @@ shinipsum::random_ggplotly(type = "density") %>%
 
 Table with detailed description of columns and definitions for each data table.
 
-```{r echo=FALSE}
-caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
-caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
-saveCap(paste0("cap-", caption_index))
-saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
-```
-{{< pagebreak >}}

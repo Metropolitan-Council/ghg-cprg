@@ -74,14 +74,16 @@ electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_
 
 electric_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Electricity") %>%
+  filter((year == 2005 & category == "Total") | (year == 2021 & category != "Total")) %>% #avoid duplication and NAs until category is infilled later
   mutate(
-    sector = "Energy",
+    sector = "Electricity",
     geog_level = "county",
     geog_name = county,
     category = paste0(category, " energy"),
     source = source,
-    data_source = "Individual electric utilities, NREL SLOPE",
-    factor_source = "eGRID MROW"
+    data_source = "Individual electric utilities, NREL SLOPE (2021)",
+    factor_source = "eGRID MROW",
+    year = as.numeric(year)
   ) %>%
   select(names(transportation_emissions))
 
@@ -90,14 +92,16 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
 
 natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Natural gas") %>%
+  filter((year == 2005 & category == "Total") | (year == 2021 & category != "Total")) %>% #avoid duplication and NAs until category is infilled later
   mutate(
-    sector = "Energy",
+    sector = "Building Fuel",
     geog_level = "county",
     geog_name = county,
     category = paste0(category, " energy"),
     source = source,
     data_source = "Individual natural gas utilities, NREL SLOPE (2021)",
-    factor_source = "EPA GHG Emission Factors Hub (2021)"
+    factor_source = "EPA GHG Emission Factors Hub (2021)",
+    year = as.numeric(year)
   ) %>%
   select(names(transportation_emissions))
 
@@ -105,7 +109,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
 
 propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
   mutate(
-    sector = "Energy",
+    sector = "Building Fuel",
     geog_level = "county",
     geog_name = NAME,
     category = "Liquid stationary fuels",
@@ -114,6 +118,8 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
   select(names(transportation_emissions))
+
+## agriculture ----
 
 ## agriculture ----
 

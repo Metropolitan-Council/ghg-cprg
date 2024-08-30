@@ -29,6 +29,16 @@ rural_ag_2021 <- county_emissions %>%
          geog_name %in% c("St. Croix","Pierce", "Carver", "Dakota")) %>% 
            pull(emissions_metric_tons_co2e) %>% sum()
 
+methane_2021 <- ag_emissions %>% 
+  filter(inventory_year == 2021,
+         units_emissions == "Metric tons CH4") %>% 
+  pull(mt_co2e) %>% sum()
+
+n2o_2021 <- ag_emissions %>% 
+  filter(inventory_year == 2021,
+         units_emissions == "Metric tons N2O") %>% 
+  pull(mt_co2e) %>% sum()
+
 hookaddcap()
 ```
 
@@ -41,11 +51,13 @@ Agricultural systems are major emitters of methane and nitrous oxide, both from 
 
 ### 2021 county and subsector breakdown
 
-Agriculture accounted for `r round(ag_emissions_2021/emissions_2021, digits = 3)`% of total emissions in the 11-county region in 2021. As expected, more rural counties produce a larger share of the agricultural emissions, with St. Croix, Pierce, Dakota, and Carver accounting for `r round(rural_ag_2021/ag_emissions_2021, digits = 3)`% of the regions agricultural emissions.
+Agriculture accounted for `r 100*round(ag_emissions_2021/emissions_2021, digits = 3)`% of total emissions in the 11-county region in 2021. As expected, more rural counties produce a larger share of the agricultural emissions, with St. Croix, Pierce, Dakota, and Carver accounting for `r 100*round(rural_ag_2021/ag_emissions_2021, digits = 3)`% of the regions agricultural emissions.
 
 ```{r fig-ag-county-emissions}
 #| fig-cap: "2021 county agricultural emissions"
 #| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 10   # Set width in inches
 
 fig_ag_county_emissions <- plot_ly(
   type = "bar",
@@ -87,11 +99,14 @@ fig_ag_county_emissions
 
 ### Baseline emissions
 
-Regional agricultural emissions have decreased by 
+Regional agricultural emissions have decreased by `r 100*round(1 - (ag_emissions_2021/ag_emissions_2005))`% since 2005, potentially reflecting increased agricultural abandonment and suburban expansion in the region.
 
 ```{r fig-ag-baseline-emissions}
 #| fig-cap: "Baseline agricultural emissions"
 #| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
+
 fig_ag_baseline <- plot_ly(
   source = "fig-ag-baseline-emissions",
   data = county_emissions %>%
@@ -100,18 +115,19 @@ fig_ag_baseline <- plot_ly(
     summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
   x = ~year,
   y = ~emissions_metric_tons_co2e,
-  
-  colors = unlist(category_colors),
+  color = ~category,  # 
+  colors = unlist(category_colors),  # Directly map the colors to categories
   type = "scatter",
-  mode = "none",  # No points or lines, just fill
+  mode = "lines",  # No points or lines, just fill
   stackgroup = 'one',  # Fill to the next y value (stacking)
-  fillcolor = ~category,
+  hoverinfo = "x+y+name",  # Ensure hover displays x, y, and category name
   hovertemplate = ~ paste0(
-   "%{x}", "<br>",
-    "%{color}", "<br>",
-    "%{y:.2f} million metric tons CO<sub>2</sub>e", "<br>",
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
     "<extra></extra>"
-  )
+  ),
+  text = ~category  # Pass category to hovertext
 ) %>% 
   plotly_layout(
     main_title = "County Agricultural Emissions Over Time",
@@ -120,6 +136,7 @@ fig_ag_baseline <- plot_ly(
     subtitle = ""
   ) %>%
   layout(
+    hovermode = "x unified",  # Combine all hovertext under one hover
     hoverlabel = list(
       font = list(
         color = "black"  # Set hovertext color to black
@@ -129,6 +146,13 @@ fig_ag_baseline <- plot_ly(
 
 fig_ag_baseline
 ```
+
+### Emissions by gas type
+
+The majority of agricultural emissions by weight are methane, but when accounting for the increased warming potential of nitrous oxide, CO<sub>2</sub>e are roughly equivalent. 
+CH<sub>4</sub>: `r 100 * round(methane_2021/ag_emissions_2021, digits = 3)`% 
+N<sub>2</sub>O: `r 100 * round(n2o_2021/ag_emissions_2021, digits = 3)`%
+
 
 
 ```{r fig-ag-county-emissions-by-gas-type}
@@ -210,3 +234,6 @@ fig_ag_gas_co2e <- plot_ly(
 
 fig_ag_gas_co2e
 ```
+
+## Summary
+Methane production is largely tied to consumer food preferences, with enteric fermentation in cattle raised for meat and dairy production being the central driver of agricultural methane production. Nitrous oxide emissions also derive from livestock via manure emissions, both in managed systems and in manure that is applied to or leaches into soils. Crop production also accounts for a large percentage of agricultural nitrous oxide emissions via synthetic fertilizer production and the biochemical processes that delivers nitrogen to soils. Efficient agricultural techniques, particularly in crop management, can reduce the amount of nitrogen entering soil and therefore the amount that is volatilized into gaseous nitrous oxide.
