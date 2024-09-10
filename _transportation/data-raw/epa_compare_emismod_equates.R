@@ -15,18 +15,12 @@ nei_summary <- epa_nei %>%
   summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
   mutate(calc_year = as.character(nei_inventory_year)) %>% 
   select(-nei_inventory_year)
-  
+
 
 equates_cprg <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cprg.RDS") %>% 
   select(-equates_path) %>% 
   left_join(scc_equates,
             join_by(scc, scc6))
-
-emis_onroad <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi_15_28.RDS") %>% 
-  bind_rows(read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi_19_22.RDS")) %>% 
-  left_join(scc_equates) %>% 
-  mutate(geoid = region_cd) %>% 
-  left_join(counties_light)
 
 
 equates_cprg_summary <- equates_cprg %>% 
@@ -49,7 +43,16 @@ equates_cprg_summary <- equates_cprg %>%
   select(calc_year, geoid, county_name, co2, emissions_metric_tons_co2e)
 
 
+emis_onroad <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi_15_18.RDS") %>% 
+  bind_rows(read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi_19_22.RDS")) %>% 
+  bind_rows(read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi_11_14.RDS")) %>% 
+  left_join(scc_equates) %>% 
+  mutate(geoid = region_cd) %>% 
+  left_join(counties_light) %>% 
+  filter(cprg_area == TRUE)
+
 emis_onroad_summary <- emis_onroad %>% 
+  filter(emis_type == "RPD") %>% 
   group_by(geoid, county_name, calc_year, poll) %>% 
   summarize(emissions_short_tons = sum(emissions_short_tons)) %>% 
   mutate(ann_value_grams = emissions_short_tons %>% 
@@ -89,12 +92,25 @@ equates_onroad_compare %>%
 
 
 equates_onroad_compare %>% 
+  # 2017 is the only year we have complete data for 
   filter(calc_year == "2017") %>% 
-ggplot() +
+  ggplot() +
   aes(y = reorder(county_name, emissions_metric_tons_co2e),
       x = emissions_metric_tons_co2e,
       colour = source) +
   geom_point(
     size = 3,
     alpha =  0.5
-  ) 
+  )  +
+  labs(title = "2017 emissions by county")
+
+
+equates_onroad_compare %>% 
+  filter(county_name == "Hennepin") %>% 
+  ggplot() +
+  aes(x = as.numeric(calc_year),
+      y = emissions_metric_tons_co2e,
+      color = source,
+      group = source) +
+  geom_point() +
+  geom_line()
