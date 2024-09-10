@@ -67,7 +67,12 @@ v_or_2008 <- read.csv("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad
   ) %>%
   filter(
     geoid %in% county_geography$geoid,
-    pollutant_code %in% c("CO2", "CH4", "N2O", "CO", "PM25-PRI", "PM10-PRI")
+    pollutant_code %in% c(
+      "CH4", "N2O",
+      "CO2", "NO", "NOX",
+      "HFC", "VOC", "O3", "CO",
+      "PM10-PRI", "PM25-PRI"
+    )
   )
 
 v_or_2011 <- read.csv("_transportation/data-raw/epa/nei/2011NEI/2011neiv2_onroad_byregions/onroad_5.csv",
@@ -86,7 +91,12 @@ v_or_2011 <- read.csv("_transportation/data-raw/epa/nei/2011NEI/2011neiv2_onroad
   ) %>%
   filter(
     geoid %in% county_geography$geoid,
-    pollutant_code %in% c("CO2", "CH4", "N2O", "CO", "PM25-PRI", "PM10-PRI")
+    pollutant_code %in% c(
+      "CH4", "N2O",
+      "CO2", "NO", "NOX",
+      "HFC", "VOC", "O3", "CO",
+      "PM10-PRI", "PM25-PRI"
+    )
   )
 
 v_or_2014 <- read.csv("_transportation/data-raw/epa/nei/2014NEI/2014neiv2_onroad_byregions/onroad_5.csv",
@@ -102,7 +112,12 @@ v_or_2014 <- read.csv("_transportation/data-raw/epa/nei/2014NEI/2014neiv2_onroad
   ) %>%
   filter(
     geoid %in% county_geography$geoid,
-    pollutant_code %in% c("CO2", "CH4", "N2O", "CO", "PM25-PRI", "PM10-PRI")
+    pollutant_code %in% c(
+      "CH4", "N2O",
+      "CO2", "NO", "NOX",
+      "HFC", "VOC", "O3", "CO",
+      "PM10-PRI", "PM25-PRI"
+    )
   )
 
 v_or_2017 <- read.csv("_transportation/data-raw/epa/nei/2017NEI/2017neiApr_onroad_byregions/onroad_5.csv",
@@ -116,7 +131,12 @@ v_or_2017 <- read.csv("_transportation/data-raw/epa/nei/2017NEI/2017neiApr_onroa
   ) %>%
   filter(
     geoid %in% county_geography$geoid,
-    pollutant_code %in% c("CO2", "CH4", "N2O", "CO", "PM25-PRI", "PM10-PRI")
+    pollutant_code %in% c(
+      "CH4", "N2O",
+      "CO2", "NO", "NOX",
+      "HFC", "VOC", "O3", "CO",
+      "PM10-PRI", "PM25-PRI"
+    )
   )
 
 v_or_2020 <- read.csv("_transportation/data-raw/epa/nei/2020NEI/2020nei_onroad_byregion/onroad_5.csv",
@@ -129,7 +149,12 @@ v_or_2020 <- read.csv("_transportation/data-raw/epa/nei/2020NEI/2020nei_onroad_b
   ) %>%
   filter(
     geoid %in% county_geography$geoid,
-    pollutant_code %in% c("CO2", "CH4", "N2O", "CO", "PM25-PRI", "PM10-PRI")
+    pollutant_code %in% c(
+      "CH4", "N2O",
+      "CO2", "NO", "NOX",
+      "HFC", "VOC", "O3", "CO",
+      "PM10-PRI", "PM25-PRI"
+    )
   )
 
 # combine all
