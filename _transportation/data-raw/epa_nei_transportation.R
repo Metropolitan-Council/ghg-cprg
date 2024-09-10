@@ -8,7 +8,7 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_county_meta <- read_rds("_meta/data/cprg_county_meta.RDS")
 epa_moves <- readRDS("_transportation/data/epa_moves.RDS")
 
-if(!exists("nei_county_multi_year")){
+if (!exists("nei_county_multi_year")) {
   source("_meta/data-raw/epa_nei.R")
 }
 # mobile sectors only
@@ -57,16 +57,16 @@ mobile_sectors <- sectors %>%
   )
 
 nei_state_emissions <- nei_county_multi_year %>%
-  mutate(nei_sector_code = sector_code) %>% 
+  mutate(nei_sector_code = sector_code) %>%
   filter(
     nei_sector_code %in% mobile_sectors$nei_sector_code,
     pollutant_type == "GHG"
   ) %>%
   left_join(mobile_sectors,
-            by = join_by(
-              nei_sector_code, ei_sector,
-              sector_one, sector_two, sector_three
-            )
+    by = join_by(
+      nei_sector_code, ei_sector,
+      sector_one, sector_two, sector_three
+    )
   ) %>%
   group_by(
     state_name,
@@ -96,16 +96,16 @@ nei_state_emissions <- nei_county_multi_year %>%
 # check unit of measurement
 # https://www.epa.gov/air-emissions-inventories/what-are-units-nei-emissions-data
 nei_county_emissisons <- nei_county_multi_year %>%
-  mutate(nei_sector_code = sector_code) %>% 
+  mutate(nei_sector_code = sector_code) %>%
   filter(
     nei_sector_code %in% mobile_sectors$nei_sector_code,
     pollutant_type == "GHG"
   ) %>%
   left_join(mobile_sectors,
-            by = join_by(
-              nei_sector_code, ei_sector,
-              sector_one, sector_two, sector_three
-            )
+    by = join_by(
+      nei_sector_code, ei_sector,
+      sector_one, sector_two, sector_three
+    )
   ) %>%
   pivot_wider(
     names_from = pollutant_code,
@@ -138,11 +138,11 @@ nei_county_emissisons <- nei_county_multi_year %>%
 # aggregate by vehicle weight and county
 epa_nei <- nei_county_emissisons %>%
   left_join(county_geography %>%
-              select(geoid,
-                     county_name,
-                     county_fips = countyfp
-              )) %>%
-  unique() %>% 
+    select(geoid,
+      county_name,
+      county_fips = countyfp
+    )) %>%
+  unique() %>%
   group_by(
     geoid, county_name,
     vehicle_weight_label,
@@ -219,12 +219,12 @@ epa_nei_full <- epa_nei %>%
   )) %>%
   unique() %>%
   mutate(interp_emissions = na_kalman(emissions_metric_tons_co2e,
-                                      smooth = TRUE,
-                                      type = "trend"
+    smooth = TRUE,
+    type = "trend"
   )) %>%
   mutate(nei_data_source = ifelse(is.na(emissions_metric_tons_co2e),
-                                  "EPA NEI, interpolated",
-                                  "EPA NEI, reported"
+    "EPA NEI, interpolated",
+    "EPA NEI, reported"
   ))
 
 
@@ -260,14 +260,14 @@ epa_nei_full %>%
 
 epa_nei_complete <- epa_nei_full %>%
   select(geoid, county_fips, county_name, cprg_area,
-         nei_inventory_year, nei_data_source,
-         vehicle_weight_label,
-         vehicle_fuel_label,
-         vehicle_group,
-         vehicle_type,
-         nei_sector_code,
-         emissions_metric_tons_co2e = interp_emissions
-  ) %>% 
+    nei_inventory_year, nei_data_source,
+    vehicle_weight_label,
+    vehicle_fuel_label,
+    vehicle_group,
+    vehicle_type,
+    nei_sector_code,
+    emissions_metric_tons_co2e = interp_emissions
+  ) %>%
   filter(vehicle_group == "On-Road")
 
 epa_nei_complete_meta <- tibble::tribble(
@@ -291,17 +291,17 @@ saveRDS(epa_nei_complete_meta, "_transportation/data/epa_nei_complete_meta.RDS")
 # combine state and county to get relative proportions  -----
 nei_county_proportions <- nei_state_emissions %>%
   select(state_name, nei_inventory_year,
-         vehicle_weight_label,
-         vehicle_group, vehicle_fuel_label,
-         state_emissions_metric_tons_co2e = emissions_metric_tons_co2e
+    vehicle_weight_label,
+    vehicle_group, vehicle_fuel_label,
+    state_emissions_metric_tons_co2e = emissions_metric_tons_co2e
   ) %>%
   left_join(
     epa_nei %>%
       ungroup() %>%
       select(county_fips, state_name, county_name, geoid, nei_inventory_year,
-             cprg_area,
-             vehicle_weight_label, vehicle_fuel_label, vehicle_group,
-             county_emissions_metric_tons_co2e = emissions_metric_tons_co2e
+        cprg_area,
+        vehicle_weight_label, vehicle_fuel_label, vehicle_group,
+        county_emissions_metric_tons_co2e = emissions_metric_tons_co2e
       ) %>%
       unique(),
     relationship = "many-to-many"
