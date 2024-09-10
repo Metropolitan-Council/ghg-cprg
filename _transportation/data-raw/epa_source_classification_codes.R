@@ -243,3 +243,36 @@ scc_equates <- readxl::read_xlsx(
         TRUE ~ scc_level_three
       )
   )
+
+
+
+# scc combine -----
+# create a combined SCC index for use across all data sources
+scc_combine <- scc_complete_road %>% 
+  select(scc6, scc6_desc) %>% 
+  unique() %>% 
+  bind_rows(scc_equates %>% 
+              select(scc6, scc6_desc) %>% 
+              unique()) %>% 
+  unique() %>% 
+  filter(!is.na(scc6_desc)) %>% 
+  mutate(
+    fuel_type = stringr::str_split(
+      scc6_desc,
+      pattern = ";",
+      simplify = TRUE
+    )[, 1] %>% 
+      str_trim(),
+    vehicle_type = stringr::str_split(
+      scc6_desc,
+      pattern = ";",
+      simplify = TRUE
+    )[, 2] %>% 
+      str_trim()
+  ) %>% 
+  left_join(
+    scc_complete_road %>% 
+      select(scc6_desc,
+             alt_mode, alt_mode_truck) %>% 
+      unique()
+  )
