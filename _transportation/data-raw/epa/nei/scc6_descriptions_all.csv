@@ -114,3 +114,5 @@ scc6_new,scc_level_one,scc_level_two,scc_level_three,fuel_type_detect,scc6_desc,
 228500,Mobile Sources,Railroad Equipment,Diesel,Diesel,NA,Railroad equipment,Railroad equipment,Diesel; Railroad equipment,Diesel; Railroad equipment
 228500,Mobile Sources,Railroad Equipment,"Gasoline, 4-Stroke",Gasoline,NA,Railroad equipment,Railroad equipment,Gasoline; Railroad equipment,Gasoline; Railroad equipment
 228500,Mobile Sources,Railroad Equipment,LPG,Liquefied petroleum gas (LPG),NA,Railroad equipment,Railroad equipment,Liquefied petroleum gas (LPG); Railroad equipment,Liquefied petroleum gas (LPG); Railroad equipment
+220200,Mobile Sources,Highway Vehicles - Gasoline,Refueling,Diesel,NA,Gas stations,Gas stations,Diesel; Gas stations,Diesel; Gas stations
+220500,Mobile Sources,Highway Vehicles - Ethanol (E-85),Refueling,Ethanol (E-85),NA,Gas stations,Gas stations,Ethanol (E-85); Gas stations,Ethanol (E-85); Gas stations
