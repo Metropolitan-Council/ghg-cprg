@@ -7,7 +7,7 @@ source("_meta/data-raw/county_geography.R")
 library(imputeTS)
 
 if(Sys.info()["user"][[1]] == "rotenle"){
-  cli::cli_alert_warning("All plotly plots will launch in Firefox DE")
+  cli::cli_alert_warning("All plotly's will launch in Firefox DE")
   options(browser = "/usr/bin/open -a 'Firefox Developer Edition'",
           viewer = NULL)
 }
@@ -26,6 +26,8 @@ epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUA
 epa_emismod <- 
   bind_rows(readRDS("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi_19_22.RDS"),
             readRDS("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi_15_18.RDS"),
+            # note that 2011 and 2014 do not report any GHG emissions, 
+            # only CO, NOX, PM10, PM25, VOC, and NO
             readRDS("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi_11_14.RDS")) %>% 
   mutate(geoid = region_cd) %>%
   left_join(counties_light) %>%
@@ -34,6 +36,7 @@ epa_emismod <-
   left_join(scc_combine)
 
 # start summarizing datasets -----
+# aggregate each dataset up to scc6, pollutant_code
 epa_nei_onroad_summary <- epa_nei_onroad %>% 
   group_by(geoid, county_name, nei_inventory_year,
            pollutant_code, scc6) %>%
@@ -53,10 +56,13 @@ epa_nei_onroad_summary <- epa_nei_onroad %>%
   mutate(
     co2_co2_equivalent =
       sum(co2, (ch4 * gwp$ch4), na.rm = T),
-    emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
+    emissions_metric_tons_co2e = co2_co2_equivalent / 1000000,
+    co2_co2_n2o_equivalent =
+      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = T),
+    emissions_metric_tons_co2e_n2o = co2_co2_n2o_equivalent / 1000000
   ) %>%
   select(nei_inventory_year, geoid, county_name, 
-         co2, emissions_metric_tons_co2e,
+         emissions_metric_tons_co2e, emissions_metric_tons_co2e_n2o,
          everything()) %>% 
   left_join(scc_combine)
 
@@ -81,11 +87,23 @@ epa_emismod_summary <- epa_emismod %>%
   mutate(
     co2_co2_equivalent =
       sum(co2, (ch4 * gwp$ch4), na.rm = T),
-    emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
+    emissions_metric_tons_co2e = co2_co2_equivalent / 1000000,
+    
+    co2_co2_n2o_equivalent =
+      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = T),
+    emissions_metric_tons_co2e_n2o = co2_co2_n2o_equivalent / 1000000
   ) %>%
-  select(calc_year, geoid, county_name, co2,
-         emissions_metric_tons_co2e, everything())
+  select(calc_year, geoid, county_name,
+         emissions_metric_tons_co2e, emissions_metric_tons_co2e_n2o,
+         everything())
 
+# the difference with and without n2o is at most 3%
+# and mostly effects trucks, buses, motorhomes (larger vehicles)
+epa_emismod_summary %>% 
+  group_by(calc_year, geoid, county_name, scc6_desc) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+            emissions_metric_tons_co2e_n2o = sum(emissions_metric_tons_co2e_n2o)) %>% 
+  mutate(pct_diff = (emissions_metric_tons_co2e_n2o -  emissions_metric_tons_co2e)/emissions_metric_tons_co2e) %>% View
 
 # compile EQUATES data  
 epa_equates_summary <- epa_equates %>% 
@@ -113,12 +131,16 @@ epa_equates_summary <- epa_equates %>%
          emissions_metric_tons_co2e, everything()) %>% 
   left_join(scc_combine)
 
+
 epa_equates_summary_interp <- epa_equates_summary %>% 
   # some of the vehicle/fuel type combinations only have PM2.5 and PM10
   # not any other pollutant types
   # remove these from the dataset
   filter(!is.na(emissions_metric_tons_co2e),
          !is.na(co2),
+         # CNG school buses, motor homes, and short haul trucks 
+         # have very low data availability (fewer than 3 observations)
+         # and so won't interpolate. 
          ! scc6 %in% c("220352",
                        "220343",
                        "220361",
@@ -184,6 +206,11 @@ epa_emissions_combine <- bind_rows(
            interpolation = "Original"),
   # use EQUATES for all other years
   epa_equates_summary_interp) %>% 
+  filter(! scc6 %in% c("220352",
+                       "220343",
+                       "220361",
+                       "220354")
+  ) %>% 
   ungroup() %>% 
   select(emissions_year, data_source, interpolation, geoid, county_name, scc6, 
          co2, n2o, ch4, emissions_metric_tons_co2e, 
@@ -208,7 +235,7 @@ epa_emissions_summary <- epa_emissions_combine %>%
 
 
 epa_emissions_summary_vehicle <- epa_emissions_combine %>% 
-  group_by(emissions_year, geoid, county_name, data_source, vehicle_type, alt_mode_truck) %>% 
+  group_by(emissions_year, geoid, county_name, data_source, vehicle_type) %>% 
   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
             # co2 = sum(co2),
             # ch4 = sum(ch4),
@@ -224,14 +251,14 @@ epa_emissions_summary_vehicle <- epa_emissions_combine %>%
 epa_emissions_summary_alt_mode_truck <- epa_emissions_combine %>% 
   group_by(emissions_year, geoid, county_name, data_source, alt_mode_truck) %>% 
   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
-            # co2 = sum(co2),
-            # ch4 = sum(ch4),
-            # n2o = sum(n2o),
-            # pm10_pri = sum(pm10_pri),
-            # pm25_pri = sum(pm25_pri),
-            # co = sum(co),
-            # no = sum(no),
-            # nox = sum(nox),
+            co2 = sum(co2),
+            ch4 = sum(ch4),
+            n2o = sum(n2o),
+            pm10_pri = sum(pm10_pri),
+            pm25_pri = sum(pm25_pri),
+            co = sum(co),
+            no = sum(no),
+            nox = sum(nox),
             .groups = "keep")
 
 # basic plots ---- 
