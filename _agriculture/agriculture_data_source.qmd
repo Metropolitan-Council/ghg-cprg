@@ -30,14 +30,14 @@ The USDA census is conducted once every five years (years ending in '2 and '7). 
 
 The SIT provides guidance on how to translate livestock counts, crop production, and fertilizer use into emission factors. A brief description of the major emitters in this sector is listed here, but please refer to the SIT documentation for more detail information.
 
-#Livestock
+# Livestock
 
-##Enteric fermentation
+## Enteric fermentation
 
 Enteric fermentation is methane emitted from livestock during digestion.
 
 $$\text{Emissions (Metric tons CO}_2 \text{ equivalency)} =  \text{Animal Population} \times  \text{Emission Factor (MT CH4/head)} \times \text{28 (GWP)}$$
-##Manure management
+## Manure management
 
 Manure in lagoons and holding facilities emits methane and nitrous oxide. Both gaseous emissions depend on the amount of volatile solids produced by livestock, which varies by livestock type. Adult cattle volatile solids are calculated using a variable based on heads of cattle; other livestock (including cattle calves) volatiles solids are calculated based on animal mass, which is itself calculated by multiplying number of livestock by the typical animal mass of that livestock type.
 
@@ -53,29 +53,29 @@ Nitrous oxide emissions are calculated as follows:
 $$\text{Emissions (Metric tons CO}_2 \text{ equivalency)} =  \sum_{i,j}(\text{Animal Population}_{i,j} \times  \text{Volatile solids per head (kg/head/yr)}_{i,j} \times \text{Percentage manure management}_{i,j} \times \text{Manure management emission factor}_{i,j} \times \text{273 (GWP)})$$
 where *i* represents livestock from the following categories: Dairy Cows, Beef Cows, Feedlot Cattle, Calves, Swine, Sheep, Goats, Chickens (Broilers, Pullets, and Layers), and Turkeys; and *j* is dry or wet manure management systems. In other words, total nitrous oxide emissions are the sum of manure managed in wet systems or dry systems, each of which have different emission factors.
 
-##Manure runoff
+## Manure runoff
 
 Manure from managed and unmanaged systems enter soil via application or runoff and cause additional nitrous oxide emissions.
 
 Indirect manure runoff emissions also occur when unvolatilized nitrogen runoff and later volatilizing on or off site. It is calculated as:
 
 $$\text{Emissions (Metric tons CO}_2 \text{ equivalency)} =  \sum_{i}(\text{Animal Population}_i \times  \text{Volatile solids per head (kg/head/yr)}_i \times \text{(1 - Volatilization Percent)} \times \text{Leaching Percent} \times \text{273 (GWP)})$$
-where 20% of 
+where EPA provides an estimate of 
 
 The SIT calculates emissions by multiplying each animal population (entered in the manure management worksheet) by the rate of N excreted by animal type, provided in kg/head/year for cattle (excluding calves), and kg/1,000 kg animal mass/day for calves and all other livestock (i.e., swine, poultry, sheep, goats, and horses). For cattle (excluding calves), animal population is multiplied by the K-nitrogen excretion rate (kg/head/year) for total K-nitrogen excreted. For calves and all other livestock, animal population is multiplied by the TAM (kg), the K-nitrogen excretion rate (kg/1,000 kg animal mass/day), and 365 days per year for total K-nitrogen excreted. Next, the total K-nitrogen is disaggregated into manure handled in managed systems, manure applied as daily spread, and manure deposited directly into pastures, ranges, or paddocks, based on default percentages obtained from the U.S. Inventory (EPA 2023a).
 Direct emissions from manure handled in management systems and applied as daily spread is multiplied by the volatilization factor (0.8) to obtain the total unvolatilized N. Additionally, for poultry an adjustment must be made for the small portion of waste used as animal feed. For all poultry categories (i.e., layers (hens, pullets, and chickens), broilers, and turkeys), the total K-nitrogen in managed systems is multiplied by 0.958, as it is assumed that 4.2 percent of all poultry manure is used as animal feed and not applied to agricultural soils (Carpenter 1992). The total unvolatilized N is multiplied by the emission factor for direct emissions of N2O (1.0 percent) to obtain the amount of emissions in N2O-N/yr.
 For animal waste deposited directly onto pasture, range, and paddock the total K-nitrogen is multiplied by the percent of manure deposited on pasture, range, and paddocks and the IPCC default emission factor for direct emissions (0.02 kg N2O-N/kg N excreted) (IPCC 1997, EPA 2023a) to obtain the amount of emissions in N2O-N/yr.
 
-#Cropland - 
+# Cropland - 
 
-##Plant residue
+## Plant residue
 
 Croplands emit nitrous oxide when via legumes (i.e. soybeans, alfalfa, beans) that fix atmospheric N2 in the soil, some of which is converted to nitrous oxide via soil biochemical processes. Additionally, non-legume crops have residues that are left on soils and breakdown into the soil, emitting further nitrous oxide.
 
-###Legumes: 
+### Legumes: 
 Emissions (MTCO2E) = Crop Production (MT) × Mass ratio (residue/crop) × Dry Matter Fraction × N content × Emission Factor (1.0%) × 44/28 (Ratio of N2O to N2O-N) 
 
-###Residues: 
+### Residues: 
 Emissions (MTCO2E) = Crop Production (MT) × Mass ratio (residue/crop) × Dry Matter Fraction × Fraction Residue Applied × N content × Emission Factor (1.0%) × 44/28 (Ratio of N2O to N2O-N)
 
 ## Fertilizer application
@@ -99,7 +99,7 @@ Some proportion of applied fertilized is leached into the soil and runs off into
 
 Small emission sources not currently accounted for: liming, indirect N2O from livestock/soils-animal sheet, residue burning, urea production.
 Calculation fixes - Fertilizer runoff (from ag soils-animals) sheet is currently calculated from total fertilizer but should only be from volatized, leading to a likely small over estimation.
-Coding fixes - update cropland emissions code to reference cleaner ag_constants_formatted RDS.
+
 
 
 
@@ -124,6 +124,12 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 - Variance, Z-Score, quantiles
 - Facet views by categorical variables
 
+## Data validation
+
+### Emissions vs. agricultural lands
+
+We would expect that counties with higher amounts of agricultural land would have higher emissions associated with crop production and likly livestock, though the latter may be more poorly predicted as area required for livestock can vary greatly depending on management.
+
 ```{r fig-cropland-area-emissions}
 #| fig-cap: "A scatter plot"
 #| out-width: "95%"
@@ -134,9 +140,10 @@ cropland_2021 <- county_agriculture %>%
   left_join(., county_emissions %>% 
               filter(sector == 'Agriculture',
                      year == 2021) %>% 
-              group_by(geog_name) %>% 
+              group_by(geog_name, category) %>% 
               summarize(ag_emissions = sum(emissions_metric_tons_co2e)),
             by = c("county" = "geog_name"))
+
 
 fig_cropland_area_emissions <- plot_ly(
   type = "scatter",
@@ -145,28 +152,69 @@ fig_cropland_area_emissions <- plot_ly(
   data = cropland_2021,
   y = ~ag_emissions,
   x = ~area,
+  color = ~category,  # Map colors by category
+  colors = unlist(category_colors),  # Convert list to vector of colors
   hovertemplate = ~ paste0(
     county, " County", "<br>",
     "Area: ", scales::comma(area), " square kilometers", "<br>",
-    "Emissions: ", round(ag_emissions, digits = 2), "  metric tons CO<sub>2</sub>e", "<br>",
+    "Emissions: ", round(ag_emissions, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
   marker = list(
-    color = colors$councilBlue,
     size = 18,
     line = list(
       color = "lightgray",
       width = 2
     )
   )
-) %>%
-  plotly_layout(
-    main_title = "Area of county cropland and county agricultural emissions",
-    x_title = "Area km<sup>2",
-    y_title = "Metric tons CO<sub>2</sub>e",
-    subtitle = ""
-  ) %>%
+)
+
+# Separate linear trend lines for each category
+for(cat in levels(cropland_2021$category)) {
+  cat_data <- cropland_2021 %>%
+    filter(category == cat, !is.na(area), !is.na(ag_emissions))  # Filter out NA values
+
+  # Only fit model if there's enough data
+  if(nrow(cat_data) > 1) {
+    # Fit the linear model
+    model <- lm(ag_emissions ~ area, data = cat_data)
+    
+    # Create a sequence of area values to plot the line
+    area_seq <- seq(min(cat_data$area), max(cat_data$area), length.out = 100)
+    
+    # Predict ag_emissions for the sequence of area values
+    emissions_pred <- predict(model, newdata = data.frame(area = area_seq))
+    
+    # Add the line of best fit
+    fig_cropland_area_emissions <- fig_cropland_area_emissions %>%
+      add_trace(
+        x = area_seq,
+        y = emissions_pred,
+        type = "scatter",
+        mode = "lines",  # Ensure mode is 'lines' for the trend line
+        line = list(
+          color = category_colors[[cat]],  # Use the same color as the points
+          dash = 'solid',
+          width = 2
+        ),
+        showlegend = FALSE,  # Hide trend line from legend
+        inherit = FALSE  # Prevent inheritance of other properties like hovertemplate
+      )
+  }
+}
+
+# Final layout and titles
+fig_cropland_area_emissions <- fig_cropland_area_emissions %>%
   layout(
+    title = list(
+      text = "Area of county cropland and county agricultural emissions"
+    ),
+    xaxis = list(
+      title = "Agricultural area km<sup>2</sup>"
+    ),
+    yaxis = list(
+      title = "Metric tons CO<sub>2</sub>e"
+    ),
     barmode = "stack",
     legend = list(
       traceorder = "reversed"
@@ -174,16 +222,92 @@ fig_cropland_area_emissions <- plot_ly(
   )
 
 fig_cropland_area_emissions
-  
+
 ```
 
+As expected, we see that livestock and crop emissions increases with area devoted to agriculture. There is potentially a non-linear relationship with livestock, with smaller agricultural areas less likely to have large livestock populations, making the fit more tenuous for these counties.
+
+### USDA cattle census vs annual surveys
+
+Most USDA data is available from a five year census; we interpolate 
+
+```{r fig-cattle-comparison}
+#| fig-cap: "A scatter plot"
+#| out-width: "95%"
+
+cattle_survey <- readRDS(file.path(here::here(), "_agriculture/data/usda_cattle_survey.RDS")) %>% 
+  mutate(county_name = if_else(county_name == "ST CROIX", 
+                               "St. Croix", 
+                               str_to_sentence(county_name)))
+cattle_census <- readRDS(file.path(here::here(), "_agriculture/data/usda_census_data.RDS")) %>% 
+  # calves were previous split to those in and out of feedlots
+  mutate(livestock_type = if_else(livestock_type == "Feedlot Cattle", 
+                                  "Calves", 
+                                  livestock_type)) %>% 
+  group_by(year, county_name, data_type, livestock_type) %>% 
+  summarize(head_count = sum(head_count))
+# Merging cattle_survey and cattle_census on the common columns
+cattle_merged <- cattle_survey %>%
+  left_join(cattle_census, by = c("year", "county_name", "livestock_type"), suffix = c("_survey", "_census"))
+
+min_val <- min(c(cattle_merged$head_count_survey, cattle_merged$head_count_census), na.rm = TRUE)
+max_val <- max(c(cattle_merged$head_count_survey, cattle_merged$head_count_census), na.rm = TRUE)
 
 
-### Limitations
+# Create the base plot
+cattle_comparison <- plot_ly(
+  type = "scatter",
+  mode = "markers",
+  source = "fig-cropland-area-emissions",
+  data = cattle_merged
+) %>%
+  add_trace(
+    x = ~head_count_survey, 
+    y = ~head_count_census, 
+    color = ~livestock_type,  # Color by livestock_type
+    symbol = ~data_type,      # Change symbol based on data_type
+    symbols = c('census' = 'circle', 'interpolated' = 'triangle-up'),  # Custom symbols for data_type
+    marker = list(size = 10),
+      hovertemplate = ~ paste0(
+    county_name, " County", "<br>",
+    "Census head count: ", scales::comma(head_count_census),"<br>",
+    "Survey head count: ", scales::comma(head_count_survey),"<br>",
+    "<extra></extra>"
+  )
+  ) %>%
+  layout(
+    title = "Comparison of Livestock Estimates: Survey vs Census",
+    xaxis = list(title = "Survey Head Count"),
+    yaxis = list(title = "Census Head Count"),
+    legend = list(title = list(text = "Livestock Type and Data Type"))
+  ) %>%
+  add_trace(
+    x = c(min_val, max_val), 
+    y = c(min_val, max_val), 
+    mode = 'lines',
+    line = list(dash = 'dash', color = 'black', width = 2),
+    showlegend = FALSE, 
+    name = "1:1 Line"
+  ) %>%
+  add_trace(
+    data = cattle_merged %>% filter(livestock_type == "Beef Cows"),
+    x = ~head_count_survey, 
+    y = ~head_count_census, 
+    color = ~livestock_type,  # Color by livestock_type
+    symbol = ~data_type,      # Change symbol based on data_type
+    symbols = c('census' = 'circle', 'interpolated' = 'triangle-up'),
+    marker = list(size = 10),
+    name = "Beef Cows"
+  )
 
-### Comparison with similar datasets
+cattle_comparison
 
-### Data dictionary
+```
 
-Table with detailed description of columns and definitions for each data table.
+Estimates from the census and surveys are reasonably close for dairy cows and beef cows, the former which are the biggest emitters. For calves, there is increasing disagreement between the survey and census at large head counts, with the census typically estimating lower head counts for both interpolated and actual census years. We will continue using the census head count data as it's error is likely less and it contains non-cattle animal counts.
+
+### Scaling to CTUs
+
+The ICLEI U.S. Community Protocol recommends, in the absence of CTU level livestock or crop production data, downscaling from county data using the ratio of agricultural land in the community to agricultural land in the county. We followed this approach for downscaling county level emissions. Future work may seek to downscale livestock counts and crop production directly, to allow more direct reduction measure estimations for various agricultural components (e.g. changes to cattle feed additives that may reduce enteric fermentation).
+
 
