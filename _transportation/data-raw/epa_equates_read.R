@@ -145,8 +145,7 @@ read_equates <- function(equates_path) {
 }
 
 library(furrr)
-# number of workers should match number of items in the
-# vector
+# number of workers should match number of items in the vector
 plan(strategy = future::multisession, workers = 12)
 
 equates <-
