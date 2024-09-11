@@ -25,12 +25,7 @@ epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUA
   filter(cprg_area == TRUE,
          emis_type == "RPD")
 
-epa_emismod <- 
-  bind_rows(readRDS("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi_19_22.RDS"),
-            readRDS("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi_15_18.RDS"),
-            # note that 2011 and 2014 do not report any GHG emissions, 
-            # only CO, NOX, PM10, PM25, VOC, and NO
-            readRDS("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi_11_14.RDS")) %>% 
+epa_emismod <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS") %>% 
   mutate(geoid = region_cd) %>%
   left_join(counties_light) %>%
   filter(cprg_area == TRUE,
@@ -180,8 +175,8 @@ epa_equates_summary_interp <- epa_equates_summary %>%
     nox = na_kalman(nox, smooth = TRUE, type = "trend"),
     pm10_pri = na_kalman(pm10_pri, smooth = TRUE, type = "trend"),
     pm25_pri = na_kalman(pm25_pri, smooth = TRUE, type = "trend"),
-    so2 = na_kalman(so2, smooth = TRUE, type = "trend"),
-    nh4 = na_kalman(nh4, smooth = TRUE, type = "trend"),
+    # so2 = na_kalman(so2, smooth = TRUE, type = "trend"),
+    # nh4 = na_kalman(nh4, smooth = TRUE, type = "trend"),
     
     # we got NAs in the data_source column when we ran complete()
     # if it is NA, then it means that row was interpolated!
@@ -306,7 +301,7 @@ epa_emissions_summary %>%
 
 
 epa_emissions_summary_alt_mode_truck %>% 
-  filter(county_name == "Hennepin") %>% 
+  filter(county_name == "Ramsey") %>% 
   group_by(alt_mode_truck) %>% 
   plot_ly(
     x = ~emissions_year,
@@ -324,7 +319,6 @@ epa_emissions_summary_alt_mode_truck %>%
       opacity = 0.7
     )) %>% 
   plotly_layout(
-    main_title = "Hennepin County",
     legend_title = "Vehicle type"
   )
 
@@ -336,26 +330,35 @@ pollutant_key <- epa_nei_onroad %>%
   mutate(pollutant = make_clean_names(pollutant_code),
          unit_of_measurement = "grams") %>% 
   bind_rows(
-    tibble(pollutant = "emissions_metric_tons_co2e",
-           pollutant_code = "emissions_metric_tons_co2e",
-           pollutant_desc = "Carbon dioxide equivalence, excluding nitrous oxide",
-           unit_of_measurement = "metric tons")
+    tibble(
+      pollutant = "emissions_metric_tons_co2e",
+      pollutant_code = "emissions_metric_tons_co2e",
+      pollutant_desc = "Carbon dioxide equivalence, excluding nitrous oxide",
+      unit_of_measurement = "metric tons")
+  ) %>% 
+  bind_rows(
+    tibble(
+      pollutant = "no",
+      pollutant_code = "NO",
+      pollutant_desc = "Nitric Oxide",
+      unit_of_measurement = "grams")
   ) %>% 
   mutate(
     # fill out HTML formatting for future use
     pollutant_format = case_when(
-    pollutant_code == "CH4" ~ "CH<sub>4</sub>",
-    pollutant_code == "CO" ~ "CO",
-    pollutant_code == "CO2" ~ "CO<sub>2</sub>",
-    pollutant_code == "N2O" ~ "N<sub>2</sub>",
-    pollutant_code == "NH3" ~ "NH<sub>3</sub>",
-    pollutant_code == "SO2" ~ "SO<sub>2</sub>",
-    pollutant_code == "NOX" ~ "NOx",
-    pollutant_code == "PM10-PRI" ~ "PM<sub>2.5</sub>",
-    pollutant_code == "PM25-PRI" ~ "PM<sub>10</sub>",
-    pollutant_code == "VOC" ~ "VOC",
-    pollutant_code == "emissions_metric_tons_co2e" ~ "CO<sub>2</sub>e" 
-  ))
+      pollutant_code == "CH4" ~ "CH<sub>4</sub>",
+      pollutant_code == "CO" ~ "CO",
+      pollutant_code == "CO2" ~ "CO<sub>2</sub>",
+      pollutant_code == "N2O" ~ "N<sub>2</sub>",
+      pollutant_code == "NH3" ~ "NH<sub>3</sub>",
+      pollutant_code == "SO2" ~ "SO<sub>2</sub>",
+      pollutant_code == "NOX" ~ "NOx",
+      pollutant_code == "NO" ~ "NO",
+      pollutant_code == "PM10-PRI" ~ "PM<sub>2.5</sub>",
+      pollutant_code == "PM25-PRI" ~ "PM<sub>10</sub>",
+      pollutant_code == "VOC" ~ "VOC",
+      pollutant_code == "emissions_metric_tons_co2e" ~ "CO<sub>2</sub>e" 
+    ))
 
 emissions_year_scc_index <- epa_emissions_combine %>% 
   select(emissions_year, scc6, scc6_desc, fuel_type, vehicle_type,
@@ -365,9 +368,9 @@ emissions_year_scc_index <- epa_emissions_combine %>%
 emissions_year_pollutant_index <- epa_emissions_combine %>% 
   select(emissions_year,data_source, interpolation, co2, ch4, n2o, 
          emissions_metric_tons_co2e, co,
-         no, nox, pm10_pri, pm25_pri, n) %>%
+         no, nox, pm10_pri, pm25_pri, nh3, so2) %>%
   pivot_longer(cols = c(co2, ch4, n2o, emissions_metric_tons_co2e, co,
-                        no, nox, pm10_pri, pm25_pri),
+                        no, nox, pm10_pri, pm25_pri, nh3, so2),
                names_to = "pollutant",
                values_drop_na = TRUE) %>% 
   select(-value) %>% 
@@ -383,5 +386,15 @@ epa_onroad_emissions_combine <- epa_emissions_combine %>%
   select(emissions_year,
          data_source, interpolation, geoid, county_name,
          scc6, scc6_desc, fuel_type, vehicle_type, alt_mode, 
-         alt_mode_truck, emissions_metric_tons_co2e, co2, ch4, n2o, 
-         co, no, nox, )
+         alt_mode_truck, 
+         emissions_metric_tons_co2e, co2, ch4, n2o, 
+         co, no, nox, so2, nh3, pm10_pri, pm25_pri) %>% 
+  group_by(emissions_year,
+           data_source, interpolation, geoid, county_name,
+           scc6, scc6_desc, fuel_type, vehicle_type, alt_mode, 
+           alt_mode_truck) %>% 
+  pivot_longer(cols = c(emissions_metric_tons_co2e, co2, ch4, n2o, 
+                        co, no, nox, so2, nh3, pm10_pri, pm25_pri),
+               names_to = "pollutant",
+               values_to = "emissions") %>% 
+  left_join(pollutant_key)
