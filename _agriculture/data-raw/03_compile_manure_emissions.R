@@ -235,7 +235,7 @@ manure_soils_emissions_county %>%
   filter(year == 2021) %>%
   pull(co2e) %>%
   sum()
-# 86113
+# 69983.24
 # for later: make test for this value
 
 ### compile all emissions for export
