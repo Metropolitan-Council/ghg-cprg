@@ -14,66 +14,10 @@
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
 
-if (!file.exists("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002/inputs/onroad_inv_diesel/diesel_MYR_2002_SMOKE_MOVES_MOVES3_AQstyle_06jan2021_v0.csv")) {
-  cli::cli_warn("These files are hefty")
-
-  download.file("https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2002_inventory_onroad_01jun2021.zip",
-    destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002_inventory_onroad_23jun2021.zip"
-  )
-
-
-  download.file("https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2005_inventory_onroad_23jun2021.zip",
-    destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2005_inventory_onroad_23jun2021.zip"
-  )
-
-  download.file("https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2008_inventory_onroad_11may2021.zip",
-    destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2008_inventory_onroad_11may2021.zip"
-  )
-
-  download.file("https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2011_inventory_onroad_01jun2021.zip",
-    destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2011_inventory_onroad_23jun2021.zip"
-  )
-
-  download.file("https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2014_inventory_onroad_01mar2021.zip",
-    destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2014_inventory_onroad_01mar2021.zip"
-  )
-
-  download.file("https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2017_inventory_onroad_inv_25jan2021.zip",
-    destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017_inventory_onroad_inv_25jan2021.zip"
-  )
-
-  unzip(
-    zipfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002_inventory_onroad_01jun2021.zip",
-    exdir = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/"
-  )
-
-  unzip(
-    zipfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2005_inventory_onroad_23jun2021.zip",
-    exdir = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/"
-  )
-
-  unzip(
-    zipfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2008_inventory_onroad_11may2021.zip",
-    exdir = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/"
-  )
-
-  unzip(
-    zipfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2011_inventory_onroad_20apr2021.zip",
-    exdir = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/"
-  )
-
-  unzip(
-    zipfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2014_inventory_onroad_01mar2021.zip",
-    exdir = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/"
-  )
-
-  unzip("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017_inventory_onroad_inv_25jan2021.zip",
-    exdir = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/"
-  )
-}
-
 read_equates <- function(equates_path) {
-  data.table::fread(equates_path,
+  
+  equates_table <- data.table::fread(
+    equates_path,
     skip = 19,
     header = FALSE,
     colClasses = "character",
@@ -121,13 +65,14 @@ read_equates <- function(equates_path) {
       ),
       poll %in% c(
         "CH4", "N2O",
-        "CO2", "NO", "NOX",
+        "CO2", "NO", "NOX", "SO2", "NH3",
         "HFC", "VOC", "O3", "CO",
         "PM10-PRI", "PM25-PRI"
       ),
       emis_type %in% c("RPD", "RPV")
     ) %>%
-    dplyr::mutate(dplyr::across(tidyr::ends_with("value"), as.numeric),
+    dplyr::mutate(
+      dplyr::across(tidyr::ends_with("value"), as.numeric),
       scc6 = stringr::str_sub(scc, 1, 6),
       equates_path = equates_path,
       emissions_short_tons = ann_value
@@ -142,37 +87,44 @@ read_equates <- function(equates_path) {
       -control_measures, -control_ids,
       -tidyr::starts_with(tolower(month.abb))
     )
+  
+  out_file_name <- stringr::str_split(equates_path, pattern = "/") %>%
+    last() %>% last() %>%
+    stringr::str_remove(".csv") %>% 
+    paste0(".RDS")
+  
+  saveRDS(equates_table, 
+          file.path(paste0("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/", 
+                           out_file_name)))
+  
+  rm(equates_table)
 }
 
 library(furrr)
 # number of workers should match number of items in the vector
 plan(strategy = future::multisession, workers = 12)
 
-equates <-
-  furrr::future_map(
-    c(
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002/inputs/onroad_inv_diesel/diesel_MYR_2002_SMOKE_MOVES_MOVES3_AQstyle_06jan2021_v0.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002/inputs/onroad_inv_gas/gas_MYR_2002_SMOKE_MOVES_MOVES3_AQstyle_28may2021_nf_v1.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2005/inputs/onroad_inv_diesel/diesel_MYR_2005_SMOKE_MOVES_MOVES3_AQstyle_13jan2021_v0.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2005/inputs/onroad_inv_gas/gas_MYR_2005_SMOKE_MOVES_MOVES3_AQstyle_13jan2021_v0.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2008/inputs/onroad_inv_diesel/diesel_MYR_2008_SMOKE_MOVES_MOVES3_AQstyle_30oct2020_v0.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2008/inputs/onroad_inv_gas/gas_MYR_2008_SMOKE_MOVES_MOVES3_AQstyle_30oct2020_v0.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2011/inputs/onroad_inv_diesel/diesel_MYR_2011_SMOKE_MOVES_MOVES3_AQstyle_20apr2021_nf_v1.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2011/inputs/onroad_inv_gas/gas_MYR_2011_SMOKE_MOVES_MOVES3_AQstyle_20apr2021_nf_v1.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2014/inputs/onroad_inv_diesel/diesel_MYR_2014_SMOKE_MOVES_MOVES3_AQstyle_23nov2020_v0.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2014/inputs/onroad_inv_gas/gas_MYR_2014_SMOKE_MOVES_MOVES3_AQstyle_23nov2020_v0.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_diesel/diesel_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_gas/gas_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv"
-    ),
-    read_equates
-  ) %>%
+furrr::future_map(
+  c(
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002/inputs/onroad_inv_diesel/diesel_MYR_2002_SMOKE_MOVES_MOVES3_AQstyle_06jan2021_v0.csv",
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002/inputs/onroad_inv_gas/gas_MYR_2002_SMOKE_MOVES_MOVES3_AQstyle_28may2021_nf_v1.csv",
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2005/inputs/onroad_inv_diesel/diesel_MYR_2005_SMOKE_MOVES_MOVES3_AQstyle_13jan2021_v0.csv",
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2005/inputs/onroad_inv_gas/gas_MYR_2005_SMOKE_MOVES_MOVES3_AQstyle_13jan2021_v0.csv",
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2008/inputs/onroad_inv_diesel/diesel_MYR_2008_SMOKE_MOVES_MOVES3_AQstyle_30oct2020_v0.csv",
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2008/inputs/onroad_inv_gas/gas_MYR_2008_SMOKE_MOVES_MOVES3_AQstyle_30oct2020_v0.csv",
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2011/inputs/onroad_inv_diesel/diesel_MYR_2011_SMOKE_MOVES_MOVES3_AQstyle_20apr2021_nf_v1.csv",
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2011/inputs/onroad_inv_gas/gas_MYR_2011_SMOKE_MOVES_MOVES3_AQstyle_20apr2021_nf_v1.csv",
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2014/inputs/onroad_inv_diesel/diesel_MYR_2014_SMOKE_MOVES_MOVES3_AQstyle_23nov2020_v0.csv",
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2014/inputs/onroad_inv_gas/gas_MYR_2014_SMOKE_MOVES_MOVES3_AQstyle_23nov2020_v0.csv",
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_diesel/diesel_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv",
+    "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_gas/gas_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv"
+  ),
+  read_equates
+) 
+
+
+equates <- purrr::map(list.files("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/", full.names = TRUE),
+                      readRDS) %>% 
   bind_rows()
 
-
-
-equates_cprg <- equates %>%
-  mutate(geoid = region_cd) %>%
-  left_join(counties_light)
-
 saveRDS(equates, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS")
-saveRDS(equates_cprg, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cprg.RDS")
