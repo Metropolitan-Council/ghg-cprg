@@ -84,14 +84,18 @@ read_emismod_nonroad <- function(equates_path) {
       ),
       poll %in% c(
         "CH4", "N2O",
-        "CO2", "NO", "NOX",
+        "CO2", "NO", "NOX", "SO2", "NH3",
         "HFC", "VOC", "O3", "CO",
         "PM10-PRI", "PM25-PRI"
       )
     ) %>%
-    dplyr::mutate(dplyr::across(tidyr::ends_with("value"), as.numeric),
+    dplyr::mutate(
+      dplyr::across(tidyr::ends_with("value"), as.numeric),
       scc6 = stringr::str_sub(scc, 1, 6),
-      emissions_short_tons = ann_value
+      equates_path = equates_path,
+      emissions_short_tons = ann_value,
+      file_name = stringr::str_split(equates_path, pattern = "/", 
+                                     simplify = TRUE)[,-1]
     ) %>%
     dplyr::select(
       -tribal_code, -census_tract_cd,
@@ -112,10 +116,10 @@ emis_modeled_nonroad <-
       "_transportation/data-raw/epa/air_emissions_modeling/2016/2016gf_16j/inputs/nonroad/2016fj_v2platform_nonroad_from_MOVES_aggSCC_27apr2021_nf_v1.csv",
       "_transportation/data-raw/epa/air_emissions_modeling/2017/2017gb_17j/inputs/nonroad/2017nei_nonroad_from_MOVES2014b_aggSCC_15apr2020_nf_v6.csv",
       "_transportation/data-raw/epa/air_emissions_modeling/2018/2018gg_18j/inputs/nonroad/2018platform_nonroad_from_MOVES_aggSCC_08oct2021_v2.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/2019/2019ge_cb6_19k 2/inputs/nonroad/2019ge_nonroad_from_MOVES_aggSCC_29oct2021_v1.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/2020/2020ha2_cb6_20k 2/inputs/nonroad/2020NEI_nonroad_from_MOVES_aggSCC_10may2023_v4.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k 3/inputs/nonroad/nonroad_ff10_2021hb_MOVES_ROC_AE6_10nov2023_nf_v2.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m 2/inputs/nonroad/nonroad_ff10_2022hc_MOVES_ROC_AE6_13mar2024_v1.csv"
+      "_transportation/data-raw/epa/air_emissions_modeling/2019/2019ge_cb6_19k/inputs/nonroad/2019ge_nonroad_from_MOVES_aggSCC_29oct2021_v1.csv",
+      "_transportation/data-raw/epa/air_emissions_modeling/2020/2020ha2_cb6_20k/inputs/nonroad/2020NEI_nonroad_from_MOVES_aggSCC_10may2023_v4.csv",
+      "_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k/inputs/nonroad/nonroad_ff10_2021hb_MOVES_ROC_AE6_10nov2023_nf_v2.csv",
+      "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/nonroad/nonroad_ff10_2022hc_MOVES_ROC_AE6_13mar2024_v1.csv"
     ),
     read_emismod_nonroad
   ) %>%

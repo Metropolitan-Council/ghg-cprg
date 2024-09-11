@@ -248,6 +248,7 @@ scc_equates <- readxl::read_xlsx(
 
 # scc combine -----
 # create a combined SCC index for use across all data sources
+# including NEI, EQUATES, and air emissions modeling platforms
 scc_combine <- scc_complete_road %>% 
   select(scc6, scc6_desc, scc6_desc_broad, scc6_desc_manual) %>% 
   unique() %>% 

@@ -78,16 +78,19 @@ read_airemis_modeling <- function(equates_path) {
       ),
       poll %in% c(
         "CH4", "N2O",
-        "CO2", "NO", "NOX",
+        "CO2", "NO", "NOX", "SO2", "NH3",
         "HFC", "VOC", "O3", "CO",
         "PM10-PRI", "PM25-PRI"
       ),
       emis_type %in% c("RPD", "RPV")
     ) %>%
-    dplyr::mutate(dplyr::across(tidyr::ends_with("value"), as.numeric),
+    dplyr::mutate(
+      dplyr::across(tidyr::ends_with("value"), as.numeric),
       scc6 = stringr::str_sub(scc, 1, 6),
       equates_path = equates_path,
-      emissions_short_tons = ann_value
+      emissions_short_tons = ann_value,
+      file_name = stringr::str_split(equates_path, pattern = "/", 
+                                     simplify = TRUE)[,-1]
     ) %>%
     dplyr::select(
       -tribal_code, -census_tract_cd,
@@ -112,7 +115,7 @@ emis_modeled_onroad_19_22 <-
     c(
       "_transportation/data-raw/epa/air_emissions_modeling/2019/2019ge_cb6_19k/inputs/onroad/2019ge_SMOKE_MOVES_MOVES3_AQ_fullHAP_30nov2021_v0.csv",
       "_transportation/data-raw/epa/air_emissions_modeling/2020/2020ha2_cb6_20k/inputs/onroad/2020ha2_onroad_SMOKE_MOVES_MOVES3_HAPCAP_style_30may2023_v0.csv",
-      "_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k 2/inputs/onroad/2021hb_onroad_SMOKE_MOVES_MOVES4_hapcap_04dec2023_v0.csv",
+      "_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k/inputs/onroad/2021hb_onroad_SMOKE_MOVES_MOVES4_hapcap_04dec2023_v0.csv",
       "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/onroad/2022hc_onroad_SMOKE_MOVES_MOVES4_forAQ_27jun2024_v0.csv"
     ),
     read_airemis_modeling
