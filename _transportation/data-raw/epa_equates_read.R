@@ -52,12 +52,17 @@ furrr::future_map(
     "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_diesel/diesel_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_gas/gas_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv"
   ),
-  read_equates
+  read_smoke_moves,
+  n_skip_rows = 19,
+  out_directory = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/"
 ) 
 
 
-equates <- purrr::map(list.files("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/", full.names = TRUE),
-                      readRDS) %>% 
+# read back in, combine, and save -----
+equates <- purrr::map(
+  list.files("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/", 
+             full.names = TRUE),
+  readRDS) %>% 
   bind_rows()
 
 saveRDS(equates, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS")
