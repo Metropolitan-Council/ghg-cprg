@@ -66,7 +66,7 @@ Next, navigate to the links provided in the epa_downloads. These are data summar
 
 When prompted to download, save each download its the corresponding folder. 
 
-```{r}
+```{r tbl-nei-locations}
 epa_downloads %>% 
   filter(group == "NEI",
          measurement == "emissions") %>% 
@@ -95,10 +95,29 @@ County-level data are only available at the continental US (CONUS) level; these 
 
 The data available for each platform year varies. Data is much more consistently available and standardized from 2014 onward. 
 
-Downloads for thsee
+
+```{r tbl-emismod-locations}
+epa_downloads %>% 
+  filter(
+    group == "emismod",
+         measurement == "emissions",
+    inventory_year >= 2011) %>% 
+  select(-file_name, -description) %>% 
+  arrange(category, inventory_year) %>% 
+  gt() %>% 
+  gt::opt_row_striping() %>% 
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>% 
+  gt::cols_align(align = "left")
+
+```
+
 
 #### EQUATES
 
 > EPA scientists have developed a set of modeled meteorology, emissions, air quality and pollutant deposition spanning the years 2002 through 2019. Modeled datasets cover the Conterminous U.S. (CONUS) at a 12km horizontal grid spacing and the Northern Hemisphere at a 108km grid spacing using the Weather Research and Forecasting (WRF) model version 4.1.1 for simulating weather conditions and EPA’s Community Multiscale Air Quality (CMAQ) model version 5.3.2 for air quality modeling. New hemispheric and North American emissions inventories were developed using, to the extent possible, consistent input data and methods across all years, including emissions from motor vehicles, fires, and oil and gas sources. - [EPA website](https://www.epa.gov/cmaq/equates)
+
 
 
