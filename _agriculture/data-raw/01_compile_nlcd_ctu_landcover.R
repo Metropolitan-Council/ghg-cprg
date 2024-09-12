@@ -4,7 +4,7 @@ source("R/cprg_colors.R")
 # load the county boundaries layer
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
-cprg_ctu_7 <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/bdry_mn_city_township_unorg/gpkg_bdry_mn_city_township_unorg.zip") %>%
+cprg_ctu_9 <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/bdry_mn_city_township_unorg/gpkg_bdry_mn_city_township_unorg.zip") %>%
   filter(COUNTY_NAM %in% c(cprg_county$county_name)) %>%
   mutate(
     STATEFP = "27",
@@ -25,10 +25,10 @@ cprg_ctu_7 <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/g
 
 
 # convert the counties vector to a terra object
-cprg_ctu_7 <- terra::vect(cprg_ctu_7)
+cprg_ctu_9 <- terra::vect(cprg_ctu_9)
 
 # define CRS for using with other layers
-crs_use <- terra::crs(cprg_ctu_7)
+crs_use <- terra::crs(cprg_ctu_9)
 
 # Create an empty dataframe to store the results
 nlcd_ctu <- data.frame(
@@ -51,7 +51,7 @@ lapply(start_year:end_year, function(year) {
 
   # Get the land cover type layer
   nlcd_lc <- try(FedData::get_nlcd(
-    template =cprg_ctu_7,
+    template =cprg_ctu_9,
     label = "city_name",
     year = year,
     dataset = "landcover" # downloads land cover classification data only
@@ -65,15 +65,15 @@ lapply(start_year:end_year, function(year) {
     return(NULL)
   }
 
-  nlcd_lc_mask <- terra::mask(nlcd_lc, cprg_ctu_7)
-  nlcd_lc_area <- terra::mask(cellSize(nlcd_lc_mask, unit = "km"), cprg_ctu_7)
-  ctu_raster <- terra::rasterize(cprg_ctu_7, nlcd_lc_mask, field = "CTU_NAME")
-  nlcd_lc_values <- terra::extract(nlcd_lc, cprg_ctu_7)
+  nlcd_lc_mask <- terra::mask(nlcd_lc, cprg_ctu_9)
+  nlcd_lc_area <- terra::mask(cellSize(nlcd_lc_mask, unit = "km"), cprg_ctu_9)
+  ctu_raster <- terra::rasterize(cprg_ctu_9, nlcd_lc_mask, field = "CTU_NAME")
+  nlcd_lc_values <- terra::extract(nlcd_lc, cprg_ctu_9)
   
 
-    area_values <- terra::extract(nlcd_lc_area, cprg_ctu_7)
-    lc_values <- terra::extract(nlcd_lc_mask, cprg_ctu_7)
-    ctu_values <- terra::extract(ctu_raster, cprg_ctu_7)
+    area_values <- terra::extract(nlcd_lc_area, cprg_ctu_9)
+    lc_values <- terra::extract(nlcd_lc_mask, cprg_ctu_9)
+    ctu_values <- terra::extract(ctu_raster, cprg_ctu_9)
 
     lc_df <- as_tibble(data.frame(
       ctu = ctu_values[, 2],
@@ -135,7 +135,7 @@ saveRDS(nlcd_ctu, "./_agriculture/data/nlcd_ctu_landcover.rds")
 saveRDS(nlcd_ctu_meta, "./_agriculture/data/nlcd_ctu_landcover_meta.rds")
 
 ### for now assigning COCTU to where majority of land area is manually
-ctu_co <- cprg_ctu_7 %>% 
+ctu_co <- cprg_ctu_9 %>% 
   filter(!(CTU_NAME == "Chanhassen" & COUNTY_NAM == "Hennepin"),
          !(CTU_NAME == "Blaine" & COUNTY_NAM == "Ramsey"),
          !(CTU_NAME == "Hastings" & COUNTY_NAM == "Washington"),
@@ -172,4 +172,3 @@ ctu_ag_proportion_meta <-
 
 saveRDS(ctu_ag_proportion, "./_agriculture/data/ctu_ag_proportion.rds")
 saveRDS(ctu_ag_proportion_meta, "./_agriculture/data/ctu_ag_proportion_meta.rds")
-
