@@ -2,53 +2,18 @@
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
 
-if (!file.exists("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byregions/2008NEIv3_onroad5.csv")) {
-  # 2020
-  download.file(
-    "https://gaftp.epa.gov/air/nei/2020/data_summaries/2020nei_onroad_byregion.zip",
-    "_transportation/data-raw/epa/nei/2020NEI/2020nei_onroad_byregion.zip"
-  )
-  unzip(
-    "_transportation/data-raw/epa/nei/2020NEI/2020nei_onroad_byregion.zip",
-    "_transportation/data-raw/epa/nei/2020NEI/2020nei_onroad_byregion/"
-  )
-
-  # 2017
-  download.file(
-    "https://gaftp.epa.gov/air/nei/2017/data_summaries/2017v1/2017neiApr_onroad_byregions.zip",
-    "_transportation/data-raw/epa/nei/2017NEI/2017neiApr_onroad_byregions.zip"
-  )
-  unzip(
-    zipfile = "_transportation/data-raw/epa/nei/2017NEI/2017neiApr_onroad_byregions.zip",
-    exdir = "_transportation/data-raw/epa/nei/2017NEI/2017neiApr_onroad_byregions/"
-  )
-
-  # 2014
-  download.file(
-    "https://gaftp.epa.gov/air/nei/2014/data_summaries/2014v2/2014neiv2_onroad_byregions.zip",
-    "_transportation/data-raw/epa/nei/2014NEI/2014neiv2_onroad_byregions.zip"
-  )
-  unzip("_transportation/data-raw/epa/nei/2014NEI/2014neiv2_onroad_byregions.zip",
-    exdir = "_transportation/data-raw/epa/nei/2014NEI/"
-  )
-
-  # 2011
-  download.file(
-    "https://gaftp.epa.gov/air/nei/2011/data_summaries/2011v2/2011neiv2_onroad_byregions.zip",
-    "_transportation/data-raw/epa/nei/2011NEI/2011neiv2_onroad_byregions.zip"
-  )
-  unzip(
-    zipfile = "_transportation/data-raw/epa/nei/2011NEI/2011neiv2_onroad_byregions.zip",
-    exdir = "_transportation/data-raw/epa/nei/2011NEI/2011neiv2_onroad_byregions"
-  )
-
-  # 2008
-  download.file("https://gaftp.epa.gov/air/nei/2008/data_summaries/2008neiv3_onroad_byregions.zip",
-    destfile = "_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byregions.zip"
-  )
-  unzip("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byregions.zip",
-    exdir = "_transportation/data-raw/epa/nei/2008NEI/"
-  )
+if(any(purrr::map(
+  c("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byregions/2008NEIv3_onroad5.csv",
+    "_transportation/data-raw/epa/nei/2011NEI/2011neiv2_onroad_byregions/onroad_5.csv",
+    "_transportation/data-raw/epa/nei/2014NEI/2014neiv2_onroad_byregions/onroad_5.csv",
+    "_transportation/data-raw/epa/nei/2017NEI/2017neiApr_onroad_byregions/onroad_5.csv",
+    "_transportation/data-raw/epa/nei/2020NEI/2020nei_onroad_byregion/onroad_5.csv"),
+  file_exists) == FALSE)){
+  cli::cli_abort(c(
+    "Required datasets unavailable",
+    "*" = "Consult documentation for more information",
+    "*" = "{.file _transportation/data-raw/epa/README_epa_downloads.html}"
+  ))
 }
 
 pollutants_keep <- c(
