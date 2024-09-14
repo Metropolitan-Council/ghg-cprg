@@ -3,6 +3,7 @@
 # EPA scientists have developed a set of modeled meteorology, emissions,
 # air quality and pollutant deposition spanning the years 2002 through 2019.
 
+tictoc::tic(msg = "EQUATES processing")
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
 source("_transportation/data-raw/_read_smoke_moves.R")
@@ -66,3 +67,5 @@ equates <- purrr::map(
   bind_rows()
 
 saveRDS(equates, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS")
+
+tictoc::toc()

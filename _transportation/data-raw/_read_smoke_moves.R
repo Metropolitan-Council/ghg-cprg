@@ -62,9 +62,9 @@ read_smoke_moves <- function(file_location,
         "CO2", "NO", "NOX", "SO2", "NH3",
         "HFC", "VOC", "O3", "CO",
         "PM10-PRI", "PM25-PRI"
-      ),
+      )
       # only fetch RatePerDistance, RatePerVehicle, or NA values
-      emis_type %in% c("RPD", "RPV", NA)
+      # emis_type %in% c("RPD", "RPV", NA)
     ) %>%
     dplyr::mutate(
       # convert all value columns to numeric
@@ -80,6 +80,7 @@ read_smoke_moves <- function(file_location,
       -tribal_code, -census_tract_cd,
       -shape_id, -country_cd,
       -date_updated, -data_set_id,
+      -current_cost,
       -cumulative_cost, -reg_codes,
       -ann_pct_red,
       -projection_factor, -calc_method,
