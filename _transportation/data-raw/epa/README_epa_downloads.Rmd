@@ -20,10 +20,11 @@ old.hooks <- fansi::set_knit_hooks(knitr::knit_hooks)
 source(file.path(here::here(), "R/_load_pkgs.R"))
 
 epa_downloads <- readxl::read_xlsx(file.path(here::here(), "_transportation/data-raw/epa/epa_downloads.xlsx")) %>% 
-    mutate(
+  mutate(
     direct_link = map(direct_link, ~ htmltools::a(href = .x, .x)) %>% 
       map(~ gt::html(as.character(.x)))) 
 
+epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/epa_onroad_source_set.RDS"))
 ```
 
 
@@ -34,6 +35,23 @@ Altogether, this folder comes to nearly 200 GB. If you plan to replicate these d
 All download links and essential description information is documented in [epa_downloads.xlsx](_transportation/data-raw/epa/epa_downloads.xlsx)
 
 Keep in mind that URLs are relatively fragile and may change at any time. 
+
+All datasets are processed from their unzipped locations in processing scripts. At the top of each script, there is a helper that looks for all the input datasets necessary. Ensure you have all the appropriate downloads unzipped and in the correct locations and run the scripts.
+
+Summary of inputs and outputs
+
+```{r}
+epa_onroad_source_set %>% 
+  arrange(data_source, emissions_year) %>% 
+  gt() %>% 
+  gt::opt_row_striping() %>% 
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>% 
+  gt::cols_align(align = "left")
+```
+
 
 ## Folder structure
 
@@ -52,10 +70,10 @@ NEI should only be compared directly for years 2011 onward. Between 2008 and 201
 
 Within the epa/ folder, create folders for each NEI release year: 2008, 2011, 2014, 2017, and 2020.
 
+
 ```{r}
 fs::dir_tree(
   "./nei",
-  # path_common("../../../_transportation/data-raw/epa/nei/"),
   type = "directory",
   recurse = 0
 )
@@ -66,12 +84,20 @@ Next, navigate to the links provided in the epa_downloads. These are data summar
 
 When prompted to download, save each download its the corresponding folder. 
 
-```{r tbl-nei-locations}
+NEI data are then compiled in a three locations 
+
+- [epa_nei_onroad_emissions.R](../epa_nei_onroad_emissions.R)
+- [epa_nei_nonroad_emissions.R](../epa_nei_nonroad_emissions.R)
+- [epa_nei_smoke_ff.R](../epa_nei_smoke_ff.R)
+
+
+```{r tbl-nei-locations, tab.cap="NEI download direct URLs"}
 epa_downloads %>% 
   filter(group == "NEI",
-         measurement == "emissions") %>% 
+         measurement %in% c("emissions",
+                            "smoke_flat_file")) %>% 
   select(-file_name, -description) %>% 
-  arrange(category, inventory_year) %>% 
+  arrange(category, measurement, inventory_year) %>% 
   gt() %>% 
   gt::opt_row_striping() %>% 
   tab_style(
@@ -91,16 +117,28 @@ The organizing body for air emissions modeling is [Community Modeling and Analys
 
 County-level data are only available at the continental US (CONUS) level; these datasets include all counties in the US and are very large. 
 
-#### Air emissions modeling platforms
-
 The data available for each platform year varies. Data is much more consistently available and standardized from 2014 onward. 
+
+Create a folder for each year (2011, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022v1), plus EQUATES and air_emissions_modeling_mn_wi.
+
+Air emissions modeling data are compiled in two locations 
+
+- [epa_air_emissions_modeling_onroad.R](../epa_air_emissions_modeling_onroad.R)
+- [epa_air_emissions_modeling_nonroad.R](../epa_air_emissions_modeling_nonroad.R)
+
+
+```{r}
+fs::dir_tree("./air_emissions_modeling/",
+             type = "directory",
+             recurse = 0)
+```
 
 
 ```{r tbl-emismod-locations}
 epa_downloads %>% 
   filter(
     group == "emismod",
-         measurement == "emissions",
+    measurement == "emissions",
     inventory_year >= 2011) %>% 
   select(-file_name, -description) %>% 
   arrange(category, inventory_year) %>% 
@@ -116,8 +154,35 @@ epa_downloads %>%
 
 
 #### EQUATES
+ 
+EQUATES only has onroad data from 2002 to 2017.
 
-> EPA scientists have developed a set of modeled meteorology, emissions, air quality and pollutant deposition spanning the years 2002 through 2019. Modeled datasets cover the Conterminous U.S. (CONUS) at a 12km horizontal grid spacing and the Northern Hemisphere at a 108km grid spacing using the Weather Research and Forecasting (WRF) model version 4.1.1 for simulating weather conditions and EPA’s Community Multiscale Air Quality (CMAQ) model version 5.3.2 for air quality modeling. New hemispheric and North American emissions inventories were developed using, to the extent possible, consistent input data and methods across all years, including emissions from motor vehicles, fires, and oil and gas sources. - [EPA website](https://www.epa.gov/cmaq/equates)
+Within /air_emissions_modeling/EQUATES, create a folder for each EQUATES year (2002, 2005, 2008, 2011, 2014, 2017) with the prefix "EQUATES_", plus one additional folder named "EQUATES_MN_WI".
+
+Download the data for each of the given links and save in the appropriate location. 
+
+EQUATES is processed in [epa_equates_read.R](./../epa_equates_read.R)
 
 
+```{r}
+fs::dir_tree("./air_emissions_modeling/EQUATES/",
+             type = "directory",
+             recurse = 0)
+```
 
+```{r tbl-equates-locations}
+epa_downloads %>% 
+  filter(
+    group == "EQUATES",
+    measurement == "emissions") %>% 
+  select(-file_name, -description) %>% 
+  arrange(category, inventory_year) %>% 
+  gt() %>% 
+  gt::opt_row_striping() %>% 
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>% 
+  gt::cols_align(align = "left")
+
+```

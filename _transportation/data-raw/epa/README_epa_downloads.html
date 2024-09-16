@@ -363,49 +363,26 @@ accordingly.</p>
 documented in <a href="_transportation/data-raw/epa/epa_downloads.xlsx">epa_downloads.xlsx</a></p>
 <p>Keep in mind that URLs are relatively fragile and may change at any
 time.</p>
-<div id="folder-structure" class="section level2">
-<h2>Folder structure</h2>
-<p>Note that to save space, some unzipped data irrelevant to our region
-(like EPA regions outside of MN and WI, Texas, and California datasets)
-have been deleted.</p>
-<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #0000BB; font-weight: bold;">.</span>
-#&gt; ├── <span style="color: #0000BB; font-weight: bold;">air_emissions_modeling</span>
-#&gt; └── <span style="color: #0000BB; font-weight: bold;">nei</span>
-</CODE></PRE>
-<div id="nei" class="section level3">
-<h3>nei</h3>
-<p>The NEI is available from the EPA in multiple places at different
-aggregation levels</p>
-<p>NEI should only be compared directly for years 2011 onward. Between
-2008 and 2011, there were significant changes in the underlying source
-classification codes (SCCs).</p>
-<p>Within the epa/ folder, create folders for each NEI release year:
-2008, 2011, 2014, 2017, and 2020.</p>
-<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #0000BB; font-weight: bold;">./nei</span>
-#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2008NEI</span>
-#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2011NEI</span>
-#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2014NEI</span>
-#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2017NEI</span>
-#&gt; └── <span style="color: #0000BB; font-weight: bold;">2020NEI</span>
-</CODE></PRE>
-<p>Next, navigate to the links provided in the epa_downloads. These are
-data summaries broken out by on-road and non-road by EPA region.</p>
-<p>When prompted to download, save each download its the corresponding
-folder.</p>
-<div id="buakxuysym" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#buakxuysym table {
+<p>All datasets are processed from their unzipped locations in
+processing scripts. At the top of each script, there is a helper that
+looks for all the input datasets necessary. Ensure you have all the
+appropriate downloads unzipped and in the correct locations and run the
+scripts.</p>
+<p>Summary of inputs and outputs</p>
+<div id="zwnrzmxqzk" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#zwnrzmxqzk table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#buakxuysym thead, #buakxuysym tbody, #buakxuysym tfoot, #buakxuysym tr, #buakxuysym td, #buakxuysym th {
+#zwnrzmxqzk thead, #zwnrzmxqzk tbody, #zwnrzmxqzk tfoot, #zwnrzmxqzk tr, #zwnrzmxqzk td, #zwnrzmxqzk th {
 border-style: none;
 }
-#buakxuysym p {
+#zwnrzmxqzk p {
 margin: 0;
 padding: 0;
 }
-#buakxuysym .gt_table {
+#zwnrzmxqzk .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -430,11 +407,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#buakxuysym .gt_caption {
+#zwnrzmxqzk .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#buakxuysym .gt_title {
+#zwnrzmxqzk .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -445,7 +422,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#buakxuysym .gt_subtitle {
+#zwnrzmxqzk .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -456,7 +433,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#buakxuysym .gt_heading {
+#zwnrzmxqzk .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -467,12 +444,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#buakxuysym .gt_bottom_border {
+#zwnrzmxqzk .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#buakxuysym .gt_col_headings {
+#zwnrzmxqzk .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -486,7 +463,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#buakxuysym .gt_col_heading {
+#zwnrzmxqzk .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -505,7 +482,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#buakxuysym .gt_column_spanner_outer {
+#zwnrzmxqzk .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -516,13 +493,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#buakxuysym .gt_column_spanner_outer:first-child {
+#zwnrzmxqzk .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#buakxuysym .gt_column_spanner_outer:last-child {
+#zwnrzmxqzk .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#buakxuysym .gt_column_spanner {
+#zwnrzmxqzk .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -533,10 +510,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#buakxuysym .gt_spanner_row {
+#zwnrzmxqzk .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#buakxuysym .gt_group_heading {
+#zwnrzmxqzk .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -561,7 +538,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#buakxuysym .gt_empty_group_heading {
+#zwnrzmxqzk .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -575,13 +552,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#buakxuysym .gt_from_md > :first-child {
+#zwnrzmxqzk .gt_from_md > :first-child {
 margin-top: 0;
 }
-#buakxuysym .gt_from_md > :last-child {
+#zwnrzmxqzk .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#buakxuysym .gt_row {
+#zwnrzmxqzk .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -599,7 +576,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#buakxuysym .gt_stub {
+#zwnrzmxqzk .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -611,7 +588,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#buakxuysym .gt_stub_row_group {
+#zwnrzmxqzk .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -624,13 +601,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#buakxuysym .gt_row_group_first td {
+#zwnrzmxqzk .gt_row_group_first td {
 border-top-width: 2px;
 }
-#buakxuysym .gt_row_group_first th {
+#zwnrzmxqzk .gt_row_group_first th {
 border-top-width: 2px;
 }
-#buakxuysym .gt_summary_row {
+#zwnrzmxqzk .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -639,14 +616,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#buakxuysym .gt_first_summary_row {
+#zwnrzmxqzk .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#buakxuysym .gt_first_summary_row.thick {
+#zwnrzmxqzk .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#buakxuysym .gt_last_summary_row {
+#zwnrzmxqzk .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -655,7 +632,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#buakxuysym .gt_grand_summary_row {
+#zwnrzmxqzk .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -664,7 +641,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#buakxuysym .gt_first_grand_summary_row {
+#zwnrzmxqzk .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -673,7 +650,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#buakxuysym .gt_last_grand_summary_row_top {
+#zwnrzmxqzk .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -682,10 +659,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#buakxuysym .gt_striped {
+#zwnrzmxqzk .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#buakxuysym .gt_table_body {
+#zwnrzmxqzk .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -693,7 +670,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#buakxuysym .gt_footnotes {
+#zwnrzmxqzk .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -706,7 +683,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#buakxuysym .gt_footnote {
+#zwnrzmxqzk .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -714,7 +691,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#buakxuysym .gt_sourcenotes {
+#zwnrzmxqzk .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -727,57 +704,628 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#buakxuysym .gt_sourcenote {
+#zwnrzmxqzk .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#buakxuysym .gt_left {
+#zwnrzmxqzk .gt_left {
 text-align: left;
 }
-#buakxuysym .gt_center {
+#zwnrzmxqzk .gt_center {
 text-align: center;
 }
-#buakxuysym .gt_right {
+#zwnrzmxqzk .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#buakxuysym .gt_font_normal {
+#zwnrzmxqzk .gt_font_normal {
 font-weight: normal;
 }
-#buakxuysym .gt_font_bold {
+#zwnrzmxqzk .gt_font_bold {
 font-weight: bold;
 }
-#buakxuysym .gt_font_italic {
+#zwnrzmxqzk .gt_font_italic {
 font-style: italic;
 }
-#buakxuysym .gt_super {
+#zwnrzmxqzk .gt_super {
 font-size: 65%;
 }
-#buakxuysym .gt_footnote_marks {
+#zwnrzmxqzk .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#buakxuysym .gt_asterisk {
+#zwnrzmxqzk .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#buakxuysym .gt_indent_1 {
+#zwnrzmxqzk .gt_indent_1 {
 text-indent: 5px;
 }
-#buakxuysym .gt_indent_2 {
+#zwnrzmxqzk .gt_indent_2 {
 text-indent: 10px;
 }
-#buakxuysym .gt_indent_3 {
+#zwnrzmxqzk .gt_indent_3 {
 text-indent: 15px;
 }
-#buakxuysym .gt_indent_4 {
+#zwnrzmxqzk .gt_indent_4 {
 text-indent: 20px;
 }
-#buakxuysym .gt_indent_5 {
+#zwnrzmxqzk .gt_indent_5 {
+text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="data_source">data_source</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="dataset">dataset</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="emissions_year">emissions_year</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="process_source">process_source</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="file_location">file_location</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="data_source" class="gt_row gt_left">Air Emissions Modeling</td>
+<td headers="dataset" class="gt_row gt_left">onroad_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2011</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_air_emissions_modeling_onroad.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/2011/2011el_cb6v2_v6_11g/inputs/onroad/2011el_onroad_SMOKE_MOVES_MOVES2014a_forOTAQ_31aug2016_v1_part1.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">Air Emissions Modeling</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">onroad_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2014</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_air_emissions_modeling_onroad.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/2014/2014fd_cb6_14j/inputs/onroad/2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_AQstyle_06feb2018_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">Air Emissions Modeling</td>
+<td headers="dataset" class="gt_row gt_left">onroad_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2015</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_air_emissions_modeling_onroad.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/2015/2015fd_cb6_15j/inputs/onroad/2015fd_onroad_SMOKE_MOVES_MOVES2014a_AQstyle_28sep2018_nf_v1.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">Air Emissions Modeling</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">onroad_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2016</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_air_emissions_modeling_onroad.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/2016/2016gf_16j/inputs/onroad/2016gf_onroad_SMOKE_MOVES_MOVES3_30jun2022_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">Air Emissions Modeling</td>
+<td headers="dataset" class="gt_row gt_left">onroad_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2017</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_air_emissions_modeling_onroad.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/2017/2017gb_17j/inputs/onroad/2017gb_nata_onroad_SMOKE_MOVES_NATAstyle_14may2020_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">Air Emissions Modeling</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">onroad_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2018</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_air_emissions_modeling_onroad.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/2018/2018gc_cb6_18j/inputs/onroad/2018gc_SMOKE_MOVES_MOVES3_AQ_fullHAP_29sep2021_v1.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">Air Emissions Modeling</td>
+<td headers="dataset" class="gt_row gt_left">onroad_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2019</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_air_emissions_modeling_onroad.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/2019/2019ge_cb6_19k/inputs/onroad/2019ge_SMOKE_MOVES_MOVES3_AQ_fullHAP_30nov2021_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">Air Emissions Modeling</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">onroad_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2020</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_air_emissions_modeling_onroad.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/2020/2020ha2_cb6_20k/inputs/onroad/2020ha2_onroad_SMOKE_MOVES_MOVES3_HAPCAP_style_30may2023_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">Air Emissions Modeling</td>
+<td headers="dataset" class="gt_row gt_left">onroad_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2021</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_air_emissions_modeling_onroad.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k/inputs/onroad/2021hb_onroad_SMOKE_MOVES_MOVES4_hapcap_04dec2023_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">Air Emissions Modeling</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">onroad_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2022</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_air_emissions_modeling_onroad.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/onroad/2022hc_onroad_SMOKE_MOVES_MOVES4_forAQ_27jun2024_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2002</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002/inputs/onroad_inv_diesel/diesel_MYR_2002_SMOKE_MOVES_MOVES3_AQstyle_06jan2021_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2002</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002/inputs/onroad_inv_gas/gas_MYR_2002_SMOKE_MOVES_MOVES3_AQstyle_28may2021_nf_v1.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2005</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2005/inputs/onroad_inv_diesel/diesel_MYR_2005_SMOKE_MOVES_MOVES3_AQstyle_13jan2021_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2005</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2005/inputs/onroad_inv_gas/gas_MYR_2005_SMOKE_MOVES_MOVES3_AQstyle_13jan2021_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2008</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2008/inputs/onroad_inv_diesel/diesel_MYR_2008_SMOKE_MOVES_MOVES3_AQstyle_30oct2020_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2008</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2008/inputs/onroad_inv_gas/gas_MYR_2008_SMOKE_MOVES_MOVES3_AQstyle_30oct2020_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2011</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2011/inputs/onroad_inv_diesel/diesel_MYR_2011_SMOKE_MOVES_MOVES3_AQstyle_20apr2021_nf_v1.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2011</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2011/inputs/onroad_inv_gas/gas_MYR_2011_SMOKE_MOVES_MOVES3_AQstyle_20apr2021_nf_v1.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2014</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2014/inputs/onroad_inv_diesel/diesel_MYR_2014_SMOKE_MOVES_MOVES3_AQstyle_23nov2020_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2014</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2014/inputs/onroad_inv_gas/gas_MYR_2014_SMOKE_MOVES_MOVES3_AQstyle_23nov2020_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2017</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_diesel/diesel_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">EQUATES</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">equates_mn_wi.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2017</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_equates_read.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_gas/gas_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">National Emissions Inventory</td>
+<td headers="dataset" class="gt_row gt_left">epa_nei_smoke_ff.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2014</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_nei_smoke_ff.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/nei/2014NEI/SmokeFlatFile_ONROAD_20160910.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">National Emissions Inventory</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">epa_nei_smoke_ff.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2017</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_nei_smoke_ff.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/nei/2017NEI/home/callen05/tmp/2017NEI_onroad_SMOKE_MOVES_NEIstyle_09mar2020_FIPS_27.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left">National Emissions Inventory</td>
+<td headers="dataset" class="gt_row gt_left">epa_nei_smoke_ff.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left">2017</td>
+<td headers="process_source" class="gt_row gt_left">_transportation/data-raw/epa_nei_smoke_ff.R</td>
+<td headers="file_location" class="gt_row gt_left">_transportation/data-raw/epa/nei/2017NEI/home 2/callen05/tmp/2017NEI_onroad_SMOKE_MOVES_NEIstyle_09mar2020_FIPS_55.csv</td></tr>
+    <tr><td headers="data_source" class="gt_row gt_left gt_striped">National Emissions Inventory</td>
+<td headers="dataset" class="gt_row gt_left gt_striped">epa_nei_smoke_ff.RDS</td>
+<td headers="emissions_year" class="gt_row gt_left gt_striped">2020</td>
+<td headers="process_source" class="gt_row gt_left gt_striped">_transportation/data-raw/epa_nei_smoke_ff.R</td>
+<td headers="file_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/nei/2020NEI/SmokeFlatFile_ONROAD_20230330.csv</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+<div id="folder-structure" class="section level2">
+<h2>Folder structure</h2>
+<p>Note that to save space, some unzipped data irrelevant to our region
+(like EPA regions outside of MN and WI, Texas, and California datasets)
+have been deleted.</p>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #0000BB; font-weight: bold;">.</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">air_emissions_modeling</span>
+#&gt; └── <span style="color: #0000BB; font-weight: bold;">nei</span>
+</CODE></PRE>
+<div id="nei" class="section level3">
+<h3>nei</h3>
+<p>The NEI is available from the EPA in multiple places at different
+aggregation levels</p>
+<p>NEI should only be compared directly for years 2011 onward. Between
+2008 and 2011, there were significant changes in the underlying source
+classification codes (SCCs).</p>
+<p>Within the epa/ folder, create folders for each NEI release year:
+2008, 2011, 2014, 2017, and 2020.</p>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #0000BB; font-weight: bold;">./nei</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2008NEI</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2011NEI</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2014NEI</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2017NEI</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2020NEI</span>
+#&gt; └── <span style="color: #0000BB; font-weight: bold;">SmokeFlatFile_MN_WI</span>
+</CODE></PRE>
+<p>Next, navigate to the links provided in the epa_downloads. These are
+data summaries broken out by on-road and non-road by EPA region.</p>
+<p>When prompted to download, save each download its the corresponding
+folder.</p>
+<p>NEI data are then compiled in a three locations</p>
+<ul>
+<li><a href="../epa_nei_onroad_emissions.R">epa_nei_onroad_emissions.R</a></li>
+<li><a href="../epa_nei_nonroad_emissions.R">epa_nei_nonroad_emissions.R</a></li>
+<li><a href="../epa_nei_smoke_ff.R">epa_nei_smoke_ff.R</a></li>
+</ul>
+<div id="chvxtkcxln" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#chvxtkcxln table {
+font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+#chvxtkcxln thead, #chvxtkcxln tbody, #chvxtkcxln tfoot, #chvxtkcxln tr, #chvxtkcxln td, #chvxtkcxln th {
+border-style: none;
+}
+#chvxtkcxln p {
+margin: 0;
+padding: 0;
+}
+#chvxtkcxln .gt_table {
+display: table;
+border-collapse: collapse;
+line-height: normal;
+margin-left: auto;
+margin-right: auto;
+color: #333333;
+font-size: 16px;
+font-weight: normal;
+font-style: normal;
+background-color: #FFFFFF;
+width: auto;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #A8A8A8;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #A8A8A8;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+}
+#chvxtkcxln .gt_caption {
+padding-top: 4px;
+padding-bottom: 4px;
+}
+#chvxtkcxln .gt_title {
+color: #333333;
+font-size: 125%;
+font-weight: initial;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-color: #FFFFFF;
+border-bottom-width: 0;
+}
+#chvxtkcxln .gt_subtitle {
+color: #333333;
+font-size: 85%;
+font-weight: initial;
+padding-top: 3px;
+padding-bottom: 5px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-color: #FFFFFF;
+border-top-width: 0;
+}
+#chvxtkcxln .gt_heading {
+background-color: #FFFFFF;
+text-align: center;
+border-bottom-color: #FFFFFF;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#chvxtkcxln .gt_bottom_border {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#chvxtkcxln .gt_col_headings {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#chvxtkcxln .gt_col_heading {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 6px;
+padding-left: 5px;
+padding-right: 5px;
+overflow-x: hidden;
+}
+#chvxtkcxln .gt_column_spanner_outer {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+padding-top: 0;
+padding-bottom: 0;
+padding-left: 4px;
+padding-right: 4px;
+}
+#chvxtkcxln .gt_column_spanner_outer:first-child {
+padding-left: 0;
+}
+#chvxtkcxln .gt_column_spanner_outer:last-child {
+padding-right: 0;
+}
+#chvxtkcxln .gt_column_spanner {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 5px;
+overflow-x: hidden;
+display: inline-block;
+width: 100%;
+}
+#chvxtkcxln .gt_spanner_row {
+border-bottom-style: hidden;
+}
+#chvxtkcxln .gt_group_heading {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+text-align: left;
+}
+#chvxtkcxln .gt_empty_group_heading {
+padding: 0.5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: middle;
+}
+#chvxtkcxln .gt_from_md > :first-child {
+margin-top: 0;
+}
+#chvxtkcxln .gt_from_md > :last-child {
+margin-bottom: 0;
+}
+#chvxtkcxln .gt_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+margin: 10px;
+border-top-style: solid;
+border-top-width: 1px;
+border-top-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+overflow-x: hidden;
+}
+#chvxtkcxln .gt_stub {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+}
+#chvxtkcxln .gt_stub_row_group {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+vertical-align: top;
+}
+#chvxtkcxln .gt_row_group_first td {
+border-top-width: 2px;
+}
+#chvxtkcxln .gt_row_group_first th {
+border-top-width: 2px;
+}
+#chvxtkcxln .gt_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#chvxtkcxln .gt_first_summary_row {
+border-top-style: solid;
+border-top-color: #D3D3D3;
+}
+#chvxtkcxln .gt_first_summary_row.thick {
+border-top-width: 2px;
+}
+#chvxtkcxln .gt_last_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#chvxtkcxln .gt_grand_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#chvxtkcxln .gt_first_grand_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-style: double;
+border-top-width: 6px;
+border-top-color: #D3D3D3;
+}
+#chvxtkcxln .gt_last_grand_summary_row_top {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: double;
+border-bottom-width: 6px;
+border-bottom-color: #D3D3D3;
+}
+#chvxtkcxln .gt_striped {
+background-color: rgba(128, 128, 128, 0.05);
+}
+#chvxtkcxln .gt_table_body {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#chvxtkcxln .gt_footnotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#chvxtkcxln .gt_footnote {
+margin: 0px;
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#chvxtkcxln .gt_sourcenotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#chvxtkcxln .gt_sourcenote {
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#chvxtkcxln .gt_left {
+text-align: left;
+}
+#chvxtkcxln .gt_center {
+text-align: center;
+}
+#chvxtkcxln .gt_right {
+text-align: right;
+font-variant-numeric: tabular-nums;
+}
+#chvxtkcxln .gt_font_normal {
+font-weight: normal;
+}
+#chvxtkcxln .gt_font_bold {
+font-weight: bold;
+}
+#chvxtkcxln .gt_font_italic {
+font-style: italic;
+}
+#chvxtkcxln .gt_super {
+font-size: 65%;
+}
+#chvxtkcxln .gt_footnote_marks {
+font-size: 75%;
+vertical-align: 0.4em;
+position: initial;
+}
+#chvxtkcxln .gt_asterisk {
+font-size: 100%;
+vertical-align: 0;
+}
+#chvxtkcxln .gt_indent_1 {
+text-indent: 5px;
+}
+#chvxtkcxln .gt_indent_2 {
+text-indent: 10px;
+}
+#chvxtkcxln .gt_indent_3 {
+text-indent: 15px;
+}
+#chvxtkcxln .gt_indent_4 {
+text-indent: 20px;
+}
+#chvxtkcxln .gt_indent_5 {
 text-indent: 25px;
 }
 </style>
@@ -831,39 +1379,116 @@ text-indent: 25px;
 <td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/air/nei/2020/data_summaries/2020nei_nonroad_byregion.zip">https://gaftp.epa.gov/air/nei/2020/data_summaries/2020nei_nonroad_byregion.zip</a></td></tr>
     <tr><td headers="group" class="gt_row gt_left gt_striped">NEI</td>
 <td headers="inventory_year" class="gt_row gt_left gt_striped">2008</td>
+<td headers="measurement" class="gt_row gt_left gt_striped">smoke_flat_file</td>
+<td headers="category" class="gt_row gt_left gt_striped">nonroad</td>
+<td headers="slug" class="gt_row gt_left gt_striped">2008NEIv3</td>
+<td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/nei/2008NEI</td>
+<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/Air/nei/2008/flat_files/2008NEIv3_NONROAD_20130224.zip">https://gaftp.epa.gov/Air/nei/2008/flat_files/2008NEIv3_NONROAD_20130224.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left">NEI</td>
+<td headers="inventory_year" class="gt_row gt_left">2011</td>
+<td headers="measurement" class="gt_row gt_left">smoke_flat_file</td>
+<td headers="category" class="gt_row gt_left">nonroad</td>
+<td headers="slug" class="gt_row gt_left">Unavailable</td>
+<td headers="download_location" class="gt_row gt_left">_transportation/data-raw/epa/nei/2011NEI</td>
+<td headers="direct_link" class="gt_row gt_left"><a href>NA</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left gt_striped">NEI</td>
+<td headers="inventory_year" class="gt_row gt_left gt_striped">2014</td>
+<td headers="measurement" class="gt_row gt_left gt_striped">smoke_flat_file</td>
+<td headers="category" class="gt_row gt_left gt_striped">nonroad</td>
+<td headers="slug" class="gt_row gt_left gt_striped">2014NEI</td>
+<td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/nei/2014NEI</td>
+<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/Air/nei/2014/flat_files/SmokeFlatFile_NONROAD_20160917.csv.zip">https://gaftp.epa.gov/Air/nei/2014/flat_files/SmokeFlatFile_NONROAD_20160917.csv.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left">NEI</td>
+<td headers="inventory_year" class="gt_row gt_left">2017</td>
+<td headers="measurement" class="gt_row gt_left">smoke_flat_file</td>
+<td headers="category" class="gt_row gt_left">nonroad</td>
+<td headers="slug" class="gt_row gt_left">2017NEI</td>
+<td headers="download_location" class="gt_row gt_left">_transportation/data-raw/epa/nei/2017NEI</td>
+<td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/Air/nei/2017/doc/flat_files/2017NEI_nonroad_20200427.zip">https://gaftp.epa.gov/Air/nei/2017/doc/flat_files/2017NEI_nonroad_20200427.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left gt_striped">NEI</td>
+<td headers="inventory_year" class="gt_row gt_left gt_striped">2020</td>
+<td headers="measurement" class="gt_row gt_left gt_striped">smoke_flat_file</td>
+<td headers="category" class="gt_row gt_left gt_striped">nonroad</td>
+<td headers="slug" class="gt_row gt_left gt_striped">2020NEI</td>
+<td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/nei/2020NEI</td>
+<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/Air/nei/2020/doc/flat_files/SmokeFlatFile_NONROAD_20230330.zip">https://gaftp.epa.gov/Air/nei/2020/doc/flat_files/SmokeFlatFile_NONROAD_20230330.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left">NEI</td>
+<td headers="inventory_year" class="gt_row gt_left">2008</td>
+<td headers="measurement" class="gt_row gt_left">emissions</td>
+<td headers="category" class="gt_row gt_left">onroad</td>
+<td headers="slug" class="gt_row gt_left">2008NEIv3</td>
+<td headers="download_location" class="gt_row gt_left">_transportation/data-raw/epa/nei/2008NEI</td>
+<td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/air/nei/2008/data_summaries/2008neiv3_onroad_byregions.zip">https://gaftp.epa.gov/air/nei/2008/data_summaries/2008neiv3_onroad_byregions.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left gt_striped">NEI</td>
+<td headers="inventory_year" class="gt_row gt_left gt_striped">2011</td>
 <td headers="measurement" class="gt_row gt_left gt_striped">emissions</td>
+<td headers="category" class="gt_row gt_left gt_striped">onroad</td>
+<td headers="slug" class="gt_row gt_left gt_striped">2011NEIv2</td>
+<td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/nei/2011NEI</td>
+<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/air/nei/2011/data_summaries/2011v2/2011neiv2_onroad_byregions.zip">https://gaftp.epa.gov/air/nei/2011/data_summaries/2011v2/2011neiv2_onroad_byregions.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left">NEI</td>
+<td headers="inventory_year" class="gt_row gt_left">2014</td>
+<td headers="measurement" class="gt_row gt_left">emissions</td>
+<td headers="category" class="gt_row gt_left">onroad</td>
+<td headers="slug" class="gt_row gt_left">2014neiv2</td>
+<td headers="download_location" class="gt_row gt_left">_transportation/data-raw/epa/nei/2014NEI</td>
+<td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/air/nei/2014/data_summaries/2014v2/2014neiv2_onroad_byregions.zip">https://gaftp.epa.gov/air/nei/2014/data_summaries/2014v2/2014neiv2_onroad_byregions.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left gt_striped">NEI</td>
+<td headers="inventory_year" class="gt_row gt_left gt_striped">2017</td>
+<td headers="measurement" class="gt_row gt_left gt_striped">emissions</td>
+<td headers="category" class="gt_row gt_left gt_striped">onroad</td>
+<td headers="slug" class="gt_row gt_left gt_striped">2017neiApr</td>
+<td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/nei/2017NEI</td>
+<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/air/nei/2017/data_summaries/2017v1/2017neiApr_onroad_byregions.zip">https://gaftp.epa.gov/air/nei/2017/data_summaries/2017v1/2017neiApr_onroad_byregions.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left">NEI</td>
+<td headers="inventory_year" class="gt_row gt_left">2020</td>
+<td headers="measurement" class="gt_row gt_left">emissions</td>
+<td headers="category" class="gt_row gt_left">onroad</td>
+<td headers="slug" class="gt_row gt_left">2020nei</td>
+<td headers="download_location" class="gt_row gt_left">_transportation/data-raw/epa/nei/2020NEI</td>
+<td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/air/nei/2020/data_summaries/2020nei_onroad_byregion.zip">https://gaftp.epa.gov/air/nei/2020/data_summaries/2020nei_onroad_byregion.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left gt_striped">NEI</td>
+<td headers="inventory_year" class="gt_row gt_left gt_striped">2008</td>
+<td headers="measurement" class="gt_row gt_left gt_striped">smoke_flat_file</td>
 <td headers="category" class="gt_row gt_left gt_striped">onroad</td>
 <td headers="slug" class="gt_row gt_left gt_striped">2008NEIv3</td>
 <td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/nei/2008NEI</td>
-<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/air/nei/2008/data_summaries/2008neiv3_onroad_byregions.zip">https://gaftp.epa.gov/air/nei/2008/data_summaries/2008neiv3_onroad_byregions.zip</a></td></tr>
+<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/Air/nei/2008/flat_files/2008NEIv3_ONROAD_20130225.zip">https://gaftp.epa.gov/Air/nei/2008/flat_files/2008NEIv3_ONROAD_20130225.zip</a></td></tr>
     <tr><td headers="group" class="gt_row gt_left">NEI</td>
 <td headers="inventory_year" class="gt_row gt_left">2011</td>
-<td headers="measurement" class="gt_row gt_left">emissions</td>
+<td headers="measurement" class="gt_row gt_left">smoke_flat_file</td>
 <td headers="category" class="gt_row gt_left">onroad</td>
-<td headers="slug" class="gt_row gt_left">2011NEIv2</td>
+<td headers="slug" class="gt_row gt_left">Unavailable</td>
 <td headers="download_location" class="gt_row gt_left">_transportation/data-raw/epa/nei/2011NEI</td>
-<td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/air/nei/2011/data_summaries/2011v2/2011neiv2_onroad_byregions.zip">https://gaftp.epa.gov/air/nei/2011/data_summaries/2011v2/2011neiv2_onroad_byregions.zip</a></td></tr>
+<td headers="direct_link" class="gt_row gt_left"><a href>NA</a></td></tr>
     <tr><td headers="group" class="gt_row gt_left gt_striped">NEI</td>
 <td headers="inventory_year" class="gt_row gt_left gt_striped">2014</td>
-<td headers="measurement" class="gt_row gt_left gt_striped">emissions</td>
+<td headers="measurement" class="gt_row gt_left gt_striped">smoke_flat_file</td>
 <td headers="category" class="gt_row gt_left gt_striped">onroad</td>
-<td headers="slug" class="gt_row gt_left gt_striped">2014neiv2</td>
+<td headers="slug" class="gt_row gt_left gt_striped">2014NEI</td>
 <td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/nei/2014NEI</td>
-<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/air/nei/2014/data_summaries/2014v2/2014neiv2_onroad_byregions.zip">https://gaftp.epa.gov/air/nei/2014/data_summaries/2014v2/2014neiv2_onroad_byregions.zip</a></td></tr>
+<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/Air/nei/2014/flat_files/SmokeFlatFile_ONROAD_20160910.csv.zip">https://gaftp.epa.gov/Air/nei/2014/flat_files/SmokeFlatFile_ONROAD_20160910.csv.zip</a></td></tr>
     <tr><td headers="group" class="gt_row gt_left">NEI</td>
 <td headers="inventory_year" class="gt_row gt_left">2017</td>
-<td headers="measurement" class="gt_row gt_left">emissions</td>
+<td headers="measurement" class="gt_row gt_left">smoke_flat_file</td>
 <td headers="category" class="gt_row gt_left">onroad</td>
-<td headers="slug" class="gt_row gt_left">2017neiApr</td>
+<td headers="slug" class="gt_row gt_left">2017NEI</td>
 <td headers="download_location" class="gt_row gt_left">_transportation/data-raw/epa/nei/2017NEI</td>
-<td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/air/nei/2017/data_summaries/2017v1/2017neiApr_onroad_byregions.zip">https://gaftp.epa.gov/air/nei/2017/data_summaries/2017v1/2017neiApr_onroad_byregions.zip</a></td></tr>
+<td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/Air/nei/2017/doc/flat_files/onroad_by_state/2017NEI_onroad_FF10_SMOKE_MOVES_FIPS_27.zip">https://gaftp.epa.gov/Air/nei/2017/doc/flat_files/onroad_by_state/2017NEI_onroad_FF10_SMOKE_MOVES_FIPS_27.zip</a></td></tr>
     <tr><td headers="group" class="gt_row gt_left gt_striped">NEI</td>
-<td headers="inventory_year" class="gt_row gt_left gt_striped">2020</td>
-<td headers="measurement" class="gt_row gt_left gt_striped">emissions</td>
+<td headers="inventory_year" class="gt_row gt_left gt_striped">2017</td>
+<td headers="measurement" class="gt_row gt_left gt_striped">smoke_flat_file</td>
 <td headers="category" class="gt_row gt_left gt_striped">onroad</td>
-<td headers="slug" class="gt_row gt_left gt_striped">2020nei</td>
-<td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/nei/2020NEI</td>
-<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/air/nei/2020/data_summaries/2020nei_onroad_byregion.zip">https://gaftp.epa.gov/air/nei/2020/data_summaries/2020nei_onroad_byregion.zip</a></td></tr>
+<td headers="slug" class="gt_row gt_left gt_striped">2017NEI</td>
+<td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/nei/2017NEI</td>
+<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/Air/nei/2017/doc/flat_files/onroad_by_state/2017NEI_onroad_FF10_SMOKE_MOVES_FIPS_55.zip">https://gaftp.epa.gov/Air/nei/2017/doc/flat_files/onroad_by_state/2017NEI_onroad_FF10_SMOKE_MOVES_FIPS_55.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left">NEI</td>
+<td headers="inventory_year" class="gt_row gt_left">2020</td>
+<td headers="measurement" class="gt_row gt_left">smoke_flat_file</td>
+<td headers="category" class="gt_row gt_left">onroad</td>
+<td headers="slug" class="gt_row gt_left">2020NEI</td>
+<td headers="download_location" class="gt_row gt_left">_transportation/data-raw/epa/nei/2020NEI</td>
+<td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/Air/nei/2020/doc/flat_files/SmokeFlatFile_ONROAD_20230330.zip">https://gaftp.epa.gov/Air/nei/2020/doc/flat_files/SmokeFlatFile_ONROAD_20230330.zip</a></td></tr>
   </tbody>
   
   
@@ -886,25 +1511,46 @@ and respond to bug reports.</p>
 <p>County-level data are only available at the continental US (CONUS)
 level; these datasets include all counties in the US and are very
 large.</p>
-<div id="air-emissions-modeling-platforms" class="section level4">
-<h4>Air emissions modeling platforms</h4>
 <p>The data available for each platform year varies. Data is much more
 consistently available and standardized from 2014 onward.</p>
-<p>Downloads for these are quites scattered</p>
-<div id="trfnqtkdlu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#trfnqtkdlu table {
+<p>Create a folder for each year (2011, 2014, 2015, 2016, 2017, 2018,
+2019, 2020, 2021, 2022v1), plus EQUATES and
+air_emissions_modeling_mn_wi.</p>
+<p>Air emissions modeling data are compiled in two locations</p>
+<ul>
+<li><a href="../epa_air_emissions_modeling_onroad.R">epa_air_emissions_modeling_onroad.R</a></li>
+<li><a href="../epa_air_emissions_modeling_nonroad.R">epa_air_emissions_modeling_nonroad.R</a></li>
+</ul>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #0000BB; font-weight: bold;">./air_emissions_modeling/</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2007</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2008</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2011</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2014</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2015</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2016</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2017</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2018</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2019</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2020</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2021</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">2022v1</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">EQUATES</span>
+#&gt; └── <span style="color: #0000BB; font-weight: bold;">air_emissions_modeling_mn_wi</span>
+</CODE></PRE>
+<div id="stwkaxntsb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#stwkaxntsb table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#trfnqtkdlu thead, #trfnqtkdlu tbody, #trfnqtkdlu tfoot, #trfnqtkdlu tr, #trfnqtkdlu td, #trfnqtkdlu th {
+#stwkaxntsb thead, #stwkaxntsb tbody, #stwkaxntsb tfoot, #stwkaxntsb tr, #stwkaxntsb td, #stwkaxntsb th {
 border-style: none;
 }
-#trfnqtkdlu p {
+#stwkaxntsb p {
 margin: 0;
 padding: 0;
 }
-#trfnqtkdlu .gt_table {
+#stwkaxntsb .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -929,11 +1575,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#trfnqtkdlu .gt_caption {
+#stwkaxntsb .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#trfnqtkdlu .gt_title {
+#stwkaxntsb .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -944,7 +1590,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#trfnqtkdlu .gt_subtitle {
+#stwkaxntsb .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -955,7 +1601,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#trfnqtkdlu .gt_heading {
+#stwkaxntsb .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -966,12 +1612,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#trfnqtkdlu .gt_bottom_border {
+#stwkaxntsb .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#trfnqtkdlu .gt_col_headings {
+#stwkaxntsb .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -985,7 +1631,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#trfnqtkdlu .gt_col_heading {
+#stwkaxntsb .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -1004,7 +1650,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#trfnqtkdlu .gt_column_spanner_outer {
+#stwkaxntsb .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -1015,13 +1661,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#trfnqtkdlu .gt_column_spanner_outer:first-child {
+#stwkaxntsb .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#trfnqtkdlu .gt_column_spanner_outer:last-child {
+#stwkaxntsb .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#trfnqtkdlu .gt_column_spanner {
+#stwkaxntsb .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -1032,10 +1678,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#trfnqtkdlu .gt_spanner_row {
+#stwkaxntsb .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#trfnqtkdlu .gt_group_heading {
+#stwkaxntsb .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1060,7 +1706,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#trfnqtkdlu .gt_empty_group_heading {
+#stwkaxntsb .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -1074,13 +1720,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#trfnqtkdlu .gt_from_md > :first-child {
+#stwkaxntsb .gt_from_md > :first-child {
 margin-top: 0;
 }
-#trfnqtkdlu .gt_from_md > :last-child {
+#stwkaxntsb .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#trfnqtkdlu .gt_row {
+#stwkaxntsb .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1098,7 +1744,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#trfnqtkdlu .gt_stub {
+#stwkaxntsb .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -1110,7 +1756,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#trfnqtkdlu .gt_stub_row_group {
+#stwkaxntsb .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -1123,13 +1769,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#trfnqtkdlu .gt_row_group_first td {
+#stwkaxntsb .gt_row_group_first td {
 border-top-width: 2px;
 }
-#trfnqtkdlu .gt_row_group_first th {
+#stwkaxntsb .gt_row_group_first th {
 border-top-width: 2px;
 }
-#trfnqtkdlu .gt_summary_row {
+#stwkaxntsb .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -1138,14 +1784,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#trfnqtkdlu .gt_first_summary_row {
+#stwkaxntsb .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#trfnqtkdlu .gt_first_summary_row.thick {
+#stwkaxntsb .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#trfnqtkdlu .gt_last_summary_row {
+#stwkaxntsb .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1154,7 +1800,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#trfnqtkdlu .gt_grand_summary_row {
+#stwkaxntsb .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -1163,7 +1809,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#trfnqtkdlu .gt_first_grand_summary_row {
+#stwkaxntsb .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1172,7 +1818,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#trfnqtkdlu .gt_last_grand_summary_row_top {
+#stwkaxntsb .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1181,10 +1827,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#trfnqtkdlu .gt_striped {
+#stwkaxntsb .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#trfnqtkdlu .gt_table_body {
+#stwkaxntsb .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -1192,7 +1838,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#trfnqtkdlu .gt_footnotes {
+#stwkaxntsb .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -1205,7 +1851,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#trfnqtkdlu .gt_footnote {
+#stwkaxntsb .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -1213,7 +1859,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#trfnqtkdlu .gt_sourcenotes {
+#stwkaxntsb .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -1226,57 +1872,57 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#trfnqtkdlu .gt_sourcenote {
+#stwkaxntsb .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#trfnqtkdlu .gt_left {
+#stwkaxntsb .gt_left {
 text-align: left;
 }
-#trfnqtkdlu .gt_center {
+#stwkaxntsb .gt_center {
 text-align: center;
 }
-#trfnqtkdlu .gt_right {
+#stwkaxntsb .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#trfnqtkdlu .gt_font_normal {
+#stwkaxntsb .gt_font_normal {
 font-weight: normal;
 }
-#trfnqtkdlu .gt_font_bold {
+#stwkaxntsb .gt_font_bold {
 font-weight: bold;
 }
-#trfnqtkdlu .gt_font_italic {
+#stwkaxntsb .gt_font_italic {
 font-style: italic;
 }
-#trfnqtkdlu .gt_super {
+#stwkaxntsb .gt_super {
 font-size: 65%;
 }
-#trfnqtkdlu .gt_footnote_marks {
+#stwkaxntsb .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#trfnqtkdlu .gt_asterisk {
+#stwkaxntsb .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#trfnqtkdlu .gt_indent_1 {
+#stwkaxntsb .gt_indent_1 {
 text-indent: 5px;
 }
-#trfnqtkdlu .gt_indent_2 {
+#stwkaxntsb .gt_indent_2 {
 text-indent: 10px;
 }
-#trfnqtkdlu .gt_indent_3 {
+#stwkaxntsb .gt_indent_3 {
 text-indent: 15px;
 }
-#trfnqtkdlu .gt_indent_4 {
+#stwkaxntsb .gt_indent_4 {
 text-indent: 20px;
 }
-#trfnqtkdlu .gt_indent_5 {
+#stwkaxntsb .gt_indent_5 {
 text-indent: 25px;
 }
 </style>
@@ -1466,23 +2112,473 @@ text-indent: 25px;
   
 </table>
 </div>
-</div>
 <div id="equates" class="section level4">
 <h4>EQUATES</h4>
-<blockquote>
-<p>EPA scientists have developed a set of modeled meteorology,
-emissions, air quality and pollutant deposition spanning the years 2002
-through 2019. Modeled datasets cover the Conterminous U.S. (CONUS) at a
-12km horizontal grid spacing and the Northern Hemisphere at a 108km grid
-spacing using the Weather Research and Forecasting (WRF) model version
-4.1.1 for simulating weather conditions and EPA’s Community Multiscale
-Air Quality (CMAQ) model version 5.3.2 for air quality modeling. New
-hemispheric and North American emissions inventories were developed
-using, to the extent possible, consistent input data and methods across
-all years, including emissions from motor vehicles, fires, and oil and
-gas sources. - <a href="https://www.epa.gov/cmaq/equates">EPA
-website</a></p>
-</blockquote>
+<p>EQUATES only has onroad data from 2002 to 2017.</p>
+<p>Within /air_emissions_modeling/EQUATES, create a folder for each
+EQUATES year (2002, 2005, 2008, 2011, 2014, 2017) with the prefix
+“EQUATES_”, plus one additional folder named “EQUATES_MN_WI”.</p>
+<p>Download the data for each of the given links and save in the
+appropriate location.</p>
+<p>EQUATES is processed in <a href="./../epa_equates_read.R">epa_equates_read.R</a></p>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #0000BB; font-weight: bold;">./air_emissions_modeling/EQUATES/</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">EQUATES_2002</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">EQUATES_2005</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">EQUATES_2008</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">EQUATES_2011</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">EQUATES_2014</span>
+#&gt; ├── <span style="color: #0000BB; font-weight: bold;">EQUATES_2017</span>
+#&gt; └── <span style="color: #0000BB; font-weight: bold;">EQUATES_MN_WI</span>
+</CODE></PRE>
+<div id="gepdzrrhzy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#gepdzrrhzy table {
+font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+#gepdzrrhzy thead, #gepdzrrhzy tbody, #gepdzrrhzy tfoot, #gepdzrrhzy tr, #gepdzrrhzy td, #gepdzrrhzy th {
+border-style: none;
+}
+#gepdzrrhzy p {
+margin: 0;
+padding: 0;
+}
+#gepdzrrhzy .gt_table {
+display: table;
+border-collapse: collapse;
+line-height: normal;
+margin-left: auto;
+margin-right: auto;
+color: #333333;
+font-size: 16px;
+font-weight: normal;
+font-style: normal;
+background-color: #FFFFFF;
+width: auto;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #A8A8A8;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #A8A8A8;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+}
+#gepdzrrhzy .gt_caption {
+padding-top: 4px;
+padding-bottom: 4px;
+}
+#gepdzrrhzy .gt_title {
+color: #333333;
+font-size: 125%;
+font-weight: initial;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-color: #FFFFFF;
+border-bottom-width: 0;
+}
+#gepdzrrhzy .gt_subtitle {
+color: #333333;
+font-size: 85%;
+font-weight: initial;
+padding-top: 3px;
+padding-bottom: 5px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-color: #FFFFFF;
+border-top-width: 0;
+}
+#gepdzrrhzy .gt_heading {
+background-color: #FFFFFF;
+text-align: center;
+border-bottom-color: #FFFFFF;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#gepdzrrhzy .gt_bottom_border {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#gepdzrrhzy .gt_col_headings {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#gepdzrrhzy .gt_col_heading {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 6px;
+padding-left: 5px;
+padding-right: 5px;
+overflow-x: hidden;
+}
+#gepdzrrhzy .gt_column_spanner_outer {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+padding-top: 0;
+padding-bottom: 0;
+padding-left: 4px;
+padding-right: 4px;
+}
+#gepdzrrhzy .gt_column_spanner_outer:first-child {
+padding-left: 0;
+}
+#gepdzrrhzy .gt_column_spanner_outer:last-child {
+padding-right: 0;
+}
+#gepdzrrhzy .gt_column_spanner {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 5px;
+overflow-x: hidden;
+display: inline-block;
+width: 100%;
+}
+#gepdzrrhzy .gt_spanner_row {
+border-bottom-style: hidden;
+}
+#gepdzrrhzy .gt_group_heading {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+text-align: left;
+}
+#gepdzrrhzy .gt_empty_group_heading {
+padding: 0.5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: middle;
+}
+#gepdzrrhzy .gt_from_md > :first-child {
+margin-top: 0;
+}
+#gepdzrrhzy .gt_from_md > :last-child {
+margin-bottom: 0;
+}
+#gepdzrrhzy .gt_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+margin: 10px;
+border-top-style: solid;
+border-top-width: 1px;
+border-top-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+overflow-x: hidden;
+}
+#gepdzrrhzy .gt_stub {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+}
+#gepdzrrhzy .gt_stub_row_group {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+vertical-align: top;
+}
+#gepdzrrhzy .gt_row_group_first td {
+border-top-width: 2px;
+}
+#gepdzrrhzy .gt_row_group_first th {
+border-top-width: 2px;
+}
+#gepdzrrhzy .gt_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#gepdzrrhzy .gt_first_summary_row {
+border-top-style: solid;
+border-top-color: #D3D3D3;
+}
+#gepdzrrhzy .gt_first_summary_row.thick {
+border-top-width: 2px;
+}
+#gepdzrrhzy .gt_last_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#gepdzrrhzy .gt_grand_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#gepdzrrhzy .gt_first_grand_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-style: double;
+border-top-width: 6px;
+border-top-color: #D3D3D3;
+}
+#gepdzrrhzy .gt_last_grand_summary_row_top {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: double;
+border-bottom-width: 6px;
+border-bottom-color: #D3D3D3;
+}
+#gepdzrrhzy .gt_striped {
+background-color: rgba(128, 128, 128, 0.05);
+}
+#gepdzrrhzy .gt_table_body {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#gepdzrrhzy .gt_footnotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#gepdzrrhzy .gt_footnote {
+margin: 0px;
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#gepdzrrhzy .gt_sourcenotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#gepdzrrhzy .gt_sourcenote {
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#gepdzrrhzy .gt_left {
+text-align: left;
+}
+#gepdzrrhzy .gt_center {
+text-align: center;
+}
+#gepdzrrhzy .gt_right {
+text-align: right;
+font-variant-numeric: tabular-nums;
+}
+#gepdzrrhzy .gt_font_normal {
+font-weight: normal;
+}
+#gepdzrrhzy .gt_font_bold {
+font-weight: bold;
+}
+#gepdzrrhzy .gt_font_italic {
+font-style: italic;
+}
+#gepdzrrhzy .gt_super {
+font-size: 65%;
+}
+#gepdzrrhzy .gt_footnote_marks {
+font-size: 75%;
+vertical-align: 0.4em;
+position: initial;
+}
+#gepdzrrhzy .gt_asterisk {
+font-size: 100%;
+vertical-align: 0;
+}
+#gepdzrrhzy .gt_indent_1 {
+text-indent: 5px;
+}
+#gepdzrrhzy .gt_indent_2 {
+text-indent: 10px;
+}
+#gepdzrrhzy .gt_indent_3 {
+text-indent: 15px;
+}
+#gepdzrrhzy .gt_indent_4 {
+text-indent: 20px;
+}
+#gepdzrrhzy .gt_indent_5 {
+text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="group">group</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="inventory_year">inventory_year</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="measurement">measurement</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="category">category</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="slug">slug</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="download_location">download_location</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;" scope="col" id="direct_link">direct_link</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="group" class="gt_row gt_left">EQUATES</td>
+<td headers="inventory_year" class="gt_row gt_left">2002</td>
+<td headers="measurement" class="gt_row gt_left">emissions</td>
+<td headers="category" class="gt_row gt_left">onroad</td>
+<td headers="slug" class="gt_row gt_left">EQUATES_2002</td>
+<td headers="download_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002</td>
+<td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2002_inventory_onroad_01jun2021.zip">https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2002_inventory_onroad_01jun2021.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left gt_striped">EQUATES</td>
+<td headers="inventory_year" class="gt_row gt_left gt_striped">2005</td>
+<td headers="measurement" class="gt_row gt_left gt_striped">emissions</td>
+<td headers="category" class="gt_row gt_left gt_striped">onroad</td>
+<td headers="slug" class="gt_row gt_left gt_striped">EQUATES_2005</td>
+<td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2005</td>
+<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2005_inventory_onroad_23jun2021.zip">https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2005_inventory_onroad_23jun2021.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left">EQUATES</td>
+<td headers="inventory_year" class="gt_row gt_left">2008</td>
+<td headers="measurement" class="gt_row gt_left">emissions</td>
+<td headers="category" class="gt_row gt_left">onroad</td>
+<td headers="slug" class="gt_row gt_left">EQUATES_2008</td>
+<td headers="download_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2008</td>
+<td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2008_inventory_onroad_11may2021.zip">https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2008_inventory_onroad_11may2021.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left gt_striped">EQUATES</td>
+<td headers="inventory_year" class="gt_row gt_left gt_striped">2011</td>
+<td headers="measurement" class="gt_row gt_left gt_striped">emissions</td>
+<td headers="category" class="gt_row gt_left gt_striped">onroad</td>
+<td headers="slug" class="gt_row gt_left gt_striped">EQUATES_2011</td>
+<td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2011</td>
+<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2011_inventory_onroad_20apr2021.zip">https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2011_inventory_onroad_20apr2021.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left">EQUATES</td>
+<td headers="inventory_year" class="gt_row gt_left">2014</td>
+<td headers="measurement" class="gt_row gt_left">emissions</td>
+<td headers="category" class="gt_row gt_left">onroad</td>
+<td headers="slug" class="gt_row gt_left">EQUATES_2014</td>
+<td headers="download_location" class="gt_row gt_left">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2014</td>
+<td headers="direct_link" class="gt_row gt_left"><a href="https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2014_inventory_onroad_01mar2021.zip">https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2014_inventory_onroad_01mar2021.zip</a></td></tr>
+    <tr><td headers="group" class="gt_row gt_left gt_striped">EQUATES</td>
+<td headers="inventory_year" class="gt_row gt_left gt_striped">2017</td>
+<td headers="measurement" class="gt_row gt_left gt_striped">emissions</td>
+<td headers="category" class="gt_row gt_left gt_striped">onroad</td>
+<td headers="slug" class="gt_row gt_left gt_striped">EQUATES_2017</td>
+<td headers="download_location" class="gt_row gt_left gt_striped">_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017</td>
+<td headers="direct_link" class="gt_row gt_left gt_striped"><a href="https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2017_inventory_onroad_inv_25jan2021.zip">https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/EQUATES_2017_inventory_onroad_inv_25jan2021.zip</a></td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
 </div>
 </div>
 </div>
