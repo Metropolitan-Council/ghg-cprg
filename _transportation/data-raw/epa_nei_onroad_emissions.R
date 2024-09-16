@@ -19,8 +19,8 @@ if(any(purrr::map(
 pollutants_keep <- c(
   "CH4", "N2O",
   "CO2", "NO", "NOX", "SO2", "NH3",
-  "HFC", "VOC", "O3", "CO",
-  "PM10-PRI", "PM25-PRI"
+  "HFC", "VOC", "O3", "CO", "PFC", "SF6",
+  "PM10-PRI", "PM25-PRI", "PM-CON"
 )
 
 v_or_2008 <- read.csv("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byregions/2008NEIv3_onroad5.csv",
