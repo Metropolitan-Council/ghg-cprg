@@ -60,11 +60,9 @@ read_smoke_moves <- function(file_location,
       poll %in% c(
         "CH4", "N2O",
         "CO2", "NO", "NOX", "SO2", "NH3",
-        "HFC", "VOC", "O3", "CO",
-        "PM10-PRI", "PM25-PRI"
+        "HFC", "VOC", "O3", "CO", "PFC", "SF6",
+        "PM10-PRI", "PM25-PRI", "PM-CON"
       )
-      # only fetch RatePerDistance, RatePerVehicle, or NA values
-      # emis_type %in% c("RPD", "RPV", NA)
     ) %>%
     dplyr::mutate(
       # convert all value columns to numeric
