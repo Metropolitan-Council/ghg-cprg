@@ -1,9 +1,11 @@
 # the EPA publishes data for years in between NEI releases
 # these are modeled estimates based on a variety of sources
+tictoc::tic(msg = "Air emissions modeling onroad processing")
+
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
-source("_transportation/data-raw/epa_source_classification_codes.R")
 source("_transportation/data-raw/_read_smoke_moves.R")
+scc_combine <- readRDS("_transportation/data/scc_combine.RDS")
 library(furrr)
 
 # check that we have all the necessary files -----

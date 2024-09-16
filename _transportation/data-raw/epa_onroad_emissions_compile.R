@@ -2,9 +2,14 @@
 
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
-source("_transportation/data-raw/epa_source_classification_codes.R")
 source("_meta/data-raw/county_geography.R")
 library(imputeTS)
+
+scc_combine <- readRDS("_transportation/data/scc_combine.RDS")
+scc_combine_meta <- readRDS("_transportation/data/scc_combine_meta.RDS")
+
+pollutant_key <- readRDS("_transportation/data/pollutant_key.RDS")
+pollutant_key_meta <- readRDS("_transportation/data/pollutant_key_meta.RDS")
 
 cprg_county_meta <- read_rds("_meta/data/cprg_county_meta.RDS")
 
