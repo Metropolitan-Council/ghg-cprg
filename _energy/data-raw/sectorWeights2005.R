@@ -1,3 +1,5 @@
+source("R/_load_pkgs.R")
+
 # MN
 # 2005
 
@@ -7,6 +9,12 @@ MN_elecUtils_2005 <- read_rds(here("_energy",
                                    "data", 
                                    "distinct_electricity_util_type_MN.RDS"))
 
+#add flag for municipal
+
+#add flag for Great River Energy
+
+
+#use municipal utility numbers by sector in 2005 and 2021 to compare against NREL-forecasted numbers. (and maybe estiamte farm/industrial breakdown?)
 
 mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
   mutate(
@@ -110,6 +118,15 @@ mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
 
 # county x utility x countyPopulation x utilityPop x utilityProportionOfCountyPop (contribution to total)
 
+
+
+
+# For city 2005... 
+
+
+#For city 2021, use NREL-forecasted city proportion of forecasted COUNTY total emissions to allocate actual emissions gathered at county level (Separate from NREL)
+# and then use to allocate city level forecast PROPORTIONS to allocate to sectors
+# do projected activity-emissions at city-sector lefvel add up? a test to write.
 
 # vector of res-commercial-industrial proportion in a utility --> assume that is THE mix for a given area...
 # need to retain GRE subsidiary .shp
