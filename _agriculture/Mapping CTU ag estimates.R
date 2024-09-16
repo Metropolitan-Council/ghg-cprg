@@ -59,4 +59,4 @@ ggplot(data = ctu_ag_map) +
   geom_sf(aes(fill = ctu_emissions)) +
   scale_fill_viridis_c(option = "plasma") +  # You can change the color scale here
   theme_minimal() +
-  labs(fill = "CTU Emissions", title = "CTU Emissions Map")
+  labs(fill = "CTU Ag Emissions", title = "CTU Emissions Map")
