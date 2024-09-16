@@ -302,3 +302,20 @@ scc_combine <- scc_complete_road %>%
                                                       "Trucks and buses"), vehicle_type,
                                   alt_mode_truck)
   )
+
+
+
+
+scc_combine_meta <- tibble::tribble(
+  ~"Column", ~"Class", ~"Description",
+  "scc6", class(scc_combine$scc6), "Source classification code (SCC), first six digits only. Includes retired SCCs",
+  "scc6_desc", class(scc_combine$scc6_desc), "SCC description",
+  "fuel_type", class(scc_combine$fuel_type), "Vehicle fuel type",
+  "vehicle_type", class(scc_combine$vehicle_type), "Vehicle type",
+  "alt_mode", class(scc_combine$alt_mode), "Alternate vehicle type",
+  "alt_mode_truck", class(scc_combine$alt_mode_truck), "Alternate vehicle type, grouping truck and bus categories"
+)
+
+
+saveRDS(scc_combine, "_transportation/data/scc_combine.RDS")
+saveRDS(scc_combine_meta, "_transportation/data/scc_combine_meta.RDS")
