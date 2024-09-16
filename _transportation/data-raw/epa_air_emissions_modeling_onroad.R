@@ -73,3 +73,17 @@ onroad_mn_wi <- purrr::map(
   bind_rows()
 
 saveRDS(onroad_mn_wi, "_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS")
+tictoc::toc()
+
+# optional plotting
+
+onroad_mn_wi %>% 
+  mutate(geoid = region_cd) %>%
+  left_join(counties_light) %>%
+  filter(cprg_area == TRUE,
+         emis_type == "RPD") %>% 
+  left_join(scc_combine) %>% 
+  group_by(calc_year, alt_mode_truck, poll) %>% 
+  summarise(ann_value = sum(ann_value, na.rm = T)) %>% 
+  # select(calc_year, alt_mode_truck, poll) %>% 
+  unique() 
