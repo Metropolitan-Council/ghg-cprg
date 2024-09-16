@@ -23,10 +23,11 @@ nrelSlope_countyForecasts <- read.csv(here("_energy",
          & Year > 2024)
 
 
-
+#filters 
 nrelSlope_cityForecasts <- read.csv(here("_energy", 
                                          "data-raw",
                                          "nrel_slope",
                                          "energy_consumption_expenditure_business_as_usual_city.csv")
 ) %>%
-  filter()
+  filter(State.Name %in% c("Minnesota", "Wisconsin") 
+         & Year > 2024)

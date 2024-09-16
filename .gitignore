@@ -401,3 +401,5 @@ _energy/data-raw/dataExplorer.twb
 *.twbr
 
 _energy/data-raw/modelingDocs
+
+_energy/data-raw/nrel_slope
