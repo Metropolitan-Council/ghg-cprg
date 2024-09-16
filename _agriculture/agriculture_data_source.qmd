@@ -318,6 +318,6 @@ Estimates from the census and surveys are reasonably close for dairy cows and be
 
 ### Scaling to CTUs
 
-The ICLEI U.S. Community Protocol recommends, in the absence of CTU level livestock or crop production data, downscaling from county data using the ratio of agricultural land in the community to agricultural land in the county. We followed this approach for downscaling county level emissions. Future work may seek to downscale livestock counts and crop production directly, to allow more direct reduction measure estimations for various agricultural components (e.g. changes to cattle feed additives that may reduce enteric fermentation).
+The ICLEI U.S. Community Protocol recommends, in the absence of CTU level livestock or crop production data, downscaling from county data using the ratio of agricultural land in the community to agricultural land in the county. We followed this approach for downscaling county level emissions using NLCD land cover data to find the ratio of CTU agricultural land to county agricultural land. Future work may seek to downscale livestock counts and crop production directly, to allow more direct reduction measure estimations for various agricultural components (e.g. changes to cattle feed additives that may reduce enteric fermentation).
 
 
