@@ -6,7 +6,7 @@
 tictoc::tic(msg = "EQUATES processing")
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
-source("_transportation/data-raw/_read_smoke_moves.R")
+source("_transportation/data-raw/_read_smoke_ff10.R")
 library(furrr)
 
 # check that we have all the necessary files -----
@@ -53,7 +53,7 @@ furrr::future_map(
     "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_diesel/diesel_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_gas/gas_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv"
   ),
-  read_smoke_moves,
+  read_smoke_ff10,
   n_skip_rows = 19,
   out_directory = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/"
 ) 

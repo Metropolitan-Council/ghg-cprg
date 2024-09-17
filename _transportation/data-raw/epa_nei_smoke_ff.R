@@ -1,7 +1,7 @@
 
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
-source("_transportation/data-raw/_read_smoke_moves.R")
+source("_transportation/data-raw/_read_smoke_ff10.R")
 library(furrr)
 tictoc::tic("NEI SMOKE flat file proccessing")
 
@@ -32,7 +32,7 @@ furrr::future_map(
     # "_transportation/data-raw/epa/nei/2017NEI/2017NEI_onroad_20200427/2017NEI_onroad_CONUS_noCalifornia.csv",
     "_transportation/data-raw/epa/nei/2014NEI/SmokeFlatFile_ONROAD_20160910.csv"
   ),
-  read_smoke_moves,
+  read_smoke_ff10,
   n_skip_rows = 13,
   out_directory = "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI//"
 ) 

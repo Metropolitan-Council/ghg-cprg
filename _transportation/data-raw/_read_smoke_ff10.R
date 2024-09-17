@@ -1,11 +1,12 @@
-#' Read, clean, and save SMOKE/MOVES data
+#' Read, clean, and save SMOKE flat file (FF10) data, onroad and nonroad
 #'
-#' @param file_location character, location of SMOKE/MOVES file
+#' @param file_location character, location of SMOKE FF10 file
 #' @param n_skip_rows numeric, how many header rows to skip
 #' @param out_directory character, output location
-read_smoke_moves <- function(file_location,
-                             n_skip_rows,
-                             out_directory) {
+#' 
+read_smoke_ff10 <- function(file_location,
+                            n_skip_rows,
+                            out_directory) {
   
   # read and complete initial cleaning
   smoke_moves_table <- data.table::fread(

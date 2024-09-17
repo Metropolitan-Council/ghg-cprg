@@ -4,7 +4,7 @@ tictoc::tic(msg = "Air emissions modeling nonroad processing")
 
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
-source("_transportation/data-raw/_read_smoke_moves.R")
+source("_transportation/data-raw/_read_smoke_ff10.R")
 scc_combine <- readRDS("_transportation/data/scc_combine.RDS")
 
 library(furrr)
@@ -40,7 +40,7 @@ furrr::future_map(
     "_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k/inputs/nonroad/nonroad_ff10_2021hb_MOVES_ROC_AE6_10nov2023_nf_v2.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/nonroad/nonroad_ff10_2022hc_MOVES_ROC_AE6_13mar2024_v1.csv"
   ),
-  read_smoke_moves,
+  read_smoke_ff10,
   n_skip_rows = 31,
   out_directory = "_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/nonroad/"
 ) 
