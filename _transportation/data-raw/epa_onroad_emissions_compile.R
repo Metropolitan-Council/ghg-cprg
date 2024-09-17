@@ -405,6 +405,7 @@ epa_onroad_emissions_compile <- epa_emissions_combine %>%
                         co, no, nox, so2, nh3, pm10_pri, pm25_pri),
                names_to = "pollutant",
                values_to = "emissions") %>% 
+  unique() %>% 
   left_join(pollutant_key)
 
 
@@ -426,6 +427,8 @@ saveRDS(epa_onroad_emissions_compile_meta, "_transportation/data/epa_onroad_emis
 
 
 
+# what is the complete start-to-finish pipeline
+# for each portion of this dataset?
 epa_onroad_source_set <- bind_rows(
   epa_nei_onroad %>% 
     select(file_location, calc_year) %>%
