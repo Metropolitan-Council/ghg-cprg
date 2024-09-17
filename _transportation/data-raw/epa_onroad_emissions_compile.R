@@ -20,7 +20,8 @@ if(Sys.info()["user"][[1]] == "rotenle"){
 }
 
 # read in base datasets -----
-# first, NEI inventory from 
+# All these were compiled from SMOKE flat files
+# first, NEI inventory from  _transportation/data-raw/epa_nei_smoke_ff.R
 epa_nei_onroad <- readRDS("_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS") %>% 
   mutate(geoid = region_cd,
          pollutant_code = poll) %>%
@@ -29,6 +30,7 @@ epa_nei_onroad <- readRDS("_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS
          emis_type %in% c("RPD", "")) %>% 
   left_join(scc_combine)
 
+# next EQUATES from  _transportation/data-raw/epa_equates_read.R
 epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS") %>% 
   mutate(geoid = region_cd) %>%
   left_join(counties_light) %>%
@@ -36,6 +38,7 @@ epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUA
          emis_type %in% c("RPD", "")) %>% 
   left_join(scc_combine)
 
+# finally air emissions modeling from  _transportation/data-raw/epa_air_emissions_modeling_onroad.R
 epa_emismod <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS") %>% 
   mutate(geoid = region_cd) %>%
   left_join(counties_light) %>%
