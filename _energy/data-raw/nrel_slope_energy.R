@@ -6,18 +6,7 @@ source("R/plot_county_emissions.R")
 library(stringr)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
-cprg_ctu_point <- readRDS("_meta/data/cprg_ctu.RDS") %>%
-  st_make_valid() %>%
-  mutate(geometry = st_simplify(geometry, preserveTopology = TRUE),
-         CTU_NAME = str_to_title(CTU_NAME)
-         ) %>%
-  clean_names() %>%
-  group_by(ctu_name,
-           county_nam,
-           #ctu_class,
-           state) %>%
-  summarize(geometry = st_centroid(st_union(geometry))) %>%
-  ungroup() 
+cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
   
 
 # NREL SLOPE energy consumption and expenditure data download, cleaning, and viz
@@ -30,6 +19,8 @@ mmbtu_to_mwh <- 0.293071
 # 1 mmbtu is 1 mcf
 mmbtu_to_mcf <- 1
 
+
+# if file doesn't already exist...
 # download from NREL directly
 download.file("https://gds-files.nrel.gov/slope/energy_consumption_expenditure_business_as_usual.zip",
   destfile = "_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual.zip"
@@ -50,16 +41,33 @@ nrel_slope_cprg_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumpti
   mutate(source = ifelse(source == "ng", "Natural gas", "Electricity")) %>%
   select(-geometry)
 
-nrel_slope_cprg_city <- cprg_ctu_point %>%
+nrel_slope_cprg_city <- cprg_ctu %>%
   left_join(read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>% 
               clean_names() %>%
               mutate(city_name = str_replace_all(city_name, "St\\.", "Saint")),
              by = c(
-               "state" = "state_name",
-               "ctu_name" = "city_name"
+               "STATE" = "state_name",
+               "CTU_NAME" = "city_name"
              )
   ) %>%
-  mutate(source = ifelse(source == "ng", "Natural gas", "Electricity"))
+  
+  # Identify CTU_NAMEs that have both City and non-City classifications
+  group_by(CTU_NAME, STATE) %>%
+    mutate(has_city_class = any(CTU_CLASS == 'CITY')) %>%
+    ungroup() %>%
+  
+  # If there's a City version of the same CTU_NAME, null out joined values for the non-City rows
+  mutate(across(c(sector, year, geography_id, source, consumption_mm_btu, expenditure_us_dollars), 
+                ~ ifelse(CTU_CLASS != 'CITY' & has_city_class, NA, .))) %>%
+  
+  # Clean up the source column as per original logic
+  mutate(source = ifelse(source == "ng", "Natural gas", "Electricity")) %>%
+  
+  # clean up unnecessary columns
+  select(
+    -has_city_class,
+    -GEOID
+  )
 
 
 write.csv(nrel_slope_cprg_county, here("_energy",
