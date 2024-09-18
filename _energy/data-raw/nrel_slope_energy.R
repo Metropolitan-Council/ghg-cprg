@@ -95,6 +95,53 @@ st_write(nrel_slope_cprg_city %>% select(-expenditure_us_dollars), here("_energy
 
 # city-level
 
+# For city 2005... 
+
+
+#join county to city
+nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
+  filter(year == 2021) %>%
+  left_join(nrel_slope_cprg_county,
+            by = c(
+              "COUNTY_NAM" = "county_name",
+              "STATE" = "state_name",
+              "sector" = "sector",
+              "year" = "year",
+              "source" = "source"
+            )    
+  ) %>%
+  select(
+    -GEOID.x,
+    -GEOID.y,
+    -geography_id.x,
+    -geography_id.y,
+    -state_geography_id.x,
+    -state_geography_id.y,
+    -STATE_ABB.y,
+    -STATEFP.y,
+    -has_city_class
+  ) %>%
+  rename(
+     city_consumption_mm_btu = consumption_mm_btu.x,
+     county_consumption_mm_btu = consumption_mm_btu.y,
+     STATE_ABB = STATE_ABB.x,
+     STATEFP = STATEFP.x
+  )
+
+
+
+
+
+#For city 2021, use NREL-forecasted city proportion of forecasted COUNTY total emissions to allocate actual emissions gathered at county level (Separate from NREL)
+# and then use to allocate city level forecast PROPORTIONS to allocate to sectors
+# do projected activity-emissions at city-sector lefvel add up? a test to write.
+
+
+# calculate activity/emissions reported by NREL SLOPE at COUNTY level that AREN'T REPORTED at city level. 
+
+# use population numbers and weighted per capita to fill in emissions estimations at city level for those cities that NREL SLOPE doesn't directly provide. 
+
+
 # nrel_slope_state <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_state.csv") %>%
 #   clean_names()
 
