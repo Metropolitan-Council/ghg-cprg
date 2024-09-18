@@ -1,12 +1,30 @@
 #' Read, clean, and save SMOKE flat file (FF10) data, onroad and nonroad
 #'
 #' @param file_location character, location of SMOKE FF10 file
-#' @param n_skip_rows numeric, how many header rows to skip
 #' @param out_directory character, output location
 #' 
 read_smoke_ff10 <- function(file_location,
-                            n_skip_rows,
                             out_directory) {
+  
+  # these files have a variable number of metadata rows 
+  # before the actual data table begins
+  n_skip_rows <- tibble::tibble(
+    line_number = 1:45,
+    # read in the first 45 lines of the file
+    # and find the line that starts with the expected column names
+    contains_value = readLines(file_location,
+                               n = 45) %>% 
+      stringr::str_detect(pattern = stringr::fixed("COUNTRY_CD,REGION_CD,TRIBAL_CODE,",
+                                                   ignore_case = TRUE))
+  ) %>% 
+    dplyr::filter(contains_value == TRUE) %>% 
+    magrittr::extract2("line_number")
+  
+  # capture and collapse these metadata 
+  metadata_info <- readLines(file_location,
+                             n = (n_skip_rows - 1)) %>% 
+    paste0(collapse = "")
+  
   
   # read and complete initial cleaning
   smoke_moves_table <- data.table::fread(
@@ -73,7 +91,8 @@ read_smoke_ff10 <- function(file_location,
       # record original file path/location
       file_location = file_location,
       # specify unit of measure in column title
-      emissions_short_tons = ann_value
+      emissions_short_tons = ann_value,
+      metadata_info = metadata_info
     ) %>%
     dplyr::select(
       -tribal_code, -census_tract_cd,
