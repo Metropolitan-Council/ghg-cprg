@@ -1,4 +1,12 @@
-# verify NEI data
+# verify that the NEI summary datasets match their associated SMOKE flat files
+# Only year 2020 is consistent. Years 2017, 2014, and 2011 are not consistent.
+# The differences are generally relatively small.
+# We are only using year 2020 NEI for our regional emissions values, so it is
+# the most important year to ensure we have matching.
+# 
+# All the individual year data are independent files, so differences found in one 
+# year do not indicate differences in other years. 
+# It is not likely that the underlying processing is causing the differences.
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
 source("R/global_warming_potential.R")
@@ -6,7 +14,7 @@ scc_combine <- read_rds("_transportation/data/scc_combine.RDS")
 epa_nei_onroad_regional <- readr::read_rds("_transportation/data-raw/epa/epa_nei_onroad_emissions.RDS")
 epa_nei_onroad_smoke <- readRDS("_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS")
 
-
+# compile the onroad regional summary data
 onroad_regional <- epa_nei_onroad_regional %>% 
   left_join(counties_light) %>%
   filter(cprg_area == TRUE,
@@ -39,7 +47,6 @@ onroad_regional <- epa_nei_onroad_regional %>%
   select(nei_inventory_year, geoid, county_name,
          emissions_metric_tons_co2e, emissions_metric_tons_co2e_n2o,
          everything())
-
 
 
 onroad_smoke <- epa_nei_onroad_smoke %>% 
