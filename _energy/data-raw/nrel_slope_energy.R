@@ -115,6 +115,8 @@ nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
     -GEOID.y,
     -geography_id.x,
     -geography_id.y,
+    -GNIS_FEATU,
+    -NAMELSAD,
     -state_geography_id.x,
     -state_geography_id.y,
     -STATE_ABB.y,
@@ -124,9 +126,24 @@ nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
   rename(
      city_consumption_mm_btu = consumption_mm_btu.x,
      county_consumption_mm_btu = consumption_mm_btu.y,
+     city_expenditure_usd = expenditure_us_dollars.x,
+     county_expenditure_usd = expenditure_us_dollars.y,
      STATE_ABB = STATE_ABB.x,
      STATEFP = STATEFP.x
+  ) %>%
+  mutate(
+    cityPropOfCounty_consumption_mm_btu = city_consumption_mm_btu / county_consumption_mm_btu,
+    cityPropOfCounty_expenditure_usd = city_expenditure_usd / county_expenditure_usd
   )
+
+  #city-source-sector prop of county-source-sector emissions
+  
+  
+  
+#county level GAPS
+  
+  
+#join to pop and pop prop table... use to infill townships/towns/villages?
 
 
 
