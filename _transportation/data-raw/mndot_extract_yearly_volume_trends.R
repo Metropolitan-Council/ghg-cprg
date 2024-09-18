@@ -6,6 +6,7 @@
 ## NOTE: this is a run-once script. It should not be regularly re-run
 
 source("R/_load_pkgs.R")
+source("R/download_read_table.R")
 library(htmltab)
 
 
@@ -66,7 +67,11 @@ saveRDS(percent_by_class, paste0("_transportation/data-raw/mndot/yearly_volume_p
 # download.file("https://www.dot.state.mn.us/traffic/data/reports/Current_CC_StationList.xlsx",
 #               destfile = "_transportation/data-raw/mndot/Current_CC_StationList.xlsx")
 
-station_list <- readxl::read_excel("_transportation/data-raw/mndot/Current_CC_StationList.xlsx") %>%
+station_list <- download_read_table(
+  "https://www.dot.state.mn.us/traffic/data/reports/Current_CC_StationList.xlsx",
+  "_transportation/data-raw/mndot/",
+  sheet = 1
+) %>%
   clean_names() %>%
   filter(
     collection_type %in% c(
