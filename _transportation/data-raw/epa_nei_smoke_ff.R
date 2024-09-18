@@ -56,11 +56,12 @@ furrr::future_map(
     # the first option (dated 20160910) represents 2014 v1 (https://gaftp.epa.gov/air/nei/2014/flat_files/README_2014NEIv1_flat_files.txt)
     # 2014fd represents 2014 v2
     # 2014fd by state is the exact same as 2014fd
+    # 2014fd also has a CO and CO2 additional file that was run in 2018
     "_transportation/data-raw/epa/nei/2014NEI/SmokeFlatFile_ONROAD_20160910.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2014/2014fd_cb6_14j/inputs/onroad/2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_AQstyle_06feb2018_v0.csv",
     "_transportation/data-raw/epa/nei/2014NEI/2014fd_cb6_14j/inputs/onroad/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.csv",
     "_transportation/data-raw/epa/nei/2014NEI/2014fd_cb6_14j/inputs/onroad/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.csv",
-    
+    "_transportation/data-raw/epa/nei/2014NEI/CO_CO2_2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_forNATA_12jan2018_v1.csv",
     # 2011 has two options
     # 2011el is from January 2016
     # 2011ek is from August 2016
@@ -91,6 +92,7 @@ nei_smoke_ff <- purrr::map(
     "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_AQstyle_06feb2018_v0.RDS",
     # "_transportation/data-raw/epa/nei/2014NEI/2014fd_cb6_14j/inputs/onroad/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.csv",
     # "_transportation/data-raw/epa/nei/2014NEI/2014fd_cb6_14j/inputs/onroad/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.csv",
+    "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/CO_CO2_2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_forNATA_12jan2018_v1.RDS",
     
     # 2011
     # we will go with el, because it is more recent
@@ -101,7 +103,14 @@ nei_smoke_ff <- purrr::map(
   ),
   readRDS) %>% 
   bind_rows() %>% 
-  unique()
+  unique() %>% 
+  # CO was included in both the CO&CO2 version of 2014fd and the original 2014fd
+  # remove CO from the original 2014fd
+  mutate(remove_row = (poll == "CO" & calc_year == "2014" & file_location == "_transportation/data-raw/epa/air_emissions_modeling/2014/2014fd_cb6_14j/inputs/onroad/2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_AQstyle_06feb2018_v0.csv" )) %>% 
+  filter(
+    remove_row != TRUE
+  ) %>% 
+    select(-remove_row)
 
 saveRDS(nei_smoke_ff, "_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS")
 tictoc::toc()
@@ -136,9 +145,11 @@ tictoc::toc()
 #   read_rds("_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.RDS")
 # )
 # 
+# smoke2014fd2_co <- read_rds("_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/CO_CO2_2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_forNATA_12jan2018_v1.RDS")
+# 
 # smoke2014nei <- read_rds( "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/SmokeFlatFile_ONROAD_20160910.RDS")
 # 
-# smoke_2014fd %>% select(metadata_info) %>% unique() %>% extract2("metadata_info") %>% strsplit("#")
+# smoke2014fd2_co %>% select(metadata_info) %>% unique() %>% extract2("metadata_info") %>% strsplit("#")
 # smoke2014nei %>% select(metadata_info) %>% unique() %>% extract2("metadata_info") %>% strsplit("#")
 # 
 # smoke_2014fd %>%
@@ -153,6 +164,13 @@ tictoc::toc()
 #             by = join_by(region_cd, scc, poll, calc_year, scc6, emis_type),
 #             suffix = c(".fd", ".fd2")) %>%
 #   mutate(diff = emissions_short_tons.fd - emissions_short_tons.fd2) %>% View
+# 
+# smoke_2014fd %>%
+#   full_join(smoke2014fd2_co,
+#             by = join_by(region_cd, scc, poll, calc_year, scc6, emis_type),
+#             suffix = c(".fd", ".fd2co")) %>%
+#   mutate(diff = emissions_short_tons.fd - emissions_short_tons.fd2co) %>% View
+
 
 # # 2011
 # smoke2011ek <- bind_rows(read_rds("_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/2011ek_onroad_SMOKE_MOVES_MOVES2014a_forOTAQ_21jan2016_v2_part1.RDS"),
