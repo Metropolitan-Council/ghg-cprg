@@ -38,6 +38,8 @@ Keep in mind that URLs are relatively fragile and may change at any time.
 
 All datasets are processed from their unzipped locations in processing scripts. At the top of each script, there is a helper that looks for all the input datasets necessary. Ensure you have all the appropriate downloads unzipped and in the correct locations and run the scripts.
 
+If you want to preview any of the CSVs, open them using your machine's text editor (TextEdit on Mac, Notepad on Windows). Do NOT open using Excel - it will crash. 
+
 Summary of inputs and outputs
 
 ```{r}
@@ -62,6 +64,7 @@ fs::dir_tree(".",
              type = "directory",
              recurse = 0)
 ```
+
 ### nei
 
 The NEI is available from the EPA in multiple places at different aggregation levels
