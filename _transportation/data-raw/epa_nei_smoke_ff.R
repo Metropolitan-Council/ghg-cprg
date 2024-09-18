@@ -14,6 +14,8 @@ if(any(purrr::map(
     "_transportation/data-raw/epa/air_emissions_modeling/2017/2017gb_17j/inputs/onroad/2017gb_nata_onroad_SMOKE_MOVES_NATAstyle_14may2020_v0.csv",
     "_transportation/data-raw/epa/nei/2014NEI/SmokeFlatFile_ONROAD_20160910.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2014/2014fd_cb6_14j/inputs/onroad/2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_AQstyle_06feb2018_v0.csv",
+    "_transportation/data-raw/epa/nei/2014NEI/2014fd_cb6_14j/inputs/onroad/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.csv",
+    "_transportation/data-raw/epa/nei/2014NEI/2014fd_cb6_14j/inputs/onroad/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2011/2011ek_onroad_SMOKE_MOVES_MOVES2014a_forOTAQ_21jan2016_v2_part1.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2011/2011ek_onroad_SMOKE_MOVES_MOVES2014a_forOTAQ_21jan2016_v2_part2.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2011/2011el_cb6v2_v6_11g/inputs/onroad/2011el_onroad_SMOKE_MOVES_MOVES2014a_forOTAQ_31aug2016_v1_part1.csv",
@@ -53,8 +55,11 @@ furrr::future_map(
     # 2014 has two options
     # the first option (dated 20160910) represents 2014 v1 (https://gaftp.epa.gov/air/nei/2014/flat_files/README_2014NEIv1_flat_files.txt)
     # 2014fd represents 2014 v2
+    # 2014fd by state is the exact same as 2014fd
     "_transportation/data-raw/epa/nei/2014NEI/SmokeFlatFile_ONROAD_20160910.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2014/2014fd_cb6_14j/inputs/onroad/2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_AQstyle_06feb2018_v0.csv",
+    "_transportation/data-raw/epa/nei/2014NEI/2014fd_cb6_14j/inputs/onroad/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.csv",
+    "_transportation/data-raw/epa/nei/2014NEI/2014fd_cb6_14j/inputs/onroad/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.csv",
     
     # 2011 has two options
     # 2011el is from January 2016
@@ -84,6 +89,8 @@ nei_smoke_ff <- purrr::map(
     # go with fd because this represents the most recent version of 2014 NEI (v2)
     # "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/SmokeFlatFile_ONROAD_20160910.RDS",
     "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_AQstyle_06feb2018_v0.RDS",
+    # "_transportation/data-raw/epa/nei/2014NEI/2014fd_cb6_14j/inputs/onroad/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.csv",
+    # "_transportation/data-raw/epa/nei/2014NEI/2014fd_cb6_14j/inputs/onroad/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.csv",
     
     # 2011
     # we will go with el, because it is more recent
@@ -123,17 +130,30 @@ tictoc::toc()
 # 
 # # 2014 
 # smoke_2014fd <- readRDS("_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_AQstyle_06feb2018_v0.RDS")
+# 
+# smoke2014fd2 <- bind_rows(
+#   read_rds("_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_55.RDS"),
+#   read_rds("_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/2014fd_onroad_FF10_SMOKE_MOVES2014a_FIPS_27.RDS")
+# )
+# 
 # smoke2014nei <- read_rds( "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/SmokeFlatFile_ONROAD_20160910.RDS")
 # 
 # smoke_2014fd %>% select(metadata_info) %>% unique() %>% extract2("metadata_info") %>% strsplit("#")
 # smoke2014nei %>% select(metadata_info) %>% unique() %>% extract2("metadata_info") %>% strsplit("#")
 # 
-# smoke_2014fd %>% 
+# smoke_2014fd %>%
 #   full_join(smoke2014nei,
 #             by = join_by(region_cd, scc, poll, calc_year, scc6),
-#             suffix = c(".fd", ".nei")) %>% 
+#             suffix = c(".fd", ".nei")) %>%
 #   mutate(diff = emissions_short_tons.fd - emissions_short_tons.nei) %>% View
 # 
+# 
+# smoke_2014fd %>%
+#   full_join(smoke2014fd2,
+#             by = join_by(region_cd, scc, poll, calc_year, scc6, emis_type),
+#             suffix = c(".fd", ".fd2")) %>%
+#   mutate(diff = emissions_short_tons.fd - emissions_short_tons.fd2) %>% View
+
 # # 2011
 # smoke2011ek <- bind_rows(read_rds("_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/2011ek_onroad_SMOKE_MOVES_MOVES2014a_forOTAQ_21jan2016_v2_part1.RDS"),
 #                          read_rds("_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/2011ek_onroad_SMOKE_MOVES_MOVES2014a_forOTAQ_21jan2016_v2_part2.RDS"))
