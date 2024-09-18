@@ -54,7 +54,6 @@ furrr::future_map(
     "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_gas/gas_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv"
   ),
   read_smoke_ff10,
-  n_skip_rows = 19,
   out_directory = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/"
 ) 
 
