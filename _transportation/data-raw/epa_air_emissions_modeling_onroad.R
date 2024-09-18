@@ -44,7 +44,6 @@ furrr::future_map(
     "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/onroad/2022hc_onroad_SMOKE_MOVES_MOVES4_forAQ_27jun2024_v0.csv"
   ),
   read_smoke_ff10,
-  n_skip_rows = 19,
   out_directory = "_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/onroad/"
 )
 
@@ -60,13 +59,13 @@ furrr::future_map(
     "_transportation/data-raw/epa/air_emissions_modeling/2018/2018gc_cb6_18j/inputs/onroad/2018gc_SMOKE_MOVES_MOVES3_AQ_fullHAP_29sep2021_v1.csv"
   ),
   read_smoke_ff10,
-  n_skip_rows = 19,
   out_directory = "_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/onroad/"
 ) 
 
 # read back in, combine, and save -----
 onroad_mn_wi <- purrr::map(
-  list.files("_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/onroad/", full.names = TRUE),
+  list.files("_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/onroad/", 
+             full.names = TRUE),
   readRDS) %>% 
   bind_rows()
 
