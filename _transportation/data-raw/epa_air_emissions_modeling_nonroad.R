@@ -41,7 +41,6 @@ furrr::future_map(
     "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/nonroad/nonroad_ff10_2022hc_MOVES_ROC_AE6_13mar2024_v1.csv"
   ),
   read_smoke_ff10,
-  n_skip_rows = 31,
   out_directory = "_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/nonroad/"
 ) 
 
