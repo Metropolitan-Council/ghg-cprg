@@ -55,6 +55,7 @@ onroad_smoke <- epa_nei_onroad_smoke %>%
   left_join(counties_light) %>%
   filter(cprg_area == TRUE,
          emis_type %in% c("RPD", ""),
+         scc6 %in% onroad_regional$scc6,
          poll %in% c("CH4", "CO", "CO2", "N2O", "NH3", "NOX", "PM10-PRI", "PM25-PRI", 
                       "SO2", "VOC")) %>% 
   left_join(scc_combine) %>% 
@@ -98,13 +99,13 @@ onroad_regional %>%
   pivot_wider(names_from = data_source,
               values_from = emissions_metric_tons_co2e) %>% 
   mutate(diff = SMOKE - Regional,
-         pct_diff = diff / Regional) %>% 
+         pct_diff = abs(diff / Regional) )%>% 
   arrange(pct_diff) %>% 
   # filter(calc_year == 2020) %>%
   View
 # 2020 is correct
 # 2017 is off
-# 2014 is off
+# 2014 is off, mostly because 2014 SMOKE doesn't have CH4
 # 2011 doesn't have any CO2  
 
 
