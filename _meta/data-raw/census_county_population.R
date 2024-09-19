@@ -40,16 +40,12 @@ county_pop_intercensal1 <- download_read_table(
   exdir = "_meta/data-raw/population",
   skip = 3
 ) %>%
-# if the above code chunk fails with error:
-# libxls error: Unable to open file  
-# try manually opening downloaded xls files above and resaving. 
-# restart by uncommenting below code and 
-  mutate(NAMELSAD = `...1`) %>%
+  mutate(namelsad = `...1`) %>%
   # remove state total row and metadata rows
-  filter(stringr::str_detect(NAMELSAD, "County")) %>%
+  filter(stringr::str_detect(namelsad, "County")) %>%
   # we will use the official 2000 and 2010 (April 1) estimates
   # and the July 1 estimates for all intercensal years
-  select(NAMELSAD, everything(),
+  select(namelsad, everything(),
     -`2000`,
     `2000` = `...2`,
     -`...1`,
@@ -57,8 +53,8 @@ county_pop_intercensal1 <- download_read_table(
     -`...13`
   ) %>%
   mutate(
-    NAMELSAD = stringr::str_sub(NAMELSAD, start = 2, end = -1),
-    STATE = "Minnesota"
+    namelsad = stringr::str_sub(namelsad, start = 2, end = -1),
+    state_name = "Minnesota"
   ) %>%
   bind_rows(
     # repeat process for Wisconsin
@@ -67,9 +63,9 @@ county_pop_intercensal1 <- download_read_table(
       exdir = "_meta/data-raw/population",
       skip = 3
     ) %>%
-      mutate(NAMELSAD = `...1`) %>%
-      filter(stringr::str_detect(NAMELSAD, "County")) %>%
-      select(NAMELSAD, everything(),
+      mutate(namelsad = `...1`) %>%
+      filter(stringr::str_detect(namelsad, "County")) %>%
+      select(namelsad, everything(),
         -`2000`,
         `2000` = `...2`,
         -`...1`,
@@ -77,11 +73,11 @@ county_pop_intercensal1 <- download_read_table(
         -`...13`
       ) %>%
       mutate(
-        NAMELSAD = stringr::str_sub(NAMELSAD, start = 2, end = -1),
-        STATE = "Wisconsin"
+        namelsad = stringr::str_sub(namelsad, start = 2, end = -1),
+        state_name = "Wisconsin"
       )
   ) %>%
-  group_by(NAMELSAD, STATE) %>%
+  group_by(namelsad, state_name) %>%
   pivot_longer(
     cols = 2:12,
     names_to = "population_year",
@@ -93,8 +89,8 @@ county_pop_intercensal1 <- download_read_table(
   )) %>%
   left_join(county_geography %>%
     select(
-      STATE, STATEFP, COUNTYFP, GEOID,
-      NAMELSAD, NAME
+      state_name, statefp, countyfp, geoid,
+      namelsad, name
     ))
 
 # 2011-2019 -----
@@ -112,9 +108,9 @@ county_pop_intercensal2 <- download_read_table(
   clean_names() %>%
   # filter for only our states
   filter(
-    stname %in% county_pop_intercensal1$STATE,
+    stname %in% county_pop_intercensal1$state_name,
     # remove state level totals
-    !ctyname %in% county_pop_intercensal1$STATE
+    !ctyname %in% county_pop_intercensal1$state_name
   ) %>%
   mutate(census2010pop = as.numeric(census2010pop)) %>%
   # pivot longer
@@ -124,10 +120,10 @@ county_pop_intercensal2 <- download_read_table(
     values_to = "population"
   ) %>%
   mutate(
-    GEOID = paste0(state, county),
-    STATE = stname,
-    NAMELSAD = ctyname,
-    NAME = str_remove(ctyname, " County"),
+    geoid = paste0(state, county),
+    state_name = stname,
+    namelsad = ctyname,
+    name = str_remove(ctyname, " County"),
     # extract the year from the population_source_year
     population_year = str_extract(population_source_year, "[:digit:][:digit:][:digit:][:digit:]"),
     population_data_source = ifelse(population_year %in% c(2000, 2010, 2020),
@@ -151,7 +147,7 @@ county_pop_intercensal <- bind_rows(
   county_pop_intercensal2
 ) %>%
   arrange(population_year) %>%
-  select(1:5, GEOID, NAME)
+  select(1:5, geoid, name)
 
 # 2000, 2010, 2020 -----
 # Decennial census years
@@ -169,7 +165,7 @@ fetch_combine_decennial <- function(state_name) {
     mutate(
       population_year = "2020",
       population_data_source = "Decennial Census, Table P1",
-      STATE = state_name,
+      state_name = state_name,
       population = value
     )
 
@@ -182,7 +178,7 @@ fetch_combine_decennial <- function(state_name) {
     mutate(
       population_year = "2010",
       population_data_source = "Decennial Census, Table P1",
-      STATE = state_name,
+      state_name = state_name,
       population = value
     )
 
@@ -195,7 +191,7 @@ fetch_combine_decennial <- function(state_name) {
     mutate(
       population_year = "2000",
       population_data_source = "Decennial Census, Table P1",
-      STATE = state_name,
+      state_name = state_name,
       population = value
     )
 
@@ -210,7 +206,8 @@ fetch_combine_decennial <- function(state_name) {
 county_pop_decennial <- bind_rows(
   fetch_combine_decennial("Minnesota"),
   fetch_combine_decennial("Wisconsin")
-)
+) %>%
+  clean_names()
 
 
 # 2021, 2022, onward -----
@@ -229,7 +226,7 @@ county_pop_acs <- purrr::map_dfr(
     ) %>%
       mutate(
         population_year = as.character(x),
-        STATE = "Minnesota",
+        state_name = "Minnesota",
         population = estimate
       )
   }
@@ -247,7 +244,7 @@ county_pop_acs <- purrr::map_dfr(
         ) %>%
           mutate(
             population_year = as.character(x),
-            STATE = "Wisconsin",
+            state_name = "Wisconsin",
             population = estimate
           )
       }
@@ -255,7 +252,8 @@ county_pop_acs <- purrr::map_dfr(
   ) %>%
   mutate(
     population_data_source = "ACS 5-Year Estimates, Table DP05"
-  )
+  )%>%
+  clean_names()
 
 
 # combine all datasets -----
@@ -268,7 +266,7 @@ names(county_pop_intercensal)
 # check that the decennial census data we pulled using tidycensus
 # matches that from the intercensal
 county_pop_decennial %>%
-  left_join(county_pop_intercensal, by = c("GEOID", "population_year")) %>%
+  left_join(county_pop_intercensal, by = c("geoid", "population_year")) %>%
   filter(value != population.x) %>%
   nrow() %>%
   testthat::expect_equal(0)
@@ -279,21 +277,21 @@ census_county_population <- county_pop_intercensal %>%
   filter(!population_year %in% county_pop_decennial$population_year) %>%
   bind_rows(county_pop_decennial) %>%
   bind_rows(county_pop_acs) %>%
-  select(-NAME, -NAMELSAD, -estimate, -moe, -variable, -value) %>%
+  select(-name, -namelsad, -estimate, -moe, -variable, -value) %>%
   left_join(county_geography %>%
-    select(GEOID, NAME, STATE, STATE_ABB, COUNTYFP, NAMELSAD)) %>%
+    select(geoid, name, state_name, state_abb, countyfp, namelsad)) %>%
   # add variable discerning whether the county is in our study area
-  mutate(cprg_area = ifelse(GEOID %in% cprg_county$geoid, TRUE, FALSE)) %>%
+  mutate(cprg_area = ifelse(geoid %in% cprg_county$geoid, TRUE, FALSE)) %>%
   select(
-    STATE, STATE_ABB, GEOID, COUNTYFP, NAME,
+    state_name, state_abb, geoid, countyfp, name,
     population_year, population, population_data_source, cprg_area
   ) %>%
-  arrange(STATE, population_year) %>%
+  arrange(state_name, population_year) %>%
   clean_names() %>%
   select(
     geoid,
     county_name = name,
-    state_name = state,
+    state_name,
     state_abb,
     population_year,
     population_data_source,
