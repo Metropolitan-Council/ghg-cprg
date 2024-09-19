@@ -14,7 +14,7 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(councilR, quietly = TRUE))
   suppressMessages(library(lubridate, quietly = TRUE))
   suppressMessages(library(imputeTS, quietly = TRUE))
-  
+
   # Workflow ------
   # suppressMessages(library(keyring, quietly = TRUE))
   suppressMessages(library(here, quietly = TRUE))

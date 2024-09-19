@@ -1,69 +1,75 @@
 ## Aviation Data
 ```{r}
-source(file.path(here::here(),"R/_load_pkgs.R"))
-source(file.path(here::here(),"R/global_warming_potential.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/global_warming_potential.R"))
 
 ### load in EPA ef hub data
-aviation_ef <- read_rds(file.path(here::here(),"_meta/data/epa_ghg_factor_hub.RDS")) %>% 
-  pluck("stationary_combustion") %>% 
+aviation_ef <- read_rds(file.path(here::here(), "_meta/data/epa_ghg_factor_hub.RDS")) %>%
+  pluck("stationary_combustion") %>%
   filter(`Fuel type` == "Kerosene-Type Jet Fuel" & per_unit == "gallon" & emission != "mmBtu")
 
 
-### load in partial data from MAC and 
-mac_emissions <-  read_csv(file.path(here::here(),"_transportation/data-raw/aviation/mac_emissions.csv"))
+### load in partial data from MAC and
+mac_emissions <- read_csv(file.path(here::here(), "_transportation/data-raw/aviation/mac_emissions.csv"))
 
 ### calculate emissions from fuel provisioned at MAC in 2005 and 2021
-metc_emissions <- mac_emissions %>% 
-  filter(!is.na(Fuel_dispensed_gallons)) %>% 
-  cross_join(.,aviation_ef) %>% 
-  mutate(mt_gas = case_when(
-    grepl("CO2", emission) ~ Fuel_dispensed_gallons * value * (1/1000),
-    grepl("CH4", emission) ~ Fuel_dispensed_gallons * value * (1/1000000),
-    grepl("N2O", emission) ~ Fuel_dispensed_gallons * value * (1/1000000),
+metc_emissions <- mac_emissions %>%
+  filter(!is.na(Fuel_dispensed_gallons)) %>%
+  cross_join(., aviation_ef) %>%
+  mutate(
+    mt_gas = case_when(
+      grepl("CO2", emission) ~ Fuel_dispensed_gallons * value * (1 / 1000),
+      grepl("CH4", emission) ~ Fuel_dispensed_gallons * value * (1 / 1000000),
+      grepl("N2O", emission) ~ Fuel_dispensed_gallons * value * (1 / 1000000),
     ),
     mt_co2e = case_when(
       grepl("CO2", emission) ~ mt_gas,
       grepl("CH4", emission) ~ mt_gas * gwp$ch4,
       grepl("N2O", emission) ~ mt_gas * gwp$n2o,
-    ))
+    )
+  )
 
 ### create MSP emissions, selecting calc from fuel where possible
-msp_emissions <- mac_emissions %>% 
-  mutate(mac_emissions = LTO_CO2e + Cruise_CO2e) %>% 
-  left_join(., metc_emissions %>% 
-              group_by(year) %>% 
-              summarize(mt_co2e = sum(mt_co2e))) %>% 
-  mutate(msp_mt_co2e = if_else(is.na(mt_co2e), mac_emissions, mt_co2e)) %>% 
+msp_emissions <- mac_emissions %>%
+  mutate(mac_emissions = LTO_CO2e + Cruise_CO2e) %>%
+  left_join(., metc_emissions %>%
+    group_by(year) %>%
+    summarize(mt_co2e = sum(mt_co2e))) %>%
+  mutate(msp_mt_co2e = if_else(is.na(mt_co2e), mac_emissions, mt_co2e)) %>%
   select(year, msp_mt_co2e)
 
 ### load in state aviation data
-mpca_aviation <- read_csv(file.path(here::here(),"_transportation/data-raw/aviation/mpca_tran_inv.csv"),
-                          skip = 1) %>% 
-  pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
-  rename(Subsector = `Sources (group)`) %>% 
-  filter(Subsector == "Aviation") %>% 
-  rename(state_mt_co2e = co2e) %>% 
+mpca_aviation <- read_csv(file.path(here::here(), "_transportation/data-raw/aviation/mpca_tran_inv.csv"),
+  skip = 1
+) %>%
+  pivot_longer(cols = -c(1:2), names_to = "year", values_to = "co2e") %>%
+  rename(Subsector = `Sources (group)`) %>%
+  filter(Subsector == "Aviation") %>%
+  rename(state_mt_co2e = co2e) %>%
   mutate(year = as.numeric(year))
 
-#explore ways of interpolating NAs in MSP emissions
-aviation_emissions <- full_join(mpca_aviation, msp_emissions) %>% 
+# explore ways of interpolating NAs in MSP emissions
+aviation_emissions <- full_join(mpca_aviation, msp_emissions) %>%
   mutate(msp_proportion = msp_mt_co2e / state_mt_co2e) %>%
   # first method just uses time series imputation between missing msp values
-  mutate(msp_mt_co2e_impute = if_else(is.na(msp_mt_co2e), 
-                                      na_kalman(msp_mt_co2e),
-                                      NA),
-         msp_proportion_impute = na_kalman(msp_proportion),
-  #second methods uses time series imputaiton between missing msp_proportion values,
-  # then multiplies imputed proportion by state value
-         msp_mt_co2e_state_prop = if_else(is.na(msp_mt_co2e), 
-                                                msp_proportion_impute * state_mt_co2e,
-                                                NA),
-### interpolating directly from MSP values leads to higher aviation estimates in
-### MSP than entire state from 2010-2012, which is obviously problematic
-### Using the imputing proportion step as a result
-         Sector = "Transportation",
-         Subsector = "Aviation")
-
+  mutate(
+    msp_mt_co2e_impute = if_else(is.na(msp_mt_co2e),
+      na_kalman(msp_mt_co2e),
+      NA
+    ),
+    msp_proportion_impute = na_kalman(msp_proportion),
+    # second methods uses time series imputaiton between missing msp_proportion values,
+    # then multiplies imputed proportion by state value
+    msp_mt_co2e_state_prop = if_else(is.na(msp_mt_co2e),
+      msp_proportion_impute * state_mt_co2e,
+      NA
+    ),
+    ### interpolating directly from MSP values leads to higher aviation estimates in
+    ### MSP than entire state from 2010-2012, which is obviously problematic
+    ### Using the imputing proportion step as a result
+    Sector = "Transportation",
+    Subsector = "Aviation"
+  )
 ```
 
 Aviation emissions are derived from three data sources: Metropolitan Airport Commission (MAC) fuel distribution (2005, 2021), MAC Aircraft emission estimates (2016-2020), and MPCA state GHG inventories. Fuel distribution at the airport is the most straight-forward approach, as it involves applying a direct emission factor for jet fuel to the total amount of fuel distributed. As aircraft are generally only fueled for one flight at a time, we are effectively capturing emissions for aircraft flights departing MSP. The assumption is that any given airport (MSP in this case), should be responsible for half of emissions for each arrival and departure, with the complementary departure/recipient airport being responsible for the other half. 
@@ -79,37 +85,45 @@ The final data source, which we used to in-fill interstitial years, 2006-2015, r
 #| out-width: "95%"
 
 
-aviation_emissions_estimates <- plot_ly(data = aviation_emissions,
-        source = "fig-aviation-emission-estimates") %>%
+aviation_emissions_estimates <- plot_ly(
+  data = aviation_emissions,
+  source = "fig-aviation-emission-estimates"
+) %>%
   # State MT CO2e (orange/yellow dots, larger size)
-  add_trace(x = ~year, y = ~state_mt_co2e, 
-            type = 'scatter', mode = 'markers', 
-            marker = list(color = 'orange', size = 12), 
-            name = 'MPCA state emissions') %>%
-  
+  add_trace(
+    x = ~year, y = ~state_mt_co2e,
+    type = "scatter", mode = "markers",
+    marker = list(color = "orange", size = 12),
+    name = "MPCA state emissions"
+  ) %>%
   # MSP MT CO2e Impute (red dots)
-  add_trace(x = ~year, y = ~msp_mt_co2e_impute, 
-            type = 'scatter', mode = 'markers', 
-            marker = list(color = 'red', size = 12),
-            name = 'Imputed MSP emission: direct') %>%
-  
+  add_trace(
+    x = ~year, y = ~msp_mt_co2e_impute,
+    type = "scatter", mode = "markers",
+    marker = list(color = "red", size = 12),
+    name = "Imputed MSP emission: direct"
+  ) %>%
   # MSP MT CO2e State Prop (blue dots)
-  add_trace(x = ~year, y = ~msp_mt_co2e_state_prop, 
-            type = 'scatter', mode = 'markers', 
-            marker = list(color = 'blue', size = 12),
-            name = 'Imputed MSP emissions: state proportion') %>%
-  
+  add_trace(
+    x = ~year, y = ~msp_mt_co2e_state_prop,
+    type = "scatter", mode = "markers",
+    marker = list(color = "blue", size = 12),
+    name = "Imputed MSP emissions: state proportion"
+  ) %>%
   # MSP MT CO2e from activity data (black triangles for MAC derived years)
-  add_trace(x = ~year, y = ~msp_mt_co2e, 
-            type = 'scatter', mode = 'markers', 
-            marker = list(color = 'black', symbol = 'triangle-up', size = 12),
-            name = 'MSP emission: activity data') %>%
-  
+  add_trace(
+    x = ~year, y = ~msp_mt_co2e,
+    type = "scatter", mode = "markers",
+    marker = list(color = "black", symbol = "triangle-up", size = 12),
+    name = "MSP emission: activity data"
+  ) %>%
   # Layout with proper axis titles and legend
-  layout(title = 'MT CO2e Over Time',
-         xaxis = list(title = 'Year'),
-         yaxis = list(title = 'Metric tons CO2e'),
-         legend = list(title = list(text = 'Legend')))
+  layout(
+    title = "MT CO2e Over Time",
+    xaxis = list(title = "Year"),
+    yaxis = list(title = "Metric tons CO2e"),
+    legend = list(title = list(text = "Legend"))
+  )
 
 aviation_emissions_estimates
 ```
