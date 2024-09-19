@@ -10,7 +10,7 @@ dot_vmt_meta <- readRDS("_transportation/data/dot_vmt_meta.RDS")
 state_vmt <-
   # find WI state annual VMT
   wisconsin_vmt %>%
-  mutate(vmt_year = year) %>% 
+  mutate(vmt_year = year) %>%
   group_by(vmt_year) %>%
   summarize(
     state_daily_vmt = sum(daily_vmt),
@@ -23,7 +23,7 @@ state_vmt <-
   bind_rows(
     # bind with MN annual VMT
     vmt_county_raw_interp %>%
-      mutate(vmt_year = year) %>% 
+      mutate(vmt_year = year) %>%
       group_by(vmt_year) %>%
       summarise(
         state_daily_vmt = sum(daily_vmt),
@@ -65,7 +65,7 @@ dot_vmt_county_proportions_meta <-
       "county_proportion_annual_vmt", class(dot_vmt_county_proportions$county_proportion_annual_vmt), "County annual vehicle miles traveled relative to statewide total",
     )
   ) %>%
-  filter(`Column` %in% names(dot_vmt_county_proportions)) %>% 
+  filter(`Column` %in% names(dot_vmt_county_proportions)) %>%
   unique()
 
 

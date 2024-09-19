@@ -12,8 +12,8 @@ dot_vmt <- bind_rows(
   wisdot_vmt
 ) %>%
   ungroup() %>%
-  rename(county_name = county) %>% 
-  left_join(cprg_county) %>% 
+  rename(county_name = county) %>%
+  left_join(cprg_county) %>%
   select(
     vmt_year = year,
     geoid,
@@ -35,8 +35,8 @@ dot_vmt_meta <-
     "annual_vmt", class(dot_vmt$annual_vmt), "County annual vehicle miles traveled",
     "centerline miles", class(dot_vmt$centerline_miles), "Centerline miles included in county VMT estimate. Minnesota only",
     "data_source", class(dot_vmt$data_source), "State DOT. Either \"MnDOT\" or \"WisDOT\""
-  ) %>% 
-  bind_rows(cprg_county_meta) %>% 
+  ) %>%
+  bind_rows(cprg_county_meta) %>%
   filter(Column %in% names(dot_vmt))
 
 saveRDS(dot_vmt, "_transportation/data/dot_vmt.RDS")
