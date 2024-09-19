@@ -17,7 +17,7 @@ mac_emissions <- read_csv("_transportation/data-raw/aviation/mac_emissions.csv")
 metc_emissions <- mac_emissions %>%
   filter(!is.na(Fuel_dispensed_gallons)) %>%
   cross_join(., aviation_ef) %>%
-  mutate(  mutate(
+  mutate(
     mt_gas = case_when(
       # CO2 emissions factor is reported in kilograms per gallon
       grepl("CO2", emission) ~ Fuel_dispensed_gallons * value %>% 
@@ -39,7 +39,6 @@ metc_emissions <- mac_emissions %>%
       grepl("CH4", emission) ~ mt_gas * gwp$ch4,
       grepl("N2O", emission) ~ mt_gas * gwp$n2o,
     )
-  )
   )
 
 ### create MSP emissions, selecting calc from fuel where possible
@@ -68,7 +67,7 @@ aviation_emissions <- full_join(mpca_aviation, msp_emissions) %>%
   mutate(
     msp_mt_co2e_impute = na_kalman(msp_mt_co2e),
     msp_proportion_impute = na_kalman(msp_proportion),
-    # second methods uses time series imputaiton between missing msp_proportion values,
+    # second methods uses time series imputation between missing msp_proportion values,
     # then multiplies imputed proportion by state value
     msp_mt_co2e_state_prop = if_else(is.na(msp_mt_co2e),
                                      msp_proportion_impute * state_mt_co2e,
