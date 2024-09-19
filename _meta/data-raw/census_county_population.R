@@ -24,20 +24,26 @@ if (!file.exists("_meta/data-raw/population/co-est00int-01-27.xls")) {
   fs::dir_create("_meta/data-raw/population/")
   # download directly from census.gov
   download.file("https://www2.census.gov/programs-surveys/popest/tables/2000-2010/intercensal/county/co-est00int-01-27.xls",
-    destfile = "_meta/data-raw/population/co-est00int-01-27.xls"
+    destfile = "_meta/data-raw/population/co-est00int-01-27.xls",
+    mode = "wb"
   )
   download.file("https://www2.census.gov/programs-surveys/popest/tables/2000-2010/intercensal/county/co-est00int-01-55.xls",
-    destfile = "_meta/data-raw/population/co-est00int-01-55.xls"
+    destfile = "_meta/data-raw/population/co-est00int-01-55.xls",
+    mode = "wb"
   )
 }
 
 
-# if below code fails, try manually downloading xls files above. PW experiencd a partially corrupted download file using above code
+
 county_pop_intercensal1 <- download_read_table(
   "https://www2.census.gov/programs-surveys/popest/tables/2000-2010/intercensal/county/co-est00int-01-27.xls",
   exdir = "_meta/data-raw/population",
   skip = 3
 ) %>%
+# if the above code chunk fails with error:
+# libxls error: Unable to open file  
+# try manually opening downloaded xls files above and resaving. 
+# restart by uncommenting below code and 
   mutate(NAMELSAD = `...1`) %>%
   # remove state total row and metadata rows
   filter(stringr::str_detect(NAMELSAD, "County")) %>%

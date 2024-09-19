@@ -23,7 +23,8 @@ download_read_table <- function(url,
 
   # download file and save in exdir
   download.file(url,
-    destfile = file.path(exdir, file_name)
+    destfile = file.path(exdir, file_name), 
+    mode = "wb"
   )
 
   # read and return file
