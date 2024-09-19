@@ -1,5 +1,5 @@
 #### This script processes partial 2005-2021 data received from the
-#### Metropolitan Airport Commission for aviation fuel emisions
+#### Metropolitan Airport Commission for aviation fuel emissions
 
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
@@ -17,11 +17,22 @@ mac_emissions <- read_csv("_transportation/data-raw/aviation/mac_emissions.csv")
 metc_emissions <- mac_emissions %>%
   filter(!is.na(Fuel_dispensed_gallons)) %>%
   cross_join(., aviation_ef) %>%
-  mutate(
+  mutate(  mutate(
     mt_gas = case_when(
-      grepl("CO2", emission) ~ Fuel_dispensed_gallons * value * (1 / 1000),
-      grepl("CH4", emission) ~ Fuel_dispensed_gallons * value * (1 / 1000000),
-      grepl("N2O", emission) ~ Fuel_dispensed_gallons * value * (1 / 1000000),
+      # CO2 emissions factor is reported in kilograms per gallon
+      grepl("CO2", emission) ~ Fuel_dispensed_gallons * value %>% 
+        units::as_units("kilogram") %>% 
+        units::set_units("metric_ton") %>% 
+        as.numeric(),
+      # all others are reported in grams per gallon
+      grepl("CH4", emission) ~ Fuel_dispensed_gallons * value %>% 
+        units::as_units("gram") %>% 
+        units::set_units("metric_ton") %>% 
+        as.numeric(),
+      grepl("N2O", emission) ~ Fuel_dispensed_gallons * value %>% 
+        units::as_units("gram") %>% 
+        units::set_units("metric_ton") %>% 
+        as.numeric(),
     ),
     mt_co2e = case_when(
       grepl("CO2", emission) ~ mt_gas,
@@ -29,19 +40,20 @@ metc_emissions <- mac_emissions %>%
       grepl("N2O", emission) ~ mt_gas * gwp$n2o,
     )
   )
+  )
 
 ### create MSP emissions, selecting calc from fuel where possible
 msp_emissions <- mac_emissions %>%
   mutate(mac_emissions = LTO_CO2e + Cruise_CO2e) %>%
   left_join(., metc_emissions %>%
-    group_by(year) %>%
-    summarize(mt_co2e = sum(mt_co2e))) %>%
+              group_by(year) %>%
+              summarize(mt_co2e = sum(mt_co2e))) %>%
   mutate(msp_mt_co2e = if_else(is.na(mt_co2e), mac_emissions, mt_co2e)) %>%
   select(year, msp_mt_co2e)
 
 ### load in state aviation data
 mpca_aviation <- read_csv("_transportation/data-raw/aviation/mpca_tran_inv.csv",
-  skip = 1
+                          skip = 1
 ) %>%
   pivot_longer(cols = -c(1:2), names_to = "year", values_to = "co2e") %>%
   rename(Subsector = `Sources (group)`) %>%
@@ -59,8 +71,8 @@ aviation_emissions <- full_join(mpca_aviation, msp_emissions) %>%
     # second methods uses time series imputaiton between missing msp_proportion values,
     # then multiplies imputed proportion by state value
     msp_mt_co2e_state_prop = if_else(is.na(msp_mt_co2e),
-      msp_proportion_impute * state_mt_co2e,
-      msp_mt_co2e
+                                     msp_proportion_impute * state_mt_co2e,
+                                     msp_mt_co2e
     ),
     ### interpolating directly from MSP values leads to higher aviation estimates in
     ### MSP than entire state from 2010-2012, which is obviously problematic
