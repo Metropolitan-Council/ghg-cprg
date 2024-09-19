@@ -38,34 +38,35 @@ interpolate_population <- function(start_year, end_year, start_pop, end_pop) {
 
 # Interpolating population and taking 2005 to 2008
 mn_pop_full <- bind_rows(interpolate_population(2000, 2009, mn_2000$population[1], mn_pop$population[1]) %>% 
-                      filter(year %in% c(2005:2008)),
-                    mn_pop)
+                           filter(year %in% c(2005:2008)),
+                         mn_pop)
 
 # read in mpca data, bind, and convert co2e to per capita for all sectors
+# Check shared Teams folder if you don't have these available on your machine
 mpca_inv <- bind_rows(
-read_csv("_meta/data-raw/mpca_ag_inv.csv",skip = 1) %>% 
-  pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
-  rename(Subsector = `Sources (group)`),
-read_csv("_meta/data-raw/mpca_comm_inv.csv",skip = 1) %>% 
-  pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
-  rename(Subsector = `Sources (group)`),
-read_csv("_meta/data-raw/mpca_elec_inv.csv",skip = 1) %>% 
-  pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
-  rename(Subsector = `Sources (group)`),
-read_csv("_meta/data-raw/mpca_ind_inv.csv",skip = 1) %>% 
-  pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
-  rename(Subsector = `Sources (group)`),
-read_csv("_meta/data-raw/mpca_res_inv.csv",skip = 1) %>% 
-  pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
-  rename(Subsector = `Sources (group)`),
-read_csv("_meta/data-raw/mpca_tran_inv.csv",skip = 1) %>% 
-  pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
-  rename(Subsector = `Sources (group)`),
-read_csv("_meta/data-raw/mpca_waste_inv.csv",skip = 1) %>% 
-  pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
-  rename(Subsector = `Sources (group)`)) %>% 
+  read_csv("_meta/data-raw/mpca_ag_inv.csv",skip = 1) %>% 
+    pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
+    rename(Subsector = `Sources (group)`),
+  read_csv("_meta/data-raw/mpca_comm_inv.csv",skip = 1) %>% 
+    pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
+    rename(Subsector = `Sources (group)`),
+  read_csv("_meta/data-raw/mpca_elec_inv.csv",skip = 1) %>% 
+    pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
+    rename(Subsector = `Sources (group)`),
+  read_csv("_meta/data-raw/mpca_ind_inv.csv",skip = 1) %>% 
+    pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
+    rename(Subsector = `Sources (group)`),
+  read_csv("_meta/data-raw/mpca_res_inv.csv",skip = 1) %>% 
+    pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
+    rename(Subsector = `Sources (group)`),
+  read_csv("_meta/data-raw/mpca_tran_inv.csv",skip = 1) %>% 
+    pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
+    rename(Subsector = `Sources (group)`),
+  read_csv("_meta/data-raw/mpca_waste_inv.csv",skip = 1) %>% 
+    pivot_longer(cols = -c(1:2),names_to = "year", values_to = "co2e") %>% 
+    rename(Subsector = `Sources (group)`)) %>% 
   mutate(year = as.numeric(year)) %>% 
-left_join(.,mn_pop_full) %>% 
+  left_join(.,mn_pop_full) %>% 
   mutate(co2e_per_cap = co2e /population)
 
 mpca_inv_meta <-
@@ -78,7 +79,7 @@ mpca_inv_meta <-
     "population", class(mpca_inv$population), "Minnesota state population",
     "co2e_per_cap", class(mpca_inv$co2e_per_cap), "Metric tonnes of CO2 equivalency generated per capita"
   )
-  
+
 saveRDS(mpca_inv, "_meta/data/mpca_ghg_inv_2005_2020.RDS")
 
 saveRDS(mpca_inv, "_meta/data/mpca_ghg_inv_2005_2020_meta.RDS")
