@@ -80,6 +80,8 @@ aviation_emissions <- full_join(mpca_aviation, msp_emissions) %>%
     Subsector = "Aviation"
   )
 
+aviation_emissions_data_source_compare <- aviation_emissions
+
 aviation_out <- aviation_emissions %>%
   select(sector = Sector, source = Subsector, inventory_year = year, value_emissions = msp_mt_co2e_state_prop) %>%
   mutate(
@@ -109,3 +111,4 @@ aviation_emissions_meta <- tibble::tribble(
 
 saveRDS(aviation_out, "./_transportation/data/aviation_emissions.rds")
 saveRDS(aviation_emissions_meta, "./_transportation/data/aviation_emissions_meta.rds")
+saveRDS(aviation_emissions_data_source_compare, "_transportation/data/aviation_emissions_data_source_compare.RDS")
