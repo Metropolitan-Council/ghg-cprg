@@ -162,8 +162,8 @@ emissions_all <- bind_rows(
   left_join(
     cprg_county %>%
       sf::st_drop_geometry() %>%
-      select(NAME, geog_id = COUNTYFP),
-    by = c("geog_name" = "NAME")
+      select(county_name, geoid),
+    by = c("geog_name" = "county_name")
   ) %>%
   mutate(
     source = factor(source,
@@ -214,29 +214,29 @@ emissions_all <- bind_rows(
   left_join(
     cprg_county_pop %>%
       select(
-        geog_id = COUNTYFP,
+        geoid,
         population_year,
         county_total_population = population,
         population_data_source
       ),
-    by = join_by(geog_id, year == population_year)
+    by = join_by(geoid, year == population_year)
   ) %>%
   rowwise() %>%
   mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
-  select(year, geog_level, geog_id, geog_name, everything())
+  select(year, geog_level, geoid, geog_name, everything())
 
 # splitting off carbon stock here as it is a capacity, not a rate
 carbon_stock <- emissions_all %>% filter(category == "Stock")
 emissions_all <- emissions_all %>% filter(category != "Stock")
 
-mean(emissions_all$emissions_per_capita[!emissions_all$category == "Stock"])
-sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"]) / sum(cprg_county_pop$population)
+mean(emissions_all$emissions_per_capita[!emissions_all$category == "Stock"], na.rm = T)
+sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"], na.rm = T) / sum(cprg_county_pop$population)
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
   "year", class(emissions_all$year), "Emissions estimation year",
   "geog_level", class(emissions_all$geog_level), "Geography level; city or county",
-  "geog_id", class(emissions_all$geog_id), "FIPS code",
+  "geoid", class(emissions_all$geoid), "FIPS code",
   "geog_name", class(emissions_all$geog_name), "Name of geographic area",
   "sector", class(emissions_all$sector), paste0(
     "Emissions sector. One of ",
