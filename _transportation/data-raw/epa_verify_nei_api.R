@@ -6,4 +6,3 @@ epa_nei_onroad <- readRDS("_transportation/data-raw/epa/epa_nei_onroad_emissions
 
 # how do the NEI summary values from the EnviroFacts API compare with
 # the emissions values pulled from the regional summary files?
-

@@ -10,7 +10,7 @@ source("_transportation/data-raw/_read_smoke_ff10.R")
 library(furrr)
 
 # check that we have all the necessary files -----
-if(any(purrr::map(
+if (any(purrr::map(
   c(
     "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002/inputs/onroad_inv_diesel/diesel_MYR_2002_SMOKE_MOVES_MOVES3_AQstyle_06jan2021_v0.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2002/inputs/onroad_inv_gas/gas_MYR_2002_SMOKE_MOVES_MOVES3_AQstyle_28may2021_nf_v1.csv",
@@ -25,7 +25,8 @@ if(any(purrr::map(
     "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_diesel/diesel_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_2017/inputs/onroad_inv_gas/gas_MYR_2017_SMOKE_MOVES_MOVES3_AQstyle_15dec2020_v0.csv"
   ),
-  file_exists) == FALSE)){
+  file_exists
+) == FALSE)) {
   cli::cli_abort(c(
     "Required datasets unavailable",
     "*" = "Consult documentation for more information",
@@ -55,14 +56,16 @@ furrr::future_map(
   ),
   read_smoke_ff10,
   out_directory = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/"
-) 
+)
 
 
 # read back in, combine, and save -----
 equates <- purrr::map(
-  list.files("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/", 
-             full.names = TRUE),
-  readRDS) %>% 
+  list.files("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/",
+    full.names = TRUE
+  ),
+  readRDS
+) %>%
   bind_rows()
 
 saveRDS(equates, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS")

@@ -3,8 +3,8 @@ source("R/_load_pkgs.R")
 # scc onroad only -----
 # onroad only, broad SCC descriptons
 scc6_desc <- read_xlsx("_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022v1 onroad comparisons 22-26-32-38 10aug2024.xlsx",
-                       col_types = "text",
-                       sheet = 4
+  col_types = "text",
+  sheet = 4
 ) %>%
   clean_names() %>%
   select(scc6, scc6_desc) %>%
@@ -19,7 +19,7 @@ scc6_desc <- read_xlsx("_transportation/data-raw/epa/air_emissions_modeling/2022
 # these are used specifically for onroad SCCs
 # in VMT and other supplementary calculations
 scc_onroad <- readxl::read_xlsx("_transportation/data-raw/epa/onroad_activity_data_SCC_descriptions.xlsx",
-                                col_types = "text"
+  col_types = "text"
 ) %>%
   clean_names() %>%
   mutate(scc6 = stringr::str_sub(scc, 1, 6)) %>%
@@ -32,27 +32,27 @@ scc_onroad <- readxl::read_xlsx("_transportation/data-raw/epa/onroad_activity_da
     )[, 2] %>%
       stringr::str_trim(),
     fuel_type_detail = ifelse(fuel_type_detail == "Ethanol (E",
-                              "Ethanol (E-85)",
-                              fuel_type_detail
+      "Ethanol (E-85)",
+      fuel_type_detail
     )
   ) %>%
   mutate(scc6_desc = ifelse(is.na(scc6_desc),
-                            paste0(
-                              fuel_type_detail, "; ",
-                              str_to_sentence(vehicle_type)
-                            ),
-                            scc6_desc
+    paste0(
+      fuel_type_detail, "; ",
+      str_to_sentence(vehicle_type)
+    ),
+    scc6_desc
   ))
 
 # scc  NEI complete -----
 # these are used in the official NEI
 
 scc6_desc_manual <- read.csv("_transportation/data-raw/epa/nei/scc6_descriptions_all.csv",
-                             colClasses = "character"
+  colClasses = "character"
 )
 
 scc_complete_road <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-0812-144242.csv",
-                              col_types = "c"
+  col_types = "c"
 ) %>%
   clean_names() %>%
   filter(data_category %in% c("Onroad", "Nonroad")) %>%
@@ -162,7 +162,7 @@ scc_complete_road <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-081
 # listen, this is the best I could find using google.com
 if (!file.exists("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx")) {
   download.file("https://dep.nj.gov/wp-content/uploads/airplanning/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx",
-                destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx"
+    destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx"
   )
 }
 
@@ -207,8 +207,8 @@ scc_equates <- readxl::read_xlsx(
     )[, 2] %>%
       stringr::str_trim(),
     fuel_type = ifelse(fuel_type == "Ethanol (E",
-                       "Ethanol (E-85)",
-                       fuel_type
+      "Ethanol (E-85)",
+      fuel_type
     )
   ) %>%
   select(
@@ -222,7 +222,7 @@ scc_equates <- readxl::read_xlsx(
   unique() %>%
   mutate(scc6 = stringr::str_sub(scc, 1, 6)) %>%
   left_join(scc6_desc,
-            by = "scc6"
+    by = "scc6"
   ) %>%
   mutate(
     alt_vehicle_type =
@@ -249,58 +249,72 @@ scc_equates <- readxl::read_xlsx(
 # scc combine -----
 # create a combined SCC index for use across all data sources
 # including NEI, EQUATES, and air emissions modeling platforms
-scc_combine <- scc_complete_road %>% 
-  select(scc6, scc6_desc, scc6_desc_broad, scc6_desc_manual) %>% 
-  unique() %>% 
-  bind_rows(scc_equates %>% 
-              select(scc6, scc6_desc) %>% 
-              unique()) %>% 
+scc_combine <- scc_complete_road %>%
+  select(scc6, scc6_desc, scc6_desc_broad, scc6_desc_manual) %>%
+  unique() %>%
+  bind_rows(scc_equates %>%
+    select(scc6, scc6_desc) %>%
+    unique()) %>%
   bind_rows(scc6_desc_manual %>%
-              filter(scc6_new %in% c("220200", "220932")) %>%
-              select(scc6 = scc6_new, scc6_desc, scc6_desc_manual, alt_mode,
-                     alt_mode_truck)) %>%
-  unique() %>% 
-  mutate(scc6_desc = ifelse(is.na(scc6_desc), scc6_desc_manual, scc6_desc)) %>% 
-  filter(!is.na(scc6_desc)) %>% 
-  mutate(scc6_desc = 
-           case_when(
-             scc6 %in% c("220100",
-                         "223007",
-                         "220107") ~ "Diesel; Trucks and buses",
-             TRUE ~ scc6_desc
-           )) %>% 
+    filter(scc6_new %in% c("220200", "220932")) %>%
+    select(
+      scc6 = scc6_new, scc6_desc, scc6_desc_manual, alt_mode,
+      alt_mode_truck
+    )) %>%
+  unique() %>%
+  mutate(scc6_desc = ifelse(is.na(scc6_desc), scc6_desc_manual, scc6_desc)) %>%
+  filter(!is.na(scc6_desc)) %>%
+  mutate(
+    scc6_desc =
+      case_when(
+        scc6 %in% c(
+          "220100",
+          "223007",
+          "220107"
+        ) ~ "Diesel; Trucks and buses",
+        TRUE ~ scc6_desc
+      )
+  ) %>%
   mutate(
     fuel_type = stringr::str_split(
       scc6_desc,
       pattern = ";",
       simplify = TRUE
-    )[, 1] %>% 
+    )[, 1] %>%
       str_trim(),
     vehicle_type = stringr::str_split(
       scc6_desc,
       pattern = ";",
       simplify = TRUE
-    )[, 2] %>% 
+    )[, 2] %>%
       str_trim()
-  ) %>% 
-  select(scc6, scc6_desc, fuel_type, vehicle_type) %>% 
-  unique() %>% 
+  ) %>%
+  select(scc6, scc6_desc, fuel_type, vehicle_type) %>%
+  unique() %>%
   left_join(
     scc_complete_road %>%
-      select(scc6_desc,
-             alt_mode, alt_mode_truck) %>%
+      select(
+        scc6_desc,
+        alt_mode, alt_mode_truck
+      ) %>%
       unique()
-  ) %>% 
-  filter(str_detect(vehicle_type, "equipment", negate = TRUE)) %>% 
-  mutate(alt_mode  = ifelse(vehicle_type %in% c("Gas stations",
-                                                "Pleasure craft",
-                                                "Trucks and buses"), vehicle_type,
-                            alt_mode),
-         
-         alt_mode_truck  = ifelse(vehicle_type %in% c("Gas stations",
-                                                      "Pleasure craft",
-                                                      "Trucks and buses"), vehicle_type,
-                                  alt_mode_truck)
+  ) %>%
+  filter(str_detect(vehicle_type, "equipment", negate = TRUE)) %>%
+  mutate(
+    alt_mode = ifelse(vehicle_type %in% c(
+      "Gas stations",
+      "Pleasure craft",
+      "Trucks and buses"
+    ), vehicle_type,
+    alt_mode
+    ),
+    alt_mode_truck = ifelse(vehicle_type %in% c(
+      "Gas stations",
+      "Pleasure craft",
+      "Trucks and buses"
+    ), vehicle_type,
+    alt_mode_truck
+    )
   )
 
 

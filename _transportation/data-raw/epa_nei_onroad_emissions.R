@@ -2,13 +2,16 @@
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
 
-if(any(purrr::map(
-  c("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byregions/2008NEIv3_onroad5.csv",
+if (any(purrr::map(
+  c(
+    "_transportation/data-raw/epa/nei/2008NEI/2008neiv3_onroad_byregions/2008NEIv3_onroad5.csv",
     "_transportation/data-raw/epa/nei/2011NEI/2011neiv2_onroad_byregions/onroad_5.csv",
     "_transportation/data-raw/epa/nei/2014NEI/2014neiv2_onroad_byregions/onroad_5.csv",
     "_transportation/data-raw/epa/nei/2017NEI/2017neiApr_onroad_byregions/onroad_5.csv",
-    "_transportation/data-raw/epa/nei/2020NEI/2020nei_onroad_byregion/onroad_5.csv"),
-  file_exists) == FALSE)){
+    "_transportation/data-raw/epa/nei/2020NEI/2020nei_onroad_byregion/onroad_5.csv"
+  ),
+  file_exists
+) == FALSE)) {
   cli::cli_abort(c(
     "Required datasets unavailable",
     "*" = "Consult documentation for more information",
@@ -121,11 +124,14 @@ epa_nei_onroad_emissions <- bind_rows(
     -emissions_type_code, -pollutant_type_s, -aetc, -reporting_period
   ) %>%
   select(geoid, scc, nei_inventory_year, everything()) %>%
-  mutate(total_emissions = as.numeric(total_emissions),
-         data_category = "Onroad",
-         scc6 = stringr::str_sub(scc, 1, 6)) %>% 
+  mutate(
+    total_emissions = as.numeric(total_emissions),
+    data_category = "Onroad",
+    scc6 = stringr::str_sub(scc, 1, 6)
+  ) %>%
   left_join(counties_light,
-            by = join_by(geoid))
+    by = join_by(geoid)
+  )
 
 
 saveRDS(epa_nei_onroad_emissions, "_transportation/data-raw/epa/epa_nei_onroad_emissions.RDS")
@@ -134,23 +140,30 @@ saveRDS(epa_nei_onroad_emissions, "_transportation/data-raw/epa/epa_nei_onroad_e
 # other editions of the same dataset
 
 # from https://gaftp.epa.gov/Air/nei/2017/doc/flat_files/2017NEI_onroad_20200427.zip
-nei2017_conus <- read.csv("_transportation/data-raw/epa/nei/2017NEI/2017NEI_onroad_20200427/2017NEI_onroad_CONUS_noCalifornia.csv") %>% 
-  filter(region_cd %in% counties_light$geoid,
-         poll %in% pollutants_keep) %>% 
-  mutate(nei_inventory_year = "2017",
-         data_category = "Onroad",
-         geoid = as.character(region_cd),
-         scc6 = stringr::str_sub(scc_agg, 1, 6))
+nei2017_conus <- read.csv("_transportation/data-raw/epa/nei/2017NEI/2017NEI_onroad_20200427/2017NEI_onroad_CONUS_noCalifornia.csv") %>%
+  filter(
+    region_cd %in% counties_light$geoid,
+    poll %in% pollutants_keep
+  ) %>%
+  mutate(
+    nei_inventory_year = "2017",
+    data_category = "Onroad",
+    geoid = as.character(region_cd),
+    scc6 = stringr::str_sub(scc_agg, 1, 6)
+  )
 
-nei2017_conus %>% 
-  filter(geoid == "27053",
-         poll == "CO2") %>% 
+nei2017_conus %>%
+  filter(
+    geoid == "27053",
+    poll == "CO2"
+  ) %>%
   left_join(
-    epa_nei_onroad_emissions %>% 
-      filter(geoid == "27053",
-             pollutant_code == "CO2")
-  ) %>% 
-  mutate(diff = total_emissions - ann_value) %>% 
-  filter(abs(diff) > 1) %>% 
+    epa_nei_onroad_emissions %>%
+      filter(
+        geoid == "27053",
+        pollutant_code == "CO2"
+      )
+  ) %>%
+  mutate(diff = total_emissions - ann_value) %>%
+  filter(abs(diff) > 1) %>%
   nrow()
-

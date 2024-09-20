@@ -3,9 +3,10 @@
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
 
-if(any(purrr::map(
+if (any(purrr::map(
   c(("_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/onroad/VMT_2022v1_full_annual_20240226_monthly_18jun2024_nf_v4.csv")),
-  file_exists) == FALSE)){
+  file_exists
+) == FALSE)) {
   cli::cli_abort(c(
     "Required datasets unavailable",
     "*" = "Consult documentation for more information",

@@ -84,8 +84,8 @@ county_pop_intercensal1 <- download_read_table(
     values_to = "population"
   ) %>%
   mutate(population_data_source = ifelse(population_year %in% c(2000, 2010),
-                                         "US Decennial Census",
-                                         "US Census County Intercensal Tables (CO-EST00INT-01)"
+    "US Decennial Census",
+    "US Census County Intercensal Tables (CO-EST00INT-01)"
   )) %>%
   left_join(county_geography %>%
     select(
@@ -127,8 +127,8 @@ county_pop_intercensal2 <- download_read_table(
     # extract the year from the population_source_year
     population_year = str_extract(population_source_year, "[:digit:][:digit:][:digit:][:digit:]"),
     population_data_source = ifelse(population_year %in% c(2000, 2010, 2020),
-                                    "US Decennial Census",
-                                    "US Census County Intercensal Tables (CO-EST2020)"
+      "US Decennial Census",
+      "US Census County Intercensal Tables (CO-EST2020)"
     )
   ) %>%
   select(-1:-3) %>%
@@ -168,7 +168,7 @@ fetch_combine_decennial <- function(state_name) {
       state_name = state_name,
       population = value
     )
-  
+
   x2010 <- get_decennial(
     geography = "county",
     state = state_name,
@@ -181,7 +181,7 @@ fetch_combine_decennial <- function(state_name) {
       state_name = state_name,
       population = value
     )
-  
+
   x2000 <- get_decennial(
     geography = "county",
     year = 2000,
@@ -194,7 +194,7 @@ fetch_combine_decennial <- function(state_name) {
       state_name = state_name,
       population = value
     )
-  
+
   bind_rows(
     x2000,
     x2010,
@@ -252,7 +252,7 @@ county_pop_acs <- purrr::map_dfr(
   ) %>%
   mutate(
     population_data_source = "ACS 5-Year Estimates, Table DP05"
-  )%>%
+  ) %>%
   clean_names()
 
 

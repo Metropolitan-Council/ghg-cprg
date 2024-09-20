@@ -13,16 +13,19 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-options(htmltools.dir.version = FALSE,
-        crayon.enabled = TRUE)
+options(
+  htmltools.dir.version = FALSE,
+  crayon.enabled = TRUE
+)
 old.hooks <- fansi::set_knit_hooks(knitr::knit_hooks)
 
 source(file.path(here::here(), "R/_load_pkgs.R"))
 
-epa_downloads <- readxl::read_xlsx(file.path(here::here(), "_transportation/data-raw/epa/epa_downloads.xlsx")) %>% 
+epa_downloads <- readxl::read_xlsx(file.path(here::here(), "_transportation/data-raw/epa/epa_downloads.xlsx")) %>%
   mutate(
-    direct_link = map(direct_link, ~ htmltools::a(href = .x, .x)) %>% 
-      map(~ gt::html(as.character(.x)))) 
+    direct_link = map(direct_link, ~ htmltools::a(href = .x, .x)) %>%
+      map(~ gt::html(as.character(.x)))
+  )
 
 epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/epa_onroad_source_set.RDS"))
 ```
@@ -43,14 +46,14 @@ If you want to preview any of the CSVs, open them using your machine's text edit
 Summary of inputs and outputs
 
 ```{r}
-epa_onroad_source_set %>% 
-  arrange(data_source, emissions_year) %>% 
-  gt() %>% 
-  gt::opt_row_striping() %>% 
+epa_onroad_source_set %>%
+  arrange(data_source, emissions_year) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
-  ) %>% 
+  ) %>%
   gt::cols_align(align = "left")
 ```
 
@@ -61,8 +64,9 @@ Note that to save space, some unzipped data irrelevant to our region (like EPA r
 
 ```{r}
 fs::dir_tree(".",
-             type = "directory",
-             recurse = 0)
+  type = "directory",
+  recurse = 0
+)
 ```
 
 ### nei
@@ -95,20 +99,23 @@ NEI data are then compiled in a three locations
 
 
 ```{r tbl-nei-locations, tab.cap="NEI download direct URLs"}
-epa_downloads %>% 
-  filter(group == "NEI",
-         measurement %in% c("emissions",
-                            "smoke_flat_file")) %>% 
-  select(-file_name, -description) %>% 
-  arrange(category, measurement, inventory_year) %>% 
-  gt() %>% 
-  gt::opt_row_striping() %>% 
+epa_downloads %>%
+  filter(
+    group == "NEI",
+    measurement %in% c(
+      "emissions",
+      "smoke_flat_file"
+    )
+  ) %>%
+  select(-file_name, -description) %>%
+  arrange(category, measurement, inventory_year) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
-  ) %>% 
+  ) %>%
   gt::cols_align(align = "left")
-
 ```
 
 
@@ -132,27 +139,28 @@ Air emissions modeling data are compiled in two locations
 
 ```{r}
 fs::dir_tree("./air_emissions_modeling/",
-             type = "directory",
-             recurse = 0)
+  type = "directory",
+  recurse = 0
+)
 ```
 
 
 ```{r tbl-emismod-locations}
-epa_downloads %>% 
+epa_downloads %>%
   filter(
     group == "emismod",
     measurement == "emissions",
-    inventory_year >= 2011) %>% 
-  select(-file_name, -description) %>% 
-  arrange(category, inventory_year) %>% 
-  gt() %>% 
-  gt::opt_row_striping() %>% 
+    inventory_year >= 2011
+  ) %>%
+  select(-file_name, -description) %>%
+  arrange(category, inventory_year) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
-  ) %>% 
+  ) %>%
   gt::cols_align(align = "left")
-
 ```
 
 
@@ -169,23 +177,24 @@ EQUATES is processed in [epa_equates_read.R](./../epa_equates_read.R)
 
 ```{r}
 fs::dir_tree("./air_emissions_modeling/EQUATES/",
-             type = "directory",
-             recurse = 0)
+  type = "directory",
+  recurse = 0
+)
 ```
 
 ```{r tbl-equates-locations}
-epa_downloads %>% 
+epa_downloads %>%
   filter(
     group == "EQUATES",
-    measurement == "emissions") %>% 
-  select(-file_name, -description) %>% 
-  arrange(category, inventory_year) %>% 
-  gt() %>% 
-  gt::opt_row_striping() %>% 
+    measurement == "emissions"
+  ) %>%
+  select(-file_name, -description) %>%
+  arrange(category, inventory_year) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
-  ) %>% 
+  ) %>%
   gt::cols_align(align = "left")
-
 ```

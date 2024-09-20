@@ -2,30 +2,32 @@
 #'
 #' @param file_location character, location of SMOKE FF10 file
 #' @param out_directory character, output location
-#' 
+#'
 read_smoke_ff10 <- function(file_location,
                             out_directory) {
-  
-  # these files have a variable number of metadata rows 
+  # these files have a variable number of metadata rows
   # before the actual data table begins
   n_skip_rows <- tibble::tibble(
     line_number = 1:45,
     # read in the first 45 lines of the file
     # and find the line that starts with the expected column names
     contains_value = readLines(file_location,
-                               n = 45) %>% 
+      n = 45
+    ) %>%
       stringr::str_detect(pattern = stringr::fixed("COUNTRY_CD,REGION_CD,TRIBAL_CODE,",
-                                                   ignore_case = TRUE))
-  ) %>% 
-    dplyr::filter(contains_value == TRUE) %>% 
+        ignore_case = TRUE
+      ))
+  ) %>%
+    dplyr::filter(contains_value == TRUE) %>%
     magrittr::extract2("line_number")
-  
-  # capture and collapse these metadata 
+
+  # capture and collapse these metadata
   metadata_info <- readLines(file_location,
-                             n = (n_skip_rows - 1)) %>% 
+    n = (n_skip_rows - 1)
+  ) %>%
     paste0(collapse = "")
-  
-  
+
+
   # read and complete initial cleaning
   smoke_moves_table <- data.table::fread(
     file = file_location,
@@ -105,19 +107,24 @@ read_smoke_ff10 <- function(file_location,
       -control_measures, -control_ids,
       -tidyr::starts_with(tolower(month.abb))
     )
-  
+
   # create the output file name from the input file name
   # same name, but ending with ".RDS" instead of ".csv"
   out_file_name <- stringr::str_split(file_location, pattern = "/") %>%
-    last() %>% last() %>%
-    stringr::str_remove(".csv") %>% 
+    last() %>%
+    last() %>%
+    stringr::str_remove(".csv") %>%
     paste0(".RDS")
-  
+
   # save
-  saveRDS(smoke_moves_table, 
-          file.path(paste0(out_directory, 
-                           out_file_name)))
-  
+  saveRDS(
+    smoke_moves_table,
+    file.path(paste0(
+      out_directory,
+      out_file_name
+    ))
+  )
+
   # ensure removed from environment
   rm(smoke_moves_table)
 }

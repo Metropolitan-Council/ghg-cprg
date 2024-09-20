@@ -6,7 +6,7 @@ epa_nei_nonroad_regional <- read_rds("_transportation/data-raw/epa/epa_nei_nonro
 
 req_base <- httr2::request("https://data.epa.gov/efservice")
 
-pollutants <- req_base %>% 
+pollutants <- req_base %>%
   httr2::req_url_path_append("POLLUTANT/CSV") %>%
   httr2::req_method("GET") %>%
   httr2::req_perform() %>%
@@ -15,31 +15,37 @@ pollutants <- req_base %>%
     delim = ",",
     col_types = "c",
     show_col_types = FALSE
-  ) %>% 
+  ) %>%
   clean_names()
 
 pollutant_key <-
-  bind_rows(epa_nei_nonroad_regional %>% 
-              select(pollutant_code, pollutant_desc),
-            epa_nei_onroad_regional %>% 
-              select(pollutant_code, pollutant_desc)) %>% 
-  unique() %>% 
-  mutate(pollutant = make_clean_names(pollutant_code),
-         unit_of_measurement = "grams") %>% 
+  bind_rows(
+    epa_nei_nonroad_regional %>%
+      select(pollutant_code, pollutant_desc),
+    epa_nei_onroad_regional %>%
+      select(pollutant_code, pollutant_desc)
+  ) %>%
+  unique() %>%
+  mutate(
+    pollutant = make_clean_names(pollutant_code),
+    unit_of_measurement = "grams"
+  ) %>%
   bind_rows(
     tibble(
       pollutant = "emissions_metric_tons_co2e",
       pollutant_code = "emissions_metric_tons_co2e",
       pollutant_desc = "Carbon dioxide equivalence, excluding nitrous oxide",
-      unit_of_measurement = "metric tons")
-  ) %>% 
+      unit_of_measurement = "metric tons"
+    )
+  ) %>%
   bind_rows(
     tibble(
       pollutant = "no",
       pollutant_code = "NO",
       pollutant_desc = "Nitric Oxide",
-      unit_of_measurement = "grams")
-  ) %>% 
+      unit_of_measurement = "grams"
+    )
+  ) %>%
   mutate(
     # fill out HTML formatting for future use
     pollutant_format = case_when(
@@ -57,7 +63,8 @@ pollutant_key <-
       pollutant_code == "SF6" ~ "SF<sub>6</sub>",
       pollutant_code == "emissions_metric_tons_co2e" ~ "CO<sub>2</sub>e",
       TRUE ~ pollutant_code
-    ))
+    )
+  )
 
 pollutant_key_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",

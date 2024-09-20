@@ -9,7 +9,7 @@ scc_combine <- readRDS("_transportation/data/scc_combine.RDS")
 library(furrr)
 
 # check that we have all the necessary files -----
-if(any(purrr::map(
+if (any(purrr::map(
   c(
     "_transportation/data-raw/epa/air_emissions_modeling/2011/2011el_cb6v2_v6_11g/inputs/onroad/2011el_onroad_SMOKE_MOVES_MOVES2014a_forOTAQ_31aug2016_v1_part1.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2014/2014fd_cb6_14j/inputs/onroad/2014fd_nata_onroad_SMOKE_MOVES_MOVES2014a_AQstyle_06feb2018_v0.csv",
@@ -22,7 +22,8 @@ if(any(purrr::map(
     "_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k/inputs/onroad/2021hb_onroad_SMOKE_MOVES_MOVES4_hapcap_04dec2023_v0.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/onroad/2022hc_onroad_SMOKE_MOVES_MOVES4_forAQ_27jun2024_v0.csv"
   ),
-  file_exists) == FALSE)){
+  file_exists
+) == FALSE)) {
   cli::cli_abort(c(
     "Required datasets unavailable",
     "*" = "Consult documentation for more information",
@@ -60,13 +61,15 @@ furrr::future_map(
   ),
   read_smoke_ff10,
   out_directory = "_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/onroad/"
-) 
+)
 
 # read back in, combine, and save -----
 onroad_mn_wi <- purrr::map(
-  list.files("_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/onroad/", 
-             full.names = TRUE),
-  readRDS) %>% 
+  list.files("_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/onroad/",
+    full.names = TRUE
+  ),
+  readRDS
+) %>%
   bind_rows()
 
 saveRDS(onroad_mn_wi, "_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS")
@@ -74,13 +77,15 @@ tictoc::toc()
 
 # optional plotting
 
-onroad_mn_wi %>% 
+onroad_mn_wi %>%
   mutate(geoid = region_cd) %>%
   left_join(counties_light) %>%
-  filter(cprg_area == TRUE,
-         emis_type == "RPD") %>% 
-  left_join(scc_combine) %>% 
-  group_by(calc_year, alt_mode_truck, poll) %>% 
-  summarise(ann_value = sum(ann_value, na.rm = T)) %>% 
-  # select(calc_year, alt_mode_truck, poll) %>% 
-  unique() 
+  filter(
+    cprg_area == TRUE,
+    emis_type == "RPD"
+  ) %>%
+  left_join(scc_combine) %>%
+  group_by(calc_year, alt_mode_truck, poll) %>%
+  summarise(ann_value = sum(ann_value, na.rm = T)) %>%
+  # select(calc_year, alt_mode_truck, poll) %>%
+  unique()

@@ -2,13 +2,16 @@
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
 
-if(any(purrr::map(
-  c("_transportation/data-raw/epa/nei/2008NEI/2008neiv3_nonroad_byregions/2008NEIv3_nonroad5.csv",
+if (any(purrr::map(
+  c(
+    "_transportation/data-raw/epa/nei/2008NEI/2008neiv3_nonroad_byregions/2008NEIv3_nonroad5.csv",
     "_transportation/data-raw/epa/nei/2011NEI/2011neiv2_nonroad_byregions/nonroad_5.csv",
     "_transportation/data-raw/epa/nei/2014NEI/2014neiv2_nonroad_byregions/nonroad_5.csv",
     "_transportation/data-raw/epa/nei/2017NEI/2017neiApr_nonroad_byregions/nonroad_5.csv",
-    "_transportation/data-raw/epa/nei/2020NEI/2020nei_nonroad_byregion/nonroad_5.csv"),
-  file_exists) == FALSE)){
+    "_transportation/data-raw/epa/nei/2020NEI/2020nei_nonroad_byregion/nonroad_5.csv"
+  ),
+  file_exists
+) == FALSE)) {
   cli::cli_abort(c(
     "Required datasets unavailable",
     "*" = "Consult documentation for more information",
@@ -122,10 +125,13 @@ epa_nei_nonroad_emissions <- bind_rows(
   ) %>%
   select(geoid, scc, nei_inventory_year, everything()) %>%
   mutate(total_emissions = as.numeric(total_emissions)) %>%
-  mutate(data_category = "Nonroad",
-         scc6 = stringr::str_sub(scc, 1, 6)) %>%
+  mutate(
+    data_category = "Nonroad",
+    scc6 = stringr::str_sub(scc, 1, 6)
+  ) %>%
   left_join(counties_light,
-            by = join_by(geoid))
+    by = join_by(geoid)
+  )
 
 
 saveRDS(epa_nei_nonroad_emissions, "_transportation/data-raw/epa/epa_nei_nonroad_emissions.RDS")
