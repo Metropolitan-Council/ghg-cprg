@@ -21,7 +21,7 @@ cprg_population <- census_county_population %>%
 
 cprg_population_meta <- bind_rows(
   cprg_county_meta,
-  cprg_population_meta
+  census_county_population_meta
 ) %>%
   unique() %>%
   filter(Column %in% names(cprg_population))
