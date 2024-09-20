@@ -17,6 +17,7 @@ options(
   htmltools.dir.version = FALSE,
   crayon.enabled = TRUE
 )
+
 old.hooks <- fansi::set_knit_hooks(knitr::knit_hooks)
 
 source(file.path(here::here(), "R/_load_pkgs.R"))
@@ -43,7 +44,7 @@ All datasets are processed from their unzipped locations in processing scripts. 
 
 If you want to preview any of the CSVs, open them using your machine's text editor (TextEdit on Mac, Notepad on Windows). Do NOT open using Excel - it will crash. 
 
-Summary of inputs and outputs
+Summary of direct inputs and outputs of all data in epa_onroad_emissions_compile
 
 ```{r}
 epa_onroad_source_set %>%
@@ -97,6 +98,7 @@ NEI data are then compiled in a three locations
 - [epa_nei_nonroad_emissions.R](../epa_nei_nonroad_emissions.R)
 - [epa_nei_smoke_ff.R](../epa_nei_smoke_ff.R)
 
+NEI summary data are also fetched directly from the EnviroFacts API in [epa_nei_envirofacts.R](../epa_nei_envirofacts.R). 
 
 ```{r tbl-nei-locations, tab.cap="NEI download direct URLs"}
 epa_downloads %>%
@@ -173,7 +175,6 @@ Within /air_emissions_modeling/EQUATES, create a folder for each EQUATES year (2
 Download the data for each of the given links and save in the appropriate location. 
 
 EQUATES is processed in [epa_equates_read.R](./../epa_equates_read.R)
-
 
 ```{r}
 fs::dir_tree("./air_emissions_modeling/EQUATES/",
