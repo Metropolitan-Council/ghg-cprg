@@ -7,18 +7,22 @@ test_that("All population", {
   testthat::expect_equal(
     names(census_county_population),
     c(
-      "STATE", "STATE_ABB", "GEOID",
-      "COUNTYFP", "NAME",
-      "population_year", "population",
-      "population_data_source", "cprg_area"
+      "geoid", "county_name", "state_name", "state_abb", "population_year",
+      "population_data_source", "cprg_area", "population"
     )
+    # c(
+    #   "STATE", "STATE_ABB", "GEOID",
+    #   "COUNTYFP", "NAME",
+    #   "population_year", "population",
+    #   "population_data_source", "cprg_area"
+    # )
   )
 
 
   # expect specific Pierce Co 2018 value
   census_county_population %>%
     filter(
-      NAME == "Pierce",
+      county_name == "Pierce",
       population_year == 2018
     ) %>%
     extract2("population") %>%
@@ -28,7 +32,7 @@ test_that("All population", {
   # expect specific Hennepin Co 2014 value
   census_county_population %>%
     filter(
-      NAME == "Hennepin",
+      county_name == "Hennepin",
       population_year == 2014
     ) %>%
     extract2("population") %>%
@@ -45,18 +49,18 @@ test_that("All population", {
   # test upper and lower county values
   census_county_population %>%
     filter(population == max(population)) %>%
-    extract2("NAME") %>%
+    extract2("county_name") %>%
     testthat::expect_equal("Hennepin")
 
   census_county_population %>%
     filter(population == min(population)) %>%
-    extract2("NAME") %>%
+    extract2("county_name") %>%
     testthat::expect_equal("Traverse")
 
 
   # test statewide totals
   state_population <- census_county_population %>%
-    group_by(STATE, population_year) %>%
+    group_by(state_name, population_year) %>%
     summarize(
       state_population = sum(population, na.rm = T),
       .groups = "keep"
@@ -65,7 +69,7 @@ test_that("All population", {
 
   state_population %>%
     filter(
-      STATE == "Minnesota",
+      state_name == "Minnesota",
       population_year == "2011"
     ) %>%
     magrittr::extract2("state_population") %>%
@@ -74,7 +78,7 @@ test_that("All population", {
 
   state_population %>%
     filter(
-      STATE == "Wisconsin",
+      state_name == "Wisconsin",
       population_year == "2007"
     ) %>%
     magrittr::extract2("state_population") %>%

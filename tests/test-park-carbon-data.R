@@ -15,14 +15,14 @@ testthat::test_that("Park carbon data values are as expected", {
       group_by(geog_name) %>%
       summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
     cprg_area,
-    by = c("geog_name" = "NAME")
+    by = c("geog_name" = "county_name")
   ) %>%
     mutate(stock_per_area = emissions_metric_tons_co2e / area_sq_km)
 
 
-  cprg_7 <- vect(cprg_county %>% filter(!NAME %in% c("Sherburne", "Chisago", "St. Croix", "Pierce")))
-  county_seq_7 <- county_emissions %>% filter(geog_name %in% cprg_7$NAME, sector == "Nature")
-  county_stock_7 <- carbon_stock_area %>% filter(geog_name %in% cprg_7$NAME)
+  cprg_7 <- vect(cprg_county %>% filter(!county_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce")))
+  county_seq_7 <- county_emissions %>% filter(geog_name %in% cprg_7$county_name, sector == "Nature")
+  county_stock_7 <- carbon_stock_area %>% filter(geog_name %in% cprg_7$county_name)
 
 
   park_area_total <- sum(expanse(parks, unit = "km")) # 307.684
