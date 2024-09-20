@@ -7,14 +7,17 @@ testthat::test_that("EPA wastewater", {
 
   # double check manual calculation
   cprg_county_proportions %>%
-    filter(year == 2021) %>%
-    select(STATE, NAME = name, county_proportion_of_state_pop) %>%
-    left_join(epa_state_wastewater_by_year %>%
-      filter(Year == 2021) %>%
-      group_by(STATE) %>%
-      summarize(emissions = sum(CO2e)), by = "STATE") %>%
+    filter(population_year == 2021) %>%
+    select(county_name, state_name, county_proportion_of_state_pop) %>%
+    left_join(
+      epa_state_wastewater_by_year %>%
+        filter(Year == 2021) %>%
+        group_by(STATE) %>%
+        summarize(emissions = sum(CO2e)),
+      by = c("state_name" = "STATE")
+    ) %>%
     mutate(epa_co2e_test = county_proportion_of_state_pop * emissions) %>%
-    left_join(epa_county_wastewater, by = "NAME") %>%
+    left_join(epa_county_wastewater, by = c("county_name" = "NAME")) %>%
     filter(epa_co2e_test != epa_co2e) %>%
     nrow() %>%
     testthat::expect_equal(0)
