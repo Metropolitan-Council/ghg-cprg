@@ -9,6 +9,8 @@ aviation_emissions <- readRDS(file.path(here::here(), "_transportation/data/avia
 
 aviation_emissions_data_source_compare <- read_rds(file.path(here::here(), "_transportation/data/aviation_emissions_data_source_compare.RDS"))
 
+hookaddcap()
+
 ```
 
 Aviation emissions are derived from three data sources: Metropolitan Airport Commission (MAC) fuel distribution (2005, 2021), MAC Aircraft emission estimates (2016-2020), and MPCA state GHG inventories. Fuel distribution at the airport is the most straight-forward approach, as it involves applying a direct emission factor for jet fuel to the total amount of fuel distributed. As aircraft are generally only fueled for one flight at a time, we are effectively capturing emissions for aircraft flights departing MSP. The assumption is that any given airport (MSP in this case), should be responsible for half of emissions for each arrival and departure, with the complementary departure/recipient airport being responsible for the other half. 
@@ -17,56 +19,11 @@ The second data source, MAC provided emissions are also a highly useful source, 
 
 The final data source, which we used to in-fill interstitial years, 2006-2015, relies on MPCA statewide aviation emission estimates. Here, we calculated the proportion of MSP aviation emissions relative to statewide emissions, and used a time-series imputation method to fill in the interstitial years' proportions. Then, we recalculated MSP emissions by multiplying the interpolated proportion by the statewide emission estimate. This method proved superior to directly imputing the MSP emissions between 2005 and 2016-2021 (i.e. not using the state data in any form), as those interpolations resulted in three years with MSP emission estimates exceeding the statewide emission estimate.
 
-
-
 ```{r fig-aviation-emissions-data-source-compare}
 #| fig-cap: "Comparison of aviation emission interpolations"
 #| out-width: "95%"
 
-aviation_data_source_compare <- aviation_emissions_data_source_compare %>% 
-  pivot_longer(cols = c(state_mt_co2e, msp_mt_co2e,
-                        msp_mt_co2e_impute, msp_mt_co2e_state_prop),
-               names_to = "value_source",
-               values_to = "value") %>% 
-  mutate(value_label =
-           case_when(value_source == "state_mt_co2e" ~ "MPCA statewide emissions",
-                     value_source == "msp_mt_co2e_impute" ~ "Imputed MSP emission: direct",
-                     value_source == "msp_mt_co2e_state_prop" ~ "Imputed MSP emissions: state proportion",
-                     value_source == "msp_mt_co2e" ~ "MSP emissions: activity data"))
-
-
-fig_aviation_emissions_data_source_compare <- 
-  aviation_data_source_compare %>% 
-  plot_ly(
-    source = "fig-aviation-emissions-data-source-compare",
-    type = "scatter",
-    mode = "markers",
-    color = ~value_label,
-    x = ~year,
-    y = ~value,
-    colors = 
-      c("MPCA statewide emissions" = "orange", 
-        "MSP emissions: activity data" = colors$mtsRed, 
-        "Imputed MSP emission: direct" = colors$councilBlue, 
-        "Imputed MSP emissions: state proportion" = "black"
-      ),
-    symbol = list(
-      
-    ),
-    marker = list(
-      size = 12,
-      opacity = 0.5
-    )
-  ) %>% 
-  plotly_layout()
-
-fig_aviation_emissions_data_source_compare
-```
-
-
-
-```{r}
-orig_fig_aviation_emissions_data_source_compare <- plot_ly(
+fig_aviation_emissions_data_source_compare <- plot_ly(
   data = aviation_emissions_data_source_compare,
   source = "fig-aviation-emissions-data-source-compare"
 ) %>%
@@ -89,9 +46,10 @@ orig_fig_aviation_emissions_data_source_compare <- plot_ly(
   # MSP MT CO2e State Prop (blue dots)
   add_trace(
     x = ~year, y = ~msp_mt_co2e_state_prop,
-    type = "scatter", mode = "markers",
+    type = "scatter", mode = "lines+markers",
     marker = list(color = colors$councilBlue, size = 12,
                   opacity = 0.75),
+    line = list(color = colors$councilBlue),
     name = "Imputed MSP emissions: state proportion"
   ) %>%
   # MSP MT CO2e from activity data (black triangles for MAC derived years)
@@ -105,12 +63,21 @@ orig_fig_aviation_emissions_data_source_compare <- plot_ly(
     name = "MSP emissions: activity data"
   ) %>%
   plotly_layout(
-    main_title = "Aviation emissions data sources",
+    main_title = "Aviation emissions imputation comparison",
+    subtitle = "MSP proportion of statwide emissions provides best fit",
     x_title = "Year",
     y_title = "Metric tons CO<sub>2</sub>e",
     
   )
 
-orig_fig_aviation_emissions_data_source_compare
+fig_aviation_emissions_data_source_compare
 ```
 
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}
