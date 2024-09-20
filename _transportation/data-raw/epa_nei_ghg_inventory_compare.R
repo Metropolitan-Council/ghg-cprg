@@ -5,7 +5,7 @@
 # which is then apportioned to vehicle and fuel types).
 # They cannot be reconciled, regardless of whether they are aggregated to the state level.
 
-source("_transportation/data-raw/epa_nei_transportation.R")
+source("_transportation/data-raw/epa_nei_envirofacts.R")
 source("_transportation/data-raw/epa_ghg_inventory.R")
 
 county_proportions <- read_rds("_meta/data/cprg_county_proportions.RDS")

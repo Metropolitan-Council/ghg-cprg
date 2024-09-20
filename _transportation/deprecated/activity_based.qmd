@@ -198,10 +198,10 @@ The origin-destination activity method is used in regional PCAPs, including metr
 
 The National Emissions Inventory (NEI) is a comprehensive and detailed estimate of air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants from air emissions sources. The county-level GHG emissions included in the NEI for this category are calculated by running the MOVES model with State-, Local-, and Tribal-submitted activity data and EPA-developed activity inputs based on data from FHWA and other sources [@usepa2020NationalEmissions2023]. 
 
-NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and processed in R scripts: [epa_nei.R](../_meta/data-raw/epa_nei.R) and [epa_nei_transportation.R](data-raw/epa_nei_transportation.R)
+NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and processed in R scripts: [epa_nei.R](../_meta/data-raw/epa_nei.R) and [epa_nei_envirofacts.R](data-raw/epa_nei_envirofacts.R)
 
 ```{r read-nei}
-epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei.RDS"))
+epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei_envirofacts.RDS"))
 
 nei_emissions_all <- epa_nei %>%
   filter(nei_inventory_year == 2020) %>%

@@ -26,10 +26,10 @@ NEI data for aircraft and locomotives in our region are unavailable prior to 201
 
 We are assuming that all light-duty vehicles are passenger vehicles, and all heavy-duty are commercial. 
 
-NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and processed in R scripts: [epa_nei.R](../_meta/data-raw/epa_nei.R) and [epa_nei_transportation.R](data-raw/epa_nei_transportation.R)
+NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and processed in R scripts: [epa_nei.R](../_meta/data-raw/epa_nei.R) and [epa_nei_envirofacts.R](data-raw/epa_nei_envirofacts.R)
 
 ```{r read-nei}
-epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei.RDS"))
+epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei_envirofacts.RDS"))
 
 nei_emissions_all <- epa_nei %>%
   filter(nei_inventory_year == 2020) %>%

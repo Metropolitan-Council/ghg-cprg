@@ -1,7 +1,7 @@
 # scc sector mappings
 source("R/_load_pkgs.R")
 source("_transportation/data-raw/epa_source_classification_codes.R")
-source("_transportation/data-raw/epa_nei_transportation.R")
+source("_transportation/data-raw/epa_nei_envirofacts.R")
 nei_onroad_emissions <- readRDS("_transportation/data-raw/epa/nei_onroad_emissions.RDS")
 nei_nonroad_emissions <- readRDS("_transportation/data-raw/epa/nei_nonroad_emissions.RDS")
 

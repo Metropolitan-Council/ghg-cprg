@@ -3,7 +3,7 @@ source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
 source("R/download_read_table.R")
 source("_transportation/data-raw/epa_source_classification_codes.R")
-source("_transportation/data-raw/epa_nei_transportation.R")
+source("_transportation/data-raw/epa_nei_envirofacts.R")
 
 nei_vmt <- readRDS("_transportation/data-raw/epa/nei/nei_vmt.RDS")
 
