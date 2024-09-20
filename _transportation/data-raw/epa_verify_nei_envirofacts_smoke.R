@@ -13,15 +13,6 @@ source("R/global_warming_potential.R")
 scc_combine <- read_rds("_transportation/data/scc_combine.RDS")
 epa_nei_onroad_regional <- readr::read_rds("_transportation/data-raw/epa/epa_nei_onroad_emissions.RDS")
 epa_nei_onroad_smoke <- readRDS("_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS")
-epa_nei_envirofacts <- readRDS("_transportation/data/epa_nei_envirofacts.RDS")
-
-
-envirofacts_summary <- epa_nei_envirofacts %>% 
-  # filter(nei_inventory_year == 2020) %>% 
-  group_by(geoid, county_name, sector_two, nei_inventory_year) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
-  ungroup()
-
 
 # compile the onroad regional summary data
 onroad_regional <- epa_nei_onroad_regional %>%
@@ -139,6 +130,15 @@ onroad_regional %>%
 # 2014 is off, mostly because 2014 SMOKE doesn't have CH4
 # 2011 doesn't have any CO2
 
+# bring in EnviroFacts dataset
+epa_nei_envirofacts <- readRDS("_transportation/data/epa_nei_envirofacts.RDS")
+
+envirofacts_summary <- epa_nei_envirofacts %>% 
+  # filter(nei_inventory_year == 2020) %>%
+  filter(sector_two == "On-Road") %>% 
+  group_by(geoid, county_name, sector_two, nei_inventory_year) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  ungroup()
 
 bind_rows(
   onroad_regional %>% 
@@ -153,7 +153,6 @@ bind_rows(
     ungroup() %>% 
     select(-calc_year),
   envirofacts_summary %>% 
-    filter(sector_two == "On-Road") %>% 
     mutate(data_source = "EnviroFacts",
            nei_inventory_year = as.character(nei_inventory_year)) %>% 
     select(-sector_two)
