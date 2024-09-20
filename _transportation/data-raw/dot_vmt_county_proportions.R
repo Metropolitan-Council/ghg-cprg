@@ -1,6 +1,8 @@
 # find the proportion of state VMT each county makes up
 # specific to each state
 #source("_transportation/data-raw/wisdot_vmt_county.R")
+source("R/_load_pkgs.R")
+
 wisconsin_vmt <- read_rds("_transportation/data-raw/wisdot/wisdot_vmt_county.RDS")
 source("_transportation/data-raw/mndot_vmt_county.R")
 source("_meta/data-raw/cprg_county_proportions.R")
