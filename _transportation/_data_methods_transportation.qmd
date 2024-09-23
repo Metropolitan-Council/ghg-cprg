@@ -27,8 +27,6 @@ We are following these guidelines:
 
 ## Data sources
 
-{{< include data_epa_nei.qmd >}}
-
 {{< include data_streetlight.qmd >}}
 
 {{< include data_state_dot.qmd >}}

@@ -1,0 +1,60 @@
+## EPA Emissions
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+hookaddcap()
+
+
+epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/epa_onroad_source_set.RDS"))
+pollutant_key <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key.RDS"))
+pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/epa_onroad_source_set.RDS"))
+
+
+
+```
+
+
+The EPA releases various emissions estimates as part of several programs and initiatives. 
+
+All datasets are compiled from SMOKE flat files.
+
+
+```{r}
+
+```
+
+Each data source and year may use a different MOVES edition. These are listed in [table below].
+
+```{r}
+epa_onroad_source_set %>% 
+  select(data_source, moves_edition, emissions_year) %>% 
+  unique() %>% 
+  group_by(data_source, moves_edition) %>% 
+  summarize(emissions_years = paste0(emissions_year, collapse = ", "))
+```
+
+
+Various pollutants are available 
+
+```{r}
+
+pollutant_key %>% 
+  select(pollutant_format, pollutant_code, pollutant_desc) %>% 
+  gt() %>% 
+  gt::as_raw_html()
+```
+
+
+{{< include data_epa_nei.qmd >}}
+
+
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}

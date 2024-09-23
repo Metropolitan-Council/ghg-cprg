@@ -27,6 +27,12 @@ hookaddcap()
 - Why we changed
 - Other regions/states/CPRG recipients, findings from TAFs
 
+
+```{r}
+# include table source_method_compare.xlsx
+```
+
+
 ## EPA emissions data sources
 
 The EPA provides many datasets and tools for estimating and forecasting greenhouse gas emissions. For our purposes, we want data disaggregated to the county level, though we can work with state-level data if necessary.
