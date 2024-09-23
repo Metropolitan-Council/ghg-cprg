@@ -484,7 +484,8 @@ epa_onroad_emissions_compile <- epa_emissions_combine %>%
     values_to = "emissions"
   ) %>%
   unique() %>%
-  left_join(pollutant_key)
+  left_join(pollutant_key) %>% 
+  ungroup()
 
 
 names(epa_onroad_emissions_compile)
@@ -554,6 +555,6 @@ epa_onroad_source_set <-
          file_location
   )
 
-saveRDS(epa_onroad_source_set, "_transportation/data-raw/epa/epa_onroad_source_set.RDS")
+saveRDS(epa_onroad_source_set, "_transportation/data/epa_onroad_source_set.RDS")
 
 
