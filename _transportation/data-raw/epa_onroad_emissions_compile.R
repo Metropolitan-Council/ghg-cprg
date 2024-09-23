@@ -428,17 +428,18 @@ epa_emissions_summary_alt_mode_truck %>%
 
 epa_onroad_emissions_year_scc_index <- epa_emissions_combine %>%
   select(
+    data_source,
     scc6, scc6_desc, fuel_type, vehicle_type,
     alt_mode, alt_mode_truck
   ) %>%
-  unique()
+  unique() 
 
 epa_onroad_emissions_year_pollutant_index <- epa_emissions_combine %>%
   select(
     emissions_year, data_source, interpolation,
     co2, ch4, n2o,
     emissions_metric_tons_co2e, co,
-    no, nox, pm10_pri, pm25_pri, nh3, so2
+    no, nox, pm10_pri, pm25_pri, nh3, so2, voc
   ) %>%
   group_by(
     emissions_year,
@@ -507,7 +508,6 @@ saveRDS(epa_onroad_emissions_compile_meta, "_transportation/data/epa_onroad_emis
 # what is the complete start-to-finish pipeline
 # for each portion of this dataset?
 epa_onroad_source_set <- 
-  
   bind_rows(
     epa_nei_onroad %>%
       select(file_location, calc_year, metadata_info) %>%
@@ -532,18 +532,20 @@ epa_onroad_source_set <-
       )
   ) %>% 
   unique() %>% 
-  mutate(moves_2014 = stringr::str_extract(metadata_info, "MOVES20[:digit:][:digit:][:alpha:]"),
-         moves4 = stringr::str_extract(metadata_info, "MOVES[:digit:]"),
-         moves3 = stringr::str_extract(file_location, "MOVES[:digit:]"),
-         moves_edition = 
-           case_when(
-             is.na(moves_2014) & is.na(moves4) & is.na(moves3) & data_source == "National Emissions Inventory" ~ "MOVES3",
-             is.na(moves_2014) & is.na(moves4) ~ moves3,
-             is.na(moves_2014) & is.na(moves3) ~ moves4,
-             is.na(moves_2014) & moves4 == "MOVES2" ~ moves3,
-             is.na(moves_2014) ~ moves4,
-             TRUE ~ moves_2014
-           )) %>% 
+  mutate(
+    # pull MOVES edition information from metadata
+    moves_2014 = stringr::str_extract(metadata_info, "MOVES20[:digit:][:digit:][:alpha:]"),
+    moves4 = stringr::str_extract(metadata_info, "MOVES[:digit:]"),
+    moves3 = stringr::str_extract(file_location, "MOVES[:digit:]"),
+    moves_edition = 
+      case_when(
+        is.na(moves_2014) & is.na(moves4) & is.na(moves3) & data_source == "National Emissions Inventory" ~ "MOVES3",
+        is.na(moves_2014) & is.na(moves4) ~ moves3,
+        is.na(moves_2014) & is.na(moves3) ~ moves4,
+        is.na(moves_2014) & moves4 == "MOVES2" ~ moves3,
+        is.na(moves_2014) ~ moves4,
+        TRUE ~ moves_2014
+      )) %>% 
   select(-moves3, -moves4, -moves_2014, -metadata_info)%>%
   mutate(compiled_to = "epa_onroad_emissions_compile") %>%
   select(data_source, dataset, moves_edition,
