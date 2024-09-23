@@ -8,8 +8,8 @@ hookaddcap()
 
 epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/epa_onroad_source_set.RDS"))
 pollutant_key <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key.RDS"))
-pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/epa_onroad_source_set.RDS"))
-
+pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_source_set.RDS"))
+epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
 
 
 ```
@@ -17,7 +17,7 @@ pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data-raw/
 
 The EPA releases various emissions estimates as part of several programs and initiatives. 
 
-All datasets are compiled from SMOKE flat files.
+All datasets are compiled from SMOKE flat files downloaded from the EPA website. 
 
 
 ```{r}
@@ -36,6 +36,19 @@ epa_onroad_source_set %>%
 
 
 Various pollutants are available 
+
+
+
+```{r}
+epa_onroad_emissions_compile %>% 
+  filter(!is.na(emissions),
+         pollutant != "emissions_metric_tons_co2e") %>% 
+  select(emissions_year, interpolation, data_source, pollutant, pollutant_code) %>% 
+  unique() %>% 
+  group_by(emissions_year, data_source, interpolation) %>% 
+  summarize(pollutants_available = paste0(unique(pollutant_code), collapse = ", "))
+```
+
 
 ```{r}
 
