@@ -101,13 +101,13 @@ crf_emissions <- emissions_council_region %>%
   pivot_longer(
     cols = everything(),
     names_to = "Sectors and Subsectors",
-    values_to = "Direct emissions (metric tonnes CO2e)^"
+    values_to = "Direct emissions (metric tonnes CO2e)^ "
   ) %>% 
   # notation keys for no emissions
   mutate(
-    "If you have no direct emissions to report, please select a notation key to
+    "\'If you have no direct emissions to report, please select a notation key to
     explain why^" = case_when(
-      `Direct emissions (metric tonnes CO2e)^` == 0  ~ case_when(
+      `Direct emissions (metric tonnes CO2e)^ ` == 0  ~ case_when(
         `Sectors and Subsectors` %in% c("Stationary energy > Fugitive emissions^^", 
                                         "Transportation > Waterborne navigation^^",
                                         "Transportation > Off-road^^") 
@@ -119,14 +119,14 @@ crf_emissions <- emissions_council_region %>%
         TRUE ~ "NE"
           )
     ),
-    "Direct emissions (metric tonnes CO2e)^" = case_match(
-      `Direct emissions (metric tonnes CO2e)^`,
+    "Direct emissions (metric tonnes CO2e)^ " = case_match(
+      `Direct emissions (metric tonnes CO2e)^ `,
       0 ~ NA,
-      .default = `Direct emissions (metric tonnes CO2e)^`
+      .default = `Direct emissions (metric tonnes CO2e)^ `
     ),
     "Indirect emissions from the use of grid-supplied electricity, heat, steam and/or
     cooling (metric tonnes CO2e)^" = NA,
-    "If you have no inderect emissions to report, please select a notation key 
+    "\'If you have no inderect emissions to report, please select a notation key 
     to explain why^" = "NE",
     "Emissions occurring outside the jurisdiction boundary as a result of in-jurisdiction
     activities (metric tonnes CO2e)" = NA,
@@ -135,10 +135,10 @@ crf_emissions <- emissions_council_region %>%
     key to explain why" = "NE",
     "Please explain any excluded sources, identify any emissions covered under 
     an ETS and provide any other comments^" = case_when(
-      `If you have no direct emissions to report, please select a notation key to
-    explain why^` == "NE" ~ paste0(ne_justification, indirect_justification),
-    `If you have no direct emissions to report, please select a notation key to
-    explain why^` == "IE" ~ case_when(
+      "\'If you have no direct emissions to report, please select a notation key to
+    explain why^" == "NE" ~ paste0(ne_justification, indirect_justification),
+    "\'If you have no direct emissions to report, please select a notation key to
+    explain why^" == "IE" ~ case_when(
       `Sectors and Subsectors` == "Stationary energy > Institutional buildings & facilities^^"
       ~ "Because of the manner in which emissions were calculated, this category is included in `Commercial buildings and facilities`. See documentation attached in 3.1.1 for further information.",
       `Sectors and Subsectors` == "Stationary energy > Agriculture"
