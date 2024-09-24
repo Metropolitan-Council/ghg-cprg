@@ -23,6 +23,9 @@ if (Sys.info()["user"][[1]] == "rotenle") {
 
 # read in base datasets -----
 # All these were compiled from SMOKE flat files
+# waiting to hear back from CMAS forum on blank emis_type column
+# https://forum.cmascenter.org/t/blank-emis-type/5244
+
 # first, NEI inventory from  _transportation/data-raw/epa_nei_smoke_ff.R
 epa_nei_onroad <- readRDS("_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS") %>%
   mutate(
