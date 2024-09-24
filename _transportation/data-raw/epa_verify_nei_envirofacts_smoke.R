@@ -31,9 +31,9 @@ onroad_regional <- epa_nei_onroad_regional %>%
     .groups = "keep"
   ) %>%
   mutate(ann_value_grams = emissions_short_tons %>%
-           units::as_units("short_ton") %>%
-           units::set_units("gram") %>%
-           as.numeric()) %>%
+    units::as_units("short_ton") %>%
+    units::set_units("gram") %>%
+    as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = pollutant_code,
@@ -78,9 +78,9 @@ onroad_smoke <- epa_nei_onroad_smoke %>%
     .groups = "keep"
   ) %>%
   mutate(ann_value_grams = emissions_short_tons %>%
-           units::as_units("short_ton") %>%
-           units::set_units("gram") %>%
-           as.numeric()) %>%
+    units::as_units("short_ton") %>%
+    units::set_units("gram") %>%
+    as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -106,13 +106,13 @@ onroad_smoke <- epa_nei_onroad_smoke %>%
 
 onroad_regional %>%
   select(geoid, county_name,
-         calc_year = nei_inventory_year, emissions_metric_tons_co2e,
-         scc6, scc6_desc
+    calc_year = nei_inventory_year, emissions_metric_tons_co2e,
+    scc6, scc6_desc
   ) %>%
   mutate(data_source = "Regional") %>%
   bind_rows(onroad_smoke %>%
-              select(geoid, calc_year, emissions_metric_tons_co2e, scc6, scc6_desc) %>%
-              mutate(data_source = "SMOKE")) %>%
+    select(geoid, calc_year, emissions_metric_tons_co2e, scc6, scc6_desc) %>%
+    mutate(data_source = "SMOKE")) %>%
   group_by(geoid, county_name, calc_year, scc6, scc6_desc) %>%
   pivot_wider(
     names_from = data_source,
@@ -133,31 +133,36 @@ onroad_regional %>%
 # bring in EnviroFacts dataset
 epa_nei_envirofacts <- readRDS("_transportation/data/epa_nei_envirofacts.RDS")
 
-envirofacts_summary <- epa_nei_envirofacts %>% 
+envirofacts_summary <- epa_nei_envirofacts %>%
   # filter(nei_inventory_year == 2020) %>%
-  filter(sector_two == "On-Road") %>% 
-  group_by(geoid, county_name, sector_two, nei_inventory_year) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  filter(sector_two == "On-Road") %>%
+  group_by(geoid, county_name, sector_two, nei_inventory_year) %>%
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
   ungroup()
 
 bind_rows(
-  onroad_regional %>% 
-    group_by(nei_inventory_year, geoid, county_name) %>% 
-    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  onroad_regional %>%
+    group_by(nei_inventory_year, geoid, county_name) %>%
+    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
     mutate(data_source = "Regional"),
-  onroad_smoke %>% 
-    group_by(calc_year, geoid, county_name) %>% 
-    summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
-    mutate(data_source = "SMOKE",
-           nei_inventory_year = calc_year) %>% 
-    ungroup() %>% 
+  onroad_smoke %>%
+    group_by(calc_year, geoid, county_name) %>%
+    summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
+    mutate(
+      data_source = "SMOKE",
+      nei_inventory_year = calc_year
+    ) %>%
+    ungroup() %>%
     select(-calc_year),
-  envirofacts_summary %>% 
-    mutate(data_source = "EnviroFacts",
-           nei_inventory_year = as.character(nei_inventory_year)) %>% 
+  envirofacts_summary %>%
+    mutate(
+      data_source = "EnviroFacts",
+      nei_inventory_year = as.character(nei_inventory_year)
+    ) %>%
     select(-sector_two)
-) %>% 
-  pivot_wider(names_from = data_source,
-              values_from = emissions_metric_tons_co2e) %>% 
-  View
-
+) %>%
+  pivot_wider(
+    names_from = data_source,
+    values_from = emissions_metric_tons_co2e
+  ) %>%
+  View()

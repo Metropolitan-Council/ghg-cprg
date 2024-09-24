@@ -12,15 +12,15 @@ pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/epa_
 epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
 
 
-epa_onroad_year_source <- epa_onroad_emissions_compile %>% 
-  mutate(emissions_year = as.character(emissions_year)) %>% 
-  select(emissions_year, data_source) %>% 
+epa_onroad_year_source <- epa_onroad_emissions_compile %>%
+  mutate(emissions_year = as.character(emissions_year)) %>%
+  select(emissions_year, data_source) %>%
   unique()
 
-aem_years <- epa_onroad_emissions_compile %>% 
-  filter(data_source == "Air Emissions Modeling") %>% 
-  select(data_source, emissions_year, interpolation) %>% 
-  unique() 
+aem_years <- epa_onroad_emissions_compile %>%
+  filter(data_source == "Air Emissions Modeling") %>%
+  select(data_source, emissions_year, interpolation) %>%
+  unique()
 ```
 
 The EPA continually works on emissions inventories for various projects. 
@@ -43,10 +43,8 @@ Compare underlying activity data with data from state DOTs
 
 ## Limitations 
 
-In addition to limitations described in @sec-epa-emissions-limitations, EQUATES has its own set of limitations.
+In addition to limitations described in @sec-epa-emissions-limitations, Air Emissions Modeling has its own set of limitations.
 
-- EQUATES does not contain emissions estimates for N~2~O (nitrous oxide).
-- EQUATES includes only on-road emission sources. 
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))

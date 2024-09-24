@@ -11,9 +11,9 @@ pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/epa_
 epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
 
 
-epa_onroad_year_source <- epa_onroad_emissions_compile %>% 
-  mutate(emissions_year = as.character(emissions_year)) %>% 
-  select(emissions_year, data_source) %>% 
+epa_onroad_year_source <- epa_onroad_emissions_compile %>%
+  mutate(emissions_year = as.character(emissions_year)) %>%
+  select(emissions_year, data_source) %>%
   unique()
 
 hookaddcap()
