@@ -1,4 +1,4 @@
-#' Read, clean, and save SMOKE flat file (FF10) data, onroad and nonroad
+#' Read, clean, and save SMOKE flat file (FF10) data, on-road and non-road
 #'
 #' @param file_location character, location of SMOKE FF10 file
 #' @param out_directory character, output location
