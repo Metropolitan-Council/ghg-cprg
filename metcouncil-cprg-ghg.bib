@@ -663,6 +663,17 @@
   langid = {english}
 }
 
+@report{cmasSMOKEV51Users2024,
+  title = {{{SMOKE}} v5.1 {{User}}’s {{Manual}}},
+  author = {{CMAS}},
+  date = {2024-07-31},
+  institution = {{Community Modeling and Analysis System Center (CMAS)}},
+  location = {Chapel Hill},
+  url = {https://www.cmascenter.org/smoke/documentation/5.1/html/ch02s02s03.html},
+  urldate = {2024-09-24},
+  abstract = {The Sparse Matrix Operator Kernel Emissions (SMOKE) Modeling System was originally developed at MCNC to integrate emissions data processing with high-performance computing (HPC) sparse-matrix algorithms. SMOKE is now under active development at the Institute for the Environment and is partially supported by the Community Modeling and Analysis System (CMAS). SMOKE is primarily an emissions processing system designed to create gridded, speciated, hourly emissions for input into a variety of air quality models such as CMAQ, REMSAD, CAMX and UAM. SMOKE supports area, biogenic, mobile (both onroad and nonroad), and point source emissions processing for criteria, particulate, and toxic pollutants. For biogenic emissions modeling, SMOKE uses the Biogenic Emission Inventory System. SMOKE is also integrated with the on-road emissions model MOVES. The sparse matrix approach used throughout SMOKE permits rapid and flexible processing of emissions data. Rapid processing is possible because SMOKE uses a series of matrix calculations rather than a less-efficient sequential approach used by previous systems. Flexible processing comes from splitting the processing steps of inventory growth, controls, chemical speciation, temporal allocation, and spatial allocation into independent steps whenever possible. The results from these steps are merged together in the final stage of processing using vector-matrix multiplication. This means that individual steps (such as adding a new control strategy, or processing for a different grid) can be performed and merged without having to redo all of the other processing steps. SMOKE is written in Fortran 90 and is designed to run on a variety of UNIX platforms. We currently provide executables for Linux and the source code is available for download and can easily be compiled for your particular system. We do not support running SMOKE on Windows, due to the inherent limitations of that system. The current version of SMOKE is version 4.9, although earlier versions are still available for download.}
+}
+
 @report{cmcogCentralMidlandsPriority2024,
   type = {Government},
   title = {Central {{Midlands Priority Climate Action Plan}}},
@@ -1240,7 +1251,7 @@
   abstract = {Fresno Council of Governments (Fresno COG) received a planning grant from the Climate Pollution Reduction Grants (CPRG) program, which was appropriated by the Inflation Reduction Act (IRA) to the US Environmental Protection Agency (EPA). There is a total of \$5 billion in CPRG funding, among which \$250 million was allocated as planning grants to eligible entities to develop GHG reduction plans; \$4.6075 billion was allocated to fund the implementation of the GHG reduction measures identified in the GHG reduction plans developed through the planning grants. The Priority Climate Action Plan (PCAP) is the first component of the Regional Climate Action Plan that Fresno COG will be developing for the CPRG grant funding. It includes a regional greenhouse gas (GHG) inventory, a public outreach process, identification and quantification of priority GHG emissions reduction measures, a benefit analysis for low-income and disadvantaged communities, and identification of implementation authorities. Fresno COG staff utilized a three-pronged approach to developing the PCAP. First, a robust public outreach process with multi-media platform was conducted to reach the general public, especially the low-income and disadvantaged communities identified during the process. As a parallel process, a Stakeholder Steering Committee was formed to provide input and guidance on the overall process. The third and final step of the PCAP development process was to present the PCAP to the Fresno COG’s three standing committees, including the Transportation Technical Committee, the Policy Advisory Committee and the Policy Board, for final approval. The GHG inventory in the PCAP follows the U.S. Community Protocol for Accounting and Reporting of Greenhouse Gas Emissions, developed by ICLEI Local Governments for Sustainability,1 as modified for use in California and was developed utilizing available tools and data from EPA, CARB, and the City of Fresno. The quantification of GHG reductions associated with each priority GHG reduction measure was conducted using previously conducted studies such as Fresno COG’s EV Readiness Plan (EVRP), publicly available datasets such as the National Renewable Energy Laboratory (NREL)’s residential and commercial building stock typologies, and tools such as the EPA’s Waste Reduction Model (WARM). The PCAP was the first region-wide climate action planning effort in Fresno County. It provided a valuable educational experience to the communities in the region as well as to the municipality staff on climate action planning. However, due to the constrained timeline (5 months) for the PCAP development, the process for many components of the PCAP was shortened or simplified. The next step in the planning process will be the preparation of a Comprehensive Climate Action Plan (CCAP) that will build on the PCAP, address the additional requirements for the CCAP, and expand/enhance the PCAP components in the CCAP.}
 }
 
-@article{foley20022017Anthropogenic2023,
+@article{foleyEQUATESAnthropogenic2023,
   title = {2002–2017 Anthropogenic Emissions Data for Air Quality Modeling over the {{United States}}},
   shorttitle = {{{EQUATES}} 2002-2017},
   author = {Foley, Kristen M. and Pouliot, George A. and Eyth, Alison and Aldridge, Michael F. and Allen, Christine and Appel, K. Wyat and Bash, Jesse O. and Beardsley, Megan and Beidler, James and Choi, David and Farkas, Caroline and Gilliam, Robert C. and Godfrey, Janice and Henderson, Barron H. and Hogrefe, Christian and Koplitz, Shannon N. and Mason, Rich and Mathur, Rohit and Misenis, Chris and Possiel, Norm and Pye, Havala O. T. and Reynolds, Lara and Roark, Matthew and Roberts, Sarah and Schwede, Donna B. and Seltzer, Karl M. and Sonntag, Darrell and Talgo, Kevin and Toro, Claudia and Vukovich, Jeff and Xing, Jia and Adams, Elizabeth},
@@ -4171,6 +4182,28 @@ Last Modified: 2017-11-16T02:18+08:00}
   urldate = {2024-01-25},
   langid = {english},
   keywords = {NEI,TO-READ-FULLY}
+}
+
+@online{usepa2021EmissionsModeling2024,
+  type = {Air Emissions Modeling Platforms},
+  title = {2021 {{Emissions Modeling Platform}}},
+  author = {{USEPA}},
+  date = {2024-02-06},
+  url = {https://www.epa.gov/air-emissions-modeling/2021-emissions-modeling-platform},
+  urldate = {2024-09-24},
+  abstract = {The 2021 Emissions Modeling Platform is based on the 2020 National Emissions Inventory released in the spring of 2023 with some updates to better represent 2021.  It was created as part of a product for the Centers for Disease Control and Prevention (CDC) to produce derived estimates of air quality for 2021 using the Bayesian Space-time Downscaling Fusion Model (Downscaler) and in support of AirToxScreen for 2021. The modeling platform contains emissions inventories for 2021, spatial surrogates, temporal profiles, and other ancillary files. This platform does not contain projection years.},
+  langid = {english}
+}
+
+@online{usepa2022v1EmissionsModeling2024,
+  type = {Air Emissions Modeling Platforms},
+  title = {2022v1 {{Emissions Modeling Platform}}},
+  author = {{USEPA}},
+  date = {2024-08-23},
+  url = {https://www.epa.gov/air-emissions-modeling/2022v1-emissions-modeling-platform},
+  urldate = {2024-09-24},
+  abstract = {Modeling files from the 2022 Emissions Modeling Platform},
+  langid = {english}
 }
 
 @standard{usepa40CFRPart2018,
