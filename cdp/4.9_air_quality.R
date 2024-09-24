@@ -1,4 +1,6 @@
 # [explain]
+source("R/_load_pkgs.R")
+met_counties <- c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington")
 
 criteria_pollutants <- read.csv(file.path(
   here::here(), 
@@ -46,6 +48,12 @@ calc_avg_pollution <- function(name){
 }
 
 n20_annual <- calc_avg_pollution("Nitrogen dioxide: annual")
+# convert from ppb to ug_m3, using avg temp of 15 deg C
+# equation from https://www.apis.ac.uk/unit-conversion?ppb_ug=ppb&value=7.4&pollutant=NO2&m_weight=&select_temp=0&input_temp=15&Submit=Calculate+#jump
+temp <- 8.3
+# ignoring the conversion for barometric pressure because mpls hovers around sea level average
+n2o_ug_m3 <- n20_annual$avg_pollutant * 46.01 * (273/(temp+273)*(1/22.41))
+  #molecular weight * n20_annual / 24.45
 pm10_daily <- calc_avg_pollution("PM10: daily")
 pm2.5_annual <- calc_avg_pollution("PM2.5: annual background for modeling-  smoke/dust removed")
 fine_particles_annual <- calc_avg_pollution("Fine particles: annual")
