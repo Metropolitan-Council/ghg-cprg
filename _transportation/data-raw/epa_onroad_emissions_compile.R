@@ -548,7 +548,8 @@ epa_onroad_source_set <-
         TRUE ~ moves_2014
       )) %>% 
   select(-moves3, -moves4, -moves_2014, -metadata_info)%>%
-  mutate(compiled_to = "epa_onroad_emissions_compile") %>%
+  mutate(compiled_to = "epa_onroad_emissions_compile",
+         calc_year = as.character(calc_year)) %>%
   select(data_source, dataset, moves_edition,
          emissions_year = calc_year,
          process_source,
