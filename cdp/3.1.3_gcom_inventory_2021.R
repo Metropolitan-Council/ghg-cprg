@@ -3,6 +3,7 @@
 # factors as required. The GCOM inventory will cover the year 2021 (only) and the 
 # 7-county region.
 source("R/_load_pkgs.R")
+library("writexl")
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
@@ -25,6 +26,9 @@ emissions_council_region <- county_emissions %>%
   ) %>% 
   distinct() %>% 
   ungroup()
+
+# require writexl
+write_xlsx(emissions_council_region, "cdp/inventory_council_format.xlsx")
  
 # Reassign to CRF categories ----
 
@@ -73,6 +77,7 @@ crf_emissions <- emissions_council_region %>%
     "AFOLU > Land use" = `Sequestration_Grassland` + `Sequestration_Tree` +
       `Sequestration_Urban grassland` + `Sequestration_Urban tree` +
       `Sequestration_Wetland`,
+    "AFOLU > Other AFOLU" = 0,
     "Total AFOLU" = `Sequestration_Grassland` + `Sequestration_Tree` +
       `Sequestration_Urban grassland` + `Sequestration_Urban tree` +
       `Sequestration_Wetland`,
@@ -144,6 +149,7 @@ crf_emissions <- emissions_council_region %>%
   )
 
 # export it as an xcel spreadsheet
+write_xlsx(crf_emissions, "cdp/3.1.3_crf.xlsx")
 
 # 2005 emissions ----
 

@@ -53,7 +53,6 @@ no2_annual <- calc_avg_pollution("Nitrogen dioxide: annual")
 temp <- 8.3
 # ignoring the conversion for barometric pressure because mpls hovers around sea level average
 no2_ug_m3 <- no2_annual$avg_pollutant * 46.01 * (273/(temp+273)*(1/22.41))
-  #molecular weight * n20_annual / 24.45
 pm10_daily <- calc_avg_pollution("PM10: daily")
 pm2.5_annual <- calc_avg_pollution("PM2.5: annual background for modeling-  smoke/dust removed")
 fine_particles_annual <- calc_avg_pollution("Fine particles: annual")
