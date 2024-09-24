@@ -21,6 +21,16 @@ if (Sys.info()["user"][[1]] == "rotenle") {
   )
 }
 
+
+# CNG school buses, motor homes, and short haul trucks
+# have very low data availability 
+scc6_remove <- c(
+  "220352", # single unit short haul
+  "220343", # school buses
+  "220361", # combination short haul
+  "220354"  # motor homes
+)
+
 # read in base datasets -----
 # All these were compiled from SMOKE flat files
 # waiting to hear back from CMAS forum on blank emis_type column
@@ -37,7 +47,8 @@ epa_nei_onroad <- readRDS("_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS
     cprg_area == TRUE,
     emis_type %in% c("RPD", "")
   ) %>%
-  left_join(scc_combine)
+  left_join(scc_combine) %>% 
+  filter(!scc6 %in% scc6_remove)
 
 # next EQUATES from  _transportation/data-raw/epa_equates_read.R
 epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS") %>%
@@ -47,7 +58,8 @@ epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUA
     cprg_area == TRUE,
     emis_type %in% c("RPD", "")
   ) %>%
-  left_join(scc_combine)
+  left_join(scc_combine) %>% 
+  filter(!scc6 %in% scc6_remove)
 
 # finally air emissions modeling from  _transportation/data-raw/epa_air_emissions_modeling_onroad.R
 epa_emismod <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS") %>%
@@ -57,7 +69,8 @@ epa_emismod <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/onr
     cprg_area == TRUE,
     emis_type %in% c("RPD", "")
   ) %>%
-  left_join(scc_combine)
+  left_join(scc_combine) %>% 
+  filter(!scc6 %in% scc6_remove)
 
 # summarize datasets -----
 # aggregate each dataset up to scc6, pollutant_code
