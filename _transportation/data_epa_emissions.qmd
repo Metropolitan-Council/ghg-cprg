@@ -3,8 +3,6 @@
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
-hookaddcap()
-
 
 epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/epa_onroad_source_set.RDS"))
 pollutant_key <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key.RDS"))
@@ -12,52 +10,151 @@ pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/epa_
 epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
 
 
-```
+epa_onroad_year_source <- epa_onroad_emissions_compile %>% 
+  mutate(emissions_year = as.character(emissions_year)) %>% 
+  select(emissions_year, data_source) %>% 
+  unique()
 
+
+hookaddcap()
+```
 
 The EPA releases various emissions estimates as part of several programs and initiatives. 
 
-All datasets are compiled from SMOKE flat files downloaded from the EPA website. 
+All datasets are compiled from Sparse Matrix Operator Kernel Emissions (SMOKE) Flat File 10 (FF10) formatted data downloaded from the EPA website. SMOKE FF10 is a standardized format regularly released by the EPA for NEI, EQUATES, and Air Emissions Modeling platforms [@cmasSMOKEV51Users2024, section 2.2.3].
 
+SMOKE FF10 files were processed using [`read_smoke_ff10()`](data-raw/_read_smoke_ff10.R), which reads in the raw data, records relevant metadata, filters to only include relevant counties and pollutants, and saves an intermediary dataset. These intermediary datasets are read back in, combined, and saved. 
 
-```{r}
+SMOKE FF10 data were filtered to include MOVES processes associated with on-roadway vehicle operation [^These pollutants account for emissions from RatePerDistance MOVES process types, including running exhaust, crankcase running exhaust, tire wear, brake wear, on-road evaporative permeation, on-road evaporative fuel leaks on-road evaporative fuel vapor, and venting [@cmasSMOKEV51Users2024, section 2.7.4.9]].
 
+```{r tbl-epa-intermediary-smoke-datasets}
+#| tbl-cap: "Intermediary datasets and processing scripts"
+#| out-width: "95%"
+
+epa_onroad_source_set %>% 
+  select(data_source, dataset, process_source) %>% 
+  unique() %>% 
+  mutate(
+    direct_link = map(process_source, ~ htmltools::a(href = .x, .x)) %>%
+      map(~ gt::html(as.character(.x)))
+  ) %>% 
+  select(
+    `Data source` = data_source,
+    `Dataset` = dataset,
+    `Processing script` = direct_link
+  ) %>% 
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::cols_align(align = "left")
 ```
 
-Each data source and year may use a different MOVES edition. These are listed in [table below].
+Each data source and year uses a different MOVES edition. These are listed in @tbl-epa-source-moves-edition-year.
 
-```{r}
+```{r tbl-epa-source-moves-edition-year}
+#| tbl-cap: "On-road pollutants available by year and EPA data source"
+#| out-width: "95%"
+
 epa_onroad_source_set %>% 
+  inner_join(epa_onroad_year_source, join_by(data_source, emissions_year)) %>% 
   select(data_source, moves_edition, emissions_year) %>% 
   unique() %>% 
   group_by(data_source, moves_edition) %>% 
-  summarize(emissions_years = paste0(emissions_year, collapse = ", "))
+  summarize(emissions_years = paste0(emissions_year, collapse = ", "),
+            .groups = "keep") %>% 
+  ungroup() %>% 
+  select(
+    `Data source` = data_source,
+    `MOVES edition` = moves_edition,
+    `Years` = emissions_years,
+  ) %>% 
+  gt() %>% 
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
 ```
+Various pollutants are available. 
 
+```{r tbl-epa-source-pollutant-year}
+#| tbl-cap: "On-road pollutants available by year and EPA data source"
+#| out-width: "95%"
 
-Various pollutants are available 
-
-
-
-```{r}
 epa_onroad_emissions_compile %>% 
   filter(!is.na(emissions),
          pollutant != "emissions_metric_tons_co2e") %>% 
-  select(emissions_year, interpolation, data_source, pollutant, pollutant_code) %>% 
+  select(emissions_year, interpolation, data_source, pollutant, pollutant_format) %>% 
   unique() %>% 
-  group_by(emissions_year, data_source, interpolation) %>% 
-  summarize(pollutants_available = paste0(unique(pollutant_code), collapse = ", "))
-```
-
-
-```{r}
-
-pollutant_key %>% 
-  select(pollutant_format, pollutant_code, pollutant_desc) %>% 
+  group_by(data_source, interpolation) %>% 
+  summarize(
+    emissions_years = paste0(sort(unique(emissions_year)), collapse = ", "),
+    pollutants_available = paste0(unique(pollutant_format), collapse = ", ")) %>% 
+  ungroup() %>% 
+  select(
+    `Data source` = data_source,
+    `Interpolation` = interpolation,
+    `Years` = emissions_years,
+    `Pollutants`  = pollutants_available
+  ) %>% 
   gt() %>% 
+  gt::opt_row_striping() %>%
+  fmt_markdown(columns = 4) %>% 
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
   gt::as_raw_html()
 ```
 
+Pollutant descriptions
+
+```{r tbl-epa-pollutants}
+#| tbl-cap: "Pollutants provided by EPA datasets"
+#| out-width: "95%"
+
+pollutant_key %>% 
+  filter(pollutant != "emissions_metric_tons_co2e") %>% 
+  arrange(pollutant_code) %>% 
+  select(Pollutant = pollutant_format,
+         `Pollutant code` = pollutant_code,
+         `Description` = pollutant_desc) %>% 
+  gt() %>% 
+  gt::opt_row_striping() %>%
+  fmt_markdown(columns = 1) %>% 
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
+
+Vehicle and fuel types
+
+```{r tbl-epa-vehicle-fuel-types}
+#| tbl-cap: "Vehicle and fuel types provided by EPA datasets"
+#| out-width: "95%"
+
+epa_onroad_emissions_compile %>% 
+  select(vehicle_type, fuel_type, alt_mode, alt_mode_truck) %>% 
+  unique() %>% 
+  group_by(vehicle_type) %>% 
+  summarize(fuel_types = paste0(unique(fuel_type), collapse = ", "))
+  select(`Vehicle type` = vehicle_type,
+         `Alternate vehicle type` = alt_mode,
+         `Secondary alternate vehicle type` = alt_mode_truck) %>% 
+  gt() %>% 
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
 
 {{< include data_epa_nei.qmd >}}
 ### Consistent limitations {#sec-epa-emissions-limitations}
