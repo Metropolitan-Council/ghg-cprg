@@ -252,3 +252,22 @@ save_plotly <- function(a_plotly, fmt = c("png", "pdf", "svg"),
     )
   }
 }
+
+
+# thanks to R for the Rest of Us
+# https://rfortherestofus.com/2022/10/automating-sentences-with-r
+# Example: 
+# > 1:4 %>% listify()
+# "1, 2, 3 and 4"
+listify <- function(my_vector) {
+  if(length(my_vector) > 1) {
+    paste(paste(my_vector[1:length(my_vector)-1], 
+                collapse = ", "), 
+          "and", 
+          my_vector[length(my_vector)])
+  } else {
+    # if length == 1, we don't want to print "and blah"
+    paste(my_vector)
+  }
+}
+
