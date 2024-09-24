@@ -157,6 +157,12 @@ epa_onroad_emissions_compile %>%
 ```
 
 {{< include data_epa_nei.qmd >}}
+
+{{< include data_epa_equates.qmd >}}
+
+{{< include data_epa_air_emissions_modeling.qmd >}}
+
+
 ### Consistent limitations {#sec-epa-emissions-limitations}
 
 
