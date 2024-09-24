@@ -52,7 +52,7 @@ pollutant_key <-
       pollutant_code == "CH4" ~ "CH<sub>4</sub>",
       pollutant_code == "CO" ~ "CO",
       pollutant_code == "CO2" ~ "CO<sub>2</sub>",
-      pollutant_code == "N2O" ~ "N<sub>2</sub>",
+      pollutant_code == "N2O" ~ "N<sub>2</sub>O",
       pollutant_code == "NH3" ~ "NH<sub>3</sub>",
       pollutant_code == "SO2" ~ "SO<sub>2</sub>",
       pollutant_code == "NOX" ~ "NOx",
