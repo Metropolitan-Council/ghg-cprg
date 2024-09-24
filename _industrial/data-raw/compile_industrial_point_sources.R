@@ -17,6 +17,16 @@ sectors <- req_base %>%
     show_col_types = FALSE
   )
 
+sources <- req_base %>%
+  httr2::req_url_path_append("BRS_SOURCE_NAME/CSV") %>%
+  httr2::req_method("GET") %>%
+  httr2::req_perform() %>%
+  httr2::resp_body_string(encoding = "UTF-8") %>%
+  readr::read_delim(
+    delim = ",",
+    show_col_types = FALSE
+  )
+
 industrial_sector <- sectors %>% 
   filter(grepl("Industrial", ei_sector))
 
@@ -99,5 +109,7 @@ multi_year_industrial_point <- purrr::map_dfr(
     state = "MN",
     county = "Dakota"
   )
-
+### unclear if we can breakdown point sources to further categories, i.e. separate electricity and natural gas from further emissions
+### API for source codes is broken and can't find what these mean
 unique(multi_year_industrial_point$naics_desc)
+unique(multi_year_industrial_point$source_code)
