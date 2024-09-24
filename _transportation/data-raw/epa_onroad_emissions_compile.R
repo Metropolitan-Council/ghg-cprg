@@ -24,6 +24,7 @@ if (Sys.info()["user"][[1]] == "rotenle") {
 
 # CNG school buses, motor homes, and short haul trucks
 # have very low data availability 
+# we will remove them from our datasets
 scc6_remove <- c(
   "220352", # single unit short haul
   "220343", # school buses
