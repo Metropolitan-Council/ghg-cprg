@@ -25,7 +25,7 @@ All datasets are compiled from Sparse Matrix Operator Kernel Emissions (SMOKE) F
 
 SMOKE FF10 files were processed using [`read_smoke_ff10()`](data-raw/_read_smoke_ff10.R), which reads in the raw data, records relevant metadata, filters to only include relevant counties and pollutants, and saves an intermediary dataset. These intermediary datasets are read back in, combined, and saved. 
 
-SMOKE FF10 data were filtered to include MOVES processes associated with on-roadway vehicle operation [^These pollutants account for emissions from RatePerDistance MOVES process types, including running exhaust, crankcase running exhaust, tire wear, brake wear, on-road evaporative permeation, on-road evaporative fuel leaks on-road evaporative fuel vapor, and venting [@cmasSMOKEV51Users2024, section 2.7.4.9]].
+SMOKE FF10 data were filtered to include MOVES processes associated with on-roadway vehicle operation [^These pollutants account for emissions from RatePerDistance (RPD) MOVES process types, including running exhaust, crankcase running exhaust, tire wear, brake wear, on-road evaporative permeation, on-road evaporative fuel leaks on-road evaporative fuel vapor, and venting [@cmasSMOKEV51Users2024, section 2.7.4.9]].
 
 ```{r tbl-epa-intermediary-smoke-datasets}
 #| tbl-cap: "Intermediary datasets and processing scripts"
@@ -173,8 +173,14 @@ epa_onroad_emissions_compile %>%
     - The NEI augmented vehicle miles traveled (VMT) data for Minnesota and Wisconsin in 2020 using federal and state-level datasets due to data availability issues [@usepaDevelopment2020DefaultData2022]. 
 - To reduce model run-time, the EPA groups counties together and only runs MOVES on a single representative county. The resulting MOVES emissions factors are multiplied by county-specific activity data (including VMT, vehicle population, hourly speed distribution, among others) to get county-specific emissions [@usepa2020NationalEmissions2023onroad, section 5.6.2.1]. Effectively, emissions factors are generated on a single representative county, and are then applied to similar counties. 
 
+#### Nitrous oxide (N~2~O) availability
 
+<!-- I haven't gotten a response from my CMAS forum post https://forum.cmascenter.org/t/nitrous-oxide-n2o-availability-in-equates-county-level/5199/2 -->
+Though nitrous oxide  N~2~O has a high global warming potential (@sec-gwp), the amount of N~2~O released is relatively small when compared to other sectors. 
 
+N~2~O is unavailable in EQUATES. For consistency across all three data sources, N~2~O is removed from NEI and Air Emissions Modeling datasets. The resulting CO~2~e only accounts for CO~2~ and CH~4~.
+
+What proportion of total CO~2~e is made up by N~2~O in datasets where it is available?
 
 
 
