@@ -136,20 +136,6 @@ epa_emismod_summary <- epa_emismod %>%
     everything()
   )
 
-# the difference with and without n2o is at MOST 3%
-# and mostly effects trucks, buses, motor homes, larger vehicles
-# which makes sense, because these emit more n2o than passenger
-# cars and smaller vehicles, both because more fuel usage, but
-# also because these larger vehicles are more likely to run on diesel
-# and diesel emits more n2o than gasoline
-epa_emismod_summary %>%
-  group_by(calc_year, geoid, county_name, scc6_desc) %>%
-  summarize(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
-    emissions_metric_tons_co2e_n2o = sum(emissions_metric_tons_co2e_n2o)
-  ) %>%
-  mutate(pct_diff = (emissions_metric_tons_co2e_n2o - emissions_metric_tons_co2e) / emissions_metric_tons_co2e)
-
 # compile EQUATES data
 # note that we don't have n2o from EQUATES
 # I'm waiting on a reply on the CMAS forum
@@ -190,16 +176,7 @@ epa_equates_summary_interp <- epa_equates_summary %>%
     # not any other pollutant types
     # remove these from the dataset
     !is.na(emissions_metric_tons_co2e),
-    !is.na(co2),
-    # CNG school buses, motor homes, and short haul trucks
-    # have very low data availability (fewer than 3 observations)
-    # and so won't interpolate.
-    !scc6 %in% c(
-      "220352",
-      "220343",
-      "220361",
-      "220354"
-    )
+    !is.na(co2)
   ) %>%
   mutate(data_source = "EQUATES") %>%
   group_by(
