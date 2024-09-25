@@ -24,6 +24,7 @@ equates_years <- epa_onroad_emissions_compile %>%
   group_by(interpolation) %>%
   group_split()
 ```
+
 <!-- EQUATES official citation is foleyEQUATESAnthropogenic2023 -->
 
 EQUATES (EPA’s Air QUAlity TimE Series) is a set of modeled emissions and supporting data developed by EPA scientists spanning years 2002 to 2019. EQUATES is particularly useful in that it uses modern source classification codes (SCCs) to provide a continuous time series [@foleyEQUATESAnthropogenic2023].

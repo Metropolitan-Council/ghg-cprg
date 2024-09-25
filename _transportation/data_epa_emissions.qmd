@@ -175,6 +175,7 @@ select(
 
 
 - The NEI, EQUATES, and Air Emissions Modeling platforms are based on MOVES, which does not account for activity on local roads. 
+- NEI, EQUATES, and Air Emissions modeling use different MOVES editions (see @tbl-epa-source-pollutant-year), which may result in discrepancies between years. 
 - To reduce run times, the EPA uses fuel months to represent summer and winter fuels. The month of January represents October through April (winter), while July represents May through September (summer) [@usepa2020NationalEmissions2023onroad, section 5.6.6.2]. Variation within the summer and winter months is not accounted for using this method. 
 - The 2020 NEI had particular challenges due to the COVID-19 pandemic
     - Minnesota did not submit custom data inputs for the 2020 NEI, meaning that inputs to MOVES were based on national default values. Wisconsin submitted custom data for VMT, vehicle population, and road type distribution. Both Minnesota and Wisconsin submitted data for 2017, 2014, and 2011 [@usepa2017NationalEmissions2021, @usepa2014NationalEmissions2018, @usepa2011NationalEmissions2015]. 
