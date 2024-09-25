@@ -43,34 +43,44 @@ epa_nei_onroad <- readRDS("_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS
     geoid = region_cd,
     pollutant_code = poll
   ) %>%
-  left_join(counties_light) %>%
+  left_join(counties_light, by = join_by(geoid)) %>%
   filter(
     cprg_area == TRUE,
     emis_type %in% c("RPD", "")
   ) %>%
-  left_join(scc_combine) %>%
+  left_join(scc_combine, by = join_by(scc6)) %>%
   filter(!scc6 %in% scc6_remove)
 
 # next EQUATES from  _transportation/data-raw/epa_equates_read.R
 epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS") %>%
   mutate(geoid = region_cd) %>%
-  left_join(counties_light) %>%
+  left_join(counties_light, by = join_by(geoid)) %>%
   filter(
     cprg_area == TRUE,
     emis_type %in% c("RPD", "")
   ) %>%
-  left_join(scc_combine) %>%
-  filter(!scc6 %in% scc6_remove)
+  left_join(scc_combine, by = join_by(scc6)) %>%
+  filter(!scc6 %in% scc6_remove) %>% 
+  bind_rows(readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cmas_mn_wi.RDS") %>% 
+               mutate(geoid = region_cd) %>%
+               left_join(counties_light, by = join_by(geoid)) %>%
+               filter(
+                 cprg_area == TRUE,
+                 emis_type %in% c("RPD", ""),
+                 calc_year == "2019"
+               ) %>%
+               left_join(scc_combine) %>%
+               filter(!scc6 %in% scc6_remove))
 
 # finally air emissions modeling from  _transportation/data-raw/epa_air_emissions_modeling_onroad.R
 epa_emismod <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS") %>%
   mutate(geoid = region_cd) %>%
-  left_join(counties_light) %>%
+  left_join(counties_light, by = join_by(geoid)) %>%
   filter(
     cprg_area == TRUE,
     emis_type %in% c("RPD", "")
   ) %>%
-  left_join(scc_combine) %>%
+  left_join(scc_combine, by = join_by(scc6)) %>%
   filter(!scc6 %in% scc6_remove)
 
 # summarize datasets -----
@@ -82,9 +92,9 @@ epa_nei_onroad_summary <- epa_nei_onroad %>%
     .groups = "keep"
   ) %>%
   mutate(ann_value_grams = emissions_short_tons %>%
-    units::as_units("short_ton") %>%
-    units::set_units("gram") %>%
-    as.numeric()) %>%
+           units::as_units("short_ton") %>%
+           units::set_units("gram") %>%
+           as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -113,9 +123,9 @@ epa_emismod_summary <- epa_emismod %>%
     .groups = "keep"
   ) %>%
   mutate(ann_value_grams = emissions_short_tons %>%
-    units::as_units("short_ton") %>%
-    units::set_units("gram") %>%
-    as.numeric()) %>%
+           units::as_units("short_ton") %>%
+           units::set_units("gram") %>%
+           as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -139,7 +149,6 @@ epa_emismod_summary <- epa_emismod %>%
 
 # compile EQUATES data
 # note that we don't have n2o from EQUATES
-# I'm waiting on a reply on the CMAS forum
 # https://forum.cmascenter.org/t/nitrous-oxide-n2o-availability-in-equates-county-level/5199
 epa_equates_summary <- epa_equates %>%
   group_by(geoid, county_name, calc_year, poll, scc6) %>%
@@ -149,9 +158,9 @@ epa_equates_summary <- epa_equates %>%
   ) %>%
   # convert to grams
   mutate(ann_value_grams = emissions_short_tons %>%
-    units::as_units("short_ton") %>%
-    units::set_units("gram") %>%
-    as.numeric()) %>%
+           units::as_units("short_ton") %>%
+           units::set_units("gram") %>%
+           as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -194,8 +203,8 @@ epa_equates_summary_interp <- epa_equates_summary %>%
   mutate(
     # use Kalman interpolation for all pollutants
     emissions_metric_tons_co2e = na_kalman(emissions_metric_tons_co2e,
-      smooth = TRUE,
-      type = "trend"
+                                           smooth = TRUE,
+                                           type = "trend"
     ),
     co2 = na_kalman(co2, smooth = TRUE, type = "trend"),
     ch4 = na_kalman(ch4, smooth = TRUE, type = "trend"),
@@ -207,14 +216,14 @@ epa_equates_summary_interp <- epa_equates_summary %>%
     pm10_pri = na_kalman(pm10_pri, smooth = TRUE, type = "trend"),
     pm25_pri = na_kalman(pm25_pri, smooth = TRUE, type = "trend"),
     voc = na_kalman(voc, smooth = TRUE, type = "trend"),
-
+    
     # so2 = na_kalman(so2, smooth = TRUE, type = "trend"),
     # nh4 = na_kalman(nh4, smooth = TRUE, type = "trend"),
-
+    
     # we got NAs in the data_source column when we ran complete()
     # if it is NA, then it means that row was interpolated!
     interpolation = ifelse(is.na(data_source), "Interpolated",
-      "Original"
+                           "Original"
     ),
     data_source = "EQUATES"
   ) %>%
@@ -272,14 +281,6 @@ epa_emissions_combine <- bind_rows(
   # use EQUATES for all other years
   epa_equates_summary_interp
 ) %>%
-  # remove CNG school buses, motor homes, and short haul trucks
-  # from all datasets
-  filter(!scc6 %in% c(
-    "220352",
-    "220343",
-    "220361",
-    "220354"
-  )) %>%
   ungroup() %>%
   select(
     emissions_year, data_source, interpolation,
@@ -386,6 +387,7 @@ epa_emissions_summary_alt_mode_truck %>%
     )
   ) %>%
   plotly_layout(
+    main_title = "Ramsey",
     legend_title = "Vehicle type"
   )
 
@@ -414,6 +416,7 @@ epa_emissions_summary_alt_mode_truck %>%
     )
   ) %>%
   plotly_layout(
+    main_title = "Hennepin",
     legend_title = "Vehicle type"
   )
 
@@ -512,10 +515,19 @@ epa_onroad_source_set <-
         process_source = "_transportation/data-raw/epa_nei_smoke_ff.R"
       ),
     epa_equates %>%
+      filter(calc_year != "2019") %>% 
       select(file_location, calc_year, metadata_info) %>%
       mutate(
         data_source = "EQUATES",
         dataset = "equates_mn_wi.RDS",
+        process_source = "_transportation/data-raw/epa_equates_read.R"
+      ),
+    epa_equates %>%
+      filter(calc_year == "2019") %>% 
+      select(file_location, calc_year, metadata_info) %>%
+      mutate(
+        data_source = "EQUATES",
+        dataset = "equates_cmas_mn_wi.RDS",
         process_source = "_transportation/data-raw/epa_equates_read.R"
       ),
     epa_emismod %>%
@@ -548,9 +560,9 @@ epa_onroad_source_set <-
     calc_year = as.character(calc_year)
   ) %>%
   select(data_source, dataset, moves_edition,
-    emissions_year = calc_year,
-    process_source,
-    file_location
+         emissions_year = calc_year,
+         process_source,
+         file_location
   )
 
 saveRDS(epa_onroad_source_set, "_transportation/data/epa_onroad_source_set.RDS")
