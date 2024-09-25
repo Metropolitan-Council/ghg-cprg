@@ -559,6 +559,7 @@ epa_onroad_source_set <-
     compiled_to = "epa_onroad_emissions_compile",
     calc_year = as.character(calc_year)
   ) %>%
+  unique() %>% 
   select(data_source, dataset, moves_edition,
          emissions_year = calc_year,
          process_source,
