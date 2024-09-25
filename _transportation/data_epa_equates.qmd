@@ -24,12 +24,12 @@ equates_years <- epa_onroad_emissions_compile %>%
   group_by(interpolation) %>%
   group_split()
 ```
+<!-- EQUATES official citation is foleyEQUATESAnthropogenic2023 -->
 
-EQUATES (EPA’s Air QUAlity TimE Series) is a set of modeled emissions and supporting data developed by EPA scientists spanning years 2002 to 2019. EQUATES is particularly useful in that it uses modern source classification codes (SCCs) to provide a continuous time series [@usepaEQUATESEPAsAir2024].
+EQUATES (EPA’s Air QUAlity TimE Series) is a set of modeled emissions and supporting data developed by EPA scientists spanning years 2002 to 2019. EQUATES is particularly useful in that it uses modern source classification codes (SCCs) to provide a continuous time series [@foleyEQUATESAnthropogenic2023].
 
 
 Between the 2008 and 2011 NEI releases, the EPA completed major changes to their source classification codes (SCCs), which rendered direct comparison between 2008 and prior years with 2011 and later years impossible.
-
 
 EQUATES is based on the 2017 NEI and uses MOVES3 [@foleyEQUATESAnthropogenic2023]. 
 
@@ -39,8 +39,7 @@ EQUATES SMOKE FF10 data are processed in [epa_equates_read.R](data-raw/epa_equat
 
 ## Verification and validation
 
-EQUATES data are only available from a single consistent website, and so verification across locations was not neccessary. 
-
+Though EQUATES datasets are available on the EPA file transfer site and the CMAS Data Warehouse Google Drive, individual file names and file contents were identical.
 
 ### Activity data
 
