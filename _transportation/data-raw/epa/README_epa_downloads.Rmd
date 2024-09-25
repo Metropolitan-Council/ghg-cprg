@@ -100,7 +100,7 @@ NEI data are then compiled in a three locations
 
 NEI summary data are also fetched directly from the EnviroFacts API in [epa_nei_envirofacts.R](../epa_nei_envirofacts.R). 
 
-```{r tbl-nei-locations, tab.cap="NEI download direct URLs"}
+```{r}
 epa_downloads %>%
   filter(
     group == "NEI",
@@ -147,7 +147,7 @@ fs::dir_tree("./air_emissions_modeling/",
 ```
 
 
-```{r tbl-emismod-locations}
+```{r}
 epa_downloads %>%
   filter(
     group == "emismod",
@@ -185,7 +185,7 @@ fs::dir_tree("./air_emissions_modeling/EQUATES/",
 )
 ```
 
-```{r tbl-equates-locations}
+```{r}
 epa_downloads %>%
   filter(
     group == "EQUATES",

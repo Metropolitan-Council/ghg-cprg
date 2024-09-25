@@ -1,4 +1,4 @@
-## EPA Emissions
+## EPA emissions data
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -25,6 +25,8 @@ All datasets are compiled from Sparse Matrix Operator Kernel Emissions (SMOKE) F
 SMOKE FF10 files were processed using [`read_smoke_ff10()`](data-raw/_read_smoke_ff10.R), which reads in the raw data, records relevant metadata, filters to only include relevant counties and pollutants, and saves an intermediary dataset. These intermediary datasets are read back in, combined, and saved. 
 
 SMOKE FF10 data were filtered to include MOVES processes associated with on-roadway vehicle operation [^These pollutants account for emissions from RatePerDistance (RPD) MOVES process types, including running exhaust, crankcase running exhaust, tire wear, brake wear, on-road evaporative permeation, on-road evaporative fuel leaks on-road evaporative fuel vapor, and venting [@cmasSMOKEV51Users2024, section 2.7.4.9]].
+
+Direct URLs and download information are available in the [EPA downloads guide](data-raw/epa/README_epa_downloads.html). 
 
 ```{r tbl-epa-intermediary-smoke-datasets}
 #| tbl-cap: "Intermediary datasets and processing scripts"
@@ -80,6 +82,7 @@ epa_onroad_source_set %>%
   ) %>%
   gt::as_raw_html()
 ```
+
 Various pollutants are available. 
 
 ```{r tbl-epa-source-pollutant-year}
