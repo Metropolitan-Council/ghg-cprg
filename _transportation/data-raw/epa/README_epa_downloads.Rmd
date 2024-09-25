@@ -168,13 +168,15 @@ epa_downloads %>%
 
 #### EQUATES
  
-EQUATES only has onroad data from 2002 to 2017.
+EQUATES data is located on the EPA FTP site *and* the CMAS Data Warehouse Google Drive. Direct links are provided for both locations. 
+ 
+EQUATES only has onroad data from 2002 to 2019.
 
-Within /air_emissions_modeling/EQUATES, create a folder for each EQUATES year (2002, 2005, 2008, 2011, 2014, 2017) with the prefix "EQUATES_", plus one additional folder named "EQUATES_MN_WI".
+Within /air_emissions_modeling/EQUATES, create a folder for each EQUATES year (2002, 2005, 2008, 2011, 2014, 2017) with the prefix "EQUATES_", plus two additional folders named "EQUATES_MN_WI" and "CMAS_Data_Warehouse". 
 
 Download the data for each of the given links and save in the appropriate location. 
 
-EQUATES is processed in [epa_equates_read.R](./../epa_equates_read.R)
+All EQUATES data is processed in [epa_equates_read.R](./../epa_equates_read.R)
 
 ```{r}
 fs::dir_tree("./air_emissions_modeling/EQUATES/",
@@ -187,7 +189,8 @@ fs::dir_tree("./air_emissions_modeling/EQUATES/",
 epa_downloads %>%
   filter(
     group == "EQUATES",
-    measurement == "emissions"
+    measurement %in% c("emissions",
+                       "smoke_flat_file")
   ) %>%
   select(-file_name, -description) %>%
   arrange(category, inventory_year) %>%
