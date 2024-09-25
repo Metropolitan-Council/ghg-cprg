@@ -52,7 +52,7 @@ Compare underlying activity data with data from state DOTs
 
 In addition to limitations described in @sec-epa-emissions-limitations, EQUATES has its own set of limitations.
 
-- EQUATES does not contain emissions estimates for N~2~O (nitrous oxide).
+- EQUATES does not contain emissions estimates for N~2~O (nitrous oxide). N~2~O was added to the EPA Emissions Modeling Framework (EMF) after EQUATES was compiled. N~2~O does not affect air quality monitoring and so was not included in older emissions work. More recent emissions work (2018 onward) does include N~2~O [@foleyNitrousOxideCMASForum2024]. 
 - EQUATES includes only on-road emission sources. 
 
 ```{r echo=FALSE}
