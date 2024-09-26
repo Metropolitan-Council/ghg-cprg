@@ -100,3 +100,10 @@ multi_year_industrial_county_ghg %>%
   group_by(ei_sector, sector_code) %>% 
   summarize(tons_co2 = sum(emissions))
 #### NEC can, and almost certainly does for Sherburne, include electricity generation
+
+ggplot(multi_year_industrial_county_ghg %>% 
+         filter(pollutant_code == "CO2") %>% 
+         group_by(inventory_year,county_name) %>% 
+         summarize(tons_co2 = sum(emissions)), 
+       aes(x = inventory_year , y = tons_co2 , col = county_name)) + 
+  geom_line()
