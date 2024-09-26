@@ -54,8 +54,10 @@ crf_emissions <- emissions_council_region %>%
     "Stationary energy > Industrial buildings & facilities^^" =
       `Industrial energy_Electricity` + `Industrial energy_Natural gas`,
     "Stationary energy > Agriculture" = 0, #IE
-    "Stationary energy > Fugitive emissions^^" = 0, #NO
-    "Total Stationary Energy^" = `Total energy_Electricity` + `Total energy_Natural gas`,
+    "Stationary energy > Fugitive emissions^^" = `Liquid stationary fuels_Propane` +
+      `Liquid stationary fuels_Kerosene`, 
+    "Total Stationary Energy^" = `Total energy_Electricity` + `Total energy_Natural gas`+
+      `Liquid stationary fuels_Propane` + `Liquid stationary fuels_Kerosene`,
     "Transportation > On-road^^" = `Passenger vehicles_Light-duty vehicles` +
       `Commercial vehicles_Medium-duty vehicles` + `Commercial vehicles_Heavy-duty vehicles`,
     "Transportation > Rail^^" = 0, # NE
@@ -108,9 +110,10 @@ crf_emissions <- emissions_council_region %>%
     "\'If you have no direct emissions to report, please select a notation key to
     explain why^" = case_when(
       `Direct emissions (metric tonnes CO2e)^ ` == 0  ~ case_when(
-        `Sectors and Subsectors` %in% c("Stationary energy > Fugitive emissions^^", 
-                                        "Transportation > Waterborne navigation^^",
-                                        "Transportation > Off-road^^") 
+        `Sectors and Subsectors` %in% c(
+          "Transportation > Waterborne navigation^^",
+          "Transportation > Off-road^^"
+          ) 
         ~ "NO",
         `Sectors and Subsectors` %in% 
           c("Stationary energy > Institutional buildings & facilities^^",
