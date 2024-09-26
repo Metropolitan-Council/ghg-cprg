@@ -189,8 +189,10 @@ fs::dir_tree("./air_emissions_modeling/EQUATES/",
 epa_downloads %>%
   filter(
     group == "EQUATES",
-    measurement %in% c("emissions",
-                       "smoke_flat_file")
+    measurement %in% c(
+      "emissions",
+      "smoke_flat_file"
+    )
   ) %>%
   select(-file_name, -description) %>%
   arrange(category, inventory_year) %>%

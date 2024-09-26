@@ -212,9 +212,9 @@ equates_cprg_summary <- equates_cprg %>%
     .groups = "keep"
   ) %>%
   mutate(ann_value_grams = emissions_short_tons %>%
-           units::as_units("short_ton") %>%
-           units::set_units("gram") %>%
-           as.numeric()) %>%
+    units::as_units("short_ton") %>%
+    units::set_units("gram") %>%
+    as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -288,8 +288,8 @@ equates_cprg %>%
 equates_epa_comps <- read.csv("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/Dataverse/Emissions_comparison_EQUATES_vs_EPA_Trends_version_20220210.csv") %>%
   clean_names() %>%
   pivot_longer(4:19,
-               names_to = "inventory_year",
-               values_to = "emissions_short_tons"
+    names_to = "inventory_year",
+    values_to = "emissions_short_tons"
   ) %>%
   filter(
     source_category %in% c(
@@ -308,7 +308,7 @@ equates_epa_comps <- read.csv("_transportation/data-raw/epa/air_emissions_modeli
 
 
 equates_national <- fread("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_M3_bySCC/EQUATES_M3_bySCC_annual.csv",
-                          colClasses = "character"
+  colClasses = "character"
 ) %>%
   pivot_longer(3:19) %>%
   mutate(value = as.numeric(value)) %>%
@@ -327,16 +327,16 @@ options(timeout = 130)
 # ## find which counties were used as representatives for all others  -----
 if (!file.exists("_transportation/data-raw/epa/nei/2020NEI/2020_Representative_Counties_Analysis_20220720.xlsx")) {
   rep_counties_raw <- download_read_table("https://gaftp.epa.gov/Air/nei/2020/doc/supporting_data/onroad/2020_Representative_Counties_Analysis_20220720.xlsx",
-                                          exdir = "_transportation/data-raw/epa/nei/",
-                                          sheet = 2,
-                                          col_types = "text"
+    exdir = "_transportation/data-raw/epa/nei/",
+    sheet = 2,
+    col_types = "text"
   ) %>%
     clean_names() %>%
     filter(county_id %in% county_geography$geoid)
 } else {
   rep_counties_raw <- readxl::read_excel("_transportation/data-raw/epa/nei/2020NEI/2020_Representative_Counties_Analysis_20220720.xlsx",
-                                         sheet = 2,
-                                         col_types = "text"
+    sheet = 2,
+    col_types = "text"
   ) %>%
     clean_names() %>%
     filter(county_id %in% county_geography$geoid)
@@ -348,24 +348,24 @@ counties_light <- county_geography %>%
 
 rep_counties <- counties_light %>%
   left_join(rep_counties_raw,
-            by = c("geoid" = "county_id")
+    by = c("geoid" = "county_id")
   ) %>%
   left_join(counties_light,
-            by = c("x2020_final_rep_county" = "geoid")
+    by = c("x2020_final_rep_county" = "geoid")
   ) %>%
   mutate(self_represented = county_name.x == county_name.y) %>%
   select(geoid,
-         county_name = county_name.x,
-         represented_by = county_name.y,
-         cprg_area = cprg_area.x,
-         self_represented
+    county_name = county_name.x,
+    represented_by = county_name.y,
+    cprg_area = cprg_area.x,
+    self_represented
   )
 
 ## onroad activity data -----
 
 scc_codes <- read_xlsx("_transportation/data-raw/epa/nei/2020NEI/onroad_activity_data_SCC_descriptions.xlsx",
-                       sheet = 1,
-                       col_types = "text"
+  sheet = 1,
+  col_types = "text"
 ) %>%
   clean_names()
 
@@ -381,7 +381,7 @@ scc_codes <- read_xlsx("_transportation/data-raw/epa/nei/2020NEI/onroad_activity
 # 5.Starts by county and SCC.
 if (!file.exists("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/onroad/VMT_2020NEI_full_monthly_run3_09jan2023_v0.csv")) {
   download.file("https://gaftp.epa.gov/Air/nei/2020/doc/supporting_data/onroad/2020NEI_onroad_activity_final_20230112.zip",
-                destfile = "_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad_activity_final_20230112.zip"
+    destfile = "_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad_activity_final_20230112.zip"
   )
   unzip(
     zipfile = "_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad_activity_final_20230112.zip",
@@ -401,14 +401,14 @@ onroad_input_colnames <- c(
 )
 
 vmt <- data.table::fread("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/onroad/VMT_2020NEI_full_monthly_run3_09jan2023_v0.csv",
-                         skip = 16,
-                         header = FALSE,
-                         colClasses = "character",
-                         col.names = onroad_input_colnames
+  skip = 16,
+  header = FALSE,
+  colClasses = "character",
+  col.names = onroad_input_colnames
 ) %>%
   filter(region_cd %in% county_geography$geoid) %>%
   left_join(counties_light,
-            by = c("region_cd" = "geoid")
+    by = c("region_cd" = "geoid")
   ) %>%
   left_join(scc_codes, by = c("scc" = "scc")) %>%
   mutate(across(ends_with("value"), as.numeric)) %>%
@@ -416,14 +416,14 @@ vmt <- data.table::fread("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroa
   select(-tribal_code, -census_tract_cd)
 
 hoteling <- data.table::fread("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/onroad/HOTELING_2020NEI_monthly_23nov2022_v4.csv",
-                              skip = 15,
-                              header = FALSE,
-                              colClasses = "character",
-                              col.names = onroad_input_colnames
+  skip = 15,
+  header = FALSE,
+  colClasses = "character",
+  col.names = onroad_input_colnames
 ) %>%
   filter(region_cd %in% county_geography$geoid) %>%
   left_join(counties_light,
-            by = c("region_cd" = "geoid")
+    by = c("region_cd" = "geoid")
   ) %>%
   left_join(scc_codes, by = c("scc" = "scc")) %>%
   mutate(across(ends_with("value"), as.numeric)) %>%
@@ -431,13 +431,13 @@ hoteling <- data.table::fread("_transportation/data-raw/epa/nei/2020NEI/2020NEI_
 
 
 starts <- data.table::fread("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/onroad/STARTS_2020NEI_full_monthly_run3_09jan2023_v0.csv",
-                            skip = 15,
-                            colClasses = "character",
-                            col.names = onroad_input_colnames
+  skip = 15,
+  colClasses = "character",
+  col.names = onroad_input_colnames
 ) %>%
   filter(region_cd %in% county_geography$geoid) %>%
   left_join(counties_light,
-            by = c("region_cd" = "geoid")
+    by = c("region_cd" = "geoid")
   ) %>%
   left_join(scc_codes, by = c("scc" = "scc")) %>%
   mutate(across(ends_with("value"), as.numeric)) %>%
@@ -445,13 +445,13 @@ starts <- data.table::fread("_transportation/data-raw/epa/nei/2020NEI/2020NEI_on
 
 
 oni <- data.table::fread("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/onroad/ONI_2020NEI_full_monthly_run3_09jan2023_v0.csv",
-                         skip = 16,
-                         colClasses = "character",
-                         col.names = onroad_input_colnames
+  skip = 16,
+  colClasses = "character",
+  col.names = onroad_input_colnames
 ) %>%
   filter(region_cd %in% county_geography$geoid) %>%
   left_join(counties_light,
-            by = c("region_cd" = "geoid")
+    by = c("region_cd" = "geoid")
   ) %>%
   left_join(scc_codes, by = c("scc" = "scc")) %>%
   mutate(across(ends_with("value"), as.numeric)) %>%
@@ -459,13 +459,13 @@ oni <- data.table::fread("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroa
 
 # vehicle population
 vpop <- data.table::fread("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onroad/inputs/onroad/VPOP_2020NEI_full_20220729_07oct2022_v1.csv",
-                          skip = 27,
-                          colClasses = "character",
-                          col.names = onroad_input_colnames
+  skip = 27,
+  colClasses = "character",
+  col.names = onroad_input_colnames
 ) %>%
   filter(region_cd %in% county_geography$geoid) %>%
   left_join(counties_light,
-            by = c("region_cd" = "geoid")
+    by = c("region_cd" = "geoid")
   ) %>%
   left_join(scc_codes, by = c("scc" = "scc")) %>%
   mutate(across(ends_with("value"), as.numeric)) %>%
@@ -476,7 +476,7 @@ vpop <- data.table::fread("_transportation/data-raw/epa/nei/2020NEI/2020NEI_onro
 # the full range of emissions factors necessary to run SMOKEMOVES and the
 # ZMH files used to run MOVES. Generated by running the SMOKE Met4moves program.
 download.file("https://gaftp.epa.gov/Air/nei/2020/doc/supporting_data/onroad/2020NEI_RepCounty_Temperatures.zip",
-              destfile = "_transportation/data-raw/epa/nei/2020NEI/2020NEI_RepCounty_Temperatures.zip"
+  destfile = "_transportation/data-raw/epa/nei/2020NEI/2020NEI_RepCounty_Temperatures.zip"
 )
 
 
@@ -508,10 +508,10 @@ vmt_summary <- vmt %>%
 # close-ish? Ramsey County has the biggest disparity, for some reason
 dot_vmt %>%
   right_join(vmt_summary,
-             by = c(
-               "geoid", "cprg_area",
-               "year"
-             )
+    by = c(
+      "geoid", "cprg_area",
+      "year"
+    )
   ) %>%
   mutate(
     vmt_diff = annual_vmt - ann_parm_value,
@@ -532,20 +532,20 @@ readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
 #                     sheet = 2)
 
 download.file("https://gaftp.epa.gov/air/nei/2017/doc/supporting_data/onroad/MOVES_Input_DBs.zip",
-              destfile = "_transportation/data-raw/epa/nei/2017NEI/MOVES_Input_DBs.zip"
+  destfile = "_transportation/data-raw/epa/nei/2017NEI/MOVES_Input_DBs.zip"
 )
 
 
 
 vmt17 <- data.table::fread("_transportation/data-raw/epa/nei/2017NEI/2017NEI_onroad_activity_final/VMT_2017NEI_final_from_CDBs_month_redist_27mar2020_v3.csv",
-                           skip = 16,
-                           header = FALSE,
-                           colClasses = "character",
-                           col.names = onroad_input_colnames
+  skip = 16,
+  header = FALSE,
+  colClasses = "character",
+  col.names = onroad_input_colnames
 ) %>%
   filter(region_cd %in% county_geography$geoid) %>%
   left_join(counties_light,
-            by = c("region_cd" = "geoid")
+    by = c("region_cd" = "geoid")
   ) %>%
   left_join(scc_codes, by = c("scc" = "scc")) %>%
   mutate(across(ends_with("value"), as.numeric)) %>%
@@ -566,10 +566,10 @@ vmt17_summary <- vmt17 %>%
 # 2017 VMT differences are MUCH smaller (practically negligible)
 dot_vmt %>%
   right_join(vmt17_summary,
-             by = c(
-               "geoid", "cprg_area",
-               "year"
-             )
+    by = c(
+      "geoid", "cprg_area",
+      "year"
+    )
   ) %>%
   mutate(
     vmt_diff = annual_vmt - ann_parm_value,

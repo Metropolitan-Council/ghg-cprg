@@ -6,8 +6,8 @@ epa_nei_onroad_regional <- readRDS("_transportation/data-raw/epa/epa_nei_onroad_
 epa_nei_nonroad_regional <- readRDS("_transportation/data-raw/epa/epa_nei_nonroad_emissions.RDS")
 
 # EnviroFacts -----
-# pull pollutants from EnviroFacts 
-# useful for double checking descriptions 
+# pull pollutants from EnviroFacts
+# useful for double checking descriptions
 req_base <- httr2::request("https://data.epa.gov/efservice")
 
 pollutants <- req_base %>%

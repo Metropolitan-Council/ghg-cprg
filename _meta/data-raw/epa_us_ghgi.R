@@ -1,21 +1,22 @@
-# 
 # Inventory of U.S. Greenhouse Gas Emissions and Sinks by State: 1990-2021
 # https://www.epa.gov/ghgemissions/methodology-report-inventory-us-greenhouse-gas-emissions-and-sinks-state-1990-2021
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
-if(!file.exists("_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0/AllStateGHGDataPY2023_100323.xlsx")){
+if (!file.exists("_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0/AllStateGHGDataPY2023_100323.xlsx")) {
   download.file("https://www.epa.gov/system/files/other-files/2023-10/allstateghgdatapy2023readme_100323_0.zip",
-                destfile = "_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0.zip")
-  
+    destfile = "_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0.zip"
+  )
+
   unzip("_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0.zip",
-        exdir = "_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0")
+    exdir = "_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0"
+  )
 }
 
 # ipcc sectors -----
 ipcc_sectors <- readxl::read_xlsx("_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0/AllStateGHGDataPY2023_100323.xlsx",
-                                  sheet = 2
+  sheet = 2
 ) %>%
   clean_names()
 
@@ -31,8 +32,8 @@ ipcc <- ipcc_sectors %>%
     state %in% c("MN", "WI")
   ) %>%
   pivot_longer(starts_with("y"),
-               names_to = "inventory_year",
-               values_to = "emission_grams"
+    names_to = "inventory_year",
+    values_to = "emission_grams"
   ) %>%
   mutate(
     inventory_year = str_remove(inventory_year, "y"),
@@ -103,8 +104,8 @@ econ <- econ_sectors %>%
   filter(state %in% c("MN", "WI")) %>%
   select(-subcategory4, -rownumber) %>%
   pivot_longer(starts_with("y"),
-               names_to = "inventory_year",
-               values_to = "emission_grams"
+    names_to = "inventory_year",
+    values_to = "emission_grams"
   ) %>%
   mutate(
     inventory_year = str_remove(inventory_year, "y"),
@@ -153,8 +154,8 @@ ipcc_econ_mapping <- econ_sectors %>%
   ) %>%
   unique() %>%
   left_join(ipcc_sector_category,
-            by = "rownumber",
-            suffix = c(".econ", ".ipcc")
+    by = "rownumber",
+    suffix = c(".econ", ".ipcc")
   ) %>%
   select(-rownumber) %>%
   unique()

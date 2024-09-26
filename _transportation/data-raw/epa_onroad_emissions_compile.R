@@ -60,17 +60,17 @@ epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUA
     emis_type %in% c("RPD", "")
   ) %>%
   left_join(scc_combine, by = join_by(scc6)) %>%
-  filter(!scc6 %in% scc6_remove) %>% 
-  bind_rows(readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cmas_mn_wi.RDS") %>% 
-               mutate(geoid = region_cd) %>%
-               left_join(counties_light, by = join_by(geoid)) %>%
-               filter(
-                 cprg_area == TRUE,
-                 emis_type %in% c("RPD", ""),
-                 calc_year == "2019"
-               ) %>%
-               left_join(scc_combine) %>%
-               filter(!scc6 %in% scc6_remove))
+  filter(!scc6 %in% scc6_remove) %>%
+  bind_rows(readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cmas_mn_wi.RDS") %>%
+    mutate(geoid = region_cd) %>%
+    left_join(counties_light, by = join_by(geoid)) %>%
+    filter(
+      cprg_area == TRUE,
+      emis_type %in% c("RPD", ""),
+      calc_year == "2019"
+    ) %>%
+    left_join(scc_combine) %>%
+    filter(!scc6 %in% scc6_remove))
 
 # finally air emissions modeling from  _transportation/data-raw/epa_air_emissions_modeling_onroad.R
 epa_emismod <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS") %>%
@@ -92,9 +92,9 @@ epa_nei_onroad_summary <- epa_nei_onroad %>%
     .groups = "keep"
   ) %>%
   mutate(ann_value_grams = emissions_short_tons %>%
-           units::as_units("short_ton") %>%
-           units::set_units("gram") %>%
-           as.numeric()) %>%
+    units::as_units("short_ton") %>%
+    units::set_units("gram") %>%
+    as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -123,9 +123,9 @@ epa_emismod_summary <- epa_emismod %>%
     .groups = "keep"
   ) %>%
   mutate(ann_value_grams = emissions_short_tons %>%
-           units::as_units("short_ton") %>%
-           units::set_units("gram") %>%
-           as.numeric()) %>%
+    units::as_units("short_ton") %>%
+    units::set_units("gram") %>%
+    as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -158,9 +158,9 @@ epa_equates_summary <- epa_equates %>%
   ) %>%
   # convert to grams
   mutate(ann_value_grams = emissions_short_tons %>%
-           units::as_units("short_ton") %>%
-           units::set_units("gram") %>%
-           as.numeric()) %>%
+    units::as_units("short_ton") %>%
+    units::set_units("gram") %>%
+    as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -203,8 +203,8 @@ epa_equates_summary_interp <- epa_equates_summary %>%
   mutate(
     # use Kalman interpolation for all pollutants
     emissions_metric_tons_co2e = na_kalman(emissions_metric_tons_co2e,
-                                           smooth = TRUE,
-                                           type = "trend"
+      smooth = TRUE,
+      type = "trend"
     ),
     co2 = na_kalman(co2, smooth = TRUE, type = "trend"),
     ch4 = na_kalman(ch4, smooth = TRUE, type = "trend"),
@@ -216,14 +216,14 @@ epa_equates_summary_interp <- epa_equates_summary %>%
     pm10_pri = na_kalman(pm10_pri, smooth = TRUE, type = "trend"),
     pm25_pri = na_kalman(pm25_pri, smooth = TRUE, type = "trend"),
     voc = na_kalman(voc, smooth = TRUE, type = "trend"),
-    
+
     # so2 = na_kalman(so2, smooth = TRUE, type = "trend"),
     # nh4 = na_kalman(nh4, smooth = TRUE, type = "trend"),
-    
+
     # we got NAs in the data_source column when we ran complete()
     # if it is NA, then it means that row was interpolated!
     interpolation = ifelse(is.na(data_source), "Interpolated",
-                           "Original"
+      "Original"
     ),
     data_source = "EQUATES"
   ) %>%
@@ -515,7 +515,7 @@ epa_onroad_source_set <-
         process_source = "_transportation/data-raw/epa_nei_smoke_ff.R"
       ),
     epa_equates %>%
-      filter(calc_year != "2019") %>% 
+      filter(calc_year != "2019") %>%
       select(file_location, calc_year, metadata_info) %>%
       mutate(
         data_source = "EQUATES",
@@ -523,7 +523,7 @@ epa_onroad_source_set <-
         process_source = "_transportation/data-raw/epa_equates_read.R"
       ),
     epa_equates %>%
-      filter(calc_year == "2019") %>% 
+      filter(calc_year == "2019") %>%
       select(file_location, calc_year, metadata_info) %>%
       mutate(
         data_source = "EQUATES",
@@ -559,11 +559,11 @@ epa_onroad_source_set <-
     compiled_to = "epa_onroad_emissions_compile",
     calc_year = as.character(calc_year)
   ) %>%
-  unique() %>% 
+  unique() %>%
   select(data_source, dataset, moves_edition,
-         emissions_year = calc_year,
-         process_source,
-         file_location
+    emissions_year = calc_year,
+    process_source,
+    file_location
   )
 
 saveRDS(epa_onroad_source_set, "_transportation/data/epa_onroad_source_set.RDS")
