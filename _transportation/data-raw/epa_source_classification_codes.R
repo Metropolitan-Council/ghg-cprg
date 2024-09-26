@@ -1,14 +1,35 @@
 source("R/_load_pkgs.R")
-
-# scc onroad only -----
-# onroad only, broad SCC descriptons
-scc6_desc <- read_xlsx("_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022v1 onroad comparisons 22-26-32-38 10aug2024.xlsx",
-  col_types = "text",
-  sheet = 4
-) %>%
+source("R/download_read_table.R")
+# The U.S. EPA uses Source Classification Codes (SCCs) to classify different
+#  types of activities that generate
+#  emissions. Each SCC represents a unique source category-specific process or
+#  function that emits air pollutants.
+#  
+#  SCCs have changed over time, with the biggest change occurring between 2008
+#  and 2011 NEI years. This means it is impossible to compare any NEIs 2008 
+#  and prior with 2011 and later. This is remedied by EQUATES.
+#  
+#  There are special SCCs for modeling mobile sources that are different from
+#  those used for the NEI. 
+#  
+#  See _transportation/data-raw/epa/Re: Seeking guidance on consistent sccs.pdf
+#  and the EPA introduction document, Zotero key usepaIntroductionSCCs2021
+#  
+#  This script reads in SCC dictionaries from various places and combines them 
+#  into a single reference dataset (scc_combine.RDS), later used for compiling emissions.
+#  
+# scc6 -----
+#  SCC6 (the first six digits of the SCC) is a shortened version that helps 
+#  group together like vehicle and fuel types, regardless of road type or
+#  process type.
+scc6_desc <- download_read_table("https://gaftp.epa.gov/Air/emismod/2022/v1/reports/mobile/onroad/2022v1%20onroad%20comparisons%2022-26-32-38%2010aug2024.xlsx", 
+                                 exdir = "_transportation/data-raw/epa/air_emissions_modeling/2022v1/",
+                                 col_types = "text",
+                                 sheet = 4) %>% 
   clean_names() %>%
   select(scc6, scc6_desc) %>%
   unique() %>%
+  # add CNG motor homes code
   bind_rows(
     tibble(
       scc6 = "220354",
@@ -16,15 +37,23 @@ scc6_desc <- read_xlsx("_transportation/data-raw/epa/air_emissions_modeling/2022
     )
   )
 
-# these are used specifically for onroad SCCs
-# in VMT and other supplementary calculations
-scc_onroad <- readxl::read_xlsx("_transportation/data-raw/epa/onroad_activity_data_SCC_descriptions.xlsx",
-  col_types = "text"
-) %>%
+# manual scc6 descriptions, compiled by Council staff
+scc6_desc_manual <- read.csv("_transportation/data-raw/epa/nei/scc6_descriptions_all.csv",
+                             colClasses = "character"
+)
+
+# scc onroad modeling -----
+# scc_onroad are used specifically for modeling, on-road
+scc_onroad <- download_read_table(
+  "https://gaftp.epa.gov/Air/emismod/series/onroad_activity/onroad_activity_data_SCC_descriptions.xlsx",
+  exdir = "_transportation/data-raw/epa/",
+  col_types = "text") %>% 
   clean_names() %>%
   mutate(scc6 = stringr::str_sub(scc, 1, 6)) %>%
+  # join with scc6 descriptions
   left_join(scc6_desc) %>%
   mutate(
+    # manually split out fuel type details
     fuel_type_detail = stringr::str_split(
       fuel_type,
       pattern = "-",
@@ -32,28 +61,29 @@ scc_onroad <- readxl::read_xlsx("_transportation/data-raw/epa/onroad_activity_da
     )[, 2] %>%
       stringr::str_trim(),
     fuel_type_detail = ifelse(fuel_type_detail == "Ethanol (E",
-      "Ethanol (E-85)",
-      fuel_type_detail
+                              "Ethanol (E-85)",
+                              fuel_type_detail
     )
   ) %>%
+  # if scc6_desc is NA, 
+  # then construct it from the fuel and vehicle types
   mutate(scc6_desc = ifelse(is.na(scc6_desc),
-    paste0(
-      fuel_type_detail, "; ",
-      str_to_sentence(vehicle_type)
-    ),
-    scc6_desc
+                            paste0(
+                              fuel_type_detail, "; ",
+                              str_to_sentence(vehicle_type)
+                            ),
+                            scc6_desc
   ))
 
-# scc  NEI complete -----
+# scc NEI -----
 # these are used in the official NEI
-
-scc6_desc_manual <- read.csv("_transportation/data-raw/epa/nei/scc6_descriptions_all.csv",
-  colClasses = "character"
-)
-
-scc_complete_road <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-0812-144242.csv",
-  col_types = "c"
-) %>%
+# downloaded directly from EPA SCC website:
+# https://sor-scc-api.epa.gov/sccwebservices/sccsearch/
+# contains onroad and nonroad, retired and active SCCs
+scc_complete_road <- 
+  download_read_table("https://sor-scc-api.epa.gov/sccwebservices/v1/SCC?format=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2024-0812-144242.csv",
+                      exdir = "_transportation/data-raw/epa/",
+                      col_types = "c") %>% 
   clean_names() %>%
   filter(data_category %in% c("Onroad", "Nonroad")) %>%
   select(
@@ -61,6 +91,9 @@ scc_complete_road <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-081
     last_inventory_year, sector,
     starts_with("scc")
   ) %>%
+  # break out SCC into its
+  # individual components:
+  # fuel, vehicle, road, and proces types
   tidyr::separate_wider_position(
     scc,
     widths = c(
@@ -74,7 +107,7 @@ scc_complete_road <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-081
   ) %>%
   mutate(
     # various years listed the road type and process type
-    # differently, for some reason
+    # in different orders
     scc_split_1 = stringr::str_split(
       scc_level_four,
       pattern = ":", simplify = TRUE
@@ -119,6 +152,7 @@ scc_complete_road <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-081
   ) %>%
   rowwise() %>%
   mutate(
+    # clean up fuel type labels
     fuel_type_detect = case_when(
       scc_level_two %in% c(
         "Highway Vehicles - Liquefied Petroleum Gas (LPG)",
@@ -140,6 +174,8 @@ scc_complete_road <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-081
   select(-scc_split_1, -scc_split_2) %>%
   mutate(scc6 = stringr::str_sub(scc, 1, 6)) %>%
   mutate(
+    # for retired SCCs that have a specified active SCC to 
+    # map to, replace the original SCC with the map to SCC
     scc_new = case_when(
       is.na(map_to) | map_to %in% c(
         "None",
@@ -150,19 +186,22 @@ scc_complete_road <- read_csv("_transportation/data-raw/epa/SCCDownload-2024-081
     scc6_new = str_sub(scc_new, 1, 6)
   ) %>%
   left_join(
+    # join with manual descriptions
     scc6_desc_manual,
     join_by(scc_level_one, scc_level_two, scc_level_three, fuel_type_detect, scc6_new)
   )
 
 
-# scc EQUATES
-
-
+# scc EQUATES -----
+# best available dataset was found in the New Jersey state website
 # https://dep.nj.gov/wp-content/uploads/airplanning/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx
-# listen, this is the best I could find using google.com
+# download_read_table doesn't seem to work with this link
+# and you may need to download it manually by going to the URL through your 
+# web browser
 if (!file.exists("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx")) {
   download.file("https://dep.nj.gov/wp-content/uploads/airplanning/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx",
-    destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx"
+                destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx",
+                mode = "wb"
   )
 }
 
@@ -207,8 +246,8 @@ scc_equates <- readxl::read_xlsx(
     )[, 2] %>%
       stringr::str_trim(),
     fuel_type = ifelse(fuel_type == "Ethanol (E",
-      "Ethanol (E-85)",
-      fuel_type
+                       "Ethanol (E-85)",
+                       fuel_type
     )
   ) %>%
   select(
@@ -222,7 +261,7 @@ scc_equates <- readxl::read_xlsx(
   unique() %>%
   mutate(scc6 = stringr::str_sub(scc, 1, 6)) %>%
   left_join(scc6_desc,
-    by = "scc6"
+            by = "scc6"
   ) %>%
   mutate(
     alt_vehicle_type =
@@ -246,22 +285,24 @@ scc_equates <- readxl::read_xlsx(
 
 
 
-# scc combine -----
+# Combine all SCCs -----
 # create a combined SCC index for use across all data sources
 # including NEI, EQUATES, and air emissions modeling platforms
 scc_combine <- scc_complete_road %>%
   select(scc6, scc6_desc, scc6_desc_broad, scc6_desc_manual) %>%
   unique() %>%
   bind_rows(scc_equates %>%
-    select(scc6, scc6_desc) %>%
-    unique()) %>%
-  bind_rows(scc6_desc_manual %>%
-    filter(scc6_new %in% c("220200", "220932")) %>%
-    select(
-      scc6 = scc6_new, scc6_desc, scc6_desc_manual, alt_mode,
-      alt_mode_truck
-    )) %>%
+              select(scc6, scc6_desc) %>%
+              unique()) %>%
+  bind_rows(
+    scc6_desc_manual %>%
+      filter(scc6_new %in% c("220200", "220932")) %>%
+      select(
+        scc6 = scc6_new, scc6_desc, scc6_desc_manual, alt_mode,
+        alt_mode_truck
+      )) %>%
   unique() %>%
+  # if no official scc6_desc exists, use the manually designated one
   mutate(scc6_desc = ifelse(is.na(scc6_desc), scc6_desc_manual, scc6_desc)) %>%
   filter(!is.na(scc6_desc)) %>%
   mutate(
@@ -276,6 +317,7 @@ scc_combine <- scc_complete_road %>%
       )
   ) %>%
   mutate(
+    # break out and clean fuel and vehicle types
     fuel_type = stringr::str_split(
       scc6_desc,
       pattern = ";",
@@ -292,6 +334,7 @@ scc_combine <- scc_complete_road %>%
   select(scc6, scc6_desc, fuel_type, vehicle_type) %>%
   unique() %>%
   left_join(
+    # join back with NEI SCCs
     scc_complete_road %>%
       select(
         scc6_desc,
@@ -299,8 +342,10 @@ scc_combine <- scc_complete_road %>%
       ) %>%
       unique()
   ) %>%
+  # remove any "equipment" vehicle types
   filter(str_detect(vehicle_type, "equipment", negate = TRUE)) %>%
   mutate(
+    # specify outputs for gas stations, pleasure craft, trucks and buses
     alt_mode = ifelse(vehicle_type %in% c(
       "Gas stations",
       "Pleasure craft",
@@ -317,9 +362,7 @@ scc_combine <- scc_complete_road %>%
     )
   )
 
-
-
-
+# create metadata
 scc_combine_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
   "scc6", class(scc_combine$scc6), "Source classification code (SCC), first six digits only. Includes retired SCCs",
