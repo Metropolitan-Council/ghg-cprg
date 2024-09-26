@@ -20,18 +20,18 @@ metc_emissions <- mac_emissions %>%
   mutate(
     mt_gas = case_when(
       # CO2 emissions factor is reported in kilograms per gallon
-      grepl("CO2", emission) ~ Fuel_dispensed_gallons * value %>% 
-        units::as_units("kilogram") %>% 
-        units::set_units("metric_ton") %>% 
+      grepl("CO2", emission) ~ Fuel_dispensed_gallons * value %>%
+        units::as_units("kilogram") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       # all others are reported in grams per gallon
-      grepl("CH4", emission) ~ Fuel_dispensed_gallons * value %>% 
-        units::as_units("gram") %>% 
-        units::set_units("metric_ton") %>% 
+      grepl("CH4", emission) ~ Fuel_dispensed_gallons * value %>%
+        units::as_units("gram") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
-      grepl("N2O", emission) ~ Fuel_dispensed_gallons * value %>% 
-        units::as_units("gram") %>% 
-        units::set_units("metric_ton") %>% 
+      grepl("N2O", emission) ~ Fuel_dispensed_gallons * value %>%
+        units::as_units("gram") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
     ),
     mt_co2e = case_when(
@@ -45,14 +45,14 @@ metc_emissions <- mac_emissions %>%
 msp_emissions <- mac_emissions %>%
   mutate(mac_emissions = LTO_CO2e + Cruise_CO2e) %>%
   left_join(., metc_emissions %>%
-              group_by(year) %>%
-              summarize(mt_co2e = sum(mt_co2e))) %>%
+    group_by(year) %>%
+    summarize(mt_co2e = sum(mt_co2e))) %>%
   mutate(msp_mt_co2e = if_else(is.na(mt_co2e), mac_emissions, mt_co2e)) %>%
   select(year, msp_mt_co2e)
 
 ### load in state aviation data
 mpca_aviation <- read_csv("_transportation/data-raw/aviation/mpca_tran_inv.csv",
-                          skip = 1
+  skip = 1
 ) %>%
   pivot_longer(cols = -c(1:2), names_to = "year", values_to = "co2e") %>%
   rename(Subsector = `Sources (group)`) %>%
@@ -70,8 +70,8 @@ aviation_emissions <- full_join(mpca_aviation, msp_emissions) %>%
     # second methods uses time series imputation between missing msp_proportion values,
     # then multiplies imputed proportion by state value
     msp_mt_co2e_state_prop = if_else(is.na(msp_mt_co2e),
-                                     msp_proportion_impute * state_mt_co2e,
-                                     msp_mt_co2e
+      msp_proportion_impute * state_mt_co2e,
+      msp_mt_co2e
     ),
     ### interpolating directly from MSP values leads to higher aviation estimates in
     ### MSP than entire state from 2010-2012, which is obviously problematic

@@ -1,8 +1,8 @@
 source("R/_load_pkgs.R")
 library(srvyr, warn.conflicts = FALSE)
-# 2023 Travel Behavior Inventory (TBI) to estimate proportion of regional 
+# 2023 Travel Behavior Inventory (TBI) to estimate proportion of regional
 # passenger/non-freight trips made by given modes on an average day in 2023,
-#  trips taken by households in the 7-county metro area. 
+#  trips taken by households in the 7-county metro area.
 #  Only includes trips beginning OR ending in 7-county.
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
@@ -15,24 +15,24 @@ load(url(paste0(
 cdp_tbi_hh_counties <- c(
   "Anoka MN",
   "Carver MN",
-  "Dakota MN", 
+  "Dakota MN",
   "Hennepin MN",
   "Ramsey MN",
-  "Scott MN", 
+  "Scott MN",
   "Washington MN",
   "Anoka, MN",
   "Carver, MN",
-  "Dakota, MN", 
+  "Dakota, MN",
   "Hennepin, MN",
   "Ramsey, MN",
-  "Scott, MN", 
+  "Scott, MN",
   "Washington, MN",
   "Anoka County, MN",
   "Carver County, MN",
-  "Dakota County, MN", 
+  "Dakota County, MN",
   "Hennepin County, MN",
   "Ramsey County, MN",
-  "Scott County, MN", 
+  "Scott County, MN",
   "Washington County, MN"
 )
 
@@ -41,7 +41,7 @@ hh <- tbi_rmPII$hh %>%
   # filter to households in the needed counties
   filter(home_county %in% cdp_tbi_hh_counties)
 
-tbi <- tbi_rmPII %>% 
+tbi <- tbi_rmPII %>%
   purrr::map(
     filter,
     survey_year == "2023",
@@ -61,7 +61,7 @@ tbi <- tbi_rmPII %>%
 # Informal/paratransit/popular transit systems
 # Other
 
-cdp_modes<- c(
+cdp_modes <- c(
   "Airplane/helicopter" = "Other",
   "ATV or snowmobile" = "Other",
   "Golf cart" = "Other",
@@ -124,27 +124,30 @@ cdp_modes<- c(
 )
 
 
-cdp_mode_mapping <- data.table(mode_type_detailed = names(cdp_modes), 
-                               cdp_mode = cdp_modes)
+cdp_mode_mapping <- data.table(
+  mode_type_detailed = names(cdp_modes),
+  cdp_mode = cdp_modes
+)
 
 
 # match trips with CDP mode mapping
 
-trip_mode <- tbi$trip %>% 
+trip_mode <- tbi$trip %>%
   filter(
     trip_o_county %in% cdp_tbi_hh_counties | trip_d_county %in% cdp_tbi_hh_counties,
     !is.na(trip_weight) & trip_weight > 0,
     # o_zone != "Not in study region",
     # d_zone != "Not in study region",
     mode_type != "Missing",
-    mode_type_detailed != "Missing") %>% 
-  left_join(cdp_mode_mapping) %>% 
-  left_join(hh %>% 
-              select(hh_id, hh_weight, sample_segment) %>% 
-              unique())
+    mode_type_detailed != "Missing"
+  ) %>%
+  left_join(cdp_mode_mapping) %>%
+  left_join(hh %>%
+    select(hh_id, hh_weight, sample_segment) %>%
+    unique())
 
 
-passenger_mode_share <- trip_mode %>% 
+passenger_mode_share <- trip_mode %>%
   as_survey_design(
     ids = trip_id,
     weights = trip_weight,
@@ -155,12 +158,11 @@ passenger_mode_share <- trip_mode %>%
     mode_prop = survey_prop(),
     n_trips = survey_total(),
     sample_trips = n(),
-    modes_included = paste0(unique(mode_type_detailed), collapse = ", " )
-  ) %>% 
-  mutate(across(where(is.numeric), \(x)round(x, digits = 4))) %>% 
+    modes_included = paste0(unique(mode_type_detailed), collapse = ", ")
+  ) %>%
+  mutate(across(where(is.numeric), \(x)round(x, digits = 4))) %>%
   ungroup()
 
-passenger_mode_share %>% 
-  select(-modes_included) %>% 
+passenger_mode_share %>%
+  select(-modes_included) %>%
   kable(format = "markdown")
-
