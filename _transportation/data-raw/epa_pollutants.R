@@ -1,9 +1,13 @@
-# compile pollutants from transportation
+# compile pollutants from transportation data sources
+# results in epa_pollutants_key.RDS and associated metadata
 source("R/_load_pkgs.R")
 # read in regional summarized datasets
-epa_nei_onroad_regional <- readr::read_rds("_transportation/data-raw/epa/epa_nei_onroad_emissions.RDS")
-epa_nei_nonroad_regional <- read_rds("_transportation/data-raw/epa/epa_nei_nonroad_emissions.RDS")
+epa_nei_onroad_regional <- readRDS("_transportation/data-raw/epa/epa_nei_onroad_emissions.RDS")
+epa_nei_nonroad_regional <- readRDS("_transportation/data-raw/epa/epa_nei_nonroad_emissions.RDS")
 
+# EnviroFacts -----
+# pull pollutants from EnviroFacts 
+# useful for double checking descriptions 
 req_base <- httr2::request("https://data.epa.gov/efservice")
 
 pollutants <- req_base %>%
@@ -18,6 +22,8 @@ pollutants <- req_base %>%
   ) %>%
   clean_names()
 
+# NEI data -----
+# pull pollutants from NEI onroad and nonroad emissions
 pollutant_key <-
   bind_rows(
     epa_nei_nonroad_regional %>%
@@ -31,6 +37,7 @@ pollutant_key <-
     unit_of_measurement = "grams"
   ) %>%
   bind_rows(
+    # add emissions_metric_tons_co2e
     tibble(
       pollutant = "emissions_metric_tons_co2e",
       pollutant_code = "emissions_metric_tons_co2e",
@@ -39,6 +46,7 @@ pollutant_key <-
     )
   ) %>%
   bind_rows(
+    # add nitric oxide
     tibble(
       pollutant = "no",
       pollutant_code = "NO",
@@ -66,6 +74,8 @@ pollutant_key <-
     )
   )
 
+
+# document and save -----
 pollutant_key_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
   "pollutant_code", class(pollutant_key$pollutant_code), "Pollutant code",
