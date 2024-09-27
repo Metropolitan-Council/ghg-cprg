@@ -81,10 +81,20 @@ flight_county_summary <- cprg_flight %>%
   summarize(co2e = sum(ghg_quantity_metric_tons_co2e)) %>% 
   left_join(., cprg_county %>% 
               select(county_name, geoid, state_name) %>%  
-              st_drop_geometry())
+              st_drop_geometry())%>% 
+  select(inventory_year = reporting_year,
+         county_name,
+         state_name,
+         value_emissions = co2e,
+         doublecount) %>% 
+  mutate(units_emissions = "Metric tons CO2e",
+         sector = "Industrial",
+         data_source = "EPA FLIGHT",
+         factor_source = "EPA FLIGHT (no direct gas data provied)")
 
-cprg_flight_out <- 
+### add meta table
 
+saveRDS(flight_county_summary, "./_agriculture/data/flight_industrial_point_sources_county.rds")
 
 ggplot(county_summary %>% 
          filter(doublecount == "No"), 
