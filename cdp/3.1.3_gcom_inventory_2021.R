@@ -84,15 +84,12 @@ crf_emissions <- emissions_council_region %>%
       `Sequestration_Urban grassland` + `Sequestration_Urban tree` +
       `Sequestration_Wetland`,
     "Generation of grid-supplied energy > Electricity-only generation^^" = 
-      `Total energy_Electricity`,
+      0,
     "Generation of grid-supplied energy > CHP generation^^" = 0, #NE
     "Generation of grid-supplied energy > Heat/cold generation^^" = 
-      `Total energy_Natural gas` + `Liquid stationary fuels_Propane` +
-      `Liquid stationary fuels_Kerosene`,
+      0,
     "Generation of grid-supplied energy > Local renewable generation" = 0, #NE
-    "Total generation of grid-supplied energy" = `Total energy_Electricity` +
-      `Total energy_Natural gas` + `Liquid stationary fuels_Propane` +
-      `Liquid stationary fuels_Kerosene`,
+    "Total generation of grid-supplied energy" = 0,
     "Total Emissions (excluding generation of grid-supplied energy)" =
       `Total Stationary Energy^` + `Total Transport^` + `Total Waste` + `Total IPPU`
       + `Total AFOLU`
