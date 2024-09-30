@@ -39,7 +39,6 @@ nlcd_county_c <- nlcd_county %>%
     stock_potential = stock_potential3
   ) %>%
   dplyr::select(year, county, land_cover_type, area, sequestration_potential, stock_potential, source) %>%
-
   arrange(year, county, land_cover_type) %>%
   # Now that we've extrapolated sequestration/stock values despite having no area estimates,
   # we need to calculate area based on the extrapolated sequestration.

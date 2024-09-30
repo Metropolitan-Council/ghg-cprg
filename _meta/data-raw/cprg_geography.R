@@ -18,7 +18,7 @@ mn_counties <- tigris::counties(state = "MN") %>%
     "Chisago",
     "Washington"
   )) %>%
-  mutate(STATE_ABB = "MN") %>% 
+  mutate(STATE_ABB = "MN") %>%
   clean_names()
 
 # fetch WI counties
@@ -27,7 +27,7 @@ wi_counties <- tigris::counties(state = "WI") %>%
     "St. Croix",
     "Pierce"
   )) %>%
-  mutate(STATE_ABB = "WI") %>% 
+  mutate(STATE_ABB = "WI") %>%
   clean_names()
 
 
@@ -40,14 +40,16 @@ cprg_county <- bind_rows(mn_counties, wi_counties) %>%
       unique(),
     by = c("statefp" = "state_code")
   ) %>%
-  mutate(cprg_area = TRUE) %>% 
+  mutate(cprg_area = TRUE) %>%
   select(
-    geoid,  county_name = name,
+    geoid,
+    county_name = name,
     county_name_full = namelsad,
     state_name, statefp,
     state_abb = STATE_ABB,
     cprg_area,
-    geometry)
+    geometry
+  )
 
 
 
@@ -83,7 +85,7 @@ mn_ctu <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
     GNIS_FEATU,
     geometry = geom
   ) %>%
-  arrange(CTU_NAME) %>% 
+  arrange(CTU_NAME) %>%
   clean_names()
 
 
@@ -119,17 +121,19 @@ wi_ctu <- sf::read_sf("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023
     STATE,
     STATE_ABB,
     GEOID
-  ) %>% 
+  ) %>%
   clean_names()
 
-cprg_ctu <- bind_rows(mn_ctu, wi_ctu) %>% 
-  mutate(cprg_area = TRUE) %>% 
-  select(ctu_name, ctu_class, county_name = county_nam,
-         state_name = state, statefp, state_abb, 
-         geoid_wis = geoid,
-         gnis = gnis_featu,
-         cprg_area,
-         geometry)
+cprg_ctu <- bind_rows(mn_ctu, wi_ctu) %>%
+  mutate(cprg_area = TRUE) %>%
+  select(ctu_name, ctu_class,
+    county_name = county_nam,
+    state_name = state, statefp, state_abb,
+    geoid_wis = geoid,
+    gnis = gnis_featu,
+    cprg_area,
+    geometry
+  )
 
 
 cprg_ctu_meta <- tribble(
@@ -139,9 +143,8 @@ cprg_ctu_meta <- tribble(
   "gnis", class(cprg_ctu$gnis), "Minnesota geographic identifier",
   "geoid_wis", class(cprg_ctu$geoid_wis), "Wisconsin geographic identifier",
   "geometry", class(cprg_ctu$geometry)[1], "Simple feature geometry",
-  
-) %>% 
-  bind_rows(cprg_county_meta) %>% 
+) %>%
+  bind_rows(cprg_county_meta) %>%
   filter(Column %in% names(cprg_ctu))
 
 # create coherent geogs list
@@ -149,7 +152,7 @@ geogs_list_ctu <- cprg_ctu %>%
   mutate(
     geog_level_id = "CTU",
     geog_unit_id = if_else(is.na(gnis), geoid_wis, as.character(gnis)), # pad with zeros on left til 8 chars
-    geog_unit_name = ctu_name, 
+    geog_unit_name = ctu_name,
     geog_unit_desc = ctu_name
   ) %>%
   sf::st_drop_geometry()
@@ -157,16 +160,18 @@ geogs_list_ctu <- cprg_ctu %>%
 geogs_list_co <- cprg_county %>%
   mutate(
     geog_level_id = "CO",
-    geog_unit_id = as.character(geoid), 
+    geog_unit_id = as.character(geoid),
     geog_unit_name = county_name,
     geog_unit_desc = county_name_full
   ) %>%
   sf::st_drop_geometry()
 
 ctu_co_crosswalk <- left_join(geogs_list_ctu, geogs_list_co,
-                              by = c("county_name", 
-                                     "statefp"),
-                              suffix = c(".child", ".parent")
+  by = c(
+    "county_name",
+    "statefp"
+  ),
+  suffix = c(".child", ".parent")
 ) %>%
   select(
     geog_level_id.parent,
@@ -177,17 +182,20 @@ ctu_co_crosswalk <- left_join(geogs_list_ctu, geogs_list_co,
   )
 
 geogs_list <- bind_rows(
-  select(geogs_list_ctu, geog_unit_id,
-         geog_level_id,
-         geog_unit_name,
-         geog_unit_desc,
-         statefp),
-  
-  select(geogs_list_co, geog_unit_id,
-         geog_level_id,
-         geog_unit_name,
-         geog_unit_desc,
-         statefp)
+  select(
+    geogs_list_ctu, geog_unit_id,
+    geog_level_id,
+    geog_unit_name,
+    geog_unit_desc,
+    statefp
+  ),
+  select(
+    geogs_list_co, geog_unit_id,
+    geog_level_id,
+    geog_unit_name,
+    geog_unit_desc,
+    statefp
+  )
 )
 # there are different CRS for geometries between CTU/CO; removed geometries above, geogs_list is a simple table
 

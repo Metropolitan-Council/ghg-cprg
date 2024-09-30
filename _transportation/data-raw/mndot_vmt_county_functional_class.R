@@ -33,7 +33,6 @@ dat_ls[["2014"]] <- readxl::read_excel(
     "skip",
     "skip",
     "skip"
-    
   ),
   skip = 1
 ) %>%
@@ -157,13 +156,17 @@ dat_ls[["2023"]] <- readxl::read_excel(
 # compile ------
 
 # bind all datasets together
-vmt_county_fc_raw <- data.table::rbindlist(dat_ls, fill = TRUE,
-                                        idcol = "year") %>%
+vmt_county_fc_raw <- data.table::rbindlist(dat_ls,
+  fill = TRUE,
+  idcol = "year"
+) %>%
   # remove extra columns
   select(-percent_sampled, -x100_percent_due_to_rounding) %>%
   # remove any grand total rows
-  filter(functional_class != "Grand Totals",
-         !is.na(functional_class)) %>%
+  filter(
+    functional_class != "Grand Totals",
+    !is.na(functional_class)
+  ) %>%
   mutate(
     # remove extra codes from county names
     county = gsub("[0-9][0-9] - ", "", county),
@@ -191,82 +194,99 @@ vmt_county_fc_raw <- data.table::rbindlist(dat_ls, fill = TRUE,
       ) ~ "St. Louis",
       TRUE ~ county
     ),
-    functional_class_label = stringr::str_remove_all(functional_class,
-                                                     "[:digit:] -") %>% 
+    functional_class_label = stringr::str_remove_all(
+      functional_class,
+      "[:digit:] -"
+    ) %>%
       str_trim()
   )
 
 # better define route systems
 # as labels have changed over time
 
-functional_class_reference <-  vmt_county_fc_raw %>% 
-  select(functional_class, urban_rural, year) %>% 
-  filter(year == 2023) %>% 
-  select(functional_class, urban_rural) %>% 
-  unique() %>% 
-  tidyr::separate_wider_delim(functional_class, delim = "-",
-                              names =  c("functional_class_id",
-                                         "functional_class_desc"),
-                              too_many = "merge") %>% 
-  mutate(functional_class_id = str_pad(functional_class_id %>% 
-                                     str_trim(),
-                                   side = "left",
-                                   pad = "0",
-                                   width = 2)) %>% 
-  arrange(functional_class_id) %>% 
+functional_class_reference <- vmt_county_fc_raw %>%
+  select(functional_class, urban_rural, year) %>%
+  filter(year == 2023) %>%
+  select(functional_class, urban_rural) %>%
+  unique() %>%
+  tidyr::separate_wider_delim(functional_class,
+    delim = "-",
+    names = c(
+      "functional_class_id",
+      "functional_class_desc"
+    ),
+    too_many = "merge"
+  ) %>%
+  mutate(functional_class_id = str_pad(
+    functional_class_id %>%
+      str_trim(),
+    side = "left",
+    pad = "0",
+    width = 2
+  )) %>%
+  arrange(functional_class_id) %>%
   mutate(moves_road_type = case_when(
     urban_rural == "R" & functional_class_id %in% c("01", "02") ~ "Rural Restricted Access",
     urban_rural == "U" & functional_class_id %in% c("01", "02") ~ "Urban Restricted Access",
-
-    urban_rural == "U" & functional_class_id %in% c("03","04", "05", "06", "07") ~ "Urban Unrestricted Access",
+    urban_rural == "U" & functional_class_id %in% c("03", "04", "05", "06", "07") ~ "Urban Unrestricted Access",
     urban_rural == "R" & functional_class_id %in% c("03", "04", "05", "06", "07") ~ "Rural Unrestricted Access",
-    
   ))
 
-functional_class_year_all <- vmt_county_fc_raw %>% 
-  select(functional_class, year, urban_rural) %>% 
-  unique() %>% 
-  tidyr::separate_wider_delim(functional_class, delim = "-",
-                              names =  c("functional_class_id",
-                                         "functional_class"),
-                              too_many = "merge",
-                              too_few = "align_start",
-                              cols_remove = FALSE) %>% 
-  mutate(functional_class_id = str_pad(functional_class_id %>% 
-                                         str_trim(),
-                                       side = "left",
-                                       pad = "0",
-                                       width = 2),
-         functional_class_id = case_when(
-           functional_class_id == "Local" ~ "07",
-           functional_class_id == "Major Collector" ~ "05",
-           functional_class_id == "Minor Collector" ~ "06",
-           functional_class_id == "Minor Arterial" ~ "04",
-           functional_class_id == "Principal Arterial" & functional_class == " Interstate" ~ "01",
-           functional_class_id == "Principal Arterial" & functional_class == " Other" ~ "03",
-           functional_class_id == "Principal Arterial" & functional_class == " Other Freeways and Expressways" ~ "02",
-           TRUE ~ functional_class_id
-         )) %>%
-  left_join(functional_class_reference, by = c("functional_class_id",
-                                               "urban_rural"))
+functional_class_year_all <- vmt_county_fc_raw %>%
+  select(functional_class, year, urban_rural) %>%
+  unique() %>%
+  tidyr::separate_wider_delim(functional_class,
+    delim = "-",
+    names = c(
+      "functional_class_id",
+      "functional_class"
+    ),
+    too_many = "merge",
+    too_few = "align_start",
+    cols_remove = FALSE
+  ) %>%
+  mutate(
+    functional_class_id = str_pad(
+      functional_class_id %>%
+        str_trim(),
+      side = "left",
+      pad = "0",
+      width = 2
+    ),
+    functional_class_id = case_when(
+      functional_class_id == "Local" ~ "07",
+      functional_class_id == "Major Collector" ~ "05",
+      functional_class_id == "Minor Collector" ~ "06",
+      functional_class_id == "Minor Arterial" ~ "04",
+      functional_class_id == "Principal Arterial" & functional_class == " Interstate" ~ "01",
+      functional_class_id == "Principal Arterial" & functional_class == " Other" ~ "03",
+      functional_class_id == "Principal Arterial" & functional_class == " Other Freeways and Expressways" ~ "02",
+      TRUE ~ functional_class_id
+    )
+  ) %>%
+  left_join(functional_class_reference, by = c(
+    "functional_class_id",
+    "urban_rural"
+  ))
 
 # join back with VMT
 vmt_county_raw_functional_class <- vmt_county_fc_raw %>%
   left_join(functional_class_year_all,
-             by = c("year", "functional_class", "urban_rural"))
+    by = c("year", "functional_class", "urban_rural")
+  )
 
 # remove from environment
 rm(functional_class_reference, functional_class_year_all, dat_ls)
 
-vmt_county_raw_functional_class %>% 
-  group_by(year, county, moves_road_type) %>% 
-  summarize(annual_vmt = sum(annual_vmt)) %>% 
+vmt_county_raw_functional_class %>%
+  group_by(year, county, moves_road_type) %>%
+  summarize(annual_vmt = sum(annual_vmt)) %>%
   filter(county == "Anoka")
 vmt_county_raw_functional_class
 # summarize by year and county only
 # removing the route system distinction
 vmt_county_raw_fc_summary <-
-  vmt_county_raw_functional_class %>% 
+  vmt_county_raw_functional_class %>%
   group_by(year, county, cprg_area) %>%
   summarize(
     daily_vmt = sum(daily_vmt),

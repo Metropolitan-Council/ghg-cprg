@@ -6,8 +6,10 @@ test_that("All population", {
 
   testthat::expect_equal(
     names(census_county_population),
-    c("geoid", "county_name", "state_name", "state_abb", "population_year", 
-      "population_data_source", "cprg_area", "population")
+    c(
+      "geoid", "county_name", "state_name", "state_abb", "population_year",
+      "population_data_source", "cprg_area", "population"
+    )
     # c(
     #   "STATE", "STATE_ABB", "GEOID",
     #   "COUNTYFP", "NAME",

@@ -13,7 +13,7 @@ cprg_population <- census_county_population %>%
   select(
     state_name,
     state_abb,
-    geoid, 
+    geoid,
     county_name,
     population, population_data_source
   )
@@ -21,8 +21,9 @@ cprg_population <- census_county_population %>%
 
 cprg_population_meta <- bind_rows(
   cprg_county_meta,
-  cprg_population_meta) %>% 
-  unique() %>% 
+  census_county_population_meta
+) %>%
+  unique() %>%
   filter(Column %in% names(cprg_population))
 
 saveRDS(cprg_population, "_meta/data/cprg_population.RDS")

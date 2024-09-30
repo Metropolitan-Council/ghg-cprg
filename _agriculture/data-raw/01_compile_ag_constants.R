@@ -3,22 +3,20 @@ source("R/_load_pkgs.R")
 # from the SIT tool
 
 # check that needed data are available locally
-if(!file.exists("_agriculture/data-raw/ag-module.xlsx")){
+if (!file.exists("_agriculture/data-raw/ag_constants.csv")) {
   cli::cli_abort("Download agriculture data from MS Team")
 }
 
-### going to slice and dice this below due to difficult formatting
-ag_control <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
-                                sheet = "Control")
+# emission factors and constants are located in two places
+ag_constants <- read_csv("_agriculture/data-raw/ag_constants.csv")
+ag_control <- read_csv("_agriculture/data-raw/ag_control.csv")
 
-### breaking constants down to categories, adding syntax friendly descriptor 
+### breaking constants down to categories, adding syntax friendly descriptor
 ### - matched to EPA SIT short_text where possible
-general_constants <-  readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
-                                        sheet = "constants",
-                                        range = "B2:C17") %>% 
-  rename(value = General, description = `...2`) %>% 
-  mutate(
-    short_text = c(
+general_constants <- data.frame(
+  value = ag_constants[2:16, 1],
+  description = ag_constants[2:16, 2],
+  short_text = c(
     "MT_ton",
     "lbs_ton",
     "kg_lb",
@@ -34,16 +32,19 @@ general_constants <-  readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
     "lbs_hundredweight",
     "VolPercent_Indirect",
     "VolPercent"
-  ),
-  value = as.numeric(value)
   )
+) %>%
+  select(
+    value = Constants,
+    description = `...2`,
+    short_text
+  ) %>%
+  mutate(value = as.numeric(value))
 
 
-soil_plant_constants <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
-                                          sheet = "constants",
-                                          range = "B18:C28") %>% 
-  rename(value = `Ag Soils-Plant`, description = `...2`) %>% 
-  mutate(
+soil_plant_constants <- data.frame(
+  value = ag_constants[18:27, 1],
+  description = ag_constants[18:27, 2],
   short_text = c(
     "NMan",
     "NOrg",
@@ -55,17 +56,19 @@ soil_plant_constants <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx"
     "HistEF",
     "TropHistEF",
     "N_content_legume"
-  ),
-  value = as.numeric(value)
   )
+) %>%
+  select(
+    value = Constants,
+    description = `...2`,
+    short_text
+  ) %>%
+  mutate(value = as.numeric(value))
 
 
-
-soil_animal_constants <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
-                                           sheet = "constants",
-                                           range = "G18:H28") %>% 
-  rename(value = `Ag Soils-Animal`, description = `...2`) %>% 
-  mutate(
+soil_animal_constants <- data.frame(
+  value = ag_constants[18:27, 6],
+  description = ag_constants[18:27, 7],
   short_text = c(
     "NonVolEF",
     "prpEF",
@@ -77,17 +80,19 @@ soil_animal_constants <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx
     "SolidEF",
     "nobedEF",
     "PoultryNotManaged"
-  ),
-  value = as.numeric(value)
-  ) %>%
-  filter(!is.na(value))
+  )
+) %>%
+  rename(value = ...6, description = ...7) %>%
+  filter(!is.na(value)) %>%
+  mutate(value = if_else(short_text == "PoultryNotManaged",
+    as.numeric(str_remove(value, "%")) / 100,
+    as.numeric(value)
+  ))
 
 
-crop_mt_bushel <-  readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
-                                     sheet = "constants",
-                                     range = "B30:C39") %>% 
-  rename(value = `...2`, description = Alfalfa) %>% 
-  mutate(
+crop_mt_bushel <- data.frame(
+  value = ag_constants[30:38, 2],
+  description = ag_constants[30:38, 1],
   short_text = c(
     "corn_mtb",
     "wheat_mtb",
@@ -101,6 +106,7 @@ crop_mt_bushel <-  readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   )
 ) %>%
   filter(!is.na(short_text)) %>%
+  rename(value = ...2, description = Constants) %>%
   mutate(
     value = as.numeric(value),
     description = paste(description, "MT to bushels")
@@ -108,12 +114,9 @@ crop_mt_bushel <-  readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
 
 
 
-crop_residue_mass_ratio <- read_xlsx("_agriculture/data-raw/ag-module.xlsx",
-                                     sheet = "constants",
-                                     range = "B29:D45") %>% 
-  select(-`metric tons/bushel:`) %>% 
-  rename(value = `Residue: Crop Mass Ratio`, description = Crop) %>% 
-  mutate(
+crop_residue_mass_ratio <- data.frame(
+  value = ag_constants[29:44, c(3)],
+  descriptor = ag_constants[29:44, c(1)],
   short_text = c(
     "alfalfa_rcmr",
     "corn_rcmr",
@@ -133,13 +136,16 @@ crop_residue_mass_ratio <- read_xlsx("_agriculture/data-raw/ag-module.xlsx",
     "wrinkled_peas_rcmr"
   )
 ) %>%
+  rename(value = ...3, description = Constants) %>%
   mutate(
     description = paste(description, "residue to crop mass ratio"),
     value = as.numeric(value)
   )
 
-crop_residue <- ag_control[c(71, 74:89),
-                           c(1, 2, 6, 10)] %>%
+crop_residue <- ag_control[
+  c(71, 74:89),
+  c(1, 2, 6, 10)
+] %>%
   row_to_names(row_number = 1) %>%
   pivot_longer(cols = 2:4, values_to = "value") %>%
   mutate(
@@ -185,55 +191,11 @@ animal_mass <- data.frame(
   )
 ) %>%
   rename(
-    description = State.Inventory.Tool...Carbon.Dioxide..Methane..and.Nitrous.Oxide.Emissions.from.Agriculture.ModuleVersion.2024.1,
+    description = State.Inventory.Tool...Carbon.Dioxide..Methane..and.Nitrous.Oxide.Emissions.from.Agriculture.Module.Version.2024.1,
     value = ...2
   ) %>%
   mutate(
     description = paste(description, "Typical Animal Mass"),
-    value = as.numeric(value)
-  ) %>%
-  filter(!is.na(value))
-
-animal_Bo <- data.frame(  #max potential emissions (m3 CH4/kg VS)
-  value = ag_control[37:65, 10],
-  description = ag_control[37:65, 1],
-  short_text = c(
-    "Dairy Cattle",
-    "Dairy Cows",
-    'Dairy Replacement Heifers',
-    'Beef Cattle',
-    'Feedlot Heifers',
-    'Feedlot Steer',
-    'Bulls',
-    'Calves',
-    'Beef Cows',
-    'Beef Replacement Heifers',
-    'Steer Stockers',
-    'Heifer Stockers',
-    "Swine",
-    "breeding_swine",
-    "swine_under_60lbs",
-    "swine_60_119_lbs",
-    "swine_120_179_lbs", # KS: fixed minor typo here
-    "swine_over_180lbs",
-    NA, NA,
-    "hens",
-    "pullets",
-    "chickens",
-    "broilers",
-    "turkeys",
-    NA,
-    "sheep_on_feed",
-    "sheep_not_on_feed",
-    "goats"
-  )
-) %>%
-  rename(
-    description = State.Inventory.Tool...Carbon.Dioxide..Methane..and.Nitrous.Oxide.Emissions.from.Agriculture.ModuleVersion.2024.1,
-    value = ...10
-  ) %>%
-  mutate(
-    description = paste(description, "Bo"),
     value = as.numeric(value)
   ) %>%
   filter(!is.na(value))
@@ -245,8 +207,7 @@ ag_constants_formatted <- bind_rows(
   crop_mt_bushel,
   crop_residue_mass_ratio,
   crop_residue,
-  animal_mass,
-  animal_Bo
+  animal_mass
 )
 
 ag_constants_meta <-
@@ -257,5 +218,5 @@ ag_constants_meta <-
     "short_text", class(ag_constants_formatted$short_text), "Syntax friendly classifier for coding"
   )
 
-saveRDS(ag_constants_formatted, "./_agriculture/data/ag_constants.rds")
-saveRDS(ag_constants_meta, "./_agriculture/data/ag_constants_meta.rds")
+saveRDS(ag_constants_formatted, "./_agriculture/data/ag_constants_formatted.rds")
+saveRDS(ag_constants_meta, "./_agriculture/data/ag_constants_formatted.rds_meta.rds")

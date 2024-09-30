@@ -69,8 +69,9 @@ saveRDS(percent_by_class, paste0("_transportation/data-raw/mndot/yearly_volume_p
 
 station_list <- download_read_table(
   "https://www.dot.state.mn.us/traffic/data/reports/Current_CC_StationList.xlsx",
-                                    "_transportation/data-raw/mndot/",
-                                    sheet = 1) %>%
+  "_transportation/data-raw/mndot/",
+  sheet = 1
+) %>%
   clean_names() %>%
   filter(
     collection_type %in% c(

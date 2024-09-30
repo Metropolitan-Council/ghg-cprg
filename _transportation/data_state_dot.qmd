@@ -5,6 +5,7 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_lines.RDS")) %>%
   mutate(hover_info = paste0(
     "Name: ", name, "<br>"
@@ -40,16 +41,18 @@ WisDOT publishes PDF tables with county-level VMT. These were downloaded and dat
 #| fig-cap: "County vehicle miles traveled"
 #| out-width: "95%"
 dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
-  filter(year < 2022, 
-         year >= 2018,
-         cprg_area == TRUE) %>%
-  group_by(county)
+  filter(
+    vmt_year < 2022,
+    vmt_year >= 2018,
+    cprg_area == TRUE
+  ) %>%
+  group_by(county_name)
 
 
 fig_dot_vmt <- plot_ly(
   data = dot_vmt,
   source = "fig-dot-vmt",
-  x = ~year,
+  x = ~vmt_year,
   y = ~annual_vmt,
   color = ~data_source,
   colors = c(
@@ -70,8 +73,8 @@ fig_dot_vmt <- plot_ly(
     width = 3
   ),
   hovertemplate = ~ paste0(
-    county, " County", "<br>",
-    year, "<br>",
+    county_name, " County", "<br>",
+    vmt_year, "<br>",
     round(annual_vmt * 1e-9, digits = 2), " billion VMT annually", "<br>",
     "<extra></extra>"
   )
@@ -104,7 +107,6 @@ Data were processed in R scripts: [wisdot_stations.R](data-raw/wisdot_stations.R
 #| out-width: "95%"
 #| out-height: "500px"
 
-cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 
 bound_box <- st_bbox(commercial_lines) %>%
   unlist()
