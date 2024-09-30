@@ -74,8 +74,8 @@ cprg_flight_meta <-
     "doublecount", class(cprg_flight_out$doublecount), "Is this emission counted in another sector?"
   )
 
-saveRDS(cprg_flight_out, "./_agriculture/data/flight_industrial_point_sources_ctu.rds")
-saveRDS(cprg_flight_meta, "./_agriculture/data/flight_industrial_point_sources_ctu_meta.rds")
+saveRDS(cprg_flight_out, "./_industrial/data/flight_industrial_point_sources_ctu.rds")
+saveRDS(cprg_flight_meta, "./_industrial/data/flight_industrial_point_sources_ctu_meta.rds")
 
 ### summarize to the yearly county level while IDing doublecounts
 flight_county_summary <- cprg_flight %>% 
