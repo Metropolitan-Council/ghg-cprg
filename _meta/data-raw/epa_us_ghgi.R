@@ -5,10 +5,11 @@ source("R/global_warming_potential.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 if (!file.exists("_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0/AllStateGHGDataPY2023_100323.xlsx")) {
+  # download file directly from EPA
   download.file("https://www.epa.gov/system/files/other-files/2023-10/allstateghgdatapy2023readme_100323_0.zip",
     destfile = "_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0.zip"
   )
-
+  # unzip
   unzip("_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0.zip",
     exdir = "_meta/data-raw/epa/us_ghgi/allstateghgdatapy2023readme_100323_0"
   )
