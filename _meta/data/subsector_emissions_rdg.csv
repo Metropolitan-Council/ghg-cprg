@@ -1,0 +1,92 @@
+"year","geog_name","sector","category","emissions_metric_tons_co2e","emissions_per_capita"
+2021,"Anoka","Agriculture","Livestock",622.191653134753,0.00172460703305057
+2021,"Anoka","Agriculture","Cropland",8079.35985970288,0.0223945801368253
+2021,"Anoka","Building Fuel","Residential energy",350665.337116411,0.971983316701669
+2021,"Anoka","Building Fuel","Commercial energy",214040.220503855,0.593282259215228
+2021,"Anoka","Building Fuel","Industrial energy",281212.870917928,0.779473161566768
+2021,"Anoka","Building Fuel","Liquid stationary fuels",13992.753004,0.0387854773056742
+2021,"Anoka","Electricity","Residential energy",645119.047608757,1.78815778234169
+2021,"Anoka","Electricity","Commercial energy",778328.169866572,2.15739029768462
+2021,"Anoka","Electricity","Industrial energy",595297.095171256,1.65005999664957
+2021,"Anoka","Transportation","Light-duty vehicles",1045151.4817841,2.89697810474759
+2021,"Anoka","Transportation","Heavy-duty vehicles",328614.155012374,0.910861275684084
+2021,"Anoka","Waste","Wastewater",34992.7043110344,0.0969936894142145
+2021,"Anoka","Waste","Solid waste",160138.080836126,0.443874904264249
+2021,"Carver","Agriculture","Livestock",139991.508827932,1.32449816288466
+2021,"Carver","Agriculture","Cropland",93938.9021492683,0.888781786565635
+2021,"Carver","Building Fuel","Residential energy",100886.217575925,0.954512248338841
+2021,"Carver","Building Fuel","Commercial energy",74852.076136686,0.708196076756353
+2021,"Carver","Building Fuel","Industrial energy",106513.202733841,1.00775070234679
+2021,"Carver","Building Fuel","Liquid stationary fuels",12647.68362825,0.11966321293782
+2021,"Carver","Electricity","Residential energy",177632.032409859,1.68062550769068
+2021,"Carver","Electricity","Commercial energy",200620.051510905,1.89812147814356
+2021,"Carver","Electricity","Industrial energy",176988.679315785,1.67453856714464
+2021,"Carver","Transportation","Light-duty vehicles",287960.303821806,2.72447162395033
+2021,"Carver","Transportation","Heavy-duty vehicles",100574.401170782,0.951562067579825
+2021,"Carver","Waste","Wastewater",10251.651008946,0.0969936894142145
+2021,"Carver","Waste","Solid waste",51133.3398152285,0.483786589732894
+2021,"Dakota","Agriculture","Livestock",132018.627854607,0.302890192226931
+2021,"Dakota","Agriculture","Cropland",123142.150353776,0.282524899690444
+2021,"Dakota","Building Fuel","Residential energy",295097.029014479,0.677040788079004
+2021,"Dakota","Building Fuel","Commercial energy",251984.761832314,0.578128361049949
+2021,"Dakota","Building Fuel","Industrial energy",345216.794923377,0.792030511705231
+2021,"Dakota","Building Fuel","Liquid stationary fuels",20252.7725265,0.0464659136620911
+2021,"Dakota","Electricity","Residential energy",524214.69171359,1.20270518881756
+2021,"Dakota","Electricity","Commercial energy",943259.529780592,2.16411929845064
+2021,"Dakota","Electricity","Industrial energy",787195.675337333,1.80606216939114
+2021,"Dakota","Transportation","Light-duty vehicles",1312785.13216605,3.01192148029552
+2021,"Dakota","Transportation","Heavy-duty vehicles",473883.098924158,1.08722947101304
+2021,"Dakota","Waste","Wastewater",42275.9604491478,0.0969936894142145
+2021,"Dakota","Waste","Solid waste",221896.942324168,0.509097909949154
+2021,"Hennepin","Agriculture","Livestock",19050.4490318579,0.0149970117146005
+2021,"Hennepin","Agriculture","Cropland",21628.7255426822,0.0170266984149849
+2021,"Hennepin","Building Fuel","Residential energy",1830187.54793349,1.44077150362044
+2021,"Hennepin","Building Fuel","Commercial energy",2186397.61354012,1.72118938342095
+2021,"Hennepin","Building Fuel","Industrial energy",566931.191848617,0.446303061482061
+2021,"Hennepin","Building Fuel","Liquid stationary fuels",44245.5527845,0.0348312563298887
+2021,"Hennepin","Electricity","Residential energy",1234350.25291517,0.971712801726206
+2021,"Hennepin","Electricity","Commercial energy",3334064.31012335,2.62466262252061
+2021,"Hennepin","Electricity","Industrial energy",798699.696627368,0.628757290011256
+2021,"Hennepin","Transportation","Light-duty vehicles",3647192.63982566,2.87116543307724
+2021,"Hennepin","Transportation","Heavy-duty vehicles",1225542.44577888,0.964779065593165
+2021,"Hennepin","Waste","Wastewater",123209.434770157,0.0969936894142145
+2021,"Hennepin","Waste","Solid waste",563129.754581419,0.443310470644273
+2021,"Ramsey","Agriculture","Livestock",0.0122824755932807,0.0000000223570983009495
+2021,"Ramsey","Agriculture","Cropland",194.219425984102,0.000353526678372233
+2021,"Ramsey","Building Fuel","Residential energy",1016419.16191158,1.85013053315224
+2021,"Ramsey","Building Fuel","Commercial energy",1188884.96062431,2.16406030944927
+2021,"Ramsey","Building Fuel","Industrial energy",795147.451022467,1.44736210475223
+2021,"Ramsey","Building Fuel","Liquid stationary fuels",17284.2507215,0.0314615477559126
+2021,"Ramsey","Electricity","Residential energy",496753.812084805,0.904212975943304
+2021,"Ramsey","Electricity","Commercial energy",1127227.29445158,2.05182833364262
+2021,"Ramsey","Electricity","Industrial energy",534598.544112965,0.973099609399311
+2021,"Ramsey","Transportation","Light-duty vehicles",1595529.03301438,2.90425160320577
+2021,"Ramsey","Transportation","Heavy-duty vehicles",542368.017160816,0.987241943439234
+2021,"Ramsey","Waste","Wastewater",53286.1021093129,0.0969936894142145
+2021,"Ramsey","Waste","Solid waste",222700.976352017,0.405370039794198
+2021,"Scott","Agriculture","Livestock",62506.4410762789,0.41791319718308
+2021,"Scott","Agriculture","Cropland",68940.8771837556,0.460933335899093
+2021,"Scott","Building Fuel","Residential energy",235255.655845046,1.5729009938292
+2021,"Scott","Building Fuel","Commercial energy",165380.374026127,1.10572030130861
+2021,"Scott","Building Fuel","Industrial energy",147536.282096937,0.986416092325477
+2021,"Scott","Building Fuel","Liquid stationary fuels",7634.727521,0.0510451936309906
+2021,"Scott","Electricity","Residential energy",295279.235259336,1.97421397129958
+2021,"Scott","Electricity","Commercial energy",387442.600094918,2.5904110511267
+2021,"Scott","Electricity","Industrial energy",189227.455685153,1.26516003212688
+2021,"Scott","Transportation","Light-duty vehicles",456386.317562252,3.0513633769406
+2021,"Scott","Transportation","Heavy-duty vehicles",174883.264001292,1.16925588362011
+2021,"Scott","Waste","Wastewater",14507.1521383052,0.0969936894142145
+2021,"Scott","Waste","Solid waste",67127.8231099003,0.448811397557635
+2021,"Washington","Agriculture","Livestock",273541.943413337,1.03294316630039
+2021,"Washington","Agriculture","Cropland",59231.1187602931,0.223667268691301
+2021,"Washington","Building Fuel","Residential energy",629740.759091508,2.37801342465961
+2021,"Washington","Building Fuel","Commercial energy",365156.654974321,1.37889665722995
+2021,"Washington","Building Fuel","Industrial energy",421574.649784966,1.59194106814856
+2021,"Washington","Building Fuel","Liquid stationary fuels",9764.1216015,0.0368710646613901
+2021,"Washington","Electricity","Residential energy",357627.292592083,1.35046444196423
+2021,"Washington","Electricity","Commercial energy",394634.436797056,1.4902100189453
+2021,"Washington","Electricity","Industrial energy",422664.081072413,1.59605495499707
+2021,"Washington","Transportation","Light-duty vehicles",768273.618901558,2.90113821153229
+2021,"Washington","Transportation","Heavy-duty vehicles",273076.486666522,1.0311855186072
+2021,"Washington","Waste","Wastewater",25685.6748432935,0.0969936894142145
+2021,"Washington","Waste","Solid waste",80899.8998366022,0.305492450802446
