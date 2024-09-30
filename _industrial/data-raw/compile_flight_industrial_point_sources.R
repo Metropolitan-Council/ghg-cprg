@@ -27,8 +27,10 @@ cprg_flight %>% distinct(subparts)
 # https://www.epa.gov/ghgreporting/resources-subpart-ghg-reporting
 ### key subparts to note here:
 ### D is electricity generation and should be discounted as it is inventoried elsewhere
+### W is natural gas and petroleum systems. This is likely a large double count, though petroleum is only inventoried residentially
 ### HH is municipal solid waste landfills which is inventoried elsewhere
 ### TT is industrial waste landfills which are NOT inventoried elsewhere
+cprg_flight %>% filter(grepl("R", subparts)) %>% distinct(facility_name)
 
 cprg_flight <- cprg_flight %>% 
 ## DD is electric transmission and would be filtered if it were included here (it is not)
@@ -99,7 +101,7 @@ saveRDS(flight_county_summary, "./_agriculture/data/flight_industrial_point_sour
 ggplot(county_summary %>% 
          filter(doublecount == "No"), 
        aes(x = reporting_year, y = co2e, col = county_name)) + 
-  geom_line()
+  geom_line() + theme_minimal()
 
 leaflet(cprg_flight %>%
   filter(reporting_year == 2021,
