@@ -3,7 +3,6 @@
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
 source("_meta/data-raw/county_geography.R")
-library(imputeTS)
 
 scc_combine <- readRDS("_transportation/data/scc_combine.RDS")
 scc_combine_meta <- readRDS("_transportation/data/scc_combine_meta.RDS")

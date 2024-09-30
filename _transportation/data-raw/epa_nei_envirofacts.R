@@ -3,7 +3,6 @@
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
 source("_meta/data-raw/county_geography.R")
-library(imputeTS)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_county_meta <- read_rds("_meta/data/cprg_county_meta.RDS")
