@@ -6,7 +6,7 @@ project:
   post-render: 
     - R/fix_style.R
 
-quarto-required: 1.4.553
+quarto-required: 1.4.555
 
 book:
   version: 1.1.1

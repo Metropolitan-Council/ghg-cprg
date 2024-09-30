@@ -13,7 +13,9 @@ cprg_colors <- list(
 sector_colors <- list(
   "Transportation" = "#8e440b",
   "Energy" = "#163c6a",
-  "Waste" = "#8d0c3b"
+  "Waste" = "#8d0c3b",
+  "Agriculture" = "#fec44f",
+  "Nature" = "#367639"
 )
 
 # category
@@ -27,13 +29,17 @@ category_colors <-
 
 
     # YlOrBr
-    "Passenger vehicles" = "#ec7014",
-    "Commercial vehicles" = "#fec44f",
+    "Passenger vehicles" = "#6E260E",
+    "Commercial vehicles" = "#C19A6B",
 
     # PuRd
     "Solid waste" = "#ce1256",
     "Wastewater" = "#c994c7",
 
+    # YlOrBr
+    "Livestock" = "#ec7014",
+    "Cropland" = "#fec44f",
+    
     # Gn
     "Sequestration" = "#006f3c",
     "Stock" = "#27b376"
@@ -43,9 +49,9 @@ category_colors <-
 # source
 source_colors <- list(
   # transportation levels
-  "Light-duty vehicles" = "#993404",
-  "Medium-duty vehicles" = "#fe9929",
-  "Heavy-duty vehicles" = "#fee391",
+  "Light-duty vehicles" = "#6E260E",
+  "Medium-duty vehicles" = "#C19A6B",
+  "Heavy-duty vehicles" = "#E5AA70",
 
   # waste levels
   "Landfill" = "#ae017e",
@@ -60,6 +66,15 @@ source_colors <- list(
   "Propane" = "#2f4f4f",
   "Kerosene" = "#004242",
 
+  # agriculture
+  "Enteric fermentation"  = "#D27D2D",
+  "Manure management"  = "#F28C28",
+  "Direct manure soil emissions" = "#DAA520",
+  "Indirect manure runoff emissions" = "#E49B0F",
+  "Soil residue emissions" = "#FFD700",
+  "Onsite fertilizer emissions" = "#FAFA33",
+  "Runoff fertilizer emissions" = "#FFFF8F",
+  
   # nature
   "Tree" = "#006d2c",
   "Grassland" = "#22b600",
