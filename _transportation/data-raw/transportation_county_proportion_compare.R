@@ -10,15 +10,16 @@ cprg_county_proportions <- readRDS("_meta/data/cprg_county_proportions.RDS")
 
 county_vmt_pop_emissions <- cprg_county_proportions %>%
   left_join(dot_vmt_county_proportions,
-    by = c("geoid", "population_year" = "vmt_year",
+    by = c("geoid",
+      "population_year" = "vmt_year",
       "county_name",
       "state_name" = "state"
     )
-  )  %>%
+  ) %>%
   mutate(
     vmt_per_capita = annual_vmt / county_population,
   ) %>%
-  filter(population_year  >= 2005)
+  filter(population_year >= 2005)
 
 
 county_prop_long <- county_vmt_pop_emissions %>%
