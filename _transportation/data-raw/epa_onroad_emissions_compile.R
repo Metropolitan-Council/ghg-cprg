@@ -51,25 +51,15 @@ epa_nei_onroad <- readRDS("_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS
   filter(!scc6 %in% scc6_remove)
 
 # next EQUATES from  _transportation/data-raw/epa_equates_read.R
-epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS") %>%
-  mutate(geoid = region_cd) %>%
-  left_join(counties_light, by = join_by(geoid)) %>%
-  filter(
-    cprg_area == TRUE,
-    emis_type %in% c("RPD", "")
-  ) %>%
-  left_join(scc_combine, by = join_by(scc6)) %>%
-  filter(!scc6 %in% scc6_remove) %>%
-  bind_rows(readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cmas_mn_wi.RDS") %>%
+epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cmas_mn_wi.RDS") %>%
     mutate(geoid = region_cd) %>%
     left_join(counties_light, by = join_by(geoid)) %>%
     filter(
       cprg_area == TRUE,
-      emis_type %in% c("RPD", ""),
-      calc_year == "2019"
+      emis_type %in% c("RPD", "")
     ) %>%
     left_join(scc_combine) %>%
-    filter(!scc6 %in% scc6_remove))
+    filter(!scc6 %in% scc6_remove)
 
 # finally air emissions modeling from  _transportation/data-raw/epa_air_emissions_modeling_onroad.R
 epa_emismod <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS") %>%
@@ -147,7 +137,7 @@ epa_emismod_summary <- epa_emismod %>%
   )
 
 # compile EQUATES data
-# note that we don't have n2o from EQUATES
+# note that we don't have n2o from EQUATES, except years 2018-2019
 # https://forum.cmascenter.org/t/nitrous-oxide-n2o-availability-in-equates-county-level/5199
 epa_equates_summary <- epa_equates %>%
   group_by(geoid, county_name, calc_year, poll, scc6) %>%
@@ -178,85 +168,6 @@ epa_equates_summary <- epa_equates %>%
   ) %>%
   left_join(scc_combine)
 
-# interpolate intermediary years
-epa_equates_summary_interp <- epa_equates_summary %>%
-  filter(
-    # some of the vehicle/fuel type combinations only have PM2.5, PM10, and VOC
-    # not any other pollutant types
-    # remove these from the dataset
-    !is.na(emissions_metric_tons_co2e),
-    !is.na(co2)
-  ) %>%
-  mutate(data_source = "EQUATES") %>%
-  group_by(
-    geoid, county_name,
-    scc6,
-    scc6_desc,
-    fuel_type,
-    vehicle_type
-  ) %>%
-  # convert character to numeric
-  mutate(emissions_year = as.numeric(calc_year)) %>%
-  # complete the time series by filling in missing years with NA values
-  complete(emissions_year = 2002:2019) %>%
-  mutate(
-    # use Kalman interpolation for all pollutants
-    emissions_metric_tons_co2e = na_kalman(emissions_metric_tons_co2e,
-      smooth = TRUE,
-      type = "trend"
-    ),
-    co2 = na_kalman(co2, smooth = TRUE, type = "trend"),
-    ch4 = na_kalman(ch4, smooth = TRUE, type = "trend"),
-    co2_co2_equivalent = na_kalman(co2_co2_equivalent, smooth = TRUE, type = "trend"),
-    # n2o = na_kalman(n2o, smooth = TRUE, type = "trend"),
-    co = na_kalman(co, smooth = TRUE, type = "trend"),
-    no = na_kalman(no, smooth = TRUE, type = "trend"),
-    nox = na_kalman(nox, smooth = TRUE, type = "trend"),
-    pm10_pri = na_kalman(pm10_pri, smooth = TRUE, type = "trend"),
-    pm25_pri = na_kalman(pm25_pri, smooth = TRUE, type = "trend"),
-    voc = na_kalman(voc, smooth = TRUE, type = "trend"),
-
-    # so2 = na_kalman(so2, smooth = TRUE, type = "trend"),
-    # nh4 = na_kalman(nh4, smooth = TRUE, type = "trend"),
-
-    # we got NAs in the data_source column when we ran complete()
-    # if it is NA, then it means that row was interpolated!
-    interpolation = ifelse(is.na(data_source), "Interpolated",
-      "Original"
-    ),
-    data_source = "EQUATES"
-  ) %>%
-  # replace negative values with 0
-  mutate(across(where(is.numeric), ~ ifelse(. < 0, 0, .))) %>%
-  # re-calculate CO2e using the interpolated individual pollutants
-  mutate(
-    co2_co2_equivalent_recalc =
-      sum(co2, (ch4 * gwp$ch4), na.rm = T),
-    emissions_metric_tons_co2e_recalc = co2_co2_equivalent / 1000000
-  ) %>%
-  select(
-    1:7, data_source, interpolation, emissions_metric_tons_co2e,
-    everything()
-  )
-
-# check
-# do the re-calculated total emissions equal (within an acceptable tolerance)
-# equal the interpolated total emissions?
-epa_equates_summary_interp %>%
-  select(
-    geoid, county_name, emissions_year,
-    interpolation, scc6, emissions_metric_tons_co2e,
-    emissions_metric_tons_co2e_recalc
-  ) %>%
-  unique() %>%
-  mutate(
-    value_compare = equals(
-      round(emissions_metric_tons_co2e, digits = 0),
-      round(emissions_metric_tons_co2e_recalc, digits = 0)
-    )
-  ) %>%
-  filter(value_compare == FALSE)
-
 
 # combine specific years to get a full time series -----
 epa_emissions_combine <- bind_rows(
@@ -278,7 +189,10 @@ epa_emissions_combine <- bind_rows(
       interpolation = "Original"
     ),
   # use EQUATES for all other years
-  epa_equates_summary_interp
+  epa_equates_summary %>% 
+    mutate(data_source = "EQUATES",
+      emissions_year = as.numeric(calc_year),
+           interpolation = "Original")
 ) %>%
   ungroup() %>%
   select(
@@ -514,15 +428,6 @@ epa_onroad_source_set <-
         process_source = "_transportation/data-raw/epa_nei_smoke_ff.R"
       ),
     epa_equates %>%
-      filter(calc_year != "2019") %>%
-      select(file_location, calc_year, metadata_info) %>%
-      mutate(
-        data_source = "EQUATES",
-        dataset = "equates_mn_wi.RDS",
-        process_source = "_transportation/data-raw/epa_equates_read.R"
-      ),
-    epa_equates %>%
-      filter(calc_year == "2019") %>%
       select(file_location, calc_year, metadata_info) %>%
       mutate(
         data_source = "EQUATES",
