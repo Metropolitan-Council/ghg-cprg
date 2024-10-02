@@ -13,6 +13,7 @@
 #' @importFrom dplyr filter
 #' @importFrom stringr str_to_title
 #' @importFrom councilR plotly_layout
+#' @importFrom cli cli_alert_warning
 plot_county_emissions <- function(county_emissions,
                                   .sector,
                                   .plotly_source) {
@@ -25,6 +26,12 @@ plot_county_emissions <- function(county_emissions,
       source = .plotly_source,
       type = "bar"
     ))
+  }
+  
+  if ("year" %in% names(plot_data)) {
+    if (length(unique(plot_data$year)) > 1) {
+      cli::cli_alert_warning("Plotting more than one year of data")
+    }
   }
 
   plot_data <- plot_data %>%

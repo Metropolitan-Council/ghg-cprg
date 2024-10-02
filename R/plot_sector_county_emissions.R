@@ -4,7 +4,7 @@
 #'   "sector", "geog_name", "emissions_metric_tons_co2e", "source", "category",
 #'   and "geog_level"
 #' @param sector character, one of "Transportation", ....
-#' @param plotly_source character, passed to source paramter in `plotly::plot_ly()`
+#' @param plotly_source character, passed to source parameter in `plotly::plot_ly()`
 #'
 #' @return Plotly object
 #' @export
@@ -13,12 +13,19 @@
 #' @importFrom dplyr filter
 #' @importFrom stringr str_to_title
 #' @importFrom councilR plotly_layout
+#' @importFrom cli cli_alert_warning
 plot_county_sector_emissions <- function(county_emissions,
                                          .sector,
                                          .plotly_source) {
   plot_data <- county_emissions %>%
     dplyr::filter(sector == .sector) %>%
     rowwise()
+
+  if ("year" %in% names(plot_data)) {
+    if (length(unique(plot_data$year)) > 1) {
+      cli::cli_alert_warning("Plotting more than one year of data")
+    }
+  }
 
   if (nrow(plot_data) == 0) {
     return(plot_ly(
