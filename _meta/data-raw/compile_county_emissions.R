@@ -201,13 +201,11 @@ emissions_all <- bind_rows(
         "Industrial energy",
         "Total energy",
         "Liquid stationary fuels",
-        
         "Passenger vehicles",
         "Transit vehicles",
         "Medium-duty vehicles",
         "Heavy-duty vehicles",
         "Other vehicles",
-        
         "Wastewater",
         "Solid waste",
         "Sequestration",

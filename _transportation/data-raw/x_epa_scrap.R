@@ -1,7 +1,7 @@
 # EPA NEI scraps
-# This script is not meant to be run from top to bottom, but 
-# used as a junkyard for code that may be useful in the future, but 
-# is obsolete now. 
+# This script is not meant to be run from top to bottom, but
+# used as a junkyard for code that may be useful in the future, but
+# is obsolete now.
 
 # scc/smoke/MOVES tables -----
 # https://www.cmascenter.org/smoke/documentation/3.6/html/ch02s08s04.html
@@ -598,8 +598,8 @@ source("R/_load_pkgs.R")
 # Source Classification Codes (SCCs) categories -----
 # quick download from https://sor-scc-api.epa.gov/sccwebservices/sccsearch/
 scc_codes <- data.table::fread("_meta/data-raw/epa/SCCDownload-2024-0718-132502.csv",
-                               header = TRUE,
-                               colClasses = "character"
+  header = TRUE,
+  colClasses = "character"
 ) %>%
   clean_names()
 
@@ -641,24 +641,24 @@ scc_point <- data.table::fread(
   clean_names()
 
 scc_nonpoint <- data.table::fread("_meta/data-raw/epa/nei_2005/SCC nonpoint/NONPOINT05_V2_SCC_SUMMARY_COUNTY.txt",
-                                  sep = ",",
-                                  header = TRUE,
-                                  colClasses = c(
-                                    rep("character", 12),
-                                    "numeric",
-                                    rep("character", 2)
-                                  )
+  sep = ",",
+  header = TRUE,
+  colClasses = c(
+    rep("character", 12),
+    "numeric",
+    rep("character", 2)
+  )
 ) %>%
   clean_names()
 
 # by tiers -----
 tier1_county <- data.table::fread("_meta/data-raw/epa/nei_2005/Tier1/Tier1 County.txt",
-                                  sep = ",",
-                                  header = TRUE,
-                                  colClasses = c(
-                                    rep("character", 9),
-                                    "numeric"
-                                  )
+  sep = ",",
+  header = TRUE,
+  colClasses = c(
+    rep("character", 9),
+    "numeric"
+  )
 ) %>%
   clean_names()
 
@@ -727,9 +727,9 @@ pollutant_desc <- tier3_county %>%
     pollutant_code_description
   ) %>%
   bind_rows(tier1_county %>%
-              select(pollutant_code, pollutant_code_description)) %>%
+    select(pollutant_code, pollutant_code_description)) %>%
   bind_rows(tier2_county %>%
-              select(pollutant_code, pollutant_code_description)) %>%
+    select(pollutant_code, pollutant_code_description)) %>%
   unique()
 
 
@@ -765,7 +765,7 @@ sectors
 
 onroad <- mn_wi_scc_onroad %>%
   left_join(pollutant_desc,
-            by = "pollutant_code"
+    by = "pollutant_code"
   ) %>%
   select(
     nei_inventory_year,
@@ -841,9 +841,9 @@ nei_state_summary <- nei_state_emissions %>%
 
 inventory_comp <- state_economic_summary %>%
   left_join(nei_summary,
-            by = c("state",
-                   "inventory_year" = "nei_inventory_year"
-            )
+    by = c("state",
+      "inventory_year" = "nei_inventory_year"
+    )
   ) %>%
   left_join(county_proportions_summary, by = c(
     "inventory_year" = "year",
