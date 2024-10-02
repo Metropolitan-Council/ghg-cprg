@@ -362,7 +362,7 @@ epa_onroad_emissions_year_scc_index <- epa_emissions_combine %>%
     data_source,
     scc6, scc6_desc, fuel_type, vehicle_type,
     alt_mode, alt_mode_truck, vehicle_weight_label,
-    fuel_type_label
+    vehicle_fuel_label
   ) %>%
   unique()
 
@@ -397,7 +397,7 @@ epa_onroad_emissions_compile <- epa_emissions_combine %>%
     emissions_year,
     data_source, interpolation, geoid, county_name,
     scc6, scc6_desc, fuel_type, vehicle_type, alt_mode,
-    alt_mode_truck,
+    alt_mode_truck, vehicle_fuel_label, vehicle_weight_label,
     emissions_metric_tons_co2e, co2, ch4, n2o,
     co, no, nox, so2, nh3, pm10_pri, pm25_pri
   ) %>%
@@ -405,7 +405,7 @@ epa_onroad_emissions_compile <- epa_emissions_combine %>%
     emissions_year,
     data_source, interpolation, geoid, county_name,
     scc6, scc6_desc, fuel_type, vehicle_type, alt_mode,
-    alt_mode_truck
+    alt_mode_truck, vehicle_fuel_label, vehicle_weight_label
   ) %>%
   pivot_longer(
     cols = c(
@@ -416,7 +416,7 @@ epa_onroad_emissions_compile <- epa_emissions_combine %>%
     values_to = "emissions"
   ) %>%
   unique() %>%
-  left_join(pollutant_key) %>%
+  left_join(pollutant_key, by = "pollutant") %>%
   ungroup()
 
 
