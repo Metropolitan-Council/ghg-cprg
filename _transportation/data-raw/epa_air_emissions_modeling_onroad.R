@@ -72,7 +72,7 @@ onroad_mn_wi <- purrr::map(
 ) %>%
   bind_rows()
 
-saveRDS(onroad_mn_wi, "_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS")
+saveRDS(onroad_mn_wi, "_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS", compress = "xz")
 tictoc::toc()
 
 # optional plotting

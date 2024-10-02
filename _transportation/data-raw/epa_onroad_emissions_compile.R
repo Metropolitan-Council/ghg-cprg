@@ -3,6 +3,8 @@
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
 source("_meta/data-raw/county_geography.R")
+# remove large object
+rm(county_geography)
 
 scc_combine <- readRDS("_transportation/data/scc_combine.RDS")
 scc_combine_meta <- readRDS("_transportation/data/scc_combine_meta.RDS")
@@ -58,7 +60,7 @@ epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUA
       cprg_area == TRUE,
       emis_type %in% c("RPD", "")
     ) %>%
-    left_join(scc_combine) %>%
+    left_join(scc_combine, by = join_by(scc6)) %>%
     filter(!scc6 %in% scc6_remove)
 
 # finally air emissions modeling from  _transportation/data-raw/epa_air_emissions_modeling_onroad.R
@@ -93,15 +95,14 @@ epa_nei_onroad_summary <- epa_nei_onroad %>%
   rowwise() %>%
   mutate(
     co2_co2_equivalent =
-      sum(co2, (ch4 * gwp$ch4), na.rm = T),
+      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = TRUE),
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000,
-    co2_co2_n2o_equivalent =
-      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = T),
-    emissions_metric_tons_co2e_n2o = co2_co2_n2o_equivalent / 1000000
+    emissions_metric_tons_co2e_exclude_n2o =  
+      sum(co2, (ch4 * gwp$ch4), na.rm = TRUE) / 1000000
   ) %>%
   select(
     calc_year, geoid, county_name,
-    emissions_metric_tons_co2e, emissions_metric_tons_co2e_n2o,
+    emissions_metric_tons_co2e,
     everything()
   )
 
@@ -124,15 +125,14 @@ epa_emismod_summary <- epa_emismod %>%
   rowwise() %>%
   mutate(
     co2_co2_equivalent =
-      sum(co2, (ch4 * gwp$ch4), na.rm = T),
+      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = TRUE),
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000,
-    co2_co2_n2o_equivalent =
-      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = T),
-    emissions_metric_tons_co2e_n2o = co2_co2_n2o_equivalent / 1000000
+    emissions_metric_tons_co2e_exclude_n2o =  
+      sum(co2, (ch4 * gwp$ch4), na.rm = TRUE) / 1000000
   ) %>%
   select(
     calc_year, geoid, county_name,
-    emissions_metric_tons_co2e, emissions_metric_tons_co2e_n2o,
+    emissions_metric_tons_co2e,
     everything()
   )
 
@@ -159,8 +159,10 @@ epa_equates_summary <- epa_equates %>%
   rowwise() %>%
   mutate(
     co2_co2_equivalent =
-      sum(co2, (ch4 * gwp$ch4), na.rm = T),
-    emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
+      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = TRUE),
+    emissions_metric_tons_co2e = co2_co2_equivalent / 1000000,
+    emissions_metric_tons_co2e_exclude_n2o =  
+      sum(co2, (ch4 * gwp$ch4), na.rm = TRUE) / 1000000
   ) %>%
   select(
     calc_year, geoid, county_name,
@@ -340,7 +342,8 @@ epa_onroad_emissions_year_scc_index <- epa_emissions_combine %>%
   select(
     data_source,
     scc6, scc6_desc, fuel_type, vehicle_type,
-    alt_mode, alt_mode_truck
+    alt_mode, alt_mode_truck, vehicle_weight_label,
+    fuel_type_label
   ) %>%
   unique()
 
@@ -411,7 +414,8 @@ epa_onroad_emissions_compile_meta <- tibble::tribble(
   bind_rows(pollutant_key_meta) %>%
   filter(Column %in% names(epa_onroad_emissions_compile))
 
-saveRDS(epa_onroad_emissions_compile, "_transportation/data/epa_onroad_emissions_compile.RDS")
+saveRDS(epa_onroad_emissions_compile, "_transportation/data/epa_onroad_emissions_compile.RDS",
+        compress = "xz")
 saveRDS(epa_onroad_emissions_compile_meta, "_transportation/data/epa_onroad_emissions_compile_meta.RDS")
 
 
