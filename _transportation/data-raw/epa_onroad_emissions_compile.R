@@ -168,7 +168,7 @@ epa_equates_summary <- epa_equates %>%
     calc_year, geoid, county_name,
     emissions_metric_tons_co2e, everything()
   ) %>%
-  left_join(scc_combine)
+  left_join(scc_combine, by = "scc6")
 
 
 # combine specific years to get a full time series -----
@@ -205,7 +205,7 @@ epa_emissions_combine <- bind_rows(
     voc
   ) %>%
   unique() %>%
-  left_join(scc_combine) %>%
+  left_join(scc_combine, by = "scc6") %>%
   arrange(emissions_year)
 
 # summarize combined datasets -----
@@ -268,17 +268,27 @@ epa_emissions_summary %>%
   plot_ly(
     x = ~emissions_year,
     y = ~emissions_metric_tons_co2e,
-    color = ~county_name
+    color = ~county_name,
+    legendgroup = ~county_name
   ) %>%
   add_markers(
-    marker = list(size = 10)
+    marker = list(size = 10),
+    legendgroup = ~county_name
+    
   ) %>%
   add_lines(
     marker = list(
       size = 3
-    )
+    ),
+    legendgroup = ~county_name,
+    showlegend = FALSE
   ) %>%
-  plotly_layout()
+  plotly_layout(
+    main_title = "County transportation emissions, all EPA sources",
+    legend_title = "County",
+    x_title = "Year",
+    y_title = "Metric tons CO<sub>2</sub>e"
+  )
 
 
 epa_emissions_summary_alt_mode_truck %>%
@@ -293,17 +303,22 @@ epa_emissions_summary_alt_mode_truck %>%
     marker = list(
       size = 10,
       opacity = 0.7
-    )
+    ),
+    legendgroup = ~alt_mode_truck
   ) %>%
   add_lines(
     marker = list(
       size = 3,
       opacity = 0.7
-    )
+    ),
+    legendgroup = ~alt_mode_truck,
+    showlegend = FALSE
   ) %>%
   plotly_layout(
     main_title = "Ramsey",
-    legend_title = "Vehicle type"
+    legend_title = "Vehicle type",
+    x_title = "Year",
+    y_title = "Metric tons CO<sub>2</sub>e"
   )
 
 
@@ -316,23 +331,27 @@ epa_emissions_summary_alt_mode_truck %>%
     x = ~emissions_year,
     y = ~emissions_metric_tons_co2e,
     color = ~alt_mode_truck
-    # symbol = ~data_source
   ) %>%
   add_markers(
     marker = list(
       size = 10,
       opacity = 0.7
-    )
+    ),
+    legendgroup = ~alt_mode_truck
   ) %>%
   add_lines(
     marker = list(
       size = 3,
       opacity = 0.7
-    )
+    ),
+    legendgroup = ~alt_mode_truck,
+    showlegend = FALSE
   ) %>%
   plotly_layout(
     main_title = "Hennepin",
-    legend_title = "Vehicle type"
+    legend_title = "Vehicle type",
+    x_title = "Year",
+    y_title = "Metric tons CO<sub>2</sub>e"
   )
 
 
