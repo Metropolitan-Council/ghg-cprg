@@ -72,7 +72,8 @@ equates <- purrr::map(
 ) %>%
   bind_rows()
 
-saveRDS(equates, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS")
+saveRDS(equates, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS",
+        compress = "xz")
 
 # save CMAS data warehouse versions -----
 # these are all from the the CMAS Data Warehouse Google Drive
