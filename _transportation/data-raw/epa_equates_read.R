@@ -145,7 +145,8 @@ purrr::map(
 ) %>%
   bind_rows() %>%
   unique() %>%
-  saveRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cmas_mn_wi.RDS")
+  saveRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cmas_mn_wi.RDS",
+          compress = "xz")
 
 
 tictoc::toc()
