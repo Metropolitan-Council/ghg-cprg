@@ -17,14 +17,17 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
-vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
-vmt_emissions_all <- vmt_emissions %>%
-  group_by(zone) %>%
-  summarise(
-    vmt_total = sum(vmt_total),
-    vmt_same = sum(vmt_same),
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
-  )
+# vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
+# vmt_emissions_all <- vmt_emissions %>%
+#   group_by(zone) %>%
+#   summarise(
+#     vmt_total = sum(vmt_total),
+#     vmt_same = sum(vmt_same),
+#     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+#   )
+
+
+onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS"))
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
@@ -35,6 +38,18 @@ county_emissions_summary <- county_emissions %>%
     .groups = "keep"
   )
 
+emissions_current_year <- county_emissions %>%
+  filter(sector == "Transportation") %>%
+  filter(year == max(.$year)) %>%
+  extract2("year") %>%
+  unique()
+
+
+modes_available <-
+  stringr::str_split(onroad_emissions$vehicle_types_included, pattern = ", ", simplify = TRUE)[, 1] %>%
+  unique() %>%
+  stringr::str_to_lower()
+
 hookaddcap()
 ```
 
@@ -42,16 +57,18 @@ hookaddcap()
 
 Transportation emissions, when grouped together, are one of the largest sources of greenhouse gas emissions nationally, statewide, and locally. [more information here on transportation emissions, what is included/not included, ]
 
-This is the transportation section for estimating on-road emissions. 
+This is the transportation section for estimating on-road emissions. Modes included are `r listify(modes_available)`. 
 
-Note that this does not include buses, trains, freight rail, light rail, and other transportation emissions.
+Note that this does not include freight rail, light rail, and other transportation emissions.
 
 ## Results
 
 ```{r fig-transportation-county-emissions}
 #| fig-cap: "Transportation county emissions"
 #| out-width: "95%"
-fig_transportation_county_emissions <- plot_county_sector_emissions(county_emissions,
+fig_transportation_county_emissions <- plot_county_sector_emissions(
+  county_emissions %>%
+    filter(year == emissions_current_year),
   .sector = "Transportation",
   .plotly_source = "fig-transportation-county-emissions"
 )
@@ -68,11 +85,11 @@ We can also view this data broken out by vehicle weight in @fig-transportation-c
 fig_transportation_county_emissions_by_weight <- plot_ly(
   type = "bar",
   source = "fig-transportation-county-emissions-by-weight",
-  data = vmt_emissions,
-  y = ~ reorder(zone, emissions_metric_tons_co2e),
+  data = onroad_emissions,
+  y = ~reorder(county_, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   color = ~vehicle_weight_label,
-  colors = unlist(vehicle_weight_colors),
+  colors = unlist('vehicle_weight_colors'),
   hovertemplate = ~ paste0(
     zone, " County", "<br>",
     vehicle_weight_label, "<br>",
