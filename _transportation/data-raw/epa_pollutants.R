@@ -71,6 +71,11 @@ pollutant_key <-
       pollutant_code == "SF6" ~ "SF<sub>6</sub>",
       pollutant_code == "emissions_metric_tons_co2e" ~ "CO<sub>2</sub>e",
       TRUE ~ pollutant_code
+    ),
+    pollutant_type = case_when(
+      pollutant_code %in% c("CO2", "CH4", "N2O") ~ "Greenhouse gas",
+      pollutant_code == "emissions_metric_tons_co2e" ~ "Greenhouse gas equivalent",
+      TRUE ~ "Co-pollutant"
     )
   )
 
@@ -82,7 +87,8 @@ pollutant_key_meta <- tibble::tribble(
   "pollutant_desc", class(pollutant_key$pollutant_desc), "Full pollutant description",
   "pollutant", class(pollutant_key$pollutant), "Column name friendly pollutant code",
   "unit_of_measurement", class(pollutant_key$unit_of_measurement), "Unit of measurement, grams or metric tons",
-  "pollutant_format", class(pollutant_key$pollutant_format), "Pollutant with proper HTML formatting"
+  "pollutant_format", class(pollutant_key$pollutant_format), "Pollutant with proper HTML formatting",
+  "pollutant_type", class(pollutant_key$pollutant_type), "Pollutant type"
 )
 
 saveRDS(pollutant_key, "_transportation/data/pollutant_key.RDS")
