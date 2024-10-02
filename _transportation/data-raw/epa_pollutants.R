@@ -41,7 +41,7 @@ pollutant_key <-
     tibble(
       pollutant = "emissions_metric_tons_co2e",
       pollutant_code = "emissions_metric_tons_co2e",
-      pollutant_desc = "Carbon dioxide equivalence, excluding nitrous oxide",
+      pollutant_desc = "Carbon dioxide equivalence",
       unit_of_measurement = "metric tons"
     )
   ) %>%
