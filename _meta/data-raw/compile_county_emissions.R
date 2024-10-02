@@ -17,7 +17,7 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
     sector = "Transportation",
     geog_level = "county",
     geog_name = county_name,
-    source = paste0(vehicle_fuel_label, " vehicle fuel"),
+    source = paste0(vehicle_fuel_label, " fueled vehicles"),
     category = paste0(vehicle_weight_label, " vehicles"),
     data_source = data_source,
     factor_source = moves_edition
@@ -170,9 +170,9 @@ emissions_all <- bind_rows(
     source = factor(source,
       c(
         # transportation levels
-        "Gasoline vehicle fuel",
-        "Diesel vehicle fuel",
-        "Other vehicle fuel",
+        "Gasoline fueled vehicles",
+        "Diesel fueled vehicles",
+        "Other fueled vehicles",
         # waste levels
         "Landfill",
         "Waste to energy",
