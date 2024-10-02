@@ -122,7 +122,8 @@ read_smoke_ff10 <- function(file_location,
     file.path(paste0(
       out_directory,
       out_file_name
-    ))
+    )),
+    compress = "xz"
   )
 
   # ensure removed from environment
