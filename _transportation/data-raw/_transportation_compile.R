@@ -11,7 +11,10 @@ epa_onroad_source_set <- readRDS("_transportation/data/epa_onroad_source_set.RDS
 
 onroad_emissions <- epa_onroad_emissions_compile %>%
   # only get CO2e
-  filter(pollutant == "emissions_metric_tons_co2e") %>%
+  filter(
+    pollutant == "emissions_metric_tons_co2e",
+    !vehicle_type %in% c("Gas stations", "Trucks and buses")
+  ) %>%
   group_by(
     emissions_year, data_source, geoid, county_name, vehicle_weight_label,
     vehicle_fuel_label
