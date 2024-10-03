@@ -27,8 +27,11 @@ category_colors <-
 
 
     # YlOrBr
-    "Passenger vehicles" = "#ec7014",
-    "Commercial vehicles" = "#fec44f",
+    "Passenger vehicles" = "#993404",
+    "Medium-duty vehicles" = "#fe9929",
+    "Heavy-duty vehicles" = "#fee391",
+    "Transit vehicles" = "#E9967A",
+    "Other vehicles" = "#eaeded",
 
     # PuRd
     "Solid waste" = "#ce1256",
@@ -76,11 +79,11 @@ source_colors <- list(
 
 
 vehicle_weight_colors <- list(
-  "Passenger" = "#993404",
-  "Medium-duty" = "#fe9929",
-  "Heavy-duty" = "#fee391",
-  "Transit" = "#E9967A",
-  "Other" = "#eaeded"
+  "Passenger" = category_colors$`Passenger vehicles`,
+  "Medium-duty" = category_colors$`Medium-duty vehicles`,
+  "Heavy-duty" = category_colors$`Heavy-duty vehicles`,
+  "Transit" = category_colors$`Transit vehicles`,
+  "Other" = category_colors$`Other vehicles`
 )
 
 fuel_type_colors <- list(
