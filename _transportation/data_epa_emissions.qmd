@@ -152,7 +152,7 @@ epa_onroad_emissions_compile %>%
   select(vehicle_type, fuel_type, alt_mode, alt_mode_truck) %>%
   unique() %>%
   group_by(vehicle_type) %>%
-  summarize(fuel_types = paste0(unique(fuel_type), collapse = ", ")) %>% 
+  summarize(fuel_types = paste0(unique(fuel_type), collapse = ", ")) %>%
   select(
     `Vehicle type` = vehicle_type,
     `Fuel types` = fuel_types

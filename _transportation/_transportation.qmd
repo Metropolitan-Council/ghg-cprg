@@ -169,7 +169,7 @@ fig_transportation_county_emissions_by_fuel
 ## Historical emissions
 
 ```{r fig-transportation-time-series-county}
-#| fig-cap: "Transportation emissions, 2002-2022" 
+#| fig-cap: "Transportation emissions, 2002-2022"
 #| out-width: "95%"
 
 
