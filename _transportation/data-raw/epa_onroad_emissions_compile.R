@@ -496,3 +496,6 @@ epa_onroad_source_set <-
   )
 
 saveRDS(epa_onroad_source_set, "_transportation/data/epa_onroad_source_set.RDS")
+
+# clean up the environment to help with space
+rm(list = ls())
