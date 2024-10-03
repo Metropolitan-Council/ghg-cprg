@@ -38,14 +38,14 @@ county_emissions_summary <- county_emissions %>%
     .groups = "keep"
   )
 
-emissions_current_year <- county_emissions %>%
+transportation_current_year <- county_emissions %>%
   filter(sector == "Transportation") %>%
   filter(year == max(.$year)) %>%
   extract2("year") %>%
   unique()
 
 
-modes_available <-
+modes_included <-
   stringr::str_split(onroad_emissions$vehicle_types_included, pattern = ", ", simplify = TRUE)[, 1] %>%
   unique() %>%
   stringr::str_to_lower()
@@ -57,18 +57,18 @@ hookaddcap()
 
 Transportation emissions, when grouped together, are one of the largest sources of greenhouse gas emissions nationally, statewide, and locally. [more information here on transportation emissions, what is included/not included, ]
 
-This is the transportation section for estimating on-road emissions. Modes included are `r listify(modes_available)`. 
+This is the transportation section for estimating on-road emissions. Modes included are `r listify(modes_included)`. 
 
 Note that this does not include freight rail, light rail, and other transportation emissions.
 
 ## Results
 
 ```{r fig-transportation-county-emissions}
-#| fig-cap: "Transportation county emissions"
+#| fig-cap: `{r} paste0(transportation_current_year, " onroad transportation emissions by county")`
 #| out-width: "95%"
 fig_transportation_county_emissions <- plot_county_sector_emissions(
   county_emissions %>%
-    filter(year == emissions_current_year),
+    filter(year == transportation_current_year),
   .sector = "Transportation",
   .plotly_source = "fig-transportation-county-emissions"
 )
@@ -79,26 +79,27 @@ We can also view this data broken out by vehicle weight in @fig-transportation-c
 
 
 ```{r fig-transportation-county-emissions-by-weight}
-#| fig-cap: "2021 annual emissions by vehicle weight"
+#| fig-cap: `{r} paste0(transportation_current_year, " annual emissions by vehicle weight")`
 #| out-width: "95%"
 
 fig_transportation_county_emissions_by_weight <- plot_ly(
   type = "bar",
   source = "fig-transportation-county-emissions-by-weight",
-  data = onroad_emissions,
-  y = ~reorder(county_, emissions_metric_tons_co2e),
+  data = onroad_emissions %>% 
+    filter(emissions_year == transportation_current_year),
+  y = ~reorder(county_name, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   color = ~vehicle_weight_label,
-  colors = unlist('vehicle_weight_colors'),
+  colors = unlist(vehicle_weight_colors),
   hovertemplate = ~ paste0(
-    zone, " County", "<br>",
+    county_name, " County", "<br>",
     vehicle_weight_label, "<br>",
     round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
   plotly_layout(
-    main_title = "2021 annual emissions by vehicle weight",
+    main_title = paste0(transportation_current_year, " annual emissions by vehicle weight"),
     subtitle = "",
     y_title = "County",
     x_title = "Metric tons CO<sub>2</sub>e",
