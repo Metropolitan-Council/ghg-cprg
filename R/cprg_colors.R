@@ -83,6 +83,12 @@ vehicle_weight_colors <- list(
   "Other" = "#eaeded"
 )
 
+fuel_type_colors <- list(
+  "Gasoline" = "#ffc300",
+  "Diesel" = "#9f7a00",
+  "Other" = "#604900"
+)
+
 management_method_colors <- list(
   "WTE" = source_colors$`Waste to energy`,
   "Waste to energy" = source_colors$`Waste to energy`,
