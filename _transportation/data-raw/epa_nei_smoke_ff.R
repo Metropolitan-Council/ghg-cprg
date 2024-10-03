@@ -76,7 +76,7 @@ furrr::future_map(
 )
 
 # read back in, combine, and save -----
-nei_smoke_ff <- purrr::map(
+purrr::map(
   c(
     # 2020
     "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/SmokeFlatFile_ONROAD_20230330.RDS",
@@ -112,9 +112,9 @@ nei_smoke_ff <- purrr::map(
   filter(
     remove_row != TRUE
   ) %>%
-  select(-remove_row)
+  select(-remove_row) %>% 
+  saveRDS( "_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS", compress = "xz")
 
-saveRDS(nei_smoke_ff, "_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS", compress = "xz")
 tictoc::toc()
 
 
