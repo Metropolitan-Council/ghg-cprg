@@ -28,7 +28,7 @@ epa_downloads <- readxl::read_xlsx(file.path(here::here(), "_transportation/data
       map(~ gt::html(as.character(.x)))
   )
 
-epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/epa_onroad_source_set.RDS"))
+epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_source_set.RDS"))
 ```
 
 

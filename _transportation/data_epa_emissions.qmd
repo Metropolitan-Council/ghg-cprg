@@ -4,9 +4,9 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
-epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/epa_onroad_source_set.RDS"))
+epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_source_set.RDS"))
 pollutant_key <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key.RDS"))
-pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_source_set.RDS"))
+pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key_meta.RDS"))
 epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
 
 epa_onroad_year_source <- epa_onroad_emissions_compile %>%
@@ -152,12 +152,13 @@ epa_onroad_emissions_compile %>%
   select(vehicle_type, fuel_type, alt_mode, alt_mode_truck) %>%
   unique() %>%
   group_by(vehicle_type) %>%
-  summarize(fuel_types = paste0(unique(fuel_type), collapse = ", "))
-select(
-  `Vehicle type` = vehicle_type,
-  `Alternate vehicle type` = alt_mode,
-  `Secondary alternate vehicle type` = alt_mode_truck
-) %>%
+  summarize(fuel_types = paste0(unique(fuel_type), collapse = ", ")) %>% 
+  select(
+    `Vehicle type` = vehicle_type,
+    `Fuel types` = fuel_types
+    # `Alternate vehicle type` = alt_mode,
+    # `Secondary alternate vehicle type` = alt_mode_truck
+  ) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -181,20 +182,15 @@ select(
 - NEI, EQUATES, and Air Emissions modeling use different MOVES editions (see @tbl-epa-source-pollutant-year), which may result in discrepancies between years. 
 - To reduce run times, the EPA uses fuel months to represent summer and winter fuels. The month of January represents October through April (winter), while July represents May through September (summer) [@usepa2020NationalEmissions2023onroad, section 5.6.6.2]. Variation within the summer and winter months is not accounted for using this method. 
 - The 2020 NEI had particular challenges due to the COVID-19 pandemic
-    - Minnesota did not submit custom data inputs for the 2020 NEI, meaning that inputs to MOVES were based on national default values. Wisconsin submitted custom data for VMT, vehicle population, and road type distribution. Both Minnesota and Wisconsin submitted data for 2017, 2014, and 2011 [@usepa2017NationalEmissions2021, @usepa2014NationalEmissions2018, @usepa2011NationalEmissions2015]. 
-    - The NEI augmented vehicle miles traveled (VMT) data for Minnesota and Wisconsin in 2020 using federal and state-level datasets due to data availability issues [@usepaDevelopment2020DefaultData2022]. 
+- Minnesota did not submit custom data inputs for the 2020 NEI, meaning that inputs to MOVES were based on national default values. Wisconsin submitted custom data for VMT, vehicle population, and road type distribution. Both Minnesota and Wisconsin submitted data for 2017, 2014, and 2011 [@usepa2017NationalEmissions2021, @usepa2014NationalEmissions2018, @usepa2011NationalEmissions2015]. 
+- The NEI augmented vehicle miles traveled (VMT) data for Minnesota and Wisconsin in 2020 using federal and state-level datasets due to data availability issues [@usepaDevelopment2020DefaultData2022]. 
 - To reduce model run-time, the EPA groups counties together and only runs MOVES on a single representative county. The resulting MOVES emissions factors are multiplied by county-specific activity data (including VMT, vehicle population, hourly speed distribution, among others) to get county-specific emissions [@usepa2020NationalEmissions2023onroad, section 5.6.2.1]. Effectively, emissions factors are generated on a single representative county, and are then applied to similar counties. 
 
 #### Nitrous oxide (N~2~O) availability
 
-<!-- I haven't gotten a response from my CMAS forum post https://forum.cmascenter.org/t/nitrous-oxide-n2o-availability-in-equates-county-level/5199/2 -->
 Though nitrous oxide  N~2~O has a high global warming potential (@sec-gwp), the amount of N~2~O released is relatively small when compared to other sectors. 
 
-N~2~O is unavailable in EQUATES. For consistency across all three data sources, N~2~O is removed from NEI and Air Emissions Modeling datasets. The resulting CO~2~e only accounts for CO~2~ and CH~4~.
-
-What proportion of total CO~2~e is made up by N~2~O in datasets where it is available?
-
-
+N~2~O is unavailable in EQUATES, except years 2018 and 2019. 
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))

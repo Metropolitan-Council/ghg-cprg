@@ -5,11 +5,10 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
 
-epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/epa_onroad_source_set.RDS"))
+epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_source_set.RDS"))
 pollutant_key <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key.RDS"))
-pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_source_set.RDS"))
+pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key_meta.RDS"))
 epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
-
 
 epa_onroad_year_source <- epa_onroad_emissions_compile %>%
   mutate(emissions_year = as.character(emissions_year)) %>%
