@@ -45,16 +45,14 @@ county_emissions_summary <- county_emissions %>%
     .groups = "keep"
   )
 
-transportation_max_year <- county_emissions %>%
-  filter(sector == "Transportation") %>%
-  filter(year == max(.$year)) %>%
+transportation_max_year <-onroad_emissions %>%
+  filter(emissions_year == max(emissions_year)) %>%
   extract2("year") %>%
   unique()
 
 
-transportation_min_year <- county_emissions %>%
-  filter(sector == "Transportation") %>%
-  filter(year == min(.$year)) %>%
+transportation_min_year <- onroad_emissions %>%
+  filter(emissions_year == min(emissions_year)) %>%
   extract2("year") %>%
   unique()
 
