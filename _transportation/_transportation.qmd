@@ -115,6 +115,43 @@ fig_transportation_county_emissions_by_weight
 ```
 
 
+```{r fig-transportation-county-emissions-by-source}
+#| fig-cap: `{r} paste0(transportation_current_year, " annual emissions by vehicle weight")`
+#| out-width: "95%"
+
+fig_transportation_county_emissions_by_fuel <- plot_ly(
+  type = "bar",
+  source = "fig-transportation-county-emissions-by-fuel",
+  data = onroad_emissions %>% 
+    filter(emissions_year == transportation_current_year),
+  y = ~reorder(county_name, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
+  color = ~vehicle_fuel_label,
+  # colors = unlist(source_colors),
+  hovertemplate = ~ paste0(
+    county_name, " County", "<br>",
+    vehicle_fuel_label, "<br>",
+    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = paste0(transportation_current_year, " annual emissions by fuel type"),
+    subtitle = "",
+    y_title = "County",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Fuel type"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+fig_transportation_county_emissions_by_fuel
+```
+
+
 ### Activity-induced and geographic calculation approaches
 
 Different allocation principle
