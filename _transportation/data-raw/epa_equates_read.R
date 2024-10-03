@@ -64,16 +64,16 @@ plan(strategy = future::multisession, workers = 12)
 # read back in, combine, and save -----
 equates <- purrr::map(
   list.files("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/",
-    recursive = FALSE,
-    pattern = ".RDS",
-    full.names = TRUE
+             recursive = FALSE,
+             pattern = ".RDS",
+             full.names = TRUE
   ),
   readRDS
 ) %>%
   bind_rows()
 
 saveRDS(equates, "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_mn_wi.RDS",
-  compress = "xz"
+        compress = "xz"
 )
 
 # save CMAS data warehouse versions -----
@@ -126,13 +126,13 @@ purrr::map(
   safely(
     function(x) {
       future::plan(strategy = future::multisession, workers = length(x))
-
+      
       furrr::future_map(
         x,
         read_smoke_ff10,
         out_directory = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/cmas_data_warehouse/"
       )
-
+      
       Sys.sleep(5)
     }
   )
@@ -141,15 +141,15 @@ purrr::map(
 # save all outputs
 purrr::map(
   list.files("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/EQUATES_MN_WI/cmas_data_warehouse/",
-    full.names = TRUE,
-    recursive = FALSE
+             full.names = TRUE,
+             recursive = FALSE
   ),
   readRDS
 ) %>%
   bind_rows() %>%
   unique() %>%
   saveRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cmas_mn_wi.RDS",
-    compress = "xz"
+          compress = "xz"
   )
 
 
