@@ -1,5 +1,7 @@
 testthat::test_that("Correct plotly configurations", {
   source(file.path(here::here(), "R/plot_county_emissions.R"))
+  source(file.path(here::here(), "R/_plotting_helpers.R"))
+  
 
   county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
