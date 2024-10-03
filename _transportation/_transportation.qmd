@@ -29,6 +29,13 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 
 onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS"))
 
+onroad_county_summary <- onroad_emissions %>% 
+  group_by(emissions_year, county_name, geoid, data_source) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+            .groups = "keep") %>% 
+  rowwise() %>% 
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
+
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 county_emissions_summary <- county_emissions %>%
@@ -38,12 +45,18 @@ county_emissions_summary <- county_emissions %>%
     .groups = "keep"
   )
 
-transportation_current_year <- county_emissions %>%
+transportation_max_year <- county_emissions %>%
   filter(sector == "Transportation") %>%
   filter(year == max(.$year)) %>%
   extract2("year") %>%
   unique()
 
+
+transportation_min_year <- county_emissions %>%
+  filter(sector == "Transportation") %>%
+  filter(year == min(.$year)) %>%
+  extract2("year") %>%
+  unique()
 
 modes_included <-
   stringr::str_split(onroad_emissions$vehicle_types_included, pattern = ", ", simplify = TRUE)[, 1] %>%
@@ -61,14 +74,14 @@ This is the transportation section for estimating on-road emissions. Modes inclu
 
 Note that this does not include freight rail, light rail, and other transportation emissions.
 
-## Results
+## `r transportation_max_year` emissions
 
 ```{r fig-transportation-county-emissions}
-#| fig-cap: `{r} paste0(transportation_current_year, " onroad transportation emissions by county")`
+#| fig-cap: `{r} paste0(transportation_max_year, " onroad transportation emissions by county")`
 #| out-width: "95%"
 fig_transportation_county_emissions <- plot_county_sector_emissions(
   county_emissions %>%
-    filter(year == transportation_current_year),
+    filter(year == transportation_max_year),
   .sector = "Transportation",
   .plotly_source = "fig-transportation-county-emissions"
 )
@@ -79,14 +92,14 @@ We can also view this data broken out by vehicle weight in @fig-transportation-c
 
 
 ```{r fig-transportation-county-emissions-by-weight}
-#| fig-cap: `{r} paste0(transportation_current_year, " annual emissions by vehicle weight")`
+#| fig-cap: `{r} paste0(transportation_max_year, " annual emissions by vehicle weight")`
 #| out-width: "95%"
 
 fig_transportation_county_emissions_by_weight <- plot_ly(
   type = "bar",
   source = "fig-transportation-county-emissions-by-weight",
   data = onroad_emissions %>% 
-    filter(emissions_year == transportation_current_year),
+    filter(emissions_year == transportation_max_year),
   y = ~reorder(county_name, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   color = ~vehicle_weight_label,
@@ -99,7 +112,7 @@ fig_transportation_county_emissions_by_weight <- plot_ly(
   )
 ) %>%
   plotly_layout(
-    main_title = paste0(transportation_current_year, " annual emissions by vehicle weight"),
+    main_title = paste0(transportation_max_year, " annual emissions by vehicle weight"),
     subtitle = "",
     y_title = "County",
     x_title = "Metric tons CO<sub>2</sub>e",
@@ -115,19 +128,19 @@ fig_transportation_county_emissions_by_weight
 ```
 
 
-```{r fig-transportation-county-emissions-by-source}
-#| fig-cap: `{r} paste0(transportation_current_year, " annual emissions by vehicle weight")`
+```{r fig-transportation-county-emissions-by-fuel-type}
+#| fig-cap: `{r} paste0(transportation_max_year, " annual emissions transportation by fuel type")`
 #| out-width: "95%"
 
 fig_transportation_county_emissions_by_fuel <- plot_ly(
   type = "bar",
-  source = "fig-transportation-county-emissions-by-fuel",
+  source = "fig-transportation-county-emissions-by-fuel-type",
   data = onroad_emissions %>% 
-    filter(emissions_year == transportation_current_year),
+    filter(emissions_year == transportation_max_year),
   y = ~reorder(county_name, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   color = ~vehicle_fuel_label,
-  # colors = unlist(source_colors),
+  colors = unlist(fuel_type_colors),
   hovertemplate = ~ paste0(
     county_name, " County", "<br>",
     vehicle_fuel_label, "<br>",
@@ -136,7 +149,7 @@ fig_transportation_county_emissions_by_fuel <- plot_ly(
   )
 ) %>%
   plotly_layout(
-    main_title = paste0(transportation_current_year, " annual emissions by fuel type"),
+    main_title = paste0(transportation_max_year, " annual transportation emissions by fuel type"),
     subtitle = "",
     y_title = "County",
     x_title = "Metric tons CO<sub>2</sub>e",
@@ -152,20 +165,38 @@ fig_transportation_county_emissions_by_fuel
 ```
 
 
-### Activity-induced and geographic calculation approaches
+## Historical emissions
 
-Different allocation principle
-
-Though both geographic and activity-induced methods fulfill Scope 1 requirements [@fongGlobalProtocolCommunityScale2021], the resulting values are significantly different.
-
-Activity-induced methods (as we have used here) estimate the emissions from trips that begin, end, or are entirely contained within a given city. All passthrough trips (those that neither begin or end in the city, but pass through without stopping) are excluded. 
-
-Territorial or geographic methods represent "all traffic occurring within city boundaries, regardless of origin or destination" [@fongGlobalProtocolCommunityScale2021]. 
-
-The GPC recommends the induced activity method for cities, as it provides results more suited to local policy making. 
-
-However, the Twin Cities metropolitan area includes over 250 individual jurisdictions, with cities ranging from over 400,000 people to under 500 people. The entirety of the 11-county CPRG study area is larger than some US states. 
+```{r fig-transportation-time-series-county}
+#| fig-cap: `{r} paste0(("Transportation emissions, ", transportation_min_year, " - ", transportation_max_year))`
+#| out-width: "95%"
 
 
-The origin-destination activity method is used in regional PCAPs, including metro areas such as Santa Clara MSA [@countyofsanbenitoCountySanBenito2024], 
+fig_transportation_time_series_county <- onroad_county_summary %>% 
+  group_by(county_name) %>% 
+  plot_ly(
+    source = "fig-transportation-time-series-county",
+    x = ~emissions_year,
+    y = ~emissions_metric_tons_co2e,
+    color = ~county_name,
+    colors = "Dark2",
+    type = "scatter",
+    mode = "lines+markers",
+    marker = list(size = 10),
+    hoverinfo = "text",
+    hovertext = ~paste0(
+      county_name, "County, ", emissions_year, " ", "<br>",
+      rounded_tons
+    )
+  ) %>% 
+  plotly_layout(
+    main_title = paste0("Transportation emissions, ", transportation_min_year, " - ", transportation_max_year),
+    subtitle = "",
+    x_title = "Year",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "County"
+  ) 
+
+fig_transportation_time_series_county
+```
 
