@@ -63,13 +63,14 @@ purrr::map(
 )
 
 # read back in, combine, and save -----
-onroad_mn_wi <- purrr::map(
+purrr::map(
   list.files("_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/onroad/",
     full.names = TRUE
   ),
   readRDS
 ) %>%
-  bind_rows()
+  bind_rows() %>% 
+  unique() %>% 
+  saveRDS("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS", compress = "xz")
 
-saveRDS(onroad_mn_wi, "_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS", compress = "xz")
 tictoc::toc()
