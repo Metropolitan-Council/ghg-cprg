@@ -21,21 +21,20 @@
 source("_transportation/data-raw/epa_moves.R")
 
 # key script that outputs VMT and emissions
-source("_transportation/data-raw/vmt_emissions.R")
+# source("_transportation/data-raw/vmt_emissions.R")
 
 # corresponding datasets
 source("_transportation/data-raw/tbi_vehicle_stats.R")
 source("_transportation/data-raw/tbi_survey_stats.R")
 source("_transportation/data-raw/tbi_trip_length.R")
 
-source("_transportation/data-raw/epa_lggit.R")
-source("_transportation/data-raw/epa_nei_envirofacts.R")
+# source("_transportation/data-raw/epa_lggit.R")
+# source("_transportation/data-raw/epa_nei_envirofacts.R")
 
 source("_transportation/data-raw/epa_pollutants.R")
 source("_transportation/data-raw/epa_source_classification_codes.R")
 source("_transportation/data-raw/epa_onroad_emissions_compile.R")
 
 
-source("_transportation/data-raw/epa_onroad_emissions_compile.R")
 source("_transportation/data-raw/_transportation_compile.R")
 source("_meta/data-raw/compile_county_emissions.R")

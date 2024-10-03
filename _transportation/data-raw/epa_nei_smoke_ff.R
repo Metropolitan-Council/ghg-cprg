@@ -112,8 +112,8 @@ purrr::map(
   filter(
     remove_row != TRUE
   ) %>%
-  select(-remove_row) %>% 
-  saveRDS( "_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS", compress = "xz")
+  select(-remove_row) %>%
+  saveRDS("_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS", compress = "xz")
 
 tictoc::toc()
 

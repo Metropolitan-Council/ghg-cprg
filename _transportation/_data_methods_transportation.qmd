@@ -19,8 +19,8 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
-cprg_census_county_population <- readRDS(file.path(here::here(), "_meta/data/census_county_population.RDS")) %>% 
-  filter(cprg_area == TRUE) %>% 
+cprg_census_county_population <- readRDS(file.path(here::here(), "_meta/data/census_county_population.RDS")) %>%
+  filter(cprg_area == TRUE) %>%
   mutate(population_year = as.numeric(population_year))
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
@@ -66,17 +66,21 @@ We would expect counties with higher population to have higher emissions and VMT
 #| fig-cap: "County population and transportation emissions"
 #| out-width: "95%"
 
-onroad_emissions_population <- onroad_emissions %>% 
-  group_by(emissions_year, county_name, geoid, data_source) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
-            .groups = "keep") %>% 
-  rowwise() %>% 
+onroad_emissions_population <- onroad_emissions %>%
+  group_by(emissions_year, county_name, geoid, data_source) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  ) %>%
+  rowwise() %>%
   left_join(cprg_census_county_population,
-            by = c("geoid", "county_name", 
-                   "emissions_year" = "population_year"))
+    by = c("geoid", "county_name",
+      "emissions_year" = "population_year"
+    )
+  )
 
 fig_emissions_pop_transportation <- plot_ly(
-  data = onroad_emissions_population %>% 
+  data = onroad_emissions_population %>%
     filter(emissions_year == transportation_max_year),
   source = "fig-emissions-population-transportation",
   x = ~population,

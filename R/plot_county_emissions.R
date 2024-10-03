@@ -27,7 +27,7 @@ plot_county_emissions <- function(county_emissions,
       type = "bar"
     ))
   }
-  
+
   if ("year" %in% names(plot_data)) {
     if (length(unique(plot_data$year)) > 1) {
       cli::cli_alert_warning("Plotting more than one year of data")
@@ -36,7 +36,7 @@ plot_county_emissions <- function(county_emissions,
 
   plot_data <- plot_data %>%
     mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
-  
+
   plot_ly(
     data = plot_data,
     type = "bar",

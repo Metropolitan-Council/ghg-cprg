@@ -50,13 +50,13 @@ purrr::map(
   safely(
     function(x) {
       future::plan(strategy = future::multisession, workers = length(x))
-      
+
       furrr::future_map(
         x,
         read_smoke_ff10,
         out_directory = "_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi//"
       )
-      
+
       Sys.sleep(5)
     }
   )
@@ -69,8 +69,8 @@ purrr::map(
   ),
   readRDS
 ) %>%
-  bind_rows() %>% 
-  unique() %>% 
+  bind_rows() %>%
+  unique() %>%
   saveRDS("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS", compress = "xz")
 
 tictoc::toc()

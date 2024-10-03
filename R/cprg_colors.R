@@ -49,13 +49,12 @@ source_colors <- list(
   # "Light-duty vehicles" = "#993404",
   # "Medium-duty vehicles" = "#fe9929",
   # "Heavy-duty vehicles" = "#fee391",
-  
   "Gasoline fueled vehicles" = "#db4a33",
   "Diesel fueled vehicles" = "#feb24c",
   "Other fueled vehicles" = "#ffeda0",
 
-  
-  
+
+
   # waste levels
   "Landfill" = "#ae017e",
   "Recycling" = "#ed2c73",

@@ -372,14 +372,16 @@ scc_combine <- scc_complete_road %>%
         str_detect(fuel_type, "Diesel") ~ "Diesel",
         str_detect(fuel_type, "Gasoline") ~ "Gasoline",
         TRUE ~ "Other"
-      ) %>% 
-      factor(
-        levels = c("Gasoline",
-                   "Diesel",
-                   "Non-Diesel",
-                   "Other"),
-        ordered = TRUE
-      ),
+      ) %>%
+        factor(
+          levels = c(
+            "Gasoline",
+            "Diesel",
+            "Non-Diesel",
+            "Other"
+          ),
+          ordered = TRUE
+        ),
     vehicle_weight_label = case_when(
       vehicle_type %in% c(
         "Trucks and buses",
