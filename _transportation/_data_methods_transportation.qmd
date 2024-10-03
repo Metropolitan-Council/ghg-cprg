@@ -65,20 +65,26 @@ We would expect counties with higher population to have higher emissions and VMT
 ```{r fig-emissions-population-transportation}
 #| fig-cap: "County population and transportation emissions"
 #| out-width: "95%"
-cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
-vmt_population <- left_join(vmt_emissions_all, cprg_population,
-  by = c("zone" = "NAME")
-)
+
+onroad_emissions_population <- onroad_emissions %>% 
+  group_by(emissions_year, county_name, geoid, data_source) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+            .groups = "keep") %>% 
+  rowwise() %>% 
+  left_join(cprg_census_county_population,
+            by = c("geoid", "county_name", 
+                   "emissions_year" = "population_year"))
 
 fig_emissions_pop_transportation <- plot_ly(
-  data = vmt_population,
+  data = onroad_emissions_population %>% 
+    filter(emissions_year == transportation_max_year),
   source = "fig-emissions-population-transportation",
   x = ~population,
   y = ~emissions_metric_tons_co2e,
   type = "scatter",
   mode = "markers",
   hovertemplate = ~ paste0(
-    zone, " County", "<br>",
+    county_name, " County", "<br>",
     "Population: ", scales::comma(population), "<br>",
     "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
@@ -94,7 +100,7 @@ fig_emissions_pop_transportation <- plot_ly(
 ) %>%
   plotly_layout(
     main_title = "County population and emissions",
-    subtitle = "2021 ACS 5-year population estimates. Strong positive correlation",
+    subtitle = paste0(transportation_max_year, " ACS 5-year population estimates. Strong positive correlation"),
     x_title = "Total population",
     y_title = "Metric tons CO<sub>2</sub>e",
     legend_title = "",
