@@ -7,7 +7,7 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 county_emissions_summary <- county_emissions %>%
-  group_by(sector, category, source, data_source, factor_source) %>%
+  group_by(year, sector, category, source, data_source, factor_source) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     .groups = "keep"
@@ -24,7 +24,8 @@ This document will be updated continuously in preparation of the Metropolitan Co
 
 ```{r sector-percentages, echo=FALSE, include=FALSE}
 sector_percentages <- county_emissions_summary %>%
-  filter(!sector == "Nature") %>% # not contributing to emissions
+  filter(!sector == "Nature",
+         year == "2021") %>% # not contributing to emissions
   group_by(sector) %>%
   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
   arrange(-emissions_metric_tons_co2e) %>%
@@ -50,7 +51,9 @@ county_emissions$sector <- factor(county_emissions$sector,
 
 fig_county_emissions_sector <- plot_ly(
   data = county_emissions %>%
-    filter(category != "Stock") %>%
+    filter(category != "Stock",
+           year == "2021",
+           category != "Total energy") %>%
     group_by(sector, category) %>%
     summarize(
       emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
@@ -103,7 +106,8 @@ The transportation sector generated `r round(emissions_total/1000000 * sector_pe
 #| fig-cap: "Transportation county level emissions"
 #| out-width: "95%"
 fig_transportation_emissions <- plot_county_emissions(
-  county_emissions = county_emissions,
+  county_emissions = county_emissions %>% 
+    filter(year == "2021"),
   .sector = "Transportation",
   .plotly_source = "fig-transportation-emissions"
 )
