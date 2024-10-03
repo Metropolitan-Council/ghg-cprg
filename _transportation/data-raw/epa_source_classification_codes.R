@@ -53,7 +53,7 @@ scc_onroad <- download_read_table(
   clean_names() %>%
   mutate(scc6 = stringr::str_sub(scc, 1, 6)) %>%
   # join with scc6 descriptions
-  left_join(scc6_desc) %>%
+  left_join(scc6_desc, by = "scc6") %>%
   mutate(
     # manually split out fuel type details
     fuel_type_detail = stringr::str_split(
@@ -372,6 +372,13 @@ scc_combine <- scc_complete_road %>%
         str_detect(fuel_type, "Diesel") ~ "Diesel",
         str_detect(fuel_type, "Gasoline") ~ "Gasoline",
         TRUE ~ "Other"
+      ) %>% 
+      factor(
+        levels = c("Gasoline",
+                   "Diesel",
+                   "Non-Diesel",
+                   "Other"),
+        ordered = TRUE
       ),
     vehicle_weight_label = case_when(
       vehicle_type %in% c(
