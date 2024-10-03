@@ -35,14 +35,7 @@ plot_county_sector_emissions <- function(county_emissions,
   }
 
   plot_data <- plot_data %>%
-    mutate(
-      rounded_tons = ifelse(
-        max(emissions_metric_tons_co2e) > 1000000,
-        paste0(round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>"),
-        paste0(round(emissions_metric_tons_co2e / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>")
-      )
-    )
-
+    mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
 
   plot_ly(
     data = plot_data,
