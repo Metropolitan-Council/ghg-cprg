@@ -429,7 +429,7 @@ scc_combine_meta <- tibble::tribble(
   "vehicle_type", class(scc_combine$vehicle_type), "Vehicle type",
   "alt_mode", class(scc_combine$alt_mode), "Alternate vehicle type",
   "alt_mode_truck", class(scc_combine$alt_mode_truck), "Alternate vehicle type, grouping truck and bus categories",
-  "vehicle_fuel_label", class(scc_combine$vehicle_fuel_label), "Diesel, non-diesel, gasoline, or other fuel",
+  "vehicle_fuel_label", paste0(class(scc_combine$vehicle_fuel_label), collapse = " "), "Diesel, non-diesel, gasoline, or other fuel",
   "vehicle_weight_label", paste0(class(scc_combine$vehicle_weight_label), collapse = " "), "Passenger, Transit, Medium-duty, Heavy-duty, or Other"
 ) %>%
   unique()
@@ -437,3 +437,5 @@ scc_combine_meta <- tibble::tribble(
 
 saveRDS(scc_combine, "_transportation/data/scc_combine.RDS")
 saveRDS(scc_combine_meta, "_transportation/data/scc_combine_meta.RDS")
+
+rm(list = ls())
