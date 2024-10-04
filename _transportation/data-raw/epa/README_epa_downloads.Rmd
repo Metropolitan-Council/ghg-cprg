@@ -44,11 +44,14 @@ All datasets are processed from their unzipped locations in processing scripts. 
 
 If you want to preview any of the CSVs, open them using your machine's text editor (TextEdit on Mac, Notepad on Windows). Do NOT open using Excel - it will crash. 
 
-Summary of direct inputs and outputs of all data in epa_onroad_emissions_compile
+Copies of the intermediary datasets are available in our MS Team/OneDrive. 
+
+Summary of direct inputs and outputs of all data in `epa_onroad_emissions_compile`
 
 ```{r}
 epa_onroad_source_set %>%
-  arrange(data_source, emissions_year) %>%
+  mutate(emissions_year = as.numeric(emissions_year)) %>% 
+  arrange(emissions_year) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -99,6 +102,8 @@ NEI data are then compiled in a three locations
 - [epa_nei_smoke_ff.R](../epa_nei_smoke_ff.R)
 
 NEI summary data are also fetched directly from the EnviroFacts API in [epa_nei_envirofacts.R](../epa_nei_envirofacts.R). 
+
+On-road activity data and non-road emissions are not currently processed and saved. See GitHub for relevant Issues. 
 
 ```{r}
 epa_downloads %>%
@@ -170,11 +175,10 @@ epa_downloads %>%
  
 EQUATES data is located on the EPA FTP site *and* the CMAS Data Warehouse Google Drive. Direct links are provided for both locations. 
  
-EQUATES only has onroad data from 2002 to 2019.
+EQUATES only has on-road data from 2002 to 2019. 
 
 Within /air_emissions_modeling/EQUATES, create a folder for each EQUATES year (2002, 2005, 2008, 2011, 2014, 2017) with the prefix "EQUATES_", plus two additional folders named "EQUATES_MN_WI" and "CMAS_Data_Warehouse". 
-
-Download the data for each of the given links and save in the appropriate location. 
+Download the data for each of the given links and save in the appropriate location. If the direct Google Drive links are not working for you, download each one from the [directory page](https://drive.google.com/drive/folders/1bOb-xVqNu5uAY-wKXqTuV70qwqKkfpNz). 
 
 All EQUATES data is processed in [epa_equates_read.R](./../epa_equates_read.R)
 
