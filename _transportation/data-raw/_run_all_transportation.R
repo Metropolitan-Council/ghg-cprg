@@ -24,9 +24,11 @@ source("_transportation/data-raw/epa_moves.R")
 # source("_transportation/data-raw/vmt_emissions.R")
 
 # corresponding datasets
-source("_transportation/data-raw/tbi_vehicle_stats.R")
-source("_transportation/data-raw/tbi_survey_stats.R")
-source("_transportation/data-raw/tbi_trip_length.R")
+# these are currently commented out pending TBI updates
+# See https://github.com/Metropolitan-Council/ghg-cprg/issues/125
+# source("_transportation/data-raw/tbi_vehicle_stats.R")
+# source("_transportation/data-raw/tbi_survey_stats.R")
+# source("_transportation/data-raw/tbi_trip_length.R")
 
 # source("_transportation/data-raw/epa_lggit.R")
 # source("_transportation/data-raw/epa_nei_envirofacts.R")
