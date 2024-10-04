@@ -309,5 +309,6 @@ fig_emissions_pop_transportation
 <!-- saveCap(paste0("cap-", caption_index)) -->
 <!-- saveRDS(caption_index, file.path(here::here(), "caption_index.RDS")) -->
 <!-- ``` -->
-<!-- {{< pagebreak >}} -->
+
+{{< pagebreak >}}
 
