@@ -1,5 +1,7 @@
 source("R/_load_pkgs.R")
-# compile MN and WI datasets for upload to StreetLight
+# compile MN and WI commercial point and line datasets for upload to StreetLight
+# Used to calibrate StreetLight Index to actual truck counts for medium and heavy
+# duty traffic.
 #
 # lines -----
 mn_stations_lines <- readRDS("_transportation/data-raw/mndot/mn_stations_ratios.RDS") %>%

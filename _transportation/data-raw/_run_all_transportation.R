@@ -9,7 +9,7 @@
 #
 # # dot combination and processing
 # source("_transportation/data-raw/dot_vmt.R")
-# source("_transportation/data-raw/calibration_lines_points.R")
+# source("_transportation/data-raw/stl_calibration_lines_points.R")
 #
 # # streetlight upload, run, and fetch analyses
 # source("_transportation/data-raw/stl_upload_zone_sets.R")
