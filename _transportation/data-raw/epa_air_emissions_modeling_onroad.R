@@ -1,6 +1,6 @@
 # the EPA publishes data for years in between NEI releases
 # these are modeled estimates based on a variety of sources
-# Copies of the intermediary datasets are available in our MS Team/OneDrive. 
+# Copies of the intermediary datasets are available in our MS Team/OneDrive.
 tictoc::tic(msg = "Air emissions modeling onroad processing")
 
 source("R/_load_pkgs.R")

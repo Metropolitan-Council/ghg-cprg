@@ -50,7 +50,7 @@ Summary of direct inputs and outputs of all data in `epa_onroad_emissions_compil
 
 ```{r}
 epa_onroad_source_set %>%
-  mutate(emissions_year = as.numeric(emissions_year)) %>% 
+  mutate(emissions_year = as.numeric(emissions_year)) %>%
   arrange(emissions_year) %>%
   gt() %>%
   gt::opt_row_striping() %>%
