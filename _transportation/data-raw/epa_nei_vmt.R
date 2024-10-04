@@ -1,3 +1,7 @@
+# PLACEHOLDER 
+# for future work verifying activity data behind the NEI
+# comparing onroad activity data with DOT VMT
+
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
 

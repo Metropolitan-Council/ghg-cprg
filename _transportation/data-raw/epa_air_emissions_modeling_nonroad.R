@@ -1,7 +1,8 @@
 # the EPA publishes data for years in between NEI releases
 # these are modeled estimates based on a variety of sources
-tictoc::tic(msg = "Air emissions modeling nonroad processing")
+# Copies of the intermediary datasets are available in our MS Team/OneDrive. 
 
+tictoc::tic(msg = "Air emissions modeling nonroad processing")
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
 source("_transportation/data-raw/_read_smoke_ff10.R")

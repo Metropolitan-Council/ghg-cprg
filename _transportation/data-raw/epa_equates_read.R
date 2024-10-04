@@ -2,6 +2,7 @@
 # https://gaftp.epa.gov/Air/emismod/MOVES3/CONUS/
 # EPA scientists have developed a set of modeled meteorology, emissions,
 # air quality and pollutant deposition spanning the years 2002 through 2019.
+# Copies of the intermediary datasets are available in our MS Team/OneDrive. 
 
 tictoc::tic(msg = "EQUATES processing")
 source("R/_load_pkgs.R")

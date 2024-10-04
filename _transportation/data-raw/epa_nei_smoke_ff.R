@@ -1,4 +1,5 @@
 # NEI SMOKE flat files
+# Copies of the intermediary datasets are available in our MS Team/OneDrive. 
 source("R/_load_pkgs.R")
 source("_meta/data-raw/county_geography.R")
 source("_transportation/data-raw/_read_smoke_ff10.R")
