@@ -27,8 +27,11 @@ category_colors <-
 
 
     # YlOrBr
-    "Passenger vehicles" = "#ec7014",
-    "Commercial vehicles" = "#fec44f",
+    "Passenger vehicles" = "#993404",
+    "Medium-duty vehicles" = "#fe9929",
+    "Heavy-duty vehicles" = "#fee391",
+    "Transit vehicles" = "#E9967A",
+    "Other vehicles" = "#eaeded",
 
     # PuRd
     "Solid waste" = "#ce1256",
@@ -43,9 +46,14 @@ category_colors <-
 # source
 source_colors <- list(
   # transportation levels
-  "Light-duty vehicles" = "#993404",
-  "Medium-duty vehicles" = "#fe9929",
-  "Heavy-duty vehicles" = "#fee391",
+  # "Light-duty vehicles" = "#993404",
+  # "Medium-duty vehicles" = "#fe9929",
+  # "Heavy-duty vehicles" = "#fee391",
+  "Gasoline fueled vehicles" = "#db4a33",
+  "Diesel fueled vehicles" = "#feb24c",
+  "Other fueled vehicles" = "#ffeda0",
+
+
 
   # waste levels
   "Landfill" = "#ae017e",
@@ -70,12 +78,17 @@ source_colors <- list(
 
 
 vehicle_weight_colors <- list(
-  "Passenger" = source_colors$`Light-duty vehicles`,
-  "Medium" = source_colors$`Medium-duty vehicles`,
-  "Heavy" = source_colors$`Heavy-duty vehicles`,
-  "Light-duty" = source_colors$`Light-duty vehicles`,
-  "Medium-duty" = source_colors$`Medium-duty vehicles`,
-  "Heavy-duty" = source_colors$`Heavy-duty vehicles`
+  "Passenger" = category_colors$`Passenger vehicles`,
+  "Medium-duty" = category_colors$`Medium-duty vehicles`,
+  "Heavy-duty" = category_colors$`Heavy-duty vehicles`,
+  "Transit" = category_colors$`Transit vehicles`,
+  "Other" = category_colors$`Other vehicles`
+)
+
+fuel_type_colors <- list(
+  "Gasoline" = "#ffc300",
+  "Diesel" = "#9f7a00",
+  "Other" = "#604900"
 )
 
 management_method_colors <- list(
