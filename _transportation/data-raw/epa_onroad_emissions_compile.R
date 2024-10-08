@@ -1,4 +1,5 @@
-# compile EPA emissions datasets and interpolate between them
+# compile EPA emissions datasets 
+# anyone can run this script from the data available on GitHub
 
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
