@@ -4,8 +4,9 @@ source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 
-
+### download flight data: https://ghgdata.epa.gov/ghgp/main.do
 mn_flight <-  read_excel(file.path(here::here(), "_industrial/data-raw/mn_flight.xls"))
+
 
 #### There is no EPA flight records for Pierce or St. Croix counties in WI
 
