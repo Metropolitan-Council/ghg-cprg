@@ -818,6 +818,5 @@ _transportation/data-raw/epa/Parms by Desc.xls
 _transportation/data-raw/epa/smoke_flat_file_format_26apr2010_no_event.xls
 
 _transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/
-_industrial/data-raw/mn_flight.xls
-_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa_09_2023.xlsb
-_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa_09_2023.xlsx
+
+_transportation/data-raw/epa/air_emissions_modeling/EQUATES/CMAS_Data_Warehouse/
