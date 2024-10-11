@@ -66,12 +66,12 @@ industrial_hub <- industrial_hub %>%
   filter(per_unit != "mmBtu",
          emission != "mmBtu") %>% 
   #convert to metric tons of gas
-  mutate(mt_gas = case_when(
+  mutate(mt_gas = as.numeric(case_when(
     grepl("CO2", emission) ~ value * units::as_units("kilogram") %>%
       units::set_units("metric_ton"),
     TRUE ~ value *  units::as_units("gram") %>%
       units::set_units("metric_ton")
-  )) %>% 
+  ))) %>% 
   # convert to CO2e using IPCC 4 assessment values (consistent with EPA dataset not ours)
   mutate(mt_co2e = case_when(
     grepl("CH4", emission) ~ mt_gas * 25,
@@ -79,17 +79,68 @@ industrial_hub <- industrial_hub %>%
     TRUE ~ mt_gas
   )) %>% 
   # units per mt of co2e
-  mutate(unit_co2e = 1/mt_co2e)
+  mutate(unit_co2e = as.numeric(1/mt_co2e))
 
 co2e_to_unit <- industrial_hub %>% 
-  filter(fuel_type %in% ind_fuel_data$specific_fuel_type,
+  filter(fuel_type %in% ind_fuel_data$corrected_fuel_type,
          !grepl("CO2",emission)) %>% 
+  mutate(gas = gsub("g ", "", emission)) %>% 
   pivot_wider(id_cols = c(fuel_type, per_unit),
-              names_from = emission,
+              names_from = gas,
               values_from = unit_co2e)
 
-###
+ind_fuel_activity <- ind_fuel_data %>% 
+  select(facility_id, facility_name,industry_type_subparts, 
+         city_name, reporting_year,
+         unit_name, general_fuel_type, corrected_fuel_type,
+         fuel_methane_ch4_emissions_mt_co2e, 
+         fuel_nitrous_oxide_n2o_emissions_mt_co2e) %>% 
+  left_join(., co2e_to_unit,
+            by = c("corrected_fuel_type" = "fuel_type")) %>% 
+  mutate(unit_ch4 = fuel_methane_ch4_emissions_mt_co2e * CH4,
+         unit_n2o = fuel_nitrous_oxide_n2o_emissions_mt_co2e * N2O)
 
+### How do these compare?
+ggplot(ind_fuel_activity, aes(x = unit_ch4, y = unit_n2o)) +
+  geom_point() + 
+  geom_abline (slope=1, linetype = "dashed", color="Red") +
+  facet_wrap(~per_unit, scales = 'free')
+# looks good overall, very little disagreement, will take average unit btw gas calcs
+
+unit_to_mt <- industrial_hub %>% 
+  filter(fuel_type %in% ind_fuel_data$corrected_fuel_type) %>% 
+  mutate(gas = sub(".*? ", "", emission)) %>% 
+  pivot_wider(id_cols = c(fuel_type),
+              names_prefix = "mt_unit_",
+              names_from = gas,
+              values_from = mt_gas)
+
+ind_fuel_emissions <- ind_fuel_activity %>% 
+  left_join(., unit_to_mt,
+            by = c("corrected_fuel_type" = "fuel_type")) %>% 
+  mutate(avg_activity = (unit_ch4 + unit_n2o)/2) %>% 
+  mutate(mt_co2 = avg_activity * mt_unit_CO2,
+         mt_co2_co2e = mt_co2,
+         mt_ch4 = avg_activity * mt_unit_CH4,
+         mt_ch4_co2e = mt_ch4 * 25,
+         mt_n2o = avg_activity * mt_unit_N2O,
+         mt_n2o_co2e = mt_n2o * 298) %>% 
+  select(-c(fuel_methane_ch4_emissions_mt_co2e,
+            fuel_nitrous_oxide_n2o_emissions_mt_co2e,
+            per_unit, CH4, N2O, unit_ch4, unit_n2o,
+            mt_unit_CO2, mt_unit_CH4, mt_unit_N2O)) %>% 
+  pivot_longer(cols = 10:15,
+               names_to = "units_emissions",
+               values_to = "values_emissions")
+
+unit_emissions <- ind_fuel_emissions %>% 
+  filter(grepl("co2e", units_emissions)) %>% 
+  group_by(reporting_year, facility_id, city_name, unit_name, corrected_fuel_type) %>% 
+  summarize(mt_co2e = sum(values_emissions))
+
+  unit_emissions %>% filter(corrected_fuel_type = "Natural Gas") %>% 
+    group_by(reporting_year) %>% summarize(mt_co2e = sum(mt_co2e))
+  
 ind_fuel_units <- left_join(ind_fuel_data,
                             industrial_hub
 
