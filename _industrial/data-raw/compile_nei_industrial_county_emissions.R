@@ -82,7 +82,8 @@ multi_year_industrial_county <-
                select(state_name,county_name,geoid) %>% 
                st_drop_geometry(),
              by = c("county_name","state_name")) %>% 
-  mutate(metric_tons_emissions = emissions * 0.907185)
+  mutate(metric_tons_emissions = emissions * units::as_units("short_ton") %>%
+      units::set_units("metric_ton"))
 
 
 multi_year_industrial_county_ghg <- multi_year_industrial_county %>% 
@@ -94,6 +95,36 @@ multi_year_industrial_county_ghg <- multi_year_industrial_county %>%
     pollutant_code == "SF6" ~ metric_tons_emissions *  23500, ## ADD TO GWP TABLE
     pollutant_code == "CO2" ~ metric_tons_emissions
   ))
+
+nei_ind_county_emissions_out <- multi_year_industrial_county_ghg %>% 
+  group_by(state_name ,
+           inventory_year,
+           county_name,
+           sector_code,
+           ei_sector,
+           sector_one,
+           sector_two,
+           sector_three) %>% 
+  summarize(values_emissions = sum(mt_co2e )) %>% 
+  mutate(units_emissions = "Metric tons of CO2 equivalency")
+
+nei_ind_county_emissions_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "state_name", class(nei_ind_county_emissions_out$facility_id), "State name",
+    "county_name", class(nei_ind_county_emissions_out$city_name), "County name",
+    "inventory_year", class(nei_ind_county_emissions_out$reporting_year), "Year of emissions",
+    "sector_code", class(nei_ind_county_emissions_out$unit_name), "Industrial sector code",
+    "ei_sector", class(nei_ind_county_emissions_out$unit_name), "Industrial sector description",
+    "sector_one", class(nei_ind_county_emissions_out$general_fuel_type), "Industrial sector: Process, combustion, solvent",
+    "sector_two", class(nei_ind_county_emissions_out$values_emissions), "Higher specificity of industrial sector",
+    "sector_three", class(nei_ind_county_emissions_out$units_emissions), "Type of fuel combusted (where applicable)",
+    "values_emissions", class(nei_ind_county_emissions_out$values_emissions), "Numerical value of emissions data",
+    "units_emissions", class(nei_ind_county_emissions_out$units_emissions), "Units of emissions data"
+  )
+
+saveRDS(nei_ind_county_emissions_out, "./_industrial/data/nei_county_industrial_emissions.rds")
+saveRDS(nei_ind_county_emissions_meta, "./_industrial/data/nei_county_industrial_emissions_meta.rds")
 
 unique(multi_year_industrial_county_ghg$ei_sector)
 
@@ -107,7 +138,9 @@ multi_year_industrial_county_ghg %>%
          county_name == "Washington") %>% 
   group_by(ei_sector, sector_code) %>% 
   summarize(mt_co2e = sum(mt_co2e))
-#### NEC can, and almost certainly does for Sherburne, include electricity generation
+#### NEC includes electricity generation, which is major double count
+
+
 
 ggplot(multi_year_industrial_county_ghg %>% 
          group_by(inventory_year,county_name) %>% 
