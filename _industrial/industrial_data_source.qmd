@@ -36,34 +36,34 @@ We are omitting in-bound municipal waste facilities from our industrial analysis
 
 Currently, GHGRP data can be reliably used to avoid double-counting by avoiding emissions from Natural Gas. We can compare how subpart C (Industrial combustion) analyses compares to facilities with only subpart C FLIGHT aggregates.
 
-```{r fig-cropland-area-emissions}
-#| fig-cap: "A scatter plot"
+```{r fig-subpart-c-emissions}
+#| fig-cap: "Comparison of industrial combustion emissions from FLIGHT and subpart C analysis"
 #| out-width: "95%"
 
 
-cropland_2021 <- county_agriculture %>% 
-  filter(year == 2021) %>% 
-  left_join(., county_emissions %>% 
-              filter(sector == 'Agriculture',
-                     year == 2021) %>% 
-              group_by(geog_name, category) %>% 
-              summarize(ag_emissions = sum(emissions_metric_tons_co2e)),
-            by = c("county" = "geog_name"))
+subpart_c <- flight_emissions %>% 
+  filter(subparts == "C") %>% 
+  left_join(., subpart_c_emissions %>% 
+              filter(industry_type_subparts  == 'C') %>% 
+              group_by(facility_id, reporting_year) %>% 
+              summarise(value_emissions = sum(values_emissions)),
+            by = c("ghgrp_id" = "facility_id",
+                   "inventory_year" = "reporting_year"),
+            suffix = c("_flight","_subpart"))
 
 
-fig_cropland_area_emissions <- plot_ly(
+fig_subpart_c_comparison <- plot_ly(
   type = "scatter",
   mode = "markers",
-  source = "fig-cropland-area-emissions",
-  data = cropland_2021,
-  y = ~ag_emissions,
-  x = ~area,
-  color = ~category,  # Map colors by category
-  colors = unlist(category_colors),  # Convert list to vector of colors
+  source = "fig-subpart-c-emissions",
+  data = subpart_c,
+  y = ~value_emissions_flight,
+  x = ~value_emissions_subpart,
+  color = ~ as.character(inventory_year),  # Map colors by year
   hovertemplate = ~ paste0(
-    county, " County", "<br>",
-    "Area: ", scales::comma(area), " square kilometers", "<br>",
-    "Emissions: ", round(ag_emissions, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
+    facility_name, "<br>",
+    "FLIGHT emissions: ", round(value_emissions_flight, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
+    "SUBPART C Emissions: ", round(value_emissions_subpart, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
   marker = list(
@@ -75,59 +75,44 @@ fig_cropland_area_emissions <- plot_ly(
   )
 )
 
-# Separate linear trend lines for each category
-for(cat in levels(cropland_2021$category)) {
-  cat_data <- cropland_2021 %>%
-    filter(category == cat, !is.na(area), !is.na(ag_emissions))  # Filter out NA values
+fig_subpart_c_comparison
 
-  # Only fit model if there's enough data
-  if(nrow(cat_data) > 1) {
-    # Fit the linear model
-    model <- lm(ag_emissions ~ area, data = cat_data)
-    
-    # Create a sequence of area values to plot the line
-    area_seq <- seq(min(cat_data$area), max(cat_data$area), length.out = 100)
-    
-    # Predict ag_emissions for the sequence of area values
-    emissions_pred <- predict(model, newdata = data.frame(area = area_seq))
-    
-    # Add the line of best fit
-    fig_cropland_area_emissions <- fig_cropland_area_emissions %>%
-      add_trace(
-        x = area_seq,
-        y = emissions_pred,
-        type = "scatter",
-        mode = "lines",  # Ensure mode is 'lines' for the trend line
-        line = list(
-          color = category_colors[[cat]],  # Use the same color as the points
-          dash = 'solid',
-          width = 2
-        ),
-        showlegend = FALSE,  # Hide trend line from legend
-        inherit = FALSE  # Prevent inheritance of other properties like hovertemplate
-      )
-  }
-}
 
-# Final layout and titles
-fig_cropland_area_emissions <- fig_cropland_area_emissions %>%
-  layout(
-    title = list(
-      text = "Area of county cropland and county agricultural emissions"
-    ),
-    xaxis = list(
-      title = "Agricultural area km<sup>2</sup>"
-    ),
-    yaxis = list(
-      title = "Metric tons CO<sub>2</sub>e"
-    ),
-    barmode = "stack",
-    legend = list(
-      traceorder = "reversed"
+# compare across all subpart Cs
+subpart_c_all <- flight_emissions %>% 
+  filter(grepl("C", subparts),
+         doublecount == "No") %>% 
+  left_join(., subpart_c_emissions %>% 
+              group_by(facility_id, reporting_year) %>% 
+              summarise(value_emissions = sum(values_emissions)),
+            by = c("ghgrp_id" = "facility_id",
+                   "inventory_year" = "reporting_year"),
+            suffix = c("_flight","_subpart"))
+
+fig_subpart_c_all_comparison <- plot_ly(
+  type = "scatter",
+  mode = "markers",
+  source = "fig-subpart-c-emissions",
+  data = subpart_c_all,
+  y = ~value_emissions_flight,
+  x = ~value_emissions_subpart,
+  color = ~ as.character(inventory_year),  # Map colors by year
+  hovertemplate = ~ paste0(
+    facility_name, "<br>",
+    "FLIGHT emissions: ", round(value_emissions_flight, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
+    "SUBPART C Emissions: ", round(value_emissions_subpart, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
     )
   )
+)
 
-fig_cropland_area_emissions
+fig_subpart_c_all_comparison
 
 ```
 
