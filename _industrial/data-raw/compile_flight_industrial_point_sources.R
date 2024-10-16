@@ -47,7 +47,8 @@ cprg_flight_out <- cprg_flight %>%
          county_name,
          state,
          value_emissions = ghg_quantity_metric_tons_co2e,
-         doublecount) %>% 
+         doublecount,
+         subparts) %>% 
   mutate(units_emissions = "Metric tons CO2e",
          sector = "Industrial",
          data_source = "EPA FLIGHT",
@@ -72,7 +73,8 @@ cprg_flight_meta <-
     "factor_source", class(cprg_flight_out$factor_source), "Emissions factor data source",
     "value_emissions", class(cprg_flight_out$value_emissions), "Numerical value of emissions",
     "units_emissions", class(cprg_flight_out$units_emissions), "Units and gas type of emissions",
-    "doublecount", class(cprg_flight_out$doublecount), "Is this emission counted in another sector?"
+    "doublecount", class(cprg_flight_out$doublecount), "Is this emission counted in another sector?",
+    "subparts", class(cprg_flight_out$subparts), "Subpart code for type of industrial facility"
   )
 
 saveRDS(cprg_flight_out, "./_industrial/data/flight_industrial_point_sources_ctu.rds")
