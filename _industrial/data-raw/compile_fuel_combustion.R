@@ -240,7 +240,7 @@ ind_fuel_co2e_emissions_meta <-
     ~"Column", ~"Class", ~"Description",
     "facility_id", class(ind_fuel_co2e_emissions_out$facility_id), "Facility specific ID",
     "facility_name", class(ind_fuel_co2e_emissions_out$facility_name), "Facility name",
-    "industry_type_subparts", class(ind_fuel_co2e_emissions_out$industry_type_subparts), "Sibpart code for industry type of facility",
+    "industry_type_subparts", class(ind_fuel_co2e_emissions_out$industry_type_subparts), "Subpart code for industry type of facility",
     "city_name", class(ind_fuel_co2e_emissions_out$city_name), "City name",
     "reporting_year", class(ind_fuel_co2e_emissions_out$reporting_year), "Year of activity",
     "unit_name", class(ind_fuel_co2e_emissions_out$unit_name), "Name of combustion unit",

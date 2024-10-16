@@ -40,6 +40,7 @@ cprg_flight <- cprg_flight %>%
 
 cprg_flight_out <- cprg_flight %>% 
   select(inventory_year = reporting_year,
+         ghgrp_id,
          facility_name,
          latitude,
          longitude,
@@ -63,6 +64,7 @@ cprg_flight_meta <-
     "city_name", class(cprg_flight_out$city_name), "City name",
     "county_name", class(cprg_flight_out$city_name), "County name",
     "state", class(cprg_flight_out$state), "State name",
+    "ghgrp_id", class(cprg_flight_out$ghgrp_id), "Facility ID in GHG Reporting Program",
     "facility_name", class(cprg_flight_out$facility_name), "Facility name",
     "latitude", class(cprg_flight_out$latitude), "Latitude of industrial source",
     "longitude", class(cprg_flight_out$longitude), "Longitude of industrial source",
