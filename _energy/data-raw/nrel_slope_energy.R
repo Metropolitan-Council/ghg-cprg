@@ -20,6 +20,13 @@ mmbtu_to_mwh <- 0.293071
 mmbtu_to_mcf <- 1
 
 
+countyActivity <- minnesota_elecUtils_ActivityAndEmissions %>%
+  group_by(county) %>%
+  summarize(
+    mWh_delivered_county = sum(mWh_delivered, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
 # if file doesn't already exist...
 # download from NREL directly
 download.file("https://gds-files.nrel.gov/slope/energy_consumption_expenditure_business_as_usual.zip",
@@ -136,11 +143,33 @@ nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
     cityPropOfCounty_expenditure_usd = city_expenditure_usd / county_expenditure_usd
   )
 
+st_write(nrel_slope_cprg_cityProps_County_2021, here("_energy",
+                                                     "data-raw",
+                                                     "nrel_slope",
+                                                     "MNWI",
+                                                     "nrel_slope_cprg_cityProps_County_2021.shp")
+)
+
+
+
+countySummary_nrelCity <- nrel_slope_cprg_cityProps_County_2021 %>%
+  st_drop_geometry() %>%
+  group_by(COUNTY_NAM, sector, source) %>%
+  summarize(
+    sectorSource_accountedByCities = sum(cityPropOfCounty_consumption_mm_btu),
+    sectorSource_consumptionToteCities = sum(city_consumption_mm_btu),
+    countyTotalConsumption = max(county_consumption_mm_btu),
+    .groups = 'keep'
+  ) %>%
+  mutate(
+    QA_calc = sectorSource_consumptionToteCities / countyTotalConsumption
+  )
   #city-source-sector prop of county-source-sector emissions
-  
-  
-  
-#county level GAPS
+
+# issues to address
+# double counting of cities across counties..
+# removing portions of cities from city total that don't exist within the county study area JUST FOR calculation of proportions...
+
   
   
 #join to pop and pop prop table... use to infill townships/towns/villages?
