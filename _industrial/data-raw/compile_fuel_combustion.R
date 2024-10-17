@@ -93,7 +93,7 @@ co2e_to_unit <- industrial_hub %>%
 ### calculate the activity units of each unit's combustion by fuel type
 ind_fuel_activity <- ind_fuel_data %>% 
   select(facility_id, facility_name,industry_type_subparts, 
-         city_name, reporting_year,
+         county_name, city_name, reporting_year,
          unit_name, general_fuel_type, corrected_fuel_type,
          fuel_methane_ch4_emissions_mt_co2e, 
          fuel_nitrous_oxide_n2o_emissions_mt_co2e) %>% 
@@ -141,10 +141,11 @@ ind_fuel_emissions <- ind_fuel_activity %>%
 
 unit_emissions <- ind_fuel_emissions %>% 
   filter(grepl("co2e", units_emissions)) %>% 
-  group_by(reporting_year, facility_id, city_name, unit_name, general_fuel_type, corrected_fuel_type) %>% 
+  group_by(reporting_year, facility_id, county_name,  city_name, unit_name, 
+           general_fuel_type, corrected_fuel_type) %>% 
   summarize(mt_co2e = sum(values_emissions))
 
-  unit_emissions %>% filter(corrected_fuel_type = "Natural Gas") %>% 
+  unit_emissions %>% filter(corrected_fuel_type == "Natural Gas") %>% 
     group_by(reporting_year) %>% summarize(mt_co2e = sum(mt_co2e))
 
   ind_fuel_emissions %>% filter(industry_type_subparts  == "C") %>% 
@@ -159,6 +160,7 @@ ind_fuel_activity_out <- ind_fuel_activity %>%
   select(facility_id,
          facility_name,
          industry_type_subparts,
+         county_name,
          city_name,
          reporting_year,
          unit_name,
@@ -173,6 +175,7 @@ ind_fuel_activity_meta <-
     "facility_id", class(ind_fuel_activity_out$facility_id), "Facility specific ID",
     "facility_name", class(ind_fuel_activity_out$facility_name), "Facility name",
     "industry_type_subparts", class(ind_fuel_activity_out$industry_type_subparts), "Sibpart code for industry type of facility",
+    "county_name", class(ind_fuel_activity_out$county_name), "County name",
     "city_name", class(ind_fuel_activity_out$city_name), "City name",
     "reporting_year", class(ind_fuel_activity_out$reporting_year), "Year of activity",
     "unit_name", class(ind_fuel_activity_out$unit_name), "Name of combustion unit",

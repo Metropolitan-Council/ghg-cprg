@@ -75,8 +75,29 @@ fig_subpart_c_comparison <- plot_ly(
   )
 )
 
+fig_subpart_c_comparison <- fig_subpart_c_comparison %>%
+  add_trace(
+    type = "scatter",
+    mode = "lines",
+    x = c(0, max(subpart_c$value_emissions_subpart, na.rm = TRUE)),
+    y = c(0, max(subpart_c$value_emissions_subpart, na.rm = TRUE)),
+    line = list(
+      dash = "dash",
+      color = "black",
+      width = 2
+    ),
+    showlegend = FALSE,  # Hide this trace from the legend
+    inherit = FALSE,     # Ensure no properties are inherited from the previous trace
+    hoverinfo = "none"   # Disable hover for this line
+  )
+
 fig_subpart_c_comparison
 
+```
+
+Most emissions are on or sufficiently close to the one-to-one line. The exception is the Hennepin Energy Recovery Center, a waste burning facility. This requires further exploration but will be omitted in any case as waste-to-energy emissions are counted in the waste subsector.
+
+```{r fig-subpart-c-all-emissions}
 
 # compare across all subpart Cs
 subpart_c_all <- flight_emissions %>% 
@@ -92,7 +113,7 @@ subpart_c_all <- flight_emissions %>%
 fig_subpart_c_all_comparison <- plot_ly(
   type = "scatter",
   mode = "markers",
-  source = "fig-subpart-c-emissions",
+  source = "fig-subpart-c-all-emissions",
   data = subpart_c_all,
   y = ~value_emissions_flight,
   x = ~value_emissions_subpart,
@@ -112,19 +133,38 @@ fig_subpart_c_all_comparison <- plot_ly(
   )
 )
 
+fig_subpart_c_all_comparison <- fig_subpart_c_all_comparison %>%
+  add_trace(
+    type = "scatter",
+    mode = "lines",
+    x = c(0, max(subpart_c_all$value_emissions_subpart, na.rm = TRUE)),
+    y = c(0, max(subpart_c_all$value_emissions_subpart, na.rm = TRUE)),
+    line = list(
+      dash = "dash",
+      color = "black",
+      width = 2
+    ),
+    showlegend = FALSE,  # Hide this trace from the legend
+    inherit = FALSE,     # Ensure no properties are inherited from the previous trace
+    hoverinfo = "none"   # Disable hover for this line
+  )
+
 fig_subpart_c_all_comparison
 
 ```
 
-As expected, we see that livestock and crop emissions increases with area devoted to agriculture. There is potentially a non-linear relationship with livestock, with smaller agricultural areas less likely to have large livestock populations, making the fit more tenuous for these counties.
+When expanding to industrial point sources that have combust fuel but have additional subparts, we see that they lie on or above the 1:1 line (excepting the previously discussed HERC), which is what we would expect. There are process emissions in addition to fuel combustion.
 
-### USDA cattle census vs annual surveys
 
-Most USDA data is available from a five year census; we interpolate 
+# Natural Gas
 
-```{r fig-cattle-comparison}
+Natural gas combustion can be pulled out from a subpart C analysis and compared to our estimates of natural gas supplied to industrial
+
+```{r fig-natural-gas-comparison}
 #| fig-cap: "A scatter plot"
 #| out-width: "95%"
+
+
 
 cattle_survey <- readRDS(file.path(here::here(), "_agriculture/data/usda_cattle_survey.RDS")) %>% 
   mutate(county_name = if_else(county_name == "ST CROIX", 
