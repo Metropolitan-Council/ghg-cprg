@@ -15,12 +15,12 @@ source("_energy/data-raw/wisconsin_electricUtilities.R")
 
 # next, run processing for MN and WI activity data
 
-source("_energy/data-raw/minnesota_natGas_ActivityAndEmissions.R")
-source("_energy/data-raw/wisconsin_natGas_ActivityAndEmissions.R")
+source("_energy/data-raw/minnesota_natGas_estimate_2005_and_2021.R")
+source("_energy/data-raw/wisconsin_natGas_estimate_2005_and_2021.R")
 
 # finalize processing
-source("_energy/data-raw/processed_mn_electricUtil_activityData.R")
-source("_energy/data-raw/processed_wi_electricUtil_activityData.R")
+source("_energy/data-raw/minnesota_elec_estimate_2005_and_2021.R")
+source("_energy/data-raw/wisconsin_elec_estimate_2005_and_2021.R")
 
 source("_energy/data-raw/nrel_slope_energy.R")
 
