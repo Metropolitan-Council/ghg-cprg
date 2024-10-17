@@ -266,8 +266,8 @@ cprg_distances <- purrr::map_dfr(
   1:nrow(cprg_county),
   function(x) {
     tibble(
-      origin_zone_name = cprg_county$NAME[x],
-      destination_zone_name = cprg_county$NAME,
+      origin_zone_name = cprg_county$county_name[x],
+      destination_zone_name = cprg_county$county_name,
       distance_miles = units::set_units(
         county_distance_matrix[x, ],
         "miles"
@@ -454,7 +454,7 @@ passenger_dist_area <- left_join(
   passenger_od_trip %>%
     filter(origin_zone_name == destination_zone_name),
   cprg_area,
-  by = c("origin_zone_name" = "NAME")
+  by = c("origin_zone_name" = "county_name")
 )
 
 
@@ -474,6 +474,7 @@ fig_trip_county_area <- plot_ly(
   ),
   opacity = 0.7,
   marker = list(
+    color = colors$councilBlue,
     size = 18,
     line = list(
       color = "lightgray",
@@ -859,12 +860,12 @@ To validate our county origin-destination VMT data, we can compare the county to
 
 ```{r hpms-vmt}
 dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
-  filter(year == 2021)
+  filter(vmt_year == 2021)
 
 dot_streetlight <- left_join(
   vmt_emissions_all,
   dot_vmt,
-  by = c("zone" = "county")
+  by = c("zone" = "county_name")
 ) %>%
   unique()
 ```
@@ -889,6 +890,7 @@ fig_streetlight_hpms_vmt <- plot_ly(
   ),
   opacity = 0.7,
   marker = list(
+    color = colors$councilBlue,
     size = 18,
     line = list(
       color = "lightgray",
