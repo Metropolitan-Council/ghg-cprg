@@ -161,81 +161,180 @@ When expanding to industrial point sources that have combust fuel but have addit
 Natural gas combustion can be pulled out from a subpart C analysis and compared to our estimates of natural gas supplied to industrial
 
 ```{r fig-natural-gas-comparison}
-#| fig-cap: "A scatter plot"
+#| fig-cap: "Comparison of natural gas combustion data"
 #| out-width: "95%"
 
+natural_gas_c_2020 <- subpart_c_emissions %>% 
+  filter(specific_fuel_type == "Natural Gas",
+         reporting_year == 2020) %>% 
+  group_by(county_name,
+           reporting_year) %>% 
+  summarize(values_emissions = sum(values_emissions)) %>% 
+  mutate(data_source = "GHGRP - Fuel combustion")
 
+nei_2020_no_doublecount <- left_join(nei_emissions %>% 
+            filter(inventory_year == 2020) %>% 
+              group_by(county_name) %>% 
+              summarize(values_emissions = sum(values_emissions)),
+            flight_emissions %>% 
+              filter(inventory_year == 2020,
+                     doublecount == "Yes") %>% 
+              group_by(county_name) %>% 
+              summarize(values_emissions = sum(value_emissions)),
+            by = "county_name",
+            suffix = c("_NEI","_FLIGHT")) %>% 
+  mutate(values_emissions_FLIGHT = if_else(is.na(values_emissions_FLIGHT),0,values_emissions_FLIGHT)) %>% 
+  mutate(values_emissions = as.numeric(values_emissions_NEI) - values_emissions_FLIGHT,
+         data_source = "NEI - all",
+         inventory_year = 2020) %>% 
+  select(county_name,values_emissions, data_source, inventory_year)
+         
 
-cattle_survey <- readRDS(file.path(here::here(), "_agriculture/data/usda_cattle_survey.RDS")) %>% 
-  mutate(county_name = if_else(county_name == "ST CROIX", 
-                               "St. Croix", 
-                               str_to_sentence(county_name)))
-cattle_census <- readRDS(file.path(here::here(), "_agriculture/data/usda_census_data.RDS")) %>% 
-  # calves were previous split to those in and out of feedlots
-  mutate(livestock_type = if_else(livestock_type == "Feedlot Cattle", 
-                                  "Calves", 
-                                  livestock_type)) %>% 
-  group_by(year, county_name, data_type, livestock_type) %>% 
-  summarize(head_count = sum(head_count))
-# Merging cattle_survey and cattle_census on the common columns
-cattle_merged <- cattle_survey %>%
-  left_join(cattle_census, by = c("year", "county_name", "livestock_type"), suffix = c("_survey", "_census"))
-
-min_val <- min(c(cattle_merged$head_count_survey, cattle_merged$head_count_census), na.rm = TRUE)
-max_val <- max(c(cattle_merged$head_count_survey, cattle_merged$head_count_census), na.rm = TRUE)
-
-
-# Create the base plot
-cattle_comparison <- plot_ly(
-  type = "scatter",
-  mode = "markers",
-  source = "fig-cropland-area-emissions",
-  data = cattle_merged
-) %>%
-  add_trace(
-    x = ~head_count_survey, 
-    y = ~head_count_census, 
-    color = ~livestock_type,  # Color by livestock_type
-    symbol = ~data_type,      # Change symbol based on data_type
-    symbols = c('census' = 'circle', 'interpolated' = 'triangle-up'),  # Custom symbols for data_type
-    marker = list(size = 10),
-      hovertemplate = ~ paste0(
-    county_name, " County", "<br>",
-    "Census head count: ", scales::comma(head_count_census),"<br>",
-    "Survey head count: ", scales::comma(head_count_survey),"<br>",
+natural_gas_comp <-  bind_rows(nrel_emissions %>% 
+  filter(year == 2021) %>% 
+    mutate(data_source = "NREL") %>% 
+  select(inventory_year = year,
+         county_name = geog_name,
+         values_emissions = emissions_metric_tons_co2e,
+         data_source),
+ nei_emissions %>% 
+            filter(inventory_year == 2020,
+                   sector_three == "Natural Gas") %>% 
+   ungroup() %>% 
+   mutate(data_source = "NEI - NG combustion",
+          values_emissions = as.numeric(values_emissions)) %>% 
+  select(inventory_year,
+         county_name,
+         values_emissions,
+         data_source),
+ nei_2020_no_doublecount,
+ natural_gas_c_2020 %>% 
+   rename(inventory_year = reporting_year)
+ )
+  
+fig_industrial_ng_emissions <- plot_ly(
+  data = natural_gas_comp,
+  source = "fig-natural-gas-comparison",
+  x = ~county_name,
+  y = ~values_emissions,
+  color = ~data_source,
+  type = "bar",
+  # colors = c(
+  #   "EIA" = cprg_colors$cprg_da_yellow,
+  #   "Metropolitan Council" = colors$councilBlue
+  # ),
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    data_source, "<br>",
+    round(values_emissions / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
+) %>%
+  plotly_layout(
+    main_title = "Industrial Natural Gas Emissions Inventory Comaparison",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    x_title = "County",
+    legend_title = "Data source"
   ) %>%
   layout(
-    title = "Comparison of Livestock Estimates: Survey vs Census",
-    xaxis = list(title = "Survey Head Count"),
-    yaxis = list(title = "Census Head Count"),
-    legend = list(title = list(text = "Livestock Type and Data Type"))
-  ) %>%
-  add_trace(
-    x = c(min_val, max_val), 
-    y = c(min_val, max_val), 
-    mode = 'lines',
-    line = list(dash = 'dash', color = 'black', width = 2),
-    showlegend = FALSE, 
-    name = "1:1 Line"
-  ) %>%
-  add_trace(
-    data = cattle_merged %>% filter(livestock_type == "Beef Cows"),
-    x = ~head_count_survey, 
-    y = ~head_count_census, 
-    color = ~livestock_type,  # Color by livestock_type
-    symbol = ~data_type,      # Change symbol based on data_type
-    symbols = c('census' = 'circle', 'interpolated' = 'triangle-up'),
-    marker = list(size = 10),
-    name = "Beef Cows"
+    barmode = "group",
+    hovermode = "closest",
+    legend = list(
+      traceorder = "normal"
+    )
   )
 
-cattle_comparison
+fig_industrial_ng_emissions
 
 ```
 
-Estimates from the census and surveys are reasonably close for dairy cows and beef cows, the former which are the biggest emitters. For calves, there is increasing disagreement between the survey and census at large head counts, with the census typically estimating lower head counts for both interpolated and actual census years. We will continue using the census head count data as it's error is likely less and it contains non-cattle animal counts.
+
+```{r fig-natural-gas-comparison}
+#| fig-cap: "Comparison of natural gas combustion data"
+#| out-width: "95%"
+
+natural_gas_c_2020 <- subpart_c_emissions %>% 
+  filter(specific_fuel_type == "Natural Gas",
+         reporting_year == 2020) %>% 
+  group_by(county_name,
+           reporting_year) %>% 
+  summarize(values_emissions = sum(values_emissions)) %>% 
+  mutate(data_source = "GHGRP - Fuel combustion")
+
+nei_2020_no_doublecount <- left_join(nei_emissions %>% 
+            filter(inventory_year == 2020) %>% 
+              group_by(county_name) %>% 
+              summarize(values_emissions = sum(values_emissions)),
+            flight_emissions %>% 
+              filter(inventory_year == 2020,
+                     doublecount == "Yes") %>% 
+              group_by(county_name) %>% 
+              summarize(values_emissions = sum(value_emissions)),
+            by = "county_name",
+            suffix = c("_NEI","_FLIGHT")) %>% 
+  mutate(values_emissions_FLIGHT = if_else(is.na(values_emissions_FLIGHT),0,values_emissions_FLIGHT)) %>% 
+  mutate(values_emissions = as.numeric(values_emissions_NEI) - values_emissions_FLIGHT,
+         data_source = "NEI - all",
+         inventory_year = 2020) %>% 
+  select(county_name,values_emissions, data_source, inventory_year)
+         
+
+natural_gas_comp2 <-  bind_rows(nrel_emissions %>% 
+  filter(year == 2021) %>% 
+    mutate(data_source = "NREL") %>% 
+  select(inventory_year = year,
+         county_name = geog_name,
+         values_emissions = emissions_metric_tons_co2e,
+         data_source),
+ nei_emissions %>% 
+            filter(inventory_year == 2020,
+                   sector_three == "Natural Gas") %>% 
+   ungroup() %>% 
+   mutate(data_source = "NEI - NG combustion",
+          values_emissions = as.numeric(values_emissions)) %>% 
+  select(inventory_year,
+         county_name,
+         values_emissions,
+         data_source),
+ natural_gas_c_2020 %>% 
+   rename(inventory_year = reporting_year)
+ )
+  
+fig_industrial_ng_emissions2 <- plot_ly(
+  data = natural_gas_comp2,
+  source = "fig-natural-gas-comparison",
+  x = ~county_name,
+  y = ~values_emissions,
+  color = ~data_source,
+  type = "bar",
+  # colors = c(
+  #   "EIA" = cprg_colors$cprg_da_yellow,
+  #   "Metropolitan Council" = colors$councilBlue
+  # ),
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    data_source, "<br>",
+    round(values_emissions / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "Industrial Natural Gas Emissions Inventory Comaparison",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    x_title = "County",
+    legend_title = "Data source"
+  ) %>%
+  layout(
+    barmode = "group",
+    hovermode = "closest",
+    legend = list(
+      traceorder = "normal"
+    )
+  )
+
+fig_industrial_ng_emissions2
+
+```
 
 ### Scaling to CTUs
 
