@@ -185,7 +185,7 @@ Across all sectors, we used the GWP values established in the Intergovernmental 
 tbl_gwp <- tibble(
   "Gas" = names(gwp),
   "100-year GWP value" = unlist(gwp),
-  "Source" = "IPCC AR5 (2014)"
+  "Source" = "IPCC AR6 (2021)"
 ) %>%
   mutate(Gas = case_when(
     Gas == "co2" ~ "CO₂",
