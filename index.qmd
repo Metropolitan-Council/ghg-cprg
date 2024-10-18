@@ -103,7 +103,7 @@ fig_energy_emissions <- plot_county_emissions(
 fig_energy_emissions
 ```
 
-The transportation sector generated `r round(emissions_total/1000000 * sector_percentages[[2]][2], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. This is a county-level, activity-based estimate that accounts for the total number of vehicle trips that originate in the county, terminate in the county, or both originate and terminate within the county for passenger and medium-duty commercial vehicles. Heavy-duty commercial vehicles are only accounted for trips that both originate and terminate within the county.
+The transportation sector generated `r round(emissions_total/1000000 * sector_percentages[[2]][2], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. This is a county-level estimate. 
 
 
 ```{r fig-transportation-emissions}
