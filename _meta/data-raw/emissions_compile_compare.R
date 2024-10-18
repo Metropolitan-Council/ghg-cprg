@@ -3,7 +3,7 @@ source("R/_load_pkgs.R")
 
 cprg_county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS")
 inventory_2018 <- readRDS("_meta/data/inventory_2018.RDS")
-nei_county_emissions <- readRDS("_transportation/data/epa_nei.RDS")
+nei_county_emissions <- readRDS("_transportation/data/epa_nei_envirofacts.RDS")
 
 cprg_county_emissions %>%
   group_by(year, sector) %>%

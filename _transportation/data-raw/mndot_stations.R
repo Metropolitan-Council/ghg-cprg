@@ -1,5 +1,6 @@
 # NOTE: this is a run-once script. It should not be regularly re-run
-
+# Create calibration points and lines from proportional passenger/medium/heavy
+# duty data
 source("R/_load_pkgs.R")
 
 ## read in traffic ratios
