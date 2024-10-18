@@ -84,14 +84,12 @@ ipcc_transportation <-
 # MN 2021 as shown in GHG Data Explorer is the sum of CO2 for fossil fuel combustion
 # fuel types Petroleum and Natural Gas
 
-unique(ipcc_transportation$fuel)
-
 ipcc %>%
   group_by(
     inventory_year, state, sector, category, subsector, subcategory1, subcategory2,
     subcategory3, subcategory4, fuel
   ) %>%
-  summarize(emissions_metric_tons_co2e = sum(ghg_equiv))
+  summarize(emissions_metric_tons_co2e = sum(emission_grams))
 
 
 # economic sectors -----
@@ -136,7 +134,7 @@ econ_transportation <- econ %>%
     values_from = "emission_grams",
     values_fill = 0
   ) %>%
-  clean_names()
+  clean_names() %>% 
 mutate(
   co2_co2_equivalent =
     sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o)),
