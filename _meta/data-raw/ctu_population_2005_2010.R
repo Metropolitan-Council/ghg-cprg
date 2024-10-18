@@ -12,7 +12,9 @@ source("R/_load_pkgs.R")
 # is this the best way to do it? maybe not but it's how i'm doing it
 # this section on hold until we can hook it up to FRED
 
-ctu_estimates_2005 <- councilR::import_from_FRED("POPULATION")
+source("N:/CommDev/Research/Research/FRED/passwords.R")
+
+ctu_estimates_2005 <- councilR::import_from_FRED("COMMUNITY_DESIGNATION")
 
 # 2011-2019
 ctu_estimates_2011 <- readxl::read_xlsx("_meta/data-raw/IntercensalEstimates.xlsx") %>% 
