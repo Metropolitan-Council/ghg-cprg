@@ -9,6 +9,8 @@ pollutant_key <- readRDS(file.path(here::here(), "_transportation/data/pollutant
 pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key_meta.RDS"))
 epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
 
+onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS"))
+
 epa_onroad_year_source <- epa_onroad_emissions_compile %>%
   mutate(emissions_year = as.character(emissions_year)) %>%
   select(emissions_year, data_source) %>%
@@ -69,6 +71,7 @@ epa_onroad_source_set %>%
     .groups = "keep"
   ) %>%
   ungroup() %>%
+  arrange(desc(emissions_years)) %>% 
   select(
     `Data source` = data_source,
     `MOVES edition` = moves_edition,
@@ -94,23 +97,27 @@ epa_onroad_emissions_compile %>%
     !is.na(emissions),
     pollutant != "emissions_metric_tons_co2e"
   ) %>%
-  select(emissions_year, interpolation, data_source, pollutant, pollutant_format) %>%
+  select(emissions_year, data_source, pollutant, pollutant_format) %>%
   unique() %>%
-  group_by(data_source, interpolation) %>%
+  group_by(data_source, emissions_year) %>%
   summarize(
     emissions_years = paste0(sort(unique(emissions_year)), collapse = ", "),
-    pollutants_available = paste0(unique(pollutant_format), collapse = ", ")
+    pollutants_available = paste0(unique(pollutant_format), collapse = ", "),
+    .groups = "keep"
   ) %>%
+  group_by(data_source, pollutants_available) %>% 
+  summarize(emissions_years = paste0(emissions_years, collapse = ", "),
+            .groups = "keep") %>% 
   ungroup() %>%
+  arrange(desc(emissions_years)) %>% 
   select(
     `Data source` = data_source,
-    `Interpolation` = interpolation,
     `Years` = emissions_years,
     `Pollutants` = pollutants_available
   ) %>%
   gt() %>%
   gt::opt_row_striping() %>%
-  fmt_markdown(columns = 4) %>%
+  fmt_markdown(columns = 3) %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
@@ -148,17 +155,13 @@ Vehicle and fuel types
 #| tbl-cap: "Vehicle and fuel types provided by EPA datasets"
 #| out-width: "95%"
 
-epa_onroad_emissions_compile %>%
-  select(vehicle_type, fuel_type, alt_mode, alt_mode_truck) %>%
-  unique() %>%
-  group_by(vehicle_type) %>%
-  summarize(fuel_types = paste0(unique(fuel_type), collapse = ", ")) %>%
-  select(
-    `Vehicle type` = vehicle_type,
-    `Fuel types` = fuel_types
-    # `Alternate vehicle type` = alt_mode,
-    # `Secondary alternate vehicle type` = alt_mode_truck
-  ) %>%
+onroad_emissions %>% 
+  select(vehicle_weight_label, vehicle_types_included, fuel_types_included) %>% 
+  unique() %>% 
+  arrange(vehicle_weight_label) %>% 
+  select(`Vehicle weight label` = vehicle_weight_label,
+         `Fuel types` = fuel_types_included, 
+         `Vehicle types` = vehicle_types_included) %>% 
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
