@@ -18,7 +18,7 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
     geog_level = "county",
     geog_name = county_name,
     source = paste0(vehicle_fuel_label, " fueled vehicles"),
-    category = paste0(vehicle_weight_label, " vehicles"),
+    category = category,
     data_source = data_source,
     factor_source = moves_edition
   ) %>%
@@ -202,10 +202,9 @@ emissions_all <- bind_rows(
         "Total energy",
         "Liquid stationary fuels",
         "Passenger vehicles",
-        "Transit vehicles",
+        "Buses",
         "Medium-duty vehicles",
-        "Heavy-duty vehicles",
-        "Other vehicles",
+        "Trucks",
         "Wastewater",
         "Solid waste",
         "Sequestration",

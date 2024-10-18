@@ -16,8 +16,10 @@ onroad_emissions <- epa_onroad_emissions_compile %>%
     !vehicle_type %in% c("Gas stations", "Trucks and buses")
   ) %>%
   group_by(
-    emissions_year, data_source, geoid, county_name, vehicle_weight_label,
-    vehicle_fuel_label
+    emissions_year, data_source, geoid, county_name,
+    vehicle_weight_label,
+    vehicle_fuel_label,
+    category
   ) %>%
   # group and summarize emissions
   summarize(

@@ -399,7 +399,7 @@ epa_onroad_emissions_compile <- epa_emissions_combine %>%
     emissions_year,
     data_source, interpolation, geoid, county_name,
     scc6, scc6_desc, fuel_type, vehicle_type, alt_mode,
-    alt_mode_truck, vehicle_fuel_label, vehicle_weight_label,
+    alt_mode_truck, vehicle_fuel_label, vehicle_weight_label, category,
     emissions_metric_tons_co2e, co2, ch4, n2o,
     co, no, nox, so2, nh3, pm10_pri, pm25_pri
   ) %>%
@@ -407,7 +407,7 @@ epa_onroad_emissions_compile <- epa_emissions_combine %>%
     emissions_year,
     data_source, interpolation, geoid, county_name,
     scc6, scc6_desc, fuel_type, vehicle_type, alt_mode,
-    alt_mode_truck, vehicle_fuel_label, vehicle_weight_label
+    alt_mode_truck, vehicle_fuel_label, vehicle_weight_label, category
   ) %>%
   pivot_longer(
     cols = c(
