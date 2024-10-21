@@ -83,13 +83,13 @@ nei_state_emissions <- nei_county_multi_year %>%
   ) %>%
   pivot_wider(
     names_from = pollutant_code,
-    values_from = emissions_grams
+    values_from = emissions_grams,
+    values_fill = 0
   ) %>%
   ungroup() %>%
   clean_names() %>%
   mutate(
-    co2_co2_equivalent =
-      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = T),
+    co2_co2_equivalent = co2 + (ch4 * gwp$ch4) + (n2o * gwp$n2o),
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
   )
 
@@ -124,14 +124,14 @@ nei_county_emissisons <- nei_county_multi_year %>%
       vehicle_weight_label,
       sector_three,
       sector_two
-    )
+    ),
+    values_fill = 0
   ) %>%
   clean_names() %>%
   rowwise() %>%
   # n2o and ch4 to co2 equivalency
   mutate(
-    co2_co2_equivalent =
-      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = T),
+    co2_co2_equivalent = co2 + (ch4 * gwp$ch4) + (n2o * gwp$n2o),
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
   )
 
