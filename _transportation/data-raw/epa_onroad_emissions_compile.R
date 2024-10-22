@@ -216,16 +216,16 @@ epa_emissions_summary <- epa_emissions_combine %>%
   group_by(emissions_year, geoid, county_name, data_source) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
-    co2 = sum(co2),
-    ch4 = sum(ch4),
-    n2o = sum(n2o),
-    pm10_pri = sum(pm10_pri),
-    pm25_pri = sum(pm25_pri),
-    so2 = sum(so2),
-    co = sum(co),
-    no = sum(no),
-    nox = sum(nox),
-    voc = sum(voc),
+    co2 = sum(co2, na.rm =T),
+    ch4 = sum(ch4, na.rm =T),
+    n2o = sum(n2o, na.rm =T),
+    pm10_pri = sum(pm10_pri, na.rm =T),
+    pm25_pri = sum(pm25_pri, na.rm =T),
+    so2 = sum(so2, na.rm =T),
+    co = sum(co, na.rm =T),
+    no = sum(no, na.rm =T),
+    nox = sum(nox, na.rm =T),
+    voc = sum(voc, na.rm =T),
     .groups = "keep"
   )
 
@@ -234,16 +234,16 @@ epa_emissions_summary_vehicle <- epa_emissions_combine %>%
   group_by(emissions_year, geoid, county_name, data_source, vehicle_type) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
-    co2 = sum(co2),
-    ch4 = sum(ch4),
-    n2o = sum(n2o),
-    pm10_pri = sum(pm10_pri),
-    pm25_pri = sum(pm25_pri),
-    so2 = sum(so2),
-    co = sum(co),
-    no = sum(no),
-    nox = sum(nox),
-    voc = sum(voc),
+    co2 = sum(co2, na.rm =T),
+    ch4 = sum(ch4, na.rm =T),
+    n2o = sum(n2o, na.rm =T),
+    pm10_pri = sum(pm10_pri, na.rm =T),
+    pm25_pri = sum(pm25_pri, na.rm =T),
+    so2 = sum(so2, na.rm =T),
+    co = sum(co, na.rm =T),
+    no = sum(no, na.rm =T),
+    nox = sum(nox, na.rm =T),
+    voc = sum(voc, na.rm =T),
     .groups = "keep"
   )
 
@@ -252,16 +252,16 @@ epa_emissions_summary_alt_mode_truck <- epa_emissions_combine %>%
   group_by(emissions_year, geoid, county_name, data_source, alt_mode_truck) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
-    co2 = sum(co2),
-    ch4 = sum(ch4),
-    n2o = sum(n2o),
-    pm10_pri = sum(pm10_pri),
-    pm25_pri = sum(pm25_pri),
-    so2 = sum(so2),
-    co = sum(co),
-    no = sum(no),
-    nox = sum(nox),
-    voc = sum(voc),
+    co2 = sum(co2, na.rm =T),
+    ch4 = sum(ch4, na.rm =T),
+    n2o = sum(n2o, na.rm =T),
+    pm10_pri = sum(pm10_pri, na.rm =T),
+    pm25_pri = sum(pm25_pri, na.rm =T),
+    so2 = sum(so2, na.rm =T),
+    co = sum(co, na.rm =T),
+    no = sum(no, na.rm =T),
+    nox = sum(nox, na.rm =T),
+    voc = sum(voc, na.rm =T),
     .groups = "keep"
   )
 
