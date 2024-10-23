@@ -1,7 +1,7 @@
 # Quick and dirty compilation for the RDG 90% draft
 source("R/_load_pkgs.R")
 # read in pre-processed proportions
-epa_nei_county_proportions <- readRDS("_transportation/data/epa_nei_county_proportions.RDS")
+epa_nei_county_proportions <- readRDS("_transportation/data/epa_nei_envirofacts_county_proportions.RDS")
 epa_nei <- readRDS("_transportation/data/epa_nei_envirofacts.RDS")
 cprg_county_emission <- readRDS("_meta/data/cprg_county_emissions.RDS")
 
