@@ -195,6 +195,10 @@ epa_equates_summary_interp <- epa_equates_summary %>%
   mutate(download_source = "EPA")
 
 
+# this causes a few odd grouping results, primarily due to rare fuel-vehicle
+# combinations - like ethanol passenger cars in 2005 leading to two
+# passenger car values in that year per county
+# This is mostly for validation and not saved, so just making note for now
 epa_equates_summary_vehicle <- epa_equates_summary_interp %>%
   group_by(
     emissions_year, geoid, county_name,
@@ -268,6 +272,9 @@ veh_type_comp <- bind_rows(
 # interpolation vs actual is in combination-long haul trucks,
 # followed by combination short-haul.
 # Also big variation in passenger trucks, passenger cars
+## Largest swings appear to be passenger car vs truck in 2012
+## These values are nearly mirrors of each other in counties
+## suggesting certain vehicles are differently labeled in each dataset that year
 veh_type_comp %>%
   filter(
     diff != 0,
@@ -294,8 +301,8 @@ bind_rows(
   epa_equates_summary_vehicle
 ) %>%
   filter(county_name == "Hennepin") %>%
-  View()
-group_by(county_name, vehicle_type, download_source) %>%
+  #View()
+group_by(county_name, scc6, download_source) %>%
   plot_ly(
     x = ~emissions_year,
     y = ~emissions_metric_tons_co2e,
