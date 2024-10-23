@@ -15,7 +15,7 @@ source("_transportation/data-raw/epa_onroad_emissions_compile.R")
 
 # for each data source, summarize by vehicle type, fuel type, county, year
 epa_emismod_n2o <- epa_emismod_summary %>%
-  group_by(calc_year, geoid, county_name, vehicle_type, fuel_type) %>%
+  group_by(calc_year, geoid, county_name, scc6) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     emissions_metric_tons_co2e_exclude_n2o = sum(emissions_metric_tons_co2e_exclude_n2o)
@@ -34,7 +34,7 @@ epa_emismod_n2o <- epa_emismod_summary %>%
 # filter(calc_year %in% c("2021", "2022"))
 
 epa_nei_n2o <- epa_nei_onroad_summary %>%
-  group_by(calc_year, geoid, county_name, vehicle_type, fuel_type) %>%
+  group_by(calc_year, geoid, county_name, scc6) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     emissions_metric_tons_co2e_exclude_n2o = sum(emissions_metric_tons_co2e_exclude_n2o)
@@ -55,7 +55,7 @@ epa_nei_n2o <- epa_nei_onroad_summary %>%
 
 
 epa_equates_n2o <- epa_equates_summary %>%
-  group_by(calc_year, geoid, county_name, vehicle_type, fuel_type) %>%
+  group_by(calc_year, geoid, county_name, scc6) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     emissions_metric_tons_co2e_exclude_n2o = sum(emissions_metric_tons_co2e_exclude_n2o)
