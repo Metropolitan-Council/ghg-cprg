@@ -1,0 +1,210 @@
+---
+title: EPA download guide
+output:
+    html_document: 
+        keep_md: no
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  eval = TRUE,
+  echo = FALSE,
+  comment = "#>"
+)
+
+options(
+  htmltools.dir.version = FALSE,
+  crayon.enabled = TRUE
+)
+
+old.hooks <- fansi::set_knit_hooks(knitr::knit_hooks)
+
+source(file.path(here::here(), "R/_load_pkgs.R"))
+
+epa_downloads <- readxl::read_xlsx(file.path(here::here(), "_transportation/data-raw/epa/epa_downloads.xlsx")) %>%
+  mutate(
+    direct_link = map(direct_link, ~ htmltools::a(href = .x, .x)) %>%
+      map(~ gt::html(as.character(.x)))
+  )
+
+epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_source_set.RDS"))
+```
+
+
+This document details how the _transportation/data-raw/epa/ folder is organized and lists the associated processing scripts for each dataset. 
+
+Altogether, this folder comes to nearly 200 GB. If you plan to replicate these downloads on your machine, account for space accordingly.
+
+All download links and essential description information is documented in [epa_downloads.xlsx](_transportation/data-raw/epa/epa_downloads.xlsx)
+
+Keep in mind that URLs are relatively fragile and may change at any time. 
+
+All datasets are processed from their unzipped locations in processing scripts. At the top of each script, there is a helper that looks for all the input datasets necessary. Ensure you have all the appropriate downloads unzipped and in the correct locations and run the scripts.
+
+If you want to preview any of the CSVs, open them using your machine's text editor (TextEdit on Mac, Notepad on Windows). Do NOT open using Excel - it will crash. 
+
+Copies of the intermediary datasets are available in our MS Team/OneDrive. 
+
+Summary of direct inputs and outputs of all data in `epa_onroad_emissions_compile`
+
+```{r}
+epa_onroad_source_set %>%
+  mutate(emissions_year = as.numeric(emissions_year)) %>%
+  arrange(emissions_year) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::cols_align(align = "left")
+```
+
+
+## Folder structure
+
+Note that to save space, some unzipped data irrelevant to our region (like EPA regions outside of MN and WI, Texas, and California datasets) have been deleted. 
+
+```{r}
+fs::dir_tree(".",
+  type = "directory",
+  recurse = 0
+)
+```
+
+### nei
+
+The NEI is available from the EPA in multiple places at different aggregation levels
+
+NEI should only be compared directly for years 2011 onward. Between 2008 and 2011, there were significant changes in the underlying source classification codes (SCCs).
+
+Within the epa/ folder, create folders for each NEI release year: 2008, 2011, 2014, 2017, and 2020.
+
+
+```{r}
+fs::dir_tree(
+  "./nei",
+  type = "directory",
+  recurse = 0
+)
+```
+
+
+Next, navigate to the links provided in the epa_downloads. These are data summaries broken out by on-road and non-road by EPA region. 
+
+When prompted to download, save each download its the corresponding folder. 
+
+NEI data are then compiled in a three locations 
+
+- [epa_nei_onroad_emissions.R](../epa_nei_onroad_emissions.R)
+- [epa_nei_nonroad_emissions.R](../epa_nei_nonroad_emissions.R)
+- [epa_nei_smoke_ff.R](../epa_nei_smoke_ff.R)
+
+NEI summary data are also fetched directly from the EnviroFacts API in [epa_nei_envirofacts.R](../epa_nei_envirofacts.R). 
+
+On-road activity data and non-road emissions are not currently processed and saved. See GitHub for relevant Issues. 
+
+```{r}
+epa_downloads %>%
+  filter(
+    group == "NEI",
+    measurement %in% c(
+      "emissions",
+      "smoke_flat_file"
+    )
+  ) %>%
+  select(-file_name, -description) %>%
+  arrange(category, measurement, inventory_year) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::cols_align(align = "left")
+```
+
+
+### air_emissions_modeling
+
+EPA teams continually work on air emissions modeling. These emissions modeling platforms support the development of emissions inputs for air quality modeling supporting efforts across government agencies. Platforms include everything from model-ready datasets for models like CMAQ, MOVES, and SMOKE, scripts, output datasets, shapefiles, tables, and documentation. 
+
+The organizing body for air emissions modeling is [Community Modeling and Analysis System (CMAS)](https://www.cmascenter.org/). CMAS offers a [discussion forum](https://forum.cmascenter.org/) for folks to collaborate and ask questions. Staff scientists from the EPA, air quality monitoring agencies, and other organizations answer questions and respond to bug reports. 
+
+County-level data are only available at the continental US (CONUS) level; these datasets include all counties in the US and are very large. 
+
+The data available for each platform year varies. Data is much more consistently available and standardized from 2014 onward. 
+
+Create a folder for each year (2011, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022v1), plus EQUATES and air_emissions_modeling_mn_wi.
+
+Air emissions modeling data are compiled in two locations 
+
+- [epa_air_emissions_modeling_onroad.R](../epa_air_emissions_modeling_onroad.R)
+- [epa_air_emissions_modeling_nonroad.R](../epa_air_emissions_modeling_nonroad.R)
+
+
+```{r}
+fs::dir_tree("./air_emissions_modeling/",
+  type = "directory",
+  recurse = 0
+)
+```
+
+
+```{r}
+epa_downloads %>%
+  filter(
+    group == "emismod",
+    measurement == "emissions",
+    inventory_year >= 2011
+  ) %>%
+  select(-file_name, -description) %>%
+  arrange(category, inventory_year) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::cols_align(align = "left")
+```
+
+
+#### EQUATES
+ 
+EQUATES data is located on the EPA FTP site *and* the CMAS Data Warehouse Google Drive. Direct links are provided for both locations. 
+ 
+EQUATES only has on-road data from 2002 to 2019. 
+
+Within /air_emissions_modeling/EQUATES, create a folder for each EQUATES year (2002, 2005, 2008, 2011, 2014, 2017) with the prefix "EQUATES_", plus two additional folders named "EQUATES_MN_WI" and "CMAS_Data_Warehouse". 
+Download the data for each of the given links and save in the appropriate location. If the direct Google Drive links are not working for you, download each one from the [directory page](https://drive.google.com/drive/folders/1bOb-xVqNu5uAY-wKXqTuV70qwqKkfpNz). 
+
+All EQUATES data is processed in [epa_equates_read.R](./../epa_equates_read.R)
+
+```{r}
+fs::dir_tree("./air_emissions_modeling/EQUATES/",
+  type = "directory",
+  recurse = 0
+)
+```
+
+```{r}
+epa_downloads %>%
+  filter(
+    group == "EQUATES",
+    measurement %in% c(
+      "emissions",
+      "smoke_flat_file"
+    )
+  ) %>%
+  select(-file_name, -description) %>%
+  arrange(category, inventory_year) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::cols_align(align = "left")
+```

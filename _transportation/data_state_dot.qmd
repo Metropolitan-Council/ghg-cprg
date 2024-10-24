@@ -100,7 +100,7 @@ MnDOT provides AADT road segments, which align with station identification numbe
 
 Then, we selected only the stations within the study area with observations in the last five years (2017-2021). Finally, we joined this data with AADT [@mndotVMTRouteSystem2021, @wisdotWisconsinVehicleMiles2021] road segments by station ID. The road segments sampled include multiple road functional classes and segments in all counties. All traffic sensor stations pulled were permanent, continuous monitoring sites. Data were cross-validated by verifying AADT and weight distribution fields on [MnDOT](https://mndot.maps.arcgis.com/apps/webappviewer/index.html?id=7b3be07daed84e7fa170a91059ce63bb) and [WisDOT](https://wisdot.maps.arcgis.com/apps/webappviewer/index.html?id=2e12a4f051de4ea9bc865ec6393731f8) traffic mapping applications. 
 
-Data were processed in R scripts: [wisdot_stations.R](data-raw/wisdot_stations.R), [mndot_extract_yearly_volume_trends.R](data-raw/mndot_extract_yearly_volume_trends.R),  [mndot_stations.R](data-raw/mndot_stations.R), [calibration_lines_points.R](data-raw/calibration_lines_points.R).  
+Data were processed in R scripts: [wisdot_stations.R](data-raw/wisdot_stations.R), [mndot_extract_yearly_volume_trends.R](data-raw/mndot_extract_yearly_volume_trends.R),  [mndot_stations.R](data-raw/mndot_stations.R), [stl_calibration_lines_points.R](data-raw/stl_calibration_lines_points.R).  
 
 ```{r fig-map-calibration-set}
 #| fig-cap: "StreetLight calibration locations and values"

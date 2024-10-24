@@ -9,17 +9,18 @@ cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
   select(-cprg_area)
 
 # transportation -----
-transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
+transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS") %>%
   ungroup() %>%
   rowwise() %>%
   mutate(
+    year = emissions_year,
     sector = "Transportation",
     geog_level = "county",
-    geog_name = zone,
-    category = paste0(stringr::str_to_sentence(vehicle_type), " vehicles"),
-    source = paste0(vehicle_weight_label, " vehicles"),
-    data_source = "StreetLight Data",
-    factor_source = paste0("EPA MOVES (", moves_year, ")")
+    geog_name = county_name,
+    source = paste0(vehicle_fuel_label, " fueled vehicles"),
+    category = category,
+    data_source = data_source,
+    factor_source = moves_edition
   ) %>%
   select(
     year,
@@ -169,9 +170,9 @@ emissions_all <- bind_rows(
     source = factor(source,
       c(
         # transportation levels
-        "Light-duty vehicles",
-        "Medium-duty vehicles",
-        "Heavy-duty vehicles",
+        "Gasoline fueled vehicles",
+        "Diesel fueled vehicles",
+        "Other fueled vehicles",
         # waste levels
         "Landfill",
         "Waste to energy",
@@ -201,7 +202,9 @@ emissions_all <- bind_rows(
         "Total energy",
         "Liquid stationary fuels",
         "Passenger vehicles",
-        "Commercial vehicles",
+        "Buses",
+        "Medium-duty vehicles",
+        "Trucks",
         "Wastewater",
         "Solid waste",
         "Sequestration",
