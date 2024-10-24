@@ -113,8 +113,8 @@ MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
   )
 
 
-write_rds(processed_mn_elecUtil_activityData, here("_energy", "data", "minnesota_elecUtils_ActivityAndEmissions.RDS"))
-write_rds(MNcounty_level_electricity_emissions, here("_energy", "data", "minnesota_county_ElecEmissions.RDS"))
+write_rds(processed_mn_elecUtil_activityData, here("_energy", "data", "minnesota_elecUtils_ActivityAndEmissions_2021.RDS"))
+write_rds(MNcounty_level_electricity_emissions, here("_energy", "data", "minnesota_county_ElecEmissions_2021.RDS"))
 
 # compare numbers we obtained to downscaled EIA numbers
 # read in EIA state estimate (mWh) for MN -- https://www.eia.gov/electricity/state/archive/2021/minnesota/
