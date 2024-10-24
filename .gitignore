@@ -1004,3 +1004,5 @@ _transportation/data-raw/epa/SCC\?format=CSV&sortFacet=scc%20level%20one&filenam
 _meta/data-raw/epa/us_ghgi/
 
 _transportation/data-raw/~$_source_method_compare.xlsx
+
+_transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2024-0812-144242.csv
