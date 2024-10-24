@@ -15,7 +15,7 @@ onroad_emissions <- epa_onroad_emissions_compile %>%
     pollutant == "emissions_metric_tons_co2e",
     !vehicle_type %in% c("Gas stations", "Trucks and buses")
   ) %>%
-  unique() %>% 
+  unique() %>%
   group_by(
     emissions_year, data_source, geoid, county_name,
     vehicle_weight_label,

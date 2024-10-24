@@ -301,8 +301,8 @@ bind_rows(
   epa_equates_summary_vehicle
 ) %>%
   filter(county_name == "Hennepin") %>%
-  #View()
-group_by(county_name, scc6, download_source) %>%
+  # View()
+  group_by(county_name, scc6, download_source) %>%
   plot_ly(
     x = ~emissions_year,
     y = ~emissions_metric_tons_co2e,

@@ -24,15 +24,17 @@ source("R/download_read_table.R")
 #  process type.
 
 # create directy if it does not exist
-if(!dir.exists("_transportation/data-raw/epa/air_emissions_modeling/2022v1/")){
-  dir_create(path = file.path("_transportation/data-raw/epa/air_emissions_modeling/2022v1/"),
-             recurse = TRUE)
+if (!dir.exists("_transportation/data-raw/epa/air_emissions_modeling/2022v1/")) {
+  dir_create(
+    path = file.path("_transportation/data-raw/epa/air_emissions_modeling/2022v1/"),
+    recurse = TRUE
+  )
 }
 
 scc6_desc <- download_read_table("https://gaftp.epa.gov/Air/emismod/2022/v1/reports/mobile/onroad/2022v1%20onroad%20comparisons%2022-26-32-38%2010aug2024.xlsx",
-                                 exdir = "_transportation/data-raw/epa/air_emissions_modeling/2022v1/",
-                                 col_types = "text",
-                                 sheet = 4
+  exdir = "_transportation/data-raw/epa/air_emissions_modeling/2022v1/",
+  col_types = "text",
+  sheet = 4
 ) %>%
   clean_names() %>%
   select(scc6, scc6_desc) %>%
@@ -47,7 +49,7 @@ scc6_desc <- download_read_table("https://gaftp.epa.gov/Air/emismod/2022/v1/repo
 
 # manual scc6 descriptions, compiled by Council staff
 scc6_desc_manual <- read.csv(file.path("_transportation/data-raw/epa/nei/scc6_descriptions_all.csv"),
-                             colClasses = "character"
+  colClasses = "character"
 )
 
 # scc onroad modeling -----
@@ -70,18 +72,18 @@ scc_onroad <- download_read_table(
     )[, 2] %>%
       stringr::str_trim(),
     fuel_type_detail = ifelse(fuel_type_detail == "Ethanol (E",
-                              "Ethanol (E-85)",
-                              fuel_type_detail
+      "Ethanol (E-85)",
+      fuel_type_detail
     )
   ) %>%
   # if scc6_desc is NA,
   # then construct it from the fuel and vehicle types
   mutate(scc6_desc = ifelse(is.na(scc6_desc),
-                            paste0(
-                              fuel_type_detail, "; ",
-                              str_to_sentence(vehicle_type)
-                            ),
-                            scc6_desc
+    paste0(
+      fuel_type_detail, "; ",
+      str_to_sentence(vehicle_type)
+    ),
+    scc6_desc
   ))
 
 # scc NEI -----
@@ -91,8 +93,8 @@ scc_onroad <- download_read_table(
 # contains onroad and nonroad, retired and active SCCs
 scc_complete_road <-
   download_read_table("https://sor-scc-api.epa.gov/sccwebservices/v1/SCC?format=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2024-0812-144242.csv",
-                      exdir = "_transportation/data-raw/epa/",
-                      col_types = "c"
+    exdir = "_transportation/data-raw/epa/",
+    col_types = "c"
   ) %>%
   clean_names() %>%
   filter(data_category %in% c("Onroad", "Nonroad")) %>%
@@ -208,15 +210,17 @@ scc_complete_road <-
 # download_read_table doesn't seem to work with this link
 # and you may need to download it manually by going to the URL through your
 # web browser
-if(!dir.exists("_transportation/data-raw/epa/air_emissions_modeling/EQUATES//")){
-  dir_create(path = file.path("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/"),
-             recurse = TRUE)
+if (!dir.exists("_transportation/data-raw/epa/air_emissions_modeling/EQUATES//")) {
+  dir_create(
+    path = file.path("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/"),
+    recurse = TRUE
+  )
 }
 
 if (!file.exists("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx")) {
   download.file("https://dep.nj.gov/wp-content/uploads/airplanning/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx",
-                destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx",
-                mode = "wb"
+    destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx",
+    mode = "wb"
   )
 }
 
@@ -261,8 +265,8 @@ scc_equates <- readxl::read_xlsx(
     )[, 2] %>%
       stringr::str_trim(),
     fuel_type = ifelse(fuel_type == "Ethanol (E",
-                       "Ethanol (E-85)",
-                       fuel_type
+      "Ethanol (E-85)",
+      fuel_type
     )
   ) %>%
   select(
@@ -276,7 +280,7 @@ scc_equates <- readxl::read_xlsx(
   unique() %>%
   mutate(scc6 = stringr::str_sub(scc, 1, 6)) %>%
   left_join(scc6_desc,
-            by = "scc6"
+    by = "scc6"
   ) %>%
   mutate(
     alt_vehicle_type =
@@ -307,8 +311,8 @@ scc_combine <- scc_complete_road %>%
   select(scc6, scc6_desc, scc6_desc_broad, scc6_desc_manual) %>%
   unique() %>%
   bind_rows(scc_equates %>%
-              select(scc6, scc6_desc) %>%
-              unique()) %>%
+    select(scc6, scc6_desc) %>%
+    unique()) %>%
   bind_rows(
     scc6_desc_manual %>%
       filter(scc6_new %in% c("220200", "220932")) %>%
@@ -386,15 +390,15 @@ scc_combine <- scc_complete_road %>%
         str_detect(fuel_type, "Gasoline") ~ "Gasoline",
         TRUE ~ "Other"
       ) %>%
-      factor(
-        levels = c(
-          "Gasoline",
-          "Diesel",
-          "Non-Diesel",
-          "Other"
+        factor(
+          levels = c(
+            "Gasoline",
+            "Diesel",
+            "Non-Diesel",
+            "Other"
+          ),
+          ordered = TRUE
         ),
-        ordered = TRUE
-      ),
     vehicle_weight_label = case_when(
       vehicle_type %in% c(
         "Light commercial trucks",
@@ -429,8 +433,9 @@ scc_combine <- scc_complete_road %>%
       ),
     category = case_when(
       vehicle_weight_label %in% c("Passenger") ~ paste0(vehicle_weight_label, " vehicles"),
-                                  TRUE ~ vehicle_weight_label
-      ))
+      TRUE ~ vehicle_weight_label
+    )
+  )
 
 # create metadata
 scc_combine_meta <- tibble::tribble(

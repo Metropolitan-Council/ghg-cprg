@@ -26,12 +26,12 @@ source("_transportation/data-raw/epa_moves.R")
 # corresponding datasets
 # these are currently commented out pending TBI updates
 # See https://github.com/Metropolitan-Council/ghg-cprg/issues/125
-# 
+#
 # source("_transportation/data-raw/tbi_vehicle_stats.R")
 # source("_transportation/data-raw/tbi_survey_stats.R")
 # source("_transportation/data-raw/tbi_trip_length.R")
 
-# LGGIT verification needs to be updated 
+# LGGIT verification needs to be updated
 # See https://github.com/Metropolitan-Council/ghg-cprg/issues/122
 # source("_transportation/data-raw/epa_lggit.R")
 # source("_transportation/data-raw/epa_nei_envirofacts.R")

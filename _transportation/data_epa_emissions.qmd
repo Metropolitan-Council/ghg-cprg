@@ -71,7 +71,7 @@ epa_onroad_source_set %>%
     .groups = "keep"
   ) %>%
   ungroup() %>%
-  arrange(desc(emissions_years)) %>% 
+  arrange(desc(emissions_years)) %>%
   select(
     `Data source` = data_source,
     `MOVES edition` = moves_edition,
@@ -105,11 +105,13 @@ epa_onroad_emissions_compile %>%
     pollutants_available = paste0(unique(pollutant_format), collapse = ", "),
     .groups = "keep"
   ) %>%
-  group_by(data_source, pollutants_available) %>% 
-  summarize(emissions_years = paste0(emissions_years, collapse = ", "),
-            .groups = "keep") %>% 
+  group_by(data_source, pollutants_available) %>%
+  summarize(
+    emissions_years = paste0(emissions_years, collapse = ", "),
+    .groups = "keep"
+  ) %>%
   ungroup() %>%
-  arrange(desc(emissions_years)) %>% 
+  arrange(desc(emissions_years)) %>%
   select(
     `Data source` = data_source,
     `Years` = emissions_years,
@@ -155,13 +157,15 @@ Vehicle and fuel types
 #| tbl-cap: "Vehicle and fuel types provided by EPA datasets"
 #| out-width: "95%"
 
-onroad_emissions %>% 
-  select(vehicle_weight_label, vehicle_types_included, fuel_types_included) %>% 
-  unique() %>% 
-  arrange(vehicle_weight_label) %>% 
-  select(`Vehicle weight label` = vehicle_weight_label,
-         `Fuel types` = fuel_types_included, 
-         `Vehicle types` = vehicle_types_included) %>% 
+onroad_emissions %>%
+  select(vehicle_weight_label, vehicle_types_included, fuel_types_included) %>%
+  unique() %>%
+  arrange(vehicle_weight_label) %>%
+  select(
+    `Vehicle weight label` = vehicle_weight_label,
+    `Fuel types` = fuel_types_included,
+    `Vehicle types` = vehicle_types_included
+  ) %>%
   gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
