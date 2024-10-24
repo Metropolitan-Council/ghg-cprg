@@ -22,6 +22,13 @@ source("R/download_read_table.R")
 #  SCC6 (the first six digits of the SCC) is a shortened version that helps
 #  group together like vehicle and fuel types, regardless of road type or
 #  process type.
+
+# create directy if it does not exist
+if(!dir.exists("_transportation/data-raw/epa/air_emissions_modeling/2022v1/")){
+  dir_create(path = file.path("_transportation/data-raw/epa/air_emissions_modeling/2022v1/"),
+             recurse = TRUE)
+}
+
 scc6_desc <- download_read_table("https://gaftp.epa.gov/Air/emismod/2022/v1/reports/mobile/onroad/2022v1%20onroad%20comparisons%2022-26-32-38%2010aug2024.xlsx",
                                  exdir = "_transportation/data-raw/epa/air_emissions_modeling/2022v1/",
                                  col_types = "text",
@@ -39,7 +46,7 @@ scc6_desc <- download_read_table("https://gaftp.epa.gov/Air/emismod/2022/v1/repo
   )
 
 # manual scc6 descriptions, compiled by Council staff
-scc6_desc_manual <- read.csv("_transportation/data-raw/epa/nei/scc6_descriptions_all.csv",
+scc6_desc_manual <- read.csv(file.path("_transportation/data-raw/epa/nei/scc6_descriptions_all.csv"),
                              colClasses = "character"
 )
 
@@ -201,6 +208,11 @@ scc_complete_road <-
 # download_read_table doesn't seem to work with this link
 # and you may need to download it manually by going to the URL through your
 # web browser
+if(!dir.exists("_transportation/data-raw/epa/air_emissions_modeling/EQUATES//")){
+  dir_create(path = file.path("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/"),
+             recurse = TRUE)
+}
+
 if (!file.exists("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx")) {
   download.file("https://dep.nj.gov/wp-content/uploads/airplanning/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx",
                 destfile = "_transportation/data-raw/epa/air_emissions_modeling/EQUATES/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx",
