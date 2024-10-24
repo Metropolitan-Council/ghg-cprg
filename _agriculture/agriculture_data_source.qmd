@@ -80,7 +80,7 @@ For animal waste deposited directly onto pasture, range, and paddock the total K
 
 ## Plant residue
 
-Croplands emit nitrous oxide when via legumes (i.e. soybeans, alfalfa, beans) that fix atmospheric N2 in the soil, some of which is converted to nitrous oxide via soil biochemical processes. Additionally, non-legume crops have residues that are left on soils and breakdown into the soil, emitting further nitrous oxide.
+Croplands emit nitrous oxide via legumes (i.e. soybeans, alfalfa, beans) that fix atmospheric N2 in the soil, some of which is converted to nitrous oxide via soil biochemical processes. Additionally, non-legume crops have residues that are left on soils and breakdown into the soil, emitting further nitrous oxide.
 
 ### Legumes: 
 Emissions (MTCO2E) = Crop Production (MT) × Mass ratio (residue/crop) × Dry Matter Fraction × N content × Emission Factor (1.0%) × 44/28 (Ratio of N2O to N2O-N) 
@@ -103,11 +103,12 @@ Emissions (MMTCO2E) = Total N × fraction volatilized (0.1 synthetic or 0.2 orga
 Some proportion of applied fertilized is leached into the soil and runs off into streams and adjacent soils, where it further is chemically converted to nitrous oxide.  
 
 
+### Remaining work
 
+## Missing subsectors
+Small emission sources not currently accounted for: liming, indirect N2O from livestock/soils-animal sheet, residue burning.
 
-### remaining work
-
-Small emission sources not currently accounted for: liming, indirect N2O from livestock/soils-animal sheet, residue burning, urea production.
+## Potential errors
 Calculation fixes - Fertilizer runoff (from ag soils-animals) sheet is currently calculated from total fertilizer but should only be from volatized, leading to a likely small over estimation.
 
 
