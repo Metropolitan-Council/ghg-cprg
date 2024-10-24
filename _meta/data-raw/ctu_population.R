@@ -5,8 +5,8 @@
 source("R/_load_pkgs.R")
 library(tidycensus)
 
-# 2011-2019
-ctu_estimates_2011 <- readxl::read_xlsx("_meta/data-raw/IntercensalEstimates.xlsx") %>% 
+## 2011-2019 ----
+ctu_estimates_2011 <- readxl::read_xlsx("_meta/data-raw/population/IntercensalEstimates.xlsx") %>% 
   mutate(
     geoid = paste0("27", COUNTY_CODE)
     ) %>% 
@@ -18,7 +18,7 @@ ctu_estimates_2011 <- readxl::read_xlsx("_meta/data-raw/IntercensalEstimates.xls
   ) 
 
 
-# 2000-2009 ------
+## 2000-2009 ------
 # Using Intercensal year estimates from US Census
 
 # directly download intercensal data years from census.gov
@@ -59,35 +59,53 @@ ctu_pop_intercensal <- read.csv("_meta/data-raw/population/sub-est00int.csv") %>
     ) # note on error: no they're not
   )
 
-# get 2020 from census
-ctu_2020 <- tidycensus::get_decennial(
-  geography = "county subdivision",
-  variables = "DP1_0001C",
-  year = 2020,
-  sumfile = "dp",
-  state = "MN"
-) %>% 
+## 2020 ----
+# from decennial census
+# jk it's already in the 2011 series
+
+# ctu_2020 <- tidycensus::get_decennial(
+#   geography = "county subdivision",
+#   variables = "DP1_0001C",
+#   year = 2020,
+#   sumfile = "dp",
+#   state = "MN"
+# ) %>% 
+#   mutate(
+#     geoid = str_sub(GEOID, start = 1, end = 5),
+#     ctuid = str_sub(GEOID, start = 6, end = 10),
+#     inventory_year = 2020
+#   ) %>% 
+#   filter(
+#     geoid %in% ctu_estimates_2011$geoid
+#   ) %>% 
+#   select(
+#     geoid,
+#     ctuid,
+#     inventory_year,
+#     ctu_population = value
+#   )
+
+## 2021-2023 ----
+# from Met Council estimates
+
+ctu_estimates_2021 <- readxl::read_xlsx("_meta/data-raw/population/EstimateSeries 1.xlsx") %>%  
   mutate(
-    geoid = str_sub(GEOID, start = 1, end = 5),
-    ctuid = str_sub(GEOID, start = 6, end = 10),
-    inventory_year = 2020
-  ) %>% 
-  filter(
-    geoid %in% ctu_estimates_2011$geoid
+    geoid = paste0("27", COUNTY_CODE)
   ) %>% 
   select(
     geoid,
-    ctuid,
-    inventory_year,
-    ctu_population = value
-  )
+    ctuid = CTU_ID_FIPS,
+    inventory_year = EST_YEAR,
+    ctu_population = POPTOTAL_EST
+  ) 
 
-# 2021 (sent in Teams)
 
-# join
+# join ----
 
 ctu_pop_estimates <- ctu_pop_intercensal %>% 
-  rbind(ctu_estimates_2011) %>%
+  rbind(ctu_estimates_2011,
+        # ctu_2020,
+        ctu_estimates_2021) %>%
   group_by(
     geoid, inventory_year
   ) %>% 
@@ -99,19 +117,25 @@ ctu_pop_estimates <- ctu_pop_intercensal %>%
     ctu_proportion_of_county_pop = ctu_population/county_population
   )
 
-## test
+## test ----
 # pop_summary <- ctu_pop_estimates %>%
 #   group_by(inventory_year, geoid) %>%
 #   summarize(pop_totals = sum(ctu_population))
 # 
 # ggplot(pop_summary, aes(x = inventory_year, y = pop_totals, color = geoid)) +
 #   geom_line()
+# 
+# ctu_pop_estimates %>%
+#   group_by(geoid, inventory_year) %>%
+#   summarize(total_proportion = sum(ctu_proportion_of_county_pop)) %>%
+#   filter(total_proportion != 1)
 
+## save ----
 ctu_pop_meta <- tribble(
   ~Column, ~Class, ~Description,
   "geoid", class(ctu_pop_estimates$geoid), "GEOID tag for MN county",
   "ctuid", class(ctu_pop_estimates$ctuid), "CTU census tag",
-  "inventory_year", class(ctu_pop_estimates$inventory_year), "Population year between 2000 and 2020",
+  "inventory_year", class(ctu_pop_estimates$inventory_year), "Population year, between 2000 and 2023",
   "ctu_population", class(ctu_pop_estimates$ctu_population),
   "Population of CTU in given year",
   "county_population", class(ctu_pop_estimates$county_population), 
@@ -123,8 +147,4 @@ ctu_pop_meta <- tribble(
 saveRDS(ctu_pop_estimates, file.path(here::here(), "_meta/data/ctu_population.RDS"))
 saveRDS(ctu_pop_meta, file.path(here::here(), "_meta/data/ctu_population_meta.RDS"))
 
-# test
-# ctu_pop_estimates %>% 
-#   group_by(geoid, inventory_year) %>% 
-#   summarize(total_proportion = sum(ctu_proportion_of_county_pop)) %>% 
-#   filter(total_proportion != 1)
+
