@@ -12,7 +12,7 @@ counties <- if_else(counties == "ST. CROIX", "ST CROIX", counties)
 ### this is an API to get livestock data (mammals) from the USDA.
 ### USDA has yearly survey data that provides heads of animals -
 ###  only cattle appear to be available after 2013.
-### USDA also has 5 year census data with more detailed information 
+### USDA also has 5 year census data with more detailed information
 ### (2007, 2012, 2017, 2022).
 ### Census data will be needed for hogs, sheep, and feedlots
 ### Cattle survey and census data should be compared in 2017 and 2022
@@ -38,18 +38,18 @@ usda_survey <- tidyUSDA::getQuickstat(
 ### pull out usable data
 usda_cattle <- usda_survey %>%
   filter(
-    # exclude missing values, this omits Ramsey county 
+    # exclude missing values, this omits Ramsey county
     # (the UofM has some cattle, but this is low importance)
-    !is.na(Value), 
+    !is.na(Value),
     # only CATTLE extends to 2021 for survey data,
     # will use census data and interpolation for other livestock
-    commodity_desc == "CATTLE", 
+    commodity_desc == "CATTLE",
     ## feedlot data also stops in 2013, so going to use census
     !grepl("FEED", short_desc)
-  ) %>% 
+  ) %>%
   as.data.frame() %>%
-  dplyr::select(-geometry)  %>% # Don't need this to be a spatial object
-  #create consistent labels for use with emission calculations
+  dplyr::select(-geometry) %>% # Don't need this to be a spatial object
+  # create consistent labels for use with emission calculations
   mutate(
     livestock_type =
       case_when(
@@ -65,21 +65,22 @@ usda_cattle <- usda_survey %>%
   group_by(year, county_name, livestock_type) %>%
   summarise(head_count = sum(Value))
 
-### Calf category appears to be all cattle plus calves. 
+### Calf category appears to be all cattle plus calves.
 ### The documentation is scarce, but subtracting away adult cattle appears to be correct.
 ### Update this matched county generated reports, validating this approach
 usda_cattle_corrected <- left_join(
   usda_cattle,
   usda_cattle %>%
     ## grab any non-calf categories (contains cows- no bull or steer data)
-    filter(grepl("Cows$", livestock_type)) %>% 
+    filter(grepl("Cows$", livestock_type)) %>%
     group_by(year, county_name) %>%
     summarise(cows_sum = sum(head_count)),
   by = c("year", "county_name")
 ) %>%
   ### subtract the adults from the combined category to leave calves
-  mutate(head_count = ifelse(livestock_type == "Calves", 
-                             head_count - cows_sum, head_count)) %>% 
+  mutate(head_count = ifelse(livestock_type == "Calves",
+    head_count - cows_sum, head_count
+  )) %>%
   dplyr::select(-cows_sum)
 
 # create metadata

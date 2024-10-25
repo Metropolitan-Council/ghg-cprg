@@ -3,7 +3,7 @@ source("R/_load_pkgs.R")
 # from the SIT tool
 
 # check that needed data are available locally
-if(!file.exists("_agriculture/data-raw/ag-module.xlsx")){
+if (!file.exists("_agriculture/data-raw/ag-module.xlsx")) {
   cli::cli_abort("Download agriculture data from MS Team")
 }
 
@@ -11,14 +11,17 @@ ag_constants <- read_rds("_agriculture/data/ag_constants.rds")
 
 ### pull out typical animal mass by year
 tam_cattle <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
-                                sheet = "TAM and NEx Rates",
-                                range = "A1:K39") %>% 
-  slice(-1) %>% 
-  pivot_longer(cols = 2:11, 
-               names_to = "livestock_type", 
-               values_to = "mass_kg") %>%
+  sheet = "TAM and NEx Rates",
+  range = "A1:K39"
+) %>%
+  slice(-1) %>%
+  pivot_longer(
+    cols = 2:11,
+    names_to = "livestock_type",
+    values_to = "mass_kg"
+  ) %>%
   rename(year = `Typical Animal Mass (Kg)`) %>%
-  mutate(mass_kg = as.numeric(mass_kg)) %>% 
+  mutate(mass_kg = as.numeric(mass_kg)) %>%
   filter(year >= 1990)
 
 ### pull our non-cattle weight from formatted ag_constants data
@@ -42,16 +45,18 @@ tam_other <- ag_constants %>%
 
 tam <- rows_append(
   # only need calves for K-N calc but keeping all census categories for posterity
-  tam_cattle %>% filter(livestock_type %in% c("Calves",
-                                              "Dairy Cows",
-                                              "Beef Cows",
-                                              "Steer Feedlot",
-                                              "Heifer Feedlot")), 
+  tam_cattle %>% filter(livestock_type %in% c(
+    "Calves",
+    "Dairy Cows",
+    "Beef Cows",
+    "Steer Feedlot",
+    "Heifer Feedlot"
+  )),
   tam_other %>%
     crossing(year = 2005:2021)
-)  ### repeat years for non-cattle (static)
+) ### repeat years for non-cattle (static)
 
-  
+
 tam_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",

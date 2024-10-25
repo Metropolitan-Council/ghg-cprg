@@ -29,17 +29,17 @@ usda_census <- tidyUSDA::getQuickstat(
   weighted_by_area = T
 ) %>%
   as.data.frame() %>%
-  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>% 
+  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>%
   dplyr::select(-geometry)
 
 
-### rename and aggregate variables from short_dec to matchable 
+### rename and aggregate variables from short_dec to matchable
 ### labels with EPA emissions data
 usda_census_agg <- usda_census %>%
   filter(
-    # first avoid including non-targeted labels 
+    # first avoid including non-targeted labels
     # as there is a lot of nesting and redundancy
-    domain_desc == "TOTAL", !is.na(Value), 
+    domain_desc == "TOTAL", !is.na(Value),
     short_desc %in% c(
       "CATTLE, (EXCL COWS) - INVENTORY",
       "CATTLE, ON FEED - INVENTORY",
@@ -69,17 +69,17 @@ usda_census_agg <- usda_census %>%
 
 ### subtract feedlot calves from total calves
 usda_census_corrected <- left_join(usda_census_agg,
-                                   usda_census_agg %>%
-                                     filter(grepl("Feedlot", livestock_type)) %>%
-                                     group_by(year, county_name) %>%
-                                     summarise(feedlot_sum = sum(head_count)),
-                                   by = c("year", "county_name")
+  usda_census_agg %>%
+    filter(grepl("Feedlot", livestock_type)) %>%
+    group_by(year, county_name) %>%
+    summarise(feedlot_sum = sum(head_count)),
+  by = c("year", "county_name")
 ) %>%
   mutate(head_count = ifelse(livestock_type == "Calves", head_count - feedlot_sum, head_count)) %>%
   dplyr::select(-feedlot_sum)
 
 ### interpolate between census years for all animal types
-census_interpolated <- left_join( 
+census_interpolated <- left_join(
   # this creates an empty grid of all desired year,livestock combinations
   expand.grid(
     # merged with our populated census data, it creates NAs wherever data is missing
@@ -88,18 +88,18 @@ census_interpolated <- left_join(
     livestock_type = unique(usda_census_corrected$livestock_type)
   ),
   usda_census_corrected
-) %>% 
+) %>%
   # override census years to be 0 if livestock-county combo is missing
   mutate(head_count = if_else(year %in% c(2002, 2007, 2012, 2017, 2022) &
-                                is.na(head_count), 0, head_count)) %>% 
+    is.na(head_count), 0, head_count)) %>%
   group_by(county_name, livestock_type) %>%
   arrange(year) %>%
   mutate(
-    # this function linearly interpolates NAs between known values, 
+    # this function linearly interpolates NAs between known values,
     # following the group_by
     head_count = zoo::na.approx(head_count, na.rm = FALSE),
     # marking whether values are from the census or interpolation
-    data_type = ifelse(year %in% c(2002, 2007, 2012, 2017, 2022), "census", "interpolated") 
+    data_type = ifelse(year %in% c(2002, 2007, 2012, 2017, 2022), "census", "interpolated")
   )
 
 
@@ -124,7 +124,7 @@ usda_poultry <- tidyUSDA::getQuickstat(
   weighted_by_area = T
 ) %>%
   as.data.frame() %>%
-  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>% 
+  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>%
   dplyr::select(-geometry)
 
 ### rename and aggregate
@@ -179,8 +179,8 @@ poultry_interpolated <- left_join( # this creates an empty grid of all desired y
 
 ## stack mammals and poultry
 
-livestock_interpolated <- bind_rows(census_interpolated, poultry_interpolated) %>% 
-  mutate(county_name = if_else(county_name == "ST CROIX", "St. Croix", str_to_sentence(county_name))) #homogenize county case to other data
+livestock_interpolated <- bind_rows(census_interpolated, poultry_interpolated) %>%
+  mutate(county_name = if_else(county_name == "ST CROIX", "St. Croix", str_to_sentence(county_name))) # homogenize county case to other data
 
 # create metadata
 livestock_census_meta <-

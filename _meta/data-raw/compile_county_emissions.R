@@ -75,9 +75,9 @@ electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_
 
 electric_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Electricity") %>%
-  #avoid duplication and NAs until category is infilled later
-  filter((year == 2005 & category == "Total") | 
-           (year == 2021 & category != "Total")) %>% 
+  # avoid duplication and NAs until category is infilled later
+  filter((year == 2005 & category == "Total") |
+    (year == 2021 & category != "Total")) %>%
   mutate(
     sector = "Energy",
     geog_level = "county",
@@ -94,9 +94,9 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
 
 natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Natural gas") %>%
-  #avoid duplication and NAs until category is infilled later
-  filter((year == 2005 & category == "Total") | 
-           (year == 2021 & category != "Total")) %>% 
+  # avoid duplication and NAs until category is infilled later
+  filter((year == 2005 & category == "Total") |
+    (year == 2021 & category != "Total")) %>%
   mutate(
     sector = "Energy",
     geog_level = "county",
@@ -124,8 +124,8 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
 
 ## agriculture ----
 
-agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds") %>% 
-  left_join(cprg_county %>% select(county_name,geoid)) %>% 
+agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds") %>%
+  left_join(cprg_county %>% select(county_name, geoid)) %>%
   mutate(
     year = inventory_year,
     sector = "Agriculture",
@@ -136,7 +136,7 @@ agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds"
     source = stringr::str_to_sentence(source),
     data_source = data_source,
     factor_source = factor_source
-  )  %>%
+  ) %>%
   select(names(transportation_emissions))
 
 ## natural systems ----

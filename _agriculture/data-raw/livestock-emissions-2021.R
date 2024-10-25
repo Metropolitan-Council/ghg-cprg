@@ -1,6 +1,6 @@
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
-#source("_agriculture/data-raw/_fetch_usda_key.R")
+# source("_agriculture/data-raw/_fetch_usda_key.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 ### load in EPA Ag SIT csvs
@@ -24,26 +24,26 @@ mn_feedlots <- read_csv("_agriculture/data-raw/mn-feedlots.csv") %>%
   filter(county_name %in% cprg_county$NAME)
 
 
-## there is no non-cattle survey data past 2013. 
+## there is no non-cattle survey data past 2013.
 ## Will need to use inventory data to in-fill other livestock
 
-#### need to standardize livestock category naming between enteric 
+#### need to standardize livestock category naming between enteric
 #### fermentation data and USDA livestock head count data
 enteric_formatted <- enteric %>%
   ### these columns are year, livestock type, and emission factor.
   ### The latter varies across livestock type AND year
-  dplyr::select(c(2, 3, 6)) %>% 
+  dplyr::select(c(2, 3, 6)) %>%
   # provide readable names
-  setNames(c("Year", "Livestock", "Emission_factor_kg_ch4_per_head")) %>% 
+  setNames(c("Year", "Livestock", "Emission_factor_kg_ch4_per_head")) %>%
   # bad formatting from Excel leaves many unusable rows
-  filter(!(is.na(Year) | is.na(Emission_factor_kg_ch4_per_head))) %>% 
+  filter(!(is.na(Year) | is.na(Emission_factor_kg_ch4_per_head))) %>%
   filter(Year >= 2005) %>% # as per our baseline
   mutate(Emission_factor_kg_ch4_per_head = as.numeric(Emission_factor_kg_ch4_per_head))
 
 ## check
 # unique(enteric_formatted$Livestock)
 
-### USDA data has heads of dairy cattle, beef cattle, and 'cattle including calves' 
+### USDA data has heads of dairy cattle, beef cattle, and 'cattle including calves'
 ### - My  interpretation is last category double counts previous
 ### EPA enteric fermentation has many categories, and multiple estimates
 ### for 'replacements' (calves). Taking the average of calves as they are similar
@@ -54,11 +54,11 @@ enteric_agg <- enteric_formatted %>%
   mutate(
     livestock_type =
       case_when(
-        ### enteric data differs between age classes of calves but USDA not, 
+        ### enteric data differs between age classes of calves but USDA not,
         ### so taking average value
         grepl("Replacement", Livestock) ~ "Calves",
         ### all feedlot cattle type will be classified as same
-        grepl("Feedlot", Livestock) ~ "Feedlot Cattle", 
+        grepl("Feedlot", Livestock) ~ "Feedlot Cattle",
         TRUE ~ Livestock
       )
   ) %>%
@@ -71,8 +71,9 @@ enteric_agg <- enteric_formatted %>%
 
 
 ### merge enteric cattle data with head count survey data
-cow_burps <- left_join(usda_cattle_corrected, enteric_agg, 
-                       by = c("year" = "Year", "livestock_type" = "livestock_type")) %>%
+cow_burps <- left_join(usda_cattle_corrected, enteric_agg,
+  by = c("year" = "Year", "livestock_type" = "livestock_type")
+) %>%
   mutate(
     kg_ch4 = kg_ch4_per_head * head_count, # total kg methane from livestock_type
     MT_ch4 = kg_ch4 / 1000, # convert kg to metric tons
@@ -88,8 +89,9 @@ cow_burps_survey <- cow_burps %>%
 ## merge this with enteric fermentation data by year
 animal_burps <- left_join(
   census_interpolated %>% filter(year >= 2005 & year <= 2021),
-  enteric_agg, 
-  by = c("year" = "Year", "livestock_type" = "livestock_type")) %>%
+  enteric_agg,
+  by = c("year" = "Year", "livestock_type" = "livestock_type")
+) %>%
   mutate(
     kg_ch4 = kg_ch4_per_head * head_count,
     MT_ch4 = kg_ch4 / 1000,
@@ -105,7 +107,7 @@ animal_burps <- left_join(
 # ) +
 #   geom_line(size = 1.5) +
 #   theme_bw()
-# 
+#
 # animal_burps %>%
 #   filter(year == 2021) %>%
 #   ungroup() %>%
@@ -127,15 +129,15 @@ animal_burps_census <- animal_burps %>%
 ### additional poultry categories that need inventory data
 ### manure data requires intermediate data between head count and an
 ###  emission factor such as volatile solids per kg of animal, max potential emissions
-###  
+###
 ### it's opaque in the SIT where these intermediate values are coming from
 ###  in the Excel workbook, so we're taking a shortcut and dividing the
-### calculated emission total by the head count to get a de facto emission factor. 
+### calculated emission total by the head count to get a de facto emission factor.
 ### The effect should be the same even if using the intermediate data
-### 
-### If it becomes apparent counties have unique manure management systems 
+###
+### If it becomes apparent counties have unique manure management systems
 ### relative to the rest of the state, this should be revisited.
-### UPDATE: Better understanding now of where values are coming from in Excel 
+### UPDATE: Better understanding now of where values are coming from in Excel
 ### Workbook so this shortcut can be revised to be more explicit and therefore flexible
 
 manure_ch4_formatted <- manure_ch4 %>%
@@ -194,7 +196,7 @@ manure_n2o_formatted <- manure_n2o %>%
 # combine data
 animal_poops <- left_join(
   left_join(census_interpolated %>% filter(year >= 2005 & year <= 2021), manure_ch4_formatted,
-            by = c("year" = "Year", "livestock_type" = "livestock_type")
+    by = c("year" = "Year", "livestock_type" = "livestock_type")
   ),
   manure_n2o_formatted,
   by = c("year" = "Year", "livestock_type" = "livestock_type")
@@ -218,8 +220,8 @@ animal_poops <- left_join(
 # ) +
 #   geom_line(size = 1.5) +
 #   theme_bw()
-# 
-# 
+#
+#
 # animal_poops %>%
 #   filter(year == 2021) %>%
 #   ungroup() %>%
@@ -238,7 +240,7 @@ ggplot(
 
 bird_poops <- left_join(
   left_join(poultry_interpolated %>% filter(year >= 2005 & year <= 2021), manure_ch4_formatted,
-            by = c("year" = "Year", "livestock_type" = "livestock_type")
+    by = c("year" = "Year", "livestock_type" = "livestock_type")
   ),
   manure_n2o_formatted,
   by = c("year" = "Year", "livestock_type" = "livestock_type")
@@ -312,8 +314,10 @@ ggplot(
 ### this is one of the intermediate steps skipped in calculating N2O emissions from manure above, but is necessary for soil runoff/leaching calc
 
 ### pull out typical animal mass by year
-tam_cattle <- pivot_longer(nex[2:40, 1:11], cols = 2:11, 
-                           names_to = "livestock_type", values_to = "mass_kg") %>%
+tam_cattle <- pivot_longer(nex[2:40, 1:11],
+  cols = 2:11,
+  names_to = "livestock_type", values_to = "mass_kg"
+) %>%
   rename(year = `Typical Animal Mass (Kg)`) %>%
   mutate(mass_kg = as.numeric(mass_kg)) %>%
   filter(year >= 2005 & year <= 2021)
@@ -346,8 +350,8 @@ tam <- rows_append(
 
 # pull out cattle nitrogen excreted by head per year - mn and wi
 nex_cattle <- pivot_longer(nex[, 14:47] %>% row_to_names(1),
-                           cols = 3:34, names_to = "year", 
-                           values_to = "kg_nex_head_yr"
+  cols = 3:34, names_to = "year",
+  values_to = "kg_nex_head_yr"
 ) %>%
   filter(state %in% c("MN", "WI")) %>%
   mutate(livestock_type = case_when(
@@ -363,8 +367,8 @@ nex_cattle <- pivot_longer(nex[, 14:47] %>% row_to_names(1),
 
 # pull out other livestock nitrogen excreted by head per year - mn and wi. note these are in per day and per kg animal
 nex_other <- pivot_longer(nex[, 53:69] %>% row_to_names(1),
-                          cols = 2:17, names_to = "livestock_type", 
-                          values_to = "kg_nex_day_kg_animal"
+  cols = 2:17, names_to = "livestock_type",
+  values_to = "kg_nex_day_kg_animal"
 ) %>%
   mutate(
     livestock_type = case_when(
@@ -396,9 +400,11 @@ KN_excretion_runoff <- left_join(
     mutate(county_name = if_else(NAME == "St. Croix", "ST CROIX", toupper(NAME))) %>%
     dplyr::select(-NAME)
 ) %>%
-  left_join(., nex_formatted, by = c("STATE_ABB" = "state",
-                                     "livestock_type" = "livestock_type",
-                                     "year" = "year")) %>%
+  left_join(., nex_formatted, by = c(
+    "STATE_ABB" = "state",
+    "livestock_type" = "livestock_type",
+    "year" = "year"
+  )) %>%
   mutate(total_kn_excretion_kg = head_count * kg_nex_head_yr)
 
 nex_runoff_emissions <- KN_excretion_runoff %>%
@@ -406,7 +412,7 @@ nex_runoff_emissions <- KN_excretion_runoff %>%
   summarize(mt_total_kn_excretion = sum(total_kn_excretion_kg / 1000)) %>%
   mutate(
     # multiply total k-n excretion by volatization percent and then leaching EF
-    mt_n = mt_total_kn_excretion * (1 - ag_constants_vec["VolPercent"]) * ag_constants_vec["LeachEF"], 
+    mt_n = mt_total_kn_excretion * (1 - ag_constants_vec["VolPercent"]) * ag_constants_vec["LeachEF"],
     mt_n2o = mt_n * ag_constants_vec["LeachEF2"] * ag_constants_vec["N2O_N2"],
     mt_co2e = mt_n2o * gwp$n2o
   )
@@ -425,54 +431,54 @@ manure_mgmt_perc <- ag_manure_mgmt %>%
 
 
 manure_soils <- left_join(KN_excretion_runoff %>% filter(year != 2022),
-                          manure_mgmt_perc %>% filter(management_type == "Managed") %>%
-                            dplyr::select(-management_type) %>%
-                            rename(percent_managed = percentage),
-                          by = c(
-                            "year" = "year",
-                            "livestock_type" = "livestock_type",
-                            "STATE_ABB" = "state"
-                          )
+  manure_mgmt_perc %>% filter(management_type == "Managed") %>%
+    dplyr::select(-management_type) %>%
+    rename(percent_managed = percentage),
+  by = c(
+    "year" = "year",
+    "livestock_type" = "livestock_type",
+    "STATE_ABB" = "state"
+  )
 ) %>%
   left_join(., manure_mgmt_perc %>% filter(management_type == "Daily_spread") %>%
-              dplyr::select(-management_type) %>%
-              rename(percent_daily_spread = percentage),
-            by = c(
-              "year" = "year",
-              "livestock_type" = "livestock_type",
-              "STATE_ABB" = "state"
-            )
+    dplyr::select(-management_type) %>%
+    rename(percent_daily_spread = percentage),
+  by = c(
+    "year" = "year",
+    "livestock_type" = "livestock_type",
+    "STATE_ABB" = "state"
+  )
   ) %>%
   left_join(., manure_mgmt_perc %>% filter(management_type == "Pasture_range") %>%
-              dplyr::select(-management_type) %>%
-              rename(percent_pasture = percentage),
-            by = c(
-              "year" = "year",
-              "livestock_type" = "livestock_type",
-              "STATE_ABB" = "state"
-            )
+    dplyr::select(-management_type) %>%
+    rename(percent_pasture = percentage),
+  by = c(
+    "year" = "year",
+    "livestock_type" = "livestock_type",
+    "STATE_ABB" = "state"
+  )
   ) %>%
   ### some livestock_type have manure management determined from other sources or within SIT workbook
   mutate(
     percent_managed = case_when(
       livestock_type %in% c("Broilers", "Pullets") ~ 1,
-      # sheep have unclear math happening in SIT, with ratio flipping from 
+      # sheep have unclear math happening in SIT, with ratio flipping from
       # 1/3 to 2/3 depending on whether on feed. Taking middle value.
       livestock_type %in% c("Sheep") ~ 0.5,
       TRUE ~ percent_managed
     ),
     percent_pasture = case_when(
       livestock_type %in% c("Calves") ~ 1,
-      # sheep have unclear math happening in SIT, with ratio flipping from 
+      # sheep have unclear math happening in SIT, with ratio flipping from
       # 1/3 to 2/3 depending on whether on feed. Taking middle value.
-      livestock_type %in% c("Sheep") ~ 0.5, 
+      livestock_type %in% c("Sheep") ~ 0.5,
       TRUE ~ percent_pasture
     ),
     managed_nex = total_kn_excretion_kg * percent_managed,
     pasture_nex = total_kn_excretion_kg * percent_pasture,
     daily_spread_nex = total_kn_excretion_kg * percent_daily_spread
   ) %>%
-  replace(is.na(.), 0) 
+  replace(is.na(.), 0)
 ## lots of NAs for livestock without certain manure management, need it to be zero for next step
 
 manure_soils_emissions <- manure_soils %>%
@@ -506,19 +512,22 @@ livestock_emissions <- bind_rows(
   cow_burps %>% group_by(year, county_name) %>%
     summarize(MT_co2e = sum(CO2e), MT_gas = sum(MT_ch4)) %>%
     mutate(category = "livestock", source = "enteric_fermentation", gas_type = "ch4"),
-  livestock_poops %>% group_by(year, county_name) %>% 
+  livestock_poops %>% group_by(year, county_name) %>%
     summarize(MT_co2e = sum(CO2e), MT_gas = sum(MT_ch4)) %>%
     mutate(category = "livestock", source = "manure_management", gas_type = "ch4"),
   livestock_poops %>% group_by(year, county_name) %>%
     summarize(MT_co2e = sum(CO2e), MT_gas = sum(MT_n2o)) %>%
     mutate(category = "livestock", source = "manure_management", gas_type = "n2o"),
   manure_soils_emissions %>% group_by(year, county_name) %>%
-    summarize(MT_co2e = sum(MT_co2e_manure_application + MT_co2e_pasture),
-              MT_gas = sum(MT_n2o_manure_application + MT_n2o_pasture)
+    summarize(
+      MT_co2e = sum(MT_co2e_manure_application + MT_co2e_pasture),
+      MT_gas = sum(MT_n2o_manure_application + MT_n2o_pasture)
     ) %>%
-    mutate(category = "livestock", 
-           source = "direct_manure_soil_emissions",
-           gas_type = "n2o"),
+    mutate(
+      category = "livestock",
+      source = "direct_manure_soil_emissions",
+      gas_type = "n2o"
+    ),
   nex_runoff_emissions %>%
     group_by(year, county_name) %>% summarize(
       MT_co2e = sum(mt_co2e),
@@ -529,7 +538,8 @@ livestock_emissions <- bind_rows(
   filter(year != 2022) %>%
   replace(is.na(.), 0) %>% ## Anoka has missing enteric fermentation data from 2018-2021. They should have some livestock according to online USDA, revisit.
   mutate(county_name = if_else(county_name == "ST CROIX", "St. Croix",
-                               str_to_sentence(county_name))) # match case to other files
+    str_to_sentence(county_name)
+  )) # match case to other files
 
 livestock_emissions_meta <-
   tibble::tribble(

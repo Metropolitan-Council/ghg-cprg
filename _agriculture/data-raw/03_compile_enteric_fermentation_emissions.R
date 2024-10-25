@@ -1,6 +1,6 @@
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
-#source("_agriculture/data-raw/_fetch_usda_key.R")
+# source("_agriculture/data-raw/_fetch_usda_key.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 ### load in EPA Ag SIT csvs
@@ -15,43 +15,51 @@ ag_constants_vec <- ag_constants %>%
   tibble::deframe()
 
 # livestock data
-usda_livestock <- readRDS("_agriculture/data/usda_census_data.rds") %>% 
+usda_livestock <- readRDS("_agriculture/data/usda_census_data.rds") %>%
   mutate(state = if_else(county_name %in% c("St. Croix", "Pierce"), "Wisconsin", "Minnesota"))
 
 ## merge livestock data with enteric emission factors, multiply and convert to co2e
 animal_burps <- left_join(
   usda_livestock %>% filter(year >= 2005 & year <= 2021),
-  enteric_ef, 
-  by = c("year", "livestock_type", "state")) %>%
-  filter(!is.na(mt_ch4_head_yr)) %>%  #poultry do not contribute to enteric fermentation
+  enteric_ef,
+  by = c("year", "livestock_type", "state")
+) %>%
+  filter(!is.na(mt_ch4_head_yr)) %>% # poultry do not contribute to enteric fermentation
   mutate(
     gas_type = "ch4",
     mt_gas = mt_ch4_head_yr * head_count,
     mt_co2e = mt_gas * gwp$ch4,
-  ) %>% 
-  group_by(year,county_name,gas_type) %>% 
-  summarize(mt_gas = sum(mt_gas), mt_co2e = sum(mt_co2e)) %>% 
-  select(year, county_name,gas_type, mt_gas, mt_co2e)
+  ) %>%
+  group_by(year, county_name, gas_type) %>%
+  summarize(mt_gas = sum(mt_gas), mt_co2e = sum(mt_co2e)) %>%
+  select(year, county_name, gas_type, mt_gas, mt_co2e)
 
-animal_burps_out <- animal_burps %>% 
+animal_burps_out <- animal_burps %>%
   left_join(., cprg_county %>% select(geoid, county_name) %>% st_drop_geometry(),
-            by = c("county_name")) %>% 
-  rename(inventory_year = year, 
-         value_emissions = mt_gas, 
-         units_emissions = gas_type) %>% 
-  mutate(sector = "Agriculture",
-         category = "Livestock",
-         source = "Enteric fermentation",
-         units_emissions = case_when(
-           units_emissions == "ch4" ~ "Metric tons CH4",
-           units_emissions == "n2o" ~ "Metric tons N2O",
-           units_emissions == "co2" ~ "Metric tons CO2"
-         ),
-         data_source = "USDA livestock census",
-         factor_source = "EPA SIT") %>% 
-  ungroup() %>% 
-  select(geoid, inventory_year, sector, category, source,
-         data_source, factor_source, value_emissions, units_emissions, mt_co2e)
+    by = c("county_name")
+  ) %>%
+  rename(
+    inventory_year = year,
+    value_emissions = mt_gas,
+    units_emissions = gas_type
+  ) %>%
+  mutate(
+    sector = "Agriculture",
+    category = "Livestock",
+    source = "Enteric fermentation",
+    units_emissions = case_when(
+      units_emissions == "ch4" ~ "Metric tons CH4",
+      units_emissions == "n2o" ~ "Metric tons N2O",
+      units_emissions == "co2" ~ "Metric tons CO2"
+    ),
+    data_source = "USDA livestock census",
+    factor_source = "EPA SIT"
+  ) %>%
+  ungroup() %>%
+  select(
+    geoid, inventory_year, sector, category, source,
+    data_source, factor_source, value_emissions, units_emissions, mt_co2e
+  )
 
 animal_burps_meta <-
   tibble::tribble(

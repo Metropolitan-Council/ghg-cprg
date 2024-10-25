@@ -12,46 +12,51 @@ ag_constants_vec <- ag_constants %>%
 
 ### format needed variables for emission estimates
 ag_values <- left_join(
-  ag_constants %>% 
-  filter(grepl("rcmr", short_text)) %>% 
-  mutate(crop_type = str_replace(short_text, "_rcmr", ""),
-         value_rcmr = value
-  ) %>% 
+  ag_constants %>%
+    filter(grepl("rcmr", short_text)) %>%
+    mutate(
+      crop_type = str_replace(short_text, "_rcmr", ""),
+      value_rcmr = value
+    ) %>%
     select(value_rcmr, crop_type),
-  ag_constants %>% 
-  filter(grepl("rdmf", short_text)) %>% 
-  mutate(crop_type = str_replace(short_text, "_rdmf", ""),
-         value_rdmf = value
-  ) %>% 
+  ag_constants %>%
+    filter(grepl("rdmf", short_text)) %>%
+    mutate(
+      crop_type = str_replace(short_text, "_rdmf", ""),
+      value_rdmf = value
+    ) %>%
     select(value_rdmf, crop_type),
   by = c("crop_type")
-  ) %>% 
+) %>%
   left_join(.,
-            ag_constants %>% 
-              filter(grepl("fra", short_text)) %>% 
-              mutate(crop_type = str_replace(short_text, "_fra", ""),
-                     value_fra = value
-              ) %>% 
-              select(value_fra, crop_type),
-            by = c("crop_type")
-  )  %>% 
+    ag_constants %>%
+      filter(grepl("fra", short_text)) %>%
+      mutate(
+        crop_type = str_replace(short_text, "_fra", ""),
+        value_fra = value
+      ) %>%
+      select(value_fra, crop_type),
+    by = c("crop_type")
+  ) %>%
   left_join(.,
-            ag_constants %>% 
-              filter(grepl("ncr", short_text)) %>% 
-              mutate(crop_type = str_replace(short_text, "_ncr", ""),
-                     value_ncr = value
-              ) %>% 
-              select(value_ncr, crop_type),
-            by = c("crop_type")
-  ) %>% 
+    ag_constants %>%
+      filter(grepl("ncr", short_text)) %>%
+      mutate(
+        crop_type = str_replace(short_text, "_ncr", ""),
+        value_ncr = value
+      ) %>%
+      select(value_ncr, crop_type),
+    by = c("crop_type")
+  ) %>%
   mutate(crop_type = if_else(crop_type == "beans",
-                             "dry beans",
-                             crop_type))
+    "dry beans",
+    crop_type
+  ))
 
 
 # determine N delivered to soils
-soil_residue_emissions <- crops %>% 
-  left_join(., ag_values) %>% 
+soil_residue_emissions <- crops %>%
+  left_join(., ag_values) %>%
   mutate(
     MT_N_to_soil = if_else(
       crop_type == "alfalfa",
@@ -72,18 +77,22 @@ soil_residue_emissions <- crops %>%
     # clarify how this is being converted
     mt_n2o = mt_n_soils * ag_constants_vec["EF_Dir"] * ag_constants_vec["N2O_N2"],
     mt_co2e = mt_n2o * gwp$n2o
-  ) %>% 
-  #format to style guide
-  rename( value_emissions = mt_n2o) %>% 
-  mutate(sector = "Agriculture",
-         category = "Cropland",
-         source = "Soil residue emissions",
-         units_emissions = "Metric tons N2O",
-         data_source = "USDA crop production survey",
-         factor_source = "EPA SIT") %>% 
-  select(geoid, inventory_year, sector, category, source,
-         data_source, factor_source, value_emissions, units_emissions, mt_co2e)
-  
+  ) %>%
+  # format to style guide
+  rename(value_emissions = mt_n2o) %>%
+  mutate(
+    sector = "Agriculture",
+    category = "Cropland",
+    source = "Soil residue emissions",
+    units_emissions = "Metric tons N2O",
+    data_source = "USDA crop production survey",
+    factor_source = "EPA SIT"
+  ) %>%
+  select(
+    geoid, inventory_year, sector, category, source,
+    data_source, factor_source, value_emissions, units_emissions, mt_co2e
+  )
+
 soil_residue_emissions_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",

@@ -11,17 +11,17 @@ cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 landcover <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_2001_2021.RDS"))
 
 county_area <- cprg_county %>%
-  mutate(county_area_sqkm = as.numeric(st_area(.)/ 10^6)) %>%
-  select(county_name, county_area_sqkm) %>% 
+  mutate(county_area_sqkm = as.numeric(st_area(.) / 10^6)) %>%
+  select(county_name, county_area_sqkm) %>%
   st_drop_geometry()
 
-county_agriculture <- landcover %>% 
-  filter(!is.na(area), land_cover_type == "Cropland") %>% 
+county_agriculture <- landcover %>%
+  filter(!is.na(area), land_cover_type == "Cropland") %>%
   left_join(., county_area,
-            by = c("county" = "county_name")) %>% 
-  group_by(year, county) %>% 
+    by = c("county" = "county_name")
+  ) %>%
+  group_by(year, county) %>%
   mutate(percent_area = area / county_area_sqkm)
- 
 ```
 
 Agricultural emissions are derived from two primary sources. First is the USDA agricultural census which provides county level livestock head counts, crop production, and fertilizer sales. Second is the EPA State Inventory Tool (SIT) that provides state specific values for emission factors as well as activity data such as state-wide fertilizer application (different from sales). These are both the highest rank of data.
@@ -129,14 +129,17 @@ We would expect that counties with higher amounts of agricultural land would hav
 #| out-width: "95%"
 
 
-cropland_2021 <- county_agriculture %>% 
-  filter(year == 2021) %>% 
-  left_join(., county_emissions %>% 
-              filter(sector == 'Agriculture',
-                     year == 2021) %>% 
-              group_by(geog_name, category) %>% 
-              summarize(ag_emissions = sum(emissions_metric_tons_co2e)),
-            by = c("county" = "geog_name"))
+cropland_2021 <- county_agriculture %>%
+  filter(year == 2021) %>%
+  left_join(., county_emissions %>%
+    filter(
+      sector == "Agriculture",
+      year == 2021
+    ) %>%
+    group_by(geog_name, category) %>%
+    summarize(ag_emissions = sum(emissions_metric_tons_co2e)),
+  by = c("county" = "geog_name")
+  )
 
 
 fig_cropland_area_emissions <- plot_ly(
@@ -146,8 +149,8 @@ fig_cropland_area_emissions <- plot_ly(
   data = cropland_2021,
   y = ~ag_emissions,
   x = ~area,
-  color = ~category,  # Map colors by category
-  colors = unlist(category_colors),  # Convert list to vector of colors
+  color = ~category, # Map colors by category
+  colors = unlist(category_colors), # Convert list to vector of colors
   hovertemplate = ~ paste0(
     county, " County", "<br>",
     "Area: ", scales::comma(area), " square kilometers", "<br>",
@@ -164,35 +167,35 @@ fig_cropland_area_emissions <- plot_ly(
 )
 
 # Separate linear trend lines for each category
-for(cat in levels(cropland_2021$category)) {
+for (cat in levels(cropland_2021$category)) {
   cat_data <- cropland_2021 %>%
-    filter(category == cat, !is.na(area), !is.na(ag_emissions))  # Filter out NA values
+    filter(category == cat, !is.na(area), !is.na(ag_emissions)) # Filter out NA values
 
   # Only fit model if there's enough data
-  if(nrow(cat_data) > 1) {
+  if (nrow(cat_data) > 1) {
     # Fit the linear model
     model <- lm(ag_emissions ~ area, data = cat_data)
-    
+
     # Create a sequence of area values to plot the line
     area_seq <- seq(min(cat_data$area), max(cat_data$area), length.out = 100)
-    
+
     # Predict ag_emissions for the sequence of area values
     emissions_pred <- predict(model, newdata = data.frame(area = area_seq))
-    
+
     # Add the line of best fit
     fig_cropland_area_emissions <- fig_cropland_area_emissions %>%
       add_trace(
         x = area_seq,
         y = emissions_pred,
         type = "scatter",
-        mode = "lines",  # Ensure mode is 'lines' for the trend line
+        mode = "lines", # Ensure mode is 'lines' for the trend line
         line = list(
-          color = category_colors[[cat]],  # Use the same color as the points
-          dash = 'solid',
+          color = category_colors[[cat]], # Use the same color as the points
+          dash = "solid",
           width = 2
         ),
-        showlegend = FALSE,  # Hide trend line from legend
-        inherit = FALSE  # Prevent inheritance of other properties like hovertemplate
+        showlegend = FALSE, # Hide trend line from legend
+        inherit = FALSE # Prevent inheritance of other properties like hovertemplate
       )
   }
 }
@@ -216,7 +219,6 @@ fig_cropland_area_emissions <- fig_cropland_area_emissions %>%
   )
 
 fig_cropland_area_emissions
-
 ```
 
 As expected, we see that livestock and crop emissions increases with area devoted to agriculture. There is potentially a non-linear relationship with livestock, with smaller agricultural areas less likely to have large livestock populations, making the fit more tenuous for these counties.
@@ -229,16 +231,18 @@ Most USDA data is available from a five year census; we interpolate
 #| fig-cap: "A scatter plot"
 #| out-width: "95%"
 
-cattle_survey <- readRDS(file.path(here::here(), "_agriculture/data/usda_cattle_survey.RDS")) %>% 
-  mutate(county_name = if_else(county_name == "ST CROIX", 
-                               "St. Croix", 
-                               str_to_sentence(county_name)))
-cattle_census <- readRDS(file.path(here::here(), "_agriculture/data/usda_census_data.RDS")) %>% 
+cattle_survey <- readRDS(file.path(here::here(), "_agriculture/data/usda_cattle_survey.RDS")) %>%
+  mutate(county_name = if_else(county_name == "ST CROIX",
+    "St. Croix",
+    str_to_sentence(county_name)
+  ))
+cattle_census <- readRDS(file.path(here::here(), "_agriculture/data/usda_census_data.RDS")) %>%
   # calves were previous split to those in and out of feedlots
-  mutate(livestock_type = if_else(livestock_type == "Feedlot Cattle", 
-                                  "Calves", 
-                                  livestock_type)) %>% 
-  group_by(year, county_name, data_type, livestock_type) %>% 
+  mutate(livestock_type = if_else(livestock_type == "Feedlot Cattle",
+    "Calves",
+    livestock_type
+  )) %>%
+  group_by(year, county_name, data_type, livestock_type) %>%
   summarize(head_count = sum(head_count))
 # Merging cattle_survey and cattle_census on the common columns
 cattle_merged <- cattle_survey %>%
@@ -256,18 +260,18 @@ cattle_comparison <- plot_ly(
   data = cattle_merged
 ) %>%
   add_trace(
-    x = ~head_count_survey, 
-    y = ~head_count_census, 
-    color = ~livestock_type,  # Color by livestock_type
-    symbol = ~data_type,      # Change symbol based on data_type
-    symbols = c('census' = 'circle', 'interpolated' = 'triangle-up'),  # Custom symbols for data_type
+    x = ~head_count_survey,
+    y = ~head_count_census,
+    color = ~livestock_type, # Color by livestock_type
+    symbol = ~data_type, # Change symbol based on data_type
+    symbols = c("census" = "circle", "interpolated" = "triangle-up"), # Custom symbols for data_type
     marker = list(size = 10),
-      hovertemplate = ~ paste0(
-    county_name, " County", "<br>",
-    "Census head count: ", scales::comma(head_count_census),"<br>",
-    "Survey head count: ", scales::comma(head_count_survey),"<br>",
-    "<extra></extra>"
-  )
+    hovertemplate = ~ paste0(
+      county_name, " County", "<br>",
+      "Census head count: ", scales::comma(head_count_census), "<br>",
+      "Survey head count: ", scales::comma(head_count_survey), "<br>",
+      "<extra></extra>"
+    )
   ) %>%
   layout(
     title = "Comparison of Livestock Estimates: Survey vs Census",
@@ -276,26 +280,25 @@ cattle_comparison <- plot_ly(
     legend = list(title = list(text = "Livestock Type and Data Type"))
   ) %>%
   add_trace(
-    x = c(min_val, max_val), 
-    y = c(min_val, max_val), 
-    mode = 'lines',
-    line = list(dash = 'dash', color = 'black', width = 2),
-    showlegend = FALSE, 
+    x = c(min_val, max_val),
+    y = c(min_val, max_val),
+    mode = "lines",
+    line = list(dash = "dash", color = "black", width = 2),
+    showlegend = FALSE,
     name = "1:1 Line"
   ) %>%
   add_trace(
     data = cattle_merged %>% filter(livestock_type == "Beef Cows"),
-    x = ~head_count_survey, 
-    y = ~head_count_census, 
-    color = ~livestock_type,  # Color by livestock_type
-    symbol = ~data_type,      # Change symbol based on data_type
-    symbols = c('census' = 'circle', 'interpolated' = 'triangle-up'),
+    x = ~head_count_survey,
+    y = ~head_count_census,
+    color = ~livestock_type, # Color by livestock_type
+    symbol = ~data_type, # Change symbol based on data_type
+    symbols = c("census" = "circle", "interpolated" = "triangle-up"),
     marker = list(size = 10),
     name = "Beef Cows"
   )
 
 cattle_comparison
-
 ```
 
 Estimates from the census and surveys are reasonably close for dairy cows and beef cows, the former which are the biggest emitters. For calves, there is increasing disagreement between the survey and census at large head counts, with the census typically estimating lower head counts for both interpolated and actual census years. We will continue using the census head count data as it's error is likely less and it contains non-cattle animal counts.

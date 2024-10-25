@@ -32,7 +32,7 @@ usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
 #   filter(is.na(Value)) %>%
 #   arrange(year) %>%
 #   select(state_name, county_name, year)
-### there are 9 missing values by county. 
+### there are 9 missing values by county.
 ### 2 MN, 2 WI in 2002. 2 MN in 2007, 3 WI in 2017.
 ###  None are counties of focus except Ramsey in 2002, which has limited ag.
 
@@ -40,7 +40,7 @@ usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
 usda_fert_prop <- usda_fertilizer_mn_wi %>%
   group_by(state_name, year) %>%
   mutate(state_total = sum(Value, na.rm = TRUE), fert_prop = Value / state_total) %>%
-  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>% 
+  filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>%
   filter(county_name %in% counties) %>%
   select(year, county_name, fert_prop)
 
@@ -53,24 +53,27 @@ fert_prop_interpolated <- left_join( # this creates an empty grid of all year co
   ),
   usda_fert_prop
 ) %>% # merged with our populated fertilizer proportion data, it creates NAs wherever data is missing
-  mutate(fert_prop = if_else(year %in% c(2002, 2007, 2012, 2017, 2022) & is.na(fert_prop), 
-                             0,
-                             fert_prop)) %>% # add 0 as Ramsey value in 2002
+  mutate(fert_prop = if_else(year %in% c(2002, 2007, 2012, 2017, 2022) & is.na(fert_prop),
+    0,
+    fert_prop
+  )) %>% # add 0 as Ramsey value in 2002
   group_by(county_name) %>%
   arrange(year) %>%
   mutate(
-    # this function linearly interpolates NAs between known values, 
+    # this function linearly interpolates NAs between known values,
     # following the group_by
     fert_prop = zoo::na.approx(fert_prop, na.rm = FALSE),
     # marking whether values are from the census or interpolation
     data_type = ifelse(year %in% c(2002, 2007, 2012, 2017, 2022),
-                       "census", "interpolated") 
-  ) %>% 
+      "census", "interpolated"
+    )
+  ) %>%
   mutate(county_name = if_else(county_name == "ST CROIX",
-                               "St. Croix",
-                               str_to_sentence(county_name))) %>% 
-  left_join(., cprg_county %>% select(county_name, geoid)) %>% 
-  select(inventory_year = year, geoid, county_name,fertilizer_proportion = fert_prop, data_type)
+    "St. Croix",
+    str_to_sentence(county_name)
+  )) %>%
+  left_join(., cprg_county %>% select(county_name, geoid)) %>%
+  select(inventory_year = year, geoid, county_name, fertilizer_proportion = fert_prop, data_type)
 
 
 # create metadata
@@ -86,4 +89,3 @@ fertilizer_proportion_meta <-
 
 saveRDS(fert_prop_interpolated, "./_agriculture/data/county_fertilizer_proportion.rds")
 saveRDS(fertilizer_proportion_meta, "./_agriculture/data/county_fertilizer_proportion_meta.rds")
-

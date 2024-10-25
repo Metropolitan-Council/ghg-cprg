@@ -3,11 +3,11 @@ source("R/_load_pkgs.R")
 # from the SIT tool
 
 # check that needed data are available locally
-if(!file.exists("_agriculture/data-raw/ag-module.xlsx")){
+if (!file.exists("_agriculture/data-raw/ag-module.xlsx")) {
   cli::cli_abort("Download agriculture data from MS Team")
 }
 
-if(!file.exists("_agriculture/data/typical_animal_mass.rds")){
+if (!file.exists("_agriculture/data/typical_animal_mass.rds")) {
   cli::cli_abort("Run _agriculture/data-raw/01_compile_typical_animal_mass.R script first")
 }
 
@@ -17,10 +17,13 @@ tam <- read_rds("_agriculture/data/typical_animal_mass.rds")
 
 # pull out cattle nitrogen excreted by head per year - mn and wi
 nex_cattle <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
-                                sheet = "TAM and NEx Rates",
-                                range = "N2:AY460") %>% 
-  pivot_longer(cols = 3:38, names_to = "year", 
-               values_to = "kg_nex_head_yr") %>%
+  sheet = "TAM and NEx Rates",
+  range = "N2:AY460"
+) %>%
+  pivot_longer(
+    cols = 3:38, names_to = "year",
+    values_to = "kg_nex_head_yr"
+  ) %>%
   filter(state %in% c("MN", "WI")) %>%
   mutate(livestock_type = case_when(
     grepl("_OF_", Animal) ~ "Feedlot Cattle",
@@ -34,11 +37,14 @@ nex_cattle <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   mutate(year = as.numeric(year))
 
 # pull out other livestock nitrogen excreted by head per year - mn and wi. note these are in per day and per kg animal, so bring in TAM at end to calc
-nex_other <-  readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
-                                sheet = "TAM and NEx Rates",
-                                range = "BA2:BQ38") %>% 
-  pivot_longer(cols = 2:17, names_to = "livestock_type", 
-               values_to = "kg_nex_day_kg_animal") %>%
+nex_other <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
+  sheet = "TAM and NEx Rates",
+  range = "BA2:BQ38"
+) %>%
+  pivot_longer(
+    cols = 2:17, names_to = "livestock_type",
+    values_to = "kg_nex_day_kg_animal"
+  ) %>%
   mutate(
     livestock_type = case_when(
       grepl("calf", livestock_type) ~ "Calves",
@@ -59,7 +65,7 @@ nex_other <-  readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   mutate(kg_nex_head_yr = mass_kg / 1000 * kg_nex_day_kg_animal * 365) %>%
   filter(!is.na(mass_kg)) %>%
   crossing(state = c("MN", "WI")) %>% # repeat across states (static)
-  dplyr::select(year, livestock_type, state, kg_nex_head_yr)  %>%
+  dplyr::select(year, livestock_type, state, kg_nex_head_yr) %>%
   group_by(state, year, livestock_type) %>%
   summarize(kg_nex_head_yr = mean(kg_nex_head_yr)) %>%
   mutate(year = as.numeric(year))

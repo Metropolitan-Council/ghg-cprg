@@ -5,7 +5,8 @@ source("R/cprg_colors.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 cprg_ctu_9 <- councilR::import_from_gpkg(
-  "https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/bdry_mn_city_township_unorg/gpkg_bdry_mn_city_township_unorg.zip") %>%
+  "https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/bdry_mn_city_township_unorg/gpkg_bdry_mn_city_township_unorg.zip"
+) %>%
   filter(COUNTY_NAME %in% c(cprg_county$county_name)) %>%
   mutate(
     STATEFP = "27",
@@ -52,7 +53,7 @@ lapply(start_year:end_year, function(year) {
 
   # Get the land cover type layer
   nlcd_lc <- try(FedData::get_nlcd(
-    template =cprg_ctu_9,
+    template = cprg_ctu_9,
     label = "city_name",
     year = year,
     dataset = "landcover" # downloads land cover classification data only
@@ -70,56 +71,54 @@ lapply(start_year:end_year, function(year) {
   nlcd_lc_area <- terra::mask(cellSize(nlcd_lc_mask, unit = "km"), cprg_ctu_9)
   ctu_raster <- terra::rasterize(cprg_ctu_9, nlcd_lc_mask, field = "CTU_NAME")
   nlcd_lc_values <- terra::extract(nlcd_lc, cprg_ctu_9)
-  
 
-    area_values <- terra::extract(nlcd_lc_area, cprg_ctu_9)
-    lc_values <- terra::extract(nlcd_lc_mask, cprg_ctu_9)
-    ctu_values <- terra::extract(ctu_raster, cprg_ctu_9)
 
-    lc_df <- as_tibble(data.frame(
-      ctu = ctu_values[, 2],
-      nlcd_cover = nlcd_lc_values[, 2],
-      # impervious_cover = as.numeric(as.character(nlcd_is_values[, 2])),
-      area = area_values[, 2]
-    ))
+  area_values <- terra::extract(nlcd_lc_area, cprg_ctu_9)
+  lc_values <- terra::extract(nlcd_lc_mask, cprg_ctu_9)
+  ctu_values <- terra::extract(ctu_raster, cprg_ctu_9)
 
-    lc_rc <- lc_df %>%
-      mutate(
-        land_cover_type = case_when(
-          grepl("Developed", nlcd_cover) ~ "Developed",
-          grepl("Developed, Open Space", nlcd_cover) ~ "Urban_Grassland",
-          grepl("Deciduous Forest", nlcd_cover) ~ "Tree",
-          grepl("Evergreen Forest", nlcd_cover) ~ "Tree",
-          grepl("Mixed Forest", nlcd_cover) ~ "Tree",
-          grepl("Dwarf Scrub", nlcd_cover) ~ "Shrubland",
-          grepl("Shrub/Scrub", nlcd_cover) ~ "Shrubland",
-          grepl("Grassland/Herbaceous", nlcd_cover) ~ "Grassland",
-          grepl("Sedge/Herbaceous", nlcd_cover) ~ "Grassland",
-          grepl("Cultivated Crops", nlcd_cover) ~ "Cropland",
-          grepl("Pasture/Hay", nlcd_cover) ~ "Cropland",
-          grepl("Barren Land", nlcd_cover) ~ "Bare",
-          grepl("Perennial Ice/Snow", nlcd_cover) ~ "Snow",
-          grepl("Open Water", nlcd_cover) ~ "Water",
-          grepl("Woody Wetlands", nlcd_cover) ~ "Tree", ## Changed from "Wetland"
-          grepl("Emergent Herbaceous Wetlands", nlcd_cover) ~ "Wetland"
-        )
+  lc_df <- as_tibble(data.frame(
+    ctu = ctu_values[, 2],
+    nlcd_cover = nlcd_lc_values[, 2],
+    # impervious_cover = as.numeric(as.character(nlcd_is_values[, 2])),
+    area = area_values[, 2]
+  ))
+
+  lc_rc <- lc_df %>%
+    mutate(
+      land_cover_type = case_when(
+        grepl("Developed", nlcd_cover) ~ "Developed",
+        grepl("Developed, Open Space", nlcd_cover) ~ "Urban_Grassland",
+        grepl("Deciduous Forest", nlcd_cover) ~ "Tree",
+        grepl("Evergreen Forest", nlcd_cover) ~ "Tree",
+        grepl("Mixed Forest", nlcd_cover) ~ "Tree",
+        grepl("Dwarf Scrub", nlcd_cover) ~ "Shrubland",
+        grepl("Shrub/Scrub", nlcd_cover) ~ "Shrubland",
+        grepl("Grassland/Herbaceous", nlcd_cover) ~ "Grassland",
+        grepl("Sedge/Herbaceous", nlcd_cover) ~ "Grassland",
+        grepl("Cultivated Crops", nlcd_cover) ~ "Cropland",
+        grepl("Pasture/Hay", nlcd_cover) ~ "Cropland",
+        grepl("Barren Land", nlcd_cover) ~ "Bare",
+        grepl("Perennial Ice/Snow", nlcd_cover) ~ "Snow",
+        grepl("Open Water", nlcd_cover) ~ "Water",
+        grepl("Woody Wetlands", nlcd_cover) ~ "Tree", ## Changed from "Wetland"
+        grepl("Emergent Herbaceous Wetlands", nlcd_cover) ~ "Wetland"
       )
+    )
 
-    lc_ctu <- lc_rc %>%
-      group_by(ctu, land_cover_type) %>%
-      summarize(area = sum(area), .groups = "keep")
+  lc_ctu <- lc_rc %>%
+    group_by(ctu, land_cover_type) %>%
+    summarize(area = sum(area), .groups = "keep")
 
-    # Add the results for the current year to the results dataframe
-    nlcd_ctu <<- rbind(nlcd_ctu, data.frame(
-      year = year,
-      ctu = lc_ctu$ctu,
-      land_cover_type = lc_ctu$land_cover_type,
-      area = lc_ctu$area,
-      stringsAsFactors = FALSE
-    ))
-
-  } 
-)
+  # Add the results for the current year to the results dataframe
+  nlcd_ctu <<- rbind(nlcd_ctu, data.frame(
+    year = year,
+    ctu = lc_ctu$ctu,
+    land_cover_type = lc_ctu$land_cover_type,
+    area = lc_ctu$area,
+    stringsAsFactors = FALSE
+  ))
+})
 
 
 # create metadata
@@ -136,26 +135,29 @@ saveRDS(nlcd_ctu, "./_agriculture/data/nlcd_ctu_landcover.rds")
 saveRDS(nlcd_ctu_meta, "./_agriculture/data/nlcd_ctu_landcover_meta.rds")
 
 ### for now assigning COCTU to where majority of land area is manually
-ctu_co <- cprg_ctu_9 %>% 
-  filter(!(CTU_NAME == "Chanhassen" & COUNTY_NAM == "Hennepin"),
-         !(CTU_NAME == "Blaine" & COUNTY_NAM == "Ramsey"),
-         !(CTU_NAME == "Hastings" & COUNTY_NAM == "Washington"),
-         !(CTU_NAME == "Saint Anthony" & COUNTY_NAM == "Ramsey"),
-         !(CTU_NAME == "Shorewood" & COUNTY_NAM == "Carver"),
-         !(CTU_NAME == "Spring Lake Park" & COUNTY_NAM == "Ramsey"),
-         !(CTU_NAME == "White Bear Lake" & COUNTY_NAM == "Washington")) %>% 
+ctu_co <- cprg_ctu_9 %>%
+  filter(
+    !(CTU_NAME == "Chanhassen" & COUNTY_NAM == "Hennepin"),
+    !(CTU_NAME == "Blaine" & COUNTY_NAM == "Ramsey"),
+    !(CTU_NAME == "Hastings" & COUNTY_NAM == "Washington"),
+    !(CTU_NAME == "Saint Anthony" & COUNTY_NAM == "Ramsey"),
+    !(CTU_NAME == "Shorewood" & COUNTY_NAM == "Carver"),
+    !(CTU_NAME == "Spring Lake Park" & COUNTY_NAM == "Ramsey"),
+    !(CTU_NAME == "White Bear Lake" & COUNTY_NAM == "Washington")
+  ) %>%
   filter(!duplicated(CTU_NAME))
 
-ctu_ag_proportion <- left_join(nlcd_ctu, ctu_co %>% 
-                                 select(CTU_NAME, COUNTY_NAM, STATE, STATEFP) %>% 
-                                 st_drop_geometry(), 
-                               by = c("ctu" = "CTU_NAME")) %>% 
-  filter(land_cover_type == "Cropland") %>% 
-  group_by(year, COUNTY_NAM) %>% 
-  mutate(county_cropland = sum(area)) %>% 
+ctu_ag_proportion <- left_join(nlcd_ctu, ctu_co %>%
+  select(CTU_NAME, COUNTY_NAM, STATE, STATEFP) %>%
+  st_drop_geometry(),
+by = c("ctu" = "CTU_NAME")
+) %>%
+  filter(land_cover_type == "Cropland") %>%
+  group_by(year, COUNTY_NAM) %>%
+  mutate(county_cropland = sum(area)) %>%
   ungroup() %>%
-  mutate(proportion_ag_land = area / county_cropland) %>% 
-  select(year, ctu, area, COUNTY_NAM, STATE, STATEFP, proportion_ag_land) %>% 
+  mutate(proportion_ag_land = area / county_cropland) %>%
+  select(year, ctu, area, COUNTY_NAM, STATE, STATEFP, proportion_ag_land) %>%
   rename(county_name = COUNTY_NAM, state = STATE, statefp = STATEFP)
 
 # create metadata

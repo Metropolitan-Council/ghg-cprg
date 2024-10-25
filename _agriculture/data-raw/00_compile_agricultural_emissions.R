@@ -12,12 +12,12 @@
 # source("_agriculture/data-raw/01_compile_typical_animal_mass.R")
 # source("_agriculture/data-raw/01_compile_usda_cattle_survey.R")
 # source("_agriculture/data-raw/01_compile_usda_census_data.R")
-# 
+#
 # #02
 # source("_agriculture/data-raw/02_compile_county_crop_production.R")
 # source("_agriculture/data-raw/02_compile_nitrogen_excretion.R")
 # source("_agriculture/data-raw/02_compile_volatile_solids.R")
-# 
+#
 # #03
 # source("_agriculture/data-raw/03_compile_enteric_fermentation_emissions.R")
 # source("_agriculture/data-raw/03_compile_fertilizer_emissions.R")

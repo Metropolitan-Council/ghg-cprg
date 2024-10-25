@@ -4,7 +4,7 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 #### fertilizer data ####
 ### some creativity is required here.
-### Fertilizer purchases are recorded by MN Dept of Ag - 
+### Fertilizer purchases are recorded by MN Dept of Ag -
 ### waiting to see if data exists outside of pdfs
 ### Fertilizer expenses are recorded in USDA 5 year census
 fert_prop <- readRDS("./_agriculture/data/county_fertilizer_proportion.rds")
@@ -19,31 +19,36 @@ ag_constants_vec <- ag_constants %>%
 
 ### Fertilizer application is estimated in SIT for state, but data source is unclear
 
-### need to extract state fertilizer application estimates by year 
+### need to extract state fertilizer application estimates by year
 ### and then multiply by year constants to convert to organic vs synthetic rates
 state_fertilizer <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
-                                      sheet = "FertilizerData",
-                                      range = "A3:AG54")%>%
-  filter(!row_number() == 1) %>% 
-  
-  rename(state = `...1`) %>% 
-  filter(state %in% c("MN", "WI")) %>% 
-  pivot_longer(cols = -1, names_to = "year", 
-               values_to = "metric_tons_n_applied",
-               values_transform = list(metric_tons_n_applied = as.numeric)) %>% 
-  left_join(.,
-  # percentage fertilizer amount that is synthetic
+  sheet = "FertilizerData",
+  range = "A3:AG54"
+) %>%
+  filter(!row_number() == 1) %>%
+  rename(state = `...1`) %>%
+  filter(state %in% c("MN", "WI")) %>%
+  pivot_longer(
+    cols = -1, names_to = "year",
+    values_to = "metric_tons_n_applied",
+    values_transform = list(metric_tons_n_applied = as.numeric)
+  ) %>%
+  left_join(
+    .,
+    # percentage fertilizer amount that is synthetic
     readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
-                      sheet = "FertilizerData",
-                      range = "A3:AG60") %>% 
-    filter(!row_number() %in% c(1:53)) %>% 
-    rename(fertilizer_type = `...1`) %>%
-
-    pivot_longer(cols = -1, names_to = "year", 
-                 values_to = "percentage",
-                 values_transform = list(percentage = as.numeric)) %>% 
-    # just take synthetic value for now
-    filter(fertilizer_type == "Synthetic")       
+      sheet = "FertilizerData",
+      range = "A3:AG60"
+    ) %>%
+      filter(!row_number() %in% c(1:53)) %>%
+      rename(fertilizer_type = `...1`) %>%
+      pivot_longer(
+        cols = -1, names_to = "year",
+        values_to = "percentage",
+        values_transform = list(percentage = as.numeric)
+      ) %>%
+      # just take synthetic value for now
+      filter(fertilizer_type == "Synthetic")
   ) %>%
   mutate(
     mt_n_synthetic = metric_tons_n_applied * percentage,
@@ -56,32 +61,32 @@ state_fertilizer <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
 
 #### merge fertilize proportion estimates with state fertilizer values
 county_fertilizer_emissions <- left_join(fert_prop, cprg_county %>%
-                                           st_drop_geometry() %>% 
-              select(geoid, state_abb)) %>% 
+  st_drop_geometry() %>%
+  select(geoid, state_abb)) %>%
   left_join(.,
-            state_fertilizer,
-  by = c("state_abb" = "state", "inventory_year" = "year")
-) %>%
+    state_fertilizer,
+    by = c("state_abb" = "state", "inventory_year" = "year")
+  ) %>%
   filter(inventory_year >= 2005 & inventory_year <= 2021) %>%
   mutate(
-    mt_n_synthetic_cty = fertilizer_proportion* mt_n_synthetic,
+    mt_n_synthetic_cty = fertilizer_proportion * mt_n_synthetic,
     mt_n_organic_cty = fertilizer_proportion * mt_n_organic
   ) %>%
   #### separating mutates as this is where we will calculate emissions
   #### from estimated fertilizer application
   mutate(
     # unvolatilized N from synthetic fertilizer
-    n2o_direct = (mt_n_synthetic_cty * (1 - ag_constants_vec["VolSyn"]) + 
-                    # un-volatilized N from organic fertilizer
-                    mt_n_organic_cty * ag_constants_vec["NOrg"] * (1 - ag_constants_vec["VolOrg"])) * 
+    n2o_direct = (mt_n_synthetic_cty * (1 - ag_constants_vec["VolSyn"]) +
+      # un-volatilized N from organic fertilizer
+      mt_n_organic_cty * ag_constants_vec["NOrg"] * (1 - ag_constants_vec["VolOrg"])) *
       ## multiplied by the EF of un-volatilized N and N2O N: N2O
-        ag_constants_vec["EF_Dir"] * ag_constants_vec["N2O_N2"], 
+      ag_constants_vec["EF_Dir"] * ag_constants_vec["N2O_N2"],
     # volatilized N from synthetic fertilizer
-    n2o_indirect = (mt_n_synthetic_cty * ag_constants_vec["VolSyn"] + 
-                      # volatized N from organic fertilizer
-                      mt_n_organic_cty * ag_constants_vec["NOrg"] * ag_constants_vec["VolOrg"]) * 
+    n2o_indirect = (mt_n_synthetic_cty * ag_constants_vec["VolSyn"] +
+      # volatized N from organic fertilizer
+      mt_n_organic_cty * ag_constants_vec["NOrg"] * ag_constants_vec["VolOrg"]) *
       ## multiplied by the EF of volatized N and N2O N: N2O
-      ag_constants_vec["Vol_EF"] * ag_constants_vec["N2O_N2"], 
+      ag_constants_vec["Vol_EF"] * ag_constants_vec["N2O_N2"],
     mt_n2o = n2o_direct + n2o_indirect,
     mt_co2e = mt_n2o * gwp$n2o
   ) %>%
@@ -115,21 +120,25 @@ county_fertilizer_runoff_emissions <- county_fertilizer_emissions %>%
   )
 
 fertilizer_emissions <- bind_rows(
-  county_fertilizer_emissions %>% ungroup() %>% 
+  county_fertilizer_emissions %>% ungroup() %>%
     select(inventory_year, geoid, value_emissions = mt_n2o, mt_co2e) %>%
     mutate(category = "cropland", source = "Onsite_fertilizer_emissions", units_emissions = "Metric tons N2O"),
-  county_fertilizer_runoff_emissions %>% ungroup() %>% 
+  county_fertilizer_runoff_emissions %>% ungroup() %>%
     select(inventory_year, geoid, value_emissions = mt_n2o, mt_co2e) %>%
     mutate(category = "cropland", source = "Runoff_fertilizer_emissions", units_emissions = "Metric tons N2O")
 ) %>%
   filter(inventory_year != 2022) %>%
-  mutate(sector = "Agriculture",
-         category = str_to_sentence(category),
-         source = str_to_sentence(gsub("_", " ", source)),
-         data_source = "USDA fertilizer purchase census and EPA SIT fertilizer application data",
-         factor_source = "EPA SIT") %>% 
-  select(geoid, inventory_year, sector, category, source,
-         data_source, factor_source, value_emissions, units_emissions, mt_co2e)
+  mutate(
+    sector = "Agriculture",
+    category = str_to_sentence(category),
+    source = str_to_sentence(gsub("_", " ", source)),
+    data_source = "USDA fertilizer purchase census and EPA SIT fertilizer application data",
+    factor_source = "EPA SIT"
+  ) %>%
+  select(
+    geoid, inventory_year, sector, category, source,
+    data_source, factor_source, value_emissions, units_emissions, mt_co2e
+  )
 
 fertilizer_emissions_meta <-
   tibble::tribble(
