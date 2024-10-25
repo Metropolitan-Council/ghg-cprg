@@ -75,6 +75,9 @@ electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_
 
 electric_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Electricity") %>%
+  #avoid duplication and NAs until category is infilled later
+  filter((year == 2005 & category == "Total") | 
+           (year == 2021 & category != "Total")) %>% 
   mutate(
     sector = "Energy",
     geog_level = "county",
@@ -91,6 +94,9 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
 
 natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Natural gas") %>%
+  #avoid duplication and NAs until category is infilled later
+  filter((year == 2005 & category == "Total") | 
+           (year == 2021 & category != "Total")) %>% 
   mutate(
     sector = "Energy",
     geog_level = "county",
@@ -114,6 +120,23 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     data_source = "EIA RECS (2020)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
+  select(names(transportation_emissions))
+
+## agriculture ----
+
+agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds") %>% 
+  left_join(cprg_county %>% select(county_name,geoid)) %>% 
+  mutate(
+    year = inventory_year,
+    sector = "Agriculture",
+    geog_level = "county",
+    geog_name = county_name,
+    category = category,
+    emissions_metric_tons_co2e = mt_co2e,
+    source = stringr::str_to_sentence(source),
+    data_source = data_source,
+    factor_source = factor_source
+  )  %>%
   select(names(transportation_emissions))
 
 ## natural systems ----
@@ -157,6 +180,7 @@ emissions_all <- bind_rows(
   natural_gas_emissions,
   ww_emissions,
   solid_waste,
+  agriculture_emissions,
   natural_systems_sequestration,
   natural_systems_stock
 ) %>%
@@ -184,6 +208,14 @@ emissions_all <- bind_rows(
         "Natural gas",
         "Propane",
         "Kerosene",
+        # agriculture levels
+        "Enteric_fermentation",
+        "Manure_management",
+        "Direct_manure_soil_emissions",
+        "Indirect_manure_runoff_emissions",
+        "Crop_residue_emissions",
+        "Crop_fertilizer_emissions",
+        "Runoff_fertilizer_emissions",
         # nature levels
         "Urban grassland",
         "Urban tree",
@@ -207,6 +239,8 @@ emissions_all <- bind_rows(
         "Trucks",
         "Wastewater",
         "Solid waste",
+        "Livestock",
+        "Cropland",
         "Sequestration",
         "Stock"
       ),
