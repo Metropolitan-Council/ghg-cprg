@@ -4,7 +4,7 @@ source("_agriculture/data-raw/_fetch_usda_key.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 ### create county names matched to USDA format
-counties <- toupper(cprg_county$NAME)
+counties <- toupper(cprg_county$county_name)
 counties <- if_else(counties == "ST. CROIX", "ST CROIX", counties)
 
 

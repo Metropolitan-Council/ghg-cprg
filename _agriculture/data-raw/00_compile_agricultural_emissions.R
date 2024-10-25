@@ -1,3 +1,30 @@
+## run scripts - 01 scripts depend on raw data, 02 have 01, raw data dependencies,
+## 03 have 02, 01, raw data dependencies
+
+# #01
+# source("_agriculture/data-raw/01_compile_ag_constants.R")
+# source("_agriculture/data-raw/01_compile_county_fertilizer_proportion.R")
+# source("_agriculture/data-raw/01_compile_enteric_fermentation_emission_factors.R")
+# source("_agriculture/data-raw/01_compile_manure_management_systems.R")
+# source("_agriculture/data-raw/01_compile_methane_conversion_factors.R")
+# # following script is memory and time intensive
+# #source("_agriculture/data-raw/01_compile_nlcd_ctu_landcover.R")
+# source("_agriculture/data-raw/01_compile_typical_animal_mass.R")
+# source("_agriculture/data-raw/01_compile_usda_cattle_survey.R")
+# source("_agriculture/data-raw/01_compile_usda_census_data.R")
+# 
+# #02
+# source("_agriculture/data-raw/02_compile_county_crop_production.R")
+# source("_agriculture/data-raw/02_compile_nitrogen_excretion.R")
+# source("_agriculture/data-raw/02_compile_volatile_solids.R")
+# 
+# #03
+# source("_agriculture/data-raw/03_compile_enteric_fermentation_emissions.R")
+# source("_agriculture/data-raw/03_compile_fertilizer_emissions.R")
+# source("_agriculture/data-raw/03_compile_manure_emissions.R")
+# source("_agriculture/data-raw/03_compile_soil_residue_emissions.R")
+
+
 ### compile all agricultural subsectors and output as one file
 
 agricultural_emissions <- bind_rows(

@@ -4,22 +4,23 @@ source("R/cprg_colors.R")
 # load the county boundaries layer
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
-cprg_ctu_9 <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/bdry_mn_city_township_unorg/gpkg_bdry_mn_city_township_unorg.zip") %>%
-  filter(COUNTY_NAM %in% c(cprg_county$county_name)) %>%
+cprg_ctu_9 <- councilR::import_from_gpkg(
+  "https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/bdry_mn_city_township_unorg/gpkg_bdry_mn_city_township_unorg.zip") %>%
+  filter(COUNTY_NAME %in% c(cprg_county$county_name)) %>%
   mutate(
     STATEFP = "27",
     STATE = "Minnesota",
     STATE_ABB = "MN"
   ) %>%
   select(
-    CTU_NAME = FEATURE_NA,
+    CTU_NAME = FEATURE_NAME,
     CTU_CLASS,
-    COUNTY_NAM,
+    COUNTY_NAME,
     STATEFP,
     STATE,
     STATE_ABB,
-    GNIS_FEATU,
-    geometry = geom
+    GNIS_FEATURE_ID,
+    geometry = SHAPE
   ) %>%
   arrange(CTU_NAME)
 
