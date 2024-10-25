@@ -13,12 +13,12 @@ cprg_county_proportions <- census_county_population %>%
     by = c("state_name", "population_year", "population_data_source")
   ) %>%
   mutate(
-   population_year,
+    population_year,
     county_proportion_of_state_pop = county_population / state_population %>% round(digits = 6),
     county_name = county_name
   ) %>%
   select(
-    state_name, geoid, county_name, population_year, county_population, 
+    state_name, geoid, county_name, population_year, county_population,
     state_population, county_proportion_of_state_pop,
     population_data_source
   )
@@ -34,7 +34,7 @@ cprg_county_proportions_meta <- bind_rows(
     "county_proportion_of_state_pop", class(cprg_county_proportions$county_proportion_of_state_pop), "Proportion of the county population relative to the total state population",
   )
 ) %>%
-  filter(Column %in% names(cprg_county_proportions)) %>% 
+  filter(Column %in% names(cprg_county_proportions)) %>%
   unique()
 
 

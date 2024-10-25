@@ -8,7 +8,7 @@ state_population <- census_county_population %>%
   summarize(
     state_population = sum(population, na.rm = T),
     .groups = "keep"
-  ) %>% 
+  ) %>%
   clean_names()
 
 # create metadata

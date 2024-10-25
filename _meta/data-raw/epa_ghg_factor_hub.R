@@ -614,7 +614,8 @@ epa_ghg_factor_hub <- list(
     filter(`Fuel type` %in% c(
       "Propane",
       "Kerosene",
-      "Natural Gas"
+      "Natural Gas",
+      "Kerosene-Type Jet Fuel"
     )),
   "mobile_combustion" = kg_co2_per_unit,
   "mobile_combustion_other" = transportation_tbl345,

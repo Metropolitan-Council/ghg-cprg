@@ -1,0 +1,89 @@
+## Aviation Data
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+aviation_emissions <- readRDS(file.path(here::here(), "_transportation/data/aviation_emissions.rds"))
+
+aviation_emissions_data_source_compare <- read_rds(file.path(here::here(), "_transportation/data/aviation_emissions_data_source_compare.RDS"))
+
+hookaddcap()
+```
+
+Aviation emissions are derived from three data sources: Metropolitan Airport Commission (MAC) fuel distribution (2005, 2021), MAC Aircraft emission estimates (2016-2020), and MPCA state GHG inventories. Fuel distribution at the airport is the most straight-forward approach, as it involves applying a direct emission factor for jet fuel to the total amount of fuel distributed. As aircraft are generally only fueled for one flight at a time, we are effectively capturing emissions for aircraft flights departing MSP. The assumption is that any given airport (MSP in this case), should be responsible for half of emissions for each arrival and departure, with the complementary departure/recipient airport being responsible for the other half. 
+
+The second data source, MAC provided emissions are also a highly useful source, with the one overlapping year (2021) resulting in an almost identical emission estimate. However, because it lacks the explicit activity data, we prefer using the fuel distribution.
+
+The final data source, which we used to in-fill interstitial years, 2006-2015, relies on MPCA statewide aviation emission estimates. Here, we calculated the proportion of MSP aviation emissions relative to statewide emissions, and used a time-series imputation method to fill in the interstitial years' proportions. Then, we recalculated MSP emissions by multiplying the interpolated proportion by the statewide emission estimate. This method proved superior to directly imputing the MSP emissions between 2005 and 2016-2021 (i.e. not using the state data in any form), as those interpolations resulted in three years with MSP emission estimates exceeding the statewide emission estimate.
+
+```{r fig-aviation-emissions-data-source-compare}
+#| fig-cap: "Comparison of aviation emission interpolations"
+#| out-width: "95%"
+
+fig_aviation_emissions_data_source_compare <- plot_ly(
+  data = aviation_emissions_data_source_compare,
+  source = "fig-aviation-emissions-data-source-compare"
+) %>%
+  # State MT CO2e (orange/yellow dots, larger size)
+  add_trace(
+    x = ~year, y = ~state_mt_co2e,
+    type = "scatter", mode = "markers",
+    marker = list(
+      color = "orange", size = 12,
+      opacity = 0.75
+    ),
+    name = "MPCA statewide emissions"
+  ) %>%
+  # MSP MT CO2e Impute (red dots)
+  add_trace(
+    x = ~year, y = ~msp_mt_co2e_impute,
+    type = "scatter", mode = "markers",
+    marker = list(
+      color = colors$mtsRed, size = 12,
+      opacity = 0.75
+    ),
+    name = "Imputed MSP emission: direct"
+  ) %>%
+  # MSP MT CO2e State Prop (blue dots)
+  add_trace(
+    x = ~year, y = ~msp_mt_co2e_state_prop,
+    type = "scatter", mode = "lines+markers",
+    marker = list(
+      color = colors$councilBlue, size = 12,
+      opacity = 0.75
+    ),
+    line = list(color = colors$councilBlue),
+    name = "Imputed MSP emissions: state proportion"
+  ) %>%
+  # MSP MT CO2e from activity data (black triangles for MAC derived years)
+  add_trace(
+    x = ~year, y = ~msp_mt_co2e,
+    type = "scatter", mode = "markers",
+    marker = list(
+      color = "black",
+      symbol = "triangle-up",
+      size = 16,
+      opacity = 0.75
+    ),
+    name = "MSP emissions: activity data"
+  ) %>%
+  plotly_layout(
+    main_title = "Aviation emissions imputation comparison",
+    subtitle = "MSP proportion of statwide emissions provides best fit",
+    x_title = "Year",
+    y_title = "Metric tons CO<sub>2</sub>e",
+  )
+
+fig_aviation_emissions_data_source_compare
+```
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}

@@ -1,3 +1,4 @@
+# get trip length characteristics from the 2021 TBI
 source("R/_load_pkgs.R")
 library(srvyr, warn.conflicts = FALSE)
 

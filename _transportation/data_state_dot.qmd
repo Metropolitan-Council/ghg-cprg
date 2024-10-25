@@ -5,6 +5,7 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_lines.RDS")) %>%
   mutate(hover_info = paste0(
     "Name: ", name, "<br>"
@@ -30,22 +31,28 @@ Vehicle miles traveled (VMT) is a standardized measure created by multiplying av
 
 MnDOT and WisDOT derive VMT using traffic counts from continuous and short term traffic monitoring sites. These raw counts are adjusted by multiplying seasonal, day-of-week, and axle adjustment factors [@mndotTFADataCollection2023, @wisdotTransportationPlanningManual2023]. Data is not collected for every site every year, but the data are sufficient for year-over-year comparisons. 
 
-These data were compiled from MnDOT and WisDOT county level reports. MnDOT provides Excel workbooks with VMT by county and route system on their [website](https://www.dot.state.mn.us/roadway/data/data-products.html). These were downloaded, filtered to include the relevant counties, and aggregated to the county level by summing VMT by county/route system. Processing code can be found in [mndot_vmt_county.R](data-raw/mndot_vmt_county.R).
+These data were compiled from MnDOT and WisDOT county level reports. MnDOT provides Excel workbooks with VMT by county and route system on their [website](https://www.dot.state.mn.us/roadway/data/data-products.html). These were downloaded, filtered to include the relevant counties, and aggregated to the county level by summing VMT by county/route system. Processing code can be found in [mndot_vmt_county.R](data-raw/mndot_vmt_county.R). 
 
-WisDOT publishes PDF tables with county-level VMT. These were downloaded and data was extracted using [`{tabulizer}`](https://github.com/ropensci/tabulizer), an R package interfacing with the Tabula PDF extractor library. Processing code can be found in [wisdot_vmt_county.R](data-raw/wisdot_vmt_county.R). 
+VMT data for 2015 were interpolated at the county and year level using the midpoint method.[^ MnDOT VMT for year 2015 is unavailable due to significant and fundamental changes in underlying data structure that make directly comparing data prior- and post-2015 inappropriate. However, our interpolation here is based on the county level summary of all VMT and use for comparison purposes only. We used the midpoint method, which is the average of the observation directly before and directly after the missing data point.]
+
+WisDOT publishes PDF tables with county-level VMT. These were downloaded and data was extracted using [`{tabulapdf}`](https://docs.ropensci.org/tabulapdf/), an R package interfacing with the Tabula PDF extractor library. Processing code can be found in [wisdot_vmt_county.R](data-raw/wisdot_vmt_county.R). 
 
 ```{r fig-dot-vmt}
 #| fig-cap: "County vehicle miles traveled"
 #| out-width: "95%"
 dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
-  filter(year < 2022, year >= 2018) %>%
-  group_by(county)
+  filter(
+    vmt_year < 2022,
+    vmt_year >= 2018,
+    cprg_area == TRUE
+  ) %>%
+  group_by(county_name)
 
 
 fig_dot_vmt <- plot_ly(
   data = dot_vmt,
   source = "fig-dot-vmt",
-  x = ~year,
+  x = ~vmt_year,
   y = ~annual_vmt,
   color = ~data_source,
   colors = c(
@@ -66,8 +73,8 @@ fig_dot_vmt <- plot_ly(
     width = 3
   ),
   hovertemplate = ~ paste0(
-    county, " County", "<br>",
-    year, "<br>",
+    county_name, " County", "<br>",
+    vmt_year, "<br>",
     round(annual_vmt * 1e-9, digits = 2), " billion VMT annually", "<br>",
     "<extra></extra>"
   )
@@ -93,14 +100,13 @@ MnDOT provides AADT road segments, which align with station identification numbe
 
 Then, we selected only the stations within the study area with observations in the last five years (2017-2021). Finally, we joined this data with AADT [@mndotVMTRouteSystem2021, @wisdotWisconsinVehicleMiles2021] road segments by station ID. The road segments sampled include multiple road functional classes and segments in all counties. All traffic sensor stations pulled were permanent, continuous monitoring sites. Data were cross-validated by verifying AADT and weight distribution fields on [MnDOT](https://mndot.maps.arcgis.com/apps/webappviewer/index.html?id=7b3be07daed84e7fa170a91059ce63bb) and [WisDOT](https://wisdot.maps.arcgis.com/apps/webappviewer/index.html?id=2e12a4f051de4ea9bc865ec6393731f8) traffic mapping applications. 
 
-Data were processed in R scripts: [wisdot_stations.R](data-raw/wisdot_stations.R), [mndot_extract_yearly_volume_trends.R](data-raw/mndot_extract_yearly_volume_trends.R),  [mndot_stations.R](data-raw/mndot_stations.R), [calibration_lines_points.R](data-raw/calibration_lines_points.R).  
+Data were processed in R scripts: [wisdot_stations.R](data-raw/wisdot_stations.R), [mndot_extract_yearly_volume_trends.R](data-raw/mndot_extract_yearly_volume_trends.R),  [mndot_stations.R](data-raw/mndot_stations.R), [stl_calibration_lines_points.R](data-raw/stl_calibration_lines_points.R).  
 
 ```{r fig-map-calibration-set}
 #| fig-cap: "StreetLight calibration locations and values"
 #| out-width: "95%"
 #| out-height: "500px"
 
-cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 
 bound_box <- st_bbox(commercial_lines) %>%
   unlist()

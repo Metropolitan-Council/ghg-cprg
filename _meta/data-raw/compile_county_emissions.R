@@ -9,17 +9,18 @@ cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
   select(-cprg_area)
 
 # transportation -----
-transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
+transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS") %>%
   ungroup() %>%
   rowwise() %>%
   mutate(
+    year = emissions_year,
     sector = "Transportation",
     geog_level = "county",
-    geog_name = zone,
-    category = paste0(stringr::str_to_sentence(vehicle_type), " vehicles"),
-    source = paste0(vehicle_weight_label, " vehicles"),
-    data_source = "StreetLight Data",
-    factor_source = paste0("EPA MOVES (", moves_year, ")")
+    geog_name = county_name,
+    source = paste0(vehicle_fuel_label, " fueled vehicles"),
+    category = category,
+    data_source = data_source,
+    factor_source = moves_edition
   ) %>%
   select(
     year,
@@ -74,16 +75,14 @@ electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_
 
 electric_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Electricity") %>%
-  filter((year == 2005 & category == "Total") | (year == 2021 & category != "Total")) %>% #avoid duplication and NAs until category is infilled later
   mutate(
-    sector = "Electricity",
+    sector = "Energy",
     geog_level = "county",
     geog_name = county,
     category = paste0(category, " energy"),
     source = source,
-    data_source = "Individual electric utilities, NREL SLOPE (2021)",
-    factor_source = "eGRID MROW",
-    year = as.numeric(year)
+    data_source = "Individual electric utilities, NREL SLOPE",
+    factor_source = "eGRID MROW"
   ) %>%
   select(names(transportation_emissions))
 
@@ -92,16 +91,14 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
 
 natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Natural gas") %>%
-  filter((year == 2005 & category == "Total") | (year == 2021 & category != "Total")) %>% #avoid duplication and NAs until category is infilled later
   mutate(
-    sector = "Building Fuel",
+    sector = "Energy",
     geog_level = "county",
     geog_name = county,
     category = paste0(category, " energy"),
     source = source,
     data_source = "Individual natural gas utilities, NREL SLOPE (2021)",
-    factor_source = "EPA GHG Emission Factors Hub (2021)",
-    year = as.numeric(year)
+    factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
   select(names(transportation_emissions))
 
@@ -109,7 +106,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
 
 propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
   mutate(
-    sector = "Building Fuel",
+    sector = "Energy",
     geog_level = "county",
     geog_name = NAME,
     category = "Liquid stationary fuels",
@@ -117,27 +114,6 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     data_source = "EIA RECS (2020)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
-  select(names(transportation_emissions))
-
-## agriculture ----
-
-## agriculture ----
-
-agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds") %>% 
-  group_by(geoid, inventory_year, sector, category, source) %>% 
-  summarize(mt_co2e = sum(mt_co2e)) %>% 
-  left_join(cprg_county %>% select(county_name,geoid) %>% st_drop_geometry()) %>% 
-  mutate(
-    year = inventory_year,
-    sector = "Agriculture",
-    geog_level = "county",
-    geog_name = county_name,
-    category = category,
-    emissions_metric_tons_co2e = mt_co2e,
-    source = stringr::str_to_sentence(source),
-    data_source = "USDA Farm Census",
-    factor_source = "EPA State Inventory Tool"
-  )  %>%
   select(names(transportation_emissions))
 
 ## natural systems ----
@@ -181,23 +157,22 @@ emissions_all <- bind_rows(
   natural_gas_emissions,
   ww_emissions,
   solid_waste,
-  agriculture_emissions,
   natural_systems_sequestration,
   natural_systems_stock
 ) %>%
   left_join(
     cprg_county %>%
       sf::st_drop_geometry() %>%
-      select(county_name, geog_id = geoid ),
+      select(county_name, geoid),
     by = c("geog_name" = "county_name")
   ) %>%
   mutate(
     source = factor(source,
       c(
         # transportation levels
-        "Light-duty vehicles",
-        "Medium-duty vehicles",
-        "Heavy-duty vehicles",
+        "Gasoline fueled vehicles",
+        "Diesel fueled vehicles",
+        "Other fueled vehicles",
         # waste levels
         "Landfill",
         "Waste to energy",
@@ -209,14 +184,6 @@ emissions_all <- bind_rows(
         "Natural gas",
         "Propane",
         "Kerosene",
-        # agriculture levels
-        "Enteric fermentation",
-        "Manure management",
-        "Direct manure soil emissions",
-        "Indirect manure runoff emissions",
-        "Soil residue emissions",
-        "Onsite fertilizer emissions",
-        "Runoff fertilizer emissions",
         # nature levels
         "Urban grassland",
         "Urban tree",
@@ -235,11 +202,11 @@ emissions_all <- bind_rows(
         "Total energy",
         "Liquid stationary fuels",
         "Passenger vehicles",
-        "Commercial vehicles",
+        "Buses",
+        "Medium-duty vehicles",
+        "Trucks",
         "Wastewater",
         "Solid waste",
-        "Livestock",
-        "Cropland",
         "Sequestration",
         "Stock"
       ),
@@ -250,29 +217,29 @@ emissions_all <- bind_rows(
   left_join(
     cprg_county_pop %>%
       select(
-        geog_id = geoid,
+        geoid,
         population_year,
         county_total_population = population,
         population_data_source
       ),
-    by = join_by(geog_id, year == population_year)
+    by = join_by(geoid, year == population_year)
   ) %>%
   rowwise() %>%
   mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
-  select(year, geog_level, geog_id, geog_name, everything())
+  select(year, geog_level, geoid, geog_name, everything())
 
 # splitting off carbon stock here as it is a capacity, not a rate
 carbon_stock <- emissions_all %>% filter(category == "Stock")
 emissions_all <- emissions_all %>% filter(category != "Stock")
 
-mean(emissions_all$emissions_per_capita[!emissions_all$category == "Stock"])
-sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"]) / sum(cprg_county_pop$population)
+mean(emissions_all$emissions_per_capita[!emissions_all$category == "Stock"], na.rm = T)
+sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"], na.rm = T) / sum(cprg_county_pop$population)
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
   "year", class(emissions_all$year), "Emissions estimation year",
   "geog_level", class(emissions_all$geog_level), "Geography level; city or county",
-  "geog_id", class(emissions_all$geog_id), "FIPS code",
+  "geoid", class(emissions_all$geoid), "FIPS code",
   "geog_name", class(emissions_all$geog_name), "Name of geographic area",
   "sector", class(emissions_all$sector), paste0(
     "Emissions sector. One of ",

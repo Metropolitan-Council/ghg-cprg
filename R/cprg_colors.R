@@ -13,9 +13,7 @@ cprg_colors <- list(
 sector_colors <- list(
   "Transportation" = "#8e440b",
   "Energy" = "#163c6a",
-  "Waste" = "#8d0c3b",
-  "Agriculture" = "#fec44f",
-  "Nature" = "#367639"
+  "Waste" = "#8d0c3b"
 )
 
 # category
@@ -29,17 +27,14 @@ category_colors <-
 
 
     # YlOrBr
-    "Passenger vehicles" = "#6E260E",
-    "Commercial vehicles" = "#C19A6B",
+    "Passenger vehicles" = "#993404",
+    "Buses" = "#E9967A",
+    "Trucks" = "#fe9929",
 
     # PuRd
     "Solid waste" = "#ce1256",
     "Wastewater" = "#c994c7",
 
-    # YlOrBr
-    "Livestock" = "#ec7014",
-    "Cropland" = "#fec44f",
-    
     # Gn
     "Sequestration" = "#006f3c",
     "Stock" = "#27b376"
@@ -49,9 +44,14 @@ category_colors <-
 # source
 source_colors <- list(
   # transportation levels
-  "Light-duty vehicles" = "#6E260E",
-  "Medium-duty vehicles" = "#C19A6B",
-  "Heavy-duty vehicles" = "#E5AA70",
+  # "Light-duty vehicles" = "#993404",
+  # "Medium-duty vehicles" = "#fe9929",
+  # "Heavy-duty vehicles" = "#fee391",
+  "Gasoline fueled vehicles" = "#db4a33",
+  "Diesel fueled vehicles" = "#feb24c",
+  "Other fueled vehicles" = "#ffeda0",
+
+
 
   # waste levels
   "Landfill" = "#ae017e",
@@ -66,15 +66,6 @@ source_colors <- list(
   "Propane" = "#2f4f4f",
   "Kerosene" = "#004242",
 
-  # agriculture
-  "Enteric fermentation"  = "#D27D2D",
-  "Manure management"  = "#F28C28",
-  "Direct manure soil emissions" = "#DAA520",
-  "Indirect manure runoff emissions" = "#E49B0F",
-  "Soil residue emissions" = "#FFD700",
-  "Onsite fertilizer emissions" = "#FAFA33",
-  "Runoff fertilizer emissions" = "#FFFF8F",
-  
   # nature
   "Tree" = "#006d2c",
   "Grassland" = "#22b600",
@@ -85,12 +76,15 @@ source_colors <- list(
 
 
 vehicle_weight_colors <- list(
-  "Passenger" = source_colors$`Light-duty vehicles`,
-  "Medium" = source_colors$`Medium-duty vehicles`,
-  "Heavy" = source_colors$`Heavy-duty vehicles`,
-  "Light-duty" = source_colors$`Light-duty vehicles`,
-  "Medium-duty" = source_colors$`Medium-duty vehicles`,
-  "Heavy-duty" = source_colors$`Heavy-duty vehicles`
+  "Passenger" = category_colors$`Passenger vehicles`,
+  "Buses" = category_colors$Buses,
+  "Trucks" = category_colors$Trucks
+)
+
+fuel_type_colors <- list(
+  "Gasoline" = "#ffc300",
+  "Diesel" = "#9f7a00",
+  "Other" = "#604900"
 )
 
 management_method_colors <- list(
