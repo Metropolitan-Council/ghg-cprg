@@ -7,7 +7,7 @@ library(stringr)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
-  
+minnesota_elec_estimate_2021 <- readRDS("_energy/data/minnesota_elecUtils_ActivityAndEmissions_2021.RDS")
 
 # NREL SLOPE energy consumption and expenditure data download, cleaning, and viz
 
@@ -19,8 +19,8 @@ mmbtu_to_mwh <- 0.293071
 # 1 mmbtu is 1 mcf
 mmbtu_to_mcf <- 1
 
-
-countyActivity <- minnesota_elecUtils_ActivityAndEmissions %>%
+#have to grab activity vs. emissions, so that activity specifically can be parceled out
+countyActivity <- minnesota_elec_estimate_2021 %>%
   group_by(county) %>%
   summarize(
     mWh_delivered_county = sum(mWh_delivered, na.rm = TRUE)
@@ -41,8 +41,8 @@ nrel_slope_cprg_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumpti
   clean_names() %>%
   inner_join(cprg_county,
              by = c(
-               "state_name" = "STATE",
-               "county_name" = "NAME"
+               "state_name",
+               "county_name"
              )
   ) %>%
   mutate(source = ifelse(source == "ng", "Natural gas", "Electricity")) %>%
@@ -53,19 +53,19 @@ nrel_slope_cprg_city <- cprg_ctu %>%
               clean_names() %>%
               mutate(city_name = str_replace_all(city_name, "St\\.", "Saint")),
              by = c(
-               "STATE" = "state_name",
-               "CTU_NAME" = "city_name"
+               "state_name",
+               "ctu_name" = "city_name"
              )
   ) %>%
   
   # Identify CTU_NAMEs that have both City and non-City classifications
-  group_by(CTU_NAME, STATE) %>%
-    mutate(has_city_class = any(CTU_CLASS == 'CITY')) %>%
+  group_by(ctu_name, state_name) %>%
+    mutate(has_city_class = any(ctu_class == 'CITY')) %>%
     ungroup() %>%
   
   # If there's a City version of the same CTU_NAME, null out joined values for the non-City rows
   mutate(across(c(sector, year, geography_id, source, consumption_mm_btu, expenditure_us_dollars), 
-                ~ ifelse(CTU_CLASS != 'CITY' & has_city_class, NA, .))) %>%
+                ~ ifelse(ctu_class != 'CITY' & has_city_class, NA, .))) %>%
   
   # Clean up the source column as per original logic
   mutate(source = ifelse(source == "ng", "Natural gas", "Electricity")) %>%
@@ -73,7 +73,7 @@ nrel_slope_cprg_city <- cprg_ctu %>%
   # clean up unnecessary columns
   select(
     -has_city_class,
-    -GEOID
+    -geoid_wis
   )
 
 
@@ -110,33 +110,32 @@ nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
   filter(year == 2021) %>%
   left_join(nrel_slope_cprg_county,
             by = c(
-              "COUNTY_NAM" = "county_name",
-              "STATE" = "state_name",
+              "county_name",
+              "state_name",
               "sector" = "sector",
               "year" = "year",
               "source" = "source"
             )    
   ) %>%
   select(
-    -GEOID.x,
-    -GEOID.y,
+    -cprg_area.x,
+    -cprg_area.y,
+    -gnis,
     -geography_id.x,
     -geography_id.y,
-    -GNIS_FEATU,
-    -NAMELSAD,
+    -county_name_full,
     -state_geography_id.x,
     -state_geography_id.y,
-    -STATE_ABB.y,
-    -STATEFP.y,
-    -has_city_class
+    -state_abb.x,
+    -state_abb.y,
+    -statefp.x,
+    -statefp.y
   ) %>%
   rename(
      city_consumption_mm_btu = consumption_mm_btu.x,
      county_consumption_mm_btu = consumption_mm_btu.y,
      city_expenditure_usd = expenditure_us_dollars.x,
-     county_expenditure_usd = expenditure_us_dollars.y,
-     STATE_ABB = STATE_ABB.x,
-     STATEFP = STATEFP.x
+     county_expenditure_usd = expenditure_us_dollars.y
   ) %>%
   mutate(
     cityPropOfCounty_consumption_mm_btu = city_consumption_mm_btu / county_consumption_mm_btu,
@@ -154,7 +153,7 @@ st_write(nrel_slope_cprg_cityProps_County_2021, here("_energy",
 
 countySummary_nrelCity <- nrel_slope_cprg_cityProps_County_2021 %>%
   st_drop_geometry() %>%
-  group_by(COUNTY_NAM, sector, source) %>%
+  group_by(county_name, sector, source) %>%
   summarize(
     sectorSource_accountedByCities = sum(cityPropOfCounty_consumption_mm_btu),
     sectorSource_consumptionToteCities = sum(city_consumption_mm_btu),
