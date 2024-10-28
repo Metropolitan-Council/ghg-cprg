@@ -3,18 +3,24 @@
 # Data from 2011-2019 comes from Met Council estimates based on housing data
 
 source("R/_load_pkgs.R")
-library(tidycensus)
+# library(tidycensus)
 
 ## 2011-2019 ----
 ctu_estimates_2011 <- readxl::read_xlsx("_meta/data-raw/population/IntercensalEstimates.xlsx") %>% 
   mutate(
-    geoid = paste0("27", COUNTY_CODE)
+    geoid = paste0("27", COUNTY_CODE),
+    population_data_source = "Met Council Intercensal Estimates 2024"
     ) %>% 
+  # separate_wider_delim(
+  #   GEONAME, delim = ",", names = c("ctu_name", "county_name", "state")
+  #   ) %>% 
   select(
     geoid,
     ctuid = CTU_CODE,
+    # ctu_name,
     inventory_year = EST_YEAR,
-    ctu_population = POPTOTAL_EST
+    ctu_population = POPTOTAL_EST,
+    population_data_source
   ) 
 
 
@@ -31,16 +37,16 @@ if (!file.exists("_meta/data-raw/population/sub-est00int.csv")) {
   )
 }
 
-ctu_pop_intercensal <- read.csv("_meta/data-raw/population/sub-est00int.csv") %>% 
+ctu_estimates_2000 <- read.csv("_meta/data-raw/population/sub-est00int.csv") %>% 
   filter(STATE == 27) %>% 
   mutate(
-    ctuid = str_pad(PLACE, 5, pad = "0"),
+    ctuid = str_pad(COUSUB, 5, pad = "0"),
     geoid = paste0(STATE, str_pad(COUNTY, 3, pad = "0"))
   ) %>% 
   filter(
-    ctuid %in% ctu_estimates_2011$ctuid,
+    # ctuid %in% ctu_estimates_2011$ctuid,
     geoid %in% ctu_estimates_2011$geoid,
-    SUMLEV == 157 # select only "county place part" summary level to avoid repetition
+    SUMLEV == 61 # thank you Matt for knowing things!
   ) %>% 
   select(
     geoid,
@@ -55,8 +61,10 @@ ctu_pop_intercensal <- read.csv("_meta/data-raw/population/sub-est00int.csv") %>
   ) %>% 
   mutate(
     inventory_year = if_else(
-      inventory_year == "CENSUS2010POP", 2010, as.integer(inventory_year)
-    ) # note on error: no they're not
+      inventory_year == "CENSUS2010POP", "2010", inventory_year
+    ),
+    inventory_year = as.numeric(inventory_year),
+    population_data_source = "Census Bureau Intercensal Estimates"
   )
 
 ## 2020 ----
@@ -90,19 +98,21 @@ ctu_pop_intercensal <- read.csv("_meta/data-raw/population/sub-est00int.csv") %>
 
 ctu_estimates_2021 <- readxl::read_xlsx("_meta/data-raw/population/EstimateSeries 1.xlsx") %>%  
   mutate(
-    geoid = paste0("27", COUNTY_CODE)
+    geoid = paste0("27", COUNTY_CODE),
+    population_data_source = "Met Council Intercensal Estimates 2024"
   ) %>% 
   select(
     geoid,
     ctuid = CTU_ID_FIPS,
     inventory_year = EST_YEAR,
-    ctu_population = POPTOTAL_EST
+    ctu_population = POPTOTAL_EST,
+    population_data_source
   ) 
 
 
 # join ----
 
-ctu_pop_estimates <- ctu_pop_intercensal %>% 
+ctu_pop_estimates <- ctu_estimates_2000 %>% 
   rbind(ctu_estimates_2011,
         # ctu_2020,
         ctu_estimates_2021) %>%
@@ -141,7 +151,9 @@ ctu_pop_meta <- tribble(
   "county_population", class(ctu_pop_estimates$county_population), 
   "Population of county in given year",
   "ctu_proportion_of_county_pop", class(ctu_pop_estimates$ctu_proportion_of_county_pop),
-  "Percentage of county population atttributed to this CTU in the given year"
+  "Percentage of county population atttributed to this CTU in the given year",
+  "population_data_source", class(ctu_pop_estimates$population_data_source),
+  "Source of CTU-level population data"
 )
   
 saveRDS(ctu_pop_estimates, file.path(here::here(), "_meta/data/ctu_population.RDS"))
