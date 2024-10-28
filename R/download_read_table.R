@@ -9,9 +9,9 @@
 #' @examples
 #'
 #' download_read_table("https://www.dot.state.mn.us/traffic/data/reports/Current_CC_StationList.xlsx",
-#' "_transportation/data-raw/mndot/",
-#' sheet = 1)
-#'
+#'   "_transportation/data-raw/mndot/",
+#'   sheet = 1
+#' )
 #'
 download_read_table <- function(url,
                                 exdir,
@@ -23,7 +23,7 @@ download_read_table <- function(url,
 
   # download file and save in exdir
   download.file(url,
-    destfile = file.path(exdir, file_name), 
+    destfile = file.path(exdir, file_name),
     mode = "wb"
   )
 
