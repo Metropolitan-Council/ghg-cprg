@@ -70,6 +70,11 @@ onroad_compare <- full_join(onroad_emissions,
   mutate(emissions_diff = emissions_metric_tons_co2e_new - emissions_metric_tons_co2e_old,
          emissions_pct_diff = emissions_diff/emissions_metric_tons_co2e_old)
 
+
+onroad_compare %>% 
+  group_by(vehicle_weight_label) %>% 
+  summarize(avg_change = median(emissions_pct_diff, na.rm = T))
+
 onroad_compare %>% 
   plot_ly(
     type = "box",
@@ -91,7 +96,9 @@ onroad_compare %>%
     )
   ) %>% 
   plotly_layout(
-    main_title = "Change in emissions after including all process types"
+    main_title = "Change in emissions after including all process types",
+    x_title = "% increase in CO<sub>2</sub>e",
+    legend_title = "Fuel type"
   ) %>% 
   plotly::layout(
     xaxis = list(tickformat = "1%"),
