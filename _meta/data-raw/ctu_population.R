@@ -68,55 +68,22 @@ ctu_estimates_2000 <- read.csv("_meta/data-raw/population/sub-est00int.csv") %>%
     population_data_source = "Census Bureau Intercensal Estimates"
   ) 
 
-hassan_population <- ctu_estimates_2000 %>% 
-  filter(ctu_name == "Hassan township")
+hassan_population <- ctu_estimates_2000 %>%
+  filter(ctu_name == "Hassan township") %>%
+  select(inventory_year, hassan_pop = ctu_population)
 
-for (year in 2000:2010){ #this cannot be the most efficient way to do this
-  hassan_pop <- hassan_population %>% 
-    filter(
-      inventory_year == year
-    ) %>% 
-    pull(ctu_population)
-  
-  print(hassan_pop)
-  
-  ctu_estimates_2000 <- ctu_estimates_2000 %>% 
-    mutate(
-      ctu_population = case_when(
-        ctu_name == "Rogers city" & inventory_year==year ~ ctu_population + hassan_pop,
-        .default = ctu_population
-      )
+# update Rogers city population by adding Hassan township population for each year
+ctu_estimates_2000 <- ctu_estimates_2000 %>%
+  left_join(hassan_population, by = "inventory_year") %>%
+  mutate(
+    ctu_population = case_when(
+      ctu_name == "Rogers city" & !is.na(hassan_pop) ~ ctu_population + hassan_pop,
+      TRUE ~ ctu_population
     )
-}
-
-ctu_estimates_2000 <- ctu_estimates_2000 %>% 
+  ) %>%
+  select(-hassan_pop) %>% 
   filter(ctu_name != "Hassan township")
 
-## 2020 ----
-# from decennial census
-# jk it's already in the 2011 series
-
-# ctu_2020 <- tidycensus::get_decennial(
-#   geography = "county subdivision",
-#   variables = "DP1_0001C",
-#   year = 2020,
-#   sumfile = "dp",
-#   state = "MN"
-# ) %>%
-#   mutate(
-#     geoid = str_sub(GEOID, start = 1, end = 5),
-#     ctuid = str_sub(GEOID, start = 6, end = 10),
-#     inventory_year = 2020
-#   ) %>%
-#   filter(
-#     geoid %in% ctu_estimates_2011$geoid
-#   ) %>%
-#   select(
-#     geoid,
-#     ctuid,
-#     inventory_year,
-#     ctu_population = value
-#   )
 
 ## 2021-2023 ----
 # from Met Council estimates
