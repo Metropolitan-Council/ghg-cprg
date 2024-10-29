@@ -11,13 +11,13 @@ ctu_estimates_2011 <- readxl::read_xlsx("_meta/data-raw/population/IntercensalEs
     geoid = paste0("27", COUNTY_CODE),
     population_data_source = "Met Council Intercensal Estimates 2024"
   ) %>%
-  # separate_wider_delim(
-  #   GEONAME, delim = ",", names = c("ctu_name", "county_name", "state")
-  #   ) %>%
+  separate_wider_delim(
+    GEONAME, delim = ",", names = c("ctu_name", "county_name", "state")
+    ) %>%
   select(
     geoid,
     ctuid = CTU_CODE,
-    # ctu_name,
+    ctu_name,
     inventory_year = EST_YEAR,
     ctu_population = POPTOTAL_EST,
     population_data_source
@@ -51,10 +51,11 @@ ctu_estimates_2000 <- read.csv("_meta/data-raw/population/sub-est00int.csv") %>%
   select(
     geoid,
     ctuid,
+    ctu_name = NAME,
     POPESTIMATE2000:CENSUS2010POP
   ) %>%
   pivot_longer(
-    cols = !c(ctuid, geoid),
+    cols = !c(ctuid, geoid, ctu_name),
     names_to = "inventory_year",
     names_prefix = "POPESTIMATE",
     values_to = "ctu_population"
@@ -65,7 +66,31 @@ ctu_estimates_2000 <- read.csv("_meta/data-raw/population/sub-est00int.csv") %>%
     ),
     inventory_year = as.numeric(inventory_year),
     population_data_source = "Census Bureau Intercensal Estimates"
-  )
+  ) 
+
+hassan_population <- ctu_estimates_2000 %>% 
+  filter(ctu_name == "Hassan township")
+
+for (year in 2000:2010){ #this cannot be the most efficient way to do this
+  hassan_pop <- hassan_population %>% 
+    filter(
+      inventory_year == year
+    ) %>% 
+    pull(ctu_population)
+  
+  print(hassan_pop)
+  
+  ctu_estimates_2000 <- ctu_estimates_2000 %>% 
+    mutate(
+      ctu_population = case_when(
+        ctu_name == "Rogers city" & inventory_year==year ~ ctu_population + hassan_pop,
+        .default = ctu_population
+      )
+    )
+}
+
+ctu_estimates_2000 <- ctu_estimates_2000 %>% 
+  filter(ctu_name != "Hassan township")
 
 ## 2020 ----
 # from decennial census
@@ -101,9 +126,13 @@ ctu_estimates_2021 <- readxl::read_xlsx("_meta/data-raw/population/EstimateSerie
     geoid = paste0("27", COUNTY_CODE),
     population_data_source = "Met Council Intercensal Estimates 2024"
   ) %>%
+  separate_wider_delim(
+    GEONAME, delim = ",", names = c("ctu_name", "county_name", "state")
+  ) %>%
   select(
     geoid,
-    ctuid = CTU_ID_FIPS,
+    ctuid = CTU_ID_FIPS,,
+    ctu_name,
     inventory_year = EST_YEAR,
     ctu_population = POPTOTAL_EST,
     population_data_source
@@ -117,7 +146,19 @@ ctu_pop_estimates <- ctu_estimates_2000 %>%
     ctu_estimates_2011,
     # ctu_2020,
     ctu_estimates_2021
-  ) %>%
+  ) %>%  
+  mutate(
+    ctu_class = case_when(
+      str_detect(ctu_name, "\\scity") ~ "CITY",
+      str_detect(ctu_name, "\\stownship") ~ "TOWNSHIP",
+      str_detect(ctu_name, "\\sUT") ~ "UNORGANIZED TERRITORY",
+      .default = "NONE"
+    ),
+    ctu_name = str_remove(ctu_name, "\\scity"),
+    ctu_name = str_remove(ctu_name, "\\stownship"),
+    ctu_name = str_remove(ctu_name, "\\sUT"),
+    ctu_name = str_replace(ctu_name, "St. ", "Saint ")
+  ) %>% 
   group_by(
     geoid, inventory_year
   ) %>%
@@ -127,7 +168,18 @@ ctu_pop_estimates <- ctu_estimates_2000 %>%
   ungroup() %>%
   mutate(
     ctu_proportion_of_county_pop = ctu_population / county_population
-  )
+  ) %>% 
+  select(
+    geoid,
+    ctuid,
+    ctu_name,
+    ctu_class,
+    inventory_year,
+    population_data_source,
+    ctu_population,
+    county_population,
+    ctu_proportion_of_county_pop
+  ) # added this for ordering columns
 
 ## test ----
 # pop_summary <- ctu_pop_estimates %>%
@@ -147,15 +199,19 @@ ctu_pop_meta <- tribble(
   ~Column, ~Class, ~Description,
   "geoid", class(ctu_pop_estimates$geoid), "GEOID tag for MN county",
   "ctuid", class(ctu_pop_estimates$ctuid), "CTU census tag",
-  "inventory_year", class(ctu_pop_estimates$inventory_year), "Population year, between 2000 and 2023",
+  "ctu_name", class(ctu_pop_estimates$ctu_name), "CTU name",
+  "ctu_class", class(ctu_pop_estimates$ctu_class), "CTU class (either CITY, 
+  TOWNSHIP, or UNORGANIZED TERRITORY",
+  "inventory_year", class(ctu_pop_estimates$inventory_year), 
+  "Population year, between 2000 and 2023",
+  "population_data_source", class(ctu_pop_estimates$population_data_source),
+  "Source of CTU-level population data",
   "ctu_population", class(ctu_pop_estimates$ctu_population),
   "Population of CTU in given year",
   "county_population", class(ctu_pop_estimates$county_population),
   "Population of county in given year",
   "ctu_proportion_of_county_pop", class(ctu_pop_estimates$ctu_proportion_of_county_pop),
-  "Percentage of county population atttributed to this CTU in the given year",
-  "population_data_source", class(ctu_pop_estimates$population_data_source),
-  "Source of CTU-level population data"
+  "Percentage of county population atttributed to this CTU in the given year"
 )
 
 saveRDS(ctu_pop_estimates, file.path(here::here(), "_meta/data/ctu_population.RDS"))

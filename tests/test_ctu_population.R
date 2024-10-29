@@ -5,6 +5,15 @@ testthat::test_that("CTU population is as expected", {
     unique(ctu_population$geoid),
     c("27003", "27019", "27037", "27053", "27123", "27139", "27163")
   )
+  
+  cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS")) %>% 
+    filter(county_name %in% c("Anoka", "Dakota", "Ramsey", "Hennepin", "Washington",
+                              "Scott", "Carver")) %>% 
+    arrange(ctu_name)
+  
+  testthat::expect_equal(
+    unique(cprg_ctu$ctu_name), arrange(ctu_population, ctu_name) %>% pull(ctu_name) %>% unique()
+  )
 })
 
 testthat::test_that("CTU population matches county totals", {
