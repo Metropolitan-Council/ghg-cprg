@@ -36,41 +36,46 @@ scc6_remove <- c(
 
 # read in base datasets -----
 # All these were compiled from SMOKE flat files
-# waiting to hear back from CMAS forum on blank emis_type column
-# https://forum.cmascenter.org/t/blank-emis-type/5244
+# Blank emis_type column indicates all process types (RPD, RPH, RPHO, RPP, RPS, RPV)
+# We will include all emis_type's for each dataset
 
 # first, NEI inventory from  _transportation/data-raw/epa_nei_smoke_ff.R
 epa_nei_onroad <- readRDS("_transportation/data-raw/epa/nei/epa_nei_smoke_ff.RDS") %>%
   mutate(
     geoid = region_cd,
-    pollutant_code = poll
+    pollutant_code = poll,
+    emis_type = ifelse(emis_type == "", "All", emis_type)
   ) %>%
   left_join(counties_light, by = join_by(geoid)) %>%
   filter(
     cprg_area == TRUE,
-    emis_type %in% c("RPD", "")
+    # avoid double counting where they included both the individual 
+    # emis_types and the aggregated emis_type
+    !(calc_year == 2014 & emis_type == "All")
   ) %>%
   left_join(scc_combine, by = join_by(scc6)) %>%
   filter(!scc6 %in% scc6_remove)
 
 # next EQUATES from  _transportation/data-raw/epa_equates_read.R
 epa_equates <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQUATES/equates_cmas_mn_wi.RDS") %>%
-  mutate(geoid = region_cd) %>%
-  left_join(counties_light, by = join_by(geoid)) %>%
+  mutate(geoid = region_cd,
+         emis_type = ifelse(emis_type == "", "All", emis_type)
+  ) %>%
+  left_join(counties_light, by = join_by(geoid)) %>% 
   filter(
-    cprg_area == TRUE,
-    emis_type %in% c("RPD", "")
+    cprg_area == TRUE
   ) %>%
   left_join(scc_combine, by = join_by(scc6)) %>%
   filter(!scc6 %in% scc6_remove)
 
 # finally air emissions modeling from  _transportation/data-raw/epa_air_emissions_modeling_onroad.R
 epa_emismod <- read_rds("_transportation/data-raw/epa/air_emissions_modeling/onroad_mn_wi.RDS") %>%
-  mutate(geoid = region_cd) %>%
+  mutate(geoid = region_cd,
+         emis_type = ifelse(emis_type == "", "All", emis_type)
+  ) %>%
   left_join(counties_light, by = join_by(geoid)) %>%
   filter(
-    cprg_area == TRUE,
-    emis_type %in% c("RPD", "")
+    cprg_area == TRUE
   ) %>%
   left_join(scc_combine, by = join_by(scc6)) %>%
   filter(!scc6 %in% scc6_remove)
@@ -81,12 +86,13 @@ epa_nei_onroad_summary <- epa_nei_onroad %>%
   group_by(geoid, county_name, calc_year, poll, scc6, scc6_desc) %>%
   summarize(
     emissions_short_tons = sum(emissions_short_tons),
+    emis_types_included = paste0(unique(emis_type), collapse = ", "),
     .groups = "keep"
   ) %>%
   mutate(ann_value_grams = emissions_short_tons %>%
-    units::as_units("short_ton") %>%
-    units::set_units("gram") %>%
-    as.numeric()) %>%
+           units::as_units("short_ton") %>%
+           units::set_units("gram") %>%
+           as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -111,12 +117,13 @@ epa_emismod_summary <- epa_emismod %>%
   group_by(geoid, county_name, calc_year, poll, scc6, scc6_desc) %>%
   summarize(
     emissions_short_tons = sum(emissions_short_tons),
+    emis_types_included = paste0(unique(emis_type), collapse = ", "),
     .groups = "keep"
   ) %>%
   mutate(ann_value_grams = emissions_short_tons %>%
-    units::as_units("short_ton") %>%
-    units::set_units("gram") %>%
-    as.numeric()) %>%
+           units::as_units("short_ton") %>%
+           units::set_units("gram") %>%
+           as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -144,13 +151,14 @@ epa_equates_summary <- epa_equates %>%
   group_by(geoid, county_name, calc_year, poll, scc6) %>%
   summarize(
     emissions_short_tons = sum(emissions_short_tons),
+    emis_types_included = paste0(unique(emis_type), collapse = ", "),
     .groups = "keep"
   ) %>%
   # convert to grams
   mutate(ann_value_grams = emissions_short_tons %>%
-    units::as_units("short_ton") %>%
-    units::set_units("gram") %>%
-    as.numeric()) %>%
+           units::as_units("short_ton") %>%
+           units::set_units("gram") %>%
+           as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -202,7 +210,7 @@ epa_emissions_combine <- bind_rows(
   ungroup() %>%
   select(
     emissions_year, data_source, interpolation,
-    geoid, county_name, scc6,
+    geoid, county_name, scc6, emis_types_included,
     co2, n2o, ch4, emissions_metric_tons_co2e,
     co, no, nox, pm10_pri, pm25_pri, so2, nh3,
     voc
@@ -362,7 +370,7 @@ epa_emissions_summary_alt_mode_truck %>%
 epa_onroad_emissions_year_scc_index <- epa_emissions_combine %>%
   select(
     data_source,
-    scc6, scc6_desc, fuel_type, vehicle_type,
+    scc6, scc6_desc, fuel_type, vehicle_type, emis_types_included,
     alt_mode, alt_mode_truck, vehicle_weight_label,
     vehicle_fuel_label
   ) %>%
@@ -370,7 +378,7 @@ epa_onroad_emissions_year_scc_index <- epa_emissions_combine %>%
 
 epa_onroad_emissions_year_pollutant_index <- epa_emissions_combine %>%
   select(
-    emissions_year, data_source, interpolation,
+    emissions_year, data_source, interpolation, emis_types_included,
     co2, ch4, n2o,
     emissions_metric_tons_co2e, co,
     no, nox, pm10_pri, pm25_pri, nh3, so2, voc
@@ -397,7 +405,7 @@ epa_onroad_emissions_year_pollutant_index <- epa_emissions_combine %>%
 epa_onroad_emissions_compile <- epa_emissions_combine %>%
   select(
     emissions_year,
-    data_source, interpolation, geoid, county_name,
+    data_source, interpolation, geoid, county_name, emis_types_included,
     scc6, scc6_desc, fuel_type, vehicle_type, alt_mode,
     alt_mode_truck, vehicle_fuel_label, vehicle_weight_label, category,
     emissions_metric_tons_co2e, co2, ch4, n2o,
@@ -405,7 +413,7 @@ epa_onroad_emissions_compile <- epa_emissions_combine %>%
   ) %>%
   group_by(
     emissions_year,
-    data_source, interpolation, geoid, county_name,
+    data_source, interpolation, geoid, county_name,emis_types_included, 
     scc6, scc6_desc, fuel_type, vehicle_type, alt_mode,
     alt_mode_truck, vehicle_fuel_label, vehicle_weight_label, category
   ) %>%
@@ -428,6 +436,7 @@ epa_onroad_emissions_compile_meta <- tibble::tribble(
   "emissions_year", class(epa_onroad_emissions_compile$emissions_year), "Emissions year",
   "data_source", class(epa_onroad_emissions_compile$data_source), "EPA data source",
   "interpolation", class(epa_onroad_emissions_compile$interpolation), "Original or interpolated data",
+  "emis_types_included", class(epa_onroad_emissions_compile$emis_types_included), "SMOKE-MOVES emissions process types included",
   "emissions", class(epa_onroad_emissions_compile$emissions), "Annual emissions"
 ) %>%
   bind_rows(cprg_county_meta) %>%
@@ -436,7 +445,7 @@ epa_onroad_emissions_compile_meta <- tibble::tribble(
   filter(Column %in% names(epa_onroad_emissions_compile))
 
 saveRDS(epa_onroad_emissions_compile, "_transportation/data/epa_onroad_emissions_compile.RDS",
-  compress = "xz"
+        compress = "xz"
 )
 saveRDS(epa_onroad_emissions_compile_meta, "_transportation/data/epa_onroad_emissions_compile_meta.RDS")
 
@@ -491,9 +500,9 @@ epa_onroad_source_set <-
   ) %>%
   unique() %>%
   select(data_source, dataset, moves_edition,
-    emissions_year = calc_year,
-    process_source,
-    file_location
+         emissions_year = calc_year,
+         process_source,
+         file_location
   )
 
 saveRDS(epa_onroad_source_set, "_transportation/data/epa_onroad_source_set.RDS")
