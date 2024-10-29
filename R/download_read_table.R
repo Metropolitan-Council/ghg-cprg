@@ -11,9 +11,9 @@
 #' @examples
 #'
 #' download_read_table("https://www.dot.state.mn.us/traffic/data/reports/Current_CC_StationList.xlsx",
-#' "_transportation/data-raw/mndot/",
-#' sheet = 1)
-#'
+#'   "_transportation/data-raw/mndot/",
+#'   sheet = 1
+#' )
 #'
 download_read_table <- function(url,
                                 exdir,
@@ -22,6 +22,7 @@ download_read_table <- function(url,
   # split URL to get file name
   url_split <- strsplit(url, split = "/")
   file_name <- path_sanitize(tail(url_split[[1]], n = 1))
+
 
   # if the downloaded file does not already OR
   # we are forcing a fresh download
@@ -32,6 +33,7 @@ download_read_table <- function(url,
       mode = "wb"
     )
   }
+
 
   # read and return file
   if (fs::path_ext(file_name) == "csv") {
