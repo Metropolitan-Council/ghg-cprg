@@ -77,6 +77,10 @@ nrel_slope_cprg_city <- cprg_ctu %>%
   )
 
 
+ctu_population_2021 <- readRDS("_meta/data/ctu_population.RDS") %>%
+  filter(inventory_year == 2021) %>%
+  left_join(cprg_county %>% select(geoid, county_name),
+            by = 'geoid')
 
 # city-level
 
@@ -95,7 +99,7 @@ nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
               "source" = "source"
             )    
   ) %>%
-  filter(county_name %in% c('Anoka', 'Carver', 'Dakotaa', 'Hennepin', 'Ramsey', 'Scott', 'Washington')) %>%
+  filter(county_name %in% c('Anoka', 'Carver', 'Dakota', 'Hennepin', 'Ramsey', 'Scott', 'Washington')) %>%
   select(
     -cprg_area.x,
     -cprg_area.y,
@@ -122,6 +126,14 @@ nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
   )
 
 
+nrel_city_county_activityPopProp_reference <- nrel_slope_cprg_cityProps_County_2021 %>%
+  left_join(ctu_population_2021,
+            by = join_by('ctu_name',
+                         'ctu_class',
+                         'county_name')
+  )
+
+
 countySummary_nrelCity <- nrel_slope_cprg_cityProps_County_2021 %>%
   st_drop_geometry() %>%
   group_by(county_name, sector, source) %>%
@@ -139,6 +151,9 @@ countySummary_nrelCity <- nrel_slope_cprg_cityProps_County_2021 %>%
 # issues to address
 # double counting of cities across counties..
 # removing portions of cities from city total that don't exist within the county study area JUST FOR calculation of proportions...
+
+
+
 
   
   
