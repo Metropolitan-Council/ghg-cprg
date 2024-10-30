@@ -120,14 +120,6 @@ nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
     cityPropOfCounty_expenditure_usd = city_expenditure_usd / county_expenditure_usd
   )
 
-st_write(nrel_slope_cprg_cityProps_County_2021, here("_energy",
-                                                     "data-raw",
-                                                     "nrel_slope",
-                                                     "MNWI",
-                                                     "nrel_slope_cprg_cityProps_County_2021.shp")
-)
-
-
 
 countySummary_nrelCity <- nrel_slope_cprg_cityProps_County_2021 %>%
   st_drop_geometry() %>%
