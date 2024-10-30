@@ -53,5 +53,7 @@ df_final <- df_ww_emissions %>%
 
 df_final %>%
   ggplot() + theme_minimal() +
-  geom_point(aes(x=year, y=CO2e, color=Emission_type)) + facet_wrap(~county_name)
+  geom_path(aes(x=year, y=CO2e, color=Emission_type)) + 
+  geom_point(aes(x=year, y=CO2e, color=Emission_type)) + 
+  facet_wrap(~county_name)
 
