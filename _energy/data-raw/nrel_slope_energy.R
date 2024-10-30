@@ -77,28 +77,6 @@ nrel_slope_cprg_city <- cprg_ctu %>%
   )
 
 
-write.csv(nrel_slope_cprg_county, here("_energy",
-                                       "data-raw",
-                                       "nrel_slope",
-                                       "MNWI",
-                                       "nrel_slope_cprg_county.csv")
-          )
-
-write.csv(nrel_slope_cprg_city, here("_energy",
-                 "data-raw",
-                 "nrel_slope",
-                 "MNWI",
-                 "nrel_slope_cprg_city.csv")
-          )
-
-st_write(nrel_slope_cprg_city %>% select(-expenditure_us_dollars), here("_energy",
-                                    "data-raw",
-                                    "nrel_slope",
-                                    "MNWI",
-                                    "nrel_slope_cprg_city.shp"),
-         append = FALSE
-         )
-
 
 # city-level
 
