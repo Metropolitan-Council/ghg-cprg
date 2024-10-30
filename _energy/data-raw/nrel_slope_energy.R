@@ -131,7 +131,18 @@ nrel_city_county_activityPopProp_reference <- nrel_slope_cprg_cityProps_County_2
             by = join_by('ctu_name',
                          'ctu_class',
                          'county_name')
+  ) %>%
+  select(-geoid.x,
+        -geoid.y,
+        -geometry.y,
+        geometry = geometry.x
+  ) %>%
+  mutate(
+    cityConsumption_countyPopDownscaled_mmbtu = county_consumption_mm_btu * ctu_proportion_of_county_pop
   )
+
+
+#compare city figures 1) provided directly by NREL to 2) those downscaled from county figures provided by NREL using CTU pop proportion of county populations
 
 
 countySummary_nrelCity <- nrel_slope_cprg_cityProps_County_2021 %>%
