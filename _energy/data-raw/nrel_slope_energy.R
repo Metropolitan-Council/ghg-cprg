@@ -95,6 +95,7 @@ nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
               "source" = "source"
             )    
   ) %>%
+  filter(county_name %in% c('Anoka', 'Carver', 'Dakotaa', 'Hennepin', 'Ramsey', 'Scott', 'Washington')) %>%
   select(
     -cprg_area.x,
     -cprg_area.y,
