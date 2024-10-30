@@ -1,4 +1,4 @@
-﻿file_name,status,prefix,type,description,output_datasets,github_issue
+file_name,status,prefix,type,description,output_datasets,github_issue
 _calculate_emissions.R,Deprecated,_,function,StreetLight Data - Calculate emissions using vehicle miles traveled ,None,
 _calculate_vmt.R,Deprecated,_,function,StreetLight Data - calculate vehicle miles traveled from a given StreetLight Analysis,None,
 _read_smoke_ff10.R,Active,_,function,"EPA - read, clean, and save a given SMOKE FF10 file.",None,
@@ -25,6 +25,8 @@ epa_pollutants.R,Active,epa,data processing,Compile EPA pollutant description ta
 epa_source_classification_codes.R,Active,epa,data processing,"Compile EPA source classification codes (SCC) description tables from NEI, EQUATES, other documentation","scc_combine.RDS, scc_combine_meta.RDS",
 epa_verify_equates.R,Active,epa,validation,Verify EQUATES data downloaded from EPA FTP site and CMAS Data Warehouse,None,
 epa_verify_n2o_differences.R,Active,epa,validation,Verify and investigate differences in on-road emissions with and without N2O included in CO2e calculation,None,
+epa_verify_emis_type.R,Active,epa,validation,"Review differences in emis_type column availability across NEI , EQUATES, and Air Emissions Modeling",None,
+epa_verify_emis_type_change.R,Active,epa,validation,Verify increase in emisssions when when all process types are included,None,https://github.com/Metropolitan-Council/ghg-cprg/issues/129
 epa_verify_nei_envirofacts_smoke.R,Active,epa,validation,Verify emissions compiled from SMOKE FF10 match summary tables,None,
 mndot_cdp_mode_split.R,Active,mndot,data processing,"Calculate passenger, medium, and heavy-duty mode proportions of on-road traffic for CDP",None,
 mndot_extract_yearly_volume_trends.R,Active,mndot,data processing,Import and clean MnDOT vehicle classification data,most_recent_yearly_volume_percentage_by_class.RDS,
