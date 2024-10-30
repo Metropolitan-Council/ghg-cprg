@@ -84,7 +84,7 @@ onroad_compare %>%
     color = ~vehicle_fuel_label,
     colors = "Dark2",
     marker = list(
-      opacity = 0.5,
+      opacity = 0.4,
       size = 10
     ),
     hoverinfo = "text",
@@ -102,6 +102,9 @@ onroad_compare %>%
   ) %>% 
   plotly::layout(
     xaxis = list(tickformat = "1%"),
-    yaxis = list(traceorder = "normal"),
+    legend = list(traceorder = "reversed",
+                  orientation = "h",
+                  y = - 0.15),
     boxmode = "group",
     traceorder = "reversed")
+
