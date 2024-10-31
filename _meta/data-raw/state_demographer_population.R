@@ -63,12 +63,19 @@ state_population <- bind_rows(mn_state_population %>%
                                 select(state_name = geography_name,
                                        inventory_year = year,
                                        population,
-                                       households),
+                                       households) %>% 
+                                mutate(population_data_source = 
+                                         "MN State Demographic Center",
+                                       state_abb = "MN"),
                               wi_state_population %>% 
                                 select(state_name,
                                        inventory_year = year,
                                        population) %>% 
-                                mutate(households = NA))
+                                mutate(households = NA,
+                                       population_data_source = 
+                                         "WI Dept of Administration",
+                                       state_abb = "WI"))
+
 
 # create metadata
 state_population_meta <-
@@ -76,12 +83,13 @@ state_population_meta <-
     cprg_county_meta,
     tribble(
       ~Column, ~Class, ~Description,
-      "population_year", class(state_population$population_year), "Population estimate year",
-      "state_population", class(state_population$state_population), "Total state population estimate",
+      "inventory_year", class(state_population$inventory_year), "Population estimate year",
+      "population", class(state_population$population), "Total state population estimate",
+      "households", class(state_population$population), "Total state households estimate (Minnesota)",
       "population_data_source", class(state_population$population_data_source), "Population estimate data source"
     )
   ) %>%
   filter(Column %in% names(state_population))
 
-saveRDS(state_population, "_meta/data/state_population.RDS")
-saveRDS(state_population_meta, "_meta/data/state_population_meta.RDS")
+saveRDS(state_population, "_meta/data/state_population_demographer.RDS")
+saveRDS(state_population_meta, "_meta/data/state_population_demographer_meta.RDS")
