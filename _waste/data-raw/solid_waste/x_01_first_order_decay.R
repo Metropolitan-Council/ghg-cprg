@@ -153,5 +153,5 @@ waste_compare <- solid_waste %>%
   )
   
 ggplot(waste_compare, aes(x = inventory_year, y = value_emissions, color = geoid)) +
-  geom_line() +
-  geom_line(aes(y = value_emissions_fod), linetype = 2)
+  geom_line(linetype = 2) +
+  geom_line(aes(y = value_emissions_fod))

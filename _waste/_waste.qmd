@@ -17,14 +17,16 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
-epa_waste_inventory <- readRDS(file.path(here::here(), "_waste/data-raw/epa_solidwaste_inventory.RDS"))
+epa_waste_inventory <- readRDS(file.path(here::here(), "_waste/data-raw/compare_epa_inventory.RDS"))
 
 federal_totals <- epa_waste_inventory %>%
   filter(source == "Total") %>%
   select(
-    geog_name,
+    geoid,
+    inventory_year,
     source,
-    emissions_metric_tons_co2e,
+    value_emissions,
+    units_emissions,
     data_source
   )
 
@@ -281,7 +283,7 @@ solidwaste_totals <- county_emissions %>%
   )
 
 solidwaste_population <- left_join(solidwaste_totals, cprg_population,
-  by = c("geog_name" = "NAME")
+  by = c("geog_name" = "county_name")
 )
 
 fig_emissions_population_solidwaste <- plot_ly(
@@ -372,16 +374,25 @@ metc_solidwaste_inventory <- county_emissions %>%
   filter(sector == "Waste") %>%
   mutate(
     data_source = "Met Council",
-    year = as.character(year)
+    inventory_year = as.character(year),
+    geoid = case_when(
+      geog_name %in% c("Pierce", "St. Croix") ~ paste0("55", geog_id),
+      .default = paste0("27", geog_id)
+    ),
+    value_emissions = emissions_metric_tons_co2e,
+    units_emissions = "Tonnes CO2e"
   ) %>%
-  select(names(epa_waste_inventory))
+  select(
+    names(epa_waste_inventory)
+  )
 
 metc_epa_comp_solid <- epa_waste_inventory %>%
   filter(source != "Total") %>%
   bind_rows(metc_solidwaste_inventory) %>%
   mutate(
     source_unified = case_when(
-      # source == "Anaerobic digestion" ~ "Waste to energy",
+      # source == "Anaerobic digestion" ~ "Organics",
+      source == "Compost" ~ "Organics",
       TRUE ~ source
     )
   ) %>%
@@ -390,7 +401,7 @@ metc_epa_comp_solid <- epa_waste_inventory %>%
 wide_metc_epa_comp_solid <- metc_epa_comp_solid %>%
   pivot_wider(
     names_from = data_source,
-    values_from = emissions_metric_tons_co2e
+    values_from = value_emissions
   ) %>%
   filter(
     !is.na(`Met Council`),
@@ -408,18 +419,18 @@ plot_waste_comparison <- function(waste_source,
       filter(
         source_unified == waste_source
       ),
-    y = ~geog_name,
-    x = ~emissions_metric_tons_co2e,
+    y = ~geoid,
+    x = ~value_emissions,
     color = ~data_source,
     colors = c(
       "Met Council" = colors$councilBlue,
       "US GHG Inventory" = cprg_colors$cprg_da_yellow
     ),
     hovertemplate = ~ paste0(
-      geog_name, " County", "<br>",
+      geoid, " County", "<br>",
       data_source, "<br>",
       source_unified, "<br>",
-      round(emissions_metric_tons_co2e * 1e-3, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      round(value_emissions * 1e-3, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
     ),
     marker = list(size = 18),
@@ -431,8 +442,8 @@ plot_waste_comparison <- function(waste_source,
       name = "Difference line",
       data = wide_metc_epa_comp_solid %>%
         filter(source_unified == waste_source),
-      y = ~geog_name,
-      yend = ~geog_name,
+      y = ~geoid,
+      yend = ~geoid,
       x = ~`US GHG Inventory`,
       xend = ~`Met Council`,
       showlegend = FALSE,
