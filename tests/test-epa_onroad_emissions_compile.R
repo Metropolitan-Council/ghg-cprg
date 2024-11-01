@@ -45,7 +45,7 @@ testthat::test_that("Emissions have increased since including all emissions proc
   # Commit ID 17b4349fc5874562befaa56a85ef3f740bb1708a
   file_name <- tempfile()
   download.file("https://github.com/Metropolitan-Council/ghg-cprg/raw/17b4349fc5874562befaa56a85ef3f740bb1708a/_transportation/data/epa_onroad_emissions_compile.RDS",
-    destfile = file_name, quiet = TRUE
+    destfile = file_name, quiet = TRUE, mode = "wb"
   )
 
   # read in and create previous version aggregation
