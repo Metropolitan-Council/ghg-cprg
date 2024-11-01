@@ -1,6 +1,6 @@
 # verify differences when we include all emis_types instead of only rate-per-distance
-# 2020 will remain the same, becasue 2020 already included all emis_types
-# Otherwise, we exepect that emissions will increase
+# 2020 will remain the same, because 2020 already included all emis_types
+# Otherwise, we expect that emissions will increase
 #
 
 source("R/_load_pkgs.R")
@@ -9,7 +9,7 @@ source("R/_load_pkgs.R")
 # from the dev-2005-baseline branch
 file_name <- tempfile()
 download.file("https://github.com/Metropolitan-Council/ghg-cprg/raw/17b4349fc5874562befaa56a85ef3f740bb1708a/_transportation/data/epa_onroad_emissions_compile.RDS",
-  destfile = file_name
+              destfile = file_name, mode = "wb"
 )
 
 # read in and create previous version aggregation
