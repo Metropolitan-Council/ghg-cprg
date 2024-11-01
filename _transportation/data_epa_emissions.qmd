@@ -26,7 +26,9 @@ All datasets are compiled from Sparse Matrix Operator Kernel Emissions (SMOKE) F
 
 SMOKE FF10 files were processed using [`read_smoke_ff10()`](data-raw/_read_smoke_ff10.R), which reads in the raw data, records relevant metadata, filters to only include relevant counties and pollutants, and saves an intermediary dataset. These intermediary datasets are read back in, combined, and saved. 
 
-SMOKE FF10 data were filtered to include MOVES processes associated with on-roadway vehicle operation [^These pollutants account for emissions from RatePerDistance (RPD) MOVES process types, including running exhaust, crankcase running exhaust, tire wear, brake wear, on-road evaporative permeation, on-road evaporative fuel leaks on-road evaporative fuel vapor, and venting [@cmasSMOKEV51Users2024, section 2.7.4.9]].
+SMOKE FF10 data were aggregated to include all MOVES processes for on- and off-network vehicle operation, including running, starting, and idling exhaust, tire and brake wear, evaporative permeation, fuel leaks, and fuel vapor venting, and crankcase exhaust [@cmasSMOKEV51Users2024, section 2.7.4.9]. [^ All six MOVES emissions processes, including rate per distance (RPD), rate per vehicle (RPV), rate per hour (RPH), rate per profile (RPP), rate per start (RPS), and rate per hour for off-network idling (RPHO) were summed for each vehicle type, fuel type, and pollutant [@beidlerBlankEmis_typeCMASForum2024]].
+
+<!-- SMOKE FF10 data were filtered to include MOVES processes associated with on-roadway vehicle operation [^These pollutants account for emissions from RatePerDistance (RPD) MOVES process types, including running exhaust, crankcase running exhaust, tire wear, brake wear, on-road evaporative permeation, on-road evaporative fuel leaks on-road evaporative fuel vapor, and venting [@cmasSMOKEV51Users2024, section 2.7.4.9]]. -->
 
 Direct URLs and download information are available in the [EPA downloads guide](data-raw/epa/README_epa_downloads.html). 
 

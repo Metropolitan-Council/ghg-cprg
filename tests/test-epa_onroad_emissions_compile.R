@@ -35,3 +35,86 @@ testthat::test_that("Compiled onroad emissions", {
     )
   )
 })
+
+
+testthat::test_that("Emissions have increased since including all emissions processes", {
+  # skip this test if offline
+  testthat::skip_if_offline()
+
+  # download specific version of epa_onroad_emissions_compile from GitHub
+  # Commit ID 17b4349fc5874562befaa56a85ef3f740bb1708a
+  file_name <- tempfile()
+  download.file("https://github.com/Metropolitan-Council/ghg-cprg/raw/17b4349fc5874562befaa56a85ef3f740bb1708a/_transportation/data/epa_onroad_emissions_compile.RDS",
+    destfile = file_name, quiet = TRUE, mode = "wb"
+  )
+
+  # read in and create previous version aggregation
+  prev_epa_onroad_emissions_compile <- readRDS(file_name)
+  prev_onroad_emissions <- prev_epa_onroad_emissions_compile %>%
+    filter(
+      pollutant == "emissions_metric_tons_co2e",
+      !vehicle_type %in% c("Gas stations", "Trucks and buses")
+    ) %>%
+    unique() %>%
+    group_by(
+      emissions_year, data_source, geoid, county_name,
+      vehicle_weight_label,
+      vehicle_fuel_label,
+      category
+    ) %>%
+    # group and summarize emissions
+    summarize(
+      emissions_metric_tons_co2e = sum(emissions, na.rm = TRUE),
+      vehicle_types_included = paste0(unique(vehicle_type), collapse = ", "),
+      fuel_types_included = paste0(unique(fuel_type), collapse = ", "),
+      scc6_included = paste(unique(scc6), collapse = ", "),
+      .groups = "keep"
+    ) %>%
+    ungroup()
+
+  # pull onroad emissions compile from directory
+  epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
+  onroad_emissions <- epa_onroad_emissions_compile %>%
+    filter(
+      pollutant == "emissions_metric_tons_co2e",
+      !vehicle_type %in% c("Gas stations", "Trucks and buses")
+    ) %>%
+    unique() %>%
+    group_by(
+      emissions_year, data_source, geoid, county_name,
+      vehicle_weight_label,
+      vehicle_fuel_label,
+      category
+    ) %>%
+    summarize(
+      emissions_metric_tons_co2e = sum(emissions, na.rm = TRUE),
+      vehicle_types_included = paste0(unique(vehicle_type), collapse = ", "),
+      fuel_types_included = paste0(unique(fuel_type), collapse = ", "),
+      scc6_included = paste(unique(scc6), collapse = ", "),
+      .groups = "keep"
+    ) %>%
+    ungroup()
+
+  # create comparison dataset
+  onroad_compare <- full_join(
+    onroad_emissions,
+    prev_onroad_emissions,
+    # join by all columns EXCEPT emissions_metric_tons_co2e
+    join_by(
+      emissions_year, data_source, geoid, county_name, vehicle_weight_label,
+      vehicle_fuel_label, category,
+      vehicle_types_included, fuel_types_included, scc6_included
+    ),
+    suffix = c("_new", "_old")
+  ) %>%
+    # find difference and percent difference
+    mutate(
+      emissions_diff = emissions_metric_tons_co2e_new - emissions_metric_tons_co2e_old,
+      emissions_pct_diff = emissions_diff / emissions_metric_tons_co2e_old
+    )
+
+  # the minimum value should be 0, because nothing decreased
+  testthat::expect_equal(min(onroad_compare$emissions_pct_diff, na.rm = TRUE), 0)
+  #
+  testthat::expect_lte(max(onroad_compare$emissions_pct_diff, na.rm = TRUE), 0.25)
+})

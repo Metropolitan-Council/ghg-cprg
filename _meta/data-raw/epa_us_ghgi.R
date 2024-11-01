@@ -134,12 +134,12 @@ econ_transportation <- econ %>%
     values_from = "emission_grams",
     values_fill = 0
   ) %>%
-  clean_names() %>% 
-mutate(
-  co2_co2_equivalent =
-    sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o)),
-  emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
-)
+  clean_names() %>%
+  mutate(
+    co2_co2_equivalent =
+      sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o)),
+    emissions_metric_tons_co2e = co2_co2_equivalent / 1000000
+  )
 
 
 # compare line numbers, sectors -----
