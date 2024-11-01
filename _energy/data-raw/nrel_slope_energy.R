@@ -77,10 +77,27 @@ nrel_slope_cprg_city <- cprg_ctu %>%
   )
 
 
+
+# Define the new columns
+sectors <- c("commercial", "residential", "industrial")
+sources <- c("Electricity", "Natural Gas")
+
+# Create all combinations of sectors and sources
+sector_source <- expand.grid(sector = sectors, source = sources)
+
+
+
 ctu_population_2021 <- readRDS("_meta/data/ctu_population.RDS") %>%
   filter(inventory_year == 2021) %>%
-  left_join(cprg_county %>% select(geoid, county_name),
-            by = 'geoid')
+  left_join(cprg_county %>% select(geoid, county_name), by = 'geoid')
+
+# Only expand the dataset if sector and source columns do not exist
+if (!("sector" %in% colnames(ctu_population_2021)) & !("source" %in% colnames(ctu_population_2021))) {
+  ctu_population_2021 <- ctu_population_2021 %>%
+    slice(rep(1:n(), each = 6)) %>%
+    bind_cols(sector_source %>% slice(rep(1:n(), times = nrow(ctu_population_2021))))
+}
+
 
 # city-level
 
@@ -126,11 +143,13 @@ nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
   )
 
 
-nrel_city_county_activityPopProp_reference <- nrel_slope_cprg_cityProps_County_2021 %>%
-  left_join(ctu_population_2021,
+nrel_AllCityTownships_county_activityPopProp_reference <- nrel_slope_cprg_cityProps_County_2021 %>%
+  right_join(ctu_population_2021,
             by = join_by('ctu_name',
                          'ctu_class',
-                         'county_name')
+                         'county_name',
+                         'sector',
+                         'source')
   ) %>%
   select(-geoid.x,
         -geoid.y,
