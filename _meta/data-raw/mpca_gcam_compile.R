@@ -2,6 +2,9 @@ source("R/_load_pkgs.R")
 
 demographer_state_population <- readRDS("_meta/data/state_population_demographer.RDS")
 
+#for comparison
+county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS")
+
 state_projections <- read_xlsx("_meta/data-raw/Minnesota GCAM Modeling Data.xlsx") %>% 
   pivot_longer(cols = 6:27,
                names_to = "emissions_year",
@@ -67,16 +70,58 @@ saveRDS(scenarios_sector_annual_meta, "_meta/data/gcam/mpca_sector_gcam_meta.RDS
   
 #### homogenize subsectors to match MC inventory work
 
-unique(state_projections$source)
+state_projections %>% filter(sector == "Agriculture") %>% distinct(source) %>% 
+  print(n = 50)
 
+
+#only labeling categories where we have current emissions
 livestock <- c("American Bison", "Beef Cattle","Dairy Cattle","Dairy Heifers",
-               "Goats", "Horses", "Swine", "Poultry", "Sheep")
+               "Goats", "Horses", "Swine", "Poultry", "Sheep", "Mules and Asses")
 
-cropland <- c("Aboveground")
+cropland <- c("Biofuels","Cereals","Cropland") # omitting liming, mineral soils, grasslands (emitters?), rice, as these are not accounted for in our inv
+              
+
+state_projections %>% filter(sector == "Transportation") %>% distinct(source) %>% 
+  print(n = 50)
+
+county_emissions %>% filter(sector == "Transportation") %>% distinct(category) %>% 
+  print(n = 50)
+
+passenger_vehicles <- c("Light-duty trucks", "Motorcycles", "Passenger cars")
+
+state_projections %>% filter(sector == "Waste") %>% distinct(source) %>% 
+  print(n = 50)
+
+county_emissions %>% filter(sector == "Energy") %>% distinct(category) %>% 
+  print(n = 50)
+
+waste <- c("MMSW landfills", "MMSW composting", "MMSW compost preprocessing",
+        "Yard waste composting", "Yard waste preprocessing")
+
+state_projections %>% filter(sector == "LULUCF", values_emissions < 0) %>% distinct(source) %>% 
+  print(n = 50)
+
+sequestration <- c("Aboveground Biomass", "Belowground Biomass",
+                   "Dead Wood", "Litter", "Mineral Soil")
+
 
 state_projections <- state_projections %>% 
   mutate(subsector_mc = case_when(
-    source %in% c("American Bison",
-                  "Beef Cattle",
-                  )
+    #agriculture
+    source %in% livestock ~ "livestock",
+    source %in% cropland ~ "cropland",
+    #transportation
+    source %in% passenger_vehicles ~"passenger_vehicles",
+    source == "Heavy-duty trucks" ~ "trucks",
+    source == "Bus" ~ "buses",
+    source == "Aviation" ~ "aviation",
+    sector == "Commercial" & source = "Natural gas" ~ "Commercial natural gas",
+    sector == "Industrial" & source = "Natural gas" ~ "Industrial natural gas",
+    sector == "Residential" & source = "Natural gas" ~ "Residential natural gas",
+    source %in% waste ~ "Solid Waste",
+    source == "Wastewater" ~ "wastewater",
+    sector == "Electricity" ~ "electricity",
+    source %in% c("Sequestration") ~ "natural_systems",
+    source == "Urban Trees" ~ "urban_trees"
+    TRUE ~ "Not inventoried"
   ))
