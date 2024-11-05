@@ -21,41 +21,11 @@ hookaddcap()
 ```{r load-clean-cprg-stock-data}
 #| include: false
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
-carbon_stock <- readRDS(file.path(here::here(), "_meta/data/cprg_county_carbon_stock.RDS"))
+mpca_economy_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_economy_wide_gcam.RDS"))
+mpca_sector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_sector_gcam.RDS"))
+mpca_subsector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_subsector_gcam.RDS"))
 
-worldcover_msa <- unwrap(read_rds(here(
-  "_nature", "data", "worldcover_msa.rds"
-)))
 
-cprg_county <- read_rds(here(
-  "_meta", "data", "cprg_county.RDS"
-))
-
-cprg_area <- cprg_county %>%
-  mutate(area_sq_km = sf::st_area(cprg_county) %>% units::set_units("km^2") %>%
-    as.numeric())
-
-crs_use <- terra::crs(worldcover_msa)
-
-cprg_county <- project(vect(cprg_county), crs_use)
-
-nlcd_lc <- get_nlcd(
-  cprg_county,
-  "county",
-  year = 2021,
-  dataset = "landcover"
-) %>%
-  project(., crs_use) %>%
-  mask(cprg_county)
-
-nlcd_is <- get_nlcd(
-  cprg_county,
-  "county",
-  year = 2021,
-  dataset = "impervious"
-) %>%
-  project(., crs_use) %>%
-  mask(cprg_county)
 ```
 
 
