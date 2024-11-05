@@ -2011,6 +2011,23 @@
 2022,"county","55109","St. Croix","Transportation","Trucks","Gasoline fueled vehicles",39297.6327258453,"Air Emissions Modeling","MOVES4",93752,"ACS 5-Year Estimates, Table DP05",0.42
 2022,"county","55109","St. Croix","Transportation","Trucks","Diesel fueled vehicles",391884.369057476,"Air Emissions Modeling","MOVES4",93752,"ACS 5-Year Estimates, Table DP05",4.18
 2022,"county","55109","St. Croix","Transportation","Trucks","Other fueled vehicles",96.867686578017,"Air Emissions Modeling","MOVES4",93752,"ACS 5-Year Estimates, Table DP05",0
+2005,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",4153081.45399171,"Metropolitan Airport Commission: fuel dispersement reporting","Metropolitan Airport Commission: fuel dispersement reporting",NA,NA,NA
+2006,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3650771.68977507,"MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2007,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3728588.1240988,"MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2008,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3437491.48584434,"MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2009,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3320971.97753232,"MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2010,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",2975332.01681466,"MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2011,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3051381.5277847,"MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2012,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3116350.8535896,"MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2013,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3151592.57636772,"MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2014,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3308986.63341057,"MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2015,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3350064.50829267,"MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2016,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3468025,"Metropolitan Airport Commission: GHG emission reporting","Metropolitan Airport Commission: GHG emission reporting",NA,NA,NA
+2017,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3552246,"Metropolitan Airport Commission: GHG emission reporting","Metropolitan Airport Commission: GHG emission reporting",NA,NA,NA
+2018,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3571088,"Metropolitan Airport Commission: GHG emission reporting","Metropolitan Airport Commission: GHG emission reporting",NA,NA,NA
+2019,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",3648049,"Metropolitan Airport Commission: GHG emission reporting","Metropolitan Airport Commission: GHG emission reporting",NA,NA,NA
+2020,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",2053337,"Metropolitan Airport Commission: GHG emission reporting","Metropolitan Airport Commission: GHG emission reporting",NA,NA,NA
+2021,"county",NA,"MSP Airport","Transportation","Aviation","Aviation",2476855.03073956,"Metropolitan Airport Commission: fuel dispersement reporting","Metropolitan Airport Commission: fuel dispersement reporting",NA,NA,NA
 2021,"county","27003","Anoka","Energy","Liquid stationary fuels","Propane",11724.06931325,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",360773,"ACS 5-Year Estimates, Table DP05",0.03
 2021,"county","27019","Carver","Energy","Liquid stationary fuels","Propane",11032.1942135,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",105694,"ACS 5-Year Estimates, Table DP05",0.1
 2021,"county","27025","Chisago","Energy","Liquid stationary fuels","Propane",13062.45065375,"EIA RECS (2020)","EPA GHG Emission Factors Hub (2021)",56328,"ACS 5-Year Estimates, Table DP05",0.23
