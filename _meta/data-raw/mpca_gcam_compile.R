@@ -108,20 +108,56 @@ sequestration <- c("Aboveground Biomass", "Belowground Biomass",
 state_projections <- state_projections %>% 
   mutate(subsector_mc = case_when(
     #agriculture
-    source %in% livestock ~ "livestock",
-    source %in% cropland ~ "cropland",
+    source %in% livestock ~ "Livestock",
+    source %in% cropland ~ "Cropland",
     #transportation
-    source %in% passenger_vehicles ~"passenger_vehicles",
-    source == "Heavy-duty trucks" ~ "trucks",
-    source == "Bus" ~ "buses",
-    source == "Aviation" ~ "aviation",
-    sector == "Commercial" & source = "Natural gas" ~ "Commercial natural gas",
-    sector == "Industrial" & source = "Natural gas" ~ "Industrial natural gas",
-    sector == "Residential" & source = "Natural gas" ~ "Residential natural gas",
-    source %in% waste ~ "Solid Waste",
-    source == "Wastewater" ~ "wastewater",
-    sector == "Electricity" ~ "electricity",
-    source %in% c("Sequestration") ~ "natural_systems",
-    source == "Urban Trees" ~ "urban_trees"
-    TRUE ~ "Not inventoried"
+    source %in% passenger_vehicles ~"Passenger vehicles",
+    source == "Heavy-duty trucks" ~ "Trucks",
+    source == "Bus" ~ "Buses",
+    source == "Aviation" ~ "Aviation",
+    #building energy
+    sector == "Commercial" & source == "Natural gas" ~ "Commercial Natural Gas",
+    sector == "Industrial" & source == "Natural gas" ~ "Industrial Natural Gas",
+    sector == "Residential" & source == "Natural gas" ~ "Residential Natural Gas",
+    #waste
+    source %in% waste ~ "Solid waste",
+    source == "Wastewater" ~ "Wastewater",
+    #electricity
+    sector == "Electricity" ~ "Electricity",
+    #natural systems
+    source %in% c("Sequestration") ~ "Sequestration",
+    source == "Urban Trees" ~ "Urban tree",
+    TRUE ~ "not_inventoried"
+  )) %>% 
+  mutate(subsector_mc = case_when(
+    subsector_mc == "not_inventoried" & values_emissions < 0 ~ "sequestration_not_inventoried",
+    subsector_mc == "not_inventoried" & values_emissions >= 0 ~ "emissions_not_inventoried",
+    TRUE ~ subsector_mc
   ))
+
+county_emissions %>% distinct(sector, category, source) %>% print(n = 50)
+
+scenarios_sources_annual <- state_projections %>% 
+  filter(sector != "Offsets Needed") %>% 
+  mutate(source_sink = if_else(values_emissions < 0, "Sequestration","Emission")) %>% 
+  group_by(emissions_year, scenario, source_sink, sector, subsector_mc, units) %>% 
+  summarize(values_emissions = sum(values_emissions)) %>% 
+  #### add proportion relative to 2005
+  group_by(scenario, subsector_mc, source_sink,sector, units) %>% 
+  mutate(value_2005 = values_emissions[emissions_year == 2005]) %>% 
+  # Calculate the proportion
+  mutate(proportion_of_2005 = values_emissions / value_2005) %>% 
+  ungroup() %>% select(-value_2005) %>% 
+  rename(units_emission = units)
+
+scenarios_sources_annual_meta <-
+  bind_rows(
+    scenarios_annual_meta,
+    tibble::tribble(
+      ~"Column", ~"Class", ~"Description",
+      "subsector_mc", class(scenarios_sources_annual$subsector_mc), "Subsector match for Met Council labels",
+    )
+  )
+
+saveRDS(scenarios_sources_annual, "_meta/data/gcam/mpca_subsector_gcam.RDS")
+saveRDS(scenarios_sources_annual_meta, "_meta/data/gcam/mpca_subsector_gcam_meta.RDS")
