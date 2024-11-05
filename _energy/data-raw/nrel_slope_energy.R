@@ -80,7 +80,7 @@ nrel_slope_cprg_city <- cprg_ctu %>%
 
 # Define the new columns
 sectors <- c("commercial", "residential", "industrial")
-sources <- c("Electricity", "Natural Gas")
+sources <- c("Electricity", "Natural gas")
 
 # Create all combinations of sectors and sources
 sector_source <- expand.grid(sector = sectors, source = sources)
@@ -144,7 +144,7 @@ nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
 
 
 nrel_AllCityTownships_county_activityPopProp_reference <- nrel_slope_cprg_cityProps_County_2021 %>%
-  right_join(ctu_population_2021,
+  full_join(ctu_population_2021,
             by = join_by('ctu_name',
                          'ctu_class',
                          'county_name',
