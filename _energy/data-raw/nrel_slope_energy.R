@@ -140,7 +140,8 @@ nrel_slope_cprg_cityProps_County_2021 <- nrel_slope_cprg_city %>%
   mutate(
     cityPropOfCounty_consumption_mm_btu = city_consumption_mm_btu / county_consumption_mm_btu,
     cityPropOfCounty_expenditure_usd = city_expenditure_usd / county_expenditure_usd
-  )
+  ) %>%
+  st_drop_geometry()
 
 
 nrel_AllCityTownships_county_activityPopProp_reference <- nrel_slope_cprg_cityProps_County_2021 %>%
@@ -152,12 +153,11 @@ nrel_AllCityTownships_county_activityPopProp_reference <- nrel_slope_cprg_cityPr
                          'source')
   ) %>%
   select(-geoid.x,
-        -geoid.y,
-        -geometry.y,
-        geometry = geometry.x
+        -geoid.y
   ) %>%
   mutate(
-    cityConsumption_countyPopDownscaled_mmbtu = county_consumption_mm_btu * ctu_proportion_of_county_pop
+    cityConsumption_countyPopDownscaled_mmbtu = county_consumption_mm_btu * ctu_proportion_of_county_pop,
+    state_name = "Minnesota"
   )
 
 
