@@ -20,10 +20,29 @@ hookaddcap()
 
 ```{r load-clean-cprg-stock-data}
 #| include: false
+
+cprg_county <- read_rds(file.path(here::here(),"_meta/data/cprg_county.RDS"))
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 mpca_economy_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_economy_wide_gcam.RDS"))
 mpca_sector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_sector_gcam.RDS"))
 mpca_subsector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_subsector_gcam.RDS"))
+
+### match county emissions to mpca projections
+
+# Create economy wide projections
+economy_projections <- county_emissions %>%
+  filter(year == 2005, sector != "Nature") %>%
+  cross_join(mpca_economy_projections %>% 
+               filter(emissions_year >= 2025,
+                      source_sink == "Emission") %>% 
+               select(emissions_year, scenario, proportion_of_2005)) %>% 
+  mutate(emissions_metric_tons_co2e = proportion_of_2005 * emissions_metric_tons_co2e) %>% 
+  select(-c(proportion_of_2005, year))
+
+economy_inventory_projections <- bind_rows(
+  county_emissions %>%
+    select(emissions_year)
+)
 
 
 ```
