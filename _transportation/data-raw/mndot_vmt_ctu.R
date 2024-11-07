@@ -578,8 +578,8 @@ vmt_city_raw <- data.table::rbindlist(dat_ls,
 
 # record which CTU/counties were incorrect 
 # and what they are now assigned to
-vmt_county_incorrect <- vmt_city_raw %>% 
-  filter(county_name != correct_county_name)
+# vmt_county_incorrect <- vmt_city_raw %>% 
+#   filter(county_name != correct_county_name)
 
 # define route systems -----
 # labels have changed over time
@@ -650,41 +650,117 @@ vmt_city_raw_route_system <- vmt_city_raw %>%
 # remove from environment
 rm(route_system_reference, route_system_year_all, dat_ls)
 
-# summarize by year and county only
+# summarize by year and county only ------
 # removing the route system distinction
 vmt_city_raw_summary <-
   vmt_city_raw_route_system %>%
-  group_by(year, county_name, correct_county_name, city, ctu_name, cprg_area) %>%
+  group_by(year, county_name, ctu_name, cprg_area) %>%
   summarize(
-    daily_vmt = sum(daily_vmt),
-    annual_vmt = sum(annual_vmt),
-    centerline_miles = sum(centerline_miles),
+    daily_vmt = sum(daily_vmt, na.rm = TRUE),
+    annual_vmt = sum(annual_vmt, na.rm = TRUE),
+    centerline_miles = sum(centerline_miles, na.rm = TRUE),
     .groups = "keep"
   ) %>% 
   ungroup() %>% 
-  filter(correct_county_name %in% cprg_county$county_name)
+  filter(county_name %in% cprg_county$county_name)
 
-# try merging with ctu population 
+# merge with ctu population 
 
-# 
-# ctu_population %>% 
-#   select(county_name, ctu_name, inventory_year, ctu_population) %>% 
-#   unique() %>% 
-#   filter(inventory_year %in% vmt_city_raw_summary$year) %>% 
-#   full_join(
-#     vmt_city_raw_summary %>% 
-#       ungroup() %>% 
-#       filter(cprg_area == TRUE) %>% 
-#       select(county_name, correct_county_name, city, ctu_name, year, centerline_miles) %>% 
-#       mutate(year = as.numeric(year)) %>% 
-#       filter(year %in% unique(ctu_population$inventory_year),
-#              !ctu_name %in% c("Nonmunicpal",
-#                               "Nonmunicipal")) %>% 
-#       unique(),
-#     by = c("ctu_name", "county_name" = "correct_county_name", 
-#            "inventory_year" = "year")
-#   ) %>% View
 
+vmt_ctu_pop <- ctu_population %>%
+  select(county_name, ctu_name, inventory_year, ctu_population) %>%
+  unique() %>%
+  filter(inventory_year %in% vmt_city_raw_summary$year) %>%
+  full_join(
+    vmt_city_raw_summary %>%
+      ungroup() %>%
+      filter(cprg_area == TRUE,
+             ctu_name %in% ctu_population$ctu_name) %>%
+      select(county_name, ctu_name, year, centerline_miles,
+             annual_vmt, daily_vmt) %>%
+      mutate(year = as.numeric(year)) %>%
+      filter(year %in% unique(ctu_population$inventory_year),
+             !ctu_name %in% c("Nonmunicpal",
+                              "Nonmunicipal")) %>%
+      unique(),
+    by = c("ctu_name", "county_name",
+           "inventory_year" = "year")
+  )
+
+
+vmt_ctu_pop %>% 
+  plot_ly(
+    type = "scatter",
+    mode = "markers",
+    x = ~ctu_population,
+    y = ~annual_vmt,
+    color = ~inventory_year,
+    hoverinfo = "text",
+    hovertext = ~paste0(
+      inventory_year, "<br>",
+      ctu_name, ", ", county_name, " County",  "<br>",
+      "Pop: ", scales::comma(ctu_population), "<br>",
+      "Annual VMT: ", scales::comma(annual_vmt/1000000, accuracy = 1), "M"
+    )
+  )
+
+vmt_ctu_pop %>% 
+  filter(ctu_population >= 65000) %>% 
+  plot_ly(
+    type = "scatter",
+    mode = "lines+markers",
+    x = ~inventory_year,
+    y = ~annual_vmt,
+    color = ~ctu_name,
+    hoverinfo = "text",
+    hovertext = ~paste0(
+      inventory_year, "<br>",
+      ctu_name, ", ", county_name, " County",  "<br>",
+      "Pop: ", scales::comma(ctu_population), "<br>",
+      "Annual VMT: ", scales::comma(annual_vmt/1000000, accuracy = 1), "M"
+    )
+  )
+
+# centerline miles
+vmt_ctu_pop %>% 
+  filter(ctu_population >= 65000) %>% 
+  plot_ly(
+    type = "scatter",
+    mode = "lines+markers",
+    x = ~inventory_year,
+    y = ~centerline_miles,
+    color = ~ctu_name,
+    hoverinfo = "text",
+    hovertext = ~paste0(
+      inventory_year, "<br>",
+      ctu_name, ", ", county_name, " County",  "<br>",
+      "Pop: ", scales::comma(ctu_population), "<br>",
+      "Annual VMT: ", scales::comma(annual_vmt/1000000, accuracy = 1), "M"
+    )
+  )
+
+# aggregate to county level
+# using the original (sometimes incorrect) county designations, things
+# line up nicely.
+# however, changing the
+vmt_city_raw %>% 
+  filter(county_name %in% mndot_vmt_county$county) %>% 
+  group_by(county_name, year) %>% 
+  summarize(
+    city_daily_vmt = sum(daily_vmt, na.rm = TRUE),
+    city_annual_vmt = sum(annual_vmt, na.rm = TRUE),
+    city_centerline_miles = sum(centerline_miles, na.rm = TRUE),
+    .groups = "keep"
+  ) %>% 
+  left_join(
+    mndot_vmt_county,
+    by = c("county_name" = "county",
+           "year")) %>% 
+  mutate(
+    diff_daily_vmt = round(city_daily_vmt -  daily_vmt),
+    diff_annual_vmt = round(city_annual_vmt - annual_vmt),
+    diff_centerline_miles = round(city_centerline_miles - centerline_miles)
+  ) %>% View
 
 # TODO interpolate 2015 data
 # TODO verify that CTU-county totals equal vmt_county totals
