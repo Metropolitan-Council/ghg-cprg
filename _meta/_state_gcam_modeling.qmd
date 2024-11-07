@@ -18,11 +18,11 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
-```{r load-clean-cprg-stock-data}
+```{r merge-cprg-mpca-data}
 #| include: false
 
 cprg_county <- read_rds(file.path(here::here(),"_meta/data/cprg_county.RDS"))
-county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS")) 
 mpca_economy_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_economy_wide_gcam.RDS"))
 mpca_sector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_sector_gcam.RDS"))
 mpca_subsector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_subsector_gcam.RDS"))
@@ -31,100 +31,88 @@ mpca_subsector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/m
 
 # Create economy wide projections
 economy_projections <- county_emissions %>%
-  filter(year == 2005, sector != "Nature") %>%
+  filter(year == 2005, sector != "Nature",
+         !geog_name %in% c("Chisago", "St. Croix", "Pierce","Sherburne")) %>%
   cross_join(mpca_economy_projections %>% 
                filter(emissions_year >= 2025,
                       source_sink == "Emission") %>% 
                select(emissions_year, scenario, proportion_of_2005)) %>% 
   mutate(emissions_metric_tons_co2e = proportion_of_2005 * emissions_metric_tons_co2e) %>% 
-  select(-c(proportion_of_2005, year))
+  group_by(emissions_year, sector, scenario) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  ungroup()
 
 economy_inventory_projections <- bind_rows(
   county_emissions %>%
-    select(emissions_year)
+    filter(year >=2005 & year <= 2021) %>% 
+   group_by(year, sector) %>% 
+    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+    rename(emissions_year = year) %>% 
+    ungroup() %>% 
+    right_join(
+    #fill in missing years
+    expand.grid(
+    emissions_year = seq(2005, 2021, by = 1),
+    sector = unique(county_emissions$sector)
+  )) %>% 
+  mutate(scenario = "Inventory",
+         emissions_metric_tons_co2e = imputeTS::na_kalman(emissions_metric_tons_co2e)),
+  economy_projections %>% 
+    mutate(emissions_year = as.numeric(emissions_year))
 )
 
 
 ```
-
-
-```{r create-esa-nlcd-maps, include = FALSE}
-# <!-- #| fig-cap: "European Space Agency WorldCover land classification" -->
-# <!-- #| out-width: "95%" -->
-# <!-- #| include: false -->
-
-### create class conversion table (couldn't get ESA to output this info which would be cleaner)
-code_class_tab <- data.frame(
-  old_lab = c(10, 20, 30, 40, 50, 60, 70, 80, 90),
-  esa_label = c(
-    "Tree", "Shrubland", "Grassland", "Cropland", "Built-up",
-    "Bare", "Snow", "Water", "Wetland"
-  )
-)
-
-worldcover_msa_map <- ggplot() +
-  geom_spatraster(data = as.factor(worldcover_msa)) +
-  scale_fill_manual(
-    breaks = code_class_tab$old_lab,
-    labels = code_class_tab$esa_label,
-    values = esa_color,
-    na.value = "white",
-    name = "WorldCover Land Cover"
-  ) +
-  theme_void()
-
-nlcd_msa_map <- ggplot() +
-  geom_spatraster(data = nlcd_lc) +
-  guides(fill = guide_legend(title = "NLCD Land Cover")) +
-  theme_void()
-
-imperv_msa_map <- ggplot() +
-  geom_spatraster(data = nlcd_is, na.rm = TRUE) +
-  geom_spatvector(data = cprg_county, fill = NA) +
-  scale_fill_gradient(low = "pink", high = "firebrick4", na.value = "white") +
-  guides(fill = guide_legend(title = "NLCD Impervious Cover")) +
-  theme_void()
-```
-
 
 ## Introduction
 
 Natural systems are a critical component of capturing carbon from the atmosphere and sequestering it in biomass and terrestrial soils. Photosynthesis is the central mechanism of this process and vegetation is therefore the focal land cover classification for quantifying the potential for regions to both sequester and store carbon. Different ecosystems have varying capacities for carbon capture and this work focuses on five broad classifications: urban trees, urban grasslands (i.e. turf grass), forests, natural grasslands, and wetlands. The distinction between tree and grassland cover in developed areas (i.e. urban) is important as despite having similar sequestration rates, urban natural systems are generally understood to have smaller storage capacities. The preservation and restoration of natural systems will be a key tool in limiting atmospheric greenhouse gases.
 
-## Methods
-  
-The approach for calculating carbon sequestration potential for a given geography, $j$, is,
-
-$$\text{Sequestration}_j = \Sigma (\text{area}_i \times {\text{Sequestration Rate}_i}) $$
-
-where $i$ is land cover classification. The sequestration rate is based on Midwest specific sequestration rate estimates found in the primary scientific literature (@tbl-sequestration). 
-
-### Land cover classification
-
-Land cover was determined by using the [European Space Agencies 2021 WorldCover](https://esa-worldcover.org/en), a 10 m resolution satellite data product, in combination with [USGS's National Land Cover Dataset (NLCD)](https://www.usgs.gov/node/279743). These datasets complement each other as WorldCover provides finer spatial resolution and classifies green spaces within urban areas, whereas the NLCD products can split and downscale green space area in developed lands from those in non-developed lands, offering an important distinction between carbon sequestration and stock capacities. Specifically the NLCD 'Developed' land classification was used to assign the 'urban' label to WorldCover tree and grassland cells, and the NLCD impervious cover layer was used to correct the area of urban trees in WorldCover, which otherwise classifies any cell with >10% tree cover as 100% tree.
-
-
-```{r fig-esa-worldcover}
-#| fig-cap: "European Space Agency WorldCover"
+```{r fig-economy-downscale}
+#| fig-cap: "Economy wide MPCA downscale"
 #| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
 
-worldcover_msa_map
+fig_economy_net_zero <- plot_ly(
+  source = "fig-economy-downscale",
+  data = economy_inventory_projections %>% 
+    filter(scenario %in% c("Inventory", "Net-zero pathway")),
+  x = ~emissions_year,
+  y = ~emissions_metric_tons_co2e,
+  color = ~sector, #
+  #colors = unlist(category_colors), # Directly map the colors to categories
+  type = "scatter",
+  mode = "lines", # No points or lines, just fill
+  stackgroup = "one", # Fill to the next y value (stacking)
+  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~scenario # Pass category to hovertext
+) %>%
+  plotly_layout(
+    main_title = "Economy wide net-zero downscale",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hovermode = "x unified", # Combine all hovertext under one hover
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_economy_net_zero
 ```
 
 
-```{r fig-nlcd-classification}
-#| fig-cap: "USGS National Land Cover Database (NLCD)"
-#| out-width: "95%"
-
-nlcd_msa_map
-```
-
-```{r fig-nlcd-impervious-cover}
-#| fig-cap: "USGS National Land Cover Database (NLCD) - impervious cover"
-#| out-width: "95%"
-
-imperv_msa_map
-```
 
 ## Results
 
