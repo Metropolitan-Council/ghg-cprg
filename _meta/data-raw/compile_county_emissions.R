@@ -83,7 +83,6 @@ solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
 
 
 # energy -----
-
 electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_proportioned.RDS")
 
 ## electricity ----

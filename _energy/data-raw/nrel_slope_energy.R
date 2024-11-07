@@ -14,10 +14,10 @@ mmbtu_to_mcf <- 1
 
 # download from NREL directly
 download.file("https://gds-files.nrel.gov/slope/energy_consumption_expenditure_business_as_usual.zip",
-  destfile = "_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual.zip"
+              destfile = "_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual.zip"
 )
 unzip("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual.zip",
-  exdir = "_energy/data-raw/nrel_slope/"
+      exdir = "_energy/data-raw/nrel_slope/"
 )
 
 # nrel_slope_city <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>%
@@ -29,10 +29,10 @@ nrel_slope_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_ex
 
 nrel_slope_cprg <- nrel_slope_county %>%
   inner_join(cprg_county,
-    by = c(
-      "state_name" = "STATE",
-      "county_name" = "NAME"
-    )
+             by = c(
+               "state_name",
+               "county_name"
+             )
   ) %>%
   filter(year < 2025) %>%
   mutate(source = ifelse(source == "ng", "Natural gas", "Electricity"))
@@ -46,22 +46,22 @@ nrel_emissions <- bind_rows(
       # convert mmbtu to Mwh
       consumption_mwh = consumption_mm_btu * mmbtu_to_mwh,
       # apply emission factor and convert to metric tons
-      co2 = (consumption_mwh * eGRID_MROW_emissionsFactor_CO2) %>%
+      co2 = (consumption_mwh * eGRID_MROW_emissionsFactor_CO2_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      ch4 = (consumption_mwh * eGRID_MROW_emissionsFactor_CH4) %>%
+      ch4 = (consumption_mwh * eGRID_MROW_emissionsFactor_CH4_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      n2o = (consumption_mwh * eGRID_MROW_emissionsFactor_N2O) %>%
+      n2o = (consumption_mwh * eGRID_MROW_emissionsFactor_N2O_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
       co2e =
         co2 +
-          (ch4 * gwp$n2o) +
-          (n2o * gwp$n2o)
+        (ch4 * gwp$n2o) +
+        (n2o * gwp$n2o)
     ),
   # natural gas emissions
   nrel_slope_cprg %>%
@@ -85,8 +85,8 @@ nrel_emissions <- bind_rows(
         as.numeric(),
       co2e =
         co2 +
-          (ch4 * gwp$n2o) +
-          (n2o * gwp$n2o)
+        (ch4 * gwp$n2o) +
+        (n2o * gwp$n2o)
     )
 ) %>%
   mutate(

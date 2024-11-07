@@ -2,25 +2,38 @@ if (exists("eGRID_MROW_emissionsFactor_CO2") == FALSE) {
   if (!exists("gwp")) {
     source("R/global_warming_potential.R")
   }
-
+  
   epa_ghg_factor_hub <- readRDS("_meta/data/epa_ghg_factor_hub.RDS")
   mrow_factors <- epa_ghg_factor_hub$egrid
-
-
+  
+  
   # Load eGRID Total Output Emission Rates (lb/MWh) for the MROW subregion (
   # which covers our study area)
   # figures in lbs./mWh
-
-  eGRID_MROW_emissionsFactor_CO2 <- mrow_factors %>%
-    filter(emission == "lb CO2") %>%
+  
+  # if more years are added, refactor this into a fucntion or dedicated dataframe
+  # 2021
+  eGRID_MROW_emissionsFactor_CO2_2021 <- mrow_factors %>%
+    filter(emission == "lb CO2" & year == 2021) %>%
     magrittr::extract2("value")
-  eGRID_MROW_emissionsFactor_CH4 <- mrow_factors %>%
-    filter(emission == "lb CH4") %>%
+  eGRID_MROW_emissionsFactor_CH4_2021 <- mrow_factors %>%
+    filter(emission == "lb CH4" & year == 2021) %>%
     magrittr::extract2("value")
-  eGRID_MROW_emissionsFactor_N2O <- mrow_factors %>%
-    filter(emission == "lb N2O") %>%
+  eGRID_MROW_emissionsFactor_N2O_2021 <- mrow_factors %>%
+    filter(emission == "lb N2O" & year == 2021) %>%
     magrittr::extract2("value")
-
+  
+  # 2005
+  eGRID_MROW_emissionsFactor_CO2_2005 <- mrow_factors %>%
+    filter(emission == "lb CO2" & year == 2005) %>%
+    magrittr::extract2("value")
+  eGRID_MROW_emissionsFactor_CH4_2005 <- mrow_factors %>%
+    filter(emission == "lb CH4" & year == 2005) %>%
+    magrittr::extract2("value")
+  eGRID_MROW_emissionsFactor_N2O_2005 <- mrow_factors %>%
+    filter(emission == "lb N2O" & year == 2005) %>%
+    magrittr::extract2("value")
+  
   # Natural Gas emissions factor from https://www.epa.gov/system/files/documents/2023-04/emission-factors_sept2021.pdf
   # CO2
   # Emissions factor value provided by EPA (0.05444) is in terms of kg CO2 per scf
@@ -34,12 +47,12 @@ if (exists("eGRID_MROW_emissionsFactor_CO2") == FALSE) {
       per_unit == "scf"
     ) %>%
     magrittr::extract2("value") * 1000 %>% # scf to mcf
-      units::as_units("kg") %>%
-      units::set_units("lb") %>%
-      as.numeric()
-
-
-
+    units::as_units("kg") %>%
+    units::set_units("lb") %>%
+    as.numeric()
+  
+  
+  
   # CH4
   # 0.00103 g CH4 per scf --> 0.00000103 kg per scf ---> 0.00103 kg per mcf
   # 1 kg = 2.20462262 lbs --> 0.00227 lbs CH4 per mcf natural gas in 2021
@@ -50,13 +63,13 @@ if (exists("eGRID_MROW_emissionsFactor_CO2") == FALSE) {
       per_unit == "scf"
     ) %>%
     magrittr::extract2("value") * 1000 %>% # scf to mcf
-      units::as_units("gram") %>%
-      units::set_units("lb") %>%
-      as.numeric()
-
+    units::as_units("gram") %>%
+    units::set_units("lb") %>%
+    as.numeric()
+  
   # Global Warming Potential (GWP) is the multiplier from AR5 that converts emissions factors to CO2 equivalent
   GWP_CH4 <- gwp$ch4
-
+  
   # N2O
   # 0.0001 g N2O per scf --> 0.0000001 kg per scf ---> 0.0001 kg per mcf
   # 1 kg = 2.20462262 lbs --> 0.0002 lbs N2O per mcf natural gas in 2021
@@ -67,10 +80,10 @@ if (exists("eGRID_MROW_emissionsFactor_CO2") == FALSE) {
       per_unit == "scf"
     ) %>%
     magrittr::extract2("value") * 1000 %>% # scf to mcf
-      units::as_units("gram") %>%
-      units::set_units("lb") %>%
-      as.numeric()
-
+    units::as_units("gram") %>%
+    units::set_units("lb") %>%
+    as.numeric()
+  
   # Global Warming Potential (GWP) is the multiplier from AR5 that converts emissions factors to CO2 equivalent
   GWP_N2O <- gwp$n2o
 } else {
