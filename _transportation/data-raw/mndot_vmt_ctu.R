@@ -499,68 +499,69 @@ vmt_city_raw <- data.table::rbindlist(dat_ls,
     TRUE ~ ctu_name
   )) %>% 
   # create correct county names for each CTU
-  mutate(
-    correct_county_name = 
-      case_when(
-        ctu_name %in% c("Columbia Heights",
-                        "Columbus",
-                        "Lino Lakes",
-                        "Fridley",
-                        "Nowthen",
-                        "Ramsey",
-                        "Saint Francis"
-        ) ~ "Anoka",
-        ctu_name %in% c("Victoria"
-        ) ~ "Carver",
-        ctu_name %in% c("Mendota Heights",
-                        "South Saint Paul",
-                        "Burnsville",
-                        "Lakeville",
-                        "South Saint Paul"
-        ) ~ "Dakota",
-        ctu_name %in% c("Saint Paul",
-                        "Maplewood",
-                        "Mounds View",
-                        "New Brighton",
-                        "North Oaks",
-                        "North Saint Paul",
-                        "Roseville"
-        ) ~ "Ramsey",
-        ctu_name %in% c("Minneapolis",
-                        "Bloomington",
-                        "Champlin",
-                        "Eden Prairie",
-                        "Independence",
-                        "Minnetonka",
-                        "Minnetrista"
-                        
-        ) ~ "Hennepin",
-        ctu_name %in% c("Savage",
-                        "Credit River"
-        ) ~ "Scott",
-        ctu_name %in% c("Forest Lake",
-                        "Hugo",
-                        "Birchwood Village",
-                        "Dellwood",
-                        "Grant",
-                        "Mahtomedi",
-                        "Newport",
-                        "Oakdale",
-                        "Scandia",
-                        "Woodbury"
-        ) ~ "Washington",
-        ctu_name %in% c("Otsego") ~ "Wright",
-        ctu_name %in% c("Wyoming") ~ "Chisago",
-        ctu_name == "Saint Anthony" & county_name == "Anoka" ~ "Hennepin",
-        # expected splits
-        # ctu_name %in% c("Blaine",
-        #                 "Chanhassen",
-        #                 "Hastings",
-        #                 "Saint Anthony",
-        #                 "Shorewood",
-        #                 "Spring Lake Park",
-        #                 "White Bear Lake") ~ county_name,
-        TRUE ~ county_name)) %>% 
+  # mutate(
+  #   correct_county_name =
+  #     case_when(
+  #       ctu_name %in% c("Columbia Heights",
+  #                       "Columbus",
+  #                       "Lino Lakes",
+  #                       "Fridley",
+  #                       "Nowthen",
+  #                       "Ramsey",
+  #                       "Saint Francis"
+  #       ) ~ "Anoka",
+  #       ctu_name %in% c("Victoria"
+  #       ) ~ "Carver",
+  #       ctu_name %in% c("Mendota Heights",
+  #                       "South Saint Paul",
+  #                       "Burnsville",
+  #                       "Lakeville",
+  #                       "South Saint Paul"
+  #       ) ~ "Dakota",
+  #       ctu_name %in% c(
+  #         "Saint Paul",
+  #         "Maplewood",
+  #         "Mounds View",
+  #         "New Brighton",
+  #         "North Oaks",
+  #         "North Saint Paul",
+  #         "Roseville"
+  #       ) ~ "Ramsey",
+  #       ctu_name %in% c(
+  #         "Minneapolis",
+  #         "Bloomington",
+  #         "Champlin",
+  #         "Eden Prairie",
+  #         "Independence",
+  #         "Minnetonka",
+  #         "Minnetrista"
+  #       ) ~ "Hennepin",
+  #       ctu_name %in% c("Savage",
+  #                       "Credit River"
+  #       ) ~ "Scott",
+  #       ctu_name %in% c("Forest Lake",
+  #                       "Hugo",
+  #                       "Birchwood Village",
+  #                       "Dellwood",
+  #                       "Grant",
+  #                       "Mahtomedi",
+  #                       "Newport",
+  #                       "Oakdale",
+  #                       "Scandia",
+  #                       "Woodbury"
+  #       ) ~ "Washington",
+  #       ctu_name %in% c("Otsego") ~ "Wright",
+  #       ctu_name %in% c("Wyoming") ~ "Chisago",
+  #       ctu_name == "Saint Anthony" & county_name == "Anoka" ~ "Hennepin",
+  #       # expected splits
+  #       # ctu_name %in% c("Blaine",
+  #       #                 "Chanhassen",
+  #       #                 "Hastings",
+  #       #                 "Saint Anthony",
+  #       #                 "Shorewood",
+  #       #                 "Spring Lake Park",
+  #       #                 "White Bear Lake") ~ county_name,
+  #       TRUE ~ county_name)) %>%
   mutate(
     cprg_area = ifelse(county_name %in% c(
       "Hennepin",
