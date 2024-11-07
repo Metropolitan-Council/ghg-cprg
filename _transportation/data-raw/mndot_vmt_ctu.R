@@ -494,6 +494,7 @@ vmt_city_raw <- data.table::rbindlist(dat_ls,
                                                              "St ", "Saint "),
     ctu_name == "Mc Grath" ~ "McGrath",
     ctu_name == "Mc Gregor" ~ "McGregor",
+    ctu_name == "Elko-New Market" ~ "Elko New Market",
     ctu_name %in% c("Marine On St Croix",
                     "Marine On Saint Croix")  ~ "Marine on Saint Croix",
     TRUE ~ ctu_name
@@ -687,7 +688,14 @@ vmt_ctu_pop <- ctu_population %>%
            "inventory_year" = "year")
   )
 
+vmt_city_raw_summary %>% 
+  select(ctu_name, year) %>% 
+  unique() %>% 
+  group_by(ctu_name) %>% 
+  count() %>% View
 
+# basic plotting
+# note that note very CTU has data for the full time series
 vmt_ctu_pop %>% 
   plot_ly(
     type = "scatter",
