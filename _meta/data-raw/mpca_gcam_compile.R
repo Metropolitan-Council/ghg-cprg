@@ -104,6 +104,9 @@ state_projections %>% filter(sector == "LULUCF", values_emissions < 0) %>% disti
 sequestration <- c("Aboveground Biomass", "Belowground Biomass",
                    "Dead Wood", "Litter", "Mineral Soil")
 
+state_projections %>% filter(sector == "Industry") %>% distinct(source) %>% 
+  print(n = 50)
+
 
 state_projections <- state_projections %>% 
   mutate(subsector_mc = case_when(
@@ -117,11 +120,11 @@ state_projections <- state_projections %>%
     source == "Aviation" ~ "Aviation",
     #building energy
     sector == "Commercial" & source == "Natural gas" ~ "Commercial Natural Gas",
-    sector == "Industrial" & source == "Natural gas" ~ "Industrial Natural Gas",
+    sector == "Industry" & source == "Natural gas" ~ "Industrial Natural Gas",
     sector == "Residential" & source == "Natural gas" ~ "Residential Natural Gas",
     #waste
     source %in% waste ~ "Solid waste",
-    source == "Wastewater" ~ "Wastewater",
+    source == "Wastewater treatment" ~ "Wastewater",
     #electricity
     sector == "Electricity" ~ "Electricity",
     #natural systems

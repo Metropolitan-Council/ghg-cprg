@@ -29,6 +29,13 @@ mpca_subsector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/m
 
 ### match county emissions to mpca projections
 
+county_emissions <- county_emissions %>%
+ mutate(sector = case_when(
+    source == "Electricity" ~ "Electricity",
+    source %in% c("Natural gas","Propane","Kerosene") ~ "Building energy",
+    TRUE ~ sector
+  ))
+  
 # Create economy wide projections
 economy_projections <- county_emissions %>%
   filter(year == 2005, sector != "Nature",
@@ -36,6 +43,18 @@ economy_projections <- county_emissions %>%
   cross_join(mpca_economy_projections %>% 
                filter(emissions_year >= 2025,
                       source_sink == "Emission") %>% 
+               select(emissions_year, scenario, proportion_of_2005)) %>% 
+  mutate(emissions_metric_tons_co2e = proportion_of_2005 * emissions_metric_tons_co2e) %>% 
+  group_by(emissions_year, sector, scenario) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  ungroup()
+
+economy_sequestration_projections <- county_emissions %>%
+  filter(year == 2005, sector == "Nature",
+         !geog_name %in% c("Chisago", "St. Croix", "Pierce","Sherburne")) %>%
+  cross_join(mpca_economy_projections %>% 
+               filter(emissions_year >= 2025,
+                      source_sink == "Sequestration") %>% 
                select(emissions_year, scenario, proportion_of_2005)) %>% 
   mutate(emissions_metric_tons_co2e = proportion_of_2005 * emissions_metric_tons_co2e) %>% 
   group_by(emissions_year, sector, scenario) %>% 
@@ -55,12 +74,69 @@ economy_inventory_projections <- bind_rows(
     emissions_year = seq(2005, 2021, by = 1),
     sector = unique(county_emissions$sector)
   )) %>% 
-  mutate(scenario = "Inventory",
-         emissions_metric_tons_co2e = imputeTS::na_kalman(emissions_metric_tons_co2e)),
+    mutate(scenario = "Inventory"),
   economy_projections %>% 
+    mutate(emissions_year = as.numeric(emissions_year)),
+  economy_sequestration_projections%>% 
     mutate(emissions_year = as.numeric(emissions_year))
-)
+) %>% 
+ group_by(sector) %>% 
+ mutate(emissions_metric_tons_co2e = imputeTS::na_kalman(emissions_metric_tons_co2e))
 
+
+## now do this by sector emissions
+
+unique(mpca_subsector_projections$subsector_mc)
+unique(county_emissions$category)
+
+county_emissions <- county_emissions %>% 
+  mutate(subsector_mc = case_when(
+    source != "Electricity" & category == "Residential energy" ~ "Residential Natural Gas",
+    source != "Electricity" & category == "Commercial energy" ~ "Commercial Natural Gas",
+    source != "Electricity" & category == "Industrial energy" ~ "Industrial Natural Gas",
+    source != "Electricity" & category == "Total energy" ~ "Natural Gas",
+    source == "Electricity" ~ "Electricity",
+    TRUE ~ category
+  ))
+
+mpca_subsector_projections_use <- mpca_subsector_projections %>% 
+               filter(emissions_year >= 2025,
+                      source_sink == "Emission",
+                      !grepl("not_inventoried", subsector_mc)) %>% 
+               mutate(subsector_mc = if_else(grepl("Natural Gas", subsector_mc),
+                                             "Natural Gas",
+                                             subsector_mc)) %>% 
+               group_by(emissions_year, scenario, subsector_mc) %>% 
+  summarize(proportion_of_2005 = mean(proportion_of_2005))
+
+subsector_projections <- county_emissions %>%
+  filter(year == 2005, sector != "Nature",
+         !geog_name %in% c("Chisago", "St. Croix", "Pierce","Sherburne")) %>%
+  left_join(., mpca_subsector_projections_use, 
+            by = "subsector_mc") %>% 
+  mutate(emissions_metric_tons_co2e = proportion_of_2005 * emissions_metric_tons_co2e) %>% 
+  group_by(emissions_year, sector, scenario) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  ungroup()
+
+subsector_inventory_projections <- bind_rows(
+  county_emissions %>%
+    filter(year >=2005 & year <= 2021) %>% 
+   group_by(year, sector) %>% 
+    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+    rename(emissions_year = year) %>% 
+    ungroup() %>% 
+    right_join(
+    #fill in missing years
+    expand.grid(
+    emissions_year = seq(2005, 2021, by = 1),
+    sector = unique(county_emissions$sector)
+  )) %>% 
+    mutate(scenario = "Inventory"),
+  subsector_projections %>% 
+    mutate(emissions_year = as.numeric(emissions_year))) %>% 
+ group_by(sector) %>% 
+ mutate(emissions_metric_tons_co2e = imputeTS::na_kalman(emissions_metric_tons_co2e))
 
 ```
 
@@ -74,17 +150,69 @@ Natural systems are a critical component of capturing carbon from the atmosphere
 #| fig.height: 4  # Set height in inches
 #| fig.width: 8   # Set width in inches
 
-fig_economy_net_zero <- plot_ly(
+### can't currently get sequestration to plot as negative figure
+
+fig_economy_current_policies <- plot_ly(
   source = "fig-economy-downscale",
   data = economy_inventory_projections %>% 
-    filter(scenario %in% c("Inventory", "Net-zero pathway")),
+    filter(scenario %in% c("Inventory", "Current policies"),
+           sector != "Nature"),
   x = ~emissions_year,
   y = ~emissions_metric_tons_co2e,
   color = ~sector, #
   #colors = unlist(category_colors), # Directly map the colors to categories
   type = "scatter",
   mode = "lines", # No points or lines, just fill
-  stackgroup = "one", # Fill to the next y value (stacking)
+  stackgroup = "relative", # Fill to the next y value (stacking)
+  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~scenario # Pass category to hovertext
+) %>%
+  plotly_layout(
+    main_title = "Economy wide current policies downscale",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hovermode = "x unified", # Combine all hovertext under one hover
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+
+fig_economy_current_policies
+```
+
+```{r fig-economy-nz-downscale}
+#| fig-cap: "Economy wide MPCA downscale"
+#| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
+
+### can't currently get sequestration to plot as negative figure
+
+
+fig_economy_net_zero <- plot_ly(
+  source = "fig-economy-nz-downscale",
+  data = economy_inventory_projections %>% 
+    filter(scenario %in% c("Inventory", "Net-zero pathway"),
+           sector != "Nature"),
+  x = ~emissions_year,
+  y = ~emissions_metric_tons_co2e,
+  color = ~sector, #
+  #colors = unlist(category_colors), # Directly map the colors to categories
+  type = "scatter",
+  mode = "lines", # No points or lines, just fill
+  stackgroup = "relative", # Fill to the next y value (stacking)
   hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
   hovertemplate = ~ paste0(
     "Year: %{x}<br>",
@@ -112,7 +240,101 @@ fig_economy_net_zero <- plot_ly(
 fig_economy_net_zero
 ```
 
+```{r fig-subsector-cp-downscale}
+#| fig-cap: "Economy wide MPCA downscale"
+#| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
 
+### can't currently get sequestration to plot as negative figure
+
+fig_subsector_current_policies <- plot_ly(
+  source = "fig-subsector-cp-downscale",
+  data = subsector_inventory_projections %>% 
+    filter(scenario %in% c("Inventory", "Current policies"),
+           sector != "Nature"),
+  x = ~emissions_year,
+  y = ~emissions_metric_tons_co2e,
+  color = ~sector, #
+  #colors = unlist(category_colors), # Directly map the colors to categories
+  type = "scatter",
+  mode = "lines", # No points or lines, just fill
+  stackgroup = "relative", # Fill to the next y value (stacking)
+  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~scenario # Pass category to hovertext
+) %>%
+  plotly_layout(
+    main_title = "Subsector net-zero downscale",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hovermode = "x unified", # Combine all hovertext under one hover
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_subsector_current_policies
+```
+
+
+```{r fig-subsector-nz-downscale}
+#| fig-cap: "Economy wide MPCA downscale"
+#| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
+
+### can't currently get sequestration to plot as negative figure
+
+
+fig_subsector_net_zero <- plot_ly(
+  source = "fig-subsector-nz-downscale",
+  data = subsector_inventory_projections %>% 
+    filter(scenario %in% c("Inventory", "Net-zero pathway"),
+           sector != "Nature"),
+  x = ~emissions_year,
+  y = ~emissions_metric_tons_co2e,
+  color = ~sector, #
+  #colors = unlist(category_colors), # Directly map the colors to categories
+  type = "scatter",
+  mode = "lines", # No points or lines, just fill
+  stackgroup = "relative", # Fill to the next y value (stacking)
+  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~scenario # Pass category to hovertext
+) %>%
+  plotly_layout(
+    main_title = "Subsector net-zero downscale",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hovermode = "x unified", # Combine all hovertext under one hover
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_subsector_net_zero
+```
 
 ## Results
 
