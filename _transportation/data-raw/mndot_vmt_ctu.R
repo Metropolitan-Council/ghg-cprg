@@ -783,10 +783,6 @@ vmt_ctu_pop %>%
     )
   )
 
-# aggregate to county level
-# using the original (sometimes incorrect) county designations, things
-# line up nicely.
-# however, re-assigning means that they don't line up with county VMT 
 vmt_city_raw %>% 
   filter(county_name %in% mndot_vmt_county$county) %>% 
   group_by(county_name, year) %>% 
@@ -852,7 +848,7 @@ vmt_ctu <- vmt_interp %>%
   ) %>%
   select(-daily_approx, -annual_approx, -centerline_approx)
 
-
+# this saves a version with only the CTUs that have a full time series
 
 saveRDS(vmt_ctu, "_transportation/data-raw/mndot/mndot_vmt_ctu.RDS")
 
