@@ -16,6 +16,15 @@ if (file.exists("_transportation/data-raw/mndot/city_route_system/23_ccr.xlsx") 
   ))
 }
 
+ctu_nov <- c("Coon Rapids",
+             "Carver",
+             "Eagan",
+             "Bloomington",
+             "Saint Paul",
+             "Mahtomedi",
+             "Minneapolis",
+             "Savage")
+
 # load -----
 # read city level data and make column names consistent
 dat_ls <- list()
@@ -577,11 +586,6 @@ vmt_city_raw <- data.table::rbindlist(dat_ls,
     ), TRUE, FALSE)
   )
 
-# record which CTU/counties were incorrect 
-# and what they are now assigned to
-# vmt_county_incorrect <- vmt_city_raw %>% 
-#   filter(county_name != correct_county_name)
-
 # define route systems -----
 # labels have changed over time
 
@@ -665,6 +669,33 @@ vmt_city_raw_summary <-
   ungroup() %>% 
   filter(county_name %in% cprg_county$county_name)
 
+vmt_city_alone <- vmt_city_raw_route_system %>% 
+  filter(cprg_area == TRUE) %>% 
+  group_by(year, ctu_name) %>% 
+  summarize(
+    daily_vmt = sum(daily_vmt, na.rm = TRUE),
+    annual_vmt = sum(annual_vmt, na.rm = TRUE),
+    centerline_miles = sum(centerline_miles, na.rm = TRUE),
+    .groups = "keep"
+  ) 
+
+vmt_county_alone <- vmt_city_raw_route_system %>% 
+  filter(cprg_area == TRUE) %>% 
+  group_by(county_name, year) %>% 
+  summarize(
+    daily_vmt = sum(daily_vmt, na.rm = TRUE),
+    annual_vmt = sum(annual_vmt, na.rm = TRUE),
+    centerline_miles = sum(centerline_miles, na.rm = TRUE),
+    .groups = "keep"
+  ) 
+
+# join with county level data and check for differences
+vmt_county_alone %>% 
+  left_join(mndot_vmt_county,
+            by = c("year", "county_name" = "county"),
+            suffix = c(".city", ".county"))
+
+
 # merge with ctu population 
 
 
@@ -673,26 +704,28 @@ vmt_ctu_pop <- ctu_population %>%
   unique() %>%
   filter(inventory_year %in% vmt_city_raw_summary$year) %>%
   full_join(
-    vmt_city_raw_summary %>%
+    vmt_city_alone %>%
       ungroup() %>%
-      filter(cprg_area == TRUE,
-             ctu_name %in% ctu_population$ctu_name) %>%
-      select(county_name, ctu_name, year, centerline_miles,
+      filter(
+        ctu_name %in% ctu_population$ctu_name) %>%
+      select(ctu_name, year, centerline_miles,
              annual_vmt, daily_vmt) %>%
       mutate(year = as.numeric(year)) %>%
       filter(year %in% unique(ctu_population$inventory_year),
              !ctu_name %in% c("Nonmunicpal",
                               "Nonmunicipal")) %>%
       unique(),
-    by = c("ctu_name", "county_name",
+    by = c("ctu_name",
            "inventory_year" = "year")
   )
 
-vmt_city_raw_summary %>% 
+
+ctu_n_years <- vmt_city_raw_summary %>% 
   select(ctu_name, year) %>% 
   unique() %>% 
   group_by(ctu_name) %>% 
-  count() %>% View
+  count(name = "n_years") %>% 
+  arrange(n_years)
 
 # basic plotting
 # note that note very CTU has data for the full time series
@@ -713,7 +746,10 @@ vmt_ctu_pop %>%
   )
 
 vmt_ctu_pop %>% 
-  filter(ctu_population >= 65000) %>% 
+  filter(
+    # ctu_population >= 65000,
+    ctu_name %in% ctu_nov
+  ) %>% 
   plot_ly(
     type = "scatter",
     mode = "lines+markers",
@@ -750,7 +786,7 @@ vmt_ctu_pop %>%
 # aggregate to county level
 # using the original (sometimes incorrect) county designations, things
 # line up nicely.
-# however, changing the
+# however, re-assigning means that they don't line up with county VMT 
 vmt_city_raw %>% 
   filter(county_name %in% mndot_vmt_county$county) %>% 
   group_by(county_name, year) %>% 
@@ -771,16 +807,20 @@ vmt_city_raw %>%
   ) %>% View
 
 # TODO interpolate 2015 data
+# we can't interpolate for CTUs that don't have a full time series
 # TODO verify that CTU-county totals equal vmt_county totals
 # TODO final save
 # TODO testing!
 # interpolate 2015 data -----
 
-vmt_interp <- vmt_city_raw_summary %>%
+interp_ctus <- ctu_n_years %>% 
+  filter(n_years >= 22)  
+
+vmt_interp <- vmt_city_alone %>%
+  filter(ctu_name %in% interp_ctus$ctu_name) %>% 
   # first create an NA 2015 dataset
   ungroup() %>%
-  filter(cprg_area == TRUE) %>% 
-  select(correct_county_name, ctu_name) %>%
+  select(ctu_name) %>%
   unique() %>%
   mutate(
     year = "2015",
@@ -788,9 +828,10 @@ vmt_interp <- vmt_city_raw_summary %>%
     annual_vmt = NA
   ) %>%
   # bind with original
-  bind_rows(vmt_city_raw_summary) %>%
+  bind_rows(vmt_city_alone %>% 
+              filter(ctu_name %in% interp_ctus$ctu_name)) %>%
   arrange(year) %>%
-  group_by(ctu_name, correct_county_name) %>%
+  group_by(ctu_name) %>%
   # interpolate using midpoint method
   # for missing values
   # grouped by county
@@ -800,10 +841,10 @@ vmt_interp <- vmt_city_raw_summary %>%
     centerline_approx = zoo::na.approx(centerline_miles)
   )
 
-# review and check that values make sense for all counties
+# review and check that values make sense for all ctus
 
 # re-assign column values to match original data
-vmt_city_raw_interp <- vmt_interp %>%
+vmt_ctu <- vmt_interp %>%
   mutate(
     daily_vmt = daily_approx,
     annual_vmt = annual_approx,
@@ -812,25 +853,9 @@ vmt_city_raw_interp <- vmt_interp %>%
   select(-daily_approx, -annual_approx, -centerline_approx)
 
 
-# save county data for our CPRG counties only -----
-vmt_city <- vmt_city_raw_interp %>%
-  # filter to only the 7-county metro
-  filter(cprg_area == TRUE) %>%
-  group_by(year, county, cprg_area) %>%
-  # calculate daily, annual vmt and centerline miles
-  # grouped by year
-  dplyr::summarize(
-    daily_vmt = sum(daily_vmt),
-    annual_vmt = sum(annual_vmt),
-    centerline_miles = sum(centerline_miles),
-    .groups = "keep"
-  )
 
-
-saveRDS(vmt_city, "_transportation/data-raw/mndot/mndot_vmt_ctu.RDS")
+saveRDS(vmt_ctu, "_transportation/data-raw/mndot/mndot_vmt_ctu.RDS")
 
 # note that "New Market" is included in VMT data for years 2000-2005
 # "Elko" is included for years 2001-2006
 # "Elko New Market" is included for years 2007-onward
-# In 2022, MnDOT reported 0.001 centerline miles for Bloomington, Scott County only
-# Some 
