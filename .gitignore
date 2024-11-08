@@ -1149,3 +1149,5 @@ _meta/data-raw/epa/us_ghgi/
 _transportation/data-raw/~$_source_method_compare.xlsx
 
 _transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2024-0812-144242.csv
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsb
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsx

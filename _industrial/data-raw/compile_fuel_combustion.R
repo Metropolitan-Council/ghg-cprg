@@ -12,7 +12,7 @@ industrial_hub <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
 ### download emissions by fuel type data: https://www.epa.gov/ghgreporting/data-sets
 ind_unit_data <-  
   read_excel(file.path(here::here(), 
-                       "_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa_09_2023.xlsx"),
+                       "_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsx"),
                                        sheet = "UNIT_DATA",
                              skip = 6) %>% 
   clean_names() %>% 
@@ -26,7 +26,7 @@ ind_unit_data <-
                st_drop_geometry(),
              by= c("state" = "state_abb", "city_name"))
 
-ind_fuel_data <-  read_excel(file.path(here::here(), "_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa_09_2023.xlsx"),
+ind_fuel_data <-  read_excel(file.path(here::here(), "_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsx"),
                              sheet = "FUEL_DATA",
                              skip = 5) %>% 
   clean_names() %>% 
