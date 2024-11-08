@@ -228,7 +228,7 @@ nrel_emissions_inv_cityQA_2021 <- bind_rows(
     mutate(
       # convert mmbtu to mcf
       city_consumption_mcf = city_consumption_mm_btu * mmbtu_to_mcf,
-      cityPopDownscaled_consumption_mcf = consumption_mm_btu * mmbtu_to_mcf,
+      cityPopDownscaled_consumption_mcf = cityConsumption_countyPopDownscaled_mmbtu * mmbtu_to_mcf,
       county_consumption_mcf = county_consumption_mm_btu * mmbtu_to_mcf,
       # apply emission factor and convert to metric tons
       co2_city = (city_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF) %>%
@@ -287,7 +287,7 @@ nrel_emissions_inv_cityQA_2021 <- bind_rows(
     sector = "Energy"
   )
 
-saveRDS(nrel_AllCityTownships_county_activityPopProp_reference, "_energy/data-raw/nrel_slope/nrel_activity.RDS")
+saveRDS(nrel_emissions_inv_cityQA_2021, "_energy/data-raw/nrel_slope/nrel_emissions_inv_cityQA_2021.RDS")
 #compare city figures 1) provided directly by NREL to 2) those downscaled from county figures provided by NREL using CTU pop proportion of county populations
 
 
