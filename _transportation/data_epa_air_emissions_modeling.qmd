@@ -1,0 +1,55 @@
+## Air Emissions Modeling Platforms {#sec-epa-air-emissions-modeling}
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+hookaddcap()
+
+
+epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_source_set.RDS"))
+pollutant_key <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key.RDS"))
+pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_source_set.RDS"))
+epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
+
+
+epa_onroad_year_source <- epa_onroad_emissions_compile %>%
+  mutate(emissions_year = as.character(emissions_year)) %>%
+  select(emissions_year, data_source) %>%
+  unique()
+
+aem_years <- epa_onroad_emissions_compile %>%
+  filter(data_source == "Air Emissions Modeling") %>%
+  select(data_source, emissions_year, interpolation) %>%
+  unique()
+```
+
+The EPA continually works on emissions inventories for various projects. 
+
+Air Emissions Modeling data are available for several years, but years `r aem_years$emissions_year %>% listify()` are used in the final inventory.
+
+Both the 2021 and 2022 estimates are based on the 2020 NEI [@usepa2022v1EmissionsModeling2024, @usepa2021EmissionsModeling2024]. 
+
+Air Emissions Modeling SMOKE FF10 data are processed in [epa_air_emissions_modeling_onroad.R](data-raw/epa_air_emissions_modeling_onroad.R). 
+
+## Verification and validation
+
+Air Emissions Modeling data are only available from a single consistent website, and so verification across locations was not necessary. 
+
+### Activity data
+
+Compare underlying activity data with data from state DOTs
+
+### Emissions factors
+
+## Limitations 
+
+In addition to limitations described in @sec-epa-emissions-limitations, Air Emissions Modeling has its own set of limitations.
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}

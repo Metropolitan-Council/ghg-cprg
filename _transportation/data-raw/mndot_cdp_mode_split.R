@@ -9,12 +9,12 @@ cdp_freight <- traffic_ratios %>%
   summarize(
     `Medium Goods Vehicles` = mean(medium_duty),
     `Heavy Goods Vehicles` = mean(heavy_duty)
-  ) %>% 
+  ) %>%
   summarize(
-    `Medium Goods Freight` = `Medium Goods Vehicles`/(`Medium Goods Vehicles` +
-                                                        `Heavy Goods Vehicles`),
-    `Heavy Goods Freight` = `Heavy Goods Vehicles`/(`Medium Goods Vehicles` +
-                                                      `Heavy Goods Vehicles`)
+    `Medium Goods Freight` = `Medium Goods Vehicles` / (`Medium Goods Vehicles` +
+      `Heavy Goods Vehicles`),
+    `Heavy Goods Freight` = `Heavy Goods Vehicles` / (`Medium Goods Vehicles` +
+      `Heavy Goods Vehicles`)
   )
 
 cdp_freight %>% kable(format = "markdown")
