@@ -1157,3 +1157,9 @@ _energy/data-raw/modelingDocs
 _energy/data-raw/nrel_slope
 
 _energy/data-raw/USDA_ERS_AgriculturalResourceManagementSurvey
+
+_energy/data-raw/XcelCommunityReports
+
+_energy/data-raw/mn_elec_utility_reporting
+
+_energy\data-raw\XcelCommunityReports\electricity_all_years_city.csv
