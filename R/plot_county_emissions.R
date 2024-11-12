@@ -13,6 +13,7 @@
 #' @importFrom dplyr filter
 #' @importFrom stringr str_to_title
 #' @importFrom councilR plotly_layout
+#' @importFrom cli cli_alert_warning
 plot_county_emissions <- function(county_emissions,
                                   .sector,
                                   .plotly_source) {
@@ -27,16 +28,14 @@ plot_county_emissions <- function(county_emissions,
     ))
   }
 
+  if ("year" %in% names(plot_data)) {
+    if (length(unique(plot_data$year)) > 1) {
+      cli::cli_alert_warning("Plotting more than one year of data")
+    }
+  }
+
   plot_data <- plot_data %>%
-    mutate(
-      rounded_tons = ifelse(
-        max(emissions_metric_tons_co2e) > 1000000,
-        paste0(round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>"),
-        paste0(round(emissions_metric_tons_co2e / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>")
-      )
-    )
-
-
+    mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
 
   plot_ly(
     data = plot_data,
