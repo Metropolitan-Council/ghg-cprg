@@ -1,6 +1,7 @@
 source("R/_load_pkgs.R")
 source("R/download_read_table.R")
 source("_meta/data-raw/ctu_saint_names.R")
+
 cprg_county <- readRDS("_meta/data/cprg_county.RDS") %>% 
   sf::st_drop_geometry()
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>% 
@@ -8,6 +9,7 @@ ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
 mndot_vmt_county <- readRDS("_transportation/data-raw/mndot/mndot_vmt_county.RDS")
 mndot_route_system <- readRDS("_transportation/data-raw/mndot/mndot_route_system.RDS")
 
+# TODO bring in the percent sampled column, which is present for 2019 onward
 # check for needed files
 if (file.exists("_transportation/data-raw/mndot/city_route_system/23_ccr.xlsx") == FALSE) {
   cli::cli_abort(c(
@@ -484,7 +486,7 @@ vmt_city_raw <- data.table::rbindlist(dat_ls,
                                       idcol = "year"
 ) %>%
   # remove extra columns
-  select(-percent_sampled, -x100_percent_due_to_rounding) %>% 
+  select(-x100_percent_due_to_rounding) %>% 
   # remove any grand total rows
   filter(route_system != "Grand Totals") %>% 
   mutate(
@@ -591,8 +593,8 @@ vmt_city_raw <- data.table::rbindlist(dat_ls,
 vmt_city_raw %>% 
   filter(cprg_area ==  TRUE) %>% 
   plot_ly(
-  select(route_system, year) %>%
-  filter(year == 2023) %>%
+    type = "histogram",
+    x = ~percent_sampled,
     color = ~county_name
   )
 
@@ -600,11 +602,12 @@ vmt_city_raw_route_system <- vmt_city_raw %>%
   left_join(mndot_route_system,
             by = "route_system")
 
-
 # summarize by year and county only ------
 # removing the route system distinction
 vmt_city_raw_summary <-
   vmt_city_raw_route_system %>%
+  filter(route_system_id %in% c("01", "02", "03", "04", "05",
+                                "06", "07")) %>%
   group_by(year, county_name, ctu_name, cprg_area) %>%
   summarize(
     daily_vmt = sum(daily_vmt, na.rm = TRUE),
