@@ -6,6 +6,7 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS") %>%
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>% 
   left_join(cprg_county)
 mndot_vmt_county <- readRDS("_transportation/data-raw/mndot/mndot_vmt_county.RDS")
+mndot_route_system <- readRDS("_transportation/data-raw/mndot/mndot_route_system.RDS")
 
 # check for needed files
 if (file.exists("_transportation/data-raw/mndot/city_route_system/23_ccr.xlsx") == FALSE) {
@@ -586,74 +587,19 @@ vmt_city_raw <- data.table::rbindlist(dat_ls,
     ), TRUE, FALSE)
   )
 
-# define route systems -----
-# labels have changed over time
 
-route_system_reference <- vmt_city_raw %>%
+vmt_city_raw %>% 
+  filter(cprg_area ==  TRUE) %>% 
+  plot_ly(
   select(route_system, year) %>%
   filter(year == 2023) %>%
-  select(route_system) %>%
-  unique() %>%
-  tidyr::separate_wider_delim(route_system,
-                              delim = "-",
-                              names = c(
-                                "route_system_id",
-                                "route_system_desc"
-                              ),
-                              too_many = "merge"
-  ) %>%
-  mutate(route_system_id = str_pad(
-    route_system_id %>%
-      str_trim(),
-    side = "left",
-    pad = "0",
-    width = 2
-  ),
-  route_system_desc = stringr::str_trim(route_system_desc)) %>%
-  arrange(route_system_id) %>% 
-  bind_rows(
-    tibble::tribble(
-      ~route_system_id, ~route_system_desc,
-      "TW",       "Township Systems",
-      "MI",       "Minor Systems",
-      "08, 09", "Township Systems",
-      "11 TO 23", "Minor Systems"
-    )
+    color = ~county_name
   )
 
-route_system_year_all <- vmt_city_raw %>%
-  select(route_system, year) %>%
-  unique() %>%
-  tidyr::separate_wider_delim(
-    route_system,
-    delim = "-",
-    names = c(
-      "route_system_id",
-      "route_system"
-    ),
-    too_many = "merge",
-    too_few = "align_start",
-    cols_remove = FALSE
-  ) %>%
-  mutate(route_system_id = str_pad(
-    route_system_id %>%
-      str_trim(),
-    side = "left",
-    pad = "0",
-    width = 2
-  )) %>%
-  left_join(route_system_reference,
-            by = c("route_system_id")
-  )
+vmt_city_raw_route_system <- vmt_city_raw %>% 
+  left_join(mndot_route_system,
+            by = "route_system")
 
-# join back with VMT
-vmt_city_raw_route_system <- vmt_city_raw %>%
-  left_join(route_system_year_all,
-            by = c("year", "route_system")
-  )
-
-# remove from environment
-rm(route_system_reference, route_system_year_all, dat_ls)
 
 # summarize by year and county only ------
 # removing the route system distinction
