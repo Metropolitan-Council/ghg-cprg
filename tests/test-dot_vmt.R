@@ -19,3 +19,27 @@ testthat::test_that("state DOT VMT", {
     magrittr::extract2("county_name") %>%
     testthat::expect_equal("Hennepin")
 })
+
+
+testthat::test_that("VMT have decreased since including only major categories", {
+  # skip this test if offline
+  testthat::skip_if_offline()
+  
+  # download specific version of epa_onroad_emissions_compile from GitHub
+  # Commit ID 17b4349fc5874562befaa56a85ef3f740bb1708a
+  file_name <- tempfile()
+  download.file("https://github.com/Metropolitan-Council/ghg-cprg/raw/17b4349fc5874562befaa56a85ef3f740bb1708a/_transportation/data/dot_vmt.RDS",
+                destfile = file_name, quiet = TRUE, mode = "wb"
+  )
+  
+  
+  prev_dot_vmt <- readRDS(file_name)
+  dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS"))
+  
+  left_join(prev_dot_vmt, dot_vmt,
+            by = c("vmt_year", "geoid", "county_name", "cprg_area", "data_source")) %>% View
+  
+  waldo::compare(prev_dot_vmt, dot_vmt)
+  
+  
+})
