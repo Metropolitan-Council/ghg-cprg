@@ -154,6 +154,20 @@ agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds"
   ) %>%
   select(names(transportation_emissions))
 
+## industrial ----
+
+industrial_emissions <- readRDS("_industrial/data/county_industrial_emissions.RDS") %>%
+  ungroup() %>%
+  mutate(
+    geog_level = "county",
+    geog_name = county_name,
+    source = str_to_sentence(source),
+    emissions_metric_tons_co2e = values_emissions,
+    year = as.numeric(inventory_year)
+  ) %>%
+  select(names(transportation_emissions))
+
+
 ## natural systems ----
 
 natural_systems_sequestration_esa <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
@@ -204,7 +218,6 @@ natural_systems_stock <- readRDS("_nature/data/county_landcover_sequestration_20
   ungroup() %>%
   select(names(transportation_emissions))
 
-
 # combine and write metadata----
 
 emissions_all <- bind_rows(
@@ -216,6 +229,7 @@ emissions_all <- bind_rows(
   ww_emissions,
   solid_waste,
   agriculture_emissions,
+  industrial_emissions,
   natural_systems_sequestration_nlcd,
   natural_systems_stock
 ) %>%
@@ -252,6 +266,14 @@ emissions_all <- bind_rows(
         "Soil residue emissions",
         "Onsite fertilizer emissions",
         "Runoff fertilizer emissions",
+        # industrial levels
+        "Coal",
+        "Fuel gas",
+        #"Natural gas", # repeated in energy
+        "Petroleum products",
+        "Other",
+        "Process",
+        "Small point source",
         # nature levels
         "Urban grassland",
         "Urban tree",
@@ -278,6 +300,9 @@ emissions_all <- bind_rows(
         "Solid waste",
         "Livestock",
         "Cropland",
+        "Fuel combustion",
+        "Process",
+        "Other",
         "Sequestration",
         "Stock"
       ),

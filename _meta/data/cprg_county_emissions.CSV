@@ -4095,6 +4095,277 @@
 2021,"county","27037","Dakota","Agriculture","Cropland","Runoff fertilizer emissions",9367.83785311987,"USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",435863,"ACS 5-Year Estimates, Table DP05",0.02
 2021,"county","55093","Pierce","Agriculture","Cropland","Runoff fertilizer emissions",5156.15290286602,"USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",42204,"ACS 5-Year Estimates, Table DP05",0.12
 2021,"county","55109","St. Croix","Agriculture","Cropland","Runoff fertilizer emissions",6352.52090316456,"USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",92495,"ACS 5-Year Estimates, Table DP05",0.07
+2011,"county","27037","Dakota","Industrial","Fuel combustion","Coal",4873.44329748169,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",401804,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2011,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",2298472.65828313,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",401804,"US Census County Intercensal Tables (CO-EST2020)",5.72
+2011,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",334309.378046796,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",401804,"US Census County Intercensal Tables (CO-EST2020)",0.83
+2011,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",188.938530335366,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",401804,"US Census County Intercensal Tables (CO-EST2020)",0
+2012,"county","27037","Dakota","Industrial","Fuel combustion","Coal",4925.41283411172,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",404669,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2012,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",1806196.92138471,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",404669,"US Census County Intercensal Tables (CO-EST2020)",4.46
+2012,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",307828.536766699,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",404669,"US Census County Intercensal Tables (CO-EST2020)",0.76
+2012,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",188.938530335366,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",404669,"US Census County Intercensal Tables (CO-EST2020)",0
+2013,"county","27037","Dakota","Industrial","Fuel combustion","Coal",4821.47376085165,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",407974,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2013,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",1768826.76320668,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",407974,"US Census County Intercensal Tables (CO-EST2020)",4.34
+2013,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",502051.354459223,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",407974,"US Census County Intercensal Tables (CO-EST2020)",1.23
+2013,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",1328.81561417683,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",407974,"US Census County Intercensal Tables (CO-EST2020)",0
+2014,"county","27037","Dakota","Industrial","Fuel combustion","Coal",4679.59692585165,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",411821,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2014,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",1768283.73324102,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",411821,"US Census County Intercensal Tables (CO-EST2020)",4.29
+2014,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",290530.013177233,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",411821,"US Census County Intercensal Tables (CO-EST2020)",0.71
+2014,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",1136.75413292683,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",411821,"US Census County Intercensal Tables (CO-EST2020)",0
+2015,"county","27037","Dakota","Industrial","Fuel combustion","Coal",4854.47441661172,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",414245,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2015,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",1832755.50823325,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",414245,"US Census County Intercensal Tables (CO-EST2020)",4.42
+2015,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",274419.291559272,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",414245,"US Census County Intercensal Tables (CO-EST2020)",0.66
+2015,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",1300.53037996984,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",414245,"US Census County Intercensal Tables (CO-EST2020)",0
+2016,"county","27037","Dakota","Industrial","Fuel combustion","Coal",4469.25022634158,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",417783,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2016,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",1675229.16526629,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",417783,"US Census County Intercensal Tables (CO-EST2020)",4.01
+2016,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",490839.985293883,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",417783,"US Census County Intercensal Tables (CO-EST2020)",1.17
+2016,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",1111.59184963447,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",417783,"US Census County Intercensal Tables (CO-EST2020)",0
+2017,"county","27037","Dakota","Industrial","Fuel combustion","Coal",4433.78101759158,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",421840,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2017,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",1296494.58119524,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",421840,"US Census County Intercensal Tables (CO-EST2020)",3.07
+2017,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",443044.844493932,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",421840,"US Census County Intercensal Tables (CO-EST2020)",1.05
+2017,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",858.632825549108,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",421840,"US Census County Intercensal Tables (CO-EST2020)",0
+2018,"county","27037","Dakota","Industrial","Fuel combustion","Coal",3627.86342830128,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",425472,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2018,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",1377059.60220722,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",425472,"US Census County Intercensal Tables (CO-EST2020)",3.24
+2018,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",440359.724224272,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",425472,"US Census County Intercensal Tables (CO-EST2020)",1.03
+2018,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",725.486203547076,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",425472,"US Census County Intercensal Tables (CO-EST2020)",0
+2019,"county","27037","Dakota","Industrial","Fuel combustion","Coal",5310.63702438187,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",429453,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2019,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",1273341.99303769,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",429453,"US Census County Intercensal Tables (CO-EST2020)",2.97
+2019,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",548838.583118544,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",429453,"US Census County Intercensal Tables (CO-EST2020)",1.28
+2019,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",372.771426168699,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",429453,"US Census County Intercensal Tables (CO-EST2020)",0
+2020,"county","27037","Dakota","Industrial","Fuel combustion","Coal",6116.55461367216,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",439882,"Decennial Census, Table P1",0.01
+2020,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",1320239.53550524,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",439882,"Decennial Census, Table P1",3
+2020,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",596096.699864563,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",439882,"Decennial Census, Table P1",1.36
+2020,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",797.735282713742,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",439882,"Decennial Census, Table P1",0
+2021,"county","27037","Dakota","Industrial","Fuel combustion","Coal",6203.9933590522,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",435863,"ACS 5-Year Estimates, Table DP05",0.01
+2021,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",1262086.58569042,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",435863,"ACS 5-Year Estimates, Table DP05",2.9
+2021,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",648725.057149903,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",435863,"ACS 5-Year Estimates, Table DP05",1.49
+2021,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",668.460546533752,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",435863,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27037","Dakota","Industrial","Fuel combustion","Coal",4889.94362536172,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",439179,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","27037","Dakota","Industrial","Fuel combustion","Fuel gas",1433237.89544618,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",439179,"ACS 5-Year Estimates, Table DP05",3.26
+2022,"county","27037","Dakota","Industrial","Fuel combustion","Natural gas",625095.998776893,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",439179,"ACS 5-Year Estimates, Table DP05",1.42
+2022,"county","27037","Dakota","Industrial","Fuel combustion","Petroleum products",953.282944340086,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",439179,"ACS 5-Year Estimates, Table DP05",0
+2011,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",41922.0276785714,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1169581,"US Census County Intercensal Tables (CO-EST2020)",0.04
+2011,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",160570.19212568,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1169581,"US Census County Intercensal Tables (CO-EST2020)",0.14
+2011,"county","27053","Hennepin","Industrial","Fuel combustion","Other",356601.383926119,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1169581,"US Census County Intercensal Tables (CO-EST2020)",0.3
+2011,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",128.0409875,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1169581,"US Census County Intercensal Tables (CO-EST2020)",0
+2012,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",1688.945,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1184545,"US Census County Intercensal Tables (CO-EST2020)",0
+2012,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",161107.216179612,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1184545,"US Census County Intercensal Tables (CO-EST2020)",0.14
+2012,"county","27053","Hennepin","Industrial","Fuel combustion","Other",353342.750811635,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1184545,"US Census County Intercensal Tables (CO-EST2020)",0.3
+2012,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",64.02049375,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1184545,"US Census County Intercensal Tables (CO-EST2020)",0
+2013,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",5944.64194078947,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1198531,"US Census County Intercensal Tables (CO-EST2020)",0
+2013,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",213285.848887767,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1198531,"US Census County Intercensal Tables (CO-EST2020)",0.18
+2013,"county","27053","Hennepin","Industrial","Fuel combustion","Other",323243.076493711,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1198531,"US Census County Intercensal Tables (CO-EST2020)",0.27
+2013,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",2276.63121676829,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1198531,"US Census County Intercensal Tables (CO-EST2020)",0
+2014,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",12121.037612782,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1211635,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2014,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",169162.576988592,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1211635,"US Census County Intercensal Tables (CO-EST2020)",0.14
+2014,"county","27053","Hennepin","Industrial","Fuel combustion","Other",341536.946155975,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1211635,"US Census County Intercensal Tables (CO-EST2020)",0.28
+2014,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",16304.2012014634,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1211635,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2015,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",9579.68334116541,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1222868,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2015,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",172921.745366116,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1222868,"US Census County Intercensal Tables (CO-EST2020)",0.14
+2015,"county","27053","Hennepin","Industrial","Fuel combustion","Other",327997.095962579,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1222868,"US Census County Intercensal Tables (CO-EST2020)",0.27
+2015,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",3092.92011902439,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1222868,"US Census County Intercensal Tables (CO-EST2020)",0
+2016,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",12375.0143045113,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1236183,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2016,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",161644.240233544,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1236183,"US Census County Intercensal Tables (CO-EST2020)",0.13
+2016,"county","27053","Hennepin","Industrial","Fuel combustion","Other",337897.936613522,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1236183,"US Census County Intercensal Tables (CO-EST2020)",0.27
+2016,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",1492.54564788053,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1236183,"US Census County Intercensal Tables (CO-EST2020)",0
+2017,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",9355.86638157895,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1248707,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2017,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",150366.735100971,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1248707,"US Census County Intercensal Tables (CO-EST2020)",0.12
+2017,"county","27053","Hennepin","Industrial","Fuel combustion","Other",362056.070671384,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1248707,"US Census County Intercensal Tables (CO-EST2020)",0.29
+2017,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",1892.14549234756,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1248707,"US Census County Intercensal Tables (CO-EST2020)",0
+2018,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",6038.29584586466,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1258021,"US Census County Intercensal Tables (CO-EST2020)",0
+2018,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",237364.631837961,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1258021,"US Census County Intercensal Tables (CO-EST2020)",0.19
+2018,"county","27053","Hennepin","Industrial","Fuel combustion","Other",351590.681144654,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1258021,"US Census County Intercensal Tables (CO-EST2020)",0.28
+2018,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",4802.73574478659,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1258021,"US Census County Intercensal Tables (CO-EST2020)",0
+2019,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",3527.10130639098,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1265159,"US Census County Intercensal Tables (CO-EST2020)",0
+2019,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",230383.319136845,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1265159,"US Census County Intercensal Tables (CO-EST2020)",0.18
+2019,"county","27053","Hennepin","Industrial","Fuel combustion","Other",343951.972300943,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1265159,"US Census County Intercensal Tables (CO-EST2020)",0.27
+2019,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",4528.05393690492,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1265159,"US Census County Intercensal Tables (CO-EST2020)",0
+2020,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",2017.52734492481,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1281565,"Decennial Census, Table P1",0
+2020,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",220179.862112136,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1281565,"Decennial Census, Table P1",0.17
+2020,"county","27053","Hennepin","Industrial","Fuel combustion","Other",328171.950733648,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1281565,"Decennial Census, Table P1",0.26
+2020,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",752.268408506098,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1281565,"Decennial Census, Table P1",0
+2021,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",6082.74176691729,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1270283,"ACS 5-Year Estimates, Table DP05",0
+2021,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",237901.655891893,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1270283,"ACS 5-Year Estimates, Table DP05",0.19
+2021,"county","27053","Hennepin","Industrial","Fuel combustion","Other",367531.055310063,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1270283,"ACS 5-Year Estimates, Table DP05",0.29
+2021,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",7204.28499814024,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1270283,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","27053","Hennepin","Industrial","Fuel combustion","Coal",1973.08142387218,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1270787,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27053","Hennepin","Industrial","Fuel combustion","Natural gas",249716.185078398,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1270787,"ACS 5-Year Estimates, Table DP05",0.2
+2022,"county","27053","Hennepin","Industrial","Fuel combustion","Other",363779.135992453,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1270787,"ACS 5-Year Estimates, Table DP05",0.29
+2022,"county","27053","Hennepin","Industrial","Fuel combustion","Petroleum products",1197.28891384146,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",1270787,"ACS 5-Year Estimates, Table DP05",0
+2011,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",284507.714614203,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",515856,"US Census County Intercensal Tables (CO-EST2020)",0.55
+2011,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",1564.96980901822,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",515856,"US Census County Intercensal Tables (CO-EST2020)",0
+2012,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",176522.106961023,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",521091,"US Census County Intercensal Tables (CO-EST2020)",0.34
+2012,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",64.02049375,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",521091,"US Census County Intercensal Tables (CO-EST2020)",0
+2013,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",255623.44967165,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",527261,"US Census County Intercensal Tables (CO-EST2020)",0.48
+2013,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",1069.09827152778,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",527261,"US Census County Intercensal Tables (CO-EST2020)",0
+2014,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",245419.992646942,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",532966,"US Census County Intercensal Tables (CO-EST2020)",0.46
+2014,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",10541.1866947832,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",532966,"US Census County Intercensal Tables (CO-EST2020)",0.02
+2015,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",243271.896431214,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",536838,"US Census County Intercensal Tables (CO-EST2020)",0.45
+2015,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",2212.61072301829,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",536838,"US Census County Intercensal Tables (CO-EST2020)",0
+2016,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",241123.800215485,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",541635,"US Census County Intercensal Tables (CO-EST2020)",0.45
+2016,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",188.938530335366,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",541635,"US Census County Intercensal Tables (CO-EST2020)",0
+2017,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",236827.607784029,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",544919,"US Census County Intercensal Tables (CO-EST2020)",0.43
+2017,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",64.02049375,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",544919,"US Census County Intercensal Tables (CO-EST2020)",0
+2018,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",269586.075073883,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",548900,"US Census County Intercensal Tables (CO-EST2020)",0.49
+2018,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",2524.52150193089,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",548900,"US Census County Intercensal Tables (CO-EST2020)",0
+2019,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",270123.099127816,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",549632,"US Census County Intercensal Tables (CO-EST2020)",0.49
+2019,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",3594.1062204607,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",549632,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2020,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",237901.655891893,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",552352,"Decennial Census, Table P1",0.43
+2020,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",252.959024085366,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",552352,"Decennial Census, Table P1",0
+2021,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",207291.284817767,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",549377,"ACS 5-Year Estimates, Table DP05",0.38
+2021,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",6765.87315655488,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",549377,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","27123","Ramsey","Industrial","Fuel combustion","Natural gas",200309.97211665,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",547202,"ACS 5-Year Estimates, Table DP05",0.37
+2022,"county","27123","Ramsey","Industrial","Fuel combustion","Petroleum products",6323.97560213415,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",547202,"ACS 5-Year Estimates, Table DP05",0.01
+2011,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",60683.7180943204,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",132581,"US Census County Intercensal Tables (CO-EST2020)",0.46
+2012,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",55850.501608932,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",135140,"US Census County Intercensal Tables (CO-EST2020)",0.41
+2013,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",54776.453501068,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",137280,"US Census County Intercensal Tables (CO-EST2020)",0.4
+2014,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",54239.4294471359,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",139198,"US Census County Intercensal Tables (CO-EST2020)",0.39
+2015,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",53165.3813392718,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",141372,"US Census County Intercensal Tables (CO-EST2020)",0.38
+2016,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",54239.4294471359,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",143393,"US Census County Intercensal Tables (CO-EST2020)",0.38
+2017,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",49943.2370156796,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",145581,"US Census County Intercensal Tables (CO-EST2020)",0.34
+2018,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",52091.3332314078,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",147339,"US Census County Intercensal Tables (CO-EST2020)",0.35
+2019,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",53165.3813392718,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",149004,"US Census County Intercensal Tables (CO-EST2020)",0.36
+2020,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",54776.453501068,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",150928,"Decennial Census, Table P1",0.36
+2021,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",54239.4294471359,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",149568,"ACS 5-Year Estimates, Table DP05",0.36
+2022,"county","27139","Scott","Industrial","Fuel combustion","Natural gas",54776.453501068,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",151347,"ACS 5-Year Estimates, Table DP05",0.36
+2011,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",58844.0594646369,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",241428,"US Census County Intercensal Tables (CO-EST2020)",0.24
+2011,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",101770.026378155,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",241428,"US Census County Intercensal Tables (CO-EST2020)",0.42
+2011,"county","27163","Washington","Industrial","Fuel combustion","Other",7736.82026031746,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",241428,"US Census County Intercensal Tables (CO-EST2020)",0.03
+2011,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",6999.586147315,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",241428,"US Census County Intercensal Tables (CO-EST2020)",0.03
+2012,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",422768.897026133,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",243720,"US Census County Intercensal Tables (CO-EST2020)",1.73
+2012,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",87262.4406059223,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",243720,"US Census County Intercensal Tables (CO-EST2020)",0.36
+2012,"county","27163","Washington","Industrial","Fuel combustion","Other",6484.69432380952,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",243720,"US Census County Intercensal Tables (CO-EST2020)",0.03
+2012,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",7146.87316814024,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",243720,"US Census County Intercensal Tables (CO-EST2020)",0.03
+2013,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",388509.028621321,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",246002,"US Census County Intercensal Tables (CO-EST2020)",1.58
+2013,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",93442.1853841748,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",246002,"US Census County Intercensal Tables (CO-EST2020)",0.38
+2013,"county","27163","Washington","Industrial","Fuel combustion","Other",2174.74504761905,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",246002,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2013,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",1453.7336507622,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",246002,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2014,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",531571.168049673,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",248580,"US Census County Intercensal Tables (CO-EST2020)",2.14
+2014,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",100423.498085291,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",248580,"US Census County Intercensal Tables (CO-EST2020)",0.4
+2014,"county","27163","Washington","Industrial","Fuel combustion","Other",3677.29617142857,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",248580,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2014,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",929.215769709801,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",248580,"US Census County Intercensal Tables (CO-EST2020)",0
+2015,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",520809.407065434,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",250482,"US Census County Intercensal Tables (CO-EST2020)",2.08
+2015,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",95590.2815999029,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",250482,"US Census County Intercensal Tables (CO-EST2020)",0.38
+2015,"county","27163","Washington","Industrial","Fuel combustion","Other",1977.04095238095,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",250482,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2015,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",848.492235624435,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",250482,"US Census County Intercensal Tables (CO-EST2020)",0
+2016,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",505061.727724548,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",252655,"US Census County Intercensal Tables (CO-EST2020)",2
+2016,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",85923.8486291262,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",252655,"US Census County Intercensal Tables (CO-EST2020)",0.34
+2016,"county","27163","Washington","Industrial","Fuel combustion","Other",1950.68040634921,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",252655,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2016,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",663.039418124436,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",252655,"US Census County Intercensal Tables (CO-EST2020)",0
+2017,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",497459.379329015,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",255717,"US Census County Intercensal Tables (CO-EST2020)",1.95
+2017,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",125126.604566165,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",255717,"US Census County Intercensal Tables (CO-EST2020)",0.49
+2017,"county","27163","Washington","Industrial","Fuel combustion","Other",2741.49678730159,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",255717,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2017,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",663.039418124436,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",255717,"US Census County Intercensal Tables (CO-EST2020)",0
+2018,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",465766.533652525,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",258969,"US Census County Intercensal Tables (CO-EST2020)",1.8
+2018,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",154662.927532427,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",258969,"US Census County Intercensal Tables (CO-EST2020)",0.6
+2018,"county","27163","Washington","Industrial","Fuel combustion","Other",2741.49678730159,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",258969,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2018,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",784.471741874435,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",258969,"US Census County Intercensal Tables (CO-EST2020)",0
+2019,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",473862.50470316,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",262541,"US Census County Intercensal Tables (CO-EST2020)",1.8
+2019,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",135330.061590874,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",262541,"US Census County Intercensal Tables (CO-EST2020)",0.52
+2019,"county","27163","Washington","Industrial","Fuel combustion","Other",2517.43214603175,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",262541,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2019,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",505.918048170732,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",262541,"US Census County Intercensal Tables (CO-EST2020)",0
+2020,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",497015.092860708,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",267568,"Decennial Census, Table P1",1.86
+2020,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",127811.724835825,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",267568,"Decennial Census, Table P1",0.48
+2020,"county","27163","Washington","Industrial","Fuel combustion","Other",2003.4014984127,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",267568,"Decennial Census, Table P1",0.01
+2020,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",1927.83453855127,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",267568,"Decennial Census, Table P1",0.01
+2021,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",504370.594366808,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",264818,"ACS 5-Year Estimates, Table DP05",1.9
+2021,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",151440.783208835,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",264818,"ACS 5-Year Estimates, Table DP05",0.57
+2021,"county","27163","Washington","Industrial","Fuel combustion","Other",2108.84368253968,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",264818,"ACS 5-Year Estimates, Table DP05",0.01
+2021,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",2148.97640225497,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",264818,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","27163","Washington","Industrial","Fuel combustion","Fuel gas",447649.271162188,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",268651,"ACS 5-Year Estimates, Table DP05",1.67
+2022,"county","27163","Washington","Industrial","Fuel combustion","Natural gas",133181.965375146,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",268651,"ACS 5-Year Estimates, Table DP05",0.5
+2022,"county","27163","Washington","Industrial","Fuel combustion","Petroleum products",278.553693703704,"EPA FLIGHT Subpart C Analysis","EPA Emission Factor Hub",268651,"ACS 5-Year Estimates, Table DP05",0
+2011,"county","27037","Dakota","Industrial","Process","Process",1102196.58184225,"EPA FLIGHT","EPA Emission Factor Hub",401804,"US Census County Intercensal Tables (CO-EST2020)",2.74
+2012,"county","27037","Dakota","Industrial","Process","Process",1710918.19048415,"EPA FLIGHT","EPA Emission Factor Hub",404669,"US Census County Intercensal Tables (CO-EST2020)",4.23
+2013,"county","27037","Dakota","Industrial","Process","Process",1477442.59295906,"EPA FLIGHT","EPA Emission Factor Hub",407974,"US Census County Intercensal Tables (CO-EST2020)",3.62
+2014,"county","27037","Dakota","Industrial","Process","Process",1956187.90252297,"EPA FLIGHT","EPA Emission Factor Hub",411821,"US Census County Intercensal Tables (CO-EST2020)",4.75
+2015,"county","27037","Dakota","Industrial","Process","Process",2116282.1954109,"EPA FLIGHT","EPA Emission Factor Hub",414245,"US Census County Intercensal Tables (CO-EST2020)",5.11
+2016,"county","27037","Dakota","Industrial","Process","Process",1997207.00736385,"EPA FLIGHT","EPA Emission Factor Hub",417783,"US Census County Intercensal Tables (CO-EST2020)",4.78
+2017,"county","27037","Dakota","Industrial","Process","Process",2641351.16046769,"EPA FLIGHT","EPA Emission Factor Hub",421840,"US Census County Intercensal Tables (CO-EST2020)",6.26
+2018,"county","27037","Dakota","Industrial","Process","Process",2644729.32393666,"EPA FLIGHT","EPA Emission Factor Hub",425472,"US Census County Intercensal Tables (CO-EST2020)",6.22
+2019,"county","27037","Dakota","Industrial","Process","Process",2564464.01539322,"EPA FLIGHT","EPA Emission Factor Hub",429453,"US Census County Intercensal Tables (CO-EST2020)",5.97
+2020,"county","27037","Dakota","Industrial","Process","Process",2596790.47473381,"EPA FLIGHT","EPA Emission Factor Hub",439882,"Decennial Census, Table P1",5.9
+2021,"county","27037","Dakota","Industrial","Process","Process",2776365.90325409,"EPA FLIGHT","EPA Emission Factor Hub",435863,"ACS 5-Year Estimates, Table DP05",6.37
+2022,"county","27037","Dakota","Industrial","Process","Process",2543772.87920723,"EPA FLIGHT","EPA Emission Factor Hub",439179,"ACS 5-Year Estimates, Table DP05",5.79
+2011,"county","27053","Hennepin","Industrial","Process","Process",479235.35528213,"EPA FLIGHT","EPA Emission Factor Hub",1169581,"US Census County Intercensal Tables (CO-EST2020)",0.41
+2012,"county","27053","Hennepin","Industrial","Process","Process",297977.067515003,"EPA FLIGHT","EPA Emission Factor Hub",1184545,"US Census County Intercensal Tables (CO-EST2020)",0.25
+2013,"county","27053","Hennepin","Industrial","Process","Process",328228.801460964,"EPA FLIGHT","EPA Emission Factor Hub",1198531,"US Census County Intercensal Tables (CO-EST2020)",0.27
+2014,"county","27053","Hennepin","Industrial","Process","Process",373669.238041188,"EPA FLIGHT","EPA Emission Factor Hub",1211635,"US Census County Intercensal Tables (CO-EST2020)",0.31
+2015,"county","27053","Hennepin","Industrial","Process","Process",334747.555211115,"EPA FLIGHT","EPA Emission Factor Hub",1222868,"US Census County Intercensal Tables (CO-EST2020)",0.27
+2016,"county","27053","Hennepin","Industrial","Process","Process",282810.263200542,"EPA FLIGHT","EPA Emission Factor Hub",1236183,"US Census County Intercensal Tables (CO-EST2020)",0.23
+2017,"county","27053","Hennepin","Industrial","Process","Process",264072.182353719,"EPA FLIGHT","EPA Emission Factor Hub",1248707,"US Census County Intercensal Tables (CO-EST2020)",0.21
+2018,"county","27053","Hennepin","Industrial","Process","Process",295400.655426734,"EPA FLIGHT","EPA Emission Factor Hub",1258021,"US Census County Intercensal Tables (CO-EST2020)",0.23
+2019,"county","27053","Hennepin","Industrial","Process","Process",233830.553318916,"EPA FLIGHT","EPA Emission Factor Hub",1265159,"US Census County Intercensal Tables (CO-EST2020)",0.18
+2020,"county","27053","Hennepin","Industrial","Process","Process",247921.391400785,"EPA FLIGHT","EPA Emission Factor Hub",1281565,"Decennial Census, Table P1",0.19
+2021,"county","27053","Hennepin","Industrial","Process","Process",242646.262032986,"EPA FLIGHT","EPA Emission Factor Hub",1270283,"ACS 5-Year Estimates, Table DP05",0.19
+2022,"county","27053","Hennepin","Industrial","Process","Process",247476.308591435,"EPA FLIGHT","EPA Emission Factor Hub",1270787,"ACS 5-Year Estimates, Table DP05",0.19
+2011,"county","27123","Ramsey","Industrial","Process","Process",114973.315576779,"EPA FLIGHT","EPA Emission Factor Hub",515856,"US Census County Intercensal Tables (CO-EST2020)",0.22
+2012,"county","27123","Ramsey","Industrial","Process","Process",167332.872545227,"EPA FLIGHT","EPA Emission Factor Hub",521091,"US Census County Intercensal Tables (CO-EST2020)",0.32
+2013,"county","27123","Ramsey","Industrial","Process","Process",96368.4520568218,"EPA FLIGHT","EPA Emission Factor Hub",527261,"US Census County Intercensal Tables (CO-EST2020)",0.18
+2014,"county","27123","Ramsey","Industrial","Process","Process",117406.820658275,"EPA FLIGHT","EPA Emission Factor Hub",532966,"US Census County Intercensal Tables (CO-EST2020)",0.22
+2015,"county","27123","Ramsey","Industrial","Process","Process",78498.4928457681,"EPA FLIGHT","EPA Emission Factor Hub",536838,"US Census County Intercensal Tables (CO-EST2020)",0.15
+2016,"county","27123","Ramsey","Industrial","Process","Process",74539.2612541792,"EPA FLIGHT","EPA Emission Factor Hub",541635,"US Census County Intercensal Tables (CO-EST2020)",0.14
+2017,"county","27123","Ramsey","Industrial","Process","Process",97113.3717222209,"EPA FLIGHT","EPA Emission Factor Hub",544919,"US Census County Intercensal Tables (CO-EST2020)",0.18
+2018,"county","27123","Ramsey","Industrial","Process","Process",90289.4034241856,"EPA FLIGHT","EPA Emission Factor Hub",548900,"US Census County Intercensal Tables (CO-EST2020)",0.16
+2019,"county","27123","Ramsey","Industrial","Process","Process",96992.7946517237,"EPA FLIGHT","EPA Emission Factor Hub",549632,"US Census County Intercensal Tables (CO-EST2020)",0.18
+2020,"county","27123","Ramsey","Industrial","Process","Process",69555.3850840214,"EPA FLIGHT","EPA Emission Factor Hub",552352,"Decennial Census, Table P1",0.13
+2021,"county","27123","Ramsey","Industrial","Process","Process",70103.8420256781,"EPA FLIGHT","EPA Emission Factor Hub",549377,"ACS 5-Year Estimates, Table DP05",0.13
+2022,"county","27123","Ramsey","Industrial","Process","Process",68870.0522812154,"EPA FLIGHT","EPA Emission Factor Hub",547202,"ACS 5-Year Estimates, Table DP05",0.13
+2011,"county","27139","Scott","Industrial","Process","Process",26666.2819056796,"EPA FLIGHT","EPA Emission Factor Hub",132581,"US Census County Intercensal Tables (CO-EST2020)",0.2
+2012,"county","27139","Scott","Industrial","Process","Process",37490.498391068,"EPA FLIGHT","EPA Emission Factor Hub",135140,"US Census County Intercensal Tables (CO-EST2020)",0.28
+2013,"county","27139","Scott","Industrial","Process","Process",23518.546498932,"EPA FLIGHT","EPA Emission Factor Hub",137280,"US Census County Intercensal Tables (CO-EST2020)",0.17
+2014,"county","27139","Scott","Industrial","Process","Process",24823.5705528641,"EPA FLIGHT","EPA Emission Factor Hub",139198,"US Census County Intercensal Tables (CO-EST2020)",0.18
+2015,"county","27139","Scott","Industrial","Process","Process",26784.6186607282,"EPA FLIGHT","EPA Emission Factor Hub",141372,"US Census County Intercensal Tables (CO-EST2020)",0.19
+2016,"county","27139","Scott","Industrial","Process","Process",25351.5705528641,"EPA FLIGHT","EPA Emission Factor Hub",143393,"US Census County Intercensal Tables (CO-EST2020)",0.18
+2017,"county","27139","Scott","Industrial","Process","Process",24090.7629843204,"EPA FLIGHT","EPA Emission Factor Hub",145581,"US Census County Intercensal Tables (CO-EST2020)",0.17
+2018,"county","27139","Scott","Industrial","Process","Process",25595.6667685922,"EPA FLIGHT","EPA Emission Factor Hub",147339,"US Census County Intercensal Tables (CO-EST2020)",0.17
+2019,"county","27139","Scott","Industrial","Process","Process",27229.6186607282,"EPA FLIGHT","EPA Emission Factor Hub",149004,"US Census County Intercensal Tables (CO-EST2020)",0.18
+2020,"county","27139","Scott","Industrial","Process","Process",27786.546498932,"EPA FLIGHT","EPA Emission Factor Hub",150928,"Decennial Census, Table P1",0.18
+2021,"county","27139","Scott","Industrial","Process","Process",26673.5705528641,"EPA FLIGHT","EPA Emission Factor Hub",149568,"ACS 5-Year Estimates, Table DP05",0.18
+2022,"county","27139","Scott","Industrial","Process","Process",24755.546498932,"EPA FLIGHT","EPA Emission Factor Hub",151347,"ACS 5-Year Estimates, Table DP05",0.16
+2011,"county","27141","Sherburne","Industrial","Process","Process",18573,"EPA FLIGHT","EPA Emission Factor Hub",89279,"US Census County Intercensal Tables (CO-EST2020)",0.21
+2012,"county","27141","Sherburne","Industrial","Process","Process",23478,"EPA FLIGHT","EPA Emission Factor Hub",89474,"US Census County Intercensal Tables (CO-EST2020)",0.26
+2013,"county","27141","Sherburne","Industrial","Process","Process",28469,"EPA FLIGHT","EPA Emission Factor Hub",90086,"US Census County Intercensal Tables (CO-EST2020)",0.32
+2014,"county","27141","Sherburne","Industrial","Process","Process",95617,"EPA FLIGHT","EPA Emission Factor Hub",90908,"US Census County Intercensal Tables (CO-EST2020)",1.05
+2015,"county","27141","Sherburne","Industrial","Process","Process",123912,"EPA FLIGHT","EPA Emission Factor Hub",91441,"US Census County Intercensal Tables (CO-EST2020)",1.36
+2016,"county","27141","Sherburne","Industrial","Process","Process",148709,"EPA FLIGHT","EPA Emission Factor Hub",93247,"US Census County Intercensal Tables (CO-EST2020)",1.59
+2017,"county","27141","Sherburne","Industrial","Process","Process",156166,"EPA FLIGHT","EPA Emission Factor Hub",94527,"US Census County Intercensal Tables (CO-EST2020)",1.65
+2018,"county","27141","Sherburne","Industrial","Process","Process",163067,"EPA FLIGHT","EPA Emission Factor Hub",96067,"US Census County Intercensal Tables (CO-EST2020)",1.7
+2019,"county","27141","Sherburne","Industrial","Process","Process",169461,"EPA FLIGHT","EPA Emission Factor Hub",97424,"US Census County Intercensal Tables (CO-EST2020)",1.74
+2020,"county","27141","Sherburne","Industrial","Process","Process",176513,"EPA FLIGHT","EPA Emission Factor Hub",97183,"Decennial Census, Table P1",1.82
+2021,"county","27141","Sherburne","Industrial","Process","Process",204901,"EPA FLIGHT","EPA Emission Factor Hub",96295,"ACS 5-Year Estimates, Table DP05",2.13
+2022,"county","27141","Sherburne","Industrial","Process","Process",216506,"EPA FLIGHT","EPA Emission Factor Hub",97820,"ACS 5-Year Estimates, Table DP05",2.21
+2011,"county","27163","Washington","Industrial","Process","Process",709389.507749575,"EPA FLIGHT","EPA Emission Factor Hub",241428,"US Census County Intercensal Tables (CO-EST2020)",2.94
+2012,"county","27163","Washington","Industrial","Process","Process",303910.094875995,"EPA FLIGHT","EPA Emission Factor Hub",243720,"US Census County Intercensal Tables (CO-EST2020)",1.25
+2013,"county","27163","Washington","Industrial","Process","Process",266569.307296123,"EPA FLIGHT","EPA Emission Factor Hub",246002,"US Census County Intercensal Tables (CO-EST2020)",1.08
+2014,"county","27163","Washington","Industrial","Process","Process",273818.821923897,"EPA FLIGHT","EPA Emission Factor Hub",248580,"US Census County Intercensal Tables (CO-EST2020)",1.1
+2015,"county","27163","Washington","Industrial","Process","Process",274423.778146657,"EPA FLIGHT","EPA Emission Factor Hub",250482,"US Census County Intercensal Tables (CO-EST2020)",1.1
+2016,"county","27163","Washington","Industrial","Process","Process",289773.703821852,"EPA FLIGHT","EPA Emission Factor Hub",252655,"US Census County Intercensal Tables (CO-EST2020)",1.15
+2017,"county","27163","Washington","Industrial","Process","Process",274424.479899394,"EPA FLIGHT","EPA Emission Factor Hub",255717,"US Census County Intercensal Tables (CO-EST2020)",1.07
+2018,"county","27163","Washington","Industrial","Process","Process",281407.570285871,"EPA FLIGHT","EPA Emission Factor Hub",258969,"US Census County Intercensal Tables (CO-EST2020)",1.09
+2019,"county","27163","Washington","Industrial","Process","Process",316906.083511763,"EPA FLIGHT","EPA Emission Factor Hub",262541,"US Census County Intercensal Tables (CO-EST2020)",1.21
+2020,"county","27163","Washington","Industrial","Process","Process",289444.946266502,"EPA FLIGHT","EPA Emission Factor Hub",267568,"Decennial Census, Table P1",1.08
+2021,"county","27163","Washington","Industrial","Process","Process",275778.802339563,"EPA FLIGHT","EPA Emission Factor Hub",264818,"ACS 5-Year Estimates, Table DP05",1.04
+2022,"county","27163","Washington","Industrial","Process","Process",243354.209768963,"EPA FLIGHT","EPA Emission Factor Hub",268651,"ACS 5-Year Estimates, Table DP05",0.91
+2017,"county","27003","Anoka","Industrial","Other","Small point source",25745.648992918,"EPA NEI","EPA NEI",350598,"US Census County Intercensal Tables (CO-EST2020)",0.07
+2017,"county","27019","Carver","Industrial","Other","Small point source",15534.63148776,"EPA NEI","EPA NEI",102120,"US Census County Intercensal Tables (CO-EST2020)",0.15
+2017,"county","27025","Chisago","Industrial","Other","Small point source",18513.82617392,"EPA NEI","EPA NEI",55261,"US Census County Intercensal Tables (CO-EST2020)",0.34
+2017,"county","27037","Dakota","Industrial","Other","Small point source",0,"EPA NEI","EPA NEI",421840,"US Census County Intercensal Tables (CO-EST2020)",0
+2017,"county","27053","Hennepin","Industrial","Other","Small point source",111882.685843592,"EPA NEI","EPA NEI",1248707,"US Census County Intercensal Tables (CO-EST2020)",0.09
+2017,"county","27123","Ramsey","Industrial","Other","Small point source",348448.160118616,"EPA NEI","EPA NEI",544919,"US Census County Intercensal Tables (CO-EST2020)",0.64
+2017,"county","27139","Scott","Industrial","Other","Small point source",66869.458078098,"EPA NEI","EPA NEI",145581,"US Census County Intercensal Tables (CO-EST2020)",0.46
+2017,"county","27141","Sherburne","Industrial","Other","Small point source",1120.30344285257,"EPA NEI","EPA NEI",94527,"US Census County Intercensal Tables (CO-EST2020)",0.01
+2017,"county","27163","Washington","Industrial","Other","Small point source",24554.1658300259,"EPA NEI","EPA NEI",255717,"US Census County Intercensal Tables (CO-EST2020)",0.1
+2020,"county","27003","Anoka","Industrial","Other","Small point source",29619.146469778,"EPA NEI","EPA NEI",363887,"Decennial Census, Table P1",0.08
+2020,"county","27019","Carver","Industrial","Other","Small point source",26146.87857628,"EPA NEI","EPA NEI",106922,"Decennial Census, Table P1",0.24
+2020,"county","27025","Chisago","Industrial","Other","Small point source",11173.79444258,"EPA NEI","EPA NEI",56621,"Decennial Census, Table P1",0.2
+2020,"county","27037","Dakota","Industrial","Other","Small point source",0,"EPA NEI","EPA NEI",439882,"Decennial Census, Table P1",0
+2020,"county","27053","Hennepin","Industrial","Other","Small point source",154489.463782388,"EPA NEI","EPA NEI",1281565,"Decennial Census, Table P1",0.12
+2020,"county","55093","Pierce","Industrial","Other","Small point source",7342.75328556,"EPA NEI","EPA NEI",42212,"Decennial Census, Table P1",0.17
+2020,"county","27123","Ramsey","Industrial","Other","Small point source",369753.569672666,"EPA NEI","EPA NEI",552352,"Decennial Census, Table P1",0.67
+2020,"county","27139","Scott","Industrial","Other","Small point source",55930.211722064,"EPA NEI","EPA NEI",150928,"Decennial Census, Table P1",0.37
+2020,"county","27141","Sherburne","Industrial","Other","Small point source",0,"EPA NEI","EPA NEI",97183,"Decennial Census, Table P1",0
+2020,"county","55109","St. Croix","Industrial","Other","Small point source",6714.98144548,"EPA NEI","EPA NEI",93536,"Decennial Census, Table P1",0.07
+2020,"county","27163","Washington","Industrial","Other","Small point source",15697.7003228301,"EPA NEI","EPA NEI",267568,"Decennial Census, Table P1",0.06
 2005,"county","27003","Anoka","Nature","Sequestration","Grassland",-776.043065501259,"NLCD 2021","Various primary literature",319830,"US Census County Intercensal Tables (CO-EST00INT-01)",0
 2005,"county","27003","Anoka","Nature","Sequestration","Tree",-78524.4117366807,"NLCD 2021","Various primary literature",319830,"US Census County Intercensal Tables (CO-EST00INT-01)",-0.25
 2005,"county","27003","Anoka","Nature","Sequestration","Urban grassland",-16572.5190280976,"NLCD 2021","Various primary literature",319830,"US Census County Intercensal Tables (CO-EST00INT-01)",-0.05
