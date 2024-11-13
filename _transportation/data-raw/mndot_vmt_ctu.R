@@ -506,7 +506,12 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
                                                              "St ", "Saint "),
     ctu_name == "Mc Grath" ~ "McGrath",
     ctu_name == "Mc Gregor" ~ "McGregor",
-    ctu_name == "Elko-New Market" ~ "Elko New Market",
+    # note that "New Market" is included in VMT data for years 2000-2005
+    # "Elko" is included for years 2001-2006
+    # "Elko New Market" is included for years 2007-onward
+    ctu_name %in% c("Elko-New Market",
+                    "Elko",
+                    "New Market") ~ "Elko New Market",
     ctu_name %in% c("Marine On St Croix",
                     "Marine On Saint Croix")  ~ "Marine on Saint Croix",
     TRUE ~ ctu_name
@@ -587,7 +592,9 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
       "Sherburne",
       "Chisago"
     ), TRUE, FALSE)
-  )
+  ) %>% 
+  left_join(mndot_route_system,
+            by = "route_system")
 
 
 vmt_city_raw %>% 
