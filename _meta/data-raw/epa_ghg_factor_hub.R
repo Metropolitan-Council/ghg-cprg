@@ -636,9 +636,36 @@ epa_ghg_factor_hub <- list(
     )
 )
 
-# manual adjustment of eGRID MROW values -- 2021 Factor Hub used 2019 eGRID
-new_values <- c(995.8, 0.107, 0.015)
+# manual adjustment of eGRID MROW values -- 2021 Factor Hub used 2019 eGRID; add year to reference
+# need to adjust emissions code that applies these factors to 2021 activity data (and 2005!)
+new_values_2021 <- c(995.8, 0.107, 0.015)
 epa_ghg_factor_hub[[1]] <- epa_ghg_factor_hub[[1]] %>%
-  mutate(across(value, ~ replace(., 1:3, new_values)))
+  mutate(
+    across(
+      value,
+      ~ replace(., 1:3, new_values_2021)
+    ),
+    year = 2021,
+    Source = "EPA eGRID2021, January 2023"
+  )
+
+
+# manually add 2005 eGRID information (CH4 and N2O output emissions rates reported as 28 and 30.71 lb/GWh in 2005, which translate to .028 and .03071 lb/MWh respectively)
+eGRID_values_2005 <- c(1821.84, 0.028, 0.03071)
+
+# Extract/copy the three rows of 2021 data to use as a template for new values
+template_rows <- epa_ghg_factor_hub[[1]][1:3, ]
+
+# Create new rows for 2005 by updating year, source, and value; other columns remain the same as the 2021 values
+new_rows_2005 <- template_rows %>%
+  mutate(
+    value = c(1821.84, 0.028, 0.03071),
+    year = 2005,
+    Source = "EPA eGRID2005, December 2008"
+  )
+
+# Bind the new rows to the original data
+epa_ghg_factor_hub[[1]] <- bind_rows(epa_ghg_factor_hub[[1]], new_rows_2005)
 
 saveRDS(epa_ghg_factor_hub, "_meta/data/epa_ghg_factor_hub.RDS")
+

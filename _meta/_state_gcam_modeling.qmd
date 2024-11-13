@@ -1,0 +1,657 @@
+# MPCA GCAM modeling 
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+hookaddcap()
+```
+
+```{r merge-cprg-mpca-data}
+#| include: false
+
+cprg_county <- read_rds(file.path(here::here(),"_meta/data/cprg_county.RDS"))
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS")) 
+mpca_economy_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_economy_wide_gcam.RDS"))
+mpca_sector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_sector_gcam.RDS"))
+mpca_subsector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_subsector_gcam.RDS"))
+
+### match county emissions to mpca projections
+
+county_emissions <- county_emissions %>%
+ mutate(sector = case_when(
+    source == "Electricity" ~ "Electricity",
+    source %in% c("Natural gas","Propane","Kerosene") ~ "Building energy",
+    TRUE ~ sector
+  ))
+  
+# Create economy wide projections
+economy_projections <- county_emissions %>%
+  filter(year == 2005, sector != "Nature",
+         !geog_name %in% c("Chisago", "St. Croix", "Pierce","Sherburne")) %>%
+  cross_join(mpca_economy_projections %>% 
+               filter(emissions_year >= 2025,
+                      source_sink == "Emission") %>% 
+               select(emissions_year, scenario, proportion_of_2005)) %>% 
+  mutate(emissions_metric_tons_co2e = proportion_of_2005 * emissions_metric_tons_co2e) %>% 
+  group_by(emissions_year, sector, scenario) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  ungroup()
+
+economy_sequestration_projections <- county_emissions %>%
+  filter(year == 2005, sector == "Nature",
+         !geog_name %in% c("Chisago", "St. Croix", "Pierce","Sherburne")) %>%
+  cross_join(mpca_economy_projections %>% 
+               filter(emissions_year >= 2025,
+                      source_sink == "Sequestration") %>% 
+               select(emissions_year, scenario, proportion_of_2005)) %>% 
+  mutate(emissions_metric_tons_co2e = proportion_of_2005 * emissions_metric_tons_co2e) %>% 
+  group_by(emissions_year, sector, scenario) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  ungroup()
+
+economy_inventory_projections <- bind_rows(
+  county_emissions %>%
+    filter(year >=2005 & year <= 2021) %>% 
+   group_by(year, sector) %>% 
+    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+    rename(emissions_year = year) %>% 
+    ungroup() %>% 
+    right_join(
+    #fill in missing years
+    expand.grid(
+    emissions_year = seq(2005, 2021, by = 1),
+    sector = unique(county_emissions$sector)
+  )) %>% 
+    mutate(scenario = "Inventory"),
+  economy_projections %>% 
+    mutate(emissions_year = as.numeric(emissions_year)),
+  economy_sequestration_projections%>% 
+    mutate(emissions_year = as.numeric(emissions_year))
+) %>% 
+ group_by(sector) %>% 
+ mutate(emissions_metric_tons_co2e = imputeTS::na_kalman(emissions_metric_tons_co2e))
+
+
+## now do this by sector emissions
+
+unique(mpca_subsector_projections$subsector_mc)
+unique(county_emissions$category)
+
+county_emissions <- county_emissions %>% 
+  mutate(subsector_mc = case_when(
+    source != "Electricity" & category == "Residential energy" ~ "Residential Natural Gas",
+    source != "Electricity" & category == "Commercial energy" ~ "Commercial Natural Gas",
+    source != "Electricity" & category == "Industrial energy" ~ "Industrial Natural Gas",
+    source != "Electricity" & category == "Total energy" ~ "Natural Gas",
+    source == "Electricity" ~ "Electricity",
+    TRUE ~ category
+  ))
+
+mpca_subsector_projections_use <- mpca_subsector_projections %>% 
+               filter(emissions_year >= 2025,
+                      source_sink == "Emission",
+                      !grepl("not_inventoried", subsector_mc)) %>% 
+               mutate(subsector_mc = if_else(grepl("Natural Gas", subsector_mc),
+                                             "Natural Gas",
+                                             subsector_mc)) %>% 
+               group_by(emissions_year, scenario, subsector_mc) %>% 
+  summarize(proportion_of_2005 = mean(proportion_of_2005))
+
+subsector_projections <- county_emissions %>%
+  filter(year == 2005, sector != "Nature",
+         !geog_name %in% c("Chisago", "St. Croix", "Pierce","Sherburne")) %>%
+  left_join(., mpca_subsector_projections_use, 
+            by = "subsector_mc") %>% 
+  mutate(emissions_metric_tons_co2e = proportion_of_2005 * emissions_metric_tons_co2e) %>% 
+  group_by(emissions_year, sector, scenario) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  ungroup()
+
+subsector_inventory_projections <- bind_rows(
+  county_emissions %>%
+    filter(year >=2005 & year <= 2021) %>% 
+   group_by(year, sector) %>% 
+    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+    rename(emissions_year = year) %>% 
+    ungroup() %>% 
+    right_join(
+    #fill in missing years
+    expand.grid(
+    emissions_year = seq(2005, 2021, by = 1),
+    sector = unique(county_emissions$sector)
+  )) %>% 
+    mutate(scenario = "Inventory"),
+  subsector_projections %>% 
+    mutate(emissions_year = as.numeric(emissions_year))) %>% 
+ group_by(sector) %>% 
+ mutate(emissions_metric_tons_co2e = imputeTS::na_kalman(emissions_metric_tons_co2e))
+
+```
+
+## Introduction
+
+Natural systems are a critical component of capturing carbon from the atmosphere and sequestering it in biomass and terrestrial soils. Photosynthesis is the central mechanism of this process and vegetation is therefore the focal land cover classification for quantifying the potential for regions to both sequester and store carbon. Different ecosystems have varying capacities for carbon capture and this work focuses on five broad classifications: urban trees, urban grasslands (i.e. turf grass), forests, natural grasslands, and wetlands. The distinction between tree and grassland cover in developed areas (i.e. urban) is important as despite having similar sequestration rates, urban natural systems are generally understood to have smaller storage capacities. The preservation and restoration of natural systems will be a key tool in limiting atmospheric greenhouse gases.
+
+```{r fig-economy-downscale}
+#| fig-cap: "Economy wide MPCA downscale"
+#| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
+
+### can't currently get sequestration to plot as negative figure
+
+fig_economy_current_policies <- plot_ly(
+  source = "fig-economy-downscale",
+  data = economy_inventory_projections %>% 
+    filter(scenario %in% c("Inventory", "Current policies"),
+           sector != "Nature"),
+  x = ~emissions_year,
+  y = ~emissions_metric_tons_co2e,
+  color = ~sector, #
+  #colors = unlist(category_colors), # Directly map the colors to categories
+  type = "scatter",
+  mode = "lines", # No points or lines, just fill
+  stackgroup = "relative", # Fill to the next y value (stacking)
+  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~scenario # Pass category to hovertext
+) %>%
+  plotly_layout(
+    main_title = "Economy wide current policies downscale",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hovermode = "x unified", # Combine all hovertext under one hover
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+
+fig_economy_current_policies
+```
+
+```{r fig-economy-nz-downscale}
+#| fig-cap: "Economy wide MPCA downscale"
+#| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
+
+### can't currently get sequestration to plot as negative figure
+
+
+fig_economy_net_zero <- plot_ly(
+  source = "fig-economy-nz-downscale",
+  data = economy_inventory_projections %>% 
+    filter(scenario %in% c("Inventory", "Net-zero pathway"),
+           sector != "Nature"),
+  x = ~emissions_year,
+  y = ~emissions_metric_tons_co2e,
+  color = ~sector, #
+  #colors = unlist(category_colors), # Directly map the colors to categories
+  type = "scatter",
+  mode = "lines", # No points or lines, just fill
+  stackgroup = "relative", # Fill to the next y value (stacking)
+  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~scenario # Pass category to hovertext
+) %>%
+  plotly_layout(
+    main_title = "Economy wide net-zero downscale",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hovermode = "x unified", # Combine all hovertext under one hover
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_economy_net_zero
+```
+
+```{r fig-subsector-cp-downscale}
+#| fig-cap: "Economy wide MPCA downscale"
+#| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
+
+### can't currently get sequestration to plot as negative figure
+
+fig_subsector_current_policies <- plot_ly(
+  source = "fig-subsector-cp-downscale",
+  data = subsector_inventory_projections %>% 
+    filter(scenario %in% c("Inventory", "Current policies"),
+           sector != "Nature"),
+  x = ~emissions_year,
+  y = ~emissions_metric_tons_co2e,
+  color = ~sector, #
+  #colors = unlist(category_colors), # Directly map the colors to categories
+  type = "scatter",
+  mode = "lines", # No points or lines, just fill
+  stackgroup = "relative", # Fill to the next y value (stacking)
+  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~scenario # Pass category to hovertext
+) %>%
+  plotly_layout(
+    main_title = "Subsector net-zero downscale",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hovermode = "x unified", # Combine all hovertext under one hover
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_subsector_current_policies
+```
+
+
+```{r fig-subsector-nz-downscale}
+#| fig-cap: "Economy wide MPCA downscale"
+#| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
+
+### can't currently get sequestration to plot as negative figure
+
+
+fig_subsector_net_zero <- plot_ly(
+  source = "fig-subsector-nz-downscale",
+  data = subsector_inventory_projections %>% 
+    filter(scenario %in% c("Inventory", "Net-zero pathway"),
+           sector != "Nature"),
+  x = ~emissions_year,
+  y = ~emissions_metric_tons_co2e,
+  color = ~sector, #
+  #colors = unlist(category_colors), # Directly map the colors to categories
+  type = "scatter",
+  mode = "lines", # No points or lines, just fill
+  stackgroup = "relative", # Fill to the next y value (stacking)
+  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~scenario # Pass category to hovertext
+) %>%
+  plotly_layout(
+    main_title = "Subsector net-zero downscale",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hovermode = "x unified", # Combine all hovertext under one hover
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_subsector_net_zero
+```
+
+## Results
+
+There is considerable variation across counties in two key components that affect natural system carbon sequestration and stock potential: total area of green spaces and the ratio of 'natural' to 'urban' green spaces. Hennepin county has the highest sequestration potential due to a high proportion of urban trees and turf grass (urban grasslands) which have high potential for rapid carbon sequestration. However, counties with more acreage of green spaces in undeveloped areas, most notably St. Croix county, have a higher stock capacity. This dichotomy illustrates that different counties curation of natural spaces may play different roles. Highly developed areas may help offset carbon emissions be providing rapid sequestration sinks in urban greenery, whereas less developed counties can provide longer term carbon sinks in natural areas with a higher capacity to continue drawing down atmospheric carbon even if future emissions approach net zero. 
+
+Two important caveats to these results are that (1) carbon sequestration tends to slow as natural systems mature and (2) present day natural systems exist at some intermediate level of the illustrated carbon stock potential. The former means that these approximations could be higher or lower depending on the average age of natural systems in each county (e.g. time since agricultural abandonment). The latter means that the loss of these natural systems to development or habitat instruction means that not only would the region lose carbon sinks, but a substantial amount of the stored carbon will be transferred to the atmosphere, increasing atmospheric greenhouse gases.
+
+```{r fig-ns-county-sequestration}
+#| fig-cap: "2021 county natural system carbon sequestration potential"
+#| out-width: "95%"
+
+fig_ns_county_sequestration <- plot_ly(
+  type = "bar",
+  source = "fig-ns-county-sequestration",
+  data = county_emissions %>%
+    filter(category == "Sequestration"),
+  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
+  color = ~source,
+  colors = unlist(source_colors),
+  hovertemplate = ~ paste0(
+    geog_name, "<br>",
+    source, "<br>",
+    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county natural system sequestration",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_county_sequestration
+```
+
+{{< pagebreak >}}
+
+```{r fig-ns-county-stock}
+#| fig-cap: "2021 county natural system carbon stock potential"
+#| out-width: "95%"
+
+fig_ns_county_stock <- plot_ly(
+  type = "bar",
+  source = "fig-ns-county-sequestration",
+  data = carbon_stock,
+  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
+  color = ~source,
+  colors = unlist(source_colors),
+  hovertemplate = ~ paste0(
+    geog_name, "<br>",
+    "Natural Systems", "<br>",
+    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county natural system stock potential",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_county_stock
+```
+
+### Correlation with county area
+
+The expectation is that larger counties have higher carbon sequestration and storage capacities due to more acreage for green spaces; this is indeed observed.
+
+```{r fig-ns-county-sequestration-area}
+#| fig-cap: "2021 carbon stock by county area"
+#| out-width: "95%"
+
+sequestration_area <- left_join(
+  county_emissions %>%
+    filter(category == "Sequestration") %>%
+    group_by(geog_name) %>%
+    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
+  cprg_area,
+  by = c("geog_name" = "NAME")
+) %>%
+  mutate(seq_per_area = emissions_metric_tons_co2e / area_sq_km)
+
+fig_ns_sequestration_area <- plot_ly(
+  type = "scatter",
+  mode = "markers",
+  source = "fig-ns-county-sequestration-area",
+  data = sequestration_area,
+  y = ~emissions_metric_tons_co2e,
+  x = ~area_sq_km,
+  hovertemplate = ~ paste0(
+    geog_name, " County", "<br>",
+    "Area: ", scales::comma(area_sq_km), " square kilometers", "<br>",
+    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue,
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "County area and sequestration potential",
+    x_title = "Area km<sup>2",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_sequestration_area
+```
+
+
+```{r fig-ns-county-stock-area}
+#| fig-cap: "2021 carbon stock by county area"
+#| out-width: "95%"
+
+carbon_stock_area <- left_join(
+  carbon_stock %>%
+    group_by(geog_name) %>%
+    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
+  cprg_area,
+  by = c("geog_name" = "NAME")
+) %>%
+  mutate(stock_per_area = emissions_metric_tons_co2e / area_sq_km)
+
+fig_ns_stock_area <- plot_ly(
+  type = "scatter",
+  mode = "markers",
+  source = "fig-ns-county-stock-area",
+  data = carbon_stock_area,
+  y = ~emissions_metric_tons_co2e,
+  x = ~area_sq_km,
+  hovertemplate = ~ paste0(
+    geog_name, " County", "<br>",
+    "Area: ", scales::comma(area_sq_km), " square kilometers", "<br>",
+    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue,
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "County area and stock potential",
+    x_title = "Area km<sup>2",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_stock_area
+```
+
+### Regional parks
+
+``` {r park-carbon-data, include = FALSE}
+park_carbon <- readRDS(file.path(here::here(), "_nature/data/park_landcover_sequestration_2021.RDS"))
+parks <- readRDS(file.path(here::here(), "_nature/data/regional_parks_shape.RDS"))
+
+
+cprg_7 <- cprg_county %>% filter(!NAME %in% c("Sherburne", "Chisago", "St. Croix", "Pierce"))
+county_seq_7 <- county_emissions %>% filter(geog_name %in% cprg_7$NAME, sector == "Nature")
+county_stock_7 <- carbon_stock_area %>% filter(geog_name %in% cprg_7$NAME)
+
+
+park_area_total <- sum(expanse(parks, unit = "km")) # 307.684
+cprg_7_area <- sum(expanse(cprg_7, unit = "km")) # 7711.262
+park_area_ratio <- sum(expanse(parks, unit = "km")) / sum(expanse(cprg_7, unit = "km")) # 3.99%
+
+park_area <- data.frame(agency = parks$AgencyMana, area = expanse(parks, unit = "km")) %>%
+  group_by(agency) %>%
+  summarize(area = sum(area))
+
+park_seq_ratio <- sum(park_carbon$sequestration_potential) / sum(county_seq_7$emissions_metric_tons_co2e) # 5.56%
+park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_stock_7$emissions_metric_tons_co2e) # 7.19%
+
+
+park_carbon_agg <- park_carbon %>%
+  filter(!is.na(park)) %>%
+  group_by(county) %>%
+  summarize(
+    area = sum(area),
+    sequestration_potential = sum(sequestration_potential),
+    stock_potential = sum(stock_potential)
+  ) %>%
+  mutate(seq_area = sequestration_potential / area, stock_area = stock_potential / area)
+
+park_county_comp <- bind_rows(
+  bind_rows(
+    pivot_longer(park_carbon_agg %>% select(county, seq_area, stock_area),
+      cols = c(seq_area, stock_area)
+    ) %>% mutate(geography = "Regional Parks"),
+    sequestration_area %>% dplyr::select(geog_name, seq_per_area) %>%
+      filter(geog_name %in% park_carbon_agg$county) %>%
+      mutate(name = "seq_area", geography = "County") %>%
+      rename(value = "seq_per_area", county = "geog_name")
+  ),
+  carbon_stock_area %>% dplyr::select(geog_name, stock_per_area) %>%
+    filter(geog_name %in% park_carbon_agg$county) %>%
+    mutate(name = "stock_area", geography = "County") %>%
+    rename(value = "stock_per_area", county = "geog_name")
+)
+```
+
+Parks play an important role in climate change resilience by protecting existing natural systems and acquiring lands for natural system restoration. The regional park system of the seven county Twin Cities region provides an excellent example of this. The following graphs show how regional parks, on a per area basis, are more efficient carbon sinks than the counties they reside in. For both sequestration and stock potential, this is in large part due to a much small proportion of non-green spaces (e.g.. impervious surfaces, agricultural lands), but stock potential in particular has a higher capacity due to a larger proportion of natural green spaces as opposed to urban green spaces. Regional parks represent `r scales::percent(park_area_ratio, accuracy = 0.1)` of the total land area of the seven county region, but `r scales::percent(park_seq_ratio, accuracy = 0.1)` of its carbon sequestration potential and `r scales::percent(park_stock_ratio, accuracy = 0.1)` of its carbon stock potential.
+
+
+```{r fig-park-county-comp}
+#| fig-cap: "2021 comparison of carbon sequestration per square kilometer in counties and regional parks"
+#| out-width: "95%"
+
+
+park_county_plot <- plot_ly(
+  type = "bar",
+  source = "fig-park-county-comp",
+  data = park_county_comp %>% filter(name == "seq_area"),
+  y = ~value,
+  x = ~county,
+  color = ~geography,
+  colors = c("lightgreen", "darkgreen"),
+  hovertemplate = ~ paste0(
+    geography, "<br>",
+    "Natural Systems", "<br>",
+    round(value, digits = 2), " metric tons CO<sub>2</sub>e per square kilometers", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county vs park natural system sequestration potential",
+    y_title = "Metric tons CO<sub>2</sub>e / km<sup>2</sup>",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "group",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+park_county_plot
+```
+
+
+
+```{r fig-park-county-stock-comp}
+#| fig-cap: "2021 comparison of carbon stock per square kilometer in counties and regional parks"
+#| out-width: "95%"
+
+park_county_plot_stock <- plot_ly(
+  type = "bar",
+  source = "fig-park-county-stock-comp",
+  data = park_county_comp %>% filter(name == "stock_area"),
+  y = ~value,
+  x = ~county,
+  color = ~geography,
+  colors = c("lightgreen", "darkgreen"),
+  hovertemplate = ~ paste0(
+    geography, "<br>",
+    "Natural Systems", "<br>",
+    round(value / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e per square kilometers", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county vs park natural system stock potential",
+    y_title = "Metric tons CO<sub>2</sub>e / km<sup>2</sup>",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "group",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+park_county_plot_stock
+```
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+
+{{< pagebreak >}}

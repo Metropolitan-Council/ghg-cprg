@@ -34,9 +34,24 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
     factor_source
   )
 
+aviation_emissions <- readRDS("_transportation/data/aviation_emissions.RDS") %>%
+  mutate(
+    sector = "Transportation",
+    geog_level = "county",
+    geog_name = geog_name,
+    category = "Aviation",
+    source = "Aviation",
+    data_source = data_source,
+    factor_source = data_source,
+    emissions_metric_tons_co2e = value_emissions,
+    year = inventory_year
+  ) %>%
+  select(names(transportation_emissions))
+
+
 # waste -----
 ## wastewater ----
-ww_emissions <- readRDS("_waste/data/epa_county_wastewater.RDS") %>%
+ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
   mutate(
     sector = "Waste",
     geog_level = "county",
@@ -45,30 +60,30 @@ ww_emissions <- readRDS("_waste/data/epa_county_wastewater.RDS") %>%
     source = "Wastewater",
     data_source = "EPA State GHG Inventory and Projection Tool",
     factor_source = data_source,
-    emissions_metric_tons_co2e = epa_co2e,
-    year = 2021
+    emissions_metric_tons_co2e = co2e,
+    year = as.numeric(year)
   ) %>%
   select(names(transportation_emissions))
 
 
 ## solid waste -----
-solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
+solid_waste <- readRDS("_waste/data/mn_sw_emissions_co2e.RDS") %>%
   ungroup() %>%
   mutate(
     sector = "Waste",
     geog_level = "county",
-    geog_name = county,
+    geog_name = geog_name,
     category = "Solid waste",
     source = str_to_sentence(source),
-    data_source,
-    factor_source = "EPA GHG Emission Factors Hub (2021)"
+    data_source = "MPCA SCORE",
+    factor_source = "EPA GHG Emission Factors Hub (2021)",
+    year = as.numeric(year)
   ) %>%
   select(names(transportation_emissions))
 
 
 
 # energy -----
-
 electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_proportioned.RDS")
 
 ## electricity ----
@@ -141,7 +156,7 @@ agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds"
 
 ## natural systems ----
 
-natural_systems_sequestration <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
+natural_systems_sequestration_esa <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
   mutate(
     sector = "Nature",
     geog_level = "county",
@@ -152,9 +167,27 @@ natural_systems_sequestration <- readRDS("_nature/data/county_landcover_sequestr
     factor_source = "Various primary literature",
     year = 2021,
     emissions_metric_tons_co2e = sequestration_potential,
+    year = as.numeric(year)
   ) %>%
   ungroup() %>%
   select(names(transportation_emissions))
+
+natural_systems_sequestration_nlcd <- readRDS("_nature/data/nlcd_county_landcover_sequestration_2001_2021.RDS") %>%
+  filter(year >= 2005) %>% 
+  mutate(
+    sector = "Nature",
+    geog_level = "county",
+    geog_name = county,
+    category = "Sequestration",
+    source = stringr::str_to_sentence(str_replace_all(land_cover_type, "_", " ")),
+    data_source = "NLCD 2021",
+    factor_source = "Various primary literature",
+    emissions_metric_tons_co2e = sequestration_potential,
+    year = as.numeric(year)
+  ) %>%
+  ungroup() %>%
+  select(names(transportation_emissions))
+
 
 natural_systems_stock <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
   mutate(
@@ -171,17 +204,19 @@ natural_systems_stock <- readRDS("_nature/data/county_landcover_sequestration_20
   ungroup() %>%
   select(names(transportation_emissions))
 
+
 # combine and write metadata----
 
 emissions_all <- bind_rows(
   transportation_emissions,
+  aviation_emissions,
   propane_kerosene_emissions,
   electric_emissions,
   natural_gas_emissions,
   ww_emissions,
   solid_waste,
   agriculture_emissions,
-  natural_systems_sequestration,
+  natural_systems_sequestration_nlcd,
   natural_systems_stock
 ) %>%
   left_join(
@@ -197,6 +232,7 @@ emissions_all <- bind_rows(
         "Gasoline fueled vehicles",
         "Diesel fueled vehicles",
         "Other fueled vehicles",
+        "Aviation",
         # waste levels
         "Landfill",
         "Waste to energy",
@@ -209,13 +245,13 @@ emissions_all <- bind_rows(
         "Propane",
         "Kerosene",
         # agriculture levels
-        "Enteric_fermentation",
-        "Manure_management",
-        "Direct_manure_soil_emissions",
-        "Indirect_manure_runoff_emissions",
-        "Crop_residue_emissions",
-        "Crop_fertilizer_emissions",
-        "Runoff_fertilizer_emissions",
+        "Enteric fermentation",
+        "Manure management",
+        "Direct manure soil emissions",
+        "Indirect manure runoff emissions",
+        "Soil residue emissions",
+        "Onsite fertilizer emissions",
+        "Runoff fertilizer emissions",
         # nature levels
         "Urban grassland",
         "Urban tree",
@@ -237,6 +273,7 @@ emissions_all <- bind_rows(
         "Buses",
         "Medium-duty vehicles",
         "Trucks",
+        "Aviation",
         "Wastewater",
         "Solid waste",
         "Livestock",

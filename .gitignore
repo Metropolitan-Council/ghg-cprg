@@ -1006,4 +1006,5 @@ _meta/data-raw/epa/us_ghgi/
 _transportation/data-raw/~$_source_method_compare.xlsx
 
 _transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2024-0812-144242.csv
-_agriculture/data-raw/ag-module.xlsx
+_meta/data-raw/mpca_ghg_inventory.csv
+_meta/data-raw/Minnesota GCAM Modeling Data.xlsx
