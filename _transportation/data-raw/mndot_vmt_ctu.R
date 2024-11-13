@@ -668,12 +668,12 @@ reliable_ctu <-
   # ensure we have ctus with sampled local routes
   filter(ctu_name %in% ctu_sampled$ctu_name)
 
-# summarize by year and county only ------
+# summarize ------
 # removing the route system distinction
 vmt_city_raw_summary <-
-  vmt_city_raw_route_system %>%
-  filter(route_system_id %in% c("01", "02", "03", "04", "05",
-                                "06", "07")) %>%
+  vmt_city_raw %>%
+  filter(cprg_area == TRUE,
+         ctu_name %in% reliable_ctu$ctu_name) %>% 
   group_by(year, county_name, ctu_name, cprg_area) %>%
   summarize(
     daily_vmt = sum(daily_vmt, na.rm = TRUE),
@@ -684,8 +684,9 @@ vmt_city_raw_summary <-
   ungroup() %>% 
   filter(county_name %in% cprg_county$county_name)
 
-vmt_city_alone <- vmt_city_raw_route_system %>% 
-  filter(cprg_area == TRUE) %>% 
+vmt_city_alone <- vmt_city_raw %>% 
+  filter(cprg_area == TRUE,
+         ctu_name %in% reliable_ctu$ctu_name) %>% 
   group_by(year, ctu_name) %>% 
   summarize(
     daily_vmt = sum(daily_vmt, na.rm = TRUE),
@@ -694,7 +695,7 @@ vmt_city_alone <- vmt_city_raw_route_system %>%
     .groups = "keep"
   ) 
 
-vmt_county_alone <- vmt_city_raw_route_system %>% 
+vmt_county_alone <- vmt_city_raw %>% 
   filter(cprg_area == TRUE) %>% 
   group_by(county_name, year) %>% 
   summarize(
@@ -708,7 +709,10 @@ vmt_county_alone <- vmt_city_raw_route_system %>%
 vmt_county_alone %>% 
   left_join(mndot_vmt_county,
             by = c("year", "county_name" = "county"),
-            suffix = c(".city", ".county"))
+            suffix = c(".city", ".county")) %>% 
+  mutate(daily_diff = round(daily_vmt.city - daily_vmt.county),
+         annual_diff = round(annual_vmt.city - annual_vmt.county),
+         centerline_diff = round(centerline_miles.city - centerline_miles.county)) %>% View
 
 
 # merge with ctu population 
@@ -735,12 +739,7 @@ vmt_ctu_pop <- ctu_population %>%
   )
 
 
-ctu_n_years <- vmt_city_raw_summary %>% 
-  select(ctu_name, year) %>% 
-  unique() %>% 
-  group_by(ctu_name) %>% 
-  count(name = "n_years") %>% 
-  arrange(n_years)
+
 
 # basic plotting
 # note that note very CTU has data for the full time series
@@ -823,12 +822,7 @@ vmt_city_raw %>%
 # TODO final save
 # TODO testing!
 # interpolate 2015 data -----
-
-interp_ctus <- ctu_n_years %>% 
-  filter(n_years >= 22)  
-
 vmt_interp <- vmt_city_alone %>%
-  filter(ctu_name %in% interp_ctus$ctu_name) %>% 
   # first create an NA 2015 dataset
   ungroup() %>%
   select(ctu_name) %>%
