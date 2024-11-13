@@ -55,7 +55,7 @@ ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
   mutate(
     sector = "Waste",
     geog_level = "county",
-    geog_name = NAME,
+    geog_name = county_name ,
     category = "Wastewater",
     source = "Wastewater",
     data_source = "EPA State GHG Inventory and Projection Tool",
@@ -97,7 +97,7 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
     sector = "Energy",
     geog_level = "county",
     geog_name = county,
-    category = paste0(category, " energy"),
+    category = paste0(category, " electricity"),
     source = source,
     data_source = "Individual electric utilities, NREL SLOPE",
     factor_source = "eGRID MROW"
@@ -116,7 +116,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
     sector = "Energy",
     geog_level = "county",
     geog_name = county,
-    category = paste0(category, " energy"),
+    category = paste0(category, " natural gas"),
     source = source,
     data_source = "Individual natural gas utilities, NREL SLOPE (2021)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
@@ -286,10 +286,14 @@ emissions_all <- bind_rows(
     category = factor(
       category,
       c(
-        "Residential energy",
-        "Commercial energy",
-        "Industrial energy",
-        "Total energy",
+        "Residential electricity",
+        "Commercial electricity",
+        "Industrial electricity",
+        "Total electricity",
+        "Residential natural gas",
+        "Commercial natural gas",
+        "Industrial natural gas",
+        "Total natural gas",
         "Liquid stationary fuels",
         "Passenger vehicles",
         "Buses",
