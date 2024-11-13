@@ -13,9 +13,9 @@ if (file.exists("_transportation/data-raw/mndot/county_route_system/18_crs.xlsx"
 
 # load -----
 # read county level data and make column names consistent
-dat_ls <- list()
+county_crs <- list()
 
-dat_ls[["2001"]] <- readxl::read_excel(
+county_crs[["2001"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/01_crs.xls",
   sheet = 2,
   col_types = c(
@@ -38,7 +38,7 @@ dat_ls[["2001"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2002"]] <- readxl::read_excel(
+county_crs[["2002"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/02_crs.xls",
   sheet = 2,
   col_types = c(
@@ -61,7 +61,7 @@ dat_ls[["2002"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2003"]] <- readxl::read_excel(
+county_crs[["2003"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/03_crs.xls",
   sheet = 2,
   col_types = c(
@@ -84,7 +84,7 @@ dat_ls[["2003"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2004"]] <- readxl::read_excel(
+county_crs[["2004"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/04_crs.xls",
   sheet = 2,
   col_types = c(
@@ -107,7 +107,7 @@ dat_ls[["2004"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2005"]] <- readxl::read_excel(
+county_crs[["2005"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/05_crs.xls",
   sheet = 2,
   col_types = c(
@@ -130,7 +130,7 @@ dat_ls[["2005"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2006"]] <- readxl::read_excel(
+county_crs[["2006"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/06_crs.xls",
   sheet = 2,
   col_types = c(
@@ -153,7 +153,7 @@ dat_ls[["2006"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2007"]] <- readxl::read_excel(
+county_crs[["2007"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/07_crs.xls",
   sheet = 2,
   col_types = c(
@@ -176,7 +176,7 @@ dat_ls[["2007"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2008"]] <- readxl::read_excel(
+county_crs[["2008"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/08_crs.xls",
   sheet = 2,
   col_types = c(
@@ -198,7 +198,7 @@ dat_ls[["2008"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2009"]] <- readxl::read_excel(
+county_crs[["2009"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/09_crs.xls",
   sheet = 2,
   col_types = c(
@@ -220,7 +220,7 @@ dat_ls[["2009"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2010"]] <- readxl::read_excel(
+county_crs[["2010"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/10_crs.xls",
   sheet = 2,
   col_types = c(
@@ -242,7 +242,7 @@ dat_ls[["2010"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2011"]] <- readxl::read_excel(
+county_crs[["2011"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/11_crs.xlsx",
   sheet = 2,
   col_types = c(
@@ -264,7 +264,7 @@ dat_ls[["2011"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2012"]] <- readxl::read_excel(
+county_crs[["2012"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/12_crs.xlsx",
   sheet = 1,
   col_types = c(
@@ -291,7 +291,7 @@ dat_ls[["2012"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2013"]] <- readxl::read_excel(
+county_crs[["2013"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/13_crs.xlsx",
   sheet = 2,
   col_types = c(
@@ -320,7 +320,7 @@ dat_ls[["2013"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2014"]] <- readxl::read_excel(
+county_crs[["2014"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/14_crs.xlsx",
   sheet = 2,
   col_types = c(
@@ -349,7 +349,7 @@ dat_ls[["2014"]] <- readxl::read_excel(
 
 
 
-dat_ls[["2016"]] <- readxl::read_excel(
+county_crs[["2016"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/16_crs.xlsx",
   sheet = 2,
   col_types = c(
@@ -375,7 +375,7 @@ dat_ls[["2016"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2017"]] <- readxl::read_excel(
+county_crs[["2017"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/17_crs.xlsx",
   sheet = 2,
   col_types = c(
@@ -402,7 +402,7 @@ dat_ls[["2017"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2018"]] <- readxl::read_excel(
+county_crs[["2018"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/18_crs.xlsx",
   sheet = 2,
   col_types = c(
@@ -428,7 +428,7 @@ dat_ls[["2018"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2019"]] <- readxl::read_excel(
+county_crs[["2019"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/19_crs.xlsx",
   sheet = 1,
   skip = 2
@@ -442,7 +442,7 @@ dat_ls[["2019"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2020"]] <- readxl::read_excel(
+county_crs[["2020"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/20_crs.xlsx",
   sheet = 1,
   skip = 1
@@ -450,7 +450,7 @@ dat_ls[["2020"]] <- readxl::read_excel(
   janitor::clean_names()
 
 
-dat_ls[["2021"]] <- readxl::read_excel(
+county_crs[["2021"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/21_crs.xlsx",
   sheet = 2,
   skip = 2
@@ -458,14 +458,14 @@ dat_ls[["2021"]] <- readxl::read_excel(
   janitor::clean_names()
 
 
-dat_ls[["2022"]] <- readxl::read_excel(
+county_crs[["2022"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/22_crs.xlsx",
   sheet = 2,
   skip = 2
 ) %>%
   janitor::clean_names()
 
-dat_ls[["2023"]] <- readxl::read_excel(
+county_crs[["2023"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/23_crs.xlsx",
   sheet = 2,
   skip = 2
@@ -475,9 +475,9 @@ dat_ls[["2023"]] <- readxl::read_excel(
 # compile ------
 
 # bind all datasets together
-vmt_county_raw <- data.table::rbindlist(dat_ls,
-  fill = TRUE,
-  idcol = "year"
+vmt_county_raw <- data.table::rbindlist(county_crs,
+                                        fill = TRUE,
+                                        idcol = "year"
 ) %>%
   # remove extra columns
   select(-percent_sampled, -x100_percent_due_to_rounding) %>%
@@ -517,7 +517,7 @@ vmt_county_raw_route_system <- vmt_county_raw %>%
             by = "route_system")
 
 # remove from environment
-rm(route_system_reference, route_system_year_all, dat_ls)
+# rm(county_crs)
 
 # summarize by year and county only
 # removing the route system distinction

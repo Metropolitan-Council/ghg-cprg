@@ -30,9 +30,9 @@ ctu_nov <- c("Coon Rapids",
 
 # load -----
 # read city level data and make column names consistent
-dat_ls <- list()
+city_ccr <- list()
 
-dat_ls[["2001"]] <- readxl::read_excel(
+city_ccr[["2001"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/01_ccr.xls",
   sheet = 2,
   col_types = c(
@@ -56,7 +56,7 @@ dat_ls[["2001"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2002"]] <- readxl::read_excel(
+city_ccr[["2002"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/02_ccr.xls",
   sheet = 2,
   col_types = c(
@@ -80,7 +80,7 @@ dat_ls[["2002"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2003"]] <- readxl::read_excel(
+city_ccr[["2003"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/03_ccr.xls",
   sheet = 2,
   col_types = c(
@@ -104,7 +104,7 @@ dat_ls[["2003"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2004"]] <- readxl::read_excel(
+city_ccr[["2004"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/04_ccr.xls",
   sheet = 2,
   col_types = c(
@@ -128,7 +128,7 @@ dat_ls[["2004"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2005"]] <- readxl::read_excel(
+city_ccr[["2005"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/05_ccr.xls",
   sheet = 2,
   col_types = c(
@@ -152,7 +152,7 @@ dat_ls[["2005"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2006"]] <- readxl::read_excel(
+city_ccr[["2006"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/06_ccr.xls",
   sheet = 2,
   col_types = c(
@@ -176,7 +176,7 @@ dat_ls[["2006"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2007"]] <- readxl::read_excel(
+city_ccr[["2007"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/07_ccr.xls",
   sheet = 2,
   col_types = c(
@@ -200,7 +200,7 @@ dat_ls[["2007"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2008"]] <- readxl::read_excel(
+city_ccr[["2008"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/08_ccr.xls",
   sheet = 2,
   col_types = c(
@@ -223,7 +223,7 @@ dat_ls[["2008"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2009"]] <- readxl::read_excel(
+city_ccr[["2009"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/09_ccr.xls",
   sheet = 2,
   col_types = c(
@@ -245,7 +245,7 @@ dat_ls[["2009"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2010"]] <- readxl::read_excel(
+city_ccr[["2010"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/10_ccr.xls",
   sheet = 2,
   col_types = c(
@@ -268,7 +268,7 @@ dat_ls[["2010"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2011"]] <- readxl::read_excel(
+city_ccr[["2011"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/11_ccr.xlsx",
   sheet = 2,
   col_types = c(
@@ -295,7 +295,7 @@ dat_ls[["2011"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2012"]] <- readxl::read_excel(
+city_ccr[["2012"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/12_ccr.xlsx",
   sheet = 2,
   col_types = c(
@@ -318,7 +318,7 @@ dat_ls[["2012"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2013"]] <- readxl::read_excel(
+city_ccr[["2013"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/13_ccr.xlsx",
   sheet = 2,
   col_types = c(
@@ -344,7 +344,7 @@ dat_ls[["2013"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2014"]] <- readxl::read_excel(
+city_ccr[["2014"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/14_ccr.xlsx",
   sheet = 2,
   col_types = c(
@@ -370,7 +370,7 @@ dat_ls[["2014"]] <- readxl::read_excel(
 
 
 
-dat_ls[["2016"]] <- readxl::read_excel(
+city_ccr[["2016"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/16_ccr.xlsx",
   sheet = 2,
   col_types = c(
@@ -391,7 +391,7 @@ dat_ls[["2016"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2017"]] <- readxl::read_excel(
+city_ccr[["2017"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/17_ccr.xlsx",
   sheet = 2,
   col_types = c(
@@ -413,7 +413,7 @@ dat_ls[["2017"]] <- readxl::read_excel(
   )
 
 
-dat_ls[["2018"]] <- readxl::read_excel(
+city_ccr[["2018"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/18_ccr.xlsx",
   sheet = 2,
   col_types = c(
@@ -434,7 +434,7 @@ dat_ls[["2018"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
-dat_ls[["2019"]] <- readxl::read_excel(
+city_ccr[["2019"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/19_ccr.xlsx",
   sheet = 1,
   skip = 2
@@ -444,11 +444,11 @@ dat_ls[["2019"]] <- readxl::read_excel(
   rename(route_system = route_system) %>%
   rename(
     daily_vmt = daily_average_vehicle_miles,
-    annual_vmt = annual_total_vehicle_miles
+    annual_vmt = annual_total_vehicle_miles,
   )
 
 
-dat_ls[["2020"]] <- readxl::read_excel(
+city_ccr[["2020"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/20_ccr.xlsx",
   sheet = 1,
   skip = 2
@@ -456,7 +456,7 @@ dat_ls[["2020"]] <- readxl::read_excel(
   janitor::clean_names()
 
 
-dat_ls[["2021"]] <- readxl::read_excel(
+city_ccr[["2021"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/21_ccr.xlsx",
   sheet = 2,
   skip = 2
@@ -464,14 +464,14 @@ dat_ls[["2021"]] <- readxl::read_excel(
   janitor::clean_names()
 
 
-dat_ls[["2022"]] <- readxl::read_excel(
+city_ccr[["2022"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/22_ccr.xlsx",
   sheet = 2,
   skip = 2
 ) %>%
   janitor::clean_names()
 
-dat_ls[["2023"]] <- readxl::read_excel(
+city_ccr[["2023"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/23_ccr.xlsx",
   sheet = 2,
   skip = 2
@@ -481,7 +481,7 @@ dat_ls[["2023"]] <- readxl::read_excel(
 # compile ------
 
 # bind all datasets together
-vmt_city_raw <- data.table::rbindlist(dat_ls,
+vmt_city_raw <- data.table::rbindlist(city_ccr,
                                       fill = TRUE,
                                       idcol = "year"
 ) %>%
