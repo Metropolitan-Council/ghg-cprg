@@ -94,7 +94,7 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
   filter((year == 2005 & category == "Total") |
     (year == 2021 & category != "Total")) %>%
   mutate(
-    sector = "Energy",
+    sector = "Electricity",
     geog_level = "county",
     geog_name = county,
     category = paste0(category, " electricity"),
@@ -113,7 +113,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   filter((year == 2005 & category == "Total") |
     (year == 2021 & category != "Total")) %>%
   mutate(
-    sector = "Energy",
+    sector = "Building energy",
     geog_level = "county",
     geog_name = county,
     category = paste0(category, " natural gas"),
@@ -127,7 +127,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
 
 propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
   mutate(
-    sector = "Energy",
+    sector = "Building energy",
     geog_level = "county",
     geog_name = NAME,
     category = "Liquid stationary fuels",
