@@ -597,17 +597,76 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
             by = "route_system")
 
 
-vmt_city_raw %>% 
-  filter(cprg_area ==  TRUE) %>% 
-  plot_ly(
-    type = "histogram",
-    x = ~percent_sampled,
-    color = ~county_name
-  )
+# find reliable cities ----- 
+# CTUs are reliable if they have
+# - a full time series from 2001 to 2023
+# - a minimum percent sample across route systems
 
-vmt_city_raw_route_system <- vmt_city_raw %>% 
-  left_join(mndot_route_system,
-            by = "route_system")
+# find the ctus that have the full time series
+# about 156  
+
+ctu_n_years <- vmt_city_raw %>% 
+  filter(cprg_area == TRUE) %>% 
+  select(ctu_name, year) %>% 
+  unique() %>% 
+  group_by(ctu_name) %>% 
+  count(name = "n_years") %>% 
+  arrange(n_years) %>% 
+  ungroup() %>% 
+  # filter to only CTUs that have all years of data
+  filter(n_years == max(n_years))
+
+# we only have % sampled for years 2019 onward
+# A percent sampled of 0 indicates that there has 
+# never been a submitted count for the 
+# given route system in the CTU.
+# This indicates that the reported values are default values.
+# Default values will not respond to actual changes in VMT, unlike 
+# Though the defaults take into account things like rural/urban,
+# they are standardized values that have not been regularly updated 
+# (per conversations with MnDOT staff)
+
+# A percent sampled greater than 0 indicates that there has been
+# a count/sample for the given route system at some point. 
+
+# There is generally no issue with the trunk highway system,
+# but the lower level systems are more likely to have default values
+# or to not be sampled at all
+
+# overall mean
+mean(vmt_city_raw$percent_sampled, na.rm = T) 
+
+ctu_pct_sampled_route <- vmt_city_raw %>% 
+  filter(cprg_area == TRUE,
+         !is.na(centerline_miles),
+         !is.na(percent_sampled)) %>% 
+  # left_join(ctu_centerline_miles) %>% 
+  group_by(ctu_name, route_system_level) %>% 
+  summarize(percent_sampled = round(mean(percent_sampled), 2),
+            centerline_miles = sum(centerline_miles),
+            centerline_weight = sum(centerline_miles)/n(),
+            min_sampled = min(percent_sampled)) %>% 
+  group_by(ctu_name) %>% 
+  mutate(ctu_mean = weighted.mean(percent_sampled, centerline_miles))
+
+# find CTUs where local systems have a 
+# minimum sample greater than 0
+# indicating that there is some submitted count data
+ctu_sampled <- ctu_pct_sampled_route %>% 
+  filter(route_system_level == "Local systems",
+         min_sampled > 0) %>% 
+  select(ctu_name) %>% 
+  unique()
+
+reliable_ctu <- 
+  vmt_city_raw %>% 
+  filter(cprg_area == TRUE) %>% 
+  select(ctu_name) %>% 
+  unique() %>% 
+  # ensure we have a full time series
+  filter(ctu_name %in% ctu_n_years$ctu_name) %>% 
+  # ensure we have ctus with sampled local routes
+  filter(ctu_name %in% ctu_sampled$ctu_name)
 
 # summarize by year and county only ------
 # removing the route system distinction
