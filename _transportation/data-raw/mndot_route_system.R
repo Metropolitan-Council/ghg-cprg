@@ -108,7 +108,8 @@ route_system_year_all <- vmt_county_raw %>%
   )) %>%
   left_join(route_system_reference,
             by = c("route_system_id")
-  )
+  ) %>% 
+  ungroup()
 
 saveRDS(route_system_year_all, "_transportation/data-raw/mndot/route_system_county.RDS")
 
@@ -121,6 +122,11 @@ mndot_route_system <- bind_rows(route_system_county,
           route_system_ctu) %>% 
   mutate(route_system_desc = stringr::str_trim(route_system_desc)) %>% 
   select(-year) %>% 
-  unique()
+  unique() %>% 
+  mutate(route_system_level = case_when(
+    route_system_id %in% c(paste0("0", 1:7), "52", "32", "53") ~ "Trunk highway and county systems",
+    TRUE ~ "Local systems"
+  ))
+
 
 saveRDS(mndot_route_system,  "_transportation/data-raw/mndot/mndot_route_system.RDS")
