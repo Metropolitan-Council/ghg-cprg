@@ -480,7 +480,7 @@ vmt_county_raw <- data.table::rbindlist(county_crs,
                                         idcol = "year"
 ) %>%
   # remove extra columns
-  select(-percent_sampled, -x100_percent_due_to_rounding) %>%
+  select(-x100_percent_due_to_rounding) %>%
   # remove any grand total rows
   filter(route_system != "Grand Totals") %>%
   mutate(
@@ -523,6 +523,8 @@ vmt_county_raw_route_system <- vmt_county_raw %>%
 # removing the route system distinction
 vmt_county_raw_summary <-
   vmt_county_raw_route_system %>%
+  # only include the major categories
+  # filter(route_system_level == "Trunk highway and county systems") %>%
   group_by(year, county, cprg_area) %>%
   summarize(
     daily_vmt = sum(daily_vmt),
@@ -580,7 +582,8 @@ vmt_county <- vmt_county_raw_interp %>%
     annual_vmt = sum(annual_vmt),
     centerline_miles = sum(centerline_miles),
     .groups = "keep"
-  )
+  ) %>% 
+  ungroup()
 
 
 saveRDS(vmt_county, "_transportation/data-raw/mndot/mndot_vmt_county.RDS")
