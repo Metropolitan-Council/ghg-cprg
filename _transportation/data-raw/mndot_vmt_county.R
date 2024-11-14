@@ -523,8 +523,6 @@ vmt_county_raw_route_system <- vmt_county_raw %>%
 # removing the route system distinction
 vmt_county_raw_summary <-
   vmt_county_raw_route_system %>%
-  # only include the major categories
-  # filter(route_system_level == "Trunk highway and county systems") %>%
   group_by(year, county, cprg_area) %>%
   summarize(
     daily_vmt = sum(daily_vmt),
