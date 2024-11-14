@@ -499,8 +499,7 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
 # - a minimum percent sample across route systems
 
 # find the ctus that have the full time series
-# about 156  
-
+# about 157 CTUs
 ctu_n_years <- vmt_city_raw %>% 
   filter(cprg_area == TRUE) %>% 
   select(ctu_name, year) %>% 
@@ -512,13 +511,11 @@ ctu_n_years <- vmt_city_raw %>%
   # filter to only CTUs that have all years of data
   filter(n_years == max(n_years))
 
-# we only have % sampled for years 2019 onward
-# A percent sampled of 0 indicates that there has 
-# never been a submitted count for the 
-# given route system in the CTU.
+# we only have % sampled for years 2017 onward
+# A percent sampled of 0 indicates that there has  never been a submitted count for the  given route system in the CTU.
 # This indicates that the reported values are default values.
-# Default values will not respond to actual changes in VMT, unlike 
-# Though the defaults take into account things like rural/urban,
+# Default values will not respond to actual changes in VMT, unlike sampled data.
+# Though the defaults take into account things like rural/urban and route system,
 # they are standardized values that have not been regularly updated 
 # (per conversations with MnDOT staff)
 
@@ -532,26 +529,49 @@ ctu_n_years <- vmt_city_raw %>%
 # overall mean
 mean(vmt_city_raw$percent_sampled, na.rm = T) 
 
-ctu_pct_sampled_route <- vmt_city_raw %>% 
+
+# which route systems have never been sampled in our region?
+routes_never_sampled <- vmt_city_raw %>%
   filter(cprg_area == TRUE,
+         centerline_miles > 0,
          !is.na(centerline_miles),
          !is.na(percent_sampled)) %>% 
-  # left_join(ctu_centerline_miles) %>% 
+  group_by(route_system_id, route_system_level, route_system_desc) %>% 
+  summarize(percent_sampled = round(mean(percent_sampled), 2),
+            centerline_miles = sum(centerline_miles),
+            centerline_weight = sum(centerline_miles)/n(),
+            min_sampled = min(percent_sampled)) %>%
+  filter(percent_sampled == 0) %>% 
+  extract2("route_system_desc") 
+
+
+ctu_pct_sampled_route <- vmt_city_raw %>% 
+  ungroup() %>% 
+  filter(cprg_area == TRUE,
+         !is.na(centerline_miles),
+         !is.na(percent_sampled),
+         # remove routes that were never sampled or don't exist in our region
+         # so we don't remove a CTU based on these never-sampled systems
+         !route_system_desc %in% routes_never_sampled) %>% 
+  # group by ctu and route system level
   group_by(ctu_name, route_system_level) %>% 
   summarize(percent_sampled = round(mean(percent_sampled), 2),
             centerline_miles = sum(centerline_miles),
             centerline_weight = sum(centerline_miles)/n(),
-            min_sampled = min(percent_sampled)) %>% 
+            min_sampled = min(percent_sampled),
+            systems = paste0(unique(route_system_desc), collapse = ", ")) %>% 
+  # group by CTU only to get the CTU average 
   group_by(ctu_name) %>% 
   mutate(ctu_mean = weighted.mean(percent_sampled, centerline_miles))
 
 # find CTUs where local systems have a 
-# minimum sample greater than 0
-# indicating that there is some submitted count data
+# minimum sample on local systems greater than 0
+# indicating that there is sampled data on their local systems
+# at some point in time 
 ctu_sampled <- ctu_pct_sampled_route %>% 
+  ungroup() %>% 
   filter(route_system_level == "Local systems",
          min_sampled > 0) %>% 
-  select(ctu_name) %>% 
   unique()
 
 # now, filter to get only the CTUs that are reliable
@@ -562,11 +582,11 @@ reliable_ctu <-
   unique() %>% 
   # ensure we have a full time series
   filter(ctu_name %in% ctu_n_years$ctu_name) %>% 
-  # ensure we have ctus with sampled local routes
+  # ensure we have CTUs with sampled local routes
   filter(ctu_name %in% ctu_sampled$ctu_name)
 
 # summarize ------
-# removing the route system distinction
+# remove the route system distinction to get County/CTU level summary
 vmt_city_raw_summary <-
   vmt_city_raw %>%
   # filter to only reliable CTUs
@@ -582,6 +602,7 @@ vmt_city_raw_summary <-
   ungroup() %>% 
   filter(county_name %in% cprg_county$county_name)
 
+# get city only summary
 vmt_city_alone <- vmt_city_raw %>% 
   # filter to only reliable CTUs
   filter(cprg_area == TRUE,
@@ -594,6 +615,7 @@ vmt_city_alone <- vmt_city_raw %>%
     .groups = "keep"
   ) 
 
+# get county only summary
 vmt_county_alone <- vmt_city_raw %>% 
   filter(cprg_area == TRUE) %>% 
   group_by(county_name, year) %>% 
@@ -615,7 +637,6 @@ vmt_county_alone %>%
 
 
 # merge with ctu population 
-
 vmt_ctu_pop <- ctu_population %>%
   select(county_name, ctu_name, inventory_year, ctu_population) %>%
   unique() %>%
@@ -636,11 +657,7 @@ vmt_ctu_pop <- ctu_population %>%
            "inventory_year" = "year")
   )
 
-
-
-
-# basic plotting
-# note that note very CTU has data for the full time series
+# basic plotting -----
 vmt_ctu_pop %>% 
   plot_ly(
     type = "scatter",
@@ -658,10 +675,12 @@ vmt_ctu_pop %>%
   )
 
 vmt_ctu_pop %>% 
-  filter(
-    # ctu_population >= 65000,
-    ctu_name %in% ctu_nov
-  ) %>% 
+  # get higher population CTUs
+  filter(ctu_name %in% c(vmt_ctu_pop %>% 
+                           filter(ctu_population >= 65000) %>% 
+                           select(ctu_name) %>% 
+                           unique() %>% 
+                           extract2("ctu_name"))) %>% 
   plot_ly(
     type = "scatter",
     mode = "lines+markers",
@@ -679,11 +698,12 @@ vmt_ctu_pop %>%
 
 # centerline miles
 vmt_ctu_pop %>% 
+  # get higher population CTUs
   filter(ctu_name %in% c(vmt_ctu_pop %>% 
-           filter(ctu_population >= 65000) %>% 
-           select(ctu_name) %>% 
-           unique() %>% 
-           extract2("ctu_name"))) %>% 
+                           filter(ctu_population >= 65000) %>% 
+                           select(ctu_name) %>% 
+                           unique() %>% 
+                           extract2("ctu_name"))) %>% 
   plot_ly(
     type = "scatter",
     mode = "lines+markers",
