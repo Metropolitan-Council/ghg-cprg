@@ -26,8 +26,6 @@ testthat::test_that("state DOT VMT", {
     magrittr::extract2("county_name") %>%
     testthat::expect_equal("Hennepin")
   
-  dot_vmt$vmt_year %>% unique() %>% dput
-  
 })
 
 
