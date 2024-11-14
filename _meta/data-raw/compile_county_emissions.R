@@ -67,17 +67,14 @@ ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
 
 
 ## solid waste -----
-solid_waste <- readRDS("_waste/data/mn_sw_emissions_co2e.RDS") %>%
+solid_waste <- readRDS("_waste/data/final_solid_waste_allyrs.RDS") %>%
+  left_join(cprg_county %>% select(county_name, geoid)) %>%
   ungroup() %>%
   mutate(
-    sector = "Waste",
     geog_level = "county",
-    geog_name = geog_name,
-    category = "Solid waste",
-    source = str_to_sentence(source),
-    data_source = "MPCA SCORE",
-    factor_source = "EPA GHG Emission Factors Hub (2021)",
-    year = as.numeric(year)
+    geog_name = county_name,
+    year = as.numeric(inventory_year),
+    emissions_metric_tons_co2e = value_emissions
   ) %>%
   select(names(transportation_emissions))
 

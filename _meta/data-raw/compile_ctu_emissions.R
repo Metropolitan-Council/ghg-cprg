@@ -65,25 +65,15 @@ ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
 
 
 ## solid waste -----
-solid_waste <- readRDS("_waste/data/mn_sw_emissions_co2e.RDS") %>%
+solid_waste <- readRDS("_waste/data/final_solid_waste_ctu_allyrs.RDS") %>%
+  left_join(ctu_population %>% distinct(ctu_name, ctuid)) %>%
+  left_join(cprg_county %>% select(county_name, geoid)) %>%
   ungroup() %>%
   mutate(
-    sector = "Waste",
-    geog_level = "county",
-    county_name = geog_name,
-    category = "Solid waste",
-    source = str_to_sentence(source),
-    data_source = "MPCA SCORE",
-    factor_source = "EPA GHG Emission Factors Hub (2021)",
-    emissions_year = as.numeric(year)
-  ) %>% 
-  group_by(emissions_year, county_name, sector, category) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
-  right_join(ctu_population, 
-             by = c("county_name",
-                    "emissions_year" = "inventory_year")) %>% 
-  mutate(emissions_metric_tons_co2e = emissions_metric_tons_co2e * ctu_proportion_of_county_pop,
-         geog_level = "ctu") %>%
+    geog_level = "ctu",
+    emissions_year = as.numeric(inventory_year),
+    emissions_metric_tons_co2e = value_emissions
+  ) %>%
   select(names(transportation_emissions))
 
 
@@ -126,7 +116,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   filter((year == 2005 & category == "Total") |
            (year == 2021 & category != "Total")) %>%
   mutate(
-    sector = "Building Energy",
+    sector = "Building energy",
     county_name = county,
     category = paste0(category, " natural gas"),
     source = source,
@@ -182,11 +172,6 @@ industrial_emissions <- readRDS("_industrial/data/city_industrial_emissions.RDS"
   mutate(
     geog_level = "ctu",
     ctu_name = city_name,
-    category = if_else(
-      category == "Fuel combustion",
-      paste(source, "combustion"),
-      category
-    ),
     emissions_metric_tons_co2e = values_emissions,
     emissions_year = as.numeric(inventory_year)
   ) %>%
@@ -205,7 +190,10 @@ natural_systems_sequestration <- readRDS("_nature/data/nlcd_ctu_landcover_seques
     emissions_metric_tons_co2e = sequestration_potential,
     emissions_year = as.numeric(year),
     sector = "Nature",
-    category = "Sequestration",
+    category = case_when(
+     grepl("Urban", land_cover_type) ~ "Urban greenery",
+    !grepl("Urban", land_cover_type) ~ "Natural systems"
+    ),
     source = land_cover_type
   ) %>%
   select(names(transportation_emissions))
@@ -243,31 +231,29 @@ emissions_all <- bind_rows(
         "Solid waste",
         "Livestock",
         "Cropland",
-        "Natural Gas combustion",
-        "Petroleum Products combustion",
-        "Other combustion",
-        "Coal combustion",
+        "Fuel combustion",
         "Process",
-        "Sequestration",
+        "Natural systems",
+        "Urban greenery"
         # "Stock"
       ),
       ordered = TRUE
     )
-  ) %>%
+  ) 
   # join county population and calculate per capita emissions
-  left_join(
-    ctu_population %>%
-      select(
-        ctu_name,
-        county_name,
-        population_year = inventory_year,
-        city_total_population = ctu_population
-      ),
-    by = join_by(ctu_name, county_name, emissions_year == population_year)
-  ) %>%
-  rowwise() %>%
-  mutate(emissions_per_capita = round(emissions_metric_tons_co2e / city_total_population, digits = 2)) %>%
-  select(emissions_year, geog_level, ctu_name, everything())
+  # left_join(
+  #   ctu_population %>%
+  #     select(
+  #       ctu_name,
+  #       county_name,
+  #       population_year = inventory_year,
+  #       city_total_population = ctu_population
+  #     ),
+  #   by = join_by(ctu_name, county_name, emissions_year == population_year)
+  # ) %>%
+  # rowwise() %>%
+  # mutate(emissions_per_capita = round(emissions_metric_tons_co2e / city_total_population, digits = 2)) %>%
+  # select(emissions_year, geog_level, ctu_name, everything())
 
 
 mean(emissions_all$emissions_per_capita[!emissions_all$category == "Stock"], na.rm = T)
