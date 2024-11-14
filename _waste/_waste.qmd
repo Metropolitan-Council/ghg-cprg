@@ -17,14 +17,16 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
-epa_waste_inventory <- readRDS(file.path(here::here(), "_waste/data-raw/epa_solidwaste_inventory.RDS"))
+epa_waste_inventory <- readRDS(file.path(here::here(), "_waste/data-raw/compare_epa_inventory.RDS"))
 
 federal_totals <- epa_waste_inventory %>%
   filter(source == "Total") %>%
   select(
-    geog_name,
+    geoid,
+    inventory_year,
     source,
-    emissions_metric_tons_co2e,
+    value_emissions,
+    units_emissions,
     data_source
   )
 
@@ -56,23 +58,11 @@ hookaddcap()
 
 ## Introduction
 
-In 2021, waste activities over the entire United States generated emissions of 169.2 MMTCO~2~e, or 2.7 percent of total U.S. greenhouse gas emissions [@usepaInventoryGreenhouseGas2023]. Solid waste emissions primarily consist of CH~4~, emitted in large part by landfills and organics composting, but also include CO~2~ and N~2~O generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. This inventory also includes emissions generated in the management of recyclables.
+In 2021, waste activities over the entire United States generated emissions of 169.2 MMTCO~2~e, or 2.7 percent of total U.S. greenhouse gas emissions [@usepaInventoryGreenhouseGas2023]. Solid waste emissions primarily consist of CH~4~, emitted in large part by landfills and organics composting, but also include CO~2~ and N~2~O generation. In the metropolitan area, waste incineration accounts for a significant portion of solid waste management and therefore emissions. 
 
 Wastewater emissions account for direct CH~4~ and N~2~O emissions from the treatment of municipal wastewater, and not additional indirect anthropogenic emissions such as the electricity needed to operate processing plants.
 
-## Methods {#sec-waste-methods}
 
-### Solid Waste
-
-The process for calculating solid waste emissions slightly differs between Minnesota and Wisconsin counties, due to a difference in data availability. Both state's use state or federal data sources, the highest quality data rank (@tbl-quality-rank).
-
-For Minnesota counties, waste generation totals are allocated by sector from Minnesota Pollution Control Agency (MPCA) SCORE data [@mpcaMPCASCOREGuidebook2022]. Totals for each sector are multiplied by the appropriate EPA-provided emissions factor to provide an estimate of emissions from that source and county. Learn more about MPCA SCORE in @sec-mpca-score. 
-
-For Wisconsin counties, state-level emissions data as calculated by the Wisconsin DNR is allocated to the relevant counties by population [@wisconsindnrGreenhouseGas2021].
-
-The emissions for each county $c$ are proportional to its fractional share of Wisconsin's population.
-
-$$Emissions_c = Emissions_{total} \times \frac{Pop_c}{Pop_{total}}$$
 
 ### Wastewater
 
@@ -293,7 +283,7 @@ solidwaste_totals <- county_emissions %>%
   )
 
 solidwaste_population <- left_join(solidwaste_totals, cprg_population,
-  by = c("geog_name" = "NAME")
+  by = c("geog_name" = "county_name")
 )
 
 fig_emissions_population_solidwaste <- plot_ly(
@@ -384,16 +374,25 @@ metc_solidwaste_inventory <- county_emissions %>%
   filter(sector == "Waste") %>%
   mutate(
     data_source = "Met Council",
-    year = as.character(year)
+    inventory_year = as.character(year),
+    geoid = case_when(
+      geog_name %in% c("Pierce", "St. Croix") ~ paste0("55", geog_id),
+      .default = paste0("27", geog_id)
+    ),
+    value_emissions = emissions_metric_tons_co2e,
+    units_emissions = "Tonnes CO2e"
   ) %>%
-  select(names(epa_waste_inventory))
+  select(
+    names(epa_waste_inventory)
+  )
 
 metc_epa_comp_solid <- epa_waste_inventory %>%
   filter(source != "Total") %>%
   bind_rows(metc_solidwaste_inventory) %>%
   mutate(
     source_unified = case_when(
-      # source == "Anaerobic digestion" ~ "Waste to energy",
+      # source == "Anaerobic digestion" ~ "Organics",
+      source == "Compost" ~ "Organics",
       TRUE ~ source
     )
   ) %>%
@@ -402,7 +401,7 @@ metc_epa_comp_solid <- epa_waste_inventory %>%
 wide_metc_epa_comp_solid <- metc_epa_comp_solid %>%
   pivot_wider(
     names_from = data_source,
-    values_from = emissions_metric_tons_co2e
+    values_from = value_emissions
   ) %>%
   filter(
     !is.na(`Met Council`),
@@ -420,18 +419,18 @@ plot_waste_comparison <- function(waste_source,
       filter(
         source_unified == waste_source
       ),
-    y = ~geog_name,
-    x = ~emissions_metric_tons_co2e,
+    y = ~geoid,
+    x = ~value_emissions,
     color = ~data_source,
     colors = c(
       "Met Council" = colors$councilBlue,
       "US GHG Inventory" = cprg_colors$cprg_da_yellow
     ),
     hovertemplate = ~ paste0(
-      geog_name, " County", "<br>",
+      geoid, " County", "<br>",
       data_source, "<br>",
       source_unified, "<br>",
-      round(emissions_metric_tons_co2e * 1e-3, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      round(value_emissions * 1e-3, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
     ),
     marker = list(size = 18),
@@ -443,8 +442,8 @@ plot_waste_comparison <- function(waste_source,
       name = "Difference line",
       data = wide_metc_epa_comp_solid %>%
         filter(source_unified == waste_source),
-      y = ~geog_name,
-      yend = ~geog_name,
+      y = ~geoid,
+      yend = ~geoid,
       x = ~`US GHG Inventory`,
       xend = ~`Met Council`,
       showlegend = FALSE,
