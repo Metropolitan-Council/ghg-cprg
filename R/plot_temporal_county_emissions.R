@@ -1,18 +1,22 @@
 ### county graphs
+
+cprg_colors <- source("R/cprg_colors.R")
+
 county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") %>% 
-  filter(year %in% c(2005, 2013, 2021))
+  mutate(year = case_when(
+    sector == "Industrial" & year == 2011 ~ 2005,
+    sector == "Industrial" & category == "Other" & year == 2020 ~ 2021, 
+    TRUE ~ year)) %>% 
+  filter(year %in% c(2005, 2021))
 
 
 ### break out desired years and data sources for RDG 90%
-emissions_rdg_90_baseline <- county_emissions %>% 
+emissions_sector <- county_emissions %>% 
   group_by(year, sector) %>% 
   summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
   mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building energy", "Industrial", "Waste", "Agriculture", "Nature")))
 
-
-#### remove later
-
-baseline_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2005, 2021)),
+baseline_comparison <- ggplot(emissions_sector %>% filter(year %in% c(2005, 2021)),
                               aes(x = sector, y = MT_CO2e, fill = as.factor(year))) +
   geom_bar(stat = 'identity', position = position_dodge()) +
   labs(fill = "Year")
@@ -53,6 +57,7 @@ custom_palette <- c(
   "Transportation.2021" = unname(sector_colors["Transportation"]),
   "Building energy.2005" = lighten(sector_colors["Building energy"], 1.4),
   "Building energy.2021" = unname(sector_colors["Building energy"]),
+  "Industrial.2005" = lighten(sector_colors["Industrial"], 1.4),
   "Industrial.2021" = unname(sector_colors["Industrial"]),
   "Waste.2005" = lighten(sector_colors["Waste"], 1.4),
   "Waste.2021" = unname(sector_colors["Waste"]),
@@ -62,16 +67,15 @@ custom_palette <- c(
   "Nature.2021" = unname(sector_colors["Nature"])
 )
 
-emissions_rdg_90_baseline <- emissions_rdg_90_baseline %>%
+emissions_sector <- emissions_sector %>%
   mutate(sector_year = interaction(sector, as.factor(year), sep = "."))
-ylab(expression(paste("µg ", CO[2], " - C ", m^-2, " ", h^-1, sep="")))
 
-# Plot with custom settings
-sector_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(2021)),
-                            aes(x = sector, y = MT_CO2e/1000000, fill = sector)) +
+# Plot by year
+sector_comparison <- ggplot(emissions_sector,
+                            aes(x = sector, y = MT_CO2e/1000000, fill = sector_year)) +
   geom_bar(stat = 'identity', position = position_dodge()) +
   labs(fill = "sector") +
-  scale_fill_manual(values = sector_colors, guide = "none") +
+  scale_fill_manual(values = custom_palette, guide = "none") +
   theme_minimal() + xlab("") + ylab(expression(paste("Million metric tons of ",CO[2],"e"))) +
   theme(panel.grid.major.x = element_blank(),
         axis.text.x = element_text(size = 20),
@@ -79,6 +83,30 @@ sector_comparison <- ggplot(emissions_rdg_90_baseline %>% filter(year %in% c(202
 
 
 sector_comparison
+
+
+# Plot by subsector
+
+emissions_subsector <- county_emissions %>% 
+  group_by(year, sector, category) %>% 
+  summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
+  mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building energy", "Industrial", "Waste", "Agriculture", "Nature")))
+
+category_colors_vector <- unlist(category_colors, use.names = TRUE)
+
+subsector_comparison <- ggplot(emissions_subsector %>% filter(year ==2021),
+                            aes(x = sector, y = MT_CO2e/1000000, fill = category)) +
+  geom_bar(stat = 'identity', position = 'stack') +
+  labs(fill = "Subsector") +
+  scale_fill_manual(values = category_colors_vector) +
+  theme_minimal() + xlab("") + ylab(expression(paste("Million metric tons of ",CO[2],"e"))) +
+  theme(panel.grid.major.x = element_blank(),
+        axis.text.x = element_text(size = 20),
+        text = element_text(size = 20, family="sans"))
+
+
+subsector_comparison
+
 
 ## subsector graph example ####
 
