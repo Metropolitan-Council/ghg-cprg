@@ -36,7 +36,7 @@ category_colors <-
     #Gray
     "Fuel combustion" = "#7e7e7e",
     "Process" = "#504b4b",
-    "Other" = "#d2c5c5",
+    "Small industrial" = "#d2c5c5",
 
     # YlOrBr
     "Passenger vehicles" = "#993404",
@@ -53,8 +53,8 @@ category_colors <-
     "Livestock" = "#8fb910",
     
     # Gn
-    "Sequestration" = "#006f3c",
-    "Stock" = "#27b376"
+    "Urban greenery" = "#006f3c",
+    "Natural systems" = "#27b376"
   )
 
 

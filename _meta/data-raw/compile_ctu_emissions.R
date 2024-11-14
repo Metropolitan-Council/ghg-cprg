@@ -198,52 +198,16 @@ industrial_emissions <- readRDS("_industrial/data/city_industrial_emissions.RDS"
 
 ## natural systems ----
 
-natural_systems_sequestration_esa <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
+natural_systems_sequestration <- readRDS("_nature/data/nlcd_ctu_landcover_sequestration_2001_2021_v2.rds") %>%
+  ungroup %>% 
   mutate(
-    sector = "Nature",
-    geog_level = "county",
-    geog_name = county,
-    category = "Sequestration",
-    source = stringr::str_to_sentence(str_replace_all(land_cover_type, "_", " ")),
-    data_source = "ESA WorldCover & NLCD 2021",
-    factor_source = "Various primary literature",
-    year = 2021,
+    geog_level = "ctu",
     emissions_metric_tons_co2e = sequestration_potential,
-    year = as.numeric(year)
-  ) %>%
-  ungroup() %>%
-  select(names(transportation_emissions))
-
-natural_systems_sequestration_nlcd <- readRDS("_nature/data/nlcd_county_landcover_sequestration_2001_2021.RDS") %>%
-  filter(year >= 2005) %>% 
-  mutate(
+    emissions_year = as.numeric(year),
     sector = "Nature",
-    geog_level = "county",
-    geog_name = county,
     category = "Sequestration",
-    source = stringr::str_to_sentence(str_replace_all(land_cover_type, "_", " ")),
-    data_source = "NLCD 2021",
-    factor_source = "Various primary literature",
-    emissions_metric_tons_co2e = sequestration_potential,
-    year = as.numeric(year)
+    source = land_cover_type
   ) %>%
-  ungroup() %>%
-  select(names(transportation_emissions))
-
-
-natural_systems_stock <- readRDS("_nature/data/county_landcover_sequestration_2021.RDS") %>%
-  mutate(
-    sector = "Nature",
-    geog_level = "county",
-    geog_name = county,
-    category = "Stock",
-    source = stringr::str_to_sentence(str_replace_all(land_cover_type, "_", " ")),
-    data_source = "ESA WorldCover & NLCD 2021",
-    factor_source = "Various primary literature",
-    year = 2021,
-    emissions_metric_tons_co2e = stock_potential,
-  ) %>%
-  ungroup() %>%
   select(names(transportation_emissions))
 
 # combine and write metadata----
@@ -256,15 +220,10 @@ emissions_all <- bind_rows(
   solid_waste,
   agriculture_emissions,
   industrial_emissions,
-  # natural_systems_sequestration_nlcd,
+  natural_systems_sequestration
   # natural_systems_stock
-) %>%
-  left_join(
-    cprg_county %>%
-      sf::st_drop_geometry() %>%
-      select(county_name, geoid),
-    by = c("county_name")
-  ) %>%
+)  %>%
+  filter(emissions_year >= 2005 & emissions_year <= 2021) %>% 
   mutate(
     category = factor(
       category,
@@ -288,14 +247,13 @@ emissions_all <- bind_rows(
         "Petroleum Products combustion",
         "Other combustion",
         "Coal combustion",
-        "Process"
-        # "Sequestration",
+        "Process",
+        "Sequestration",
         # "Stock"
       ),
       ordered = TRUE
     )
   ) %>%
-  filter(emissions_year >= 2005 & emissions_year <= 2021) %>% 
   # join county population and calculate per capita emissions
   left_join(
     ctu_population %>%
@@ -311,9 +269,6 @@ emissions_all <- bind_rows(
   mutate(emissions_per_capita = round(emissions_metric_tons_co2e / city_total_population, digits = 2)) %>%
   select(emissions_year, geog_level, ctu_name, everything())
 
-# splitting off carbon stock here as it is a capacity, not a rate
-carbon_stock <- emissions_all %>% filter(category == "Stock")
-emissions_all <- emissions_all %>% filter(category != "Stock")
 
 mean(emissions_all$emissions_per_capita[!emissions_all$category == "Stock"], na.rm = T)
 sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"], na.rm = T) / sum(cprg_county_pop$population)
