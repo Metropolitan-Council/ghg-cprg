@@ -594,6 +594,7 @@ ctu_sampled <- ctu_pct_sampled_route %>%
   select(ctu_name) %>% 
   unique()
 
+# now, filter to get only the CTUs that are reliable
 reliable_ctu <- 
   vmt_city_raw %>% 
   filter(cprg_area == TRUE) %>% 
@@ -608,6 +609,7 @@ reliable_ctu <-
 # removing the route system distinction
 vmt_city_raw_summary <-
   vmt_city_raw %>%
+  # filter to only reliable CTUs
   filter(cprg_area == TRUE,
          ctu_name %in% reliable_ctu$ctu_name) %>% 
   group_by(year, county_name, ctu_name, cprg_area) %>%
@@ -621,6 +623,7 @@ vmt_city_raw_summary <-
   filter(county_name %in% cprg_county$county_name)
 
 vmt_city_alone <- vmt_city_raw %>% 
+  # filter to only reliable CTUs
   filter(cprg_area == TRUE,
          ctu_name %in% reliable_ctu$ctu_name) %>% 
   group_by(year, ctu_name) %>% 
@@ -648,11 +651,10 @@ vmt_county_alone %>%
             suffix = c(".city", ".county")) %>% 
   mutate(daily_diff = round(daily_vmt.city - daily_vmt.county),
          annual_diff = round(annual_vmt.city - annual_vmt.county),
-         centerline_diff = round(centerline_miles.city - centerline_miles.county)) %>% View
+         centerline_diff = round(centerline_miles.city - centerline_miles.county))
 
 
 # merge with ctu population 
-
 
 vmt_ctu_pop <- ctu_population %>%
   select(county_name, ctu_name, inventory_year, ctu_population) %>%
@@ -717,7 +719,11 @@ vmt_ctu_pop %>%
 
 # centerline miles
 vmt_ctu_pop %>% 
-  filter(ctu_population >= 65000) %>% 
+  filter(ctu_name %in% c(vmt_ctu_pop %>% 
+           filter(ctu_population >= 65000) %>% 
+           select(ctu_name) %>% 
+           unique() %>% 
+           extract2("ctu_name"))) %>% 
   plot_ly(
     type = "scatter",
     mode = "lines+markers",
@@ -750,13 +756,8 @@ vmt_city_raw %>%
     diff_daily_vmt = round(city_daily_vmt -  daily_vmt),
     diff_annual_vmt = round(city_annual_vmt - annual_vmt),
     diff_centerline_miles = round(city_centerline_miles - centerline_miles)
-  ) %>% View
+  )
 
-# TODO interpolate 2015 data
-# we can't interpolate for CTUs that don't have a full time series
-# TODO verify that CTU-county totals equal vmt_county totals
-# TODO final save
-# TODO testing!
 # interpolate 2015 data -----
 vmt_interp <- vmt_city_alone %>%
   # first create an NA 2015 dataset
@@ -769,8 +770,7 @@ vmt_interp <- vmt_city_alone %>%
     annual_vmt = NA
   ) %>%
   # bind with original
-  bind_rows(vmt_city_alone %>% 
-              filter(ctu_name %in% interp_ctus$ctu_name)) %>%
+  bind_rows(vmt_city_alone) %>%
   arrange(year) %>%
   group_by(ctu_name) %>%
   # interpolate using midpoint method
@@ -783,7 +783,6 @@ vmt_interp <- vmt_city_alone %>%
   )
 
 # review and check that values make sense for all ctus
-
 # re-assign column values to match original data
 vmt_ctu <- vmt_interp %>%
   mutate(
@@ -793,10 +792,4 @@ vmt_ctu <- vmt_interp %>%
   ) %>%
   select(-daily_approx, -annual_approx, -centerline_approx)
 
-# this saves a version with only the CTUs that have a full time series
-
 saveRDS(vmt_ctu, "_transportation/data-raw/mndot/mndot_vmt_ctu.RDS")
-
-# note that "New Market" is included in VMT data for years 2000-2005
-# "Elko" is included for years 2001-2006
-# "Elko New Market" is included for years 2007-onward
