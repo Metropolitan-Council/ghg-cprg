@@ -19,15 +19,6 @@ if (file.exists("_transportation/data-raw/mndot/city_route_system/23_ccr.xlsx") 
   ))
 }
 
-ctu_nov <- c("Coon Rapids",
-             "Carver",
-             "Eagan",
-             "Bloomington",
-             "Saint Paul",
-             "Mahtomedi",
-             "Minneapolis",
-             "Savage")
-
 # load -----
 # read city level data and make column names consistent
 city_ccr <- list()
@@ -391,65 +382,32 @@ city_ccr[["2016"]] <- readxl::read_excel(
     annual_vmt = annual_total_vehicle_miles
   )
 
+# 2017-2023 data were corrected, and provided by MnDOT staff directly
+# see raw data on OneDrive/MS Teams
 city_ccr[["2017"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/17_ccr.xlsx",
+  "_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/updated_2017_VMT_County_City_Route_System.xlsx",
   sheet = 2,
-  col_types = c(
-    "text",
-    "text",
-    "text",
-    "numeric",
-    "numeric",
-    "numeric"
-  ),
-  skip = 1
-) %>%
-  janitor::clean_names() %>%
-  rename_with(~ gsub("x2017_", "", .)) %>%
-  rename(route_system = route_system) %>%
-  rename(
-    daily_vmt = daily_average_vehicle_miles,
-    annual_vmt = annual_total_vehicle_miles
-  )
+  skip = 2) %>% 
+  clean_names()
 
 
 city_ccr[["2018"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/18_ccr.xlsx",
+  "_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/updated_2018_VMT_County_City_Route_System.xlsx",
   sheet = 2,
-  col_types = c(
-    "text",
-    "text",
-    "text",
-    "numeric",
-    "numeric",
-    "numeric"
-  ),
-  skip = 1
-) %>%
-  janitor::clean_names() %>%
-  rename_with(~ gsub("x2018_", "", .)) %>%
-  rename(route_system = route_system) %>%
-  rename(
-    daily_vmt = daily_average_vehicle_miles,
-    annual_vmt = annual_total_vehicle_miles
-  )
-
-city_ccr[["2019"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/19_ccr.xlsx",
-  sheet = 1,
   skip = 2
 ) %>%
-  janitor::clean_names() %>%
-  rename_with(~ gsub("x2019_", "", .)) %>%
-  rename(route_system = route_system) %>%
-  rename(
-    daily_vmt = daily_average_vehicle_miles,
-    annual_vmt = annual_total_vehicle_miles,
-  )
+  janitor::clean_names()
+
+city_ccr[["2019"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/updated_2019_VMT_County_City_Route_System.xlsx",
+  sheet = 2,
+  skip = 2
+) %>%
+  janitor::clean_names()
 
 
 city_ccr[["2020"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/20_ccr.xlsx",
+  "_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/updated_2020_VMT_County_City_Route_System.xlsx",
   sheet = 1,
   skip = 2
 ) %>%
@@ -457,7 +415,7 @@ city_ccr[["2020"]] <- readxl::read_excel(
 
 
 city_ccr[["2021"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/21_ccr.xlsx",
+  "_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/updated_2021_VMT_County_City_Route_System.xlsx",
   sheet = 2,
   skip = 2
 ) %>%
@@ -465,14 +423,14 @@ city_ccr[["2021"]] <- readxl::read_excel(
 
 
 city_ccr[["2022"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/22_ccr.xlsx",
+  "_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/updated_2022_VMT_County_City_Route_System.xlsx",
   sheet = 2,
   skip = 2
 ) %>%
   janitor::clean_names()
 
 city_ccr[["2023"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/23_ccr.xlsx",
+  "_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/updated_2023_VMT_County_City_Route_System.xlsx",
   sheet = 2,
   skip = 2
 ) %>%
@@ -486,7 +444,9 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
                                       idcol = "year"
 ) %>%
   # remove extra columns
-  select(-x100_percent_due_to_rounding) %>% 
+  select(-x100_percent_due_to_rounding,
+         -official_statistics_provided_by_the_office_of_transportation_system_management,
+         -x2) %>% 
   # remove any grand total rows
   filter(route_system != "Grand Totals") %>% 
   mutate(
