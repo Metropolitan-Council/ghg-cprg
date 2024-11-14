@@ -770,6 +770,7 @@ vmt_ctu <- vmt_interp %>%
     annual_vmt = annual_approx,
     centerline_miles = centerline_approx
   ) %>%
-  select(-daily_approx, -annual_approx, -centerline_approx)
+  select(-daily_approx, -annual_approx, -centerline_approx) %>% 
+  ungroup()
 
 saveRDS(vmt_ctu, "_transportation/data-raw/mndot/mndot_vmt_ctu.RDS")
