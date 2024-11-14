@@ -1008,3 +1008,7 @@ _transportation/data-raw/~$_source_method_compare.xlsx
 _transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2024-0812-144242.csv
 
 _transportation/data-raw/mndot/city_route_system/
+
+_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/
+
+_transportation/data-raw/mndot/updated_VMT_County_City_Route_System.zip
