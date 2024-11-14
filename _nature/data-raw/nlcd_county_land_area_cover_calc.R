@@ -1,7 +1,31 @@
+rm(list=ls())
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
 
 
+
+renv::remove("FedData")
+
+# Install devtools if not already installed
+if (!requireNamespace("devtools", quietly = TRUE)) {
+  install.packages("devtools")
+}
+
+# Load devtools
+library(devtools)
+
+dev_mode(on=T)
+
+# Install FedData from GitHub
+devtools::install_github("ropensci/FedData")
+
+library(FedData)
+
+
+
+
+
+overwrite_RDS <- FALSE
 
 # load the county boundaries layer
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
@@ -21,16 +45,15 @@ nlcd_county <- data.frame(
   stringsAsFactors = FALSE
 )
 
-start_year <- 2001
+start_year <- 2021
 end_year <- 2021
 
 
 # Loop through all years of NLCD data and extract area estimates by land cover type and by county
 lapply(start_year:end_year, function(year) {
-  # browser()
+  browser()
   message(paste0("\nBeginning year: ", year, "\n"))
   message(paste0(" 0%  |____________________|"))
-
 
   # Try to get the tree canopy cover layer
   nlcd_tcc <- try(FedData::get_nlcd( # use FedData::get_nlcd() to load nlcd data
@@ -62,15 +85,47 @@ lapply(start_year:end_year, function(year) {
   # }
   # message(paste0('20%  |====________________|'))
 
+  # # Get the land cover type layer
+  # nlcd_lc <- try(FedData::get_nlcd(
+  #   cprg_county,
+  #   "county",
+  #   year = year,
+  #   dataset = "landcover" # downloads land cover classification data only
+  # ) %>%
+  #   terra::project(., crs_use), silent = TRUE)
+
+  
+  
   # Get the land cover type layer
-  nlcd_lc <- try(FedData::get_nlcd(
+  nlcd_lc <- try(FedData::get_nlcd_annual(
     cprg_county,
     "county",
     year = year,
-    dataset = "landcover" # downloads land cover classification data only
-  ) %>%
-    terra::project(., crs_use), silent = TRUE)
-
+    product = "LndCov" # downloads land cover classification data only
+  ), silent = TRUE)
+  
+  
+  # %>%
+  #   terra::project(., crs_use), silent = TRUE)
+  # 
+  
+  
+  NLCD_ANNUAL <-
+    FedData::get_nlcd_annual(
+      template = FedData::meve,
+      label = "meve",
+      year = 2021,
+      product =
+        c(
+          "LndCov"
+        )
+    )
+  
+  
+  
+  
+  
+  
   # Check if the land cover type layer was successfully retrieved
   if (inherits(nlcd_lc, "try-error")) {
     # Move to the next year if the land cover type layer is missing
@@ -195,7 +250,7 @@ lapply(start_year:end_year, function(year) {
 
     message(paste0("70%  |==============______|"))
 
-    # browser()
+    browser()
 
     lc_df <- as_tibble(data.frame(
       county = cty_values[, 2],
@@ -244,7 +299,7 @@ lapply(start_year:end_year, function(year) {
       group_by(county, land_cover_type) %>%
       summarize(area = sum(area), .groups = "keep")
 
-    # browser()
+    browser()
 
 
     # Add the results for the current year to the results dataframe
@@ -273,8 +328,13 @@ nlcd_county_meta <-
     "area", class(nlcd_county$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas"
   )
 
-saveRDS(nlcd_county, paste0("./_nature/data/nlcd_county_landcover_", head(sort(unique(nlcd_county$year)), 1), "_", tail(sort(unique(nlcd_county$year)), 1), ".rds"))
-saveRDS(nlcd_county_meta, paste0("./_nature/data/nlcd_county_landcover_", head(sort(unique(nlcd_county$year)), 1), "_", tail(sort(unique(nlcd_county$year)), 1), "_meta.rds"))
+
+
+# User chooses whether to overwrite the rds files
+if (overwrite_RDS) {
+  saveRDS(nlcd_county, paste0("./_nature/data/nlcd_county_landcover_", head(sort(unique(nlcd_county$year)), 1), "_", tail(sort(unique(nlcd_county$year)), 1), ".rds"))
+  saveRDS(nlcd_county_meta, paste0("./_nature/data/nlcd_county_landcover_", head(sort(unique(nlcd_county$year)), 1), "_", tail(sort(unique(nlcd_county$year)), 1), "_meta.rds"))
+}
 
 
 
