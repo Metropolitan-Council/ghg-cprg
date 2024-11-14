@@ -10,6 +10,10 @@ source("R/_load_pkgs.R")
 library(tabulapdf)
 # each of these calls launch a shiny app that has you manually select the table
 # areas with your mouse
+# wi_vmt23 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2023-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/"
+# )
 # wi_vmt22 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2022-c.pdf",
 #                                      output = "csv",
 #                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/"
@@ -112,9 +116,11 @@ wisconsin_vmt <- wisconsin_vmt_raw %>%
       )
   ) %>%
   mutate(
-    Daily = str_remove_all(Daily, "[:punct:]") %>% as.numeric(),
+    Daily = str_remove_all(Daily, "[:punct:]") %>% 
+      str_remove_all(" ") %>% 
+      as.numeric(),
     ANNUAL = str_remove_all(ANNUAL, ",") %>% as.numeric()
-  ) %>%
+  ) %>% 
   clean_names() %>%
   mutate(
     county = stringr::str_to_title(county),
@@ -140,7 +146,7 @@ wi_vmt_county <- wisconsin_vmt %>%
   filter(cprg_area == TRUE)
 
 # double check that there are the right number of observations
-# 2 counties, 14 years = 28
-nrow(wi_vmt_county) == 28
+# 2 counties for each year of data
+nrow(wi_vmt_county) == (2 * length(unique(wi_vmt_county$year)))
 
 saveRDS(wi_vmt_county, "_transportation/data-raw/wisdot/wisdot_vmt_county.RDS")
