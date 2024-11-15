@@ -124,7 +124,8 @@ mndot_route_system <- bind_rows(route_system_county,
   select(-year) %>% 
   unique() %>% 
   mutate(route_system_level = case_when(
-    route_system_id %in% c(paste0("0", 1:7), "52", "32", "53") ~ "Trunk highway and county systems",
+    route_system_id %in% c("01", "02", "03", "04", "07",
+                           "52", "32", "53") ~ "Trunk highway and county systems",
     TRUE ~ "Local systems"
   ))
 
