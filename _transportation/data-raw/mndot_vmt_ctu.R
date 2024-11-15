@@ -469,6 +469,7 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
                                                              "St ", "Saint "),
     ctu_name == "Mc Grath" ~ "McGrath",
     ctu_name == "Mc Gregor" ~ "McGregor",
+    ctu_name == "Nonmunicpal" ~ "Nonmunicipal",
     # note that "New Market" is included in VMT data for years 2000-2005
     # "Elko" is included for years 2001-2006
     # "Elko New Market" is included for years 2007-onward
@@ -500,11 +501,11 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
 
 # find reliable cities ----- 
 # CTUs are reliable if they have
-# - a full time series from 2001 to 2023
+# - a full time series from 2014 to 2023
 # - a minimum percent sample across route systems
 
 # find the ctus that have the full time series
-# about 157 CTUs
+# about 162 CTUs
 ctu_n_years <- vmt_city_raw %>% 
   filter(cprg_area == TRUE) %>% 
   select(ctu_name, year) %>% 
@@ -513,8 +514,9 @@ ctu_n_years <- vmt_city_raw %>%
   count(name = "n_years") %>% 
   arrange(n_years) %>% 
   ungroup() %>% 
-  # filter to only CTUs that have all years of data
-  filter(n_years == max(n_years))
+  # filter such that we have a full time series for 
+  # year 2014 onward
+  filter(n_years >= (as.numeric(max(vmt_city_raw$year)) - 2014))
 
 # we only have % sampled for years 2017 onward
 # A percent sampled of 0 indicates that there has  never been a submitted count for the  given route system in the CTU.
