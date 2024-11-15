@@ -413,7 +413,7 @@ city_ccr[["2019"]] <- readxl::read_excel(
 
 city_ccr[["2020"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/updated_2020_VMT_County_City_Route_System.xlsx",
-  sheet = 1,
+  sheet = 2,
   skip = 2
 ) %>%
   janitor::clean_names()
@@ -449,9 +449,7 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
                                       idcol = "year"
 ) %>%
   # remove extra columns
-  select(-x100_percent_due_to_rounding,
-         -official_statistics_provided_by_the_office_of_transportation_system_management,
-         -x2) %>% 
+  select(-x100_percent_due_to_rounding) %>% 
   # remove any grand total rows
   filter(route_system != "Grand Totals") %>% 
   mutate(
