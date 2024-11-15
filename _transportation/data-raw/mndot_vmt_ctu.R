@@ -590,7 +590,42 @@ reliable_ctu <-
   # ensure we have a full time series
   filter(ctu_name %in% ctu_n_years$ctu_name) %>% 
   # ensure we have CTUs with sampled local routes
-  filter(ctu_name %in% ctu_sampled$ctu_name)
+  filter(ctu_name %in% ctu_sampled$ctu_name,
+         ctu_name != "Nonmunicipal")
+
+# patterns in the CTUs that are missing data? -----
+
+vmt_spatial <- vmt_city_raw %>% 
+  ungroup() %>% 
+  filter(year == max(year)) %>% 
+  select(ctu_name, county_name, ctu_class, ctu_name_full, cprg_area) %>% 
+  unique() %>% 
+  right_join(ctu_population %>% 
+               filter(inventory_year == max(inventory_year))) %>% 
+  left_join(cprg_ctu) %>% 
+  mutate(reliable = ifelse(ctu_name_full %in% reliable_ctu$ctu_name_full, TRUE, FALSE)) %>%
+  sf::st_as_sf() 
+
+leafp <- leaflet::colorFactor(domain = vmt_spatial$reliable,
+                              palette = "RdYlBu")
+
+council_leaflet() %>% 
+  addPolygons(data = vmt_spatial,
+              fill = TRUE,
+              fillColor = ~ leafp(reliable),
+              stroke = TRUE,
+              fillOpacity = 1,
+              color = "gray",
+              weight = 2,
+              popup = ~paste0(ctu_name, ", ", county_name, " County"),
+              highlightOptions = highlightOptions(
+                color = "white",
+                weight = 4,
+                bringToFront = TRUE
+              )
+  ) %>% 
+  addLegend(pal = leafp,
+            values = vmt_spatial$reliable)
 
 # summarize ------
 # remove the route system distinction to get County/CTU level summary
@@ -688,6 +723,8 @@ vmt_ctu_pop %>%
 
 vmt_ctu_pop %>% 
   # get higher population CTUs
+  filter(!is.na(annual_vmt),
+         !is.na(ctu_population)) %>% 
   filter(ctu_name %in% c(vmt_ctu_pop %>% 
                            filter(ctu_population >= 65000) %>% 
                            select(ctu_name) %>% 
@@ -699,6 +736,7 @@ vmt_ctu_pop %>%
     x = ~inventory_year,
     y = ~annual_vmt,
     color = ~ctu_name,
+    colors = "Paired",
     hoverinfo = "text",
     hovertext = ~paste0(
       inventory_year, "<br>",
@@ -711,6 +749,8 @@ vmt_ctu_pop %>%
 # centerline miles
 vmt_ctu_pop %>% 
   # get higher population CTUs
+  filter(!is.na(annual_vmt),
+         !is.na(ctu_population)) %>% 
   filter(ctu_name %in% c(vmt_ctu_pop %>% 
                            filter(ctu_population >= 65000) %>% 
                            select(ctu_name) %>% 
@@ -722,6 +762,7 @@ vmt_ctu_pop %>%
     x = ~inventory_year,
     y = ~centerline_miles,
     color = ~ctu_name,
+    colors = "Paired",
     hoverinfo = "text",
     hovertext = ~paste0(
       inventory_year, "<br>",
