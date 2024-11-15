@@ -2,12 +2,17 @@ source("R/_load_pkgs.R")
 source("R/download_read_table.R")
 source("_meta/data-raw/ctu_saint_names.R")
 source("R/_quarto_helpers.R")
+source("R/_leaflet_helpers.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS") %>% 
   sf::st_drop_geometry()
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>% 
-  left_join(cprg_county)
+  left_join(cprg_county) %>% 
+  mutate(ctu_name_full = paste0(ctu_name, ", ", ctu_class))
+
 mndot_vmt_county <- readRDS("_transportation/data-raw/mndot/mndot_vmt_county.RDS")
 mndot_route_system <- readRDS("_transportation/data-raw/mndot/mndot_route_system.RDS")
+cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS") %>% 
+  mutate(ctu_name_full = paste0(ctu_name, ", ", ctu_class))
 
 # TODO bring in the percent sampled column, which is present for 2019 onward
 # check for needed files
@@ -487,7 +492,9 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
       "Washington",
       "Sherburne",
       "Chisago"
-    ), TRUE, FALSE)
+    ), TRUE, FALSE),
+    ctu_class = "CITY",
+    ctu_name_full = paste0(ctu_name, ", ", ctu_class)
   ) %>% 
   left_join(mndot_route_system,
             by = "route_system")
@@ -578,7 +585,7 @@ ctu_sampled <- ctu_pct_sampled_route %>%
 reliable_ctu <- 
   vmt_city_raw %>% 
   filter(cprg_area == TRUE) %>% 
-  select(ctu_name) %>% 
+  select(ctu_name, ctu_class, ctu_name_full) %>% 
   unique() %>% 
   # ensure we have a full time series
   filter(ctu_name %in% ctu_n_years$ctu_name) %>% 
@@ -591,8 +598,8 @@ vmt_city_raw_summary <-
   vmt_city_raw %>%
   # filter to only reliable CTUs
   filter(cprg_area == TRUE,
-         ctu_name %in% reliable_ctu$ctu_name) %>% 
-  group_by(year, county_name, ctu_name, cprg_area) %>%
+         ctu_name_full %in% reliable_ctu$ctu_name_full) %>% 
+  group_by(year, county_name, ctu_name, ctu_name_full, cprg_area) %>%
   summarize(
     daily_vmt = sum(daily_vmt, na.rm = TRUE),
     annual_vmt = sum(annual_vmt, na.rm = TRUE),
@@ -606,8 +613,8 @@ vmt_city_raw_summary <-
 vmt_city_alone <- vmt_city_raw %>% 
   # filter to only reliable CTUs
   filter(cprg_area == TRUE,
-         ctu_name %in% reliable_ctu$ctu_name) %>% 
-  group_by(year, ctu_name) %>% 
+         ctu_name_full %in% reliable_ctu$ctu_name_full) %>% 
+  group_by(year, ctu_name, ctu_name_full, ctu_class) %>% 
   summarize(
     daily_vmt = sum(daily_vmt, na.rm = TRUE),
     annual_vmt = sum(annual_vmt, na.rm = TRUE),
@@ -638,15 +645,16 @@ vmt_county_alone %>%
 
 # merge with ctu population 
 vmt_ctu_pop <- ctu_population %>%
-  select(county_name, ctu_name, inventory_year, ctu_population) %>%
+  select(county_name, ctu_name, ctu_name_full, 
+         ctu_class,  inventory_year, ctu_population) %>%
   unique() %>%
   filter(inventory_year %in% vmt_city_raw_summary$year) %>%
   full_join(
     vmt_city_alone %>%
       ungroup() %>%
       filter(
-        ctu_name %in% ctu_population$ctu_name) %>%
-      select(ctu_name, year, centerline_miles,
+        ctu_name_full %in% ctu_population$ctu_name_full) %>%
+      select(ctu_name, ctu_name_full,ctu_class, year, centerline_miles,
              annual_vmt, daily_vmt) %>%
       mutate(year = as.numeric(year)) %>%
       filter(year %in% unique(ctu_population$inventory_year),
@@ -654,11 +662,15 @@ vmt_ctu_pop <- ctu_population %>%
                               "Nonmunicipal")) %>%
       unique(),
     by = c("ctu_name",
+           "ctu_name_full",
+           "ctu_class",
            "inventory_year" = "year")
   )
 
 # basic plotting -----
 vmt_ctu_pop %>% 
+  filter(!is.na(annual_vmt),
+         !is.na(ctu_population)) %>% 
   plot_ly(
     type = "scatter",
     mode = "markers",
@@ -742,7 +754,7 @@ vmt_city_raw %>%
 vmt_interp <- vmt_city_alone %>%
   # first create an NA 2015 dataset
   ungroup() %>%
-  select(ctu_name) %>%
+  select(ctu_name, ctu_name_full) %>%
   unique() %>%
   mutate(
     year = "2015",
@@ -752,7 +764,7 @@ vmt_interp <- vmt_city_alone %>%
   # bind with original
   bind_rows(vmt_city_alone) %>%
   arrange(year) %>%
-  group_by(ctu_name) %>%
+  group_by(ctu_name, ctu_name_full) %>%
   # interpolate using midpoint method
   # for missing values
   # grouped by county
@@ -765,12 +777,13 @@ vmt_interp <- vmt_city_alone %>%
 # review and check that values make sense for all ctus
 # re-assign column values to match original data
 vmt_ctu <- vmt_interp %>%
+  ungroup() %>% 
   mutate(
     daily_vmt = daily_approx,
     annual_vmt = annual_approx,
     centerline_miles = centerline_approx
   ) %>%
-  select(-daily_approx, -annual_approx, -centerline_approx) %>% 
-  ungroup()
+  select(-daily_approx, -annual_approx, -centerline_approx, -ctu_name_full) 
 
 saveRDS(vmt_ctu, "_transportation/data-raw/mndot/mndot_vmt_ctu.RDS")
+
