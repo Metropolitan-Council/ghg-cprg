@@ -1,8 +1,11 @@
 #### Create county and CTU temporary inventory graphs for 11-14-2024 steering committee meeting
+source("R/_load_pkgs.R")
+
 
 ### directory to save ggplot items in
 
 wd <- "C:/Users/WilfahPA/OneDrive - Metropolitan Council/CPRG/Steering committee graphics/November meeting/"
+
 
 ### county graphs
 
@@ -166,12 +169,65 @@ subsector_comparison <- ggplot(
 
 subsector_comparison
 
+
+
 # ggsave(paste0(wd,"ghg_subsector.png"),
 #        subsector_comparison,
 #        width = 14,
 #        height = 8,
 #        units = "in",
 #        dpi = 400)
+
+### subsector by county population
+
+emissions_subsector_per_capita <- county_emissions %>% 
+  mutate(emissions_per_capita = emissions_metric_tons_co2e / county_total_population) %>% 
+  group_by(year, geog_name, sector, category) %>% 
+  summarize(emissions_per_capita = sum(emissions_per_capita)) %>% 
+  mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building energy", "Industrial", "Waste", "Agriculture", "Nature"))) %>% 
+  mutate(year = if_else(
+    category == "Small industrial" & year == 2020,
+    2021,
+    year
+  ))
+
+electricity_per_capita_comparison <- ggplot(
+  emissions_subsector_per_capita %>%
+    filter(year == 2021, sector == "Electricity"),
+  aes(x = geog_name, y = emissions_per_capita, fill = category)
+) +
+  geom_bar(stat = 'identity', position = 'stack') +
+  labs(fill = "Subsector") +
+  scale_fill_manual(values = category_colors_vector) +
+  theme_minimal() +
+  xlab("") +
+  ylab(expression(paste("Metric tons of ", CO[2], "e per capita"))) +
+  theme(
+    panel.grid.major.x = element_blank(),
+    axis.text.x = element_text(size = 20, angle = -90),
+    text = element_text(size = 20, family = "sans")
+  )
+
+electricity_per_capita_comparison
+
+transportation_per_capita_comparison <- ggplot(
+  emissions_subsector_per_capita %>%
+    filter(year == 2021, sector == "Transportation", geog_name != "MSP Airport"),
+  aes(x = geog_name, y = emissions_per_capita, fill = category)
+) +
+  geom_bar(stat = 'identity', position = 'stack') +
+  labs(fill = "Subsector") +
+  scale_fill_manual(values = category_colors_vector) +
+  theme_minimal() +
+  xlab("") +
+  ylab(expression(paste("Metric tons of ", CO[2], "e per capita"))) +
+  theme(
+    panel.grid.major.x = element_blank(),
+    axis.text.x = element_text(size = 20, angle = -90),
+    text = element_text(size = 20, family = "sans")
+  )
+
+transportation_per_capita_comparison
 
 # iterate the subsector graphs across counties
 
