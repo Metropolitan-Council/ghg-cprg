@@ -828,3 +828,4 @@ vmt_ctu <- vmt_interp %>%
 
 saveRDS(vmt_ctu, "_transportation/data-raw/mndot/mndot_vmt_ctu.RDS")
 
+saveRDS(vmt_ctu, "_transportation/data/mndot_vmt_ctu.RDS")
