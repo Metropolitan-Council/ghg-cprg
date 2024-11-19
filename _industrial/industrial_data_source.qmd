@@ -12,7 +12,7 @@ nei_emissions <- readRDS(file.path(here::here(), "_industrial/data/nei_county_in
 subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))
 nrel_emissions <- county_emissions %>% 
   filter(category == "Industrial energy" & source == "Natural gas")
-
+mpca_emissions <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions.RDS"))
 
 ```
 
@@ -153,7 +153,7 @@ fig_subpart_c_all_comparison
 
 ```
 
-When expanding to industrial point sources that have combust fuel but have additional subparts, we see that they lie on or above the 1:1 line (excepting the previously discussed HERC), which is what we would expect. There are process emissions in addition to fuel combustion.
+When expanding to industrial point sources that combust fuel but have additional subparts, we see that they lie on or above the 1:1 line (excepting the previously discussed HERC), which is what we would expect. There are process emissions in addition to fuel combustion.
 
 
 # Natural Gas
@@ -338,5 +338,4 @@ fig_industrial_ng_emissions2
 
 ### Scaling to CTUs
 
-The ICLEI U.S. Community Protocol recommends, in the absence of CTU level livestock or crop production data, downscaling from county data using the ratio of agricultural land in the community to agricultural land in the county. We followed this approach for downscaling county level emissions using NLCD land cover data to find the ratio of CTU agricultural land to county agricultural land. Future work may seek to downscale livestock counts and crop production directly, to allow more direct reduction measure estimations for various agricultural components (e.g. changes to cattle feed additives that may reduce enteric fermentation).
----
+
