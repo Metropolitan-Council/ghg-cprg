@@ -9,12 +9,20 @@ ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   left_join(cprg_county) %>% 
   mutate(ctu_name_full = paste0(ctu_name, ", ", ctu_class))
 
+# get critical metadata 
+ctu_population_meta <- readRDS("_meta/data/ctu_population_meta.RDS")
+ctu_metadata <- ctu_population %>% 
+  select(geoid, ctuid, ctu_name, ctu_class, county_name) %>% 
+  unique()
+dot_vmt_meta <- readRDS("_transportation/data/dot_vmt_meta.RDS")
+
+
 mndot_vmt_county <- readRDS("_transportation/data-raw/mndot/mndot_vmt_county.RDS")
 mndot_route_system <- readRDS("_transportation/data-raw/mndot/mndot_route_system.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS") %>% 
   mutate(ctu_name_full = paste0(ctu_name, ", ", ctu_class))
 
-# TODO bring in the percent sampled column, which is present for 2019 onward
+
 # check for needed files
 if (file.exists("_transportation/data-raw/mndot/city_route_system/23_ccr.xlsx") == FALSE) {
   cli::cli_abort(c(
@@ -496,7 +504,72 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
     ctu_name_full = paste0(ctu_name, ", ", ctu_class)
   ) %>% 
   left_join(mndot_route_system,
-            by = "route_system")
+            by = "route_system") %>% 
+  # create correct county names for each CTU
+  mutate(
+    correct_county_name =
+      case_when(
+        ctu_name %in% c("Columbia Heights",
+                        "Columbus",
+                        "Lino Lakes",
+                        "Fridley",
+                        "Nowthen",
+                        "Ramsey",
+                        "Saint Francis"
+        ) ~ "Anoka",
+        ctu_name %in% c("Victoria"
+        ) ~ "Carver",
+        ctu_name %in% c("Mendota Heights",
+                        "South Saint Paul",
+                        "Burnsville",
+                        "Lakeville",
+                        "South Saint Paul"
+        ) ~ "Dakota",
+        ctu_name %in% c(
+          "Saint Paul",
+          "Maplewood",
+          "Mounds View",
+          "New Brighton",
+          "North Oaks",
+          "North Saint Paul",
+          "Roseville"
+        ) ~ "Ramsey",
+        ctu_name %in% c(
+          "Minneapolis",
+          "Bloomington",
+          "Champlin",
+          "Eden Prairie",
+          "Independence",
+          "Minnetonka",
+          "Minnetrista"
+        ) ~ "Hennepin",
+        ctu_name %in% c("Savage",
+                        "Credit River"
+        ) ~ "Scott",
+        ctu_name %in% c("Forest Lake",
+                        "Hugo",
+                        "Birchwood Village",
+                        "Dellwood",
+                        "Grant",
+                        "Mahtomedi",
+                        "Newport",
+                        "Oakdale",
+                        "Scandia",
+                        "Woodbury"
+        ) ~ "Washington",
+        ctu_name %in% c("Otsego") ~ "Wright",
+        ctu_name %in% c("Wyoming") ~ "Chisago",
+        ctu_name == "Saint Anthony" & county_name == "Anoka" ~ "Hennepin",
+        # expected splits
+        ctu_name %in% c("Blaine",
+                        "Chanhassen",
+                        "Hastings",
+                        "Saint Anthony",
+                        "Shorewood",
+                        "Spring Lake Park",
+                        "White Bear Lake") ~ county_name,
+        TRUE ~ county_name))
+
 
 
 # find reliable cities ----- 
@@ -516,7 +589,7 @@ ctu_n_years <- vmt_city_raw %>%
   ungroup() %>% 
   # filter such that we have a full time series for 
   # year 2014 onward
-  filter(n_years >= (as.numeric(max(vmt_city_raw$year)) - 2014))
+  filter(n_years >= (as.numeric(max(vmt_city_raw$year)) - 2013))
 
 # we only have % sampled for years 2017 onward
 # A percent sampled of 0 indicates that there has  never been a submitted count for the  given route system in the CTU.
@@ -792,10 +865,35 @@ vmt_city_raw %>%
   )
 
 # interpolate 2015 data -----
-vmt_interp <- vmt_city_alone %>%
+
+vmt_ctu_county <- vmt_city_raw %>% 
+  filter(ctu_name_full %in% reliable_ctu$ctu_name_full,
+         cprg_area == TRUE,
+         ctu_name %in% ctu_population$ctu_name) %>% 
+  group_by(year, correct_county_name, ctu_name, ctu_name_full,
+           ctu_class, cprg_area) %>%
+  summarize(
+    daily_vmt = sum(daily_vmt, na.rm = TRUE),
+    annual_vmt = sum(annual_vmt, na.rm = TRUE),
+    centerline_miles = sum(centerline_miles, na.rm = TRUE),
+    .groups = "keep"
+  ) %>% 
+  # use correct county names for final dataset
+  mutate(county_name = correct_county_name)
+
+# find our county/CTUs with fewer than 9 years of data 
+# meaning that they only started reporting in 2016
+short_ctu <- vmt_ctu_county %>% 
+  ungroup() %>% 
+  select(ctu_name, ctu_name_full, ctu_class, county_name) %>%
+  group_by(ctu_name, ctu_name_full, ctu_class, county_name) %>% 
+  count(name = "n_years") %>% 
+  filter(n_years < 9)
+
+vmt_interp <- vmt_ctu_county %>%
   # first create an NA 2015 dataset
   ungroup() %>%
-  select(ctu_name, ctu_name_full) %>%
+  select(ctu_name, ctu_name_full, ctu_class, county_name) %>%
   unique() %>%
   mutate(
     year = "2015",
@@ -803,9 +901,11 @@ vmt_interp <- vmt_city_alone %>%
     annual_vmt = NA
   ) %>%
   # bind with original
-  bind_rows(vmt_city_alone) %>%
+  bind_rows(vmt_ctu_county) %>%
   arrange(year) %>%
-  group_by(ctu_name, ctu_name_full) %>%
+  group_by(ctu_name, ctu_name_full, ctu_class, county_name) %>% 
+  anti_join(short_ctu) %>% 
+  # count()
   # interpolate using midpoint method
   # for missing values
   # grouped by county
@@ -813,8 +913,24 @@ vmt_interp <- vmt_city_alone %>%
     annual_approx = zoo::na.approx(annual_vmt),
     daily_approx = zoo::na.approx(daily_vmt),
     centerline_approx = zoo::na.approx(centerline_miles)
+  ) %>% 
+  bind_rows(
+    # for our CTUs without 2014 data to go off of
+    # we will assign 2016 VMT to 2015
+    vmt_ctu_county %>% 
+      inner_join(short_ctu) %>%
+      # get 2016 data
+      filter(year == 2016) %>% 
+      # reassign year to 2015
+      mutate(year = "2015",
+             annual_approx = annual_vmt,
+             daily_approx = daily_vmt,
+             centerline_approx = centerline_miles)
   )
 
+
+
+# complete and save -----
 # review and check that values make sense for all ctus
 # re-assign column values to match original data
 vmt_ctu <- vmt_interp %>%
