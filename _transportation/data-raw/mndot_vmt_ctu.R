@@ -824,8 +824,27 @@ vmt_ctu <- vmt_interp %>%
     annual_vmt = annual_approx,
     centerline_miles = centerline_approx
   ) %>%
-  select(-daily_approx, -annual_approx, -centerline_approx, -ctu_name_full) 
+  select(-daily_approx, -annual_approx, -centerline_approx, -ctu_name_full) %>% 
+  # join with metadata
+  left_join(ctu_metadata, by = c("ctu_name", "ctu_class", "county_name")) %>% 
+  # select only needed columns
+  select(geoid, ctuid, ctu_name, ctu_class,
+         vmt_year = year, daily_vmt, annual_vmt,
+         centerline_miles) %>% 
+  # remove CTUs outside the 7-county metro area
+  filter(!is.na(ctuid)) %>% 
+  mutate(interpolation = ifelse(vmt_year == "2015", "Interpolated", "Original"))
 
-saveRDS(vmt_ctu, "_transportation/data-raw/mndot/mndot_vmt_ctu.RDS")
+vmt_ctu_meta <- bind_rows(ctu_population_meta,
+                          dot_vmt_meta) %>% 
+  filter(Column %in% names(vmt_ctu)) %>% 
+  bind_rows(
+    tribble(
+      ~"Column", ~"Class", ~"Description",
+      "interpolation", class(vmt_ctu$interpolation), "Original or interpolated data",
+      
+    )
+  )
 
 saveRDS(vmt_ctu, "_transportation/data/mndot_vmt_ctu.RDS")
+saveRDS(vmt_ctu_meta, "_transportation/data/mndot_vmt_ctu_meta.RDS")
