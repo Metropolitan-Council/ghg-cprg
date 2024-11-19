@@ -30,17 +30,22 @@ fuel_emission_factors <- ghg_factor_hub$industrial_combustion %>%
     `Fuel type` == "Municipal Solid Waste" ~ "Waste,Solid",
     `Fuel type` == "Kerosene-Type Jet Fuel" ~ "Jet Fuel",
     `Fuel type` == "Used Oil" ~ "Waste Oil",
+    # Methanol has no match, and is most chemically similar to ethanol
+    `Fuel type` == "Ethanol (100%)" ~ "Methanol",
     # leftovers with no clear analogue being lumped into other
     `Fuel type` %in% "Other Oil (>401 deg F)" ~ "Other Oil",
     TRUE ~ `Fuel type`
   )) %>% 
   group_by(fuel_category, fuel_form, emission, per_unit, fuel_type) %>% 
   summarize(value = mean(value)) %>% 
-  arrange(fuel_type) 
-### add in transportation and waste sectors later
-# %>% 
-#   bind_rows(.,
-#             ghg_factor_hub$mobile_combustion %>% 
+  arrange(fuel_type) %>% 
+   bind_rows(.,
+             ghg_factor_hub$mobile_combustion %>% 
+               filter(`Fuel Type` == "Diesel Fuel") %>% 
+               rename(fuel_type = `Fuel Type`, value = `kg CO2 per unit`, per_unit = Unit) %>% 
+               mutate(fuel_category = "Petroleum Products",
+                      fuel_form = "Liquid",
+                      emission = "kg CO2"))
 #               mutate(fuel_type = case_when(
 #                 grepl("Distillate Fuel", `Fuel type`) ~ "Distillate Oil",
 #                 `Fuel type` == "Sub-bituminous Coal" ~ "Coal,Subbit",
@@ -70,7 +75,9 @@ mpca_fuel_formatted <- mpca_fuel %>%
   ## bring in county and ctu IDs
   mutate(county_name = str_to_sentence(county_name)) %>% 
   filter(county_name %in% c(cprg_county$county_name),
-         !sector %in% c("Waste", "Transportation", "Electric Power")) %>% 
+         !sector %in% c("Waste", "Transportation", "Electric Power"),
+         #can't figure out waht this is - only unit reported in barrels
+         !standard_material_code == "REFINERY FED") %>% 
   left_join(cprg_county %>% select(county_name, geoid),
             by = "county_name") %>% 
   left_join(ctu_population %>% 
@@ -86,20 +93,57 @@ mpca_fuel_formatted <- mpca_fuel %>%
            TRUE ~ activity_amt
          ),
          unit_activity = case_when(
-           grepl("FT3", activity_unit_code) ~ "cubic_feet",
+           grepl("FT3", activity_unit_code) ~ "scf",
            grepl("GAL", activity_unit_code) ~ "gallon",
            grepl("BBL", activity_unit_code) ~ "barrel",
-           grepl("Ton", activity_unit_code) ~ "standard_ton"
+           grepl("TON", activity_unit_code) ~ "short ton"
          ),
          fuel_type = str_to_title(standard_material_code)) %>% 
-  mutate(fuel_type = if_else(fuel_type %in% fuel_emission_factors$fuel_type,
-                             fuel_type,"Other Oil")) %>% 
+  mutate(fuel_type = case_when(
+    fuel_type %in% fuel_emission_factors$fuel_type ~ fuel_type,
+    fuel_type == "Gas" ~ "Natural Gas",
+    TRUE ~ "Other Oil")) %>% 
   select(county_name, county_id = geoid, ctu_name = geo_city_name, ctuid,
-         inventory_year, value_activity, unit_activity,fuel_type,
+         inventory_year, value_activity, unit_activity,fuel_type, source_name,
          sector, naics_description)
 
   
 mpca_fuel_emissions <- mpca_fuel_formatted %>% 
   left_join(.,fuel_emission_factors,
-            by="fuel_type",
-            relationship = "many-to-many")
+            by= c("fuel_type",
+                 "unit_activity" = "per_unit"),
+            relationship = "many-to-many") %>% 
+  filter(emission != "mmBtu") %>% 
+  # convert conversion factor to produce metric tons
+  mutate(value_mt = as.numeric(case_when(
+    grepl("CO2", emission) ~ value * units::as_units("kilogram") %>%
+      units::set_units("metric_ton"),
+    TRUE ~ value *  units::as_units("gram") %>%
+      units::set_units("metric_ton"))),
+    #calculate emissions based on activity and MT emission factor
+    value_emissions = value_mt * value_activity,
+    unit_emissions = paste("Metric tons", sub(".* ", "", emission))) %>% 
+  group_by(county_name, county_id, ctu_name, ctuid,
+           inventory_year,fuel_category, fuel_type, unit_emissions, 
+           source_name, sector, naics_description) %>% 
+  summarize(value_emissions = sum(value_emissions)) 
+  
+mpca_fuel_emissions_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "source_name", class(mpca_fuel_emissions$source_name), "Facility name",
+    "naics_description", class(mpca_fuel_emissions$naics_description), "NAICS description of facility type",
+    "county_name", class(mpca_fuel_emissions$county_name), "County name",
+    "county_id", class(mpca_fuel_emissions$county_id), "County geographic ID",
+    "ctu_name", class(mpca_fuel_emissions$ctu_name), "City name",
+    "ctuid", class(mpca_fuel_emissions$ctuid), "CTU geographic ID",
+    "sector", class(mpca_fuel_emissions$sector), "Economic sector of point source: Industrial or Commercial",
+    "inventory_year", class(mpca_fuel_emissions$inventory_year), "Year of activity",
+    "fuel_category", class(mpca_fuel_emissions$fuel_category), "General category of fuel combusted",
+    "fuel_type", class(mpca_fuel_emissions$fuel_type), "Specific type of fuel combusted",
+    "value_emissions", class(mpca_fuel_emissions$value_emissions), "Numerical value of emissions data",
+    "unit_emissions", class(mpca_fuel_emissions$unit_emissions), "Units of emissions data"
+  )
+
+saveRDS(mpca_fuel_emissions, "./_industrial/data/mpca_fuel_emissions.rds")
+saveRDS(mpca_fuel_emissions_meta, "./_industrial/data/mpca_fuel_emissions_meta.rds")
