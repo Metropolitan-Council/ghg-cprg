@@ -1,5 +1,5 @@
 testthat::test_that("state DOT VMT", {
-  mndot_vmt_ctu <- readRDS(file.path(here::here(), "_transportation/data-raw/mndot/mndot_vmt_ctu.RDS"))
+  mndot_vmt_ctu <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu.RDS"))
   
   testthat::expect_equal(nrow(mndot_vmt_ctu), 2819)
   
