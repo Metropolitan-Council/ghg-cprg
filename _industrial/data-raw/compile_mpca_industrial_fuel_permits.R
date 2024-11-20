@@ -1,7 +1,7 @@
 ##### read in MPCA data fuel combustion data
 
 source("R/_load_pkgs.R")
-
+source("R/global_warming_potential.R")
 
 cprg_county <- readRDS("_meta/data/cprg_county.rds") %>% 
   st_drop_geometry()
@@ -108,7 +108,7 @@ mpca_fuel_formatted <- mpca_fuel %>%
          sector, naics_description)
 
   
-mpca_fuel_emissions <- mpca_fuel_formatted %>% 
+mpca_fuel_emissions_gas <- mpca_fuel_formatted %>% 
   left_join(.,fuel_emission_factors,
             by= c("fuel_type",
                  "unit_activity" = "per_unit"),
@@ -128,6 +128,28 @@ mpca_fuel_emissions <- mpca_fuel_formatted %>%
            source_name, sector, naics_description) %>% 
   summarize(value_emissions = sum(value_emissions)) 
   
+mpca_fuel_emissions_co2e <- mpca_fuel_formatted %>% 
+  left_join(.,fuel_emission_factors,
+            by= c("fuel_type",
+                  "unit_activity" = "per_unit"),
+            relationship = "many-to-many") %>% 
+  filter(emission != "mmBtu") %>% 
+  # convert conversion factor to produce metric tons
+  mutate(value_mt = as.numeric(case_when(
+    grepl("CO2", emission) ~ value * units::as_units("kilogram") %>%
+      units::set_units("metric_ton"),
+    grepl("CH4", emission) ~ value * gwp$ch4 * units::as_units("kilogram") %>%
+      units::set_units("metric_ton"),
+    grepl("N2O", emission) ~ value * gwp$n2o * units::as_units("kilogram") %>%
+      units::set_units("metric_ton"))),
+    #calculate emissions based on activity and MT emission factor
+    value_emissions = value_mt * value_activity,
+    unit_emissions = "Metric tons CO2e") %>% 
+  group_by(county_name, county_id, ctu_name, ctuid,
+           inventory_year,fuel_category, fuel_type, unit_emissions, 
+           source_name, sector, naics_description) %>% 
+  summarize(value_emissions = sum(value_emissions)) 
+
 mpca_fuel_emissions_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
@@ -145,5 +167,7 @@ mpca_fuel_emissions_meta <-
     "unit_emissions", class(mpca_fuel_emissions$unit_emissions), "Units of emissions data"
   )
 
-saveRDS(mpca_fuel_emissions, "./_industrial/data/mpca_fuel_emissions.rds")
+saveRDS(mpca_fuel_emissions_gas, "./_industrial/data/mpca_fuel_emissions_by_gas.rds")
+saveRDS(mpca_fuel_emissions_co2e, "./_industrial/data/mpca_fuel_emissions.rds")
 saveRDS(mpca_fuel_emissions_meta, "./_industrial/data/mpca_fuel_emissions_meta.rds")
+saveRDS(mpca_fuel_emissions_meta, "./_industrial/data/mpca_fuel_emissions_by_gas_meta.rds")
