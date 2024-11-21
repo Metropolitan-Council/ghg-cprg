@@ -10,10 +10,10 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 
 # NOTE: Great River Energy, which supplies energy to many MN electric co-ops,
 #  reports their sales to the state and their reporting stands in for.... FILL IN
-dir_mn_electricity <- here("_energy", "data-raw", "mn_utility_reporting")
+dir_mn_electricity_state <- here("_energy", "data-raw", "mn_elec_utility_reporting_state")
 
 # Get list of Excel files in the directory
-file_list <- list.files(path = dir_mn_electricity, pattern = "\\.xlsx$", full.names = TRUE)
+#file_list <- list.files(path = dir_mn_electricity_state, pattern = "\\.xlsx$", full.names = TRUE)
 
 # Function to process each file and read the electricity delivered to each county by each utility
 process_file <- function(file_path) {
@@ -112,7 +112,7 @@ process_file <- function(file_info) {
 }
 
 # Apply process_file to each file in the nested structure and combine the results
-file_list <- get_files("mn_utility_reporting")
+file_list <- get_files(dir_mn_electricity_state)
 combined_MNelectUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
 
 
