@@ -116,11 +116,11 @@ wisconsin_vmt <- wisconsin_vmt_raw %>%
       )
   ) %>%
   mutate(
-    Daily = str_remove_all(Daily, "[:punct:]") %>% 
-      str_remove_all(" ") %>% 
+    Daily = str_remove_all(Daily, "[:punct:]") %>%
+      str_remove_all(" ") %>%
       as.numeric(),
     ANNUAL = str_remove_all(ANNUAL, ",") %>% as.numeric()
-  ) %>% 
+  ) %>%
   clean_names() %>%
   mutate(
     county = stringr::str_to_title(county),

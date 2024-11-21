@@ -476,8 +476,8 @@ county_crs[["2023"]] <- readxl::read_excel(
 
 # bind all datasets together
 vmt_county_raw <- data.table::rbindlist(county_crs,
-                                        fill = TRUE,
-                                        idcol = "year"
+  fill = TRUE,
+  idcol = "year"
 ) %>%
   # remove extra columns
   select(-x100_percent_due_to_rounding) %>%
@@ -514,7 +514,8 @@ vmt_county_raw <- data.table::rbindlist(county_crs,
 
 vmt_county_raw_route_system <- vmt_county_raw %>%
   left_join(mndot_route_system,
-            by = "route_system")
+    by = "route_system"
+  )
 
 # remove from environment
 # rm(county_crs)
@@ -580,7 +581,7 @@ vmt_county <- vmt_county_raw_interp %>%
     annual_vmt = sum(annual_vmt),
     centerline_miles = sum(centerline_miles),
     .groups = "keep"
-  ) %>% 
+  ) %>%
   ungroup()
 
 

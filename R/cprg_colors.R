@@ -48,7 +48,6 @@ source_colors <- list(
   # we still need these colors for DOT VMT docs
   "Medium-duty vehicles" = "#fe9929",
   "Heavy-duty vehicles" = "#fee391",
-  
   "Gasoline fueled vehicles" = "#db4a33",
   "Diesel fueled vehicles" = "#feb24c",
   "Other fueled vehicles" = "#ffeda0",
