@@ -88,10 +88,9 @@ mpca_fuel_formatted <- mpca_fuel %>%
   ### clean variables
   mutate(inventory_year = as.numeric(gsub("EI ","", inventory_id)),
          value_activity = case_when(
-           grepl("E3", activity_unit_code) ~ activity_amt * 1000,
-           grepl("E6", activity_unit_code) ~ activity_amt * 1000000,
-           TRUE ~ activity_amt
-         ),
+           grepl("E3", activity_unit_code) ~ activity_amt * 10^3,
+           grepl("E6", activity_unit_code) ~ activity_amt * 10^6,
+           TRUE ~ activity_amt),
          unit_activity = case_when(
            grepl("FT3", activity_unit_code) ~ "scf",
            grepl("GAL", activity_unit_code) ~ "gallon",
