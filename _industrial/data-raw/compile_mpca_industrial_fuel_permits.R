@@ -138,9 +138,9 @@ mpca_fuel_emissions_co2e <- mpca_fuel_formatted %>%
   mutate(value_mt = as.numeric(case_when(
     grepl("CO2", emission) ~ value * units::as_units("kilogram") %>%
       units::set_units("metric_ton"),
-    grepl("CH4", emission) ~ value * gwp$ch4 * units::as_units("kilogram") %>%
+    grepl("CH4", emission) ~ value * gwp$ch4 * units::as_units("gram") %>%
       units::set_units("metric_ton"),
-    grepl("N2O", emission) ~ value * gwp$n2o * units::as_units("kilogram") %>%
+    grepl("N2O", emission) ~ value * gwp$n2o * units::as_units("gram") %>%
       units::set_units("metric_ton"))),
     #calculate emissions based on activity and MT emission factor
     value_emissions = value_mt * value_activity,
