@@ -72,7 +72,9 @@ get_files <- function(root_dir) {
       
       # Append each file path with utility and year information
       for (file in files) {
-        file_info <- append(file_info, list(list(file_path = file, utility_name = utility_name, year = year)))
+        file_info <- append(file_info, list(list(file_path = file,
+                                                 utility_name = utility_name,
+                                                 year = year)))
       }
     }
   }
@@ -102,7 +104,8 @@ process_file <- function(file_info) {
     filter(county %in% c(
       "Anoka", "Carver", "Dakota", "Hennepin", "Ramsey",
       "Scott", "Sherburne", "Chisago", "Washington"
-    ))
+    )) %>%
+    filter(!is.na(mWh_delivered))
   
   # Add utility name and year columns
   combined_data$utility <- utility_name
