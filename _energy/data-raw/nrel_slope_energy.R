@@ -7,6 +7,7 @@ library(stringr)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
+mn_util_type <- readRDS("_energy/data/distinct_electricity_util_type_MN.RDS")
 minnesota_elec_estimate_2021 <- readRDS("_energy/data/minnesota_elecUtils_ActivityAndEmissions_2021.RDS")
 
 # NREL SLOPE energy consumption and expenditure data download, cleaning, and viz
