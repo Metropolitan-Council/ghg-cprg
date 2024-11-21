@@ -8,6 +8,29 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 # https://mn.gov/commerce/energy/industry-government/utilities/annual-reporting.jsp
 # based on the contents of MNutilities_in_scope$utility_name
 
+
+egridTimeSeries <- epa_ghg_factor_hub$egrid
+
+
+# Define the years available in the dataset
+eGRID_years <- c(2005, 2007, 2009, 2010, 2012, 2014, 2016, 2018, 2019, 2020, 2021, 2022)
+egrid2005_to_2022 <- data.frame(
+  eGrid_Subregion = rep("MROW (MRO West)", length(eGRID_years) * 3), # Repeat for all rows
+  factor_type = rep("Total output", length(eGRID_years) * 3),        # Repeat for all rows
+  emission = rep(c("lb CO2", "lb CH4", "lb N2O"), each = length(eGRID_years)), # Repeat emission types for all eGRID_years
+  per_unit = rep("MWh", length(eGRID_years) * 3),                    # Repeat for all rows
+  value = c(
+    # CO2 values
+    1821.84, 1722.67, 1628.60, 1536.36, 1425.15, 1365.1, 1238.8, 1239.8, 1098.4, 979.5, 995.8, 936.5,
+    # CH4 values (converted from GWh to MWh where applicable)
+    28 / 1000, 28.97 / 1000, 28.80 / 1000, 28.53 / 1000, 27.60 / 1000, 161.4 / 1000, 0.115, 0.138, 0.119, 0.104, 0.107, 0.102,
+    # N2O values (converted from GWh to MWh where applicable)
+    30.71 / 1000, 29.19 / 1000, 27.79 / 1000, 26.29 / 1000, 24.26 / 1000, 23.3 / 1000, 0.020, 0.020, 0.017, 0.015, 0.015, 0.015
+  ),
+  Year = rep(eGRID_years, times = 3), # Repeat each year for each emission
+  Source = paste("EPA eGRID", rep(eGRID_years, times = 3)) # Add source for each emission/year
+)
+
 # root directory with folders for each utility in scope (with each folder containing subfolders for all years which reporting to the state is available)
 dir_mn_electricity_state <- here("_energy", "data-raw", "mn_elec_utility_reporting_state")
 
