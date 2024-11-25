@@ -137,8 +137,9 @@ processed_mn_elecUtil_activityData <- combined_MNelectUtil_activityData %>%
          -`lb N2O`)
 
 MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
-  group_by(county) %>%
+  group_by(year, county) %>%
   summarise(
+    total_mWh_delivered = sum(mWh_delivered, na.rm = TRUE),
     total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
     total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
     total_CH4_emissions_lbs = sum(CH4_emissions, na.rm = TRUE),
@@ -157,21 +158,21 @@ MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
       units::set_units("metric_ton") %>%
       as.numeric()
   ) %>%
+  ungroup() %>%
   mutate(
     state = "MN",
-    sector = "Electricity",
-    year = 2021
+    sector = "Electricity"
   )
 
 
-write_rds(processed_mn_elecUtil_activityData, here("_energy", "data", "minnesota_elecUtils_ActivityAndEmissions_2021.RDS"))
-write_rds(MNcounty_level_electricity_emissions, here("_energy", "data", "minnesota_county_ElecEmissions_2021.RDS"))
+write_rds(processed_mn_elecUtil_activityData, here("_energy", "data", "minnesota_elecUtils_ActivityAndEmissions.RDS"))
+write_rds(MNcounty_level_electricity_emissions, here("_energy", "data", "minnesota_county_elec_ActivityAndEmissions.RDS"))
 
+
+# OUT OF DATE -- written for just 2021
 # compare numbers we obtained to downscaled EIA numbers
 # read in EIA state estimate (mWh) for MN -- https://www.eia.gov/electricity/state/archive/2021/minnesota/
-
 EIA_MN_elecRetailEst_mWh <- 66589168
-
 
 MN_currentCounty_deliveries <- read_rds(here(
   "_energy",
