@@ -104,7 +104,7 @@ mpca_fuel_formatted <- mpca_fuel %>%
     TRUE ~ "Other Oil")) %>% 
   select(county_name, county_id = geoid, ctu_name = geo_city_name, ctuid,
          inventory_year, value_activity, unit_activity,fuel_type, source_name,
-         sector, naics_description)
+         sector, naics, naics_description)
 
   
 mpca_fuel_emissions_gas <- mpca_fuel_formatted %>% 
@@ -124,7 +124,7 @@ mpca_fuel_emissions_gas <- mpca_fuel_formatted %>%
     unit_emissions = paste("Metric tons", sub(".* ", "", emission))) %>% 
   group_by(county_name, county_id, ctu_name, ctuid,
            inventory_year,fuel_category, fuel_type, unit_emissions, 
-           source_name, sector, naics_description) %>% 
+           source_name, sector, naics, naics_description) %>% 
   summarize(value_emissions = sum(value_emissions)) 
   
 mpca_fuel_emissions_co2e <- mpca_fuel_formatted %>% 
@@ -146,24 +146,25 @@ mpca_fuel_emissions_co2e <- mpca_fuel_formatted %>%
     unit_emissions = "Metric tons CO2e") %>% 
   group_by(county_name, county_id, ctu_name, ctuid,
            inventory_year,fuel_category, fuel_type, unit_emissions, 
-           source_name, sector, naics_description) %>% 
+           source_name, sector, naics, naics_description) %>% 
   summarize(value_emissions = sum(value_emissions)) 
 
 mpca_fuel_emissions_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "source_name", class(mpca_fuel_emissions$source_name), "Facility name",
-    "naics_description", class(mpca_fuel_emissions$naics_description), "NAICS description of facility type",
-    "county_name", class(mpca_fuel_emissions$county_name), "County name",
-    "county_id", class(mpca_fuel_emissions$county_id), "County geographic ID",
-    "ctu_name", class(mpca_fuel_emissions$ctu_name), "City name",
-    "ctuid", class(mpca_fuel_emissions$ctuid), "CTU geographic ID",
-    "sector", class(mpca_fuel_emissions$sector), "Economic sector of point source: Industrial or Commercial",
-    "inventory_year", class(mpca_fuel_emissions$inventory_year), "Year of activity",
-    "fuel_category", class(mpca_fuel_emissions$fuel_category), "General category of fuel combusted",
-    "fuel_type", class(mpca_fuel_emissions$fuel_type), "Specific type of fuel combusted",
-    "value_emissions", class(mpca_fuel_emissions$value_emissions), "Numerical value of emissions data",
-    "unit_emissions", class(mpca_fuel_emissions$unit_emissions), "Units of emissions data"
+    "source_name", class(mpca_fuel_emissions_co2e$source_name), "Facility name",
+    "naics", class(mpca_fuel_emissions_co2e$naics), "NAICS code for facility",
+    "naics_description", class(mpca_fuel_emissions_co2e$naics_description), "NAICS description of facility type",
+    "county_name", class(mpca_fuel_emissions_co2e$county_name), "County name",
+    "county_id", class(mpca_fuel_emissions_co2e$county_id), "County geographic ID",
+    "ctu_name", class(mpca_fuel_emissions_co2e$ctu_name), "City name",
+    "ctuid", class(mpca_fuel_emissions_co2e$ctuid), "CTU geographic ID",
+    "sector", class(mpca_fuel_emissions_co2e$sector), "Economic sector of point source: Industrial or Commercial",
+    "inventory_year", class(mpca_fuel_emissions_co2e$inventory_year), "Year of activity",
+    "fuel_category", class(mpca_fuel_emissions_co2e$fuel_category), "General category of fuel combusted",
+    "fuel_type", class(mpca_fuel_emissions_co2e$fuel_type), "Specific type of fuel combusted",
+    "value_emissions", class(mpca_fuel_emissions_co2e$value_emissions), "Numerical value of emissions data",
+    "unit_emissions", class(mpca_fuel_emissions_co2e$unit_emissions), "Units of emissions data"
   )
 
 saveRDS(mpca_fuel_emissions_gas, "./_industrial/data/mpca_fuel_emissions_by_gas.rds")
