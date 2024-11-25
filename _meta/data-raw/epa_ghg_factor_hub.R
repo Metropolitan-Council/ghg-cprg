@@ -411,6 +411,25 @@ egrid <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
   mutate(across(1:4, stringr::str_trim)) %>%
   mutate(Source = "EPA eGRID2019, February 2021")
 
+# Time series eGRID as a separate object 
+# Define the years available in the dataset
+eGRID_years <- c(2005, 2007, 2009, 2010, 2012, 2014, 2016, 2018, 2019, 2020, 2021, 2022)
+egrid2005_to_2022 <- tibble::tibble(
+  eGrid_Subregion = rep("MROW (MRO West)", length(eGRID_years) * 3), # Repeat for all rows
+  factor_type = rep("Total output", length(eGRID_years) * 3),        # Repeat for all rows
+  emission = rep(c("lb CO2", "lb CH4", "lb N2O"), each = length(eGRID_years)), # Repeat emission types for all eGRID_years
+  per_unit = rep("MWh", length(eGRID_years) * 3),                    # Repeat for all rows
+  value = c(
+    # CO2 values
+    1821.84, 1722.67, 1628.60, 1536.36, 1425.15, 1365.1, 1238.8, 1239.8, 1098.4, 979.5, 995.8, 936.5,
+    # CH4 values (converted from GWh to MWh where applicable)
+    28 / 1000, 28.97 / 1000, 28.80 / 1000, 28.53 / 1000, 27.60 / 1000, 161.4 / 1000, 0.115, 0.138, 0.119, 0.104, 0.107, 0.102,
+    # N2O values (converted from GWh to MWh where applicable)
+    30.71 / 1000, 29.19 / 1000, 27.79 / 1000, 26.29 / 1000, 24.26 / 1000, 23.3 / 1000, 0.020, 0.020, 0.017, 0.015, 0.015, 0.015
+  ),
+  Year = rep(eGRID_years, times = 3), # Repeat each year for each emission
+  Source = paste("EPA eGRID", rep(eGRID_years, times = 3)) # Add source for each emission/year
+)
 
 
 # Table: 7	Steam and Heat ----
@@ -610,6 +629,7 @@ epa_ghg_factor_hub <- list(
       `eGrid Subregion` == "MROW (MRO West)",
       factor_type == "Total output"
     ),
+  "egridTimeSeries" = egrid2005_to_2022,
   "stationary_combustion" = stationary_combustion %>%
     filter(`Fuel type` %in% c(
       "Propane",
