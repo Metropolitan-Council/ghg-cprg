@@ -9,6 +9,7 @@ hookaddcap()
 # load in necessary data frames for comparison
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 flight_emissions <- readRDS(file.path(here::here(), "_industrial/data/flight_industrial_point_sources_ctu.RDS"))
+ghgrp_emissions <- readRDS(file.path(here::here(), "_industrial/data/ghgrp_industrial_point_sources_ctu.rds"))
 nei_emissions <- readRDS(file.path(here::here(), "_industrial/data/nei_county_industrial_emissions.RDS"))
 subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))
 nrel_emissions <- county_emissions %>% 
@@ -66,6 +67,11 @@ industrial_emissions <- bind_rows(mpca_emissions %>%
                                     filter(doublecount == "No") %>% 
                                     group_by(county_name, inventory_year) %>% 
                                   summarize(value_emissions = sum(value_emissions)) %>% 
+                                    mutate(source = "FLIGHT"),
+                                  ghgrp_emissions %>% 
+                                    filter(doublecount == "No") %>% 
+                                    group_by(county_name, inventory_year) %>% 
+                                  summarize(value_emissions = sum(value_emissions)) %>% 
                                     mutate(source = "GHGRP"),
                                   nei_no_doublecount %>% select(-data_source) %>% 
                                     rename(value_emissions = values_emissions) %>% 
@@ -107,6 +113,8 @@ fig_industrial_emissions <- plot_ly(
 fig_industrial_emissions
 
 ```
+
+Currently, we are seeing large deviations (high and low) between MPCA data and federal sources, particularly in Dakota (Refinery) and Hennepin counties. MPCA data only accounts for fuel combustion, not process emissions.
 
 Currently, GHGRP and MPCA data can be reliably used to avoid double-counting by avoiding emissions from Natural Gas. We can compare how subpart C (Industrial combustion) analyses compares to facilities with only subpart C FLIGHT aggregates.
 
@@ -171,30 +179,29 @@ fig_subpart_c_comparison
 
 Most emissions are on or sufficiently close to the one-to-one line. The exception is the Hennepin Energy Recovery Center, a waste burning facility. This requires further exploration but will be omitted in any case as waste-to-energy emissions are counted in the waste subsector.
 
-```{r fig-subpart-c-all-emissions}
+```{r fig-stationary-combustion}
 
-# compare across all subpart Cs
-subpart_c_all <- flight_emissions %>% 
-  filter(grepl("C", subparts),
-         doublecount == "No") %>% 
+# compare fuel combustion to ghgrp stationary combustion
+stationary_combustion <- ghgrp_emissions %>% 
+  filter(source == "stationary_combustion") %>% 
   left_join(., subpart_c_emissions %>% 
               group_by(facility_id, reporting_year) %>% 
               summarise(value_emissions = sum(values_emissions)),
-            by = c("ghgrp_id" = "facility_id",
+            by = c("facility_id" = "facility_id",
                    "inventory_year" = "reporting_year"),
-            suffix = c("_flight","_subpart"))
+            suffix = c("_ghgrp","_subpart"))
 
-fig_subpart_c_all_comparison <- plot_ly(
+fig_stationary_combustion <- plot_ly(
   type = "scatter",
   mode = "markers",
-  source = "fig-subpart-c-all-emissions",
-  data = subpart_c_all,
-  y = ~value_emissions_flight,
+  source = "fig-stationary-combustion",
+  data = stationary_combustion,
+  y = ~value_emissions_ghgrp,
   x = ~value_emissions_subpart,
   color = ~ as.character(inventory_year),  # Map colors by year
   hovertemplate = ~ paste0(
     facility_name, "<br>",
-    "FLIGHT emissions: ", round(value_emissions_flight, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
+    "GHGRP emissions: ", round(value_emissions_ghgrp, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
     "SUBPART C Emissions: ", round(value_emissions_subpart, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
@@ -207,12 +214,12 @@ fig_subpart_c_all_comparison <- plot_ly(
   )
 )
 
-fig_subpart_c_all_comparison <- fig_subpart_c_all_comparison %>%
+fig_stationary_combustion <- fig_stationary_combustion %>%
   add_trace(
     type = "scatter",
     mode = "lines",
-    x = c(0, max(subpart_c_all$value_emissions_subpart, na.rm = TRUE)),
-    y = c(0, max(subpart_c_all$value_emissions_subpart, na.rm = TRUE)),
+    x = c(0, max(stationary_combustion$value_emissions_subpart, na.rm = TRUE)),
+    y = c(0, max(stationary_combustion$value_emissions_subpart, na.rm = TRUE)),
     line = list(
       dash = "dash",
       color = "black",
@@ -223,74 +230,54 @@ fig_subpart_c_all_comparison <- fig_subpart_c_all_comparison %>%
     hoverinfo = "none"   # Disable hover for this line
   )
 
-fig_subpart_c_all_comparison
+fig_stationary_combustion
 
 ```
 
-When expanding to industrial point sources that combust fuel but have additional subparts, we see that they lie on or above the 1:1 line (excepting the previously discussed HERC), which is what we would expect. There are process emissions in addition to fuel combustion.
+When comparing subpart C analysis of fuel combustion to the EPA provided 'stationary combustion' category of the GHG RP, we see general agreement, with our subpart analysis appear to overpredict emissions from HERC and the large in-bounds oil refinery of the region, relative to the EPA data. As the refinery emits via hydrogen production and natural gas flaring, it is possible those emissions are otherwise categorized in GHG RP.
 
 
 # Natural Gas
 
-Natural gas combustion can be pulled out from a subpart C analysis and compared to our estimates of natural gas supplied to industrial
+Given overall compliance between our subpart C analysis and EPA reporting, natural gas combustion can be pulled out from a subpart C analysis and compared to our estimates of utility-supplied natural gas deliveries to the industrial sector (via NREL).
 
 ```{r fig-natural-gas-comparison}
 #| fig-cap: "Comparison of natural gas combustion data"
 #| out-width: "95%"
 
-natural_gas_c_2020 <- subpart_c_emissions %>% 
+natural_gas_c_2021 <- subpart_c_emissions %>% 
   filter(specific_fuel_type == "Natural Gas",
-         reporting_year == 2020) %>% 
+         reporting_year == 2021) %>% 
   group_by(county_name,
            reporting_year) %>% 
-  summarize(values_emissions = sum(values_emissions)) %>% 
-  mutate(data_source = "GHGRP - Fuel combustion")
+  summarize(value_emissions = sum(values_emissions)) %>% 
+  mutate(data_source = "GHGRP - Natural Gas Combustion")
 
-nei_2020_no_doublecount <- left_join(nei_emissions %>% 
-            filter(inventory_year == 2020) %>% 
-              group_by(county_name) %>% 
-              summarize(values_emissions = sum(values_emissions)),
-            flight_emissions %>% 
-              filter(inventory_year == 2020,
-                     doublecount == "Yes") %>% 
-              group_by(county_name) %>% 
-              summarize(values_emissions = sum(value_emissions)),
-            by = "county_name",
-            suffix = c("_NEI","_FLIGHT")) %>% 
-  mutate(values_emissions_FLIGHT = if_else(is.na(values_emissions_FLIGHT),0,values_emissions_FLIGHT)) %>% 
-  mutate(values_emissions = as.numeric(values_emissions_NEI) - values_emissions_FLIGHT,
-         data_source = "NEI - all",
-         inventory_year = 2020) %>% 
-  select(county_name,values_emissions, data_source, inventory_year)
-         
+mpca_natural_gas <- mpca_emissions %>% 
+  filter(fuel_type == "Natural Gas",
+         inventory_year == 2021) %>% 
+  group_by(county_name, inventory_year) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>% 
+  mutate(data_source = "MPCA - Natural Gas Combustion")
 
 natural_gas_comp <-  bind_rows(nrel_emissions %>% 
   filter(year == 2021) %>% 
     mutate(data_source = "NREL") %>% 
   select(inventory_year = year,
          county_name = geog_name,
-         values_emissions = emissions_metric_tons_co2e,
+         value_emissions = emissions_metric_tons_co2e,
          data_source),
- nei_emissions %>% 
-            filter(inventory_year == 2020,
-                   sector_three == "Natural Gas") %>% 
-   ungroup() %>% 
-   mutate(data_source = "NEI - NG combustion",
-          values_emissions = as.numeric(values_emissions)) %>% 
-  select(inventory_year,
-         county_name,
-         values_emissions,
-         data_source),
- nei_2020_no_doublecount,
- natural_gas_c_2020 %>% 
-   rename(inventory_year = reporting_year)
+ natural_gas_c_2021 %>% 
+   rename(inventory_year = reporting_year),
+ mpca_natural_gas
  )
+
   
 fig_industrial_ng_emissions <- plot_ly(
   data = natural_gas_comp,
   source = "fig-natural-gas-comparison",
   x = ~county_name,
-  y = ~values_emissions,
+  y = ~value_emissions,
   color = ~data_source,
   type = "bar",
   # colors = c(
@@ -300,7 +287,7 @@ fig_industrial_ng_emissions <- plot_ly(
   hovertemplate = ~ paste0(
     county_name, "<br>",
     data_source, "<br>",
-    round(values_emissions / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
