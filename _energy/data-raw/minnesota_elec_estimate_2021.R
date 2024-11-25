@@ -8,8 +8,9 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 # https://mn.gov/commerce/energy/industry-government/utilities/annual-reporting.jsp
 # based on the contents of MNutilities_in_scope$utility_name
 
-#read in time series of eGRID emissions factor data
-egridTimeSeries <- epa_ghg_factor_hub$egridTimeSeries
+#read in time series of eGRID emissions factor data and pivot wider to make one row per year with all three emission types
+egridTimeSeries <- epa_ghg_factor_hub$egridTimeSeries %>%
+  pivot_wider(names_from = emission, values_from = value)
 
 # root directory with folders for each utility in scope (with each folder containing subfolders for all years which reporting to the state is available)
 dir_mn_electricity_state <- here("_energy", "data-raw", "mn_elec_utility_reporting_state")
@@ -116,11 +117,24 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
 # Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county,
 # process and merge data -- this will be a separate data collection process spanning excel reports submitted to state
 processed_mn_elecUtil_activityData <- combined_MNelectUtil_activityData %>%
+  left_join(egridTimeSeries,
+            by = join_by(year == Year)
+  ) %>%
+  # temporary, when eGRID 2023 is release 01/2025 this will be removed.
+  filter(year != 2023) %>%
   mutate(
-    CO2_emissions = mWh_delivered * eGRID_MROW_emissionsFactor_CO2,
-    CH4_emissions = mWh_delivered * eGRID_MROW_emissionsFactor_CH4,
-    N2O_emissions = mWh_delivered * eGRID_MROW_emissionsFactor_N2O
-  )
+    CO2_emissions = mWh_delivered * `lb CO2`,
+    CH4_emissions = mWh_delivered * `lb CH4`,
+    N2O_emissions = mWh_delivered * `lb N2O`
+  ) %>%
+  # get rid of unnecessary columns from eGRID factor tables
+  select(-eGrid_Subregion,
+         -factor_type,
+         -per_unit,
+         factor_source = Source,
+         -`lb CO2`,
+         -`lb CH4`,
+         -`lb N2O`)
 
 MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
   group_by(county) %>%
