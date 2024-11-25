@@ -49,6 +49,7 @@ ghgrp_source <- ghgrp %>%
          "municipal_landfills"),
          "Yes", "No"),
          city_name = str_to_sentence(city),
+         inventory_year = as.numeric(inventory_year),
          category = case_when(
            emission_source == "stationary_combustion" ~ "stationary_combustion",
            emission_source == "electricity_generation" ~ "electricity_generation",
