@@ -412,7 +412,7 @@ egrid <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
   mutate(Source = "EPA eGRID2019, February 2021")
 
 # Time series eGRID as a separate object 
-# Define the years available in the dataset
+# Define the years available in the dataset and manually inout real values
 eGRID_years <- c(2005, 2007, 2009, 2010, 2012, 2014, 2016, 2018, 2019, 2020, 2021, 2022)
 egrid2005_to_2022 <- tibble::tibble(
   eGrid_Subregion = rep("MROW (MRO West)", length(eGRID_years) * 3), # Repeat for all rows
@@ -431,6 +431,29 @@ egrid2005_to_2022 <- tibble::tibble(
   Source = paste("EPA eGRID", rep(eGRID_years, times = 3)) # Add source for each emission/year
 )
 
+# Define the full range of years
+full_years <- seq(min(eGRID_years), max(eGRID_years))
+
+# Expand the dataset to include all years for each emission type
+expanded_data <- egrid2005_to_2022 %>%
+  expand(eGrid_Subregion, factor_type, emission, per_unit, Year = full_years) %>%
+  left_join(egrid2005_to_2022, by = c("eGrid_Subregion", "factor_type", "emission", "per_unit", "Year"))
+
+interpolated_data <- expanded_data %>%
+  group_by(emission) %>%
+  mutate(
+    value = ifelse(
+      is.na(value),
+      approx(Year[!is.na(value)], value[!is.na(value)], xout = Year, rule = 2)$y,
+      value
+    ),
+    Source = ifelse(
+      is.na(Source),
+      paste("Interpolated between eGRID", lag(Year), "and", lead(Year)),
+      Source
+    )
+  ) %>%
+  ungroup()
 
 # Table: 7	Steam and Heat ----
 # Note: Emission factors are per mmBtu of steam or heat purchased.
@@ -629,7 +652,7 @@ epa_ghg_factor_hub <- list(
       `eGrid Subregion` == "MROW (MRO West)",
       factor_type == "Total output"
     ),
-  "egridTimeSeries" = egrid2005_to_2022,
+  "egridTimeSeries" = interpolated_data,
   "stationary_combustion" = stationary_combustion %>%
     filter(`Fuel type` %in% c(
       "Propane",
