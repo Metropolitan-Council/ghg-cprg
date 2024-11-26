@@ -11,36 +11,79 @@ egridTimeSeries <- epa_ghg_factor_hub$egridTimeSeries %>%
 dir_xcel_communityReports <- here("_energy", "data-raw", "xcel_community_reports")
 
 
-# Function to get file paths, utility names, and years of utility reports in root directory
+extract_city_name <- function(file_path) {
+  # Read the first 3 rows of the Excel file
+  data <- read_excel(file_path, range = cell_rows(1:3), col_names = FALSE)
+  
+  # Convert the data to a character matrix for easier searching
+  data_char <- as.matrix(data)
+  
+  # Process row 2 (Excel row 3)
+  row2 <- data_char[2, ] # Index 2 since R indexes rows starting at 1
+  
+  # Loop through each cell in row 2 to find 'Community'
+  for (i in seq_along(row2)) {
+    cell_content <- row2[i]
+    if (!is.na(cell_content) && grepl('Community', cell_content, ignore.case = TRUE)) {
+      # Case 1: City name is in the same cell
+      if (grepl('Community[:]?\\s*.+', cell_content, ignore.case = TRUE)) {
+        city_name <- sub('.*Community[:]?\\s*', '', cell_content, ignore.case = TRUE)
+        city_name <- trimws(city_name)
+        if (city_name != "") return(city_name)
+      }
+      
+      # Case 2: City name is in the next cell(s)
+      for (j in (i + 1):length(row2)) {
+        next_cell <- row2[j]
+        if (!is.na(next_cell) && next_cell != "") {
+          city_name <- trimws(next_cell)
+          if (city_name != "") return(city_name)
+        }
+      }
+    }
+  }
+  
+  # Return NA if 'Community' not found or city name is empty
+  return(NA)
+}
+
+# Function to get file paths, city names, and years of Xcel utility reports in root directory
 get_files <- function(root_dir) {
   file_info <- list()
   
-  # Loop through each utility folder
-  utility_folders <- list.dirs(root_dir, recursive = FALSE)
-  for (year in years) {
-    year <- basename(year)
+  # Get list of year folders in root_dir (assuming folders are named as years)
+  year_folders <- list.dirs(root_dir, recursive = FALSE)
+  
+  # Loop through each year folder
+  for (year_folder in year_folders) {
+    year <- basename(year_folder)
     
-    # Loop through each year sub-folder within each utility folder
-    year_folders <- list.dirs(utility_folder, recursive = FALSE)
-    for (year_folder in year_folders) {
-      year <- basename(year_folder)
+    # Get list of .xls files in the year folder
+    files <- list.files(path = year_folder, pattern = "\\.xls$", full.names = TRUE)
+    
+    # Loop through each file in the year folder
+    for (file in files) {
+      # Extract city name from the file
+      city_name <- extract_city_name(file)
       
-      # Get list of Excel files in the year folder
-      files <- list.files(path = year_folder, pattern = "\\.xlsx$", full.names = TRUE)
-      
-      # Append each file path with utility and year information
-      for (file in files) {
-        file_info <- append(file_info, list(list(file_path = file,
-                                                 city_name = utility_name,
-                                                 year = year)))
-      }
+      # Append the file information to the list
+      file_info <- append(file_info, list(list(
+        file_path = file,
+        city_name = unname(city_name),
+        year = year,
+        utility = 'Xcel Energy'
+      )))
     }
   }
   return(file_info)
 }
 
+
+filesInfo <- get_files(dir_xcel_communityReports)
+
 # function to process the file associatedf with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
-process_file <- function(file_info) {
+# years 2015 to 2019 have constant format -- 2020 adds more info about renewables and clean energy
+process_file_2015_2019 <- function(file_info) {
   # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
   file_path <- file_info$file_path
   utility_name <- file_info$utility_name
