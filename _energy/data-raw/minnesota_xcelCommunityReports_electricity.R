@@ -70,7 +70,7 @@ get_files <- function(root_dir) {
       file_info <- append(file_info, list(list(
         file_path = file,
         city_name = unname(city_name),
-        year = year,
+        year = as.numeric(year),
         utility = 'Xcel Energy'
       )))
     }
@@ -79,14 +79,59 @@ get_files <- function(root_dir) {
 }
 
 
-filesInfo <- get_files(dir_xcel_communityReports)
+# function to dynamically read in0ut from files until a stopping value is found
+read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) {
+  # Step 1: Read a broad range starting from the specified cell
+  start_row <- as.numeric(gsub("[A-Z]", "", start_cell)) # Extract the row number from start_cell
+  start_col <- gsub("[0-9]", "", start_cell)            # Extract the column letter from start_cell
+  broad_range <- paste0(start_col, start_row, ":", columns, start_row + 10) # Read 10 rows initially
+  
+  # Read the broad range
+  data_broad <- read_excel(file_path, sheet = sheet, range = broad_range, col_names = FALSE)
+  
+  # Step 2: Locate the stopping value
+  stop_row_offset <- which(data_broad[[1]] == stop_value) # Check the first column for stop_value
+  
+  if (length(stop_row_offset) == 0) {
+    stop("Stopping value not found in the specified range.")
+  }
+  
+  # Step 3: Define the dynamic range
+  stop_row <- start_row + stop_row_offset - 1 # Adjust for Excel indexing
+  refined_range <- paste0(start_col, start_row, ":", columns, stop_row)
+  
+  # Step 4: Read the refined range
+  data <- read_excel(file_path, sheet = sheet, range = refined_range)
+  
+  return(data)
+}
 
-# function to process the file associatedf with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
+# Example Usage:
+data_A_C <- read_until_value(
+  file_path = "C:/Users/LimeriSA/Documents/Projects/ghg-cprg/_energy/data-raw/xcel_community_reports/2015/MN-City-Apple-Valley-2015.xls",
+  sheet = "Standard Community Report",
+  start_cell = "A21",
+  stop_value = "Total:", # Replace this with the actual stopping value you're looking for
+  columns = "C"       # Read columns A to C
+)
+
+data_E_G <- read_until_value(
+  file_path = "example.xlsx",
+  sheet = "ElectricityByCounty",
+  start_cell = "E12",
+  stop_value = "END", # Replace this with the actual stopping value you're looking for
+  columns = "G"       # Read columns E to G
+)
+
+
+
+# function to process the file associated with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
 # years 2015 to 2019 have constant format -- 2020 adds more info about renewables and clean energy
 process_file_2015_2019 <- function(file_info) {
   # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
   file_path <- file_info$file_path
-  utility_name <- file_info$utility_name
+  city_name <- file_info$city_name
+  utility <- file_info$utility
   year <- file_info$year
   
   # Read specific ranges from each file 
