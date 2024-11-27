@@ -44,7 +44,7 @@ ghgrp_emissions %>%
 mpca_industrial_inv %>% filter(year == 2020, co2e > 0) 
 
 
-ghgrp_mpca_emissions <- ghgrp_emissions %>% 
+ghgrp_mpca_emissions <- ghgrp_emissions_combustion %>% 
   mutate(mpca_subsector = case_when(
     source %in% c("Agricultural Byproducts",
                   "fluorinated_ghg_production") ~ "Industrial processes",
