@@ -33,6 +33,8 @@ mndot_extract_yearly_volume_trends.R,Active,mndot,data processing,Import and cle
 mndot_stations.R,Deprecated,mndot,data processing,Create calibration points and lines from MnDOT vehicle classification data,"mn_stations_ratios.RDS, mn_stations_ratios_points.RDS",
 mndot_vmt_county_functional_class.R,Active,mndot,data processing,Pulls and processes MnDOT county VMT at the functional class level,None,
 mndot_vmt_county.R,Active,mndot,data processing,Pulls and processes MnDOT county VMT from county route system level data,mndot_vmt_county.RDS,
+mndot_route_system.R,Active,mndot,data processing,Creates index of route system IDs and labels,mndot_route_system.RDS,
+mndot_vmt_ctu.R,Active,mndot,data processing,Pulls and processes MnDOT CTU VMT from CTU route system level data,mndot_vmt_ctu.RDS,
 mpca_mac_aviation_emissions.R,Active,mpca_mac,data processing,Calculates aviation GHG emissions using MPCA and MAC airport emissions data,"aviation_emissions.rds, aviation_emissions_meta.rds, aviation_emissions_data_source_compare.RDS",https://github.com/Metropolitan-Council/ghg-cprg/issues/123
 stl_aadt.R,Deprecated,stl,validation,StreetLight Data - Compiles AADT data from StreetLight analyses for verification,None,
 stl_calibration_lines_points.R,Deprecated,stl,compilation,StreetLight Data - compiles MN and WI point and line datasets for use calibrating StreetLight Index to actual traffic counts for medium and heavy duty traffic,"commercial_calibration_points.RDS, commercial_calibration_lines.RDS, commercial_calibration_meta.RDS",
