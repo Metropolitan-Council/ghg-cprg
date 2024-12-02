@@ -78,6 +78,9 @@ get_files <- function(root_dir) {
   return(file_info)
 }
 
+# Apply process_file to each file identified in get_files() in the nested structure and combine the results
+file_list <- get_files(dir_xcel_communityReports)
+
 
 # test that number of distinct city year combos = number of files
 # highlight which files if any have NA value for city_name or year 
@@ -119,14 +122,8 @@ sector_test <- read_until_value(
   columns = "H"       # Read columns A to D
 )
 
-value_test <- read_until_value(
-  file_path = "C:/Users/LimeriSA/Documents/Projects/ghg-cprg/_energy/data-raw/xcel_community_reports/2015/MN-City-Apple-Valley-2015.xls",
-  sheet = "Standard Community Report",
-  start_cell = "E12",
-  stop_value = "END", # Replace this with the actual stopping value you're looking for
-  columns = "G"       # Read columns E to G
-)
 
+combined_XcelCity_activityData <- do.call(rbind, lapply(file_list, process_file))
 
 
 # function to process the file associated with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
