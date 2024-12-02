@@ -84,6 +84,25 @@ file_list <- get_files(dir_xcel_communityReports)
 
 # test that number of distinct city year combos = number of files
 # highlight which files if any have NA value for city_name or year 
+testthat::test_that("Correct number of distinct city-year combos", {
+  
+  combinations <- lapply(file_list, function(x) {
+    c(city_name = x$city_name, year = x$year)
+  })
+  
+  # Convert to a data frame for easier processing
+  combinations_df <- do.call(rbind, combinations)
+  
+  # Count unique combinations
+  unique_combinations <- nrow(unique(combinations_df))
+  
+  
+  testthat::expect_equal(
+    length(file_list),
+    unique_combinations
+  )
+})
+
 
 
 # function to dynamically read in0ut from files until a stopping value is found
@@ -104,7 +123,7 @@ read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) 
   }
   
   # Step 3: Define the dynamic range
-  stop_row <- start_row + stop_row_offset - 1 # Adjust for Excel indexing
+  stop_row <- start_row + stop_row_offset - 2 # Adjust for Excel indexing and remove the total row
   refined_range <- paste0(start_col, start_row, ":", columns, stop_row)
   
   # Step 4: Read the refined range
@@ -118,7 +137,7 @@ sector_test <- read_until_value(
   file_path = "C:/Users/LimeriSA/Documents/Projects/ghg-cprg/_energy/data-raw/xcel_community_reports/2015/MN-City-Edina-2015.xls",
   sheet = "Standard Community Report",
   start_cell = "A20",
-  stop_value = "Total:", # Replace this with the actual stopping value you're looking for
+  stop_value = "Total:", #value that signifies 
   columns = "H"       # Read columns A to D
 )
 
@@ -135,9 +154,14 @@ process_file_2015_2019 <- function(file_info) {
   utility <- file_info$utility
   year <- file_info$year
   
-  # Read specific ranges from each file 
-  data_A_C <- read_excel(file_path, sheet = "ElectricityByCounty", range = "A12:C56")
-  data_E_G <- read_excel(file_path, sheet = "ElectricityByCounty", range = "E12:G53")
+  # Read in provided electricity sector data from each file; returns a 
+  city_data <- read_until_value(
+    file_path = file_path,
+    sheet = "Standard Community Report",
+    start_cell = "A20",
+    stop_value = "Total:", 
+    columns = "H"       # Read columns A to D
+  )
   
   # Rename columns
   colnames(data_A_C) <- c("countyCode", "county", "mWh_delivered")
