@@ -1,16 +1,27 @@
 ### model early industrial emissions based on 2011-2022 GHGRP data 
 ### and MPCA 2005-2020 state inventoy
 
+cprg_county <- readRDS("_meta/data/cprg_county.rds") %>% 
+  st_drop_geometry()
+ctu_population <- readRDS("_meta/data/ctu_population.rds")%>% 
+  mutate(ctu_name  = str_replace_all(ctu_name , "St.", "Saint"))
+
 source("R/_load_pkgs.R")
 
 mpca_industrial_inv <- readRDS(file.path(here::here(), "_meta/data/mpca_ghg_inv_2005_2020.RDS")) %>% 
   filter(Sector %in% c("Waste", "Industrial"))
 
-ghgrp_emissions <- readRDS(file.path(here::here(), 
-                                     "_industrial/data/ghgrp_industrial_point_sources_ctu.rds"))
+mpca_commercial_inv <- readRDS(file.path(here::here(), "_meta/data/mpca_ghg_inv_2005_2020.RDS")) %>% 
+  filter(Sector %in% c("Commercial"))
 
-subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))
-mpca_emissions <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions.RDS"))
+ghgrp_emissions <- readRDS(file.path(here::here(), 
+                                     "_industrial/data/ghgrp_industrial_point_sources_ctu.rds")) %>% 
+  mutate(city_name = str_replace_all(city_name, "St.", "Saint"))
+
+subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))%>% 
+  mutate(city_name = str_replace_all(city_name, "St.", "Saint"))
+mpca_emissions <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions.RDS"))%>% 
+  mutate(ctu_name = str_replace_all(ctu_name, "St.", "Saint"))
 
 ghgrp_emissions_combustion <- bind_rows(
   ghgrp_emissions %>% ungroup() %>% 
@@ -67,10 +78,33 @@ ghgrp_simplified <- ghgrp_emissions_combustion %>%
   )) %>% 
   filter(mpca_subsector != "Municipal Solid Waste") %>% 
   group_by(inventory_year, city_name, county_name, mpca_subsector) %>% 
-  summarize(value_emissions_ghgrp = sum(value_emissions))
+  summarize(value_emissions = sum(value_emissions)) %>% 
+  mutate(data_source = "GHGRP")
+
+### Now add in MPCA data for cities without industrial emissions in GHGRP
+### Later we need to look for industrial point sources in MPCA missed in GHGRP cities
+### but this is easier said than done :/
+mpca_industrial_missing <- mpca_emissions %>% 
+  filter(sector == "Industrial",
+         !ctu_name %in% ghgrp_simplified$city_name) %>% 
+  mutate(mpca_subsector = case_when(
+    fuel_category %in% c("Natural Gas",
+                         "Other Fuels - Gaseous") ~ "Natural gas",
+    fuel_category == "Coal and Coke" ~ "Coal", 
+    fuel_category == "Petroleum Products" ~ "Oil", 
+    TRUE ~ "Other fuel combustion")) %>% 
+  group_by(inventory_year, county_name, ctu_name, mpca_subsector) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>% 
+  mutate(data_source = "MPCA Fuel") %>% 
+  rename(city_name = ctu_name)
+
+#bind these two data sources of measured emissions
+industrial_emissions_measured <- bind_rows(
+  ghgrp_simplified, mpca_industrial_missing
+)
 
 ## taking a slightly different approach with MPCA, leaving those with non-obvious GHGRP correlates untransformed
-mpca_simplified <- mpca_industrial_inv %>% 
+mpca_inv_simplified <- mpca_industrial_inv %>% 
   mutate(mpca_subsector = case_when(
     Subsector %in% c( "Industrial processes",
                       "Glass manufacture",
@@ -84,31 +118,36 @@ mpca_simplified <- mpca_industrial_inv %>%
     TRUE ~ Subsector
   )) %>% 
   group_by(year, mpca_subsector) %>% 
-  summarize(value_emissions_mpca = sum(co2e))
+  summarize(value_emissions_mpca_inv = sum(co2e))
+
 
 ghgrp_mpca_emissions <-  
-  left_join(ghgrp_simplified,mpca_simplified,
+  left_join(industrial_emissions_measured,mpca_inv_simplified,
              by = c("inventory_year" = "year",
                     "mpca_subsector")) %>% 
-  mutate(emission_percent = value_emissions_ghgrp/value_emissions_mpca,
+  mutate(emission_percent = value_emissions/value_emissions_mpca_inv,
          emission_percent = if_else(is.infinite(emission_percent),NA, emission_percent))
+
+
+
 
 ### create grid of needed city-subsector-year combinations
 ghgrp_extrapolated <- left_join(
   expand.grid(
     inventory_year = seq(2005, 2020, by = 1),
     city_name = unique(ghgrp_mpca_emissions$city_name),
+    county_name = unique(ghgrp_mpca_emissions$county_name),
     mpca_subsector = unique(ghgrp_mpca_emissions$mpca_subsector)
   ) %>% 
     semi_join(., ghgrp_mpca_emissions %>% 
                 ungroup() %>%  
-                distinct(city_name, mpca_subsector)),
+                distinct(city_name,county_name, mpca_subsector)),
   ghgrp_mpca_emissions %>% 
     ungroup() %>% 
-    select(inventory_year, city_name, mpca_subsector, value_emissions_ghgrp, emission_percent),
-  by = c("inventory_year","city_name", "mpca_subsector")) %>% 
+    select(inventory_year, city_name, county_name, mpca_subsector, value_emissions, emission_percent),
+  by = c("inventory_year","city_name", "county_name", "mpca_subsector")) %>% 
   ### use na.kalman to extrapolate across time-series
-  group_by(city_name, mpca_subsector) %>%
+  group_by(city_name, county_name, mpca_subsector) %>%
   arrange(inventory_year) %>%
   #first add zeros to 2011-2020 years if there aren't enough years(3+) for extrapolation
   mutate(non_na_count_2011_2020 = sum(!is.na(emission_percent) & inventory_year >= 2011 & inventory_year <= 2020, na.rm = TRUE)) %>%
@@ -121,19 +160,15 @@ ghgrp_extrapolated <- left_join(
   #extrapolate
   mutate(
     emission_percent = na_kalman(emission_percent),
-    data_type = ifelse(is.na(value_emissions_ghgrp), "modeled", "measured") # marking whether values are from the census or interpolation
+    data_type = ifelse(is.na(value_emissions), "modeled", "measured") # marking whether values are from the census or interpolation
   ) %>% 
-  
 ### bring mn state emissions back in
-  left_join(., mpca_simplified,
+  left_join(., mpca_inv_simplified,
             by = c("inventory_year" = "year",
                    "mpca_subsector")
   ) %>% 
   # recalculate emissions based on percent of MPCA inventory
-  mutate(value_emission_percentile = emission_percent * value_emissions_mpca) %>% 
-  #bring back county_name
-  left_join(., ghgrp_simplified %>% ungroup() %>% distinct(city_name,county_name))
-
+  mutate(value_emission_percentile = emission_percent * value_emissions_mpca_inv)
       
 ghgrp_extrapolated_county <- ghgrp_extrapolated %>% 
   group_by(inventory_year, county_name) %>% 
@@ -141,17 +176,130 @@ ghgrp_extrapolated_county <- ghgrp_extrapolated %>%
 
 ggplot(ghgrp_extrapolated_county, aes(x = inventory_year, y = value_emissions, col = county_name)) + geom_line()
       
-mutate(
-  msp_mt_co2e_impute = na_kalman(msp_mt_co2e),
-  msp_proportion_impute = na_kalman(msp_proportion),
-  # second methods uses time series imputation between missing msp_proportion values,
-  # then multiplies imputed proportion by state value
-  msp_mt_co2e_state_prop = if_else(is.na(msp_mt_co2e),
-                                   msp_proportion_impute * state_mt_co2e,
-                                   msp_mt_co2e
-  ),
 
-  
+###Now add in MPCA data for commercial sector 
+
+
+mpca_commercial <- mpca_emissions %>% filter(sector == "Commercial") %>% 
+  mutate(mpca_subsector = case_when(
+    fuel_category %in% c("Natural gas",
+                         "Other Fuels - Gaseous") ~ "Natural Gas",
+    fuel_category == "Coal and Coke" ~ "Coal", 
+    fuel_category == "Petroleum Products" ~ "Oil", 
+    TRUE ~ "Other fossil fuel")) %>% 
+  group_by(inventory_year, county_name, ctu_name, mpca_subsector) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>% 
+  rename(city_name = ctu_name)
+
+mpca_comm_simplied <- mpca_commercial_inv %>% 
+  mutate(mpca_subsector = case_when(
+    Subsector %in% c("Other fossil fuels") ~ "Other fuel combustion", #best worst option?
+    TRUE ~ Subsector
+  )) %>% 
+  group_by(year, mpca_subsector) %>% 
+  summarize(value_emissions_mpca_inv = sum(co2e))
+
+mpca_commercial_emissions <-  
+  left_join(mpca_commercial,mpca_comm_simplied,
+            by = c("inventory_year" = "year",
+                   "mpca_subsector")) %>% 
+  mutate(emission_percent = value_emissions/value_emissions_mpca_inv,
+         emission_percent = if_else(is.infinite(emission_percent),NA, emission_percent))
+
+comm_extrapolated <- left_join(
+  expand.grid(
+    inventory_year = seq(2005, 2020, by = 1),
+    city_name = unique(mpca_commercial$city_name),
+    county_name = unique(mpca_commercial$county_name),
+    mpca_subsector = unique(mpca_commercial$mpca_subsector)
+  ) %>% 
+    semi_join(., mpca_commercial_emissions %>% 
+                ungroup() %>%  
+                distinct(city_name,county_name, mpca_subsector)),
+  mpca_commercial_emissions %>% 
+    ungroup() %>% 
+    select(inventory_year, city_name, county_name, mpca_subsector, value_emissions, emission_percent),
+  by = c("inventory_year","city_name", "county_name", "mpca_subsector")) %>% 
+  ### use na.kalman to extrapolate across time-series
+  group_by(city_name, county_name, mpca_subsector) %>%
+  arrange(inventory_year) %>%
+  #first add zeros to 2011-2020 years if there aren't enough years(3+) for extrapolation
+  mutate(non_na_count_2011_2020 = sum(!is.na(emission_percent) & inventory_year >= 2011 & inventory_year <= 2020, na.rm = TRUE)) %>%
+  # Set NA to zero only if there are 1 or 2 years of data in the range
+  mutate(emission_percent = if_else(
+    is.na(emission_percent) & inventory_year >= 2011 & inventory_year <= 2020 & non_na_count_2011_2020 <= 2,
+    0,
+    emission_percent
+  )) %>% 
+  #extrapolate
+  mutate(
+    emission_percent = na_kalman(emission_percent),
+    data_type = ifelse(is.na(value_emissions), "modeled", "measured") # marking whether values are from the census or interpolation
+  ) %>% 
+  ### bring mn state emissions back in
+  left_join(., mpca_comm_simplied,
+            by = c("inventory_year" = "year",
+                   "mpca_subsector")
+  ) %>% 
+  # recalculate emissions based on percent of MPCA inventory
+  mutate(value_emission_percentile = emission_percent * value_emissions_mpca_inv)
+
+commercial_extrapolated_county <- comm_extrapolated %>% 
+  group_by(inventory_year, county_name) %>% 
+  summarize(value_emissions = sum(value_emission_percentile))
+
+ggplot(commercial_extrapolated_county, aes(x = inventory_year, y = value_emissions, col = county_name)) + geom_line()
+
+# combine and package
+
+industrial_baseline <- bind_rows(
+  ghgrp_extrapolated %>% 
+    select(inventory_year, city_name, county_name, source = mpca_subsector,
+           data_type, value_emissions = value_emission_percentile) %>% 
+    mutate(sector = "Industrial",
+           category = case_when(
+             source == "Refinery processes" ~ "Refinery processes",
+             source %in% c("Landfills", "Industrial processes") ~ "Industrial processes",
+             TRUE ~ "Stationary combustion"
+           ),
+           data_source = if_else(city_name %in% mpca_industrial_missing$city_name,
+                                 "MPCA Reporting",
+                                 "EPA GHG Reporting Program"),
+           data_source = if_else(data_type == "modeled", "Modeled data", data_source),
+           factor_source = "EPA GHG Factor Hub"),
+  comm_extrapolated %>% 
+    select(inventory_year, city_name, county_name, source = mpca_subsector,
+           data_type, value_emissions = value_emission_percentile) %>% 
+    mutate(sector = "Commercial",
+           category = "Stationary combustion",
+           unit_emissions = "Metric tons CO2 equivalency",
+           data_source = if_else(data_type == "modeled", "Modeled data", "MPCA Reporting"),
+           factor_source = "EPA GHG Factor Hub")
+) %>% 
+  #bring in IDs
+  left_join(cprg_county %>% select(county_name, geoid) %>% rename(county_id = geoid)) %>% 
+  select(-data_type)
+
+industrial_baseline_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "inventory_year", class(industrial_baseline$inventory_year), "Year of activity",
+    "city_name", class(industrial_baseline$city_name), "City name",
+    "county_name", class(industrial_baseline$county_name), "County name",
+    "county_id", class(industrial_baseline$county_id), "County ID",
+    "sector", class(industrial_baseline$sector), "Emissions sector",
+    "category", class(industrial_baseline$category), "Emissions category",
+    "source", class(industrial_baseline$source), "Emissions source",
+    "category", class(industrial_baseline$category), "Emissions category",
+    "value_emissions", class(industrial_baseline$value_emissions), "Numerical value of emissions data",
+    "unit_emissions", class(industrial_baseline$unit_emissions), "Units of emissions data",
+    "data_source", class(industrial_baseline$data_source), "Source of activity/emission data",
+    "factor_source", class(industrial_baseline$factor_source), "Source of emission factor"
+  )
+
+saveRDS(industrial_baseline, "./_industrial/data/modeled_industrial_baseline_emissions.rds")
+saveRDS(industrial_baseline_meta, "./_industrial/data/modeled_industrial_baseline_emissions_meta.rds")
+
   #deprecated code to match subsectors more finely (lots of numerical issues)
   # ghgrp_mpca_emissions <- ghgrp_emissions_combustion %>% 
   #   mutate(mpca_subsector = case_when(
