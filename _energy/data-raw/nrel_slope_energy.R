@@ -173,15 +173,15 @@ nrel_emissions_inv_cityQA_2021 <- bind_rows(
       cityPopDownscaled_consumption_mwh = cityConsumption_countyPopDownscaled_mmbtu * mmbtu_to_mwh,
       county_consumption_mwh = county_consumption_mm_btu * mmbtu_to_mwh,
       # apply emission factor and convert to metric tons
-      co2_city = (city_consumption_mwh * eGRID_MROW_emissionsFactor_CO2) %>%
+      co2_city = (city_consumption_mwh * eGRID_MROW_emissionsFactor_CO2_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      ch4_city = (city_consumption_mwh * eGRID_MROW_emissionsFactor_CH4) %>%
+      ch4_city = (city_consumption_mwh * eGRID_MROW_emissionsFactor_CH4_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      n2o_city = (city_consumption_mwh * eGRID_MROW_emissionsFactor_N2O) %>%
+      n2o_city = (city_consumption_mwh * eGRID_MROW_emissionsFactor_N2O_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
@@ -189,15 +189,15 @@ nrel_emissions_inv_cityQA_2021 <- bind_rows(
         co2_city +
         (ch4_city * gwp$n2o) +
         (n2o_city * gwp$n2o),
-      co2_cityPopDownscaled = (cityPopDownscaled_consumption_mwh * eGRID_MROW_emissionsFactor_CO2) %>%
+      co2_cityPopDownscaled = (cityPopDownscaled_consumption_mwh * eGRID_MROW_emissionsFactor_CO2_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      ch4_cityPopDownscaled = (cityPopDownscaled_consumption_mwh * eGRID_MROW_emissionsFactor_CH4) %>%
+      ch4_cityPopDownscaled = (cityPopDownscaled_consumption_mwh * eGRID_MROW_emissionsFactor_CH4_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      n2o_cityPopDownscaled = (cityPopDownscaled_consumption_mwh * eGRID_MROW_emissionsFactor_N2O) %>%
+      n2o_cityPopDownscaled = (cityPopDownscaled_consumption_mwh * eGRID_MROW_emissionsFactor_N2O_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
@@ -205,15 +205,15 @@ nrel_emissions_inv_cityQA_2021 <- bind_rows(
         co2_cityPopDownscaled +
         (ch4_cityPopDownscaled * gwp$n2o) +
         (n2o_cityPopDownscaled * gwp$n2o),
-      co2_county = (county_consumption_mwh * eGRID_MROW_emissionsFactor_CO2) %>%
+      co2_county = (county_consumption_mwh * eGRID_MROW_emissionsFactor_CO2_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      ch4_county = (county_consumption_mwh * eGRID_MROW_emissionsFactor_CH4) %>%
+      ch4_county = (county_consumption_mwh * eGRID_MROW_emissionsFactor_CH4_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      n2o_county = (county_consumption_mwh * eGRID_MROW_emissionsFactor_N2O) %>%
+      n2o_county = (county_consumption_mwh * eGRID_MROW_emissionsFactor_N2O_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
@@ -346,15 +346,15 @@ nrel_emissions_inv_county <- bind_rows(
       # convert mmbtu to Mwh
       consumption_mwh = consumption_mm_btu * mmbtu_to_mwh,
       # apply emission factor and convert to metric tons
-      co2 = (consumption_mwh * eGRID_MROW_emissionsFactor_CO2) %>%
+      co2 = (consumption_mwh * eGRID_MROW_emissionsFactor_CO2_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      ch4 = (consumption_mwh * eGRID_MROW_emissionsFactor_CH4) %>%
+      ch4 = (consumption_mwh * eGRID_MROW_emissionsFactor_CH4_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
-      n2o = (consumption_mwh * eGRID_MROW_emissionsFactor_N2O) %>%
+      n2o = (consumption_mwh * eGRID_MROW_emissionsFactor_N2O_2021) %>%
         units::as_units("lb") %>%
         units::set_units("ton") %>%
         as.numeric(),
