@@ -142,9 +142,6 @@ sector_test <- read_until_value(
 )
 
 
-combined_XcelCity_activityData <- do.call(rbind, lapply(file_list, process_file))
-
-
 # function to process the file associated with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
 # years 2015 to 2019 have constant format -- 2020 adds more info about renewables and clean energy
 process_file_2015_2019 <- function(file_info) {
@@ -173,7 +170,7 @@ process_file_2015_2019 <- function(file_info) {
     city_name = city_name,
     utility_name = utility,
     year = year,
-    sourfce = 'Electricty'
+    source = 'Electricity'
   )
   
   return(city_data)
@@ -184,5 +181,9 @@ process_file_2015_2019 <- function(file_info) {
 
 
 # Apply process_file to each file identified in get_files() in the nested structure and combine the results
-file_list_2015_2019 <- get_files(dir_mn_electricity_state)
-combined_MNelectUtil_activityData <- do.call(rbind, lapply(file_list_2015_2019, process_file_2015_2019))
+file_list_2015_2019 <- Filter(function(x) x$year < 2020, file_list)
+file_list_2020_2023 <- Filter(function(x) x$year > 2019, file_list)
+
+
+combined_Xcel_activityData_2015_2019 <- do.call(rbind, lapply(file_list_2015_2019, process_file_2015_2019))
+combined_Xcel_activityData_2020_2023 <- do.call(rbind, lapply(file_list_2020_2023, process_file_2020_2023))
