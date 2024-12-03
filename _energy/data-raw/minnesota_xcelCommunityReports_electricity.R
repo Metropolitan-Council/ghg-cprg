@@ -138,7 +138,7 @@ read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) 
 
 # function to process the file associated with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
 # years 2015 to 2019 have constant format -- 2020 adds more info about renewables and clean energy
-process_file_2015_2019 <- function(file_info) {
+process_file <- function(file_info, start_cell) {
   # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
   file_path <- file_info$file_path
   city_name <- file_info$city_name
@@ -149,7 +149,7 @@ process_file_2015_2019 <- function(file_info) {
   city_data <- read_until_value(
     file_path = file_path,
     sheet = "Standard Community Report",
-    start_cell = "A20",
+    start_cell = start_cell,
     stop_value = "Total:", 
     columns = "H"       # Read columns A to G
   ) %>%
@@ -171,13 +171,31 @@ process_file_2015_2019 <- function(file_info) {
 }
 
 
+# Apply process_file_2015_2019 to each file for years 2015-19 identified in get_files() in the nested structure and combine the results
+file_list_2015_2019 <- Filter(function(x) x$year < 2020, file_list)
+file_list_2020_2023 <- Filter(function(x) x$year > 2019, file_list)
+
+combined_Xcel_activityData_2015_2019 <- do.call(
+  rbind, 
+  lapply(file_list_2015_2019, function(file_info) {
+    process_file(file_info, start_cell = "A20")
+  })
+)
+
+combined_Xcel_activityData_2020_2023 <- do.call(
+  rbind, 
+  lapply(file_list_2020_2023, function(file_info) {
+    process_file(file_info, start_cell = "A39")
+  })
+)
+
+
+#row bind two sets
+
+
+#address incongruent sectors
+
+
 #join with CTU-county reference
 
 
-# Apply process_file to each file identified in get_files() in the nested structure and combine the results
-file_list_2015_2019 <- Filter(function(x) x$year < 2020, file_list)
-combined_Xcel_activityData_2015_2019 <- do.call(rbind, lapply(file_list_2015_2019, process_file_2015_2019))
-
-
-file_list_2020_2023 <- Filter(function(x) x$year > 2019, file_list)
-combined_Xcel_activityData_2020_2023 <- do.call(rbind, lapply(file_list_2020_2023, process_file_2020_2023))
