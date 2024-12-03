@@ -154,37 +154,35 @@ process_file_2015_2019 <- function(file_info) {
   utility <- file_info$utility
   year <- file_info$year
   
-  # Read in provided electricity sector data from each file; returns a 
+  # Read in provided electricity sector data from each file and add file reference info
   city_data <- read_until_value(
     file_path = file_path,
     sheet = "Standard Community Report",
     start_cell = "A20",
     stop_value = "Total:", 
-    columns = "H"       # Read columns A to D
+    columns = "H"       # Read columns A to G
+  ) %>%
+  # clean up raw data -- rename columns as needed and drop unnecessary columns
+  select(
+    sector = Electricity,
+    kwh_delivered = `Energy Consumption (kWH)`,
+    util_reported_co2e = `Carbon Emission (Metric Tons CO2) [6]`
+  ) %>%
+  mutate(
+    mWh_delivered = kwh_delivered / 1000,
+    city_name = city_name,
+    utility_name = utility,
+    year = year,
+    sourfce = 'Electricty'
   )
   
-  # Rename columns
-  colnames(data_A_C) <- c("countyCode", "county", "mWh_delivered")
-  colnames(data_E_G) <- c("countyCode", "county", "mWh_delivered")
-  
-  # Combine the data from both ranges
-  combined_data <- rbind(data_A_C, data_E_G)
-  
-  # Filter for specific counties, and exclude county rows a given utility didn't operate in that year
-  combined_data <- combined_data %>%
-    filter(county %in% c(
-      "Anoka", "Carver", "Dakota", "Hennepin", "Ramsey",
-      "Scott", "Sherburne", "Chisago", "Washington"
-    )) %>%
-    filter(!is.na(mWh_delivered))
-  
-  # Add utility name and year columns
-  combined_data$utility <- utility_name
-  combined_data$year <- as.numeric(year)  # Ensure year is numeric if needed
-  
-  return(combined_data)
+  return(city_data)
 }
 
+
+#join with CTU-county reference
+
+
 # Apply process_file to each file identified in get_files() in the nested structure and combine the results
-file_list <- get_files(dir_mn_electricity_state)
-combined_MNelectUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
+file_list_2015_2019 <- get_files(dir_mn_electricity_state)
+combined_MNelectUtil_activityData <- do.call(rbind, lapply(file_list_2015_2019, process_file_2015_2019))
