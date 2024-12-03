@@ -105,18 +105,26 @@ testthat::test_that("Correct number of distinct city-year combos", {
 
 
 
-# function to dynamically read in0ut from files until a stopping value is found
+
+
+
+# function to dynamically read input from files until a stopping value is found
 read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) {
+  print(paste("Reading file:", file_path))
+  
   # Step 1: Read a broad range starting from the specified cell
   start_row <- as.numeric(gsub("[A-Z]", "", start_cell)) # Extract the row number from start_cell
   start_col <- gsub("[0-9]", "", start_cell)            # Extract the column letter from start_cell
   broad_range <- paste0(start_col, start_row, ":", columns, start_row + 10) # Read 10 rows initially
+  print(paste("Broad range:", broad_range))
   
   # Read the broad range
   data_broad <- read_excel(file_path, sheet = sheet, range = broad_range, col_names = FALSE)
+  print(data_broad)
   
   # Step 2: Locate the stopping value
-  stop_row_offset <- which(data_broad[[1]] == stop_value) # Check the first column for stop_value
+  stop_row_offset <- which(data_broad[[1]] == stop_value)[1] # Check the first column for stop_value
+  print(paste("Stop row offset:", stop_row_offset))
   
   if (length(stop_row_offset) == 0) {
     stop("Stopping value not found in the specified range.")
@@ -125,16 +133,17 @@ read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) 
   # Step 3: Define the dynamic range
   stop_row <- start_row + stop_row_offset - 2 # Adjust for Excel indexing and remove the total row
   refined_range <- paste0(start_col, start_row, ":", columns, stop_row)
+  print(refined_range)
   
   # Step 4: Read the refined range
   data <- read_excel(file_path, sheet = sheet, range = refined_range, col_names = TRUE)
-  
+  print(data)
   return(data)
 }
 
 # Example Usage:
 sector_test <- read_until_value(
-  file_path = "C:/Users/LimeriSA/Documents/Projects/ghg-cprg/_energy/data-raw/xcel_community_reports/2015/MN-City-Edina-2015.xls",
+  file_path = "C:/Users/LimeriSA/Documents/Projects/ghg-cprg/_energy/data-raw/xcel_community_reports/2015/MN-City-Apple-Valley-2015.xls",
   sheet = "Standard Community Report",
   start_cell = "A20",
   stop_value = "Total:", #value that signifies 
@@ -182,8 +191,8 @@ process_file_2015_2019 <- function(file_info) {
 
 # Apply process_file to each file identified in get_files() in the nested structure and combine the results
 file_list_2015_2019 <- Filter(function(x) x$year < 2020, file_list)
-file_list_2020_2023 <- Filter(function(x) x$year > 2019, file_list)
-
-
 combined_Xcel_activityData_2015_2019 <- do.call(rbind, lapply(file_list_2015_2019, process_file_2015_2019))
+
+
+file_list_2020_2023 <- Filter(function(x) x$year > 2019, file_list)
 combined_Xcel_activityData_2020_2023 <- do.call(rbind, lapply(file_list_2020_2023, process_file_2020_2023))
