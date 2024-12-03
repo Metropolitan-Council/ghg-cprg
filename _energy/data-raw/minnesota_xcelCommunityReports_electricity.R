@@ -103,11 +103,6 @@ testthat::test_that("Correct number of distinct city-year combos", {
   )
 })
 
-
-
-
-
-
 # function to dynamically read input from files until a stopping value is found
 read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) {
   print(paste("Reading file:", file_path))
@@ -141,16 +136,6 @@ read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) 
   return(data)
 }
 
-# Example Usage:
-sector_test <- read_until_value(
-  file_path = "C:/Users/LimeriSA/Documents/Projects/ghg-cprg/_energy/data-raw/xcel_community_reports/2015/MN-City-Apple-Valley-2015.xls",
-  sheet = "Standard Community Report",
-  start_cell = "A20",
-  stop_value = "Total:", #value that signifies 
-  columns = "H"       # Read columns A to D
-)
-
-
 # function to process the file associated with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
 # years 2015 to 2019 have constant format -- 2020 adds more info about renewables and clean energy
 process_file_2015_2019 <- function(file_info) {
@@ -171,8 +156,8 @@ process_file_2015_2019 <- function(file_info) {
   # clean up raw data -- rename columns as needed and drop unnecessary columns
   select(
     sector = Electricity,
-    kwh_delivered = `Energy Consumption (kWH)`,
-    util_reported_co2e = `Carbon Emission (Metric Tons CO2) [6]`
+    kwh_delivered = `Energy Consumption (kWh)`,
+    util_reported_co2e = `Carbon Emissions (metric tons CO2) [6]`
   ) %>%
   mutate(
     mWh_delivered = kwh_delivered / 1000,
