@@ -58,7 +58,7 @@ state_fertilizer <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   filter(!is.na(metric_tons_n_applied))
 
 
-
+## KS Note 11-24-24: Everything looks great here!!
 #### merge fertilize proportion estimates with state fertilizer values
 county_fertilizer_emissions <- left_join(fert_prop, cprg_county %>%
   st_drop_geometry() %>%
@@ -90,7 +90,9 @@ county_fertilizer_emissions <- left_join(fert_prop, cprg_county %>%
     mt_n2o = n2o_direct + n2o_indirect,
     mt_co2e = mt_n2o * gwp$n2o
   ) %>%
-  select(inventory_year, geoid, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty, mt_n2o, mt_co2e)
+  select(inventory_year, geoid, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty, 
+         n2o_direct, n2o_indirect, # KS retain these
+         mt_n2o, mt_co2e)
 
 ### check
 ggplot(
@@ -112,12 +114,27 @@ county_fertilizer_emissions %>%
 ### but language seems to imply fertilizer that stays on field vs that transported (into waterways, off cropland vegetation) perhaps
 county_fertilizer_runoff_emissions <- county_fertilizer_emissions %>%
   select(inventory_year, geoid, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty) %>%
+  ## KS: Minor correction
+  ## the Ag_Soils-Animals worksheet uses the estimates of unvolatized synthetic
+  ## and organic fertilizer, not the total fertilizer use of each kind
   mutate(
-    mt_n2o = (mt_n_synthetic_cty + mt_n_organic_cty) *
+    # unvolatilized N from synthetic fertilizer
+    mt_uv_n_synthetic_cty = mt_n_synthetic_cty * (1 - ag_constants_vec["VolSyn"]),
+    # unvolatilized N from organic fertilizer
+    mt_uv_n_organic_cty = mt_n_organic_cty * ag_constants_vec["NOrg"] * (1 - ag_constants_vec["VolOrg"]),
+
+    mt_n2o = (mt_uv_n_synthetic_cty + mt_uv_n_organic_cty) *
       ag_constants_vec["LeachEF"] * ag_constants_vec["LeachEF2"] *
       ag_constants_vec["N2O_N2"],
     mt_co2e = mt_n2o * gwp$n2o
   )
+# 
+#   mutate(
+#     mt_n2o = (mt_n_synthetic_cty + mt_n_organic_cty) *
+#       ag_constants_vec["LeachEF"] * ag_constants_vec["LeachEF2"] *
+#       ag_constants_vec["N2O_N2"],
+#     mt_co2e = mt_n2o * gwp$n2o
+#   )
 
 fertilizer_emissions <- bind_rows(
   county_fertilizer_emissions %>% ungroup() %>%
@@ -143,8 +160,8 @@ fertilizer_emissions <- bind_rows(
 fertilizer_emissions_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "inventory_year", class(fertilizer_emissions$inventory_year), "Year of survey",
     "geoid", class(fertilizer_emissions$geoid), "County GEOID",
+    "inventory_year", class(fertilizer_emissions$inventory_year), "Year of survey",
     "sector", class(fertilizer_emissions$sector), "Emissions sector. One of Transportation, Energy, Waste, Nature, Agriculture",
     "category", class(fertilizer_emissions$category), "Category of emissions within given sector",
     "source", class(fertilizer_emissions$source), "Source of emissions. Most detailed sub-category in this table",

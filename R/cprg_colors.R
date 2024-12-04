@@ -62,8 +62,9 @@ category_colors <-
 source_colors <- list(
   # transportation levels
   # "Light-duty vehicles" = "#993404",
-  # "Medium-duty vehicles" = "#fe9929",
-  # "Heavy-duty vehicles" = "#fee391",
+  # we still need these colors for DOT VMT docs
+  "Medium-duty vehicles" = "#fe9929",
+  "Heavy-duty vehicles" = "#fee391",
   "Gasoline fueled vehicles" = "#db4a33",
   "Diesel fueled vehicles" = "#feb24c",
   "Other fueled vehicles" = "#ffeda0",
@@ -95,7 +96,10 @@ source_colors <- list(
 vehicle_weight_colors <- list(
   "Passenger" = category_colors$`Passenger vehicles`,
   "Buses" = category_colors$Buses,
-  "Trucks" = category_colors$Trucks
+  "Trucks" = category_colors$Trucks,
+  # we still need these colors for DOT VMT docs
+  "Medium-duty" = source_colors$`Medium-duty vehicles`,
+  "Heavy-duty" = source_colors$`Heavy-duty vehicles`
 )
 
 fuel_type_colors <- list(

@@ -137,28 +137,28 @@ saveRDS(nlcd_ctu_meta, "./_agriculture/data/nlcd_ctu_landcover_meta.rds")
 ### for now assigning COCTU to where majority of land area is manually
 ctu_co <- cprg_ctu_9 %>%
   filter(
-    !(CTU_NAME == "Chanhassen" & COUNTY_NAM == "Hennepin"),
-    !(CTU_NAME == "Blaine" & COUNTY_NAM == "Ramsey"),
-    !(CTU_NAME == "Hastings" & COUNTY_NAM == "Washington"),
-    !(CTU_NAME == "Saint Anthony" & COUNTY_NAM == "Ramsey"),
-    !(CTU_NAME == "Shorewood" & COUNTY_NAM == "Carver"),
-    !(CTU_NAME == "Spring Lake Park" & COUNTY_NAM == "Ramsey"),
-    !(CTU_NAME == "White Bear Lake" & COUNTY_NAM == "Washington")
+    !(CTU_NAME == "Chanhassen" & COUNTY_NAME == "Hennepin"),
+    !(CTU_NAME == "Blaine" & COUNTY_NAME == "Ramsey"),
+    !(CTU_NAME == "Hastings" & COUNTY_NAME == "Washington"),
+    !(CTU_NAME == "Saint Anthony" & COUNTY_NAME == "Ramsey"),
+    !(CTU_NAME == "Shorewood" & COUNTY_NAME == "Carver"),
+    !(CTU_NAME == "Spring Lake Park" & COUNTY_NAME == "Ramsey"),
+    !(CTU_NAME == "White Bear Lake" & COUNTY_NAME == "Washington")
   ) %>%
   filter(!duplicated(CTU_NAME))
 
 ctu_ag_proportion <- left_join(nlcd_ctu, ctu_co %>%
-  select(CTU_NAME, COUNTY_NAM, STATE, STATEFP) %>%
-  st_drop_geometry(),
+  select(CTU_NAME, COUNTY_NAME, STATE, STATEFP) %>%
+  st_drop_geometry() %>% as.data.frame(),
 by = c("ctu" = "CTU_NAME")
 ) %>%
   filter(land_cover_type == "Cropland") %>%
-  group_by(year, COUNTY_NAM) %>%
+  group_by(year, COUNTY_NAME) %>%
   mutate(county_cropland = sum(area)) %>%
   ungroup() %>%
   mutate(proportion_ag_land = area / county_cropland) %>%
-  select(year, ctu, area, COUNTY_NAM, STATE, STATEFP, proportion_ag_land) %>%
-  rename(county_name = COUNTY_NAM, state = STATE, statefp = STATEFP)
+  select(year, ctu, area, COUNTY_NAME, STATE, STATEFP, proportion_ag_land) %>%
+  rename(county_name = COUNTY_NAME, state = STATE, statefp = STATEFP)
 
 # create metadata
 ctu_ag_proportion_meta <-
