@@ -1,6 +1,6 @@
 # compile emissions from all sectors into a single data table, reducing to CTU
 source("R/_load_pkgs.R")
-cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+cprg_county <- readRDS("_meta/data/cprg_county.RDS") %>% st_drop_geometry()
 cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
   filter(cprg_area == TRUE) %>%
   mutate(
@@ -9,9 +9,28 @@ cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
   select(-cprg_area)
 
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>% 
-  left_join(cprg_county %>% select(geoid, county_name)) %>% 
-  st_drop_geometry()
+  left_join(cprg_county %>% select(geoid, county_name))
 
+# assign ctu to county where it has highest population in 2021
+ctu_county <- ctu_population %>% 
+  filter(inventory_year == 2021) %>% 
+  group_by(ctu_name, ctu_class) %>% 
+  mutate(max_population = max(ctu_population)) %>% 
+  filter(ctu_population == max_population) %>% 
+  distinct(ctu_name, county_name)
+
+mndot_vmt_ctu <- readRDS("_transportation/data/mndot_vmt_ctu.RDS")
+  
+
+ctu_vmt_percent <- left_join(mndot_vmt_ctu, cprg_county %>% 
+                               select(geoid, county_name),
+                             by = "geoid") %>% 
+  group_by(county_name, vmt_year) %>% 
+  mutate(county_annual_vmt = sum(annual_vmt)) %>% 
+  ungroup() %>% 
+  mutate(ctu_vmt_percent = annual_vmt / county_annual_vmt,
+         vmt_year = as.numeric(vmt_year))
+  
 
 # transportation -----
 transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS") %>%
@@ -25,12 +44,12 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
     data_source = data_source,
     factor_source = moves_edition
   ) %>% 
-  group_by(emissions_year, county_name, sector, category) %>% 
+  group_by(emissions_year, county_name, sector, category, source) %>% 
   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
-  right_join(ctu_population, 
+  left_join(ctu_vmt_percent, 
                  by = c("county_name",
-                        "emissions_year" = "inventory_year")) %>% 
-  mutate(emissions_metric_tons_co2e = emissions_metric_tons_co2e * ctu_proportion_of_county_pop,
+                        "emissions_year" = "vmt_year")) %>% 
+  mutate(emissions_metric_tons_co2e = emissions_metric_tons_co2e * ctu_vmt_percent,
          geog_level = "ctu") %>%
   select(
     emissions_year,
@@ -38,6 +57,7 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
     ctu_name,
     sector,
     category,
+    source,
     emissions_metric_tons_co2e
   )
 
@@ -54,7 +74,7 @@ ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
     emissions_metric_tons_co2e = co2e,
     emissions_year = as.numeric(year)
   )  %>% 
-  group_by(emissions_year, county_name, sector, category) %>% 
+  group_by(emissions_year, county_name, sector, category, source) %>% 
   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
   right_join(ctu_population, 
              by = c("county_name",
@@ -167,17 +187,17 @@ agriculture_emissions <- left_join(ctu_ag_proportion,
 
 ## industrial ----
 
-industrial_emissions <- readRDS("_industrial/data/city_industrial_emissions.RDS") %>%
+industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_emissions.RDS") %>%
   ungroup() %>%
   mutate(
     geog_level = "ctu",
     ctu_name = city_name,
-    emissions_metric_tons_co2e = values_emissions,
+    emissions_metric_tons_co2e = value_emissions,
     emissions_year = as.numeric(inventory_year)
   ) %>%
-  left_join(ctu_population %>% select(ctu_name, county_name, inventory_year),
-            by = c("ctu_name" = "ctu_name",
-                   "emissions_year" = "inventory_year")) %>% 
+  # left_join(ctu_population %>% select(ctu_name, county_name, inventory_year),
+  #           by = c("ctu_name" = "ctu_name",
+  #                  "emissions_year" = "inventory_year")) %>% 
   select(names(transportation_emissions))
 
 
