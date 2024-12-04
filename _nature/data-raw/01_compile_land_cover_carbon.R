@@ -1,4 +1,9 @@
+rm(list=ls())
 source("R/_load_pkgs.R")
+source("R/global_warming_potential.R")
+
+overwrite_RDS <- TRUE
+
 
 seq_rates <- read_csv("./_nature/data-raw/land_cover_seq_rates.csv")
 stock <- read_csv("./_nature/data-raw/land_cover_stock.csv")
@@ -61,5 +66,10 @@ land_cover_c_meta <-
     "Stock potential", class(land_cover_c$stock_mtco2e_sqkm), "Total carbon stock potential of land cover type in metric tons CO2 equivalency per square kilometer"
   )
 
+# User chooses whether to overwrite the rds files
+if (overwrite_RDS) {
 saveRDS(land_cover_c, "./_nature/data/land_cover_carbon.rds")
 saveRDS(land_cover_c_meta, "./_nature/data/land_cover_carbon_meta.rds")
+}
+
+message("Done!")
