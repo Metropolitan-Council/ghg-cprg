@@ -44,7 +44,7 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
     data_source = data_source,
     factor_source = moves_edition
   ) %>% 
-  group_by(emissions_year, county_name, sector, category, source) %>% 
+  group_by(emissions_year, county_name, sector, category) %>% 
   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
   left_join(ctu_vmt_percent, 
                  by = c("county_name",
@@ -57,7 +57,6 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
     ctu_name,
     sector,
     category,
-    source,
     emissions_metric_tons_co2e
   )
 
@@ -74,9 +73,9 @@ ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
     emissions_metric_tons_co2e = co2e,
     emissions_year = as.numeric(year)
   )  %>% 
-  group_by(emissions_year, county_name, sector, category, source) %>% 
+  group_by(emissions_year, county_name, sector, category) %>% 
   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
-  right_join(ctu_population, 
+  left_join(ctu_population, 
              by = c("county_name",
                     "emissions_year" = "inventory_year")) %>% 
   mutate(emissions_metric_tons_co2e = emissions_metric_tons_co2e * ctu_proportion_of_county_pop,
@@ -94,37 +93,27 @@ solid_waste <- readRDS("_waste/data/final_solid_waste_ctu_allyrs.RDS") %>%
     emissions_year = as.numeric(inventory_year),
     emissions_metric_tons_co2e = value_emissions
   ) %>%
+  filter(!is.na(emissions_metric_tons_co2e)) %>% 
   select(names(transportation_emissions))
 
 
 
 # energy -----
-electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_proportioned.RDS")
+electric_natgas_nrel_proportioned <- readRDS("_energy/data-raw/nrel_slope/nrel_emissions_inv_cityQA_2021.RDS")
 
 ## electricity ----
 
 electric_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Electricity") %>%
-  # avoid duplication and NAs until category is infilled later
-  filter((year == 2005 & category == "Total") |
-           (year == 2021 & category != "Total")) %>%
   mutate(
     sector = "Electricity",
-    geog_level = "county",
-    county_name = county,
-    category = paste0(category, " electricity"),
-    source = source,
+    geog_level = "ctu",
+    category = paste0(str_to_title(sector_raw), " electricity"),
+    emissions_metric_tons_co2e = co2e_city,
     data_source = "Individual electric utilities, NREL SLOPE",
     factor_source = "eGRID MROW",
     emissions_year = as.numeric(year)
   ) %>% 
-  group_by(emissions_year, county_name, sector, category) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
-  left_join(ctu_population, 
-             by = c("county_name",
-                    "emissions_year" = "inventory_year")) %>% 
-  mutate(emissions_metric_tons_co2e = emissions_metric_tons_co2e * ctu_proportion_of_county_pop,
-         geog_level = "ctu") %>%
   select(names(transportation_emissions))
 
 
@@ -132,25 +121,15 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
 
 natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Natural gas") %>%
-  # avoid duplication and NAs until category is infilled later
-  filter((year == 2005 & category == "Total") |
-           (year == 2021 & category != "Total")) %>%
   mutate(
-    sector = "Building energy",
-    county_name = county,
-    category = paste0(category, " natural gas"),
-    source = source,
+    sector = str_to_title(sector_raw),
+    geog_level = "ctu",
+    category = "Natural Gas",
+    emissions_metric_tons_co2e = co2e_city,
     data_source = "Individual natural gas utilities, NREL SLOPE (2021)",
     factor_source = "EPA GHG Emission Factors Hub (2021)",
     emissions_year = as.numeric(year)
-  )%>% 
-  group_by(emissions_year, county_name, sector, category) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
-  left_join(ctu_population, 
-             by = c("county_name",
-                    "emissions_year" = "inventory_year")) %>% 
-  mutate(emissions_metric_tons_co2e = emissions_metric_tons_co2e * ctu_proportion_of_county_pop,
-         geog_level = "ctu") %>%
+  ) %>%
   select(names(transportation_emissions))
 
 
@@ -193,7 +172,8 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
     geog_level = "ctu",
     ctu_name = city_name,
     emissions_metric_tons_co2e = value_emissions,
-    emissions_year = as.numeric(inventory_year)
+    emissions_year = as.numeric(inventory_year),
+    category = if_else(category == "Stationary combustion", source, category)
   ) %>%
   # left_join(ctu_population %>% select(ctu_name, county_name, inventory_year),
   #           by = c("ctu_name" = "ctu_name",
@@ -240,10 +220,7 @@ emissions_all <- bind_rows(
         "Commercial electricity",
         "Industrial electricity",
         "Total electricity",
-        "Residential natural gas",
-        "Commercial natural gas",
-        "Industrial natural gas",
-        "Total natural gas",
+        "Natural gas",
         "Passenger vehicles",
         "Buses",
         "Trucks",
@@ -251,15 +228,21 @@ emissions_all <- bind_rows(
         "Solid waste",
         "Livestock",
         "Cropland",
-        "Fuel combustion",
-        "Process",
+        "Other fuel combustionn",
+        "Coal",
+        "Oil",
+        "Natural Gas",
+        "Industrial processes",
         "Natural systems",
         "Urban greenery"
         # "Stock"
       ),
       ordered = TRUE
     )
-  ) 
+  ) %>% 
+  ##keep 7 counties only for CTU estimates
+  filter(!county_name %in% c("St. Croix", "Pierce", "Chisago", "Sherburne"))
+  
   # join county population and calculate per capita emissions
   # left_join(
   #   ctu_population %>%
@@ -276,8 +259,9 @@ emissions_all <- bind_rows(
   # select(emissions_year, geog_level, ctu_name, everything())
 
 
-mean(emissions_all$emissions_per_capita[!emissions_all$category == "Stock"], na.rm = T)
-sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"], na.rm = T) / sum(cprg_county_pop$population)
+emissions_all %>% filter(emissions_year == 2021, !is.na(emissions_metric_tons_co2e)) %>% 
+  pull(emissions_metric_tons_co2e) %>% sum() / 
+  sum(cprg_county_pop[cprg_county_pop$population_year==2021,]$population)
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
@@ -303,7 +287,6 @@ saveRDS(emissions_all, "_meta/data/ctu_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
 write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)
 
-county_emissions <- emissions_all
 
 saveRDS(carbon_stock, "_meta/data/cprg_county_carbon_stock.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_carbon_stock_meta.RDS")
