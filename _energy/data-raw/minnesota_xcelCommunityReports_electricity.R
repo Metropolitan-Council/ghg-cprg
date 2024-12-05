@@ -191,11 +191,13 @@ combined_Xcel_activityData_2020_2023 <- do.call(
 
 
 #row bind two sets
-
+Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
+                                     combined_Xcel_activityData_2020_2023)
 
 #address incongruent sectors
 
 
 #join with CTU-county reference
-
+cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 
