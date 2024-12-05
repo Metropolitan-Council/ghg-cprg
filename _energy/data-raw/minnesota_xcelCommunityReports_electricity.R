@@ -82,26 +82,6 @@ get_files <- function(root_dir) {
 file_list <- get_files(dir_xcel_communityReports)
 
 
-# test that number of distinct city year combos = number of files
-# highlight which files if any have NA value for city_name or year 
-testthat::test_that("Correct number of distinct city-year combos", {
-  
-  combinations <- lapply(file_list, function(x) {
-    c(city_name = x$city_name, year = x$year)
-  })
-  
-  # Convert to a data frame for easier processing
-  combinations_df <- do.call(rbind, combinations)
-  
-  # Count unique combinations
-  unique_combinations <- nrow(unique(combinations_df))
-  
-  
-  testthat::expect_equal(
-    length(file_list),
-    unique_combinations
-  )
-})
 
 # function to dynamically read input from files until a stopping value is found
 read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) {
@@ -192,7 +172,24 @@ combined_Xcel_activityData_2020_2023 <- do.call(
 
 #row bind two sets
 Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
-                                     combined_Xcel_activityData_2020_2023)
+                                     combined_Xcel_activityData_2020_2023) %>%
+  mutate(
+    sector_mapped = case_when(
+      sector %in% c("Residential") ~ "Residential",
+      sector %in% c("Street Lighting - Non-Metered/Customer Owned",
+                    "Street Lighting - Non-Metered/Xcel-Owned",
+                    "Street Lighting - Metered") ~ "Commercial", # Map street lighting to Commercial
+      sector == "Industrial" ~ "Industrial",
+      sector == "Commercial" ~ "Commercial",
+      sector == "Business *" ~ "Business *",
+      sector == "Business" ~ "Business *", # Handle as disaggregation
+      TRUE ~ NA_character_
+    )
+  )
+
+#remove interstitial dfs
+rm(combined_Xcel_activityData_2015_2019)
+rm(combined_Xcel_activityData_2020_2023)
 
 #address incongruent sectors
 
@@ -200,4 +197,26 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
 #join with CTU-county reference
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
+
+
+# test that number of distinct city year combos = number of files
+# highlight which files if any have NA value for city_name or year 
+testthat::test_that("Correct number of distinct city-year combos", {
+  
+  combinations <- lapply(file_list, function(x) {
+    c(city_name = x$city_name, year = x$year)
+  })
+  
+  # Convert to a data frame for easier processing
+  combinations_df <- do.call(rbind, combinations)
+  
+  # Count unique combinations
+  unique_combinations <- nrow(unique(combinations_df))
+  
+  
+  testthat::expect_equal(
+    length(file_list),
+    unique_combinations
+  )
+})
 
