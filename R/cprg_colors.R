@@ -11,10 +11,11 @@ cprg_colors <- list(
 
 # sector colors
 sector_colors <- list("Electricity" = "#1f77b4", 
-                       "Transportation" = "#8c564b", 
-                       "Building energy" = "#9467bd", 
+                       "Transportation" = "#F781BF", 
+                       "Residential" = "#9467bd", 
+                       "Commercial" = "#d62728", 
                        "Industrial" = "slategray",
-                       "Waste" = "#d62728", 
+                       "Waste" = "#8c564b",
                        "Agriculture" = "#ff7f0e", 
                        "Nature" = "#2ca02c")
 
@@ -28,25 +29,28 @@ category_colors <-
     "Industrial electricity" = "#7fcdbb",
     
     #Pu
-    "Residential natural gas" = "#fb7cf5",
-    "Commercial natural gas" = "#aa55a6",
-    "Industrial natural gas" = "#780e73",
-    "Liquid stationary fuels" = "#480245",
+    "Residential natural gas" = "#9467bd",
+    
+    "Commercial natural gas" = "#DC143C",
+    "Commercial oil" = "#B22222",
+    "Commercial coal" = "#FF6347",
 
     #Gray
-    "Fuel combustion" = "#7e7e7e",
-    "Process" = "#504b4b",
-    "Small industrial" = "#d2c5c5",
-
+    "Industrial natural gas" = "#C0C0C0",
+    "Industrial processes" = "#2F4F4F",
+    "Industiral oil" = "#696969",
+    "Industrial coal" = "#D3D3D3",
+    "Industrial other combustion" = "#808080",
+    
     # YlOrBr
-    "Passenger vehicles" = "#993404",
-    "Buses" = "#E9967A",
-    "Trucks" = "#fe9929",
-    "Aviation" = "#fd6d31",
+    "Passenger vehicles" = "#FF69B4",
+    "Buses" = "#FFB6C1",
+    "Trucks" = "#FF1493",
+    "Aviation" = "#DB7093",
 
     # Rd
-    "Solid waste" = "#a80d0d",
-    "Wastewater" = "#f24b4b",
+    "Solid waste" = "#8B4513",
+    "Wastewater" = "#CD853F",
 
     # Green
     "Cropland" = "#c7e960",

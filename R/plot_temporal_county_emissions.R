@@ -30,7 +30,7 @@ ctu_emissions <- readRDS("_meta/data/ctu_emissions.RDS")
 emissions_sector <- county_emissions %>% 
   group_by(year, sector) %>% 
   summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
-  mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building energy", "Industrial", "Waste", "Agriculture", "Nature")))
+  mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Nature")))
 
 baseline_comparison <- ggplot(emissions_sector %>% filter(year %in% c(2005, 2021)),
                               aes(x = sector, y = MT_CO2e, fill = as.factor(year))) +
@@ -302,7 +302,7 @@ for(i in c("Bloomington",
     filter(ctu_name == i) %>% 
     group_by(emissions_year, sector, category) %>% 
     summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
-    mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building energy", "Industrial", "Waste", "Agriculture", "Nature")))
+    mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Nature")))
   
   subsector_comparison <- ggplot(
     emissions_subsector_ctu %>%
@@ -318,7 +318,7 @@ for(i in c("Bloomington",
   ) +
     geom_bar(stat = 'identity', position = 'stack') +
     labs(fill = "Subsector") +
-    scale_fill_manual(values = category_colors_vector) +
+    #scale_fill_manual(values = category_colors_vector) +
     theme_minimal() +
     xlab("") +
     ylab(expression(paste("Million metric tons of ", CO[2], "e"))) +
