@@ -181,8 +181,8 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
                     "Street Lighting - Metered") ~ "Commercial", # Map street lighting to Commercial
       sector == "Industrial" ~ "Industrial",
       sector == "Commercial" ~ "Commercial",
-      sector == "Business *" ~ "Business *",
-      sector == "Business" ~ "Business *", # Handle as disaggregation
+      sector == "Business *" ~ "Business",
+      sector == "Business" ~ "Business", # Handle as disaggregation
       TRUE ~ NA_character_
     )
   )
@@ -191,7 +191,70 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
 rm(combined_Xcel_activityData_2015_2019)
 rm(combined_Xcel_activityData_2020_2023)
 
-#address incongruent sectors
+
+# Step 1: Calculate city-level average proportions for Commercial and Industrial, with a default value of 1 for commercial to ensure street lighting is fully allocated there if no commercial or industrial data
+city_avg_proportions <- Xcel_activityData_2015_2023 %>%
+  filter(sector_mapped %in% c("Commercial", "Industrial")) %>%
+  group_by(city_name) %>%
+  summarise(
+    total_detailed = sum(mWh_delivered, na.rm = TRUE),
+    commercial_total = sum(mWh_delivered[sector_mapped == "Commercial"], na.rm = TRUE),
+    industrial_total = sum(mWh_delivered[sector_mapped == "Industrial"], na.rm = TRUE),
+    avg_commercial_proportion = ifelse(total_detailed > 0, commercial_total / total_detailed, 1),
+    avg_industrial_proportion = ifelse(total_detailed > 0, industrial_total / total_detailed, 0)
+  )
+
+# Step 2: Backcast Business data using city-level proportions
+data_with_backcast <- Xcel_activityData_2015_2023 %>%
+  left_join(city_avg_proportions, by = "city_name") %>%
+  mutate(
+    commercial_modeled = ifelse(
+      sector_mapped == "Business",
+      mWh_delivered * avg_commercial_proportion,
+      NA
+    ),
+    industrial_modeled = ifelse(
+      sector_mapped == "Business",
+      mWh_delivered * avg_industrial_proportion,
+      NA
+    )
+  ) %>%
+  mutate(
+    # Coalesce to prioritize real values over modeled values
+    Commercial = coalesce(
+      ifelse(sector_mapped == "Commercial", mWh_delivered, NA),
+      commercial_modeled
+    ),
+    Industrial = coalesce(
+      ifelse(sector_mapped == "Industrial", mWh_delivered, NA),
+      industrial_modeled
+    )
+  )
+
+# Step 3: Combine Commercial and Industrial values into final dataset
+final_data <- data_with_backcast %>%
+  # Keep all original data plus modeled data
+  mutate(
+    Residential = ifelse(sector_mapped == "Residential", mWh_delivered, NA)
+  ) %>%
+  select(year, city_name, sector_mapped, mWh_delivered, Commercial, Industrial, Residential) %>%
+  pivot_longer(
+    cols = c(Commercial, Industrial, Residential), # Include all mapped, aggregated sectors
+    names_to = "sector",
+    values_to = "mWh_delivered",
+    names_repair = "unique"
+  ) 
+
+
+%>%
+  #filter(!is.na(mWh_delivered)) %>% # Remove rows with no data
+  mutate(
+    # Recode sector names to final format
+    sector = recode(sector,
+                    "commercial" = "Commercial",
+                    "industrial" = "Industrial",
+                    "residential" = "Residential")
+  )
 
 
 #join with CTU-county reference
