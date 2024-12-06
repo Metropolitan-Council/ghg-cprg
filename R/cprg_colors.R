@@ -38,7 +38,7 @@ category_colors <-
     #Gray
     "Industrial natural gas" = "#C0C0C0",
     "Industrial processes" = "#2F4F4F",
-    "Industiral oil" = "#696969",
+    "Industrial oil" = "#696969",
     "Industrial coal" = "#D3D3D3",
     "Industrial other combustion" = "#808080",
     

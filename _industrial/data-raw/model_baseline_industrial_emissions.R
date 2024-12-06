@@ -128,9 +128,6 @@ ghgrp_mpca_emissions <-
   mutate(emission_percent = value_emissions/value_emissions_mpca_inv,
          emission_percent = if_else(is.infinite(emission_percent),NA, emission_percent))
 
-
-
-
 ### create grid of needed city-subsector-year combinations
 ghgrp_extrapolated <- left_join(
   expand.grid(
@@ -262,6 +259,7 @@ industrial_baseline <- bind_rows(
              source %in% c("Landfills", "Industrial processes") ~ "Industrial processes",
              TRUE ~ "Stationary combustion"
            ),
+           unit_emissions = "Metric tons CO2 equivalency",
            data_source = if_else(city_name %in% mpca_industrial_missing$city_name,
                                  "MPCA Reporting",
                                  "EPA GHG Reporting Program"),
@@ -274,11 +272,47 @@ industrial_baseline <- bind_rows(
            category = "Stationary combustion",
            unit_emissions = "Metric tons CO2 equivalency",
            data_source = if_else(data_type == "modeled", "Modeled data", "MPCA Reporting"),
-           factor_source = "EPA GHG Factor Hub")
-) %>% 
+           factor_source = "EPA GHG Factor Hub"),
+  #add in 2021+ years
+  mpca_commercial %>% 
+              filter(inventory_year >= 2021) %>% 
+    select(inventory_year, city_name, county_name, source = mpca_subsector,
+           value_emissions) %>% 
+              mutate(sector = "Commercial",
+                     category = "Stationary combustion",
+                     unit_emissions = "Metric tons CO2 equivalency",
+                     data_source ="MPCA Reporting",
+                     factor_source = "EPA GHG Factor Hub",
+                     data_type = NA) ,
+  industrial_emissions_measured  %>% 
+    filter(inventory_year >= 2021)%>% 
+    select(inventory_year, city_name, county_name, source = mpca_subsector,
+           value_emissions) %>% 
+    mutate(sector = "Industrial",
+           category = case_when(
+             source == "Refinery processes" ~ "Refinery processes",
+             source %in% c("Landfills", "Industrial processes") ~ "Industrial processes",
+             TRUE ~ "Stationary combustion"
+           ),
+           unit_emissions = "Metric tons CO2 equivalency",
+           factor_source = "EPA GHG Factor Hub",
+           data_type = NA) 
+  ) %>% 
   #bring in IDs
   left_join(cprg_county %>% select(county_name, geoid) %>% rename(county_id = geoid)) %>% 
   select(-data_type)
+
+baseline_county <- industrial_baseline %>% 
+  group_by(inventory_year, sector, county_name) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+ggplot(baseline_county, aes(x = inventory_year, y = value_emissions, col = county_name)) + geom_line() +
+  facet_wrap(~ sector)
+  
+# one dataset is missing 2023, omitting for now
+
+industrial_baseline <- industrial_baseline %>% 
+  filter(inventory_year <= 2022)
 
 industrial_baseline_meta <-
   tibble::tribble(

@@ -241,7 +241,10 @@ emissions_all <- bind_rows(
     )
   ) %>% 
   ##keep 7 counties only for CTU estimates
-  filter(!county_name %in% c("St. Croix", "Pierce", "Chisago", "Sherburne"))
+  filter(!county_name %in% c("St. Croix", "Pierce", "Chisago", "Sherburne")) %>% 
+  group_by(county_name, emissions_year, geog_level, ctu_name, sector, category) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e), .groups = "drop")
+  
   
   # join county population and calculate per capita emissions
   # left_join(
