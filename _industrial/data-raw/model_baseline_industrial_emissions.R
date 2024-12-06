@@ -20,6 +20,7 @@ ghgrp_emissions <- readRDS(file.path(here::here(),
 
 subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))%>% 
   mutate(city_name = str_replace_all(city_name, "St.", "Saint"))
+
 mpca_emissions <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions.RDS"))%>% 
   mutate(ctu_name = str_replace_all(ctu_name, "St.", "Saint"))
 

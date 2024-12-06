@@ -32,15 +32,13 @@ category_colors <-
     "Residential natural gas" = "#9467bd",
     
     "Commercial natural gas" = "#DC143C",
-    "Commercial oil" = "#B22222",
-    "Commercial coal" = "#FF6347",
+    "Commercial fuel combustion" = "#FF6347",
 
     #Gray
     "Industrial natural gas" = "#C0C0C0",
     "Industrial processes" = "#2F4F4F",
-    "Industrial oil" = "#696969",
-    "Industrial coal" = "#D3D3D3",
-    "Industrial other combustion" = "#808080",
+    "Industrial fuel combustion" = "#CBC1AE",
+    "Refinery processes" = "#808080",
     
     # YlOrBr
     "Passenger vehicles" = "#FF69B4",

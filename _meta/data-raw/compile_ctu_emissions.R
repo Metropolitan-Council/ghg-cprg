@@ -173,7 +173,11 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
     ctu_name = city_name,
     emissions_metric_tons_co2e = value_emissions,
     emissions_year = as.numeric(inventory_year),
-    category = if_else(category == "Stationary combustion", source, category)
+    source = str_to_sentence(source),
+    category = case_when(
+      category == "Stationary combustion" & source == "Natural gas" ~ str_to_sentence(paste(sector,source)),
+      category == "Stationary combustion" & source != "Natural gas" ~ str_to_sentence(paste(sector,"fuel combustion")), 
+      TRUE ~ category)
   ) %>%
   # left_join(ctu_population %>% select(ctu_name, county_name, inventory_year),
   #           by = c("ctu_name" = "ctu_name",
@@ -228,11 +232,13 @@ emissions_all <- bind_rows(
         "Solid waste",
         "Livestock",
         "Cropland",
-        "Other fuel combustionn",
-        "Coal",
-        "Oil",
         "Natural Gas",
+        "Commercial fuel combustion",
+        "Commercial natural gas",
+        "Industrial fuel combustion",
+        "Industrial natural gas",
         "Industrial processes",
+        "Refinery processes",
         "Natural systems",
         "Urban greenery"
         # "Stock"
