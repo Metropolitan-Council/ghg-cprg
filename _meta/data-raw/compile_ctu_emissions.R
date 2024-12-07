@@ -106,9 +106,9 @@ electric_natgas_nrel_proportioned <- readRDS("_energy/data-raw/nrel_slope/nrel_e
 electric_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Electricity") %>%
   mutate(
-    sector = "Electricity",
+    sector = str_to_title(sector_raw),
     geog_level = "ctu",
-    category = paste0(str_to_title(sector_raw), " electricity"),
+    category = "Electricity",
     emissions_metric_tons_co2e = co2e_city,
     data_source = "Individual electric utilities, NREL SLOPE",
     factor_source = "eGRID MROW",
@@ -132,6 +132,25 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   ) %>%
   select(names(transportation_emissions))
 
+## industrial ----
+
+industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_emissions.RDS") %>%
+  ungroup() %>%
+  mutate(
+    geog_level = "ctu",
+    ctu_name = city_name,
+    emissions_metric_tons_co2e = value_emissions,
+    emissions_year = as.numeric(inventory_year),
+    source = str_to_sentence(source),
+    category = case_when(
+      category == "Stationary combustion" & source == "Natural gas" ~ str_to_sentence(paste(sector,source)),
+      category == "Stationary combustion" & source != "Natural gas" ~ str_to_sentence(paste(sector,"fuel combustion")), 
+      TRUE ~ category)
+  ) %>%
+  # left_join(ctu_population %>% select(ctu_name, county_name, inventory_year),
+  #           by = c("ctu_name" = "ctu_name",
+  #                  "emissions_year" = "inventory_year")) %>% 
+  select(names(transportation_emissions))
 
 ## agriculture ----
 
@@ -160,28 +179,6 @@ agriculture_emissions <- left_join(ctu_ag_proportion,
            TRUE ~ year
          ))  %>%
   rename(ctu_name = ctu) %>% 
-  select(names(transportation_emissions))
-
-
-
-## industrial ----
-
-industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_emissions.RDS") %>%
-  ungroup() %>%
-  mutate(
-    geog_level = "ctu",
-    ctu_name = city_name,
-    emissions_metric_tons_co2e = value_emissions,
-    emissions_year = as.numeric(inventory_year),
-    source = str_to_sentence(source),
-    category = case_when(
-      category == "Stationary combustion" & source == "Natural gas" ~ str_to_sentence(paste(sector,source)),
-      category == "Stationary combustion" & source != "Natural gas" ~ str_to_sentence(paste(sector,"fuel combustion")), 
-      TRUE ~ category)
-  ) %>%
-  # left_join(ctu_population %>% select(ctu_name, county_name, inventory_year),
-  #           by = c("ctu_name" = "ctu_name",
-  #                  "emissions_year" = "inventory_year")) %>% 
   select(names(transportation_emissions))
 
 
@@ -220,11 +217,8 @@ emissions_all <- bind_rows(
     category = factor(
       category,
       c(
-        "Residential electricity",
-        "Commercial electricity",
-        "Industrial electricity",
-        "Total electricity",
-        "Natural gas",
+        "Electricity",
+        "Natural Gas",
         "Passenger vehicles",
         "Buses",
         "Trucks",
@@ -232,7 +226,6 @@ emissions_all <- bind_rows(
         "Solid waste",
         "Livestock",
         "Cropland",
-        "Natural Gas",
         "Commercial fuel combustion",
         "Commercial natural gas",
         "Industrial fuel combustion",

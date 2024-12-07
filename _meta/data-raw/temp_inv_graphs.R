@@ -12,7 +12,7 @@ cprg_colors <- source("R/cprg_colors.R")
 
 ctu_emissions <- readRDS("_meta/data/ctu_emissions.RDS") %>% 
   filter(emissions_year == 2021) %>% 
-  mutate(category = if_else(category == "Natural Gas",
+  mutate(category = if_else(category %in% c("Electricity","Natural Gas"),
                             str_to_sentence(paste(sector, category)),
                             category))
 
@@ -65,13 +65,13 @@ nature_city <- city_selector %>%
 
 category_colors_vector <- unlist(category_colors, use.names = TRUE)
 
-for(i in c("Cottage Grove")) {
+for(i in c("Farmington")) {
   
   emissions_subsector_ctu <- ctu_emissions %>% 
     filter(ctu_name == i) %>% 
     group_by(emissions_year, sector, category) %>% 
     summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
-    mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Nature")))
+    mutate(sector = factor(sector, levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Nature")))
   
   subsector_comparison <- ggplot(
     emissions_subsector_ctu %>%
@@ -156,29 +156,29 @@ plot_city_emissions <- function(city, plot_title, file_path) {
 # produce some interesting community profiles
 
 plot_city_emissions("Richfield",
-                    "Urban Transportation Profile",
+                    "Urban - High Transportation Emissions",
                     file_path = "urban_transport")
 
 plot_city_emissions("Lino Lakes",
-                    "Suburban Edge Transportation Profile",
+                    "Suburban - High Transportation Emissions",
                     file_path = "suburban_transport")
 
 plot_city_emissions("Minneapolis",
-                    "Urban Commercial Profile",
+                    "Urban - High Commercial Emissions",
                     file_path = "urban_commercial")
 
 plot_city_emissions("Mahtomedi",
-                    "Suburban Residential Profile",
+                    "Suburban - High Residential Emissions",
                     file_path = "suburban_residential")
 
-plot_city_emissions("Cottage Grove",
-                    "Suburban Industrial Profile",
+plot_city_emissions("Farmington",
+                    "Suburban - High Industrial Emissions",
                     file_path = "suburban_industrial")
 
 plot_city_emissions("Belle Plaine",
-                    "Rural Agricultural Profile",
+                    "Rural - High Agricultural Emissions",
                     file_path = "rural_agriculture")
 
 plot_city_emissions("East Bethel",
-                    "Rural Natural Systems Profile",
+                    "Rural - High Natural Systems Sequestration",
                     file_path = "rural_natural")
