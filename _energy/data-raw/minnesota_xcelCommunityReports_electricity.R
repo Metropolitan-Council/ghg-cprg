@@ -223,6 +223,7 @@ city_avg_proportions <- Xcel_activityData_2015_2023 %>%
 
 
 Xcel_activityData_2015_2023 
+#apply 2017 numbers to 2015 and 2016
 
 # Step 2: Backcast Business data using city-level proportions
 data_with_backcast <- Xcel_activityData_2015_2023 %>%
