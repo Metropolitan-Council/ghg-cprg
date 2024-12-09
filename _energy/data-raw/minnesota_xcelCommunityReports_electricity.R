@@ -222,13 +222,30 @@ data_with_backcast <- Xcel_activityData_2015_2023 %>%
   mutate(
     # Coalesce to prioritize real values over modeled values
     Commercial = coalesce(
-      ifelse(sector_mapped == "Commercial", mWh_delivered, NA),
+      ifelse(sector_mapped == "Commercial",
+             mWh_delivered,
+             NA),
       commercial_modeled
     ),
     Industrial = coalesce(
-      ifelse(sector_mapped == "Industrial", mWh_delivered, NA),
+      ifelse(sector_mapped == "Industrial",
+             mWh_delivered,
+             NA),
       industrial_modeled
-    )
+    ),
+    Residential = ifelse(sector_mapped == "Residential",
+                         mWh_delivered,
+                         NA),
+  )
+
+# Assuming `data_with_backcast` is your data frame
+consolidated_data <- data_with_backcast %>%
+  group_by(city_name, year) %>%
+  summarise(
+    Residential = sum(Residential, na.rm = TRUE),
+    Commercial = sum(Commercial, na.rm = TRUE),
+    Industrial = sum(Industrial, na.rm = TRUE),
+    .groups = "drop" # Ungroup after summarisation
   )
 
 # Step 3: Combine Commercial and Industrial values into final dataset
@@ -245,6 +262,8 @@ final_data <- data_with_backcast %>%
     names_repair = "unique"
   ) 
 
+
+# NEED TO ADDRESS -- WHAT IF THE BREAKOUTS ARE FOR NON-REPRESENTATIVE YEARS? When to bring in NREL???
 
 %>%
   #filter(!is.na(mWh_delivered)) %>% # Remove rows with no data
