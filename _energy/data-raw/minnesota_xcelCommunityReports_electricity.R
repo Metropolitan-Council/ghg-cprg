@@ -106,7 +106,7 @@ read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) 
   }
   
   # Step 3: Define the dynamic range
-  stop_row <- start_row + stop_row_offset - 2 # Adjust for Excel indexing and remove the total row
+  stop_row <- start_row + stop_row_offset - 1 # Adjust for Excel indexing and remove the total row
   refined_range <- paste0(start_col, start_row, ":", columns, stop_row)
   print(refined_range)
   
@@ -170,7 +170,7 @@ combined_Xcel_activityData_2020_2023 <- do.call(
 )
 
 
-#row bind two sets
+#row bind two sets, wrangle city info to align with cprg_ctu formatting
 Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
                                      combined_Xcel_activityData_2020_2023) %>%
   mutate(
@@ -184,6 +184,20 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
       sector == "Business *" ~ "Business",
       sector == "Business" ~ "Business", # Handle as disaggregation
       TRUE ~ NA_character_
+    ),
+    # Assign 'CITY' or 'TOWNSHIP' based on 'City of'/'Town of', while handling Birchwood Village special case
+    ctu_class = case_when(
+      grepl("^City of", city_name, ignore.case = TRUE) ~ "CITY",
+      grepl("^Town of", city_name, ignore.case = TRUE) ~ "TOWNSHIP",
+      city_name == "Village of Birchwood" ~ "CITY",
+      TRUE ~ NA_character_
+    ),
+    # Extract the ctu_name while handling special case in Birchwood Village
+    ctu_name = case_when(
+      grepl("^City of", city_name, ignore.case = TRUE) ~ sub("^City of\\s+", "", city_name),
+      grepl("^Town of", city_name, ignore.case = TRUE) ~ sub("^Town of\\s+", "", city_name),
+      city_name == "Village of Birchwood" ~ "Birchwood Village",
+      TRUE ~ city_name
     )
   )
 
