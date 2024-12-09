@@ -187,6 +187,9 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
     )
   )
 
+write_rds(Xcel_activityData_2015_2023,
+          "_energy/data/Xcel_activityData_2015_2023.RDS")
+
 #remove interstitial dfs
 rm(combined_Xcel_activityData_2015_2019)
 rm(combined_Xcel_activityData_2020_2023)
@@ -246,24 +249,15 @@ consolidated_data <- data_with_backcast %>%
     Commercial = sum(Commercial, na.rm = TRUE),
     Industrial = sum(Industrial, na.rm = TRUE),
     .groups = "drop" # Ungroup after summarisation
-  )
-
-# Step 3: Combine Commercial and Industrial values into final dataset
-final_data <- data_with_backcast %>%
-  # Keep all original data plus modeled data
-  mutate(
-    Residential = ifelse(sector_mapped == "Residential", mWh_delivered, NA)
   ) %>%
-  select(year, city_name, sector_mapped, mWh_delivered, Commercial, Industrial, Residential) %>%
   pivot_longer(
     cols = c(Commercial, Industrial, Residential), # Include all mapped, aggregated sectors
     names_to = "sector",
-    values_to = "mWh_delivered",
-    names_repair = "unique"
+    values_to = "mWh_delivered"
   ) 
 
 
-# NEED TO ADDRESS -- WHAT IF THE BREAKOUTS ARE FOR NON-REPRESENTATIVE YEARS? When to bring in NREL???
+# NEED TO ADDRESS -- WHAT IF THE BREAKOUTS ARE FOR NON-REPRESENTATIVE YEARS? When to bring in NREL??? Need to break out NREL city proportions 
 
 %>%
   #filter(!is.na(mWh_delivered)) %>% # Remove rows with no data
