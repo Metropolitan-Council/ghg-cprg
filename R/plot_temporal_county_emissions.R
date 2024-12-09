@@ -16,7 +16,8 @@ county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") %>%
     sector == "Nature" & !grepl("Urban", source) ~ "Natural systems",
     category == "Other" ~ "Small industrial",
     TRUE ~ category
-  ))%>% 
+  ),
+  sector = if_else(sector == "Nature", "Natural Systems", sector))%>% 
   ##keep 7 counties only for CTU estimates
   filter(!geog_name %in% c("St. Croix", "Pierce", "Chisago", "Sherburne")) %>% 
   mutate(baseline_sector = case_when(
@@ -38,7 +39,7 @@ baseline_emissions_sector <- county_emissions %>%
   group_by(year, baseline_sector) %>% 
   summarize(MT_CO2e = sum(emissions_metric_tons_co2e, na.rm = TRUE)) %>% 
   mutate(baseline_sector = factor(baseline_sector, 
-                                  levels = c("Electricity", "Transportation", "Building fuel", "Industrial", "Waste", "Agriculture", "Nature"))) %>% 
+                                  levels = c("Electricity", "Transportation", "Building fuel", "Industrial", "Waste", "Agriculture", "Natural Systems"))) %>% 
   filter(!(baseline_sector == "Building fuel" & year %in% c(2006:2020)))
 
 # Define custom colors for sectors and tones for years
@@ -48,7 +49,7 @@ baseline_colors <- c("Electricity" = "#DE3163",
                    "Industrial" = "slategray",
                    "Waste" = "#8B4513", 
                    "Agriculture" = "#8fb910", 
-                   "Nature" = "#006f3c")
+                   "Natural Systems" = "#006f3c")
 
 # Plot by year
 baseline_comparison <- ggplot(baseline_emissions_sector %>% 
@@ -57,6 +58,7 @@ baseline_comparison <- ggplot(baseline_emissions_sector %>%
   geom_line(size = 1.6) +
   geom_hline(yintercept = 0, size = 2, col = "black", linetype = "dashed")+
   labs(fill = "baseline_sector") +
+  ggtitle("Seven-County Regional Emissions Inventory") +
   scale_color_manual(values = baseline_colors, name = "Sector") +
   theme_bw() + xlab("") + ylab(expression(paste("Million metric tons of ",CO[2],"e"))) +
   theme(panel.grid.major.x = element_blank(),
@@ -65,15 +67,23 @@ baseline_comparison <- ggplot(baseline_emissions_sector %>%
 
 baseline_comparison
 
-
-
+emissions_sector <- county_emissions %>% 
+  mutate(category = case_when(
+    category == "Electricity" ~ paste(sector,"electricity"),
+    category == "Natural Gas" ~ paste(sector,"natural gas"),
+    TRUE ~ category
+  )) %>% 
+  group_by(year, sector) %>% 
+  summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
+  mutate(sector = factor(sector, levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")))
 
 
 # Plot by sector
 sector_comparison <- ggplot(emissions_sector %>% filter(year == 2021),
                             aes(x = sector, y = MT_CO2e/1000000, fill = sector)) +
-  geom_bar(stat = 'identity', position = position_dodge()) +
+  geom_bar(stat = 'identity', position = position_dodge(), col = 'black') +
   labs(fill = "sector") +
+  ggtitle("2021 Regional Emissions Inventory") +
   scale_fill_manual(values = sector_colors, guide = "none") +
   theme_minimal() + xlab("") + ylab(expression(paste("Million metric tons of ",CO[2],"e"))) +
   theme(panel.grid.major.x = element_blank(),
@@ -100,6 +110,17 @@ sector_comparison
 
 # Plot by subsector
 
+category_order <- c(
+  "Aviation","Passenger vehicles", "Buses", "Trucks",        # Transportation
+  "Residential electricity", "Residential natural gas", # Residential
+  "Commercial electricity", "Commercial natural gas", "Commercial fuel combustion", # Commercial
+  "Industrial electricity", "Industrial natural gas", "Industrial fuel combustion",
+  "Industrial processes", "Refinery processes",  # Industrial
+  "Solid waste", "Wastewater",                  # Waste
+  "Livestock", "Cropland",                      # Agriculture
+  "Natural systems", "Urban greenery"           # Natural Systems
+)
+
 emissions_subsector <- county_emissions %>% 
   mutate(category = case_when(
     category == "Electricity" ~ paste(sector,"electricity"),
@@ -108,27 +129,24 @@ emissions_subsector <- county_emissions %>%
   )) %>% 
   group_by(year, sector, category) %>% 
   summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
-  mutate(sector = factor(sector, levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Nature")))
+  mutate(sector = factor(sector, levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")))
 
 category_colors_vector <- unlist(category_colors, use.names = TRUE)
 
 subsector_comparison <- ggplot(
   emissions_subsector %>%
     mutate(
-      category = factor(category, levels = emissions_subsector %>%
-                          filter(year == 2021) %>%
-                          arrange(sector, desc(MT_CO2e)) %>%
-                          pull(category) %>%
-                          unique())
+      category = factor(category, levels = category_order)
     ) %>%
     filter(year == 2021),
   aes(x = sector, y = MT_CO2e / 1000000, fill = category)
 ) +
-  geom_bar(stat = 'identity', position = 'stack') +
+  geom_bar(stat = 'identity', position = 'stack', col = 'black') +
   labs(fill = "Subsector") +
   scale_fill_manual(values = category_colors_vector) +
   theme_minimal() +
   xlab("") +
+  ggtitle("2021 Regional Emissions Profile") +
   ylab(expression(paste("Million metric tons of ", CO[2], "e"))) +
   theme(
     panel.grid.major.x = element_blank(),
@@ -154,7 +172,7 @@ emissions_subsector_per_capita <- county_emissions %>%
   mutate(emissions_per_capita = emissions_metric_tons_co2e / county_total_population) %>% 
   group_by(year, geog_name, sector, category) %>% 
   summarize(emissions_per_capita = sum(emissions_per_capita)) %>% 
-  mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building energy", "Industrial", "Waste", "Agriculture", "Nature"))) %>% 
+  mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building energy", "Industrial", "Waste", "Agriculture", "Natural Systems"))) %>% 
   mutate(year = if_else(
     category == "Small industrial" & year == 2020,
     2021,
@@ -213,7 +231,7 @@ for(i in unique(county_emissions$geog_name)) {
     filter(geog_name == i) %>% 
     group_by(year, sector, category) %>% 
     summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
-    mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building energy", "Industrial", "Waste", "Agriculture", "Nature"))) %>% 
+    mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building energy", "Industrial", "Waste", "Agriculture", "Natural Systems"))) %>% 
     mutate(year = if_else(
       category == "Small industrial" & year == 2020,
       2021,
@@ -272,7 +290,7 @@ for(i in c("Bloomington",
     filter(ctu_name == i) %>% 
     group_by(emissions_year, sector, category) %>% 
     summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
-    mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Nature")))
+    mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")))
   
   subsector_comparison <- ggplot(
     emissions_subsector_ctu %>%

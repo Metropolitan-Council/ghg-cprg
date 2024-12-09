@@ -17,7 +17,7 @@ sector_colors <- list("Electricity" = "#1f77b4",
                        "Industrial" = "slategray",
                        "Waste" = "#8c564b",
                        "Agriculture" = "#8fb910", 
-                       "Nature" = "#006f3c")
+                       "Natural Systems" = "#006f3c")
 
 
 # category
