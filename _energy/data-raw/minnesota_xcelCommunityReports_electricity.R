@@ -175,12 +175,12 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
                                      combined_Xcel_activityData_2020_2023) %>%
   mutate(
     sector_mapped = case_when(
-      sector %in% c("Residential") ~ "Residential",
+      sector %in% c("Residential") ~ "residential",
       sector %in% c("Street Lighting - Non-Metered/Customer Owned",
                     "Street Lighting - Non-Metered/Xcel-Owned",
-                    "Street Lighting - Metered") ~ "Commercial", # Map street lighting to Commercial
-      sector == "Industrial" ~ "Industrial",
-      sector == "Commercial" ~ "Commercial",
+                    "Street Lighting - Metered") ~ "commercial", # Map street lighting to Commercial
+      sector == "Industrial" ~ "industrial",
+      sector == "Commercial" ~ "commercial",
       sector == "Business *" ~ "Business",
       sector == "Business" ~ "Business", # Handle as disaggregation
       TRUE ~ NA_character_
@@ -221,6 +221,9 @@ city_avg_proportions <- Xcel_activityData_2015_2023 %>%
     avg_industrial_proportion = ifelse(total_detailed > 0, industrial_total / total_detailed, 0)
   )
 
+
+Xcel_activityData_2015_2023 
+
 # Step 2: Backcast Business data using city-level proportions
 data_with_backcast <- Xcel_activityData_2015_2023 %>%
   left_join(city_avg_proportions, by = "city_name") %>%
@@ -258,16 +261,16 @@ data_with_backcast <- Xcel_activityData_2015_2023 %>%
 # Assuming `data_with_backcast` is your data frame
 consolidated_data <- data_with_backcast %>%
   group_by(city_name, year) %>%
-  summarise(
+  mutate(
     Residential = sum(Residential, na.rm = TRUE),
     Commercial = sum(Commercial, na.rm = TRUE),
-    Industrial = sum(Industrial, na.rm = TRUE),
-    .groups = "drop" # Ungroup after summarisation
+    Industrial = sum(Industrial, na.rm = TRUE)
   ) %>%
   pivot_longer(
     cols = c(Commercial, Industrial, Residential), # Include all mapped, aggregated sectors
     names_to = "sector",
-    values_to = "mWh_delivered"
+    values_to = "mWh_delivered",
+    names_repair = "unique"
   ) 
 
 
