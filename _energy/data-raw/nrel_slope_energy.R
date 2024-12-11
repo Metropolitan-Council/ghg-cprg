@@ -293,9 +293,9 @@ saveRDS(nrel_emissions_inv_cityQA, "_energy/data-raw/nrel_slope/nrel_emissions_i
 #compare city figures 1) provided directly by NREL to 2) those downscaled from county figures provided by NREL using CTU pop proportion of county populations
 
 
-countySummary_nrelCity <- nrel_slope_cprg_cityProps_County_2021 %>%
+countySummary_nrelCity <- nrel_slope_cprg_cityProps_County%>%
   st_drop_geometry() %>%
-  group_by(county_name, sector, source) %>%
+  group_by(year, county_name, sector, source) %>%
   summarize(
     sectorSource_accountedByCities = sum(cityPropOfCounty_consumption_mm_btu),
     sectorSource_consumptionToteCities = sum(city_consumption_mm_btu),
@@ -367,6 +367,7 @@ nrel_emissions_inv_county <- bind_rows(
   # natural gas emissions
   nrel_slope_cprg_county %>%
     filter(source == "Natural gas") %>%
+    filter(year < 2025) %>%
     rowwise() %>%
     mutate(
       # convert mmbtu to mcf
