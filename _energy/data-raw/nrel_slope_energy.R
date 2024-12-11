@@ -163,7 +163,7 @@ nrel_AllCityTownships_county_activityPopProp_reference <- nrel_slope_cprg_cityPr
   )
 
 
-nrel_emissions_inv_cityQA_2021 <- bind_rows(
+nrel_emissions_inv_cityQA <- bind_rows(
   # electricity emissions
   nrel_AllCityTownships_county_activityPopProp_reference %>%
     filter(source == "Electricity") %>%
@@ -289,7 +289,7 @@ nrel_emissions_inv_cityQA_2021 <- bind_rows(
     sector = "Energy"
   )
 
-saveRDS(nrel_emissions_inv_cityQA_2021, "_energy/data-raw/nrel_slope/nrel_emissions_inv_cityQA_2021.RDS")
+saveRDS(nrel_emissions_inv_cityQA, "_energy/data-raw/nrel_slope/nrel_emissions_inv_cityQA.RDS")
 #compare city figures 1) provided directly by NREL to 2) those downscaled from county figures provided by NREL using CTU pop proportion of county populations
 
 
