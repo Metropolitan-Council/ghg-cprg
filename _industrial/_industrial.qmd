@@ -22,25 +22,25 @@ baseline_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_em
 ghgrp_emissions <- readRDS(file.path(here::here(), "_industrial/data/ghgrp_industrial_point_sources_ctu.rds"))
 nei_emissions <- readRDS(file.path(here::here(), "_industrial/data/nei_county_industrial_emissions.RDS"))
 subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))
-nrel_emissions <- county_emissions %>% 
-  filter(category == "Industrial energy" & source == "Natural gas")
 mpca_emissions <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions.RDS"))
 
-### remove doublecount from NEI emissions with FLIGHT data
-nei_no_doublecount <- left_join(nei_emissions %>% 
+### remove emissions counted in baseline (GHGRP+MPCA) and GHGRP doublecount to find missing small industrial from NEI 
+nei_small <- left_join(nei_emissions %>% 
               group_by(inventory_year, county_name) %>% 
               summarize(values_emissions = sum(values_emissions)),
-            flight_emissions %>% 
+            ghgrp_emissions %>% 
               filter(inventory_year %in% c(2017,2020),
                      doublecount == "Yes") %>% 
               group_by(inventory_year, county_name) %>% 
-              summarize(values_emissions = sum(value_emissions)),
+              summarize(value_emissions_double = sum(value_emissions)),
             by = c("county_name","inventory_year"),
-            suffix = c("_NEI","_FLIGHT")) %>% 
-  mutate(values_emissions_FLIGHT = if_else(is.na(values_emissions_FLIGHT),0,values_emissions_FLIGHT)) %>% 
-  mutate(values_emissions = as.numeric(values_emissions_NEI) - values_emissions_FLIGHT,
+            suffix = c("_NEI","_GHGRP")) %>% 
+  left_join(baseline_emissions %>% 
+              filter(year %in% c(2017,2020)s))
+  mutate(value_emissions_double = if_else(is.na(value_emissions_double),0,value_emissions_double)) %>% 
+  mutate(value_emissions = as.numeric(values_emissions) - value_emissions_double,
          data_source = "NEI - all") %>% 
-  select(county_name,values_emissions, data_source, inventory_year)
+  select(county_name,value_emissions, data_source, inventory_year)
 
 ```
 
