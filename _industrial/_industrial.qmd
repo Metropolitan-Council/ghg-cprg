@@ -18,16 +18,36 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 
 # load in necessary data frames for comparison
-baseline_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+baseline_emissions <- readRDS(file.path(here::here(), "_industrial/data/modeled_industrial_baseline_emissions.RDS")) %>% 
+  # check on this later
+  filter(!is.na(value_emissions))
 ghgrp_emissions <- readRDS(file.path(here::here(), "_industrial/data/ghgrp_industrial_point_sources_ctu.rds"))
 nei_emissions <- readRDS(file.path(here::here(), "_industrial/data/nei_county_industrial_emissions.RDS"))
 subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))
 mpca_emissions <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions.RDS"))
 
+# calculate some useful summary numbers
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+
+emissions_2021 <- county_emissions %>%
+  filter(year == 2021) %>%
+  pull(emissions_metric_tons_co2e) %>%
+  sum()
+ind_emissions_2021 <- county_emissions %>%
+  filter(year == 2021, sector == "Industrial") %>%
+  pull(emissions_metric_tons_co2e) %>%
+  sum()
+ag_emissions_2005 <- county_emissions %>%
+  filter(year == 2005, sector == "Agriculture") %>%
+  pull(emissions_metric_tons_co2e) %>%
+  sum()
+
 ### remove emissions counted in baseline (GHGRP+MPCA) and GHGRP doublecount to find missing small industrial from NEI 
 nei_small <- left_join(nei_emissions %>% 
               group_by(inventory_year, county_name) %>% 
               summarize(values_emissions = sum(values_emissions)),
+              # pull out doublecounts from GHGRP
             ghgrp_emissions %>% 
               filter(inventory_year %in% c(2017,2020),
                      doublecount == "Yes") %>% 
@@ -36,33 +56,28 @@ nei_small <- left_join(nei_emissions %>%
             by = c("county_name","inventory_year"),
             suffix = c("_NEI","_GHGRP")) %>% 
   left_join(baseline_emissions %>% 
-              filter(year %in% c(2017,2020)s))
-  mutate(value_emissions_double = if_else(is.na(value_emissions_double),0,value_emissions_double)) %>% 
-  mutate(value_emissions = as.numeric(values_emissions) - value_emissions_double,
-         data_source = "NEI - all") %>% 
+              filter(inventory_year  %in% c(2017,2020)) %>% 
+              group_by(inventory_year, county_name) %>% 
+              summarize(value_emissions_inv = sum(value_emissions))
+            ) %>% 
+  mutate(value_emissions_double = if_else(is.na(value_emissions_double),0,value_emissions_double),
+         value_emissions_inv = if_else(is.na(value_emissions_inv),0,value_emissions_inv),
+         ) %>% 
+  mutate(value_emissions = as.numeric(values_emissions) - (value_emissions_double + value_emissions_inv),
+         value_emissions = if_else(value_emissions < 0,0, value_emissions),
+         data_source = "NEI - small industry") %>% 
   select(county_name,value_emissions, data_source, inventory_year)
 
 ```
 
 ## Introduction
-Industrial facilities are major emitters stemming from high electricity demand, on-site fuel combusion, and industrial processes.
+Industrial facilities are major emitters stemming from high electricity demand, on-site fuel combustion, and industrial processes. The data presented here are aggregations of industrial point source reporting to state and federal agencies. Care must be taken to avoid double-counting in this sector, as industry includes emissions from power plants, waste facilities, and natural gas combustion that can be counted in other sectors. Natural gas combustion is the most difficult class to account for, as natural gas is delivered both within and without the services of utilities. Additionally, smaller emitters are not required to report to state and federal agencies, meaning a small but potentially significant slice of industrial emissions may be missing.
 
-## Double counting
-A key concern for industrial emissions is avoiding double counting, particularly natural gas combustion, electricity generation, and waste management. Our energy analysis uses a demand side approach to allocate electricity usage and natural gas combustion to residential, commercial, and industrial sectors. For electricity, this means avoiding industrial emissions that arise from electricty generation (note GHGRP and NEI already avoid counting electricity consumption at industrial facilities in their analyses). Natural gas consumption requires greater care, as combustion for industrial units (e.g. boilers) may be one of or some combination of natural gas, petroleum products, coal, or other fuel sources; additionally utility provisioning of natural gas may not account for all natural gas combustion at industrial sources. Our waste sector accounts for municipal waste emissions, though it does not inventory industrial waste processing.
+## Results
 
-## Electricity generation
-Electricity generation is indicated as industrial subpart "D", and can be omitted from GHGRP data easily. Note that power plants also have some fuel combustion that are not directly for electricity generation and it is currently unclear if that is accounted for in our egrid analysis. However, in NEI data, powerplants are grouped under NEC (Not Elsewhere Classified), which includes non-powerpoint sources, requiring care to avoid double-counting (e.g. subtracting away GHGRP power plant data)
+### 2021 county and subsector breakdown
 
-## Natural gas
-Detailed data can be found in the GHGRP, particularly for fuel combustion. That allows us to subtract away natural gas combustion emissions from industrial combustion, to avoid potential double counting of natural gas utility data. Note that further inquiry is required to ensure that industrial natural gas is provisioned by the utilities. An additional subpart that requires investigation is "Y" which includes flaring data, which is often flaring of natural gas. MPCA data separates gas consumption for flaring.
-
-## Waste
-We are omitting in-bound municipal waste facilities from our industrial analysis to avoid double counting with our waste emissions analyses (based on county waste volume in Minnesota). Industrial waste facilities will be analyzed here.
-
-
-# Data source comparisons
-
-Due to the reasons listed above, the expectation should be that MPCA (smaller facilities, no process emissions), GHGRP (only larger facilities), and NEI (all facilities, no point source specificity means double-counting) provide substantially different values. 
+Industry accounted for `r 100*round(ag_emissions_2021/emissions_2021, digits = 3)`% of total emissions in the 11-county region in 2021. As expected, more rural counties produce a larger share of the agricultural emissions, with St. Croix, Pierce, Dakota, and Carver accounting for `r 100*round(rural_ag_2021/ag_emissions_2021, digits = 3)`% of the regions agricultural emissions.
 
 ```{r fig-emissions-source-comparison}
 #| fig-cap: "Comparison of 2020 industrial emissions from FLIGHT, MPCA, NEI"
