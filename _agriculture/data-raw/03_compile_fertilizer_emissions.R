@@ -90,9 +90,11 @@ county_fertilizer_emissions <- left_join(fert_prop, cprg_county %>%
     mt_n2o = n2o_direct + n2o_indirect,
     mt_co2e = mt_n2o * gwp$n2o
   ) %>%
-  select(inventory_year, geoid, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty, 
-         n2o_direct, n2o_indirect, # KS retain these
-         mt_n2o, mt_co2e)
+  select(
+    inventory_year, geoid, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty,
+    n2o_direct, n2o_indirect, # KS retain these
+    mt_n2o, mt_co2e
+  )
 
 ### check
 ggplot(
@@ -122,13 +124,12 @@ county_fertilizer_runoff_emissions <- county_fertilizer_emissions %>%
     mt_uv_n_synthetic_cty = mt_n_synthetic_cty * (1 - ag_constants_vec["VolSyn"]),
     # unvolatilized N from organic fertilizer
     mt_uv_n_organic_cty = mt_n_organic_cty * ag_constants_vec["NOrg"] * (1 - ag_constants_vec["VolOrg"]),
-
     mt_n2o = (mt_uv_n_synthetic_cty + mt_uv_n_organic_cty) *
       ag_constants_vec["LeachEF"] * ag_constants_vec["LeachEF2"] *
       ag_constants_vec["N2O_N2"],
     mt_co2e = mt_n2o * gwp$n2o
   )
-# 
+#
 #   mutate(
 #     mt_n2o = (mt_n_synthetic_cty + mt_n_organic_cty) *
 #       ag_constants_vec["LeachEF"] * ag_constants_vec["LeachEF2"] *

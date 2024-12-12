@@ -18,7 +18,7 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 
 # load in necessary data frames for comparison
-baseline_emissions <- readRDS(file.path(here::here(), "_industrial/data/modeled_industrial_baseline_emissions.RDS")) %>% 
+baseline_emissions <- readRDS(file.path(here::here(), "_industrial/data/modeled_industrial_baseline_emissions.RDS")) %>%
   # check on this later
   filter(!is.na(value_emissions))
 ghgrp_emissions <- readRDS(file.path(here::here(), "_industrial/data/ghgrp_industrial_point_sources_ctu.rds"))
@@ -38,8 +38,8 @@ ind_emissions_2021 <- county_emissions %>%
   filter(year == 2021, sector == "Industrial") %>%
   pull(emissions_metric_tons_co2e) %>%
   sum()
-refinery_emissions_2021 <- ghgrp_emissions %>% 
-  filter(inventory_year == 2021, primary_naics_code  == 324110) %>% 
+refinery_emissions_2021 <- ghgrp_emissions %>%
+  filter(inventory_year == 2021, primary_naics_code == 324110) %>%
   pull(value_emissions) %>%
   sum()
 
@@ -53,31 +53,36 @@ ind_emissions_2005 <- county_emissions %>%
   pull(emissions_metric_tons_co2e) %>%
   sum()
 
-### remove emissions counted in baseline (GHGRP+MPCA) and GHGRP doublecount to find missing small industrial from NEI 
-nei_small <- left_join(nei_emissions %>% 
-              group_by(inventory_year, county_name) %>% 
-              summarize(values_emissions = sum(values_emissions)),
-              # pull out doublecounts from GHGRP
-            ghgrp_emissions %>% 
-              filter(inventory_year %in% c(2017,2020),
-                     doublecount == "Yes") %>% 
-              group_by(inventory_year, county_name) %>% 
-              summarize(value_emissions_double = sum(value_emissions)),
-            by = c("county_name","inventory_year"),
-            suffix = c("_NEI","_GHGRP")) %>% 
-  left_join(baseline_emissions %>% 
-              filter(inventory_year  %in% c(2017,2020)) %>% 
-              group_by(inventory_year, county_name) %>% 
-              summarize(value_emissions_inv = sum(value_emissions))
-            ) %>% 
-  mutate(value_emissions_double = if_else(is.na(value_emissions_double),0,value_emissions_double),
-         value_emissions_inv = if_else(is.na(value_emissions_inv),0,value_emissions_inv),
-         ) %>% 
-  mutate(value_emissions = as.numeric(values_emissions) - (value_emissions_double + value_emissions_inv),
-         value_emissions = if_else(value_emissions < 0,0, value_emissions),
-         data_source = "NEI - small industry") %>% 
-  select(county_name,value_emissions, data_source, inventory_year)
-
+### remove emissions counted in baseline (GHGRP+MPCA) and GHGRP doublecount to find missing small industrial from NEI
+nei_small <- left_join(
+  nei_emissions %>%
+    group_by(inventory_year, county_name) %>%
+    summarize(values_emissions = sum(values_emissions)),
+  # pull out doublecounts from GHGRP
+  ghgrp_emissions %>%
+    filter(
+      inventory_year %in% c(2017, 2020),
+      doublecount == "Yes"
+    ) %>%
+    group_by(inventory_year, county_name) %>%
+    summarize(value_emissions_double = sum(value_emissions)),
+  by = c("county_name", "inventory_year"),
+  suffix = c("_NEI", "_GHGRP")
+) %>%
+  left_join(baseline_emissions %>%
+    filter(inventory_year %in% c(2017, 2020)) %>%
+    group_by(inventory_year, county_name) %>%
+    summarize(value_emissions_inv = sum(value_emissions))) %>%
+  mutate(
+    value_emissions_double = if_else(is.na(value_emissions_double), 0, value_emissions_double),
+    value_emissions_inv = if_else(is.na(value_emissions_inv), 0, value_emissions_inv),
+  ) %>%
+  mutate(
+    value_emissions = as.numeric(values_emissions) - (value_emissions_double + value_emissions_inv),
+    value_emissions = if_else(value_emissions < 0, 0, value_emissions),
+    data_source = "NEI - small industry"
+  ) %>%
+  select(county_name, value_emissions, data_source, inventory_year)
 ```
 
 ## Introduction
@@ -133,7 +138,6 @@ fig_ind_county_emissions <- plot_ly(
   )
 
 fig_ind_county_emissions
-
 ```
 
 ### Baseline emissions
@@ -194,9 +198,9 @@ As industrial emissions are provided as point sources, scaling to cities is alre
 # load the county boundaries layer
 
 ind_emissions_ctu_2021 <- baseline_emissions %>%
-  filter(inventory_year == 2021) %>% 
-    group_by(city_name) %>%
-    summarize(mt_co2e = sum(value_emissions))
+  filter(inventory_year == 2021) %>%
+  group_by(city_name) %>%
+  summarize(mt_co2e = sum(value_emissions))
 
 ### map CTU scale agricultural emissions
 
@@ -247,7 +251,7 @@ map_ctu_ind <- leaflet(ctu_ind_map) %>%
       color = "blue",
       bringToFront = TRUE
     )
-  ) 
+  )
 
 map_ctu_ind
 ```

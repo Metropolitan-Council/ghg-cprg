@@ -12,85 +12,101 @@ ind_nei_emissions <- readRDS("./_industrial/data/nei_county_industrial_emissions
 ### If flight > NEI, call 'small industrial' 0
 
 ### need to do more research into what 'fuel gas' is
-ind_fuel_combustion <- ind_fuel_combustion %>% 
+ind_fuel_combustion <- ind_fuel_combustion %>%
   mutate(fuel_type = case_when(
     specific_fuel_type == "Fuel Gas" ~ "Fuel Gas",
     TRUE ~ general_fuel_type
   ))
 
-county_fuel_combustion <- ind_fuel_combustion %>% 
-  filter(units_emissions != "avg_activity") %>% 
+county_fuel_combustion <- ind_fuel_combustion %>%
+  filter(units_emissions != "avg_activity") %>%
   mutate(mt_co2e = case_when(
     units_emissions == "mt_ch4" ~ values_emissions * gwp$ch4,
     units_emissions == "mt_n2o" ~ values_emissions * gwp$n2o,
     TRUE ~ values_emissions
-  )) %>% 
-  group_by(county_name, reporting_year, fuel_type) %>% 
-  summarize(mt_co2e = sum(mt_co2e)) %>% 
-  mutate(data_source = "EPA FLIGHT Subpart C Analysis",
-         factor_source = "EPA Emission Factor Hub",
-         sector = "Industrial",
-         category = "Fuel combustion") %>% 
+  )) %>%
+  group_by(county_name, reporting_year, fuel_type) %>%
+  summarize(mt_co2e = sum(mt_co2e)) %>%
+  mutate(
+    data_source = "EPA FLIGHT Subpart C Analysis",
+    factor_source = "EPA Emission Factor Hub",
+    sector = "Industrial",
+    category = "Fuel combustion"
+  ) %>%
   select(county_name,
-         inventory_year = reporting_year,
-         sector,
-         category,
-         source = fuel_type,
-         data_source,
-         factor_source,
-         mt_co2e)
+    inventory_year = reporting_year,
+    sector,
+    category,
+    source = fuel_type,
+    data_source,
+    factor_source,
+    mt_co2e
+  )
 
-county_process_emissions <- ind_flight_emissions %>% 
-  filter(doublecount == "No") %>% 
-  group_by(county_name, inventory_year) %>% 
-  summarize(mt_co2e = sum(value_emissions)) %>% 
-  left_join(county_fuel_combustion %>% 
-              group_by(county_name, inventory_year) %>% 
-              summarize(mt_co2e = sum(mt_co2e)),
-            by = c("county_name",
-                  "inventory_year"),
-            suffix = c("_total","_fuel_combustion")) %>% 
-  #2010 is absent for fuel combustion
-  filter(inventory_year != 2010) %>% 
-  mutate(mt_co2e_fuel_combustion = coalesce(mt_co2e_fuel_combustion, 0),
-         mt_co2e = mt_co2e_total - mt_co2e_fuel_combustion,
-         sector = "Industrial",
-         category = "Process",
-         source = "Process", #This could be filled in from subparts with some effort
-         data_source = "EPA FLIGHT",
-         factor_source = "EPA Emission Factor Hub") %>% 
-  select(inventory_year, county_name, data_source,
-         factor_source, mt_co2e, sector,
-         category,
-         source)
-  
+county_process_emissions <- ind_flight_emissions %>%
+  filter(doublecount == "No") %>%
+  group_by(county_name, inventory_year) %>%
+  summarize(mt_co2e = sum(value_emissions)) %>%
+  left_join(
+    county_fuel_combustion %>%
+      group_by(county_name, inventory_year) %>%
+      summarize(mt_co2e = sum(mt_co2e)),
+    by = c(
+      "county_name",
+      "inventory_year"
+    ),
+    suffix = c("_total", "_fuel_combustion")
+  ) %>%
+  # 2010 is absent for fuel combustion
+  filter(inventory_year != 2010) %>%
+  mutate(
+    mt_co2e_fuel_combustion = coalesce(mt_co2e_fuel_combustion, 0),
+    mt_co2e = mt_co2e_total - mt_co2e_fuel_combustion,
+    sector = "Industrial",
+    category = "Process",
+    source = "Process", # This could be filled in from subparts with some effort
+    data_source = "EPA FLIGHT",
+    factor_source = "EPA Emission Factor Hub"
+  ) %>%
+  select(
+    inventory_year, county_name, data_source,
+    factor_source, mt_co2e, sector,
+    category,
+    source
+  )
+
 # to estimate smaller industrial emissions, we'll subtract all FLIGHT
 # emissions away from NEI estimates. Negative numbers will be corrected
 # to zero until a better data source is identified
-county_small <- ind_nei_emissions %>% 
-  group_by(inventory_year, county_name) %>% 
-  summarize(mt_co2e_all = as.numeric(sum(values_emissions))) %>% 
-  left_join(ind_flight_emissions %>% 
-              group_by(county_name, inventory_year) %>% 
-              summarize(mt_co2e_big = sum(value_emissions))) %>% 
-  mutate(mt_co2e_big =coalesce(mt_co2e_big, 0),
-         mt_co2e = mt_co2e_all - mt_co2e_big,
-         mt_co2e = if_else(mt_co2e < 0, 0, mt_co2e),
-         sector = "Industrial",
-         category = "Other",
-         source = "Small point source",
-         data_source = "EPA NEI",
-         factor_source = "EPA NEI") %>% 
-  select(inventory_year, county_name, data_source,
-         factor_source,mt_co2e, sector,
-         category,
-         source)
-              
-county_industrial_emission = bind_rows(
+county_small <- ind_nei_emissions %>%
+  group_by(inventory_year, county_name) %>%
+  summarize(mt_co2e_all = as.numeric(sum(values_emissions))) %>%
+  left_join(ind_flight_emissions %>%
+    group_by(county_name, inventory_year) %>%
+    summarize(mt_co2e_big = sum(value_emissions))) %>%
+  mutate(
+    mt_co2e_big = coalesce(mt_co2e_big, 0),
+    mt_co2e = mt_co2e_all - mt_co2e_big,
+    mt_co2e = if_else(mt_co2e < 0, 0, mt_co2e),
+    sector = "Industrial",
+    category = "Other",
+    source = "Small point source",
+    data_source = "EPA NEI",
+    factor_source = "EPA NEI"
+  ) %>%
+  select(
+    inventory_year, county_name, data_source,
+    factor_source, mt_co2e, sector,
+    category,
+    source
+  )
+
+county_industrial_emission <- bind_rows(
   county_fuel_combustion,
   county_process_emissions,
-  county_small) %>% 
-  mutate(units_emissions = "Metric tons CO2e") %>% 
+  county_small
+) %>%
+  mutate(units_emissions = "Metric tons CO2e") %>%
   rename(values_emissions = mt_co2e)
 
 county_industrial_emission_meta <-
@@ -114,57 +130,69 @@ saveRDS(county_industrial_emission_meta, "./_industrial/data/county_industrial_e
 ## do the same for cities, excepting the nei source
 
 
-city_fuel_combustion <- ind_fuel_combustion %>% 
-  filter(units_emissions != "avg_activity") %>% 
+city_fuel_combustion <- ind_fuel_combustion %>%
+  filter(units_emissions != "avg_activity") %>%
   mutate(mt_co2e = case_when(
     units_emissions == "mt_ch4" ~ values_emissions * gwp$ch4,
     units_emissions == "mt_n2o" ~ values_emissions * gwp$n2o,
     TRUE ~ values_emissions
-  )) %>% 
-  group_by(city_name, reporting_year, fuel_type) %>% 
-  summarize(mt_co2e = sum(mt_co2e)) %>% 
-  mutate(data_source = "EPA FLIGHT Subpart C Analysis",
-         factor_source = "EPA Emission Factor Hub",
-         sector = "Industrial",
-         category = "Fuel combustion") %>% 
+  )) %>%
+  group_by(city_name, reporting_year, fuel_type) %>%
+  summarize(mt_co2e = sum(mt_co2e)) %>%
+  mutate(
+    data_source = "EPA FLIGHT Subpart C Analysis",
+    factor_source = "EPA Emission Factor Hub",
+    sector = "Industrial",
+    category = "Fuel combustion"
+  ) %>%
   select(city_name,
-         inventory_year = reporting_year,
-         sector,
-         category,
-         source = fuel_type,
-         data_source,
-         factor_source,
-         mt_co2e)
+    inventory_year = reporting_year,
+    sector,
+    category,
+    source = fuel_type,
+    data_source,
+    factor_source,
+    mt_co2e
+  )
 
-city_process_emissions <- ind_flight_emissions %>% 
-  filter(doublecount == "No") %>% 
-  group_by(city_name, inventory_year) %>% 
-  summarize(mt_co2e = sum(value_emissions)) %>% 
-  left_join(city_fuel_combustion %>% 
-              group_by(city_name, inventory_year) %>% 
-              summarize(mt_co2e = sum(mt_co2e)),
-            by = c("city_name",
-                   "inventory_year"),
-            suffix = c("_total","_fuel_combustion")) %>% 
-  #2010 is absent for fuel combustion
-  filter(inventory_year != 2010) %>% 
-  mutate(mt_co2e_fuel_combustion = coalesce(mt_co2e_fuel_combustion, 0),
-         mt_co2e = mt_co2e_total - mt_co2e_fuel_combustion,
-         mt_co2e = if_else(mt_co2e < 0, 0, mt_co2e),
-         sector = "Industrial",
-         category = "Process",
-         source = "Process", #This could be filled in from subparts with some effort
-         data_source = "EPA FLIGHT",
-         factor_source = "EPA Emission Factor Hub") %>% 
-  select(inventory_year, city_name, data_source,
-         factor_source, mt_co2e, sector,
-         category,
-         source)
+city_process_emissions <- ind_flight_emissions %>%
+  filter(doublecount == "No") %>%
+  group_by(city_name, inventory_year) %>%
+  summarize(mt_co2e = sum(value_emissions)) %>%
+  left_join(
+    city_fuel_combustion %>%
+      group_by(city_name, inventory_year) %>%
+      summarize(mt_co2e = sum(mt_co2e)),
+    by = c(
+      "city_name",
+      "inventory_year"
+    ),
+    suffix = c("_total", "_fuel_combustion")
+  ) %>%
+  # 2010 is absent for fuel combustion
+  filter(inventory_year != 2010) %>%
+  mutate(
+    mt_co2e_fuel_combustion = coalesce(mt_co2e_fuel_combustion, 0),
+    mt_co2e = mt_co2e_total - mt_co2e_fuel_combustion,
+    mt_co2e = if_else(mt_co2e < 0, 0, mt_co2e),
+    sector = "Industrial",
+    category = "Process",
+    source = "Process", # This could be filled in from subparts with some effort
+    data_source = "EPA FLIGHT",
+    factor_source = "EPA Emission Factor Hub"
+  ) %>%
+  select(
+    inventory_year, city_name, data_source,
+    factor_source, mt_co2e, sector,
+    category,
+    source
+  )
 
-city_industrial_emission = bind_rows(
+city_industrial_emission <- bind_rows(
   city_fuel_combustion,
-  city_process_emissions) %>% 
-  mutate(units_emissions = "Metric tons CO2e") %>% 
+  city_process_emissions
+) %>%
+  mutate(units_emissions = "Metric tons CO2e") %>%
   rename(values_emissions = mt_co2e)
 
 city_industrial_emission_meta <-

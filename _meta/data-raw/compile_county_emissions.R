@@ -54,7 +54,7 @@ ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
   mutate(
     sector = "Waste",
     geog_level = "county",
-    geog_name = NAME ,
+    geog_name = NAME,
     category = "Wastewater",
     source = "Wastewater",
     data_source = "EPA State GHG Inventory and Projection Tool",
@@ -148,14 +148,15 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
     geog_level = "county",
     source = str_to_sentence(source),
     category = case_when(
-      category == "Stationary combustion" & source == "Natural gas" ~ str_to_sentence(paste(sector,source)),
-      category == "Stationary combustion" & source != "Natural gas" ~ str_to_sentence(paste(sector,"fuel combustion")), 
-      TRUE ~ category)
+      category == "Stationary combustion" & source == "Natural gas" ~ str_to_sentence(paste(sector, source)),
+      category == "Stationary combustion" & source != "Natural gas" ~ str_to_sentence(paste(sector, "fuel combustion")),
+      TRUE ~ category
+    )
   ) %>%
-  group_by(emissions_year, county_name,geog_level, county_id, sector, category, source, data_source, factor_source) %>% 
-  summarize(emissions_metric_tons_co2e = sum(value_emissions)) %>% 
-  rename(year = emissions_year, geog_name = county_name) %>% 
-  ungroup() %>% 
+  group_by(emissions_year, county_name, geog_level, county_id, sector, category, source, data_source, factor_source) %>%
+  summarize(emissions_metric_tons_co2e = sum(value_emissions)) %>%
+  rename(year = emissions_year, geog_name = county_name) %>%
+  ungroup() %>%
   select(names(transportation_emissions))
 
 

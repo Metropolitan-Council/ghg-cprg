@@ -29,7 +29,7 @@ sectors <- req_base %>%
 #     show_col_types = FALSE
 #   )
 
-industrial_sector <- sectors %>% 
+industrial_sector <- sectors %>%
   filter(grepl("Industrial", ei_sector))
 
 fetch_nei_county <- function(year, state) {
@@ -55,7 +55,8 @@ fetch_nei_county <- function(year, state) {
 multi_year_industrial_county <-
   bind_rows(
     purrr::map_dfr(
-      c(2023,
+      c(
+        2023,
         2020,
         2017,
         2014,
@@ -66,7 +67,8 @@ multi_year_industrial_county <-
       state = "Minnesota"
     ),
     purrr::map_dfr(
-      c(2023,
+      c(
+        2023,
         2020,
         2017,
         2014,
@@ -76,36 +78,39 @@ multi_year_industrial_county <-
       fetch_nei_county,
       state = "Wisconsin"
     )
-  ) %>% 
-  filter(sector_code %in% industrial_sector$sector_code) %>% 
-  right_join(., cprg_county %>% 
-               select(state_name,county_name,geoid) %>% 
-               st_drop_geometry(),
-             by = c("county_name","state_name")) %>% 
+  ) %>%
+  filter(sector_code %in% industrial_sector$sector_code) %>%
+  right_join(., cprg_county %>%
+    select(state_name, county_name, geoid) %>%
+    st_drop_geometry(),
+  by = c("county_name", "state_name")
+  ) %>%
   mutate(metric_tons_emissions = emissions * units::as_units("short_ton") %>%
-      units::set_units("metric_ton"))
+    units::set_units("metric_ton"))
 
 
-multi_year_industrial_county_ghg <- multi_year_industrial_county %>% 
-  filter(pollutant_type == "GHG", emissions != 0) %>% 
-  left_join(sectors) %>% 
+multi_year_industrial_county_ghg <- multi_year_industrial_county %>%
+  filter(pollutant_type == "GHG", emissions != 0) %>%
+  left_join(sectors) %>%
   mutate(mt_co2e = case_when(
     pollutant_code == "CH4" ~ metric_tons_emissions * gwp$ch4,
     pollutant_code == "N2O" ~ metric_tons_emissions * gwp$n2o,
-    pollutant_code == "SF6" ~ metric_tons_emissions *  23500, ## ADD TO GWP TABLE
+    pollutant_code == "SF6" ~ metric_tons_emissions * 23500, ## ADD TO GWP TABLE
     pollutant_code == "CO2" ~ metric_tons_emissions
   ))
 
-nei_ind_county_emissions_out <- multi_year_industrial_county_ghg %>% 
-  group_by(state_name ,
-           inventory_year,
-           county_name,
-           sector_code,
-           ei_sector,
-           sector_one,
-           sector_two,
-           sector_three) %>% 
-  summarize(values_emissions = sum(mt_co2e )) %>% 
+nei_ind_county_emissions_out <- multi_year_industrial_county_ghg %>%
+  group_by(
+    state_name,
+    inventory_year,
+    county_name,
+    sector_code,
+    ei_sector,
+    sector_one,
+    sector_two,
+    sector_three
+  ) %>%
+  summarize(values_emissions = sum(mt_co2e)) %>%
   mutate(units_emissions = "Metric tons of CO2 equivalency")
 
 nei_ind_county_emissions_meta <-
@@ -128,77 +133,89 @@ saveRDS(nei_ind_county_emissions_meta, "./_industrial/data/nei_county_industrial
 
 unique(multi_year_industrial_county_ghg$ei_sector)
 
-multi_year_industrial_county_ghg %>% 
-  filter(inventory_year == 2020) %>% 
-  group_by(county_name) %>% 
+multi_year_industrial_county_ghg %>%
+  filter(inventory_year == 2020) %>%
+  group_by(county_name) %>%
   summarize(mt_co2e = sum(mt_co2e))
 
-multi_year_industrial_county_ghg %>% 
-  filter(inventory_year == 2020,
-         county_name == "Washington") %>% 
-  group_by(ei_sector, sector_code) %>% 
+multi_year_industrial_county_ghg %>%
+  filter(
+    inventory_year == 2020,
+    county_name == "Washington"
+  ) %>%
+  group_by(ei_sector, sector_code) %>%
   summarize(mt_co2e = sum(mt_co2e))
 #### NEC includes electricity generation, which is major double count
 
 
 
-ggplot(multi_year_industrial_county_ghg %>% 
-         group_by(inventory_year,county_name) %>% 
-         summarize(mt_co2e = sum(mt_co2e)), 
-       aes(x = inventory_year , y = mt_co2e , col = county_name)) + 
+ggplot(
+  multi_year_industrial_county_ghg %>%
+    group_by(inventory_year, county_name) %>%
+    summarize(mt_co2e = sum(mt_co2e)),
+  aes(x = inventory_year, y = mt_co2e, col = county_name)
+) +
   geom_line()
 
 
-flight_nei_county_all <- left_join(multi_year_industrial_county_ghg %>% 
-                                     group_by(inventory_year,county_name) %>% 
-                                     summarize(mt_co2e = sum(mt_co2e)),
-                               flight_county_summary %>% 
-                                 filter(doublecount == "Yes") %>% 
-                                 group_by(county_name,inventory_year) %>% 
-                                 summarize(co2e_double = sum(value_emissions)),
-                               by = c("county_name", "inventory_year")) %>% 
-  replace(is.na(.), 0) %>% 
-  mutate(emissions_leftover = mt_co2e - co2e_double) %>% 
-  left_join(., cprg_county %>% 
-              select(county_name,geometry))
+flight_nei_county_all <- left_join(
+  multi_year_industrial_county_ghg %>%
+    group_by(inventory_year, county_name) %>%
+    summarize(mt_co2e = sum(mt_co2e)),
+  flight_county_summary %>%
+    filter(doublecount == "Yes") %>%
+    group_by(county_name, inventory_year) %>%
+    summarize(co2e_double = sum(value_emissions)),
+  by = c("county_name", "inventory_year")
+) %>%
+  replace(is.na(.), 0) %>%
+  mutate(emissions_leftover = mt_co2e - co2e_double) %>%
+  left_join(., cprg_county %>%
+    select(county_name, geometry))
 
 
-ggplot(flight_nei_county_all %>% 
-         group_by(inventory_year,county_name) %>% 
-         summarize(mt_co2e = sum(emissions_leftover)), 
-       aes(x = inventory_year , y = mt_co2e , col = county_name)) + 
+ggplot(
+  flight_nei_county_all %>%
+    group_by(inventory_year, county_name) %>%
+    summarize(mt_co2e = sum(emissions_leftover)),
+  aes(x = inventory_year, y = mt_co2e, col = county_name)
+) +
   geom_line(size = 1.3)
 
 
 pal <- colorNumeric(palette = "Reds", domain = flight_nei_county_all$emissions_leftover)
 
 # Create the leaflet map
-leaflet(st_as_sf(flight_nei_county_all %>% 
-          filter(inventory_year == 2020))) %>%
-  addProviderTiles("CartoDB.Positron") %>%  # Basic map tile
+leaflet(st_as_sf(flight_nei_county_all %>%
+  filter(inventory_year == 2020))) %>%
+  addProviderTiles("CartoDB.Positron") %>% # Basic map tile
   addPolygons(
-    fillColor = ~pal(emissions_leftover),
-    weight = 1,  # Boundary thickness
-    color = "black",  # Boundary color
-    fillOpacity = 0.7,  # Transparency
-    label = ~paste0(county_name, ": ", emissions_leftover, " mt CO2e"),
+    fillColor = ~ pal(emissions_leftover),
+    weight = 1, # Boundary thickness
+    color = "black", # Boundary color
+    fillOpacity = 0.7, # Transparency
+    label = ~ paste0(county_name, ": ", emissions_leftover, " mt CO2e"),
     highlight = highlightOptions(weight = 2, color = "white", fillOpacity = 0.9)
   ) %>%
   addLegend(pal = pal, values = ~emissions_leftover, opacity = 0.8, title = "MT CO2e")
 
 
-flight_nei_county_small <- left_join(multi_year_industrial_county_ghg %>% 
-                                     group_by(inventory_year,county_name) %>% 
-                                     summarize(mt_co2e = sum(mt_co2e)),
-                                   flight_county_summary %>% 
-                                     group_by(county_name,inventory_year) %>% 
-                                     summarize(co2e_double = sum(value_emissions)),
-                                   by = c("county_name", "inventory_year")) %>% 
-  replace(is.na(.), 0) %>% 
+flight_nei_county_small <- left_join(
+  multi_year_industrial_county_ghg %>%
+    group_by(inventory_year, county_name) %>%
+    summarize(mt_co2e = sum(mt_co2e)),
+  flight_county_summary %>%
+    group_by(county_name, inventory_year) %>%
+    summarize(co2e_double = sum(value_emissions)),
+  by = c("county_name", "inventory_year")
+) %>%
+  replace(is.na(.), 0) %>%
   mutate(emissions_leftover = mt_co2e - co2e_double)
 
-ggplot(flight_nei_county_small %>% 
-         group_by(inventory_year,county_name) %>% 
-         summarize(tons_co2 = sum(emissions_leftover)), 
-       aes(x = inventory_year , y = tons_co2 , col = county_name)) + 
+ggplot(
+  flight_nei_county_small %>%
+    group_by(inventory_year, county_name) %>%
+    summarize(tons_co2 = sum(emissions_leftover)),
+  aes(x = inventory_year, y = tons_co2, col = county_name)
+) +
   geom_line(size = 1.3)

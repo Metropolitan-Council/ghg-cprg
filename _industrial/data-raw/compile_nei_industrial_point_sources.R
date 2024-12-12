@@ -38,7 +38,7 @@ scc_metadata <- req_base %>%
     show_col_types = FALSE
   )
 
-industrial_sector <- sectors %>% 
+industrial_sector <- sectors %>%
   filter(grepl("Industrial", ei_sector))
 
 fetch_nei_point <- function(year, state, county) {
@@ -64,14 +64,14 @@ fetch_nei_point <- function(year, state, county) {
 }
 
 multi_year_industrial_point <- purrr::map_dfr(
-    2023,
-    fetch_nei_point,
-    state = "MN",
-    county = "Dakota"
-  )
+  2023,
+  fetch_nei_point,
+  state = "MN",
+  county = "Dakota"
+)
 ### unclear if we can breakdown point sources to further categories, i.e. separate electricity and natural gas from further emissions
 ### API for source codes is broken and can't find what these mean
 unique(multi_year_industrial_point$naics_desc)
 unique(multi_year_industrial_point$source_code)
 
-multi_year_industrial_point %>% distinct(site_name,source_code)
+multi_year_industrial_point %>% distinct(site_name, source_code)
