@@ -100,7 +100,7 @@ nrel_slope_cprg_city <- cprg_ctu %>%
     ungroup() %>%
   
   # If there's a City version of the same CTU_NAME, null out joined values for the non-City rows
-  mutate(across(c(sector, year, geography_id, source, consumption_mm_btu, expenditure_us_dollars), 
+  mutate(across(c(consumption_mm_btu, expenditure_us_dollars), 
                 ~ ifelse(ctu_class != 'CITY' & has_city_class, NA, .))) %>%
   
   # clean up unnecessary columns
