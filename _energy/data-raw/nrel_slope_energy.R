@@ -34,14 +34,18 @@ countyActivity <- minnesota_elec_estimate_2021 %>%
   ungroup()
 
 # if file doesn't already exist...
-# download from NREL directly
-download.file("https://gds-files.nrel.gov/slope/energy_consumption_expenditure_business_as_usual.zip",
-  destfile = "_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual.zip"
-)
-unzip("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual.zip",
-  exdir = "_energy/data-raw/nrel_slope/"
-)
+if (file.exists("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.csv") == FALSE) {
 
+  # download from NREL directly
+  download.file("https://gds-files.nrel.gov/slope/energy_consumption_expenditure_business_as_usual.zip",
+    destfile = "_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual.zip"
+  )
+  #unpack the files into dedicated sub-directory
+  unzip("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual.zip",
+    exdir = "_energy/data-raw/nrel_slope/"
+  )
+
+}
 
 nrel_slope_cprg_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.csv") %>%
   clean_names() %>%
@@ -54,13 +58,39 @@ nrel_slope_cprg_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumpti
   mutate(source = ifelse(source == "ng", "Natural gas", "Electricity")) %>%
   select(-geometry)
 
+
+# create scaffolding of final, finest data granularity based on NREL -- sector-source-year
+sectors <- c("commercial", "residential", "industrial")
+sources <- c("Electricity", "Natural gas")
+years <- seq(2017, 2050)
+
+# Create all combinations of sector-source-year (for use on cities) and simplified sector-source (for county data)
+sector_source_year <- expand.grid(sector = sectors, source = sources, year = years)
+sector_source <- expand.grid(sector = sectors, source = sources)
+
+
+#read in, clean up, and filter to MN/WI before joining to year-sector-source expanded cprg_ctu schema
+nrel_city_clean <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>% 
+  clean_names() %>%
+  filter(state_name %in% c('Minnesota', 'Wisconsin')) %>%
+  
+  # align NREL city naming with cprg_ctu and clean up source
+  mutate(
+    city_name = str_replace_all(city_name, "St\\.", "Saint"), 
+    source = ifelse(source == "ng", "Natural gas", "Electricity")
+    )
+
 nrel_slope_cprg_city <- cprg_ctu %>%
-  left_join(read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>% 
-              clean_names() %>%
-              mutate(city_name = str_replace_all(city_name, "St\\.", "Saint")),
+  # add 204 rows representing 34 years (2017-2050 inclusive) of NREL data, 3 sectors, and 2 sources (33*3*2=204)
+  expand_grid(sector_source_year) %>%
+  
+  left_join(nrel_city_clean,
              by = c(
                "state_name",
-               "ctu_name" = "city_name"
+               "ctu_name" = "city_name",
+               "year",
+               "sector",
+               "source"
              )
   ) %>%
   
@@ -73,23 +103,12 @@ nrel_slope_cprg_city <- cprg_ctu %>%
   mutate(across(c(sector, year, geography_id, source, consumption_mm_btu, expenditure_us_dollars), 
                 ~ ifelse(ctu_class != 'CITY' & has_city_class, NA, .))) %>%
   
-  # Clean up the source column as per original logic
-  mutate(source = ifelse(source == "ng", "Natural gas", "Electricity")) %>%
-  
   # clean up unnecessary columns
   select(
     -has_city_class,
-    -geoid_wis
+    -state_geography_id,
+    -geography_id
   )
-
-
-
-# Define the new columns
-sectors <- c("commercial", "residential", "industrial")
-sources <- c("Electricity", "Natural gas")
-
-# Create all combinations of sectors and sources
-sector_source <- expand.grid(sector = sectors, source = sources)
 
 
 
@@ -112,7 +131,7 @@ expanded_ctu_population_sector_source <- ctu_population %>%
 
 #join county to city
 nrel_slope_cprg_cityProps_County <- nrel_slope_cprg_city %>%
-  filter(year < 2024) %>%
+  filter(year < 2025) %>%
   left_join(nrel_slope_cprg_county,
             by = c(
               "county_name",
@@ -168,7 +187,7 @@ nrel_AllCityTownships_county_activityPopProp_reference <- nrel_slope_cprg_cityPr
   )
 
 
-nrel_emissions_inv_cityQA <- bind_rows(
+nrel_emissions_inv_city <- bind_rows(
   # electricity emissions
   nrel_AllCityTownships_county_activityPopProp_reference %>%
     filter(source == "Electricity") %>%
@@ -321,15 +340,6 @@ countySummary_nrelCity <- nrel_slope_cprg_cityProps_County%>%
 
 
 
-
-  
-  
-#join to pop and pop prop table... use to infill townships/towns/villages?
-
-
-
-
-
 #For city 2021, use NREL-forecasted city proportion of forecasted COUNTY total emissions to allocate actual emissions gathered at county level (Separate from NREL)
 # and then use to allocate city level forecast PROPORTIONS to allocate to sectors
 # do projected activity-emissions at city-sector lefvel add up? a test to write.
@@ -431,7 +441,7 @@ nrel_emissions_region %>%
 # )
 
 
-nrel_slope_proportions <- nrel_emissions_inv_county %>%
+nrel_slope_county_proportions <- nrel_emissions_inv_county %>%
   group_by(county_name, year, source) %>%
   select(county_name, year, source, sector_raw, co2e) %>%
   pivot_wider(
@@ -446,10 +456,29 @@ nrel_slope_proportions <- nrel_emissions_inv_county %>%
     residential = residential / total,
     .groups = "keep"
   ) %>%
-  filter(year == 2021) %>%
   ungroup() %>%
   mutate(county = county_name) %>%
   select(-total, -county_name)
+
+nrel_slope_city_proportions <- nrel_emissions_inv_city %>%
+  group_by(county_name, year, source) %>%
+  select(county_name, year, source, sector_raw, co2e) %>%
+  pivot_wider(
+    names_from = sector_raw,
+    values_from = co2e
+  ) %>%
+  rowwise() %>%
+  summarize(
+    total = commercial + residential + industrial,
+    commercial = commercial / total,
+    industrial = industrial / total,
+    residential = residential / total,
+    .groups = "keep"
+  ) %>%
+  ungroup() %>%
+  mutate(county = county_name) %>%
+  select(-total, -county_name)
+
 
 saveRDS(nrel_emissions_inv_county, "_energy/data-raw/nrel_slope/nrel_emissions_inv_county.RDS")
 saveRDS(nrel_slope_proportions, "_energy/data-raw/nrel_slope/nrel_slope_proportions.RDS")
