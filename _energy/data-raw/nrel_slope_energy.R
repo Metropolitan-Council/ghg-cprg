@@ -58,6 +58,17 @@ nrel_slope_cprg_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumpti
   mutate(source = ifelse(source == "ng", "Natural gas", "Electricity")) %>%
   select(-geometry)
 
+#read in, clean up, and filter to MN/WI before joining to year-sector-source expanded cprg_ctu schema
+nrel_city_clean <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>% 
+  clean_names() %>%
+  filter(state_name %in% c('Minnesota', 'Wisconsin')) %>%
+  
+  # align NREL city naming with cprg_ctu and clean up source
+  mutate(
+    city_name = str_replace_all(city_name, "St\\.", "Saint"), 
+    source = ifelse(source == "ng", "Natural gas", "Electricity")
+  )
+
 
 # create scaffolding of final, finest data granularity based on NREL -- sector-source-year
 sectors <- c("commercial", "residential", "industrial")
@@ -69,16 +80,7 @@ sector_source_year <- expand.grid(sector = sectors, source = sources, year = yea
 sector_source <- expand.grid(sector = sectors, source = sources)
 
 
-#read in, clean up, and filter to MN/WI before joining to year-sector-source expanded cprg_ctu schema
-nrel_city_clean <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>% 
-  clean_names() %>%
-  filter(state_name %in% c('Minnesota', 'Wisconsin')) %>%
-  
-  # align NREL city naming with cprg_ctu and clean up source
-  mutate(
-    city_name = str_replace_all(city_name, "St\\.", "Saint"), 
-    source = ifelse(source == "ng", "Natural gas", "Electricity")
-    )
+
 
 nrel_slope_cprg_city <- cprg_ctu %>%
   # add 204 rows representing 34 years (2017-2050 inclusive) of NREL data, 3 sectors, and 2 sources (33*3*2=204)
@@ -141,16 +143,15 @@ nrel_slope_cprg_cityProps_County <- nrel_slope_cprg_city %>%
               "source" = "source"
             )    
   ) %>%
-  filter(county_name %in% c('Anoka', 'Carver', 'Dakota', 'Hennepin', 'Ramsey', 'Scott', 'Washington')) %>%
+  filter(county_name %in% c('Anoka', 'Carver', 'Dakota', 'Hennepin', 'Ramsey', 'Scott', 'Washington',
+                            'Chisago', 'Sherburne', 'Pierce', 'St. Croix')) %>%
   select(
     -cprg_area.x,
     -cprg_area.y,
     -gnis,
-    -geography_id.x,
-    -geography_id.y,
+    -geography_id,
     -county_name_full,
-    -state_geography_id.x,
-    -state_geography_id.y,
+    -state_geography_id,
     -state_abb.x,
     -state_abb.y,
     -statefp.x,
@@ -166,11 +167,12 @@ nrel_slope_cprg_cityProps_County <- nrel_slope_cprg_city %>%
     cityPropOfCounty_consumption_mm_btu = city_consumption_mm_btu / county_consumption_mm_btu,
     cityPropOfCounty_expenditure_usd = city_expenditure_usd / county_expenditure_usd
   ) %>%
-  st_drop_geometry()
+  st_drop_geometry() %>%
+  select(-geometry)
 
 
 nrel_AllCityTownships_county_activityPopProp_reference <- nrel_slope_cprg_cityProps_County %>%
-  full_join(expanded_ctu_population_sector_source,
+  left_join(expanded_ctu_population_sector_source,
             by = join_by('ctu_name',
                          'ctu_class',
                          'county_name',
@@ -178,13 +180,12 @@ nrel_AllCityTownships_county_activityPopProp_reference <- nrel_slope_cprg_cityPr
                          'source',
                          'year')
   ) %>%
-  select(-geoid.x,
-        -geoid.y
-  ) %>%
   mutate(
-    cityConsumption_countyPopDownscaled_mmbtu = county_consumption_mm_btu * ctu_proportion_of_county_pop,
-    state_name = "Minnesota"
-  )
+    cityConsumption_countyPopDownscaled_mmbtu = county_consumption_mm_btu * ctu_proportion_of_county_pop
+  ) %>%
+  rename(city_name = ctu_name) %>%
+  select(-geoid.x,
+         -geoid.y)
 
 
 nrel_emissions_inv_city <- bind_rows(
