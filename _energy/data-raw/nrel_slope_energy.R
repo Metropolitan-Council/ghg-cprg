@@ -185,7 +185,33 @@ nrel_AllCityTownships_county_activityPopProp_reference <- nrel_slope_cprg_cityPr
   ) %>%
   rename(city_name = ctu_name) %>%
   select(-geoid.x,
-         -geoid.y)
+         -geoid.y) %>%
+  # check to make sure that NREL estimates for cities that exist in multiple counties are parceled out by source-sector
+  group_by(city_name, year, sector, source) %>%
+  mutate(
+    total_ctu_population = sum(ctu_population, na.rm = TRUE),
+    multi_county = n_distinct(county_name) > 1  # Flag multi-county cities with a Boolean
+  ) %>%
+  ungroup() %>%
+  # Calculate the proportion of CTU total pop within each COCTU
+  mutate(
+    ctu_population_proportion = ctu_population / total_ctu_population,
+    # only calc these columns, using flag variable multi_county
+    disagg_city_consumption_mm_btu = ifelse(
+      multi_county,
+      city_consumption_mm_btu * ctu_population_proportion,
+      NA
+    ),
+    disagg_city_expenditure_usd = ifelse(
+      multi_county,
+      city_expenditure_usd * ctu_population_proportion,
+      NA
+    )
+  )
+# clarify variables to ensure clear sourcing.
+  
+# coalesce and describe source
+  
 
 
 nrel_emissions_inv_city <- bind_rows(
