@@ -65,7 +65,7 @@ ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
 
 
 ## solid waste -----
-solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
+solid_waste <- readRDS("_waste/data/final_solid_waste_allyrs.RDS") %>%
   ungroup() %>%
   mutate(
     sector = "Waste",
