@@ -61,7 +61,7 @@ nrel_slope_cprg_county <- read.csv("_energy/data-raw/nrel_slope/energy_consumpti
 #read in, clean up, and filter to MN/WI before joining to year-sector-source expanded cprg_ctu schema
 nrel_city_clean <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_city.csv") %>% 
   clean_names() %>%
-  filter(state_name %in% c('Minnesota', 'Wisconsin')) %>%
+  filter(state_name == 'Minnesota') %>%
   
   # align NREL city naming with cprg_ctu and clean up source
   mutate(
@@ -116,8 +116,9 @@ nrel_slope_cprg_city <- cprg_ctu %>%
 
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   filter(inventory_year > 2004) %>%
-  left_join(cprg_county %>% select(geoid, county_name), by = 'geoid') %>%
-  rename(year = inventory_year)
+  left_join(cprg_county %>% select(geoid, county_name, state_abb), by = 'geoid') %>%
+  filter(state_abb == 'MN') %>%
+  rename(year = inventory_year) 
 
 # Expand the dataset
 expanded_ctu_population_sector_source <- ctu_population %>%
@@ -130,7 +131,7 @@ expanded_ctu_population_sector_source <- ctu_population %>%
 
 # For city 2005... 
 
-
+# Only keep MN core metro cities for city-level analysis
 #join county to city
 nrel_slope_cprg_cityProps_County <- nrel_slope_cprg_city %>%
   filter(year < 2025) %>%
@@ -143,8 +144,7 @@ nrel_slope_cprg_cityProps_County <- nrel_slope_cprg_city %>%
               "source" = "source"
             )    
   ) %>%
-  filter(county_name %in% c('Anoka', 'Carver', 'Dakota', 'Hennepin', 'Ramsey', 'Scott', 'Washington',
-                            'Chisago', 'Sherburne', 'Pierce', 'St. Croix')) %>%
+  filter(county_name %in% c('Anoka', 'Carver', 'Dakota', 'Hennepin', 'Ramsey', 'Scott', 'Washington')) %>%
   select(
     -cprg_area.x,
     -cprg_area.y,
@@ -343,11 +343,11 @@ nrel_emissions_inv_city <- bind_rows(
     sector = "Energy"
   )
 
-saveRDS(nrel_emissions_inv_cityQA, "_energy/data-raw/nrel_slope/nrel_emissions_inv_cityQA.RDS")
+saveRDS(nrel_emissions_inv_city, "_energy/data-raw/nrel_slope/nrel_emissions_inv_city.RDS")
 #compare city figures 1) provided directly by NREL to 2) those downscaled from county figures provided by NREL using CTU pop proportion of county populations
 
 
-countySummary_nrelCity <- nrel_slope_cprg_cityProps_County%>%
+countySummary_nrelCity <- nrel_slope_cprg_cityProps_County %>%
   st_drop_geometry() %>%
   group_by(year, county_name, sector, source) %>%
   summarize(
