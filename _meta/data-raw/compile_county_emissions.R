@@ -13,19 +13,17 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
   ungroup() %>%
   rowwise() %>%
   mutate(
-    year = emissions_year,
     sector = "Transportation",
     geog_level = "county",
-    geog_name = county_name,
     source = paste0(vehicle_fuel_label, " fueled vehicles"),
     category = category,
     data_source = data_source,
     factor_source = moves_edition
   ) %>%
   select(
-    year,
+    emissions_year,
     geog_level,
-    geog_name,
+    county_name,
     sector,
     category,
     source,
@@ -34,19 +32,34 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
     factor_source
   )
 
+aviation_emissions <- readRDS("_transportation/data/aviation_emissions.RDS") %>%
+  mutate(
+    sector = "Transportation",
+    geog_level = "county",
+    county_name = geog_name,
+    category = "Aviation",
+    source = "Aviation",
+    data_source = data_source,
+    factor_source = data_source,
+    emissions_metric_tons_co2e = value_emissions,
+    emissions_year = inventory_year
+  ) %>%
+  select(names(transportation_emissions))
+
+
 # waste -----
 ## wastewater ----
-ww_emissions <- readRDS("_waste/data/epa_county_wastewater.RDS") %>%
+ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
   mutate(
     sector = "Waste",
     geog_level = "county",
-    geog_name = NAME,
+    county_name = county_name,
     category = "Wastewater",
     source = "Wastewater",
     data_source = "EPA State GHG Inventory and Projection Tool",
     factor_source = data_source,
-    emissions_metric_tons_co2e = epa_co2e,
-    year = 2021
+    emissions_metric_tons_co2e = co2e,
+    year = as.numeric(year)
   ) %>%
   select(names(transportation_emissions))
 
