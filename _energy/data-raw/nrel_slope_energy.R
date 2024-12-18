@@ -341,6 +341,16 @@ nrel_emissions_inv_city <- bind_rows(
     category = ifelse(sector == "residential", "Residential", "Non-residential"),
     sector_raw = sector,
     sector = "Energy"
+  ) %>%
+  #remove electricity specific emissions factor columns
+  select(
+    -eGrid_Subregion,
+    -factor_type,
+    -per_unit,
+    -Source,
+    -`lb CO2`,
+    -`lb CH4`,
+    -`lb N2O`
   )
 
 saveRDS(nrel_emissions_inv_city, "_energy/data-raw/nrel_slope/nrel_emissions_inv_city.RDS")
@@ -459,19 +469,6 @@ nrel_emissions_region %>%
   group_by(year, source, sector_raw) %>%
   summarize(co2e = sum(co2e))
 
-# plot_ly(
-#   data = nrel_emissions_region %>%
-#     filter(year == 2021),
-#   x = ~sector_raw,
-#   y = ~co2e,
-#   color = ~source
-# )
-
-
-write_csv(nrel_emissions_inv_city %>% st_drop_geometry() %>% select(-geometry), here('_energy', 'data-raw', 'nrel_emissions_inv_city_test2.csv'))
-
-# test
-
 
 nrel_slope_county_proportions <- nrel_emissions_inv_county %>%
   group_by(county_name, year, source) %>%
@@ -492,8 +489,9 @@ nrel_slope_county_proportions <- nrel_emissions_inv_county %>%
   mutate(county = county_name) %>%
   select(-total, -county_name)
 
+
 nrel_slope_city_proportions <- nrel_emissions_inv_city %>%
-  group_by(county_name, year, source) %>%
+  group_by(city_name, ctu_class, year, source) %>%
   select(county_name, year, source, sector_raw, co2e) %>%
   pivot_wider(
     names_from = sector_raw,
