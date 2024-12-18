@@ -224,7 +224,7 @@ nrel_emissions_inv_city <- bind_rows(
     rowwise() %>%
     mutate(
       # convert mmbtu to Mwh
-      city_consumption_mwh = city_consumption_mm_btu * mmbtu_to_mwh,
+      city_consumption_mwh = coalesce(disagg_city_consumption_mm_btu, city_consumption_mm_btu) * mmbtu_to_mwh,
       cityPopDownscaled_consumption_mwh = cityConsumption_countyPopDownscaled_mmbtu * mmbtu_to_mwh,
       county_consumption_mwh = county_consumption_mm_btu * mmbtu_to_mwh,
       # apply emission factor and convert to metric tons
@@ -283,7 +283,7 @@ nrel_emissions_inv_city <- bind_rows(
     rowwise() %>%
     mutate(
       # convert mmbtu to mcf
-      city_consumption_mcf = city_consumption_mm_btu * mmbtu_to_mcf,
+      city_consumption_mcf = coalesce(disagg_city_consumption_mm_btu, city_consumption_mm_btu) * mmbtu_to_mcf,
       cityPopDownscaled_consumption_mcf = cityConsumption_countyPopDownscaled_mmbtu * mmbtu_to_mcf,
       county_consumption_mcf = county_consumption_mm_btu * mmbtu_to_mcf,
       # apply emission factor and convert to metric tons
@@ -466,6 +466,11 @@ nrel_emissions_region %>%
 #   y = ~co2e,
 #   color = ~source
 # )
+
+
+write_csv(nrel_emissions_inv_city %>% st_drop_geometry() %>% select(-geometry), here('_energy', 'data-raw', 'nrel_emissions_inv_city_test2.csv'))
+
+# test
 
 
 nrel_slope_county_proportions <- nrel_emissions_inv_county %>%
