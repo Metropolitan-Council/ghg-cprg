@@ -9,7 +9,7 @@ source("R/_load_pkgs.R")
 # from the dev-2005-baseline branch
 file_name <- tempfile()
 download.file("https://github.com/Metropolitan-Council/ghg-cprg/raw/17b4349fc5874562befaa56a85ef3f740bb1708a/_transportation/data/epa_onroad_emissions_compile.RDS",
-              destfile = file_name, mode = "wb"
+  destfile = file_name, mode = "wb"
 )
 
 # read in and create previous version aggregation

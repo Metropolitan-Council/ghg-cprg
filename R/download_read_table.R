@@ -21,7 +21,7 @@ download_read_table <- function(url,
                                 ...) {
   # split URL to get file name
   url_split <- strsplit(url, split = "/")
-  file_name <- path_sanitize(tail(url_split[[1]], n = 1))
+  file_name <- fs::path_sanitize(tail(url_split[[1]], n = 1))
 
 
   # if the downloaded file does not already OR
