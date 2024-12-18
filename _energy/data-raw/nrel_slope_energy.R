@@ -354,6 +354,7 @@ nrel_emissions_inv_city <- bind_rows(
   )
 
 saveRDS(nrel_emissions_inv_city, "_energy/data-raw/nrel_slope/nrel_emissions_inv_city.RDS")
+
 #compare city figures 1) provided directly by NREL to 2) those downscaled from county figures provided by NREL using CTU pop proportion of county populations
 
 
@@ -452,6 +453,9 @@ nrel_emissions_inv_county <- bind_rows(
     sector = "Energy"
   )
 
+saveRDS(nrel_emissions_inv_county, "_energy/data-raw/nrel_slope/nrel_emissions_inv_county.RDS")
+
+
 # find county proportions by year and source
 nrel_emissions_region <- nrel_emissions_inv_county %>%
   group_by(year, sector, sector_raw, category, source) %>%
@@ -490,28 +494,51 @@ nrel_slope_county_proportions <- nrel_emissions_inv_county %>%
   select(-total, -county_name)
 
 
-nrel_slope_city_proportions <- nrel_emissions_inv_city %>%
-  group_by(city_name, ctu_class, year, source) %>%
-  select(county_name, year, source, sector_raw, co2e) %>%
+nrel_slope_city_emission_proportions <- nrel_emissions_inv_city %>%
+  # Group and summarize to aggregate within each city-year's sector_raw
+  group_by(city_name, ctu_class, year, source, sector_raw) %>%
+  summarize(
+    co2e_city = sum(co2e_city, na.rm = TRUE),
+    co2e_cityPopDownscaled = sum(co2e_cityPopDownscaled, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  
+  # Pivot both co2e_city and co2e_cityPopDownscaled at the same time
   pivot_wider(
     names_from = sector_raw,
-    values_from = co2e
+    values_from = c(co2e_city, co2e_cityPopDownscaled),
+    names_glue = "{.value}_{sector_raw}"
   ) %>%
-  rowwise() %>%
-  summarize(
-    total = commercial + residential + industrial,
-    commercial = commercial / total,
-    industrial = industrial / total,
-    residential = residential / total,
-    .groups = "keep"
+  
+  # Calculate totals and proportions
+  mutate(
+    # Totals
+    total_nrelCity = rowSums(select(., starts_with("co2e_city_")), na.rm = TRUE),
+    total_popDownscale = rowSums(select(., starts_with("co2e_cityPopDownscaled_")), na.rm = TRUE),
+    
+    # Proportions for nrelCity emissions
+    commercial_city = ifelse(total_nrelCity > 0, co2e_city_commercial / total_nrelCity, NA),
+    industrial_city = ifelse(total_nrelCity > 0, co2e_city_industrial / total_nrelCity, NA),
+    residential_city = ifelse(total_nrelCity > 0, co2e_city_residential / total_nrelCity, NA),
+    
+    # Proportions for cityPopDownscale emissions
+    commercial_downscale = ifelse(total_popDownscale > 0, co2e_cityPopDownscaled_commercial / total_popDownscale, NA),
+    industrial_downscale = ifelse(total_popDownscale > 0, co2e_cityPopDownscaled_industrial / total_popDownscale, NA),
+    residential_downscale = ifelse(total_popDownscale > 0, co2e_cityPopDownscaled_residential / total_popDownscale, NA)
   ) %>%
-  ungroup() %>%
-  mutate(county = county_name) %>%
-  select(-total, -county_name)
+  select(-total_popDownscale,
+         -total_nrelCity,
+         -co2e_city_commercial,
+         -co2e_city_industrial,
+         -co2e_city_residential,
+         -co2e_cityPopDownscaled_commercial,
+         -co2e_cityPopDownscaled_industrial,
+         -co2e_cityPopDownscaled_residential)
 
 
-saveRDS(nrel_emissions_inv_county, "_energy/data-raw/nrel_slope/nrel_emissions_inv_county.RDS")
-saveRDS(nrel_slope_proportions, "_energy/data-raw/nrel_slope/nrel_slope_proportions.RDS")
+
+
+saveRDS(nrel_slope_city_emission_proportions, "_energy/data-raw/nrel_slope/nrel_slope_city_emission_proportions.RDS")
 
 # plot_ly(
 #   data = nrel_emissions_region %>%
