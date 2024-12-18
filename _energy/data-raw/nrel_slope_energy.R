@@ -372,24 +372,6 @@ countySummary_nrelCity <- nrel_slope_cprg_cityProps_County %>%
   )
   #city-source-sector prop of county-source-sector emissions
 
-# issues to address
-# double counting of cities across counties..
-# removing portions of cities from city total that don't exist within the county study area JUST FOR calculation of proportions...
-
-
-
-#For city 2021, use NREL-forecasted city proportion of forecasted COUNTY total emissions to allocate actual emissions gathered at county level (Separate from NREL)
-# and then use to allocate city level forecast PROPORTIONS to allocate to sectors
-# do projected activity-emissions at city-sector lefvel add up? a test to write.
-
-
-# calculate activity/emissions reported by NREL SLOPE at COUNTY level that AREN'T REPORTED at city level. 
-
-# use population numbers and weighted per capita to fill in emissions estimations at city level for those cities that NREL SLOPE doesn't directly provide. 
-
-
-# nrel_slope_state <- read.csv("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_state.csv") %>%
-#   clean_names()
 
 
 nrel_emissions_inv_county <- bind_rows(
@@ -536,39 +518,15 @@ nrel_slope_city_emission_proportions <- nrel_emissions_inv_city %>%
          -co2e_cityPopDownscaled_residential)
 
 
-
-
+#fix downstream references to county level RDS (named nrel_slope_county_proportions)
+saveRDS(nrel_slope_county_proportions, "_energy/data-raw/nrel_slope/nrel_slope_city_emission_proportions.RDS")
 saveRDS(nrel_slope_city_emission_proportions, "_energy/data-raw/nrel_slope/nrel_slope_city_emission_proportions.RDS")
 
-# plot_ly(
-#   data = nrel_emissions_region %>%
-#     filter(source == "Electricity"),
-#   x = ~year,
-#   y = ~co2e,
-#   color = ~str_to_sentence(category),
-#   type = "bar"
-# ) %>%
-#   plotly_layout(
-#     main_title = "Electricity",
-#     subtitle = "",
-#     x_title = "Year",
-#     y_title = "Metric tones CO<sub>2</sub>e",
-#     legend_title = "Sector"
-#   )
-#
-#
-# plot_ly(
-#   data = nrel_emissions_region %>%
-#     filter(source == "Natural gas"),
-#   x = ~year,
-#   y = ~co2e,
-#   color = ~str_to_sentence(category),
-#   type = "bar"
-# ) %>%
-#   plotly_layout(
-#     main_title = "Natural gas",
-#     subtitle = "",
-#     x_title = "Year",
-#     y_title = "Metric tones CO<sub>2</sub>e",
-#     legend_title = "Sector"
-#   )
+# ARCHIVED COMMENTS/NOTES
+# For city 2021, use NREL-forecasted city proportion of forecasted COUNTY total emissions to allocate actual emissions gathered at county level (Separate from NREL)
+# and then use to allocate city level forecast PROPORTIONS to allocate to sectors
+# do projected activity-emissions at city-sector lefvel add up? a test to write.
+
+# calculate activity/emissions reported by NREL SLOPE at COUNTY level that AREN'T REPORTED at city level. 
+# use population numbers and weighted per capita to fill in emissions estimations at city level for those cities that NREL SLOPE doesn't directly provide. 
+
