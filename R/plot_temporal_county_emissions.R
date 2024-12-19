@@ -67,6 +67,27 @@ baseline_comparison <- ggplot(baseline_emissions_sector %>%
 
 baseline_comparison
 
+baseline_comparison_facet <- ggplot(baseline_emissions_sector %>% 
+                                filter(year >= 2005 & year <= 2021),
+                              aes(x = year, y = MT_CO2e/1000000, 
+                                  fill = baseline_sector,
+                                  col = baseline_sector)) +
+  geom_area(alpha = 0.4) +
+  geom_line(size = 1.2) +
+  geom_hline(yintercept = 0, size = 1.2, col = "black", linetype = "dashed")+
+  labs(fill = "baseline_sector") +
+  ggtitle("Seven-County Regional Emissions Inventory") +
+  scale_fill_manual(values = baseline_colors, guide = "none") + 
+  scale_color_manual(values = baseline_colors, guide = "none") +
+  theme_bw() + xlab("") + ylab(expression(paste("Million metric tons of ",CO[2],"e"))) +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_text(size = 15, angle = -90, vjust = .25),
+        text = element_text(size = 20, family="sans")) +
+  facet_grid(. ~ baseline_sector)
+
+baseline_comparison_facet
+
 emissions_sector <- county_emissions %>% 
   mutate(category = case_when(
     category == "Electricity" ~ paste(sector,"electricity"),
