@@ -3,35 +3,23 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 source("R/plot_county_emissions.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
-#add to lockfile once finalized
 library(stringr)
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
-mn_util_type <- readRDS("_energy/data/distinct_electricity_util_type_MN.RDS")
-minnesota_elec_estimate_2021 <- readRDS("_energy/data/minnesota_elecUtils_ActivityAndEmissions_2021.RDS")
 
 #read in time series of eGRID emissions factor data and pivot wider to make one row per year with all three emission types
 egridTimeSeries <- epa_ghg_factor_hub$egridTimeSeries %>%
   pivot_wider(names_from = emission, values_from = value)
 
-# NREL SLOPE energy consumption and expenditure data download, cleaning, and viz
-
 # 1 Mmbtu is 0.293071 MWH
 mmbtu_to_mwh <- 0.293071
 
-# 1000 cubic feet is 1.038 MMBtu
+# 1000 cubic feet is 1.038 MMBtu 1 mmbtu is 1 mcf
 # https://www.naturalgasintel.com/natural-gas-converter/
-# 1 mmbtu is 1 mcf
 mmbtu_to_mcf <- 1
 
-#have to grab activity vs. emissions, so that activity specifically can be parceled out
-countyActivity <- minnesota_elec_estimate_2021 %>%
-  group_by(county) %>%
-  summarize(
-    mWh_delivered_county = sum(mWh_delivered, na.rm = TRUE)
-  ) %>%
-  ungroup()
+
 
 # if file doesn't already exist...
 if (file.exists("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.csv") == FALSE) {
@@ -127,12 +115,7 @@ expanded_ctu_population_sector_source <- ctu_population %>%
 
 
 
-# city-level
-
-# For city 2005... 
-
 # Only keep MN core metro cities for city-level analysis
-#join county to city
 nrel_slope_cprg_cityProps_County <- nrel_slope_cprg_city %>%
   filter(year < 2025) %>%
   left_join(nrel_slope_cprg_county,
@@ -208,12 +191,13 @@ nrel_AllCityTownships_county_activityPopProp_reference <- nrel_slope_cprg_cityPr
       NA
     )
   )
+
+# potential future changes:
 # clarify variables to ensure clear sourcing.
-  
-# coalesce and describe source
-  
+# coalesce and describe source based on modeling approach
 
 
+#final compilation of city-level activity and emissions modeled by NREL (with eGrid emissions for time-series elec EF)
 nrel_emissions_inv_city <- bind_rows(
   # electricity emissions
   nrel_AllCityTownships_county_activityPopProp_reference %>%
@@ -353,26 +337,11 @@ nrel_emissions_inv_city <- bind_rows(
     -`lb N2O`
   )
 
-saveRDS(nrel_emissions_inv_city, "_energy/data-raw/nrel_slope/nrel_emissions_inv_city.RDS")
-
-#compare city figures 1) provided directly by NREL to 2) those downscaled from county figures provided by NREL using CTU pop proportion of county populations
-
-
-countySummary_nrelCity <- nrel_slope_cprg_cityProps_County %>%
-  st_drop_geometry() %>%
-  group_by(year, county_name, sector, source) %>%
-  summarize(
-    sectorSource_accountedByCities = sum(cityPropOfCounty_consumption_mm_btu),
-    sectorSource_consumptionToteCities = sum(city_consumption_mm_btu),
-    countyTotalConsumption = max(county_consumption_mm_btu),
-    .groups = 'keep'
-  ) %>%
-  mutate(
-    QA_calc = sectorSource_consumptionToteCities / countyTotalConsumption
-  )
-  #city-source-sector prop of county-source-sector emissions
+# Future QA work
+# Compare city figures 1) provided directly by NREL to 2) those downscaled from county figures provided by NREL using CTU pop proportion of county populations
 
 
+# final compilation of county-level activity and emissions modeled by NREL (with eGrid emissions for time-series elec EF)
 
 nrel_emissions_inv_county <- bind_rows(
   # electricity emissions
@@ -435,7 +404,7 @@ nrel_emissions_inv_county <- bind_rows(
     sector = "Energy"
   )
 
-saveRDS(nrel_emissions_inv_county, "_energy/data-raw/nrel_slope/nrel_emissions_inv_county.RDS")
+
 
 
 # find county proportions by year and source
@@ -508,6 +477,7 @@ nrel_slope_city_emission_proportions <- nrel_emissions_inv_city %>%
     industrial_downscale = ifelse(total_popDownscale > 0, co2e_cityPopDownscaled_industrial / total_popDownscale, NA),
     residential_downscale = ifelse(total_popDownscale > 0, co2e_cityPopDownscaled_residential / total_popDownscale, NA)
   ) %>%
+  # clean up interstitial variables
   select(-total_popDownscale,
          -total_nrelCity,
          -co2e_city_commercial,
@@ -518,7 +488,12 @@ nrel_slope_city_emission_proportions <- nrel_emissions_inv_city %>%
          -co2e_cityPopDownscaled_residential)
 
 
-#fix downstream references to county level RDS (named nrel_slope_county_proportions)
+# Save activity/emissions inventory data
+saveRDS(nrel_emissions_inv_county, "_energy/data-raw/nrel_slope/nrel_emissions_inv_county.RDS")
+saveRDS(nrel_emissions_inv_city, "_energy/data-raw/nrel_slope/nrel_emissions_inv_city.RDS")
+
+# NREL proportions
+# fix downstream references to county level RDS (named nrel_slope_county_proportions)
 saveRDS(nrel_slope_county_proportions, "_energy/data-raw/nrel_slope/nrel_slope_city_emission_proportions.RDS")
 saveRDS(nrel_slope_city_emission_proportions, "_energy/data-raw/nrel_slope/nrel_slope_city_emission_proportions.RDS")
 
