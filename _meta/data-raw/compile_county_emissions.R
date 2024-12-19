@@ -11,12 +11,11 @@ cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
 # transportation -----
 transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS") %>%
   ungroup() %>%
-  rowwise() %>%
   mutate(
     sector = "Transportation",
     geog_level = "county",
-    source = paste0(vehicle_fuel_label, " fueled vehicles"),
-    category = category,
+    source = category,
+    category = "On-road",
     data_source = data_source,
     factor_source = moves_edition
   ) %>%
@@ -37,7 +36,7 @@ aviation_emissions <- readRDS("_transportation/data/aviation_emissions.RDS") %>%
     sector = "Transportation",
     geog_level = "county",
     county_name = geog_name,
-    category = "Aviation",
+    category = "Off-road",
     source = "Aviation",
     data_source = data_source,
     factor_source = data_source,
@@ -94,7 +93,7 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
     geog_level = "county",
     category = "Electricity",
     county_name = county,
-    source = source,
+    source = paste(sector,"electricity"),
     data_source = "Individual electric utilities, NREL SLOPE",
     factor_source = "eGRID MROW"
   ) %>%
@@ -114,7 +113,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
     geog_level = "county",
     category = "Building Fuel",
     county_name = county,
-    source = "Natural Gas",
+    source = paste(sector,"Natural Gas"),
     data_source = "Individual natural gas utilities, NREL SLOPE (2021)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
@@ -129,7 +128,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     geog_level = "county",
     county_name = NAME,
     category = "Building Fuel",
-    source = stringr::str_to_sentence(fuel_type),
+    source = paste("Residential", stringr::str_to_sentence(fuel_type)),
     data_source = "EIA RECS (2020)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
