@@ -258,6 +258,61 @@ fig_metc_epa_ghg_landfill <- plot_waste_comparison("Landfill",
 fig_metc_epa_ghg_landfill
 ```
 
+```{r fig-solid-waste-versions-compare}
+#| fig-cap:  "Solid waste emissions comparison: Met Council and US GHG Inventory"
+#| out-width: "95%"
+
+solidwaste_totals_prev <- waste_emissions_old %>%
+  group_by(geoid) %>%
+  summarise(
+    value_emissions = sum(value_emissions)
+  )
+
+solidwaste_totals_new <- solid_waste %>%
+  filter(inventory_year == 2021) %>%
+  group_by(geoid) %>%
+  summarise(
+    value_emissions = sum(value_emissions)
+  ) %>%
+  mutate(data_source = "Met Council V2")
+
+waste_federal <- solidwaste_totals_prev %>%
+  mutate(data_source = "Met Council V1") %>%
+  bind_rows(solidwaste_totals_new) %>%
+  bind_rows(federal_totals)
+
+fig_sw_versions_compare <- plot_ly(
+  data = waste_federal,
+  source = "fig-solid-waste-versions-compare",
+  x = ~geoid,
+  y = ~value_emissions,
+  color = ~data_source,
+  type = "bar",
+  colors = c(
+    "Met Council V1" = colors$councilBlue,
+    "Met Council V2" = cprg_colors$cprg_green,
+    "US GHG Inventory" = cprg_colors$cprg_da_yellow
+  ),
+  hovertemplate = ~ paste0(
+    geoid, " County", "<br>",
+    data_source, "<br>",
+    round(value_emissions * 1e-3, digits = 0),
+    " thousand metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  councilR::plotly_layout(
+    main_title = "Solid waste emissions comparison",
+    subtitle = "Met Council estimates compared to US GHG Inventory",
+    x_title = "County",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Emissions Source"
+  ) %>%
+  plotly::layout(barmode = "group")
+
+fig_sw_versions_compare
+```
+
 
 {{< pagebreak >}}
 
