@@ -1,4 +1,4 @@
-## Wisconsin Greenhouse Gas Emissions Inventory
+### Wisconsin Greenhouse Gas Emissions Inventory {#sec-wi-inv}
 
 ```{r}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
