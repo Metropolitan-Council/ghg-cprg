@@ -16,21 +16,8 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
-cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
-epa_waste_inventory <- readRDS(file.path(here::here(), "_waste/data-raw/compare_epa_inventory.RDS"))
 
-federal_totals <- epa_waste_inventory %>%
-  filter(source == "Total") %>%
-  select(
-    geoid,
-    source,
-    value_emissions,
-    data_source
-  )
 
-cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
-solid_waste <- readRDS(file.path(here::here(), "_waste/data/final_solid_waste_allyrs.RDS"))
-waste_emissions_old <- readRDS(file.path(here::here(), "_waste/data/solid_waste_2021.RDS"))
 hookaddcap()
 ```
 

@@ -19,16 +19,6 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 cprg_county <- readRDS(file.path(here::here(),
 "_meta/data/cprg_county.RDS"))
-epa_inventory <- readRDS(file.path(here::here(), "_waste/data-raw/compare_epa_inventory.RDS"))
-
-federal_totals <- epa_inventory %>%
-  filter(source == "Total") %>%
-  select(
-    geoid,
-    source,
-    value_emissions,
-    data_source
-  )
 
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
 # county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
@@ -354,9 +344,6 @@ fig_solid_waste_time_series_source
 ```
 
 ### Wastewater
-
-## Validation Graphs
-
 
 
 ```{r echo=FALSE}

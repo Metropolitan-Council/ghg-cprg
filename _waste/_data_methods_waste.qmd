@@ -20,6 +20,96 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 
+solid_waste_emissions <- readRDS(file.path(here::here(),
+"_waste/data/final_solid_waste_allyrs.RDS"))
+
+solidwaste_totals <- solid_waste_emissions %>%
+  filter(inventory_year == 2021) %>%
+  group_by(geoid) %>%
+  summarise(
+    value_emissions = sum(value_emissions)
+  )
+
+solidwaste_population <- left_join(solidwaste_totals, cprg_population,
+  by = join_by(geoid)
+)
+
+# EPA comparison ----
+epa_inventory <- readRDS(file.path(here::here(), "_waste/data-raw/compare_epa_inventory.RDS"))
+
+federal_totals <- epa_inventory %>%
+  filter(source == "Total") %>%
+  select(
+    geoid,
+    source,
+    value_emissions,
+    data_source
+  )
+
+waste_federal <- solidwaste_totals %>%
+  mutate(data_source = "Met Council") %>%
+  bind_rows(federal_totals) %>% 
+  left_join(
+    cprg_population,
+    by = join_by(geoid)
+  )
+
+metc_epa_comp_solid <- epa_inventory %>%
+  filter(source != "Total") %>% 
+  mutate(inventory_year = as.double(inventory_year)) %>% 
+  bind_rows(solid_waste_emissions %>% 
+              select(names(epa_inventory)) %>% 
+              mutate(data_source = "Met Council") %>% 
+              filter(inventory_year == 2021)) %>%
+  mutate(
+    source_unified = case_when(
+      # source == "Anaerobic digestion" ~ "Waste to energy",
+      TRUE ~ source
+    )
+  ) %>%
+  select(-source) %>% 
+  left_join(
+    cprg_population %>% select(geoid, county_name),
+    by = join_by(geoid)
+  )
+
+wide_metc_epa_comp_solid <- metc_epa_comp_solid %>%
+  pivot_wider(
+    names_from = data_source,
+    values_from = value_emissions
+  ) %>%
+  filter(
+    !is.na(`Met Council`),
+    !is.na(`US GHG Inventory`)
+  ) %>%
+  mutate(emiss_diff = `US GHG Inventory` - `Met Council`)
+
+waste_emissions_old <- readRDS(file.path(here::here(), "_waste/data/solid_waste_2021.RDS"))
+
+solidwaste_totals_prev <- waste_emissions_old %>%
+  group_by(geoid) %>%
+  summarise(
+    value_emissions = sum(value_emissions)
+  )
+
+solidwaste_totals_new <- solid_waste_emissions %>%
+  filter(inventory_year == 2021) %>%
+  group_by(geoid) %>%
+  summarise(
+    value_emissions = sum(value_emissions)
+  ) %>%
+  mutate(data_source = "Met Council V2")
+
+waste_federal <- solidwaste_totals_prev %>%
+  mutate(data_source = "Met Council V1") %>%
+  bind_rows(solidwaste_totals_new) %>%
+  bind_rows(federal_totals) %>% 
+  left_join(
+    cprg_population %>% select(geoid, county_name),
+    by = join_by(geoid)
+  )
+# end comparison ----
+
 hookaddcap()
 ```
 
@@ -52,30 +142,18 @@ We would expect counties with a higher population to have higher solid waste emi
 ```{r fig-emissions-population-solidwaste}
 #| fig-cap: "County population and solid waste emissions"
 #| out-width: "95%"
-cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
-
-solidwaste_totals <- county_emissions %>%
-  filter(category == "Solid waste") %>%
-  group_by(geog_name) %>%
-  summarise(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
-  )
-
-solidwaste_population <- left_join(solidwaste_totals, cprg_population,
-  by = c("geog_name" = "NAME")
-)
 
 fig_emissions_population_solidwaste <- plot_ly(
   data = solidwaste_population,
   source = "fig-emissions-population-solidwaste",
   x = ~population,
-  y = ~emissions_metric_tons_co2e,
+  y = ~value_emissions,
   type = "scatter",
   mode = "markers",
   hovertemplate = ~ paste0(
-    geog_name, " County", "<br>",
+    county_name, " County", "<br>",
     "Population: ", scales::comma(population), "<br>",
-    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "Emissions: ", round(value_emissions * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
   # opacity = 0.7,
@@ -109,18 +187,14 @@ The United States EPA conducts a comprehensive yearly estimate of greenhouse gas
 US Inventory data for the waste sector in both Minnesota and Wisconsin was downloaded from the [Greenhouse Gas Inventory Data Explorer](https://cfpub.epa.gov/ghgdata/inventoryexplorer/) and processed in R script: [epa_inventory_data.R](/data-raw/epa_inventory_data.R), where it was apportioned from state to county level by population.
 
 ```{r fig-federal-inventory-compare}
-#| fig-cap:  "Solid waste emissions comparison: Met Council and US GHG Inventory"
+#| fig-cap:  "Solid waste emissions comparison: US GHG Inventory"
 #| out-width: "95%"
-
-waste_federal <- solidwaste_totals %>%
-  mutate(data_source = "Met Council") %>%
-  bind_rows(federal_totals)
 
 fig_federal_inventory_compare <- plot_ly(
   data = waste_federal,
   source = "fig-federal-inventory-compare",
-  x = ~geog_name,
-  y = ~emissions_metric_tons_co2e,
+  x = ~county_name,
+  y = ~value_emissions,
   color = ~data_source,
   type = "bar",
   colors = c(
@@ -128,9 +202,9 @@ fig_federal_inventory_compare <- plot_ly(
     "US GHG Inventory" = cprg_colors$cprg_da_yellow
   ),
   hovertemplate = ~ paste0(
-    geog_name, " County", "<br>",
+    county_name, " County", "<br>",
     data_source, "<br>",
-    round(emissions_metric_tons_co2e * 1e-3, digits = 0),
+    round(value_emissions * 1e-3, digits = 0),
     " thousand metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
@@ -148,38 +222,6 @@ fig_federal_inventory_compare
 ```
 
 
-```{r metc-solid-epa-comp}
-metc_solidwaste_inventory <- county_emissions %>%
-  filter(sector == "Waste") %>%
-  mutate(
-    data_source = "Met Council",
-    year = as.character(year)
-  ) %>%
-  select(names(epa_waste_inventory))
-
-metc_epa_comp_solid <- epa_waste_inventory %>%
-  filter(source != "Total") %>%
-  bind_rows(metc_solidwaste_inventory) %>%
-  mutate(
-    source_unified = case_when(
-      # source == "Anaerobic digestion" ~ "Waste to energy",
-      TRUE ~ source
-    )
-  ) %>%
-  select(-source)
-
-wide_metc_epa_comp_solid <- metc_epa_comp_solid %>%
-  pivot_wider(
-    names_from = data_source,
-    values_from = emissions_metric_tons_co2e
-  ) %>%
-  filter(
-    !is.na(`Met Council`),
-    !is.na(`US GHG Inventory`)
-  ) %>%
-  mutate(emiss_diff = `US GHG Inventory` - `Met Council`)
-```
-
 ```{r plot_waste_comparison}
 plot_waste_comparison <- function(waste_source,
                                   plotly_source) {
@@ -189,18 +231,18 @@ plot_waste_comparison <- function(waste_source,
       filter(
         source_unified == waste_source
       ),
-    y = ~geog_name,
-    x = ~emissions_metric_tons_co2e,
+    y = ~county_name,
+    x = ~value_emissions,
     color = ~data_source,
     colors = c(
       "Met Council" = colors$councilBlue,
       "US GHG Inventory" = cprg_colors$cprg_da_yellow
     ),
     hovertemplate = ~ paste0(
-      geog_name, " County", "<br>",
+      county_name, " County", "<br>",
       data_source, "<br>",
       source_unified, "<br>",
-      round(emissions_metric_tons_co2e * 1e-3, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      round(value_emissions * 1e-3, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
     ),
     marker = list(size = 18),
@@ -212,8 +254,8 @@ plot_waste_comparison <- function(waste_source,
       name = "Difference line",
       data = wide_metc_epa_comp_solid %>%
         filter(source_unified == waste_source),
-      y = ~geog_name,
-      yend = ~geog_name,
+      y = ~county_name,
+      yend = ~county_name,
       x = ~`US GHG Inventory`,
       xend = ~`Met Council`,
       showlegend = FALSE,
@@ -262,29 +304,10 @@ fig_metc_epa_ghg_landfill
 #| fig-cap:  "Solid waste emissions comparison: Met Council and US GHG Inventory"
 #| out-width: "95%"
 
-solidwaste_totals_prev <- waste_emissions_old %>%
-  group_by(geoid) %>%
-  summarise(
-    value_emissions = sum(value_emissions)
-  )
-
-solidwaste_totals_new <- solid_waste %>%
-  filter(inventory_year == 2021) %>%
-  group_by(geoid) %>%
-  summarise(
-    value_emissions = sum(value_emissions)
-  ) %>%
-  mutate(data_source = "Met Council V2")
-
-waste_federal <- solidwaste_totals_prev %>%
-  mutate(data_source = "Met Council V1") %>%
-  bind_rows(solidwaste_totals_new) %>%
-  bind_rows(federal_totals)
-
 fig_sw_versions_compare <- plot_ly(
   data = waste_federal,
   source = "fig-solid-waste-versions-compare",
-  x = ~geoid,
+  x = ~county_name,
   y = ~value_emissions,
   color = ~data_source,
   type = "bar",
@@ -294,7 +317,7 @@ fig_sw_versions_compare <- plot_ly(
     "US GHG Inventory" = cprg_colors$cprg_da_yellow
   ),
   hovertemplate = ~ paste0(
-    geoid, " County", "<br>",
+    county_name, " County", "<br>",
     data_source, "<br>",
     round(value_emissions * 1e-3, digits = 0),
     " thousand metric tons CO<sub>2</sub>e", "<br>",
