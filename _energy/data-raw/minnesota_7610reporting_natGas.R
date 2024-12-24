@@ -34,14 +34,17 @@ get_files <- function(root_dir) {
 
 # Function to process each file and extract county-level utility activity data
 process_file <- function(file_path) {
-  # assumes you gave the file a nice name -- basically, the utility's name
-  utility_name <- tools::file_path_sans_ext(basename(file_path))
+  
+  # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
+  file_path <- file_info$file_path
+  utility_name <- file_info$utility_name
+  year <- file_info$year
 
   # Read specific ranges from the file
   data_A_C <- read_excel(file_path, sheet = "GasByCounty", range = "A15:C59")
   data_E_G <- read_excel(file_path, sheet = "GasByCounty", range = "E15:G56")
 
-  # Rename columns to reflect the data that is actuall read
+  # Rename columns to reflect the data that is actually read
   colnames(data_A_C) <- c("countyCode", "county", "mcf_delivered")
   colnames(data_E_G) <- c("countyCode", "county", "mcf_delivered")
 
@@ -55,13 +58,15 @@ process_file <- function(file_path) {
       "Scott", "Sherburne", "Chisago", "Washington"
     ))
 
-  # Add utility name derived from excel file name
+  # Add utility name and year columns
   combined_data$utility <- utility_name
+  combined_data$year <- as.numeric(year)  # Ensure year is numeric if needed
 
   return(combined_data)
 }
 
-# Process all files and combine the data
+# Apply process_file to each file identified in get_files() in the nested structure and combine the results
+file_list <- get_files(dir_mn_natGas_state)
 combined_MNgasUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
 
 # Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county,
