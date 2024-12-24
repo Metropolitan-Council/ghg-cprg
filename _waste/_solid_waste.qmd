@@ -71,6 +71,27 @@ solid_waste_named <- solid_waste_emissions %>%
     county_name_full
   )
 
+
+sw_county_summary <- solid_waste_named %>%
+  group_by(inventory_year, county_name) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(value_emissions),
+    .groups = "keep"
+  ) %>%
+  rowwise() %>%
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
+
+solid_waste_max_year <- solid_waste_emissions %>%
+  filter(inventory_year == max(inventory_year)) %>%
+  extract2("inventory_year") %>%
+  unique()
+
+
+solid_waste_min_year <- solid_waste_emissions %>%
+  filter(inventory_year == min(inventory_year)) %>%
+  extract2("inventory_year") %>%
+  unique()
+
 hookaddcap()
 ```
 
@@ -133,12 +154,7 @@ over time
 
 ### Solid waste
 
-### Wastewater
-
-### 2021 emissions
-
-
-### Solid waste
+#### 2021 emissions
 
 ```{r solid-waste-percentages, include=FALSE}
 solid_waste_percentages <- solid_waste_emissions %>%
@@ -247,9 +263,97 @@ fig_solid_waste_sector_emissions_by_category
 
 <!-- consider inserting CTU estimates here -->
 
-### Historical emissions
+#### Historical emissions
 
-<!-- insert historical emissions graph here -->
+The variation of solid waste emissions over the past 16 years is mainly due to variations in amount of waste collected. It does not take into account changes in methane capture and removal technology or adoption.
+
+```{r fig-solid-waste-times-series-county}
+#| fig-cap: "Solid waste emissions by county, 2005-2021"
+#| out-width: "95%"
+
+fig_solid_waste_time_series_county <- sw_county_summary %>%
+  group_by(county_name) %>%
+  plot_ly(
+    source = "fig-solid-waste-time-series-county",
+    x = ~inventory_year,
+    y = ~emissions_metric_tons_co2e,
+    color = ~county_name,
+    colors = "Dark2",
+    type = "scatter",
+    mode = "lines+markers",
+    marker = list(size = 10),
+    hoverinfo = "text",
+    hovertext = ~ paste0(
+      county_name, "County, ", inventory_year, " ", "<br>",
+      rounded_tons
+    )
+  ) %>%
+  plotly_layout(
+    main_title = paste0("Solid Waste emissions, ", solid_waste_min_year, " - ", solid_waste_max_year),
+    subtitle = "",
+    x_title = "Year",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "County"
+  )
+
+fig_solid_waste_time_series_county
+```
+
+```{r fig-solid-waste-time-series-source}
+#| fig-cap: "Solid waste emissions by source, 2005-2021"
+#| out-width: "95%"
+#| 
+sw_source_summary <- solid_waste_named %>%
+  group_by(inventory_year, source) %>%
+  filter(source != "Onsite") %>% 
+  summarize(
+    emissions_metric_tons_co2e = sum(value_emissions),
+    .groups = "keep"
+  ) %>%
+  rowwise() %>%
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
+
+fig_solid_waste_time_series_source <- sw_source_summary %>%
+  filter(source == "Landfill") %>%
+  plot_ly(
+    source = "fig-solid-waste-time-series-source",
+    x = ~inventory_year,
+    y = ~emissions_metric_tons_co2e,
+    name = "Landfill",
+    fillcolor = source_colors$Landfill,
+    type = "scatter",
+    mode = "none",
+    stackgroup = "one",
+    hoverinfo = "text",
+    hovertext = ~ paste0(
+      source, " emissions, ", inventory_year, " ", "<br>",
+      rounded_tons
+    )
+  ) %>%
+  add_trace(
+    data = sw_source_summary %>% filter(source == "Organics"),
+    y = ~emissions_metric_tons_co2e,
+    name = "Organics",
+    fillcolor = source_colors$Organics
+  ) %>% 
+  add_trace(
+    data = sw_source_summary %>% filter(source == "Waste to energy"),
+    y = ~emissions_metric_tons_co2e,
+    name = "Waste to energy",
+    fillcolor = source_colors$`Waste to energy`
+  ) %>% 
+  plotly_layout(
+    main_title = paste0("Solid Waste emissions, ", solid_waste_min_year, " - ", solid_waste_max_year),
+    subtitle = "",
+    x_title = "Year",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Source"
+  )
+
+fig_solid_waste_time_series_source
+```
+
+### Wastewater
 
 ## Validation Graphs
 
