@@ -17,8 +17,10 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
-cprg_county <- readRDS(file.path(here::here(),
-"_meta/data/cprg_county.RDS"))
+cprg_county <- readRDS(file.path(
+  here::here(),
+  "_meta/data/cprg_county.RDS"
+))
 
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
 # county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
@@ -45,12 +47,15 @@ cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
 #   arrange(-emissions_metric_tons_co2e) %>%
 #   janitor::adorn_percentages(denominator = "col")
 
-solid_waste_emissions <- readRDS(file.path(here::here(),
-"_waste/data/final_solid_waste_allyrs.RDS"))
+solid_waste_emissions <- readRDS(file.path(
+  here::here(),
+  "_waste/data/final_solid_waste_allyrs.RDS"
+))
 
-solid_waste_named <- solid_waste_emissions %>% 
+solid_waste_named <- solid_waste_emissions %>%
   left_join(cprg_county,
-            by = join_by(geoid)) %>% 
+    by = join_by(geoid)
+  ) %>%
   select(
     inventory_year,
     sector,
@@ -120,9 +125,9 @@ over time
 #     .sector = "Waste",
 #     .plotly_source = "fig-waste-wastewater-county-emissions"
 #   )
-# 
+#
 # fig_waste_wastewater_county_emissions$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
-# 
+#
 # fig_waste_wastewater_county_emissions
 ```
 
@@ -136,9 +141,9 @@ over time
 #   .sector = "Waste",
 #   .plotly_source = "fig-waste-county-emissions-by-category"
 # )
-# 
+#
 # fig_waste_county_emissions_by_category$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
-# 
+#
 # fig_waste_county_emissions_by_category
 ```
 
@@ -148,7 +153,7 @@ over time
 
 ```{r solid-waste-percentages, include=FALSE}
 solid_waste_percentages <- solid_waste_emissions %>%
-  filter(inventory_year == 2021) %>% 
+  filter(inventory_year == 2021) %>%
   group_by(category, source) %>%
   summarize(emissions_metric_tons_co2e = sum(value_emissions)) %>%
   arrange(-emissions_metric_tons_co2e) %>%
@@ -158,7 +163,7 @@ solid_waste_percentages <- solid_waste_emissions %>%
 total_solid_waste <-
   solid_waste_emissions %>%
   ungroup() %>%
-  filter(inventory_year == 2021) %>% 
+  filter(inventory_year == 2021) %>%
   summarise(emissions_metric_tons_co2e = sum(value_emissions)) %>%
   extract2("emissions_metric_tons_co2e")
 ```
@@ -173,8 +178,10 @@ fig_solid_waste_emissions <-
     type = "bar",
     source = "fig-solid-waste-emissions",
     data = solid_waste_named %>%
-      filter(category == "Solid waste",
-             inventory_year == 2021),
+      filter(
+        category == "Solid waste",
+        inventory_year == 2021
+      ),
     y = ~ reorder(county_name, value_emissions),
     x = ~value_emissions,
     color = ~category,
@@ -219,9 +226,11 @@ fig_solid_waste_sector_emissions_by_category <-
     type = "bar",
     source = "fig-solid-waste-sector-emissions-by-category",
     data = solid_waste_named %>%
-      filter(category == "Solid waste",
-             inventory_year == 2021,
-             source != "Onsite"),
+      filter(
+        category == "Solid waste",
+        inventory_year == 2021,
+        source != "Onsite"
+      ),
     y = ~ reorder(county_name, value_emissions),
     x = ~value_emissions,
     color = ~source,
@@ -292,10 +301,10 @@ fig_solid_waste_time_series_county
 ```{r fig-solid-waste-time-series-source}
 #| fig-cap: "Solid waste emissions by source, 2005-2021"
 #| out-width: "95%"
-#| 
+#|
 sw_source_summary <- solid_waste_named %>%
   group_by(inventory_year, source) %>%
-  filter(source != "Onsite") %>% 
+  filter(source != "Onsite") %>%
   summarize(
     emissions_metric_tons_co2e = sum(value_emissions),
     .groups = "keep"
@@ -325,13 +334,13 @@ fig_solid_waste_time_series_source <- sw_source_summary %>%
     y = ~emissions_metric_tons_co2e,
     name = "Organics",
     fillcolor = source_colors$Organics
-  ) %>% 
+  ) %>%
   add_trace(
     data = sw_source_summary %>% filter(source == "Waste to energy"),
     y = ~emissions_metric_tons_co2e,
     name = "Waste to energy",
     fillcolor = source_colors$`Waste to energy`
-  ) %>% 
+  ) %>%
   plotly_layout(
     main_title = paste0("Solid Waste emissions, ", solid_waste_min_year, " - ", solid_waste_max_year),
     subtitle = "",

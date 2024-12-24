@@ -20,8 +20,10 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 
-solid_waste_emissions <- readRDS(file.path(here::here(),
-"_waste/data/final_solid_waste_allyrs.RDS"))
+solid_waste_emissions <- readRDS(file.path(
+  here::here(),
+  "_waste/data/final_solid_waste_allyrs.RDS"
+))
 
 solidwaste_totals <- solid_waste_emissions %>%
   filter(inventory_year == 2021) %>%
@@ -48,26 +50,26 @@ federal_totals <- epa_inventory %>%
 
 waste_federal <- solidwaste_totals %>%
   mutate(data_source = "Met Council") %>%
-  bind_rows(federal_totals) %>% 
+  bind_rows(federal_totals) %>%
   left_join(
     cprg_population,
     by = join_by(geoid)
   )
 
 metc_epa_comp_solid <- epa_inventory %>%
-  filter(source != "Total") %>% 
-  mutate(inventory_year = as.double(inventory_year)) %>% 
-  bind_rows(solid_waste_emissions %>% 
-              select(names(epa_inventory)) %>% 
-              mutate(data_source = "Met Council") %>% 
-              filter(inventory_year == 2021)) %>%
+  filter(source != "Total") %>%
+  mutate(inventory_year = as.double(inventory_year)) %>%
+  bind_rows(solid_waste_emissions %>%
+    select(names(epa_inventory)) %>%
+    mutate(data_source = "Met Council") %>%
+    filter(inventory_year == 2021)) %>%
   mutate(
     source_unified = case_when(
       # source == "Anaerobic digestion" ~ "Waste to energy",
       TRUE ~ source
     )
   ) %>%
-  select(-source) %>% 
+  select(-source) %>%
   left_join(
     cprg_population %>% select(geoid, county_name),
     by = join_by(geoid)
@@ -103,7 +105,7 @@ solidwaste_totals_new <- solid_waste_emissions %>%
 waste_federal <- solidwaste_totals_prev %>%
   mutate(data_source = "Met Council V1") %>%
   bind_rows(solidwaste_totals_new) %>%
-  bind_rows(federal_totals) %>% 
+  bind_rows(federal_totals) %>%
   left_join(
     cprg_population %>% select(geoid, county_name),
     by = join_by(geoid)

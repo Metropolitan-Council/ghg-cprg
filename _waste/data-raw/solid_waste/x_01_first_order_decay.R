@@ -9,16 +9,16 @@ cprg_population_2005 <- readRDS(file.path(here::here(), "_meta/data/cprg_populat
 
 mt_conversion_factor <- 0.90718474
 # waste_per_cap = 0.23 # estimated MN per cap value for 1990
-# 
-# historical_est <- cprg_population_2005 %>% 
-#   filter(STATEFP == 27) %>% 
+#
+# historical_est <- cprg_population_2005 %>%
+#   filter(STATEFP == 27) %>%
 #   mutate(
 #     value_activity = population*waste_per_cap*mt_conversion_factor,
 #     source = "Landfill",
 #     units_activity = "metric tons MSW"
-#   ) %>% 
-#   slice(rep(1:n(), each = 41)) %>% 
-#   cbind(inventory_year = 1950:1990) %>% 
+#   ) %>%
+#   slice(rep(1:n(), each = 41)) %>%
+#   cbind(inventory_year = 1950:1990) %>%
 #   select(
 #     geoid = GEOID,
 #     source,
@@ -47,11 +47,11 @@ mpca_score_long <- score_summary %>%
     units_activity
     # state_total
   ) %>%
-  ungroup() %>% 
+  ungroup() %>%
   filter(
     source == "Landfill"
-  ) 
-# %>% 
+  )
+# %>%
 #   bind_rows(
 #     historical_est
 #   )
@@ -85,9 +85,9 @@ doc <- doc_sum$doc_total
 l_0 <- mcf * doc * doc_f * f * 16 / 12
 
 # first order decay ----
-k <- 0.05 
+k <- 0.05
 # default methane generation rate from IPCC
-fod_calc <- mpca_score_long %>% 
+fod_calc <- mpca_score_long %>%
   mutate(
     msw_l0 = value_activity * l_0,
     ddoc_accumulated = 0,
@@ -96,43 +96,41 @@ fod_calc <- mpca_score_long %>%
 
 fod_county_list <- list()
 
-for (i in 1:9)  {
+for (i in 1:9) {
   county <- cprg_county$geoid[i]
-  fod_county <- fod_calc %>% 
+  fod_county <- fod_calc %>%
     filter(geoid == county)
   for (r in 1:31) {
     # ddoc accumulated
-    if(r ==1) {
+    if (r == 1) {
       fod_county$ddoc_accumulated[r] <- fod_county$msw_l0[r]
-      }
-    else {
-      fod_county$ddoc_accumulated[r] <- (fod_county$ddoc_accumulated[r-1] * exp(-k)
-      + fod_county$msw_l0[r])
+    } else {
+      fod_county$ddoc_accumulated[r] <- (fod_county$ddoc_accumulated[r - 1] * exp(-k)
+        + fod_county$msw_l0[r])
     }
     # ddoc decomposed (in mmt? ch4)
-    if(r == 1){
+    if (r == 1) {
       fod_county$value_emissions[r] <- 0
-    }
-    else{
-      fod_county$value_emissions[r] <- fod_county$ddoc_accumulated[r-1] * (1-exp(-k))
+    } else {
+      fod_county$value_emissions[r] <- fod_county$ddoc_accumulated[r - 1] * (1 - exp(-k))
     }
   }
   fod_county_list[[i]] <- fod_county
 }
 
-fod_emissions <- bind_rows(fod_county_list)  
- 
+fod_emissions <- bind_rows(fod_county_list)
+
 # for final numbers: multiply by 1-ox
 ox <- 0.1
 if (!exists("gwp")) {
   source(file.path(here::here(), "R/global_warming_potential.R"))
 }
 
-fod_emissions <- fod_emissions %>% 
+fod_emissions <- fod_emissions %>%
   mutate(
-    value_emissions_fod = value_emissions * (1-ox) * gwp$ch4,
+    value_emissions_fod = value_emissions * (1 - ox) * gwp$ch4,
     units_emissions = "Metric tonnes CO2e"
-  ) %>% 
+  ) %>%
   select(
     geoid,
     inventory_year,
@@ -143,15 +141,15 @@ fod_emissions <- fod_emissions %>%
 
 solid_waste <- readRDS(file.path(here::here(), "_waste/data/final_solid_waste_allyrs.RDS"))
 
-waste_compare <- solid_waste %>% 
+waste_compare <- solid_waste %>%
   filter(
     source == "Landfill"
-  ) %>% 
+  ) %>%
   left_join(
     fod_emissions,
     by = join_by(geoid, inventory_year)
   )
-  
+
 ggplot(waste_compare, aes(x = inventory_year, y = value_emissions, color = geoid)) +
   geom_line(linetype = 2) +
   geom_line(aes(y = value_emissions_fod))
