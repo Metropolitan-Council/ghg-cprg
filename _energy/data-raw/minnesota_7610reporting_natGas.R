@@ -1,11 +1,36 @@
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
-# Directory where Excel files of utility reports should be placed
-dir_mn_gas <- here("_energy", "data-raw", "mn_natGas_utility_reporting")
+# root directory with folders for each utility in scope (with each folder containing subfolders for all years which reporting to the state is available)
+dir_mn_natGas_state <- here("_energy", "data-raw", "mn_ng_utility_reporting_state")
 
-# Get list of all Excel files in the directory
-file_list <- list.files(path = dir_mn_gas, pattern = "\\.xlsx$", full.names = TRUE)
+# Function to get file paths, utility names, and years of utility reports in root directory
+get_files <- function(root_dir) {
+  file_info <- list()
+  
+  # Loop through each utility folder
+  utility_folders <- list.dirs(root_dir, recursive = FALSE)
+  for (utility_folder in utility_folders) {
+    utility_name <- basename(utility_folder)
+    
+    # Loop through each year sub-folder within each utility folder
+    year_folders <- list.dirs(utility_folder, recursive = FALSE)
+    for (year_folder in year_folders) {
+      year <- basename(year_folder)
+      
+      # Get list of Excel files in the year folder -- captures both .xls and .xlsx
+      files <- list.files(path = year_folder, pattern = "\\.xls(x)?$", full.names = TRUE)
+      
+      # Append each file path with utility and year information
+      for (file in files) {
+        file_info <- append(file_info, list(list(file_path = file,
+                                                 utility_name = utility_name,
+                                                 year = year)))
+      }
+    }
+  }
+  return(file_info)
+}
 
 # Function to process each file and extract county-level utility activity data
 process_file <- function(file_path) {
@@ -76,6 +101,9 @@ MNcounty_level_gas_emissions_2021 <- processed_mn_gasUtil_activityData %>%
     state = "MN",
     sector = "Natural gas",
     year = 2021
+  ) %>%
+  rename(
+    county_name = county
   )
 
 
@@ -91,9 +119,9 @@ downscaleMN_gas_basedOnPopProps <- read_rds(here(
   "data",
   "cprg_county_proportions.RDS"
 )) %>%
-  filter(STATE == "Minnesota" &
-    year %in% c(2005, 2021)) %>%
-  select(year, county = name, county_proportion_of_state_pop) %>%
+  filter(state_name == "Minnesota" &
+    population_year %in% c(2005, 2021)) %>%
+  select(year = population_year, county_name, county_proportion_of_state_pop) %>%
   mutate(
     total_mcf = case_when(
       year == 2005 ~ MN_state2005_natGasMCFTotal * county_proportion_of_state_pop,
@@ -135,18 +163,18 @@ cprg_county_pops <- read_rds(here(
   "data",
   "cprg_county_proportions.RDS"
 )) %>%
-  select(county = name, year, county_population) %>%
+  select(county_name, year = population_year, county_population) %>%
   filter(year %in% c(2005, 2021))
 
 MNcounty_level_gas_emissionsQA <- rbind(downscaleMN_gas_basedOnPopProps_2005, MNcounty_level_gas_emissions_2021) %>%
   left_join(cprg_county_pops,
-    by = join_by(county, year)
+    by = join_by(county_name, year)
   ) %>%
   mutate(
     CO2eEmissions_PerCap_Tons = emissions_metric_tons_co2e / county_population
   ) %>%
-  left_join(downscaleMN_gas_basedOnPopProps_2021 %>% select(county, year, EST_emissions_metric_tons_co2e = emissions_metric_tons_co2e),
-    by = join_by(county, year)
+  left_join(downscaleMN_gas_basedOnPopProps_2021 %>% select(county_name, year, EST_emissions_metric_tons_co2e = emissions_metric_tons_co2e),
+    by = join_by(county_name, year)
   ) %>%
   mutate(
     EST_perCap_CO2e = EST_emissions_metric_tons_co2e / county_population
