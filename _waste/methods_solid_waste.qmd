@@ -50,12 +50,12 @@ $$L_0 = MCF × DOC_f × F × 16/12 \times DOC$$ where
 -   $MCF$ = methane commitment factor. Assigned IPCC default of 0.5 for managed, semi-aerobic landfills.
 -   $DOC_f$ = fraction of degradable organic carbon degraded. Assigned IPCC default of 0.6.
 -   $F$ = fraction of methane in landfill gas. Assigned IPCC default of 0.5.
--   $16/12$ = ??
+-   $16/12$ = Methane (CH~4~) to carbon (C) ratio (atomic weight)
 -   $DOC$ = degradable organic carbon. Calculated based on local waste makeup data from MPCA's [2013 Statewide Waste Characterization study](https://www.pca.state.mn.us/sites/default/files/w-sw1-60.pdf), using the equation $DOC = ( 0.4 \times \text{paper/textiles}) + ( 0.17 \times \text{non-food organics}) + ( 0.15 \times \text{food waste}) + ( 0.3 \times \text{wood/straw})$.
 
 #### Compost
 
-Compost produces both methane and nitrous oxide. Emissions are calculated by multiplying waste activity totals by emissions factors divided between aerobic and anaerobic digesters. Since Minnesota only has one anaerobic digester, we assumed 0% anaerobic digestion in the inventory area (source).
+Compost produces both methane and nitrous oxide. Emissions are calculated by multiplying waste activity totals by emissions factors divided between aerobic and anaerobic digesters. Since Minnesota only has one anaerobic digester that is outside the inventory area, we assumed 0% anaerobic digestion within the inventory area (source).
 
 $$Emissions_{CH_4} = MSW_{compost} \times 10 \times 10^{-3}$$
 
@@ -88,6 +88,8 @@ where:
 -   $FCC$ = fraction of carbon content in MSW. Assigned IPCC default of 40%.
 
 -   $FFC$ = fraction of fossil carbon in MSW. Assigned IPCC default of 40%.
+
+-   $44/12$ = Ratio of carbon dioxide (CO~2~) to carbon (C) by atomic weight
 
 -   $EF_{N_2O}$ = aggregate N~2~O emission factor for MSW. Assigned GHG Protocol default of 50 g N~2~O/ metric tons waste for continuous and semi-continuous incinerators.
 
