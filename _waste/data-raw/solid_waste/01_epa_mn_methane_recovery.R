@@ -18,17 +18,14 @@ flaring_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid
   range = "A2:AG54"
 ) %>%
   rename(State = 1) %>%
-  filter(State == "MN")
-
-
-flaring_data <- data.frame(t(flaring_data)) %>%
-  tibble::rownames_to_column("Year") %>%
-  rename(mt_ch4_mn_flared = t.flaring_data.) # this is currently mmt. it will be converted
-
-flaring_data <- flaring_data[-1, ] %>%
+  filter(State == "MN") %>% 
+  pivot_longer(cols = (2:last_col()),
+               names_to = "Year",
+               values_to = "mmt_ch4_mn_flared" ) %>%
   mutate(
-    mt_ch4_mn_flared = as.numeric(mt_ch4_mn_flared) * 10^6 # converting mmt to mt
-  )
+    mt_ch4_mn_flared = as.numeric(mmt_ch4_mn_flared) * 10^6 # converting mmt to mt
+  ) %>% 
+  select(Year, mt_ch4_mn_flared)
 
 # LFGTE
 
@@ -36,16 +33,14 @@ lfgte_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_w
   range = "A2:AG54"
 ) %>%
   rename(State = 1) %>%
-  filter(State == "MN")
-
-lfgte_data <- data.frame(t(lfgte_data)) %>%
-  tibble::rownames_to_column("Year") %>%
-  rename(mt_ch4_mn_lfgte = t.lfgte_data.)
-
-lfgte_data <- lfgte_data[-1, ] %>%
+  filter(State == "MN") %>% 
+  pivot_longer(cols = (2:last_col()),
+               names_to = "Year",
+               values_to = "mmt_ch4_mn_lfgte" ) %>% 
   mutate(
-    mt_ch4_mn_lfgte = as.numeric(mt_ch4_mn_lfgte) * 10^6
-  )
+    mt_ch4_mn_lfgte = as.numeric(mmt_ch4_mn_lfgte) * 10^6
+  )%>% 
+  select(Year, mt_ch4_mn_lfgte)
 
 # join dfs, filter to 2021/2005, join county proportions, allocate by population - TO CHANGE
 # instead allocate by proportion of MN landfill
