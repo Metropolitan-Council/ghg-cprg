@@ -63,7 +63,7 @@ landfill_emissions <- mpca_score %>%
   # left_join(methane_recovery_mn, by = join_by(County, Year, Method)) %>%
   mutate(
     value_emissions = (value_activity * l_0) * (1 - ox),
-    units_emissions = "Tonnes CH4"
+    units_emissions = "Metric tons CH4"
   ) %>%
   select(
     -state_total
