@@ -65,7 +65,7 @@ solid_waste_wi <- wi_pop %>%
     ),
     data_source = "Wisconsin GHG Inventory",
     factor_source = "Wisconsin GHG Inventory",
-    units_emissions = "Tonnes CO2e"
+    units_emissions = "Metric tons CO2e"
   ) %>%
   select(
     geoid,
