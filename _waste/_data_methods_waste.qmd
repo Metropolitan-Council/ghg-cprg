@@ -200,7 +200,8 @@ fig_federal_inventory_compare <- plot_ly(
   color = ~data_source,
   type = "bar",
   colors = c(
-    "Met Council" = colors$councilBlue,
+    "Met Council V1" = colors$councilBlue,
+    "Met Council V2" = colors$metroGreen,
     "US GHG Inventory" = cprg_colors$cprg_da_yellow
   ),
   hovertemplate = ~ paste0(
