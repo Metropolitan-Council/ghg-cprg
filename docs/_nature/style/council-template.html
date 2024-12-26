@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="$lang$" xml:lang="$lang$"$if(dir)$ dir="$dir$"$endif$>
+<head>
+$metadata.html()$
+
+<style>
+$styles.html()$
+</style>
+
+<!-- htmldependencies:E3FAD763 -->
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+$if(math)$
+$if(mathjax)$
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+$endif$
+  $math$
+$endif$
+
+$for(css)$
+<link rel="stylesheet" href="$css$" />
+$endfor$
+</head>
+<section id="navigation" class="navigation standalone-navigation">
+  	<link href="style/standalone_header_footer.css" type="text/css" rel="stylesheet">
+</section>
+
+<body>
+$for(include-before)$
+$include-before$
+$endfor$
+
+$if(title)$
+$title-block.html()$
+$elseif(subtitle)$
+$title-block.html()$
+$endif$
+
+$if(toc)$
+$toc.html()$
+$endif$
+
+$body$
+
+$for(include-after)$
+$include-after$
+$endfor$
+
+<section class="footer-social standalone-footer">
+  <div class="wrapper1 cf">
+    <nav class="footer-columns" aria-label="Footer">
+      <div>
+        <div class="footer-col">
+          <div class="wysiwyg">
+            <div class="footer-textblue"><a href="https://metrocouncil.org/"><img src="style/footer-logo.png" alt="Met Council Logo "></a></div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-divider-small"></div>
+            <h4 class="footer-textblue">390 Robert Street North<br>
+              St. Paul, MN 55101<br>
+              <a href="tel:651-602-1000">651-602-1000</a></h4>
+            <p>&nbsp;</p>
+            <p><span class="copyright">&#169; Metropolitan Council</span></p>
+        </div>
+        <div class="footer-col">
+          <div class="footer-divider-small"></div>
+            <h4 class="footer-textblue"><a href="https://metrocouncil.org/About-Us/Contact-Us-(1).aspx">Contact Us</a></h4>
+          <h4 class="footer-textblue"><a href="https://metrocouncil.org/Terms-Conditions.aspx">Terms &amp; Conditions</a></h4>
+          <h4 class="footer-textblue"><a href="https://metrocouncil.org/Privacy-Policy.aspx">Privacy Policy</a></h4>
+        </div>
+      </div>
+    </nav>
+  </div>
+</section>
+
+</body>
+</html>
