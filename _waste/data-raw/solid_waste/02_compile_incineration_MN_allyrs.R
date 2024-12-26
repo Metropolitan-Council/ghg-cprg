@@ -14,7 +14,7 @@ n2o_emissions_factor_wte <- 50 # aggregate emissions factor for incineration, g 
 n2o_emissions_factor_onsite <- 150 # aggregate emissions factor for open burning, g N2O/metric tons waste, GHG Protocol default
 
 incin_factors <- tibble(
-  source = c("WTE", "Onsite"),
+  source = c("Waste to energy", "Onsite"),
   co2 = co2_factor * c(co2_efficiency_wte, co2_efficiency_onsite),
   n2o = c(n2o_emissions_factor_wte, n2o_emissions_factor_onsite) *
     units::as_units("gram") %>%

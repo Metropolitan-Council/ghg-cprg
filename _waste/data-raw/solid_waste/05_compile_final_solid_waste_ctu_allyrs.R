@@ -1,7 +1,7 @@
 source("R/_load_pkgs.R")
 
 # pull in final RDS
-solid_waste <- readRDS(file.path(here::here(), "_waste/data/solid_waste_ctu_allyrs.RDS"))
+solid_waste <- readRDS(file.path(here::here(), "_waste/data/final_solid_waste_allyrs.RDS"))
 # pull in population proportion timeseries
 
 ctu_population <- readRDS(file.path(here::here(), "_meta/data/ctu_population.RDS"))

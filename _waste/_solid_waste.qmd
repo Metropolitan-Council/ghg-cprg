@@ -237,7 +237,7 @@ fig_solid_waste_sector_emissions_by_category <-
     colors = unlist(source_colors),
     hovertemplate = ~ paste0(
       county_name, " County", "<br>",
-      category, "<br>",
+      category, ", ", source, "<br>",
       round(value_emissions / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
     )
