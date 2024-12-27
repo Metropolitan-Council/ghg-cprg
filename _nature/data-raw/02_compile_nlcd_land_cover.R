@@ -479,8 +479,8 @@ nlcd_ctu_meta <-
     ~"Column", ~"Class", ~"Description",
     "ctu_name", class(nlcd_ctu$ctu_name), "CTU name",
     "ctu_class", class(nlcd_ctu$county_name), "CTU class",
-    "county_name ", class(nlcd_ctu$county_name), "County name",
-    "state_name ", class(nlcd_ctu$state_name), "State name",
+    "county_name", class(nlcd_ctu$county_name), "County name",
+    "state_name", class(nlcd_ctu$state_name), "State name",
     "year", class(nlcd_ctu$year), "Year",
     "land_cover_type", class(nlcd_ctu$land_cover_type), "Land cover type from National Land Cover Database. 'Urban_' indicates a natural area within NLCD designated developed land cover",
     "area", class(nlcd_ctu$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas"
