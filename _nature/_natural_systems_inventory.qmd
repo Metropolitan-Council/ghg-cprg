@@ -1,0 +1,591 @@
+# Natural Systems {#sec-natural-systems}
+
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+## Load the following datasets:
+# nlcd_county_landcover_sequestration_2001_2021.rds
+# nlcd_ctu_landcover_sequestration_2001_2021.rds
+
+county_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_sequestration_2001_2021.rds"))
+ctu_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_ctu_landcover_sequestration_2001_2021.rds"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
+
+
+# grab nlcd legend
+nlcd.legend <- FedData::pal_nlcd()
+
+
+nlcd_lc <- unwrap(read_rds(here(
+  "_nature", "data", "nlcd_lc_msa.rds"
+)))
+nlcd_tcc <- unwrap(read_rds(here(
+  "_nature", "data", "nlcd_tcc_msa.rds"
+)))
+nlcd_is <- unwrap(read_rds(here(
+  "_nature", "data", "nlcd_is_msa.rds"
+)))
+cprg_area <- cprg_county %>%
+  mutate(area_sq_km = sf::st_area(cprg_county) %>% units::set_units("km^2") %>%
+    as.numeric())
+
+crs_use <- terra::crs(nlcd_lc)
+```
+
+
+```{r include=FALSE}
+# Plot NLCD land cover map
+# library(ggplot2)
+p_nlcd_lc <- ggplot(cprg_county) +   geom_sf(color="gray20", fill=NA, lwd=0.5) + #geom_sf(color=NA, fill=NA, lwd=0) +
+  ggspatial::annotation_scale(location = "br", width_hint = 0.3, pad_x = unit(0.23, "in"),unit_category="imperial") +
+  ggspatial::annotation_north_arrow(location = "br", which_north = "true",
+                                    height= unit(0.33, "in"), width= unit(0.35, "in"),
+                                    pad_x = unit(0.1, "in"), pad_y = unit(0.35, "in"),
+                                    style = ggspatial::north_arrow_minimal) +
+  councilR::theme_council_geo() +
+  
+  tidyterra::geom_spatraster(data = nlcd_lc, alpha = 0.9) +
+  scale_fill_manual(breaks = nlcd.legend$ID,
+                                        labels = nlcd.legend$Class,
+                                        values=nlcd.legend$Color,
+                                        na.value="white",
+                                        name = 'Cover Type',
+                      guide = guide_legend(order = 1)) +
+  
+  ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(data = cprg_ctu, fill=NA, aes(color=councilR::colors$suppGray), alpha=0.8,  lwd=0.2) +
+  scale_color_manual("", values=councilR::colors$suppGray, labels = "CTU boundary") +
+  
+  ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(aes(color=councilR::colors$suppGray), fill=NA, lwd=0.6) + # add county lines
+  scale_color_manual("", values=councilR::colors$suppGray, labels = "County boundary") +
+  
+   theme(
+    legend.position = "right", legend.direction = "vertical",  legend.justification = c("left","top"),
+    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+    legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
+  )
+  # theme(
+  #   legend.position = c(-0.08,0.97), legend.direction = "vertical",  legend.justification = c("left","top"),
+  #   legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+  #   legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
+  # )
+
+
+```
+
+
+
+```{r include=FALSE}
+# Plot NLCD impervious cover map
+# library(ggplot2)
+p_nlcd_is <- ggplot(cprg_county) +   geom_sf(color="gray20", fill=NA, lwd=0.5) + #geom_sf(color=NA, fill=NA, lwd=0) +
+  ggspatial::annotation_scale(location = "br", width_hint = 0.3, pad_x = unit(0.23, "in"),unit_category="imperial") +
+  ggspatial::annotation_north_arrow(location = "br", which_north = "true",
+                                    height= unit(0.33, "in"), width= unit(0.35, "in"),
+                                    pad_x = unit(0.1, "in"), pad_y = unit(0.35, "in"),
+                                    style = ggspatial::north_arrow_minimal) +
+  councilR::theme_council_geo() +
+  
+  
+  tidyterra::geom_spatraster(data = nlcd_is, alpha = 0.9, na.rm = TRUE) +
+  scale_fill_gradient(name = "NLCD Impervious Cover (%)", low = "pink", high = "firebrick4", na.value = "white",
+                      guide = guide_legend(order = 1)) +
+  
+  ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(data = cprg_ctu, fill=NA, aes(color=councilR::colors$suppGray), alpha=0.8,  lwd=0.2) +
+  scale_color_manual("", values=councilR::colors$suppGray, labels = "CTU boundary") +
+  
+  ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(aes(color=councilR::colors$suppGray), fill=NA, lwd=0.6) + # add county lines
+  scale_color_manual("", values=councilR::colors$suppGray, labels = "County boundary") +
+  theme(
+    legend.position = "right", legend.direction = "vertical",  legend.justification = c("left","top"),
+    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+    legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
+  )
+  
+  # theme(
+  #   legend.position = c(-0.08,0.97), legend.direction = "vertical",  legend.justification = c("left","top"),
+  #   legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+  #   legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
+  # )
+
+```
+
+
+
+```{r include=FALSE}
+# Plot NLCD tree canopy cover map
+# library(ggplot2)
+p_nlcd_tcc <- ggplot(cprg_county) +   geom_sf(color="gray20", fill=NA, lwd=0.5) + #geom_sf(color=NA, fill=NA, lwd=0) +
+  ggspatial::annotation_scale(location = "br", width_hint = 0.3, pad_x = unit(0.23, "in"),unit_category="imperial") +
+  ggspatial::annotation_north_arrow(location = "br", which_north = "true",
+                                    height= unit(0.33, "in"), width= unit(0.35, "in"),
+                                    pad_x = unit(0.1, "in"), pad_y = unit(0.35, "in"),
+                                    style = ggspatial::north_arrow_minimal) +
+  councilR::theme_council_geo() +
+  
+  
+  tidyterra::geom_spatraster(data = nlcd_tcc, alpha = 0.9, na.rm = TRUE) +
+  scale_fill_gradient(name = "NLCD Tree Canopy Cover (%)", low = "white", high = "forestgreen", na.value = "white",
+                      guide = guide_legend(order = 1)) +
+  
+  ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(data = cprg_ctu, fill=NA, aes(color=councilR::colors$suppGray), alpha=0.8,  lwd=0.2) +
+  scale_color_manual("", values=councilR::colors$suppGray, labels = "CTU boundary") +
+  
+  ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
+  
+  geom_sf(aes(color=councilR::colors$suppGray), fill=NA, lwd=0.6) + # add county lines
+  scale_color_manual("", values=councilR::colors$suppGray, labels = "County boundary") +
+  
+  
+   theme(
+    legend.position = "right", legend.direction = "vertical",  legend.justification = c("left","top"),
+    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+    legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
+  )
+  # theme(
+  #   legend.position = c(-0.08,0.97), legend.direction = "vertical",  legend.justification = c("left","top"),
+  #   legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+  #   legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
+  # )
+
+```
+
+
+
+## Introduction
+
+Natural systems are a critical component of capturing carbon from the atmosphere and sequestering it in biomass and terrestrial soils. Photosynthesis is the central mechanism of this process and vegetation is therefore the focal land cover classification for quantifying the potential for regions to both sequester and store carbon. Different ecosystems have varying capacities for carbon capture and this work focuses on five broad classifications: urban trees, urban grasslands (i.e. turf grass), forests, natural grasslands, and wetlands. The distinction between tree and grassland cover in developed areas (i.e. urban) is important as despite having similar sequestration rates, urban natural systems are generally understood to have smaller storage capacities. The preservation and restoration of natural systems will be a key tool in limiting atmospheric greenhouse gases.
+
+## Methods
+  
+The approach for calculating carbon sequestration potential for a given geography, $j$, is,
+
+$$\text{Sequestration}_j = \Sigma (\text{area}_i \times {\text{Sequestration Rate}_i}) $$
+
+where $i$ is land cover classification. The sequestration rate is based on Midwest specific sequestration rate estimates found in the primary scientific literature (@tbl-sequestration). 
+
+### Land cover classification
+
+Land cover was determined by using three products from the [USGS's National Land Cover Dataset (NLCD)](https://www.usgs.gov/node/279743), each at a 30 m resolution: (1) land cover type, (2) percent impervious cover, and (3) percent tree canopy cover. First, we used the land cover map to identify the region's various natural cover types (e.g. forests, wetlands, grasslands) that fell outside of 'Developed' lands. In order to classify green spaces that are co-located within the urban sector (e.g. urban trees and grasslands), we overlaid the tree canopy cover map on the impervious cover map. When tree canopy was present in any areas classified as 'Developed', we re-classified these as 'Urban_Tree' and corrected the area covered based on the percent tree canopy value from the NLCD tree map. When an area is classified as 'Developed, Open Space' but contains zero tree canopy coverage, we re-classified this as 'Urban_Grassland'. Using this method, we developed the following land cover classifications: 'Urban_Tree', 'Urban_Grassland', 'Tree', 'Grassland', and 'Wetland'. 
+
+
+```{r fig-nlcd-lc}
+#| fig-cap: "USGS National Land Cover Database (NLCD) - Land Cover Types"
+#| out-width: "95%"
+
+p_nlcd_lc
+```
+
+```{r fig-nlcd-is}
+#| fig-cap: "USGS National Land Cover Database (NLCD) - Impervious Surfaces"
+#| out-width: "95%"
+
+p_nlcd_is
+```
+```{r fig-nlcd-tcc}
+#| fig-cap: "USGS National Land Cover Database (NLCD) - Tree Canopy Cover"
+#| out-width: "95%"
+
+p_nlcd_tcc
+```
+
+## Results
+
+There is considerable variation across counties in two key components that affect natural system carbon sequestration and stock potential: total area of green spaces and the ratio of 'natural' to 'urban' green spaces. For example, Chisago County features a higher proportion of green spaces in undeveloped lands compared to Hennepin County, and consequently has nearly 40% greater stock potential than Hennepin County owing to the former's higher stock capacity in wetlands and forests. Despite this discrepencancy, Hennepin and Chisago Counties have nearly identical sequestration rates due to Hennepin County's high proportion of urban trees and turf grass (urban grasslands) which have high potential for rapid carbon sequestration. This dichotomy illustrates that different counties curation of natural spaces may play different roles. Highly developed areas may help offset carbon emissions be providing rapid sequestration sinks in urban greenery, whereas less developed counties can provide longer term carbon sinks in natural areas with a higher capacity to continue drawing down atmospheric carbon even if future emissions approach net zero. 
+
+Two important caveats to these results are that (1) carbon sequestration tends to slow as natural systems mature and (2) present day natural systems exist at some intermediate level of the illustrated carbon stock potential. The former means that these approximations could be higher or lower depending on the average age of natural systems in each county (e.g. time since agricultural abandonment). The latter means that the loss of these natural systems to development or habitat instruction means that not only would the region lose carbon sinks, but a substantial amount of the stored carbon will be transferred to the atmosphere, increasing atmospheric greenhouse gases.
+
+
+
+
+
+```{r fig-ns-county-stock}
+#| fig-cap: "2021 county natural system carbon stock potential"
+#| out-width: "95%"
+
+
+fig_ns_county_stock <- plot_ly(
+  type = "bar",
+  source = "fig-ns-county-stock",
+  data = county_sequestration %>% filter(year == 2021) %>%
+    mutate(land_cover_type = case_when(
+      land_cover_type=="Urban_Grassland"~"Urban grassland",
+      land_cover_type=="Urban_Tree"~"Urban tree", 
+      .default = land_cover_type
+    )),
+  y = ~ reorder(county_name, stock_potential),
+  x = ~stock_potential,
+  color = ~land_cover_type,
+  colors = unlist(source_colors),
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    land_cover_type, "<br>",
+    round(stock_potential / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county natural system stock potential",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_county_stock
+
+
+```
+
+{{< pagebreak >}}
+
+
+```{r fig-ns-county-sequestration}
+#| fig-cap: "2021 county natural system carbon sequestration potential"
+#| out-width: "95%"
+
+
+fig_ns_county_sequestration <- plot_ly(
+  type = "bar",
+  source = "fig-ns-county-sequestration",
+  data = county_sequestration %>% filter(year == 2021) %>%
+    mutate(land_cover_type = case_when(
+      land_cover_type=="Urban_Grassland"~"Urban grassland",
+      land_cover_type=="Urban_Tree"~"Urban tree", 
+      .default = land_cover_type
+    )),
+  y = ~ reorder(county_name, sequestration_potential),
+  x = ~sequestration_potential,
+  color = ~land_cover_type,
+  colors = unlist(source_colors),
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    land_cover_type, "<br>",
+    round(sequestration_potential / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county natural system sequestration",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_county_sequestration
+
+
+
+# fig_ns_county_sequestration <- plot_ly(
+#   type = "bar",
+#   source = "fig-ns-county-sequestration",
+#   data = county_emissions %>%
+#     filter(category == "Sequestration"),
+#   y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+#   x = ~emissions_metric_tons_co2e,
+#   color = ~source,
+#   colors = unlist(source_colors),
+#   hovertemplate = ~ paste0(
+#     geog_name, "<br>",
+#     source, "<br>",
+#     round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+#     "<extra></extra>"
+#   )
+# ) %>%
+#   plotly_layout(
+#     main_title = "2021 county natural system sequestration",
+#     x_title = "Metric tons CO<sub>2</sub>e",
+#     subtitle = ""
+#   ) %>%
+#   layout(
+#     barmode = "stack",
+#     legend = list(
+#       traceorder = "reversed"
+#     )
+#   )
+# 
+# fig_ns_county_sequestration
+```
+
+
+
+
+
+### Correlation with county area
+
+The expectation is that larger counties have higher carbon sequestration and storage capacities due to more acreage for green spaces; this is indeed observed.
+
+```{r fig-ns-county-stock-area}
+#| fig-cap: "2021 carbon stock by county area"
+#| out-width: "95%"
+
+sequestration_area <- left_join(
+  county_sequestration %>%
+    filter(year == 2021) %>%
+    group_by(county_name) %>%
+    summarize(sequestration_potential = sum(sequestration_potential,na.rm=T),
+              stock_potential = sum(stock_potential,na.rm=T),),
+  cprg_area,
+  by = join_by(county_name)
+) %>%
+  mutate(seq_per_area = sequestration_potential / area_sq_km,
+         stock_per_area = stock_potential / area_sq_km)
+
+
+fig_ns_stock_area <- plot_ly(
+  type = "scatter",
+  mode = "markers",
+  source = "fig-ns-county-stock-area",
+  data = sequestration_area,
+  y = ~stock_potential,
+  x = ~area_sq_km,
+  hovertemplate = ~ paste0(
+    county_name, " County", "<br>",
+    "Area: ", scales::comma(area_sq_km), " square kilometers", "<br>",
+    "Emissions: ", round(stock_potential * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue,
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "County area and stock potential",
+    x_title = "Area km<sup>2",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_stock_area
+```
+
+
+
+```{r fig-ns-county-sequestration-area}
+#| fig-cap: "2021 carbon sequestration by county area"
+#| out-width: "95%"
+
+
+
+# sequestration_area <- left_join(
+#   county_emissions %>%
+#     filter(category == "Sequestration") %>%
+#     group_by(geog_name) %>%
+#     summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
+#   cprg_area,
+#   by = c("geog_name" = "NAME")
+# ) %>%
+#   mutate(seq_per_area = emissions_metric_tons_co2e / area_sq_km)
+
+fig_ns_sequestration_area <- plot_ly(
+  type = "scatter",
+  mode = "markers",
+  source = "fig-ns-county-sequestration-area",
+  data = sequestration_area,
+  y = ~sequestration_potential,
+  x = ~area_sq_km,
+  hovertemplate = ~ paste0(
+    county_name, " County", "<br>",
+    "Area: ", scales::comma(area_sq_km), " square kilometers", "<br>",
+    "Emissions: ", round(sequestration_potential * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  ),
+  marker = list(
+    color = colors$councilBlue,
+    size = 18,
+    line = list(
+      color = "lightgray",
+      width = 2
+    )
+  )
+) %>%
+  plotly_layout(
+    main_title = "County area and sequestration potential",
+    x_title = "Area km<sup>2",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+fig_ns_sequestration_area
+```
+
+
+### Regional parks
+
+``` {r park-carbon-data, include = FALSE}
+park_carbon <- readRDS(file.path(here::here(), "_nature/data/park_landcover_sequestration_2021.RDS"))
+parks <- readRDS(file.path(here::here(), "_nature/data/regional_parks_shape.RDS"))
+
+cprg_county <- project(vect(cprg_county), crs_use)
+
+
+cprg_7 <- cprg_county %>% filter(!county_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce"))
+county_sequestration_7 <- county_sequestration %>% filter(county_name %in% cprg_7$county_name) %>% filter(year == 2021)
+
+
+
+
+park_area_total <- sum(expanse(parks, unit = "km")) # 307.684
+cprg_7_area <- sum(expanse(cprg_7, unit = "km")) # 7711.262
+park_area_ratio <- sum(expanse(parks, unit = "km")) / sum(expanse(cprg_7, unit = "km")) # 3.99%
+
+park_area <- data.frame(agency = parks$AgencyMana, area = expanse(parks, unit = "km")) %>%
+  group_by(agency) %>%
+  summarize(area = sum(area))
+
+park_seq_ratio <- sum(park_carbon$sequestration_potential) / sum(county_sequestration_7$sequestration_potential) # 5.61%
+park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_sequestration_7$stock_potential) # 6.60%
+
+
+park_carbon_agg <- park_carbon %>%
+  filter(!is.na(park)) %>%
+  group_by(county) %>%
+  summarize(
+    area = sum(area),
+    sequestration_potential = sum(sequestration_potential),
+    stock_potential = sum(stock_potential)
+  ) %>%
+  mutate(seq_area = sequestration_potential / area, stock_area = stock_potential / area)
+
+park_county_comp <- bind_rows(
+  bind_rows(
+    pivot_longer(park_carbon_agg %>% select(county, seq_area, stock_area),
+      cols = c(seq_area, stock_area)
+    ) %>% mutate(geography = "Regional Parks"),
+    sequestration_area %>% dplyr::select(county_name, seq_per_area) %>%
+    filter(county_name %in% park_carbon_agg$county) %>%
+    mutate(name = "seq_area", geography = "County") %>%
+    rename(value = "seq_per_area", county = "county_name")
+  ),
+  sequestration_area %>% dplyr::select(county_name, stock_per_area) %>%
+    filter(county_name %in% park_carbon_agg$county) %>%
+    mutate(name = "stock_area", geography = "County") %>%
+    rename(value = "stock_per_area", county = "county_name")
+)
+```
+
+Parks play an important role in climate change resilience by protecting existing natural systems and acquiring lands for natural system restoration. The regional park system of the seven county Twin Cities region provides an excellent example of this. The following graphs show how regional parks, on a per area basis, are more efficient carbon sinks than the counties they reside in. For both sequestration and stock potential, this is in large part due to a much small proportion of non-green spaces (e.g.. impervious surfaces, agricultural lands), but stock potential in particular has a higher capacity due to a larger proportion of natural green spaces as opposed to urban green spaces. Regional parks represent `r scales::percent(park_area_ratio, accuracy = 0.1)` of the total land area of the seven county region, but `r scales::percent(park_seq_ratio, accuracy = 0.1)` of its carbon sequestration potential and `r scales::percent(park_stock_ratio, accuracy = 0.1)` of its carbon stock potential.
+
+
+
+```{r fig-park-county-stock-comp}
+#| fig-cap: "2021 comparison of carbon stock per square kilometer in counties and regional parks"
+#| out-width: "95%"
+
+park_county_plot_stock <- plot_ly(
+  type = "bar",
+  source = "fig-park-county-stock-comp",
+  data = park_county_comp %>% filter(name == "stock_area"),
+  y = ~value,
+  x = ~county,
+  color = ~geography,
+  colors = c("lightgreen", "darkgreen"),
+  hovertemplate = ~ paste0(
+    geography, "<br>",
+    "Natural Systems", "<br>",
+    round(value / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e per square kilometers", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county vs park natural system stock potential",
+    y_title = "Metric tons CO<sub>2</sub>e / km<sup>2</sup>",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "group",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+park_county_plot_stock
+```
+
+
+```{r fig-park-county-comp}
+#| fig-cap: "2021 comparison of carbon sequestration per square kilometer in counties and regional parks"
+#| out-width: "95%"
+
+
+park_county_plot <- plot_ly(
+  type = "bar",
+  source = "fig-park-county-comp",
+  data = park_county_comp %>% filter(name == "seq_area"),
+  y = ~value,
+  x = ~county,
+  color = ~geography,
+  colors = c("lightgreen", "darkgreen"),
+  hovertemplate = ~ paste0(
+    geography, "<br>",
+    "Natural Systems", "<br>",
+    round(value, digits = 2), " metric tons CO<sub>2</sub>e per square kilometers", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county vs park natural system sequestration potential",
+    y_title = "Metric tons CO<sub>2</sub>e / km<sup>2</sup>",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "group",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+
+park_county_plot
+```
+
+
+
