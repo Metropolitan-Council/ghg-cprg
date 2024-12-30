@@ -1,6 +1,8 @@
 # Script to import ancillary housing data from MN geospatial commons
 source("R/_load_pkgs.R")
 
+cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS")
+
 # fetch parcel data from MN Geospatial Commons
 # need to modify import code from councilR to get multiple layers
 
@@ -57,159 +59,182 @@ mn_parcel <- mn_parcel %>% select(-mc_classification)
 mn_parcel %>% distinct(DWELL_TYPE) %>% arrange() %>% 
   print(n=200) # approximately 1/2 assigned
 
+# large possibility for error in classification. Attempting to structure so overriding of earlier
+# cases happens as necessary
 mn_parcel <- mn_parcel %>%
   mutate(
     mc_classification = case_when(
-      # Single-Family Homes
-      DWELL_TYPE %in% c(
-        "Single-Family / Owner Occupied", "S.FAM.RES", "SINGLE FAMILY DWELLING, PLATT", 
-        "RESIDENTIAL, SINGLE FAMILY", "SINGLE FAMILY W/ACCESSORY UNI","RESIDENTIAL, OTHER"
-      ) ~ "single_family_home",
-      
-      # multifamily
-      grepl("townh",DWELL_TYPE, ignore.case = TRUE) ~ "multifamily_home",
-      
-      DWELL_TYPE %in% c(
-       "Two-Family Duplex", 
-        "DUPLEX", "Two-Family Conversion", "TWIN HOME",
-        "TWO FAMILY DWELLING - SIDE/SI", "TWO FAMILY DWELLING - UP/DWN",
-        "Three-Family Conversion", "TRIPLEX", "THREE FAMILY DWELLING, PLATTE",
-        "MULTI RES", "TWO RESIDENCES ON ONE PARCEL"
-      ) ~ "multifamily_home",
-
+      ## RESIDENTIAL
       # Apartments
-      grepl("apartment|condo|apt",DWELL_TYPE, ignore.case = TRUE) ~ "apartment",
+      grepl("apartment|condo|apt|nursing|astd|eldry|fraternity|sorority",DWELL_TYPE, ignore.case = TRUE) ~ "apartment",
+      grepl("Apartment|APARMENT|Apt|Elderly Liv Fac|Housing - Low Income > 3 Units|HRA|Nursing|Sr Citizens", USECLASS1, ignore.case = TRUE) ~ "apartment",
+      grepl("APT|condo", HOME_STYLE, ignore.case = TRUE) ~ "apartment",
+      grepl("Apartment|APARMENT|Apt|Elderly Liv Fac|Housing - Low Income > 3 Units|HRA|Nursing|Sr Citizens", USECLASS2, ignore.case = TRUE) ~ "apartment",
       
-      DWELL_TYPE %in% c(
-        "ASTD LIVNG", "NURSING HM", "NURSING HOMES", 
-        "HMS ELDRY", "NURSING HOME & PRIVATE HOSPIT"
-      ) ~ "apartment",
       
       # Mobile Homes
-      DWELL_TYPE %in% c(
-        "Mobile Home Housing", "MOBILE HOMES", "MOBILE HOME PARKS"
-      ) ~ "manufactured_home",
+      grepl("mobile|manufactured",DWELL_TYPE, ignore.case = TRUE) ~ "manufactured_home",
+      grepl("manufactured|MH", USECLASS1, ignore.case = TRUE) ~ "manufactured_home",
+      grepl("manufactured|MH", HOME_STYLE, ignore.case = TRUE) ~ "manufactured_home",
+      grepl("manufactured|MH", USECLASS2, ignore.case = TRUE) ~ "manufactured_home",
       
+      # multifamily
+      grepl("townh|duplex|triplex|two-family|two family|three family|two residences|twin|multi res",DWELL_TYPE, ignore.case = TRUE) ~ "multifamily_home",
+      grepl("Res 2-3|Double Bungalow|Duplex|Apartment|Low Income < 4 Units|Townh|Triplex", USECLASS1, ignore.case = TRUE) ~ "multifamily_home",
+      grepl("Quad|Townh|duplex", HOME_STYLE, ignore.case = TRUE) ~ "multifamily_home",
+      grepl("Res 2-3|Double Bungalow|Duplex|Apartment|Low Income < 4 Units|Townh|Triplex", USECLASS2, ignore.case = TRUE) ~ "multifamily_home",
 
+      
+      # Single-Family Homes
+      grepl("Frame|Cabin|BUNGALOW|SPLIT|Rambler|Log", HOME_STYLE, ignore.case = TRUE) ~ "single_family_home",
+      grepl("single|s.fam",DWELL_TYPE, ignore.case = TRUE) ~ "single_family_home",
+      grepl("Res 1 unit|CABIN|Residential|Zero Lot Line", USECLASS1, ignore.case = TRUE) ~ "single_family_home",
+      grepl("Res 1 unit|CABIN|Residential|Zero Lot Line", USECLASS2, ignore.case = TRUE) ~ "single_family_home",
+      TRUE ~ NA)) %>% 
+    
+    ### COMM/IND/PUBLIC/AG
+    mutate(
+      mc_classification = case_when(
       # Commercial
       grepl("store",DWELL_TYPE, ignore.case = TRUE) ~ "commercial",
-      
+
       DWELL_TYPE %in% c(
-        "RETAIL STR", "RESTAURANT", "REST FSTFD", "BAR/TAVERN", "MARKET", 
+        "RETAIL STR", "RESTAURANT", "REST FSTFD", "BAR/TAVERN", "MARKET",
         "DISCNT STR",  "AUTO SHWRM", "AUTO CENTR", "POST OFFIC",
         "DAYCARECTR", "CLASSROOM", "THEATER", "BANK", "CARWASH", "BWLNGALLEY",
-        "LAUNDROMAT", "MORTUARY", "COUNTRYCLB", "HAIRSALON", "CLUBHOUSE", 
-        "HEALTH CLB", "STABLE", "BED & BREAKFAST", "FRATERNITY/SORORITY HOUSE",
+        "LAUNDROMAT", "MORTUARY", "COUNTRYCLB", "HAIRSALON", "CLUBHOUSE",
+        "HEALTH CLB", "STABLE", "BED & BREAKFAST", 
         "PRKNG STRC", "OFC,MD/DTL", "OFFICE", "SHPCTR, COM", "SHPCTR,NBH",
         "SERVC GAR", "VET HSPTL", "CHURCH", "CONV STORE", "SERVC STN",
         "HOTEL", "MOTEL", "OFC,CORPTE","HOSPITALS","CREAMERY", "DEPT STORE"
-      ) ~ "Commercial",
+      ) ~ "commercial",
+      
+      grepl("Commercial|NON-PROFIT COMM|Com Ma & Pa|College|Skyways|Comm Services|SERVICE STATION|Golf Course|Condo|Cooperative|Restaurant|Marina|Arena|church", USECLASS1, ignore.case = TRUE) ~ "commercial",
+      grepl("Commercial|Arena|Charit", USECLASS2, ignore.case = TRUE) ~ "commercial",
+      grepl("church|Inst|Colleges|Private|Apprenticeship Training Facilities|hospitals", XUSECLASS1, ignore.case = TRUE) ~ "commercial",
       
       # Industrial
       DWELL_TYPE %in% c(
         "INDL,MANFG", "MFG/PROCES", "INDUSTRIAL IMPROVED", "SHED,UTIL",
         "INDUSTRIAL VACANT", "GREENHOUSE", "UTILITIES", "UTIL,TELCM",
         "GARG/STRG","HANGAR/MTC", "SHED,EQUIP"
-      ) ~ "Industrial",
+      ) ~ "industrial",
+      grepl("Industrial|INDUSTIAL|Machinery|Utilit|Railroad|El Gen Mach|Utilities|Pub Util", USECLASS1, ignore.case = TRUE) ~ "industrial",
+      grepl("Industrial", USECLASS2, ignore.case = TRUE) ~ "industrial",
+      grepl("railroad|airport", XUSECLASS1, ignore.case = TRUE) ~ "industrial",
       
+      ##public buildings
+      grepl("School|Public|Municipal|County|State Property|FEDERAL|state", USECLASS1, ignore.case = TRUE) ~ "public_building",
+      grepl("Cities|state|hwy dept|county|waste control|township|federal property|public schools|Commission", XUSECLASS1, ignore.case = TRUE) ~ "public_building",
+      
+      
+      #agricultural
+      grepl("Agricultural|Farm|AG|Green Acres|Preserve|Managed Forrest", USECLASS1, ignore.case = TRUE) ~ "agriculture",
+      grepl("Ag", USECLASS2, ignore.case = TRUE) ~ "agriculture",
+      grepl("farm", XUSECLASS1, ignore.case = TRUE) ~ "agriculture",
+      
+      TRUE ~ mc_classification)) %>% 
+      
+      ### EMPTY LAND
+      mutate(
+        mc_classification = case_when(
       # Vacant/Exempt
-      DWELL_TYPE %in% c(
-        "RESIDENTIAL, VACANT LAND, LOT", "VACANT PROPERTY", 
-        "CONDO VACANT LAND", "EXEMPT PROPERTY", "FORFEIT PROPERTY"
-      ) ~ "vacant",
+      grepl("vacant|forfeit",DWELL_TYPE, ignore.case = TRUE) ~ "vacant",
       
-      # Other
-      TRUE ~ NA
+      #open space
+      grepl("Vacant|Res V Land|VAC LAND|Unimproved|Wetlands|Forest|HUNTING|Open Space", USECLASS1, ignore.case = TRUE) ~ "no_building",
+      grepl("Vacant|Wetlands|Common", USECLASS2, ignore.case = TRUE) ~ "no_building",
+      grepl("street|park|dnr|cemetary", XUSECLASS1, ignore.case = TRUE) ~ "no_building",
+
+      TRUE ~ mc_classification)
     )
+
+
+mn_parcel_assigned <- mn_parcel %>%
+  #remaining properties are EXEMPT - implying non-profit status, putting in commercial
+  mutate(mc_classification = ifelse(is.na(mc_classification) & FIN_SQ_FT > 0,
+                                   "commercial",
+                                   mc_classification)) %>% 
+  filter(!is.na(mc_classification))
+
+tapply(mn_parcel_assigned$FIN_SQ_FT, mn_parcel_assigned$mc_classification, "median")
+big_building <- mn_parcel_assigned %>% filter(FIN_SQ_FT > 50000, mc_classification == "single_family_home")
+test <- mn_parcel_assigned %>% filter(grepl("park", XUSECLASS1, ignore.case = TRUE), mc_classification != "no_building")
+
+mn_parcel_assigned %>% filter(FIN_SQ_FT != 0) %>% count(mc_classification)
+
+data_status <- mn_parcel_assigned %>%
+  group_by(CO_NAME, mc_classification) %>%
+  summarise(
+    total_buildings = n(),
+    zero_sq_ft = sum(EMV_BLDG == 0, na.rm = TRUE),
+    non_zero_sq_ft = sum(EMV_BLDG != 0, na.rm = TRUE),
+    pct_zero_sq_ft = (zero_sq_ft / total_buildings) * 100
   )
 
-mn_parcel %>% filter(is.na(mc_classification)) %>% distinct(USECLASS1) %>% arrange() %>% 
-  print(n=200) # approximately 1/2 assigned
 
-mn_parcel <- mn_parcel %>%
-  mutate(mc_classification = if_else(
-    is.na(mc_classification), 
-    case_when(
-      grepl("Res 1 unit|CABIN|Residential|Zero Lot Line", USECLASS1, ignore.case = TRUE) ~ "single_family_home",
-      grepl("Res 2-3|Double Bungalow|Duplex|Apartment|Low Income < 4 Units|Townh|Triplex", USECLASS1, ignore.case = TRUE) ~ "multifamily_home",
-      grepl("Apartment|APARMENT|Apt|Elderly Liv Fac|Housing - Low Income > 3 Units|HRA|Nursing|Sr Citizens", USECLASS1, ignore.case = TRUE) ~ "apartment",
-      grepl("manufactured|MH", USECLASS1, ignore.case = TRUE) ~ "manufactured",
-      grepl("Commercial|NON-PROFIT COMM|Com Ma & Pa|College|Skyways|Comm Services|SERVICE STATION|Golf Course|Condo|Cooperative|Restaurant|Marina|Arena|church", USECLASS1, ignore.case = TRUE) ~ "commercial",
-      grepl("Industrial|INDUSTIAL|Machinery|Utilit|Railroad|El Gen Mach|Utilities|Pub Util", USECLASS1, ignore.case = TRUE) ~ "industrial",
-      grepl("School|Hospital|Public|Municipal|County|State Property|Charit Inst|Cemetery|FEDERAL|state", USECLASS1, ignore.case = TRUE) ~ "public_building",
-      grepl("Vacant|Res V Land|VAC LAND|Unimproved|Vacant Land|Wetlands|Forest|InLieuTx|HUNTING|Rural Vacant Land|Open Space", USECLASS1, ignore.case = TRUE) ~ "no_building",
-      grepl("Agricultural|Farm|AG|Green Acres|Preserve|Managed Forrest", USECLASS1, ignore.case = TRUE) ~ "agriculture",
-      TRUE ~ mc_classification
-    ),
-    mc_classification # If mc_classification is not NA, retain the existing value
-  ))
+### fill in 0 data for mc_classification - first based on ctu_name when avaiable, and county_name where ctu is also blank
 
-mn_parcel %>% filter(is.na(mc_classification)) %>% distinct(USECLASS2) %>% print (n = 100)
-
-mn_parcel <- mn_parcel %>%
-  mutate(mc_classification = if_else(
-    is.na(mc_classification), 
-    case_when(
-      grepl("Res 1 unit|CABIN|Residential|Zero Lot Line", USECLASS2, ignore.case = TRUE) ~ "single_family_home",
-      grepl("Res 2-3|Double Bungalow|Duplex|Apartment|Low Income < 4 Units|Townh|Triplex", USECLASS2, ignore.case = TRUE) ~ "multifamily_home",
-      grepl("Apartment|APARMENT|Apt|Elderly Liv Fac|Housing - Low Income > 3 Units|HRA|Nursing|Sr Citizens", USECLASS2, ignore.case = TRUE) ~ "apartment",
-      grepl("manufactured|MH", USECLASS2, ignore.case = TRUE) ~ "manufactured",
-      grepl("Commercial|NON-PROFIT COMM|Com Ma & Pa|College|Skyways|Comm Services|SERVICE STATION|Golf Course|Condo|Cooperative|Restaurant|Marina|Arena|church", USECLASS2, ignore.case = TRUE) ~ "commercial",
-      grepl("Industrial|INDUSTIAL|Machinery|Utilit|Railroad|El Gen Mach|Utilities|Pub Util", USECLASS2, ignore.case = TRUE) ~ "industrial",
-      grepl("School|Hospital|Public|Municipal|County|State Property|Charit Inst|Cemetery|FEDERAL|state", USECLASS2, ignore.case = TRUE) ~ "public_building",
-      grepl("Vacant|Res V Land|VAC LAND|Unimproved|Vacant Land|Wetlands|Forest|InLieuTx|HUNTING|Rural Vacant Land|Open Space", USECLASS2, ignore.case = TRUE) ~ "no_building",
-      grepl("Agricultural|Farm|AG|Green Acres|Preserve|Managed Forrest", USECLASS2, ignore.case = TRUE) ~ "agriculture",
-      TRUE ~ mc_classification
-    ),
-    mc_classification # If mc_classification is not NA, retain the existing value
-  ))
-
-mn_parcel %>% filter(is.na(mc_classification)) %>% distinct(HOME_STYLE) %>% print (n = 100)
-
-mn_parcel <- mn_parcel %>%
-  mutate(mc_classification = if_else(
-    is.na(mc_classification), 
-    case_when(
-      grepl("Story|Frame|Cabin|BUNGALOW|SPLIT|Rambler|Log", HOME_STYLE, ignore.case = TRUE) ~ "single_family_home",
-      grepl("Quad|Townhome", HOME_STYLE, ignore.case = TRUE) ~ "multifamily_home",
-      grepl("APT", HOME_STYLE, ignore.case = TRUE) ~ "apartment",
-      grepl("manufactured|MH", HOME_STYLE, ignore.case = TRUE) ~ "manufactured",
-      TRUE ~ mc_classification
-    ),
-    mc_classification # If mc_classification is not NA, retain the existing value
-  ))
-
-mn_parcel %>% filter(is.na(mc_classification)) %>% count(XUSECLASS1) %>%
-  arrange(desc(n)) %>% print(n= 100)
-
-exempt <- mn_parcel %>% filter(USECLASS1 == "EXEMPT")
-
-mn_parcel %>% filter(is.na(USECLASS1)) ### 314,577 / 3,002,804 ~ 10%
-mn_parcel %>% filter(is.na(mc_classification)) ### 2,986,778 / 3,002,804 ~ 99%
-mn_parcel %>% filter(is.na(XUSE1_DESC)) ### 2,923,951 / 3,002,804 ~ 99%
-mn_parcel %>% filter(is.na(DWELL_TYPE)) ### 1,898,223 / 3,002,804 ~ 60%
-mn_parcel %>% filter(is.na(HOME_STYLE)) ### 1,644,809 / 3,002,804 ~ 50%
-mn_parcel %>% filter(FIN_SQ_FT == 0) ### 1,725,695 / 3,002,804 ~ 55%
-mn_parcel %>% filter(NUM_UNITS  == 0) ### 517,604 / 3,002,804 ~ 15%
-
-no_use <- mn_parcel %>% filter(is.na(USECLASS1))
-no_sqft <- mn_parcel %>% filter(FIN_SQ_FT == 0)
-
-%>%
+mn_parcel_predict <- mn_parcel_assigned %>%
+  # Calculate mc_classification averages by CTU_NAME and CO_NAME
+  group_by(mc_classification, CTU_ID_TXT) %>%
   mutate(
-    STATEFP = "27",
-    STATE = "Minnesota",
-    STATE_ABB = "MN"
+    mean_ctu_sqft = if_else(all(FIN_SQ_FT == 0, na.rm = TRUE), NA_real_, mean(FIN_SQ_FT[FIN_SQ_FT > 0], na.rm = TRUE)),
+    mean_ctu_emv = if_else(all(EMV_BLDG == 0, na.rm = TRUE), NA_real_, mean(EMV_BLDG[EMV_BLDG > 0], na.rm = TRUE)),
+    mean_ctu_year = if_else(all(YEAR_BUILT == 0, na.rm = TRUE), NA_real_, mean(YEAR_BUILT[YEAR_BUILT > 0], na.rm = TRUE))
   ) %>%
-  select(
-    CTU_NAME = FEATURE_NA,
-    CTU_CLASS,
-    COUNTY_NAM,
-    STATEFP,
-    STATE,
-    STATE_ABB,
-    GNIS_FEATU,
-    geometry = geom
+  ungroup() %>%
+  group_by(mc_classification, CO_NAME) %>%
+  mutate(
+    mean_co_sqft = if_else(all(FIN_SQ_FT == 0, na.rm = TRUE), NA_real_, mean(FIN_SQ_FT[FIN_SQ_FT > 0], na.rm = TRUE)),
+    mean_co_emv = if_else(all(EMV_BLDG == 0, na.rm = TRUE), NA_real_, mean(EMV_BLDG[EMV_BLDG > 0], na.rm = TRUE)),
+    mean_co_year = if_else(all(YEAR_BUILT == 0, na.rm = TRUE), NA_real_, mean(YEAR_BUILT[YEAR_BUILT > 0], na.rm = TRUE))
   ) %>%
-  arrange(CTU_NAME) %>%
-  clean_names()
+  ungroup() %>%
+  # In-fill zeros using the calculated means
+  mutate(
+    FIN_SQ_FT = if_else(FIN_SQ_FT == 0, coalesce(mean_ctu_sqft, mean_co_sqft, FIN_SQ_FT), FIN_SQ_FT),
+    EMV_BLDG = if_else(EMV_BLDG == 0, coalesce(mean_ctu_emv, mean_co_emv, EMV_BLDG), EMV_BLDG),
+    YEAR_BUILT = if_else(YEAR_BUILT == 0, coalesce(mean_ctu_year, mean_co_year, YEAR_BUILT), YEAR_BUILT)
+  ) %>%
+  # select columns
+  select(CO_NAME, CTU_NAME,CTU_ID_TXT, FIN_SQ_FT, EMV_BLDG, YEAR_BUILT, mc_classification)
+
+mn_parcel_map <- mn_parcel_predict %>% 
+group_by(CO_NAME,CTU_NAME, CTU_ID_TXT, mc_classification) %>% 
+  summarize(mean_sq_ft = mean(FIN_SQ_FT),
+            total_sq_ft = sum(FIN_SQ_FT), 
+            mean_emv = mean(EMV_BLDG),
+            total_emv = sum(EMV_BLDG),
+            mean_year = mean(YEAR_BUILT)) %>% 
+  mutate(ctu_id = as.numeric(CTU_ID_TXT)) %>% 
+  left_join(cprg_ctu, by = c("ctu_id" = "gnis",
+                             "CO_NAME" = "county_name")) %>%
+  st_as_sf()
+
+ggplot(mn_parcel_map %>% 
+         filter(mc_classification == "single_family_home")) +
+  geom_sf(aes(fill = mean_sq_ft), color = "black", size = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Mean square foot (SFH)") +
+  theme_minimal()
+
+ggplot(mn_parcel_map %>% 
+         filter(mc_classification == "single_family_home")) +
+  geom_sf(aes(fill = mean_emv), color = "black", size = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Mean house value (SFH)") +
+  theme_minimal()
+
+ggplot(mn_parcel_map %>% 
+        filter(mc_classification == "single_family_home")) +
+  geom_sf(aes(fill = mean_year), color = "black", size = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "Mean year of construction") +
+  theme_minimal()
+
+ggplot(mn_parcel_map %>% 
+         filter(mc_classification == "single_family_home",
+                CO_NAME != "Hennepin"),
+       aes(x = mean_sq_ft, y = mean_emv)) +
+  geom_point() + theme_bw() +
+  ggtitle("CTU: Mean square footage vs mean housing value")
+
+    
