@@ -199,7 +199,8 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
       city_name == "Village of Birchwood" ~ "Birchwood Village",
       TRUE ~ city_name
     )
-  )
+  ) %>%
+  filter(!is.na(sector_mapped))
 
 write_rds(Xcel_activityData_2015_2023,
           "_energy/data/Xcel_activityData_2015_2023.RDS")

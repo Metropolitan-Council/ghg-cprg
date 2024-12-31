@@ -33,7 +33,7 @@ get_files <- function(root_dir) {
 }
 
 # Function to process each file and extract county-level utility activity data
-process_file <- function(file_path) {
+process_file <- function(file_info) {
   
   # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
   file_path <- file_info$file_path
@@ -67,11 +67,13 @@ process_file <- function(file_path) {
 
 # Apply process_file to each file identified in get_files() in the nested structure and combine the results
 file_list <- get_files(dir_mn_natGas_state)
-combined_MNgasUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
+combined_MNgasUtil_activityData <- do.call(rbind, lapply(file_list, process_file)) 
 
 # Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county,
 # process and merge data -- this will be a separate data collection process spanning excel reports submitted to state
 processed_mn_gasUtil_activityData <- combined_MNgasUtil_activityData %>%
+  #remove utility-county records with no data
+  filter(!is.na(mcf_delivered)) %>%
   mutate(
     CO2_emissions = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF,
     CH4_emissions = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF * GWP_CH4,
@@ -80,8 +82,8 @@ processed_mn_gasUtil_activityData <- combined_MNgasUtil_activityData %>%
   )
 
 # Aggregate data by county, add identifiers for state and sector
-MNcounty_level_gas_emissions_2021 <- processed_mn_gasUtil_activityData %>%
-  group_by(county) %>%
+MNcounty_level_gas_emissions <- processed_mn_gasUtil_activityData %>%
+  group_by(county, year) %>%
   summarise(
     total_mcf = sum(mcf_delivered, na.rm = TRUE),
     total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
@@ -104,8 +106,7 @@ MNcounty_level_gas_emissions_2021 <- processed_mn_gasUtil_activityData %>%
   ) %>%
   mutate(
     state = "MN",
-    sector = "Natural gas",
-    year = 2021
+    sector = "Natural gas"
   ) %>%
   rename(
     county_name = county
