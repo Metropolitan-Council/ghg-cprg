@@ -1,5 +1,6 @@
 ##### read in an reformat UrbanSim output
 
+source("R/_load_pkgs.R")
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS")
 
 us_meta <- read_xlsx(
@@ -48,7 +49,10 @@ urbansim <- read_csv(
          Variable %in% c(residential,commercial,industrial)) %>% 
   mutate(ctu_id = as.numeric(substr(as.character(coctu_id), nchar(as.character(coctu_id)) - 6, nchar(as.character(coctu_id))))) %>% 
   left_join(cprg_ctu, by = c("ctu_id" = "gnis")) %>% 
-  filter(!is.na(ctu_name)) #Shakopee Mdewakanton Community - revisit if we have utility data
+  filter(!is.na(ctu_name))%>% #Shakopee Mdewakanton Community - revisit if we have utility data
+  st_drop_geometry() %>% select(-geometry) %>% 
+  mutate(inventory_year = 2020)
 
-  
+saveRDS(urbansim,
+        "_meta/data/urban_sim_2020.RDS")
 
