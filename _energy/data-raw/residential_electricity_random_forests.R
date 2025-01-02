@@ -100,11 +100,12 @@ abline(0,1)
 # struggles with two big cities
 
 # look at top predictors
-varImpPlot(rf_res_model) 
+varImpPlot(rf_res_model,
+           sort = T) 
 
 
 ### can subset predict test model?
-rf <- randomForest(log(mWh_delivered) ~ ctu_class + #get community designation here
+rf <- randomForest(mWh_delivered ~ ctu_class + #get community designation here
                      total_pop + total_households + total_residential_units +
                      mean_year + total_emv + mean_emv +
                      max_attached + max_detached + max_lrglot + max_multifam, data=train, proximity=TRUE) 
@@ -112,15 +113,13 @@ rf <- randomForest(log(mWh_delivered) ~ ctu_class + #get community designation h
 print(rf)
 
 p1 <- predict(rf, train)
-plot(p1, log(train$mWh_delivered))
-abline(0,1)
-plot(exp(p1), train$mWh_delivered)
+plot(p1, train$mWh_delivered)
 abline(0,1)
 
 train %>% cbind(p1) %>% filter(mWh_delivered < 100000 & p1 > 150000)
 
 p2 <- predict(rf, test)
-plot(exp(p2), test$mWh_delivered)
+plot(p2, test$mWh_delivered)
 abline(0,1)
 
 test %>% cbind(p2) %>% filter(mWh_delivered > 250000)
