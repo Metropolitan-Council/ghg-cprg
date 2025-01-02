@@ -1156,3 +1156,5 @@ _agriculture/data-raw/ag-module.xlsx
 
 /_nature/data-raw/nlcd_raw_imgs
 _energy/data-raw/Xcel_activityData_2015_2023.csv
+_energy/data-raw/sql_utility_id_ctu_id.csv
+_energy/data-raw/sql_utility_id.csv
