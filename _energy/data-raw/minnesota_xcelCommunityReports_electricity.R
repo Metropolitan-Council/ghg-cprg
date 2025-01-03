@@ -200,7 +200,10 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
       TRUE ~ city_name
     )
   ) %>%
-  filter(!is.na(sector_mapped))
+  filter(!is.na(sector_mapped)) %>%
+# disagg Xcel reports to COCTU units based on population
+  
+# filter to core metro 
 
 write_rds(Xcel_activityData_2015_2023,
           "_energy/data/Xcel_activityData_2015_2023.RDS")
@@ -208,6 +211,46 @@ write_rds(Xcel_activityData_2015_2023,
 #remove interstitial dfs
 rm(combined_Xcel_activityData_2015_2019)
 rm(combined_Xcel_activityData_2020_2023)
+
+
+
+
+
+
+#preprocess the NREL proportions dataset -- make duplicates of 2017 records for 2015 and 2016 to enable join to Xcel data
+nrel_slope_city_emission_proportions_adjusted <-  readRDS("_energy/data-raw/nrel_slope/nrel_slope_city_emission_proportions.RDS") %>%
+  filter(source == 'Electricity') %>%
+  mutate(nrel_year = year) %>%
+  # Duplicate rows for 2015 and 2016, mapping them to 2017
+  bind_rows(
+    filter(., year == 2017) %>% mutate(year = 2015),
+    filter(., year == 2017) %>% mutate(year = 2016)
+  )
+
+xcel_activityData_NREL_QA_2015_2022 <- Xcel_activityData_2015_2023 %>%
+  left_join(
+    nrel_slope_city_emission_proportions_adjusted,
+    by = join_by(
+      ctu_name == city_name,
+      ctu_class == ctu_class,
+      year == year
+    )
+  ) %>%
+  # temporarily exclude 2023 since no eGRID data yet
+  filter(year < 2023) %>%
+  #filter where all are null -- these are cities not in NREL 
+  select(-source.x,
+         -source.y,
+         -kwh_delivered,
+         -city_name) %>%
+  # get county name for cities
+  left_join(cprg_ctu %>% select(ctu_name, ctu_class, county_name),
+            by = join_by(ctu_name,
+                         ctu_class)) %>%
+  filter(county_name %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington"))
+  # filter out where 1) business records occur and 2) where NO NREL data (either city-level or county downscaled) exist
+  # maintains some data outside the 7-county metro as appropriate for TESTING. We may not have other covariates for these places. 
+
 
 
 # Step 1: Calculate city-level average proportions for Commercial and Industrial, with a default value of 1 for commercial to ensure street lighting is fully allocated there if no commercial or industrial data
@@ -223,7 +266,7 @@ city_avg_proportions <- Xcel_activityData_2015_2023 %>%
   )
 
 
-Xcel_activityData_2015_2023 
+
 #apply 2017 numbers to 2015 and 2016
 
 # Step 2: Backcast Business data using city-level proportions
@@ -278,7 +321,6 @@ consolidated_data <- data_with_backcast %>%
 
 # NEED TO ADDRESS -- WHAT IF THE BREAKOUTS ARE FOR NON-REPRESENTATIVE YEARS? When to bring in NREL??? Need to break out NREL city proportions 
 
-%>%
   #filter(!is.na(mWh_delivered)) %>% # Remove rows with no data
   mutate(
     # Recode sector names to final format
