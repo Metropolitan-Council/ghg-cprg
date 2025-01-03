@@ -169,6 +169,15 @@ combined_Xcel_activityData_2020_2023 <- do.call(
   })
 )
 
+ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
+  filter(inventory_year > 2014) %>%
+  left_join(cprg_county %>% select(geoid, county_name, state_abb), by = 'geoid') %>%
+  filter(state_abb == 'MN') %>%
+  rename(year = inventory_year) 
+
+
+# COCTU population proportion reference to parcel out Xcel CTU-level reporting to COCTUs based on population.
+# Assume sector breakouts are the same in all COCTU units tied to CTU reporting.
 
 #row bind two sets, wrangle city info to align with cprg_ctu formatting
 Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
@@ -201,18 +210,41 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
     )
   ) %>%
   filter(!is.na(sector_mapped)) %>%
-# disagg Xcel reports to COCTU units based on population
-  
-# filter to core metro 
+  # disagg Xcel reports to COCTU units based on population
+  # will lead to multiples where multiple COCTUs map to 1 CTU
+  left_join(ctu_population,
+            by = join_by('ctu_name',
+                         'ctu_class',
+                         'year'),
+            relationship = 'many-to-many'
+  ) %>%
+  # calculate TOTAL CTU pop (for use in COCTU proportioning) and identify CTUs with multiple constituent COCTUs 
+  group_by(city_name, source, sector_mapped, year) %>%
+  mutate(
+    total_ctu_population = sum(ctu_population, na.rm = TRUE),
+    multi_county = n_distinct(county_name) > 1  # Flag multi-county cities with a Boolean
+  ) %>%
+  ungroup() %>%
+  # Calculate the proportion of CTU total pop within each COCTU -- by ungrouping, you add county_name back to the grain
+  mutate(
+    ctu_population_proportion = ctu_population / total_ctu_population,
+    # only calc these columns, using flag variable multi_county
+    disagg_util_reported_co2e = ifelse(
+      multi_county,
+      util_reported_co2e * ctu_population_proportion,
+      NA
+    ),
+    disagg_mWh_delivered = ifelse(
+      multi_county,
+      mWh_delivered * ctu_population_proportion,
+      NA
+    )
+  ) %>%
+  # filter to core metro 
+  filter(county_name %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington"))
 
 write_rds(Xcel_activityData_2015_2023,
           "_energy/data/Xcel_activityData_2015_2023.RDS")
-
-#remove interstitial dfs
-rm(combined_Xcel_activityData_2015_2019)
-rm(combined_Xcel_activityData_2020_2023)
-
-
 
 
 
