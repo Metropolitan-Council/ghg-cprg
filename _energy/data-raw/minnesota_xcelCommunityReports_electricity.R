@@ -179,7 +179,17 @@ ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
 # COCTU population proportion reference to parcel out Xcel CTU-level reporting to COCTUs based on population.
 # Assume sector breakouts are the same in all COCTU units tied to CTU reporting.
 
-#row bind two sets, wrangle city info to align with cprg_ctu formatting
+# Step 1: Calculate unique total population by city-year-county
+city_total_population <- ctu_population %>%
+  distinct(ctu_name, ctu_class, year, county_name, ctu_population) %>% # Ensure unique rows per city-county-year
+  group_by(ctu_name, ctu_class, year) %>% 
+  mutate(
+    total_ctu_population = sum(ctu_population, na.rm = TRUE), # Sum populations across counties for each city-year
+    multi_county = n_distinct(county_name) > 1 
+  ) %>%
+  ungroup()
+
+# Step 2: Join city_total_population back to main dataset
 Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
                                      combined_Xcel_activityData_2020_2023) %>%
   mutate(
@@ -194,14 +204,12 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
       sector == "Business" ~ "Business", # Handle as disaggregation
       TRUE ~ NA_character_
     ),
-    # Assign 'CITY' or 'TOWNSHIP' based on 'City of'/'Town of', while handling Birchwood Village special case
     ctu_class = case_when(
       grepl("^City of", city_name, ignore.case = TRUE) ~ "CITY",
       grepl("^Town of", city_name, ignore.case = TRUE) ~ "TOWNSHIP",
       city_name == "Village of Birchwood" ~ "CITY",
       TRUE ~ NA_character_
     ),
-    # Extract the ctu_name while handling special case in Birchwood Village
     ctu_name = case_when(
       grepl("^City of", city_name, ignore.case = TRUE) ~ sub("^City of\\s+", "", city_name),
       grepl("^Town of", city_name, ignore.case = TRUE) ~ sub("^Town of\\s+", "", city_name),
@@ -210,25 +218,13 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
     )
   ) %>%
   filter(!is.na(sector_mapped)) %>%
-  # disagg Xcel reports to COCTU units based on population
-  # will lead to multiples where multiple COCTUs map to 1 CTU
-  left_join(ctu_population,
-            by = join_by('ctu_name',
-                         'ctu_class',
-                         'year'),
-            relationship = 'many-to-many'
-  ) %>%
-  # calculate TOTAL CTU pop (for use in COCTU proportioning) and identify CTUs with multiple constituent COCTUs 
-  group_by(city_name, source, sector_mapped, year) %>%
+  left_join(city_total_population, 
+            by = c("ctu_name", "ctu_class", "year"),
+            relationship = 'many-to-many') %>%
+  # Step 4: Calculate proportions and disaggregated values
+  group_by(ctu_name, ctu_class, year, county_name) %>%
   mutate(
-    total_ctu_population = sum(ctu_population, na.rm = TRUE),
-    multi_county = n_distinct(county_name) > 1  # Flag multi-county cities with a Boolean
-  ) %>%
-  ungroup() %>%
-  # Calculate the proportion of CTU total pop within each COCTU -- by ungrouping, you add county_name back to the grain
-  mutate(
-    ctu_population_proportion = ctu_population / total_ctu_population,
-    # only calc these columns, using flag variable multi_county
+    ctu_population_proportion = ctu_population / total_ctu_population, # Calculate proportions
     disagg_util_reported_co2e = ifelse(
       multi_county,
       util_reported_co2e * ctu_population_proportion,
@@ -240,11 +236,13 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
       NA
     )
   ) %>%
-  # filter to core metro 
+  ungroup() %>%
+  
+  # Step 5: Filter to core metro counties while keeping `county_name` intact
   filter(county_name %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington"))
 
-write_rds(Xcel_activityData_2015_2023,
-          "_energy/data/Xcel_activityData_2015_2023.RDS")
+write_rds(Xcel_activityData_2015_2023, "_energy/data/Xcel_activityData_2015_2023.RDS")
+
 
 
 
