@@ -260,6 +260,7 @@ nrel_slope_city_emission_proportions_adjusted <-  readRDS("_energy/data-raw/nrel
 xcel_activityData_NREL_QA_2015_2022 <- Xcel_activityData_2015_2023 %>%
   left_join(
     nrel_slope_city_emission_proportions_adjusted,
+    # implicitly applies same proportions to COCTU splits
     by = join_by(
       ctu_name == city_name,
       ctu_class == ctu_class,
@@ -268,17 +269,12 @@ xcel_activityData_NREL_QA_2015_2022 <- Xcel_activityData_2015_2023 %>%
   ) %>%
   # temporarily exclude 2023 since no eGRID data yet
   filter(year < 2023) %>%
-  #filter where all are null -- these are cities not in NREL 
   select(-source.x,
          -source.y,
          -kwh_delivered,
-         -city_name) %>%
-  # get county name for cities
-  left_join(cprg_ctu %>% select(ctu_name, ctu_class, county_name),
-            by = join_by(ctu_name,
-                         ctu_class)) %>%
-  filter(county_name %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington"))
-  # filter out where 1) business records occur and 2) where NO NREL data (either city-level or county downscaled) exist
+         -city_name)
+  # coalesce disagg_ numbers to keep correct COCTU level data.
+  # ?filter out where 1) business records occur and 2) where NO NREL data (either city-level or county downscaled) exist
   # maintains some data outside the 7-county metro as appropriate for TESTING. We may not have other covariates for these places. 
 
 
