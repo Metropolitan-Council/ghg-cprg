@@ -257,7 +257,7 @@ write_rds(Xcel_activityData_2015_2023, "_energy/data/Xcel_activityData_2015_2023
 
 }
 
-Xcel_activityData_2015_2023_QA <- readRDS("_energy/data/Xcel_activityData_2015_2023.RDS")
+Xcel_activityData_2015_2023 <- readRDS("_energy/data/Xcel_activityData_2015_2023.RDS")
 
 #preprocess the NREL proportions dataset -- make duplicates of 2017 records for 2015 and 2016 to enable join to Xcel data
 nrel_slope_city_emission_proportions_adjusted <-  readRDS("_energy/data-raw/nrel_slope/nrel_slope_city_emission_proportions.RDS") %>%
@@ -285,88 +285,61 @@ xcel_activityData_NREL_QA_2015_2022 <- Xcel_activityData_2015_2023 %>%
          -source.y,
          -kwh_delivered,
          -city_name)
+
+# Expand `sector_mapped = 'Business'` into two new rows for 'commercial*' and 'industrial*'
+xcel_activityData_NREL_2015_2022 <- bind_rows(xcel_activityData_NREL_QA_2015_2022 %>%
+                                                filter(sector_mapped == "Business") %>%
+                                                mutate(sector_mapped = "commercial*"),
+                                              xcel_activityData_NREL_QA_2015_2022 %>%
+                                                filter(sector_mapped == "Business") %>%
+                                                mutate(sector_mapped = "industrial*")
+) %>%
+  # Step 2: Mutate disaggregated or original values based on the value of `sector_mapped`
+  mutate(
+    util_co2e = coalesce(disagg_util_reported_co2e, util_reported_co2e),
+    util_mWh = coalesce(disagg_mWh_delivered, mWh_delivered),
+    
+    # Adjust values for 'commercial*' and 'industrial*' rows
+    # breaks out the Business records into two pieces based oon the proportional breakdown of NREL-modeled commercial/industrial
+    util_co2e = case_when(
+      sector_mapped == "commercial*" ~ util_co2e * coalesce((commercial_city / (commercial_city + industrial_city)),
+                                                            (commercial_downscale / (commercial_downscale + industrial_downscale))
+                                                            ),
+      sector_mapped == "industrial*" ~ util_co2e * coalesce((industrial_city / (commercial_city + industrial_city)),
+                                                            (industrial_downscale / (commercial_downscale + industrial_downscale))
+      ),
+      TRUE ~ util_co2e
+    ),
+    util_mWh = case_when(
+      sector_mapped == "commercial*" ~ util_mWh * coalesce((commercial_city / (commercial_city + industrial_city)),
+                                                            (commercial_downscale / (commercial_downscale + industrial_downscale))
+      ),
+      sector_mapped == "industrial*" ~ util_mWh * coalesce((industrial_city / (commercial_city + industrial_city)),
+                                                            (industrial_downscale / (commercial_downscale + industrial_downscale))
+      ),
+      TRUE ~ util_mWh
+    ),
+    
+    # Create `nrel_source` column
+    nrel_source = case_when(
+      sector_mapped == "commercial*" & !is.na(commercial_city) ~ "CITY",
+      sector_mapped == "industrial*" & !is.na(industrial_city) ~ "CITY",
+      sector_mapped == "commercial*" & !is.na(commercial_downscale) ~ "COUNTY",
+      sector_mapped == "industrial*" & !is.na(industrial_downscale) ~ "COUNTY",
+      TRUE ~ NA_character_
+    )
+  )
+
+
   # coalesce disagg_ numbers to keep correct COCTU level data.
+  # expand out business to two new rows, remove business row
+  # coalesce (ctu totes, disagg) * coalesce (nrel_city, nrel_county)
   # ?filter out where 1) business records occur and 2) where NO NREL data (either city-level or county downscaled) exist
   # maintains some data outside the 7-county metro as appropriate for TESTING. We may not have other covariates for these places. 
 
-
+#identify cities with a mix of business and commercial/industrial?
 
 # Step 1: Calculate city-level average proportions for Commercial and Industrial, with a default value of 1 for commercial to ensure street lighting is fully allocated there if no commercial or industrial data
-city_avg_proportions <- Xcel_activityData_2015_2023 %>%
-  filter(sector_mapped %in% c("Commercial", "Industrial")) %>%
-  group_by(city_name) %>%
-  summarise(
-    total_detailed = sum(mWh_delivered, na.rm = TRUE),
-    commercial_total = sum(mWh_delivered[sector_mapped == "Commercial"], na.rm = TRUE),
-    industrial_total = sum(mWh_delivered[sector_mapped == "Industrial"], na.rm = TRUE),
-    avg_commercial_proportion = ifelse(total_detailed > 0, commercial_total / total_detailed, 1),
-    avg_industrial_proportion = ifelse(total_detailed > 0, industrial_total / total_detailed, 0)
-  )
-
-
-
-#apply 2017 numbers to 2015 and 2016
-
-# Step 2: Backcast Business data using city-level proportions
-data_with_backcast <- Xcel_activityData_2015_2023 %>%
-  left_join(city_avg_proportions, by = "city_name") %>%
-  mutate(
-    commercial_modeled = ifelse(
-      sector_mapped == "Business",
-      mWh_delivered * avg_commercial_proportion,
-      NA
-    ),
-    industrial_modeled = ifelse(
-      sector_mapped == "Business",
-      mWh_delivered * avg_industrial_proportion,
-      NA
-    )
-  ) %>%
-  mutate(
-    # Coalesce to prioritize real values over modeled values
-    Commercial = coalesce(
-      ifelse(sector_mapped == "Commercial",
-             mWh_delivered,
-             NA),
-      commercial_modeled
-    ),
-    Industrial = coalesce(
-      ifelse(sector_mapped == "Industrial",
-             mWh_delivered,
-             NA),
-      industrial_modeled
-    ),
-    Residential = ifelse(sector_mapped == "Residential",
-                         mWh_delivered,
-                         NA),
-  )
-
-# Assuming `data_with_backcast` is your data frame
-consolidated_data <- data_with_backcast %>%
-  group_by(city_name, year) %>%
-  mutate(
-    Residential = sum(Residential, na.rm = TRUE),
-    Commercial = sum(Commercial, na.rm = TRUE),
-    Industrial = sum(Industrial, na.rm = TRUE)
-  ) %>%
-  pivot_longer(
-    cols = c(Commercial, Industrial, Residential), # Include all mapped, aggregated sectors
-    names_to = "sector",
-    values_to = "mWh_delivered",
-    names_repair = "unique"
-  ) 
-
-
-# NEED TO ADDRESS -- WHAT IF THE BREAKOUTS ARE FOR NON-REPRESENTATIVE YEARS? When to bring in NREL??? Need to break out NREL city proportions 
-
-  #filter(!is.na(mWh_delivered)) %>% # Remove rows with no data
-  mutate(
-    # Recode sector names to final format
-    sector = recode(sector,
-                    "commercial" = "Commercial",
-                    "industrial" = "Industrial",
-                    "residential" = "Residential")
-  )
 
 
 
