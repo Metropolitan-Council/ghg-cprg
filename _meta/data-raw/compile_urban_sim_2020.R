@@ -1,7 +1,8 @@
 ##### read in an reformat UrbanSim output
 
 source("R/_load_pkgs.R")
-cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS")
+cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>% 
+  
 
 us_meta <- read_xlsx(
   "N:/CommDev/Research/Research/Forecasts/2050 Forecasts/Draft Preliminary Local Forecasts/Outputs/run_212/datadictionary.xlsx") %>% 
@@ -20,7 +21,14 @@ residential <- c("total_households",
                  "max_lrglot",
                  "max_attached",
                  "max_multifam",
-                 "manufactured_homes")
+                 "manufactured_homes",
+                 "single_fam_det_sl_own",
+                 "single_fam_det_ll_own",
+                 "single_fam_det_rent",
+                 "single_fam_attached_own",
+                 "single_fam_attached_rent",
+                 "multi_fam_own",
+                 "multi_fam_rent")
 
 commercial <- c("total_job_spaces",
                 "max_office",
@@ -39,19 +47,23 @@ industrial <- c("total_job_spaces",
                 "zones_total_jobs_20_minutes_tt",
                 "zones_total_jobs_45_minutes_tt")
 
+#collapse to 
 urbansim <- read_csv(
   "N:/CommDev/Research/Research/Forecasts/2050 Forecasts/Draft Preliminary Local Forecasts/Outputs/run_212/evolvingCOCTU/inflationDeflation/2020/results_metcouncil_run_212_inflationPostProcess_COCTU_2020.csv") %>% 
+  mutate(ctu_id = as.numeric(substr(as.character(coctu_id), nchar(as.character(coctu_id)) - 6, nchar(as.character(coctu_id))))) %>% 
+  select(-coctu_id) %>% 
+  group_by(ctu_id) %>% # Group by the new variable
+  summarise(across(everything(), sum, na.rm = TRUE), .groups = "drop") %>%  # Sum all columns, excluding the grouping variable
   pivot_longer(cols=2:112,
-               names_to = "Variable") %>% 
+               names_to = "Variable") %>%
   left_join(us_meta %>% select(Variable,use),
             by= "Variable") %>% 
   filter(use == "Y",
-         Variable %in% c(residential,commercial,industrial)) %>% 
-  mutate(ctu_id = as.numeric(substr(as.character(coctu_id), nchar(as.character(coctu_id)) - 6, nchar(as.character(coctu_id))))) %>% 
-  left_join(cprg_ctu, by = c("ctu_id" = "gnis")) %>% 
-  filter(!is.na(ctu_name))%>% #Shakopee Mdewakanton Community - revisit if we have utility data
-  st_drop_geometry() %>% select(-geometry) %>% 
-  mutate(inventory_year = 2020)
+         Variable %in% c(residential,commercial,industrial))
+  # left_join(cprg_ctu, by = c("ctu_id" = "gnis")) %>% 
+  # filter(!is.na(ctu_name))%>% #Shakopee Mdewakanton Community - revisit if we have utility data
+  # st_drop_geometry() %>% select(-geometry) %>% 
+  # mutate(inventory_year = 2020)
 
 saveRDS(urbansim,
         "_meta/data/urban_sim_2020.RDS")
