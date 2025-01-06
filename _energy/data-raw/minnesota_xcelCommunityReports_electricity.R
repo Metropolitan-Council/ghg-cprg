@@ -78,9 +78,6 @@ get_files <- function(root_dir) {
   return(file_info)
 }
 
-# Apply process_file to each file identified in get_files() in the nested structure and combine the results
-file_list <- get_files(dir_xcel_communityReports)
-
 
 
 # function to dynamically read input from files until a stopping value is found
@@ -151,6 +148,23 @@ process_file <- function(file_info, start_cell) {
 }
 
 
+#join with CTU-county reference
+cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
+ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
+  filter(inventory_year > 2014) %>%
+  left_join(cprg_county %>% select(geoid, county_name, state_abb), by = 'geoid') %>%
+  filter(state_abb == 'MN') %>%
+  rename(year = inventory_year) 
+
+
+
+if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
+
+# Apply process_file to each file identified in get_files() in the nested structure and combine the results
+file_list <- get_files(dir_xcel_communityReports)
+  
+
 # Apply process_file_2015_2019 to each file for years 2015-19 identified in get_files() in the nested structure and combine the results
 file_list_2015_2019 <- Filter(function(x) x$year < 2020, file_list)
 file_list_2020_2023 <- Filter(function(x) x$year > 2019, file_list)
@@ -169,17 +183,11 @@ combined_Xcel_activityData_2020_2023 <- do.call(
   })
 )
 
-ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
-  filter(inventory_year > 2014) %>%
-  left_join(cprg_county %>% select(geoid, county_name, state_abb), by = 'geoid') %>%
-  filter(state_abb == 'MN') %>%
-  rename(year = inventory_year) 
-
 
 # COCTU population proportion reference to parcel out Xcel CTU-level reporting to COCTUs based on population.
 # Assume sector breakouts are the same in all COCTU units tied to CTU reporting.
 
-# Step 1: Calculate unique total population by city-year-county
+# Calculate unique total population by city-year-county
 city_total_population <- ctu_population %>%
   distinct(ctu_name, ctu_class, year, county_name, ctu_population) %>% # Ensure unique rows per city-county-year
   group_by(ctu_name, ctu_class, year) %>% 
@@ -189,9 +197,10 @@ city_total_population <- ctu_population %>%
   ) %>%
   ungroup()
 
-# Step 2: Join city_total_population back to main dataset
+
 Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
                                      combined_Xcel_activityData_2020_2023) %>%
+  # Map Xcel-provided sectors to simplified CPRG sectors and "Business" for subsequent disaggregation
   mutate(
     sector_mapped = case_when(
       sector %in% c("Residential") ~ "residential",
@@ -204,6 +213,7 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
       sector == "Business" ~ "Business", # Handle as disaggregation
       TRUE ~ NA_character_
     ),
+    # Align ctu_name and ctu_class to CPRG format based on Xcel inputs
     ctu_class = case_when(
       grepl("^City of", city_name, ignore.case = TRUE) ~ "CITY",
       grepl("^Town of", city_name, ignore.case = TRUE) ~ "TOWNSHIP",
@@ -217,11 +227,13 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
       TRUE ~ city_name
     )
   ) %>%
+  # Remove records with no or unusable data
   filter(!is.na(sector_mapped)) %>%
+  # Join city_total_population back to main dataset
   left_join(city_total_population, 
             by = c("ctu_name", "ctu_class", "year"),
             relationship = 'many-to-many') %>%
-  # Step 4: Calculate proportions and disaggregated values
+  # Calculate proportions and disaggregated values
   group_by(ctu_name, ctu_class, year, county_name) %>%
   mutate(
     ctu_population_proportion = ctu_population / total_ctu_population, # Calculate proportions
@@ -238,14 +250,14 @@ Xcel_activityData_2015_2023 <- rbind(combined_Xcel_activityData_2015_2019,
   ) %>%
   ungroup() %>%
   
-  # Step 5: Filter to core metro counties while keeping `county_name` intact
+  # Filter to core metro counties while keeping `county_name` intact
   filter(county_name %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington"))
 
 write_rds(Xcel_activityData_2015_2023, "_energy/data/Xcel_activityData_2015_2023.RDS")
 
+}
 
-
-
+Xcel_activityData_2015_2023_QA <- readRDS("_energy/data/Xcel_activityData_2015_2023.RDS")
 
 #preprocess the NREL proportions dataset -- make duplicates of 2017 records for 2015 and 2016 to enable join to Xcel data
 nrel_slope_city_emission_proportions_adjusted <-  readRDS("_energy/data-raw/nrel_slope/nrel_slope_city_emission_proportions.RDS") %>%
@@ -357,9 +369,6 @@ consolidated_data <- data_with_backcast %>%
   )
 
 
-#join with CTU-county reference
-cprg_county <- readRDS("_meta/data/cprg_county.RDS")
-cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 
 
 # test that number of distinct city year combos = number of files
