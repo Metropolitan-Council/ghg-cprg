@@ -86,6 +86,7 @@ nhd_county_c_meta <-
     "source", class(nhd_county_c$source), "Source of emissions. Most detailed sub-category in this table",
     "data_source", class(nhd_county_c$data_source), "Activity data source",
     "factor_source", class(nhd_county_c$factor_source), "Emissions factor data source",
+    "area", class(nhd_county_c$area), "Area of land cover in square kilometers",
     "value_emissions", class(nhd_county_c$value_emissions), "Numerical value of emissions",
     "units_emissions", class(nhd_county_c$units_emissions), "Units and gas type of emissions",
     "mt_co2e", class(nhd_county_c$mt_co2e), "Metric tons of gas in CO2 equivalency"
@@ -108,6 +109,7 @@ nhd_ctu_c_meta <-
     "source", class(nhd_ctu_c$source), "Source of emissions. Most detailed sub-category in this table",
     "data_source", class(nhd_ctu_c$data_source), "Activity data source",
     "factor_source", class(nhd_ctu_c$factor_source), "Emissions factor data source",
+    "area", class(nhd_ctu_c$area), "Area of land cover in square kilometers",
     "value_emissions", class(nhd_ctu_c$value_emissions), "Numerical value of emissions",
     "units_emissions", class(nhd_ctu_c$units_emissions), "Units and gas type of emissions",
     "mt_co2e", class(nhd_ctu_c$mt_co2e), "Metric tons of gas in CO2 equivalency"
