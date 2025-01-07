@@ -301,7 +301,7 @@ xcel_activityData_NREL_2015_2022 <-  bind_rows(
     filter(sector_mapped == "Business") %>%
     mutate(sector_mapped = "industrial*")
 ) %>%
-  # Step 2: Mutate disaggregated or original values based on the value of `sector_mapped`
+  # Mutate disaggregated or original values based on the value of `sector_mapped`
   mutate(
     util_co2e = coalesce(disagg_util_reported_co2e, util_reported_co2e),
     util_mWh = coalesce(disagg_mWh_delivered, mWh_delivered),
@@ -335,11 +335,62 @@ xcel_activityData_NREL_2015_2022 <-  bind_rows(
       sector_mapped == "industrial*" & !is.na(industrial_downscale) ~ "COUNTY",
       TRUE ~ NA_character_
     )
-  )
+  ) %>%
+  # nrel value (sector_mapped <--> _____city/downscale)
+  # true proportion (for cities with real res/commercial/industrial breakdowns)
 
+  
+#df with just true res/commercial/industrial breakouts AND NREL city numbers.
+  
+  
 write_rds(xcel_activityData_NREL_2015_2022, "_energy/data/xcel_activityData_NREL_2015_2022_process.RDS")
 
 # enable comparison of NREL breakdowns to actual breakdowns from Xcel
+complete_city_years <- xcel_activityData_NREL_2015_2022 %>%
+  filter(
+    !is.na(util_mWh),
+    !is.na(commercial_city),
+    !is.na(industrial_city),
+    !is.na(residential_city)
+  ) %>%
+  group_by(ctu_name, year) %>%
+  summarize(
+    has_residential = any(sector_mapped == "residential"),
+    has_commercial = any(sector_mapped == "commercial"),
+    has_industrial = any(sector_mapped == "industrial"),
+    .groups = "drop"
+  ) %>%
+  filter(
+    has_residential & has_commercial & has_industrial
+  ) 
+    
+# Step 2: Collapse rows to city-year grain
+complete_city_NREL_comparison <- xcel_activityData_NREL_2015_2022 %>%
+  semi_join(complete_city_years, by = c("ctu_name", "year")) %>%
+  group_by(ctu_name, year) %>%
+  summarize(
+    total_util_mWh = sum(util_mWh, na.rm = TRUE),
+    total_commercial_mWh = sum(util_mWh[sector_mapped == "commercial"], na.rm = TRUE),
+    total_industrial_mWh = sum(util_mWh[sector_mapped == "industrial"], na.rm = TRUE),
+    total_residential_mWh = sum(util_mWh[sector_mapped == "residential"], na.rm = TRUE),
+    commercial_city = first(commercial_city), # Values are repeated, so take the first
+    industrial_city = first(industrial_city),
+    residential_city = first(residential_city),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    actual_commercial_prop = total_commercial_mWh / total_util_mWh,
+    actual_industrial_prop = total_industrial_mWh / total_util_mWh,
+    actual_residential_prop = total_residential_mWh / total_util_mWh
+  ) %>%
+  left_join(cprg_ctu %>% filter(ctu_class == 'CITY') %>% select(ctu_name, geometry))
+
+
+
+cor(complete_city_NREL_comparison$commercial_city, complete_city_NREL_comparison$actual_commercial_prop, use = "complete.obs")
+cor(complete_city_NREL_comparison$industrial_city, complete_city_NREL_comparison$actual_industrial_prop, use = "complete.obs")
+cor(complete_city_NREL_comparison$residential_city, complete_city_NREL_comparison$actual_residential_prop, use = "complete.obs")
+
 
 #identify cities with a mix of business and commercial/industrial?
 
