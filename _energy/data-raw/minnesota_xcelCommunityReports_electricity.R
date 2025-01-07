@@ -286,13 +286,20 @@ xcel_activityData_NREL_QA_2015_2022 <- Xcel_activityData_2015_2023 %>%
          -kwh_delivered,
          -city_name)
 
-# Expand `sector_mapped = 'Business'` into two new rows for 'commercial*' and 'industrial*'
-xcel_activityData_NREL_2015_2022 <- bind_rows(xcel_activityData_NREL_QA_2015_2022 %>%
-                                                filter(sector_mapped == "Business") %>%
-                                                mutate(sector_mapped = "commercial*"),
-                                              xcel_activityData_NREL_QA_2015_2022 %>%
-                                                filter(sector_mapped == "Business") %>%
-                                                mutate(sector_mapped = "industrial*")
+xcel_activityData_NREL_2015_2022 <-  bind_rows(
+  # Keep original rows that are not 'Business'
+  xcel_activityData_NREL_QA_2015_2022 %>%
+    filter(sector_mapped != "Business"),
+  
+  # Expand `Business` rows into 'commercial*'
+  xcel_activityData_NREL_QA_2015_2022 %>%
+    filter(sector_mapped == "Business") %>%
+    mutate(sector_mapped = "commercial*"),
+  
+  # Expand `Business` rows into 'industrial*'
+  xcel_activityData_NREL_QA_2015_2022 %>%
+    filter(sector_mapped == "Business") %>%
+    mutate(sector_mapped = "industrial*")
 ) %>%
   # Step 2: Mutate disaggregated or original values based on the value of `sector_mapped`
   mutate(
@@ -320,7 +327,7 @@ xcel_activityData_NREL_2015_2022 <- bind_rows(xcel_activityData_NREL_QA_2015_202
       TRUE ~ util_mWh
     ),
     
-    # Create `nrel_source` column
+    # Create `nrel_source` column to identify which NREL data set was used to disaggregate BUSINESS records (if such disagg was done)
     nrel_source = case_when(
       sector_mapped == "commercial*" & !is.na(commercial_city) ~ "CITY",
       sector_mapped == "industrial*" & !is.na(industrial_city) ~ "CITY",
@@ -330,12 +337,9 @@ xcel_activityData_NREL_2015_2022 <- bind_rows(xcel_activityData_NREL_QA_2015_202
     )
   )
 
+write_rds(xcel_activityData_NREL_2015_2022, "_energy/data/xcel_activityData_NREL_2015_2022_process.RDS")
 
-  # coalesce disagg_ numbers to keep correct COCTU level data.
-  # expand out business to two new rows, remove business row
-  # coalesce (ctu totes, disagg) * coalesce (nrel_city, nrel_county)
-  # ?filter out where 1) business records occur and 2) where NO NREL data (either city-level or county downscaled) exist
-  # maintains some data outside the 7-county metro as appropriate for TESTING. We may not have other covariates for these places. 
+# enable comparison of NREL breakdowns to actual breakdowns from Xcel
 
 #identify cities with a mix of business and commercial/industrial?
 
