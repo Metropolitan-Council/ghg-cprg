@@ -1,10 +1,10 @@
 ### Develop Random Forests model for predicting CTU residential electricity usage ###
 
-source("R/_load_pkgs.R" )
+source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 library(randomForest)
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>% 
-  filter(!county_name %in% c( Chisago , Sherburne ,  St. Croix ,  Pierce ))
+  filter(!county_name %in% c( "Chisago" , "Sherburne" ,  "St. Croix" ,  "Pierce"))
 
 
 ## load Xcel community reports - response to train on
@@ -71,8 +71,19 @@ nonresidential <- c( 'total_job_spaces',
                      'total_job_spaces',
                      'max_industrial',
                      'js_type_12',
-                     'zones_total_jobs_20_minutes_tt',
-                     'zones_total_jobs_45_minutes_tt')
+                     "jobs_sector_4",
+                     "jobs_sector_5",
+                     "jobs_sector_6",
+                     "jobs_sector_7",
+                     "jobs_sector_8",
+                     "jobs_sector_9",
+                     "jobs_sector_10",
+                     "total_job_spaces",
+                     "max_industrial",
+                     "js_type_12",
+                     "jobs_sector_1",
+                     "jobs_sector_2",
+                     "jobs_sector_3")
 
 # operating at ctu not coctu for now
 urbansim_nonres <- readRDS("_meta/data/urban_sim_2020.RDS") %>% 
@@ -116,7 +127,17 @@ rf_nonres_model <- randomForest(mWh_delivered ~
                                 js_type_14 +
                                 total_job_spaces +
                                 max_industrial +
-                                js_type_12,
+                                js_type_12 +
+                                 jobs_sector_4 +
+                                 jobs_sector_5 +
+                                 jobs_sector_6 +
+                                 jobs_sector_7 +
+                                 jobs_sector_8 +
+                                 jobs_sector_9 +
+                                 jobs_sector_10 +
+                                 jobs_sector_1 +
+                                 jobs_sector_2 +
+                                 jobs_sector_3,
                              importance = T, data = electricity)
 
 rf_nonres_model
@@ -180,16 +201,16 @@ county_nonres_predict <- ctu_nonres_predict %>%
   mutate(
     # apply emission factor and convert to metric tons
     co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2) %>%
-      units::as_units( lb ) %>%
-      units::set_units( ton ) %>%
+      units::as_units("lb") %>%
+      units::set_units("ton") %>%
       as.numeric(),
     ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4) %>%
-      units::as_units( lb ) %>%
-      units::set_units( ton ) %>%
+      units::as_units("lb") %>%
+      units::set_units("ton") %>%
       as.numeric(),
     n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O) %>%
-      units::as_units( lb ) %>%
-      units::set_units( ton ) %>%
+      units::as_units("lb") %>%
+      units::set_units("ton") %>%
       as.numeric(),
     co2e =
       co2 +
@@ -197,20 +218,20 @@ county_nonres_predict <- ctu_nonres_predict %>%
       (n2o * gwp$n2o)
   )
 
-source( _energy/data-raw/_energy_emissions_factors.R )
+nrel_predict_nonres <- read_rds("_energy/data/electric_natgas_nrel_proportioned.RDS") %>% 
+  filter(source ==  "Electricity",
+         category %in%  c("Commercial", "Industrial"),
+         year == 2021) %>% 
+  group_by(county)
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e))
 
-nrel_predict_res <- read_rds( _energy/data/electric_natgas_nrel_proportioned.RDS ) %>% 
-  filter(source ==  Electricity ,
-         category ==  Residential ,
-         year == 2021)
-
-prediction_comparison <- rbind(county_res_predict %>% 
+prediction_comparison <- rbind(county_nonres_predict %>% 
                                  select(county_name, co2e) %>% 
-                                 mutate(source =  MC_model ),
-                               nrel_predict_res %>% 
+                                 mutate(source =  "MC_model" ),
+                               nrel_predict_nonres %>% 
                                  select(county_name = county, co2e = emissions_metric_tons_co2e) %>% 
-                                 filter(county_name %in% county_res_predict$county_name) %>% 
-                                 mutate(source =  NREL ))
+                                 filter(county_name %in% county_nonres_predict$county_name) %>% 
+                                 mutate(source =  "NREL" ))
 
 ggplot(prediction_comparison, aes(x = county_name, y = co2e, fill = source)) +
-  geom_bar(stat =  identity , position =  dodge ) + theme_bw()
+  geom_bar(stat =  "identity" , position =  "dodge" ) + theme_bw()

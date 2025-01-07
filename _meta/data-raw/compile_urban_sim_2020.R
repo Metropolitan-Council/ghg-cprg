@@ -1,7 +1,7 @@
 ##### read in an reformat UrbanSim output
 
 source("R/_load_pkgs.R")
-cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>% 
+cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS")
   
 
 us_meta <- read_xlsx(
