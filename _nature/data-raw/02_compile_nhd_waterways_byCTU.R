@@ -164,7 +164,7 @@ cprg_ctu <- cprg_ctu %>%
 tmpNames <- unique(cprg_ctu$tmpID)
 
 geom_list <- lapply(seq_along(tmpNames), function(i) {
-  message("running ", i, " of ", length(tmpNames))
+  message("processing ", i, " of ", length(tmpNames), " CTUs")
   x <- cprg_ctu %>% dplyr::filter(tmpID == tmpNames[[i]]) %>% sf::st_make_valid()
   crop <- sf::st_crop(NHD, x) %>% sf::st_make_valid()
   
@@ -181,7 +181,7 @@ geom_list <- lapply(seq_along(tmpNames), function(i) {
   x2
 })
 
-browser()
+# browser()
 
 NHD_byCTU <- bind_rows(geom_list, .id = "column_label") %>%
   dplyr::select(-column_label, tmpID)
