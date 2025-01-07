@@ -73,7 +73,7 @@ waterway_emissions_factors <- data.frame(
   waterway_type = waterway_types,
   factor_source = "MPCA TSD",
   ef_mt_ch4 = NA,
-  units_emissions = "Metric tons CH4 per km2 per year"
+  units_emissions = "Metric tons CH4"
 ) %>% as_tibble() %>%
   mutate(
     ef_mt_ch4 = as.numeric(case_when(
