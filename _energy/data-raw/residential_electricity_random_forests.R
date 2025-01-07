@@ -114,7 +114,7 @@ rf_res_model <- randomForest(mWh_delivered ~
                                total_pop + total_households + total_residential_units +mean_year_apartment +
                                mean_year_multifamily_home + mean_year_single_family_home + 
                                total_emv_apartment + total_emv_single_family_home + total_emv_multifamily_home +
-                               max_attached + max_detached + max_lrglot + max_multifam +
+                               #max_attached + max_detached + max_lrglot + max_multifam +
                                single_fam_det_sl_own + single_fam_det_ll_own +
                              single_fam_det_rent +
                              single_fam_attached_own +
@@ -217,4 +217,56 @@ prediction_comparison <- rbind(county_res_predict %>%
                                  mutate(source = "NREL"))
 
 ggplot(prediction_comparison, aes(x = county_name, y = co2e, fill = source)) +
+  geom_bar(stat = "identity", position = "dodge") + theme_bw()
+
+ggplot(ctu_res_predict, aes(x = total_pop, y = mwh_predicted , col = county_name )) +
+  geom_point() + theme_bw()
+
+ggplot(electricity, aes(x = total_pop, y = mWh_delivered, col = total_households)) +
+  geom_point() + geom_smooth(method='lm') + theme_bw()
+
+### does a linear fit perform better?
+
+res_simple <- lm(mWh_delivered ~ total_pop + total_households, data = electricity)
+
+ctu_res_predict_linear <- cprg_ctu %>% 
+  left_join(urbansim_res, by = c("gnis" = "ctu_id")) %>% 
+  left_join(mn_parcel_res, by = c("gnis" = "ctu_id")) %>% 
+  mutate(mwh_predicted = predict(res_simple, .))
+
+
+county_res_predict_linear <- ctu_res_predict_linear %>% 
+  filter(!is.na(mwh_predicted)) %>% 
+  st_drop_geometry() %>% 
+  group_by(county_name) %>%
+  summarize(mwh_predicted = sum(mwh_predicted))  %>%
+  mutate(
+    # apply emission factor and convert to metric tons
+    co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2) %>%
+      units::as_units("lb") %>%
+      units::set_units("ton") %>%
+      as.numeric(),
+    ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4) %>%
+      units::as_units("lb") %>%
+      units::set_units("ton") %>%
+      as.numeric(),
+    n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O) %>%
+      units::as_units("lb") %>%
+      units::set_units("ton") %>%
+      as.numeric(),
+    co2e =
+      co2 +
+      (ch4 * gwp$n2o) +
+      (n2o * gwp$n2o)
+  )
+
+prediction_comparison_linear <- rbind(county_res_predict_linear %>% 
+                                 select(county_name, co2e) %>% 
+                                 mutate(source = "MC_model_simple"),
+                               nrel_predict_res %>% 
+                                 select(county_name = county, co2e = emissions_metric_tons_co2e) %>% 
+                                 filter(county_name %in% county_res_predict$county_name) %>% 
+                                 mutate(source = "NREL"))
+
+ggplot(prediction_comparison_linear, aes(x = county_name, y = co2e, fill = source)) +
   geom_bar(stat = "identity", position = "dodge") + theme_bw()
