@@ -1,6 +1,7 @@
 ### Develop Random Forests model for predicting CTU residential electricity usage ###
 
 source("R/_load_pkgs.R")
+source("_energy/data-raw/_energy_emissions_factors.R")
 library(randomForest)
 library(caret)
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>% 
@@ -200,7 +201,7 @@ county_res_predict <- ctu_res_predict %>%
       (n2o * gwp$n2o)
   )
   
-source("_energy/data-raw/_energy_emissions_factors.R")
+
 
 nrel_predict_res <- read_rds("_energy/data/electric_natgas_nrel_proportioned.RDS") %>% 
   filter(source == "Electricity",
