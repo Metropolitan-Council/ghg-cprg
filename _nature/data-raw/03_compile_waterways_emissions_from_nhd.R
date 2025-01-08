@@ -120,11 +120,11 @@ nhd_ctu_c_meta <-
 
 # User chooses whether to overwrite the rds files
 if (overwrite_RDS) {
-  saveRDS(nhd_county_c, paste0("./_nature/data/nhd_county_waterways_emissions_", head(sort(unique(nhd_county_c$inventory_year)), 1), "_", tail(sort(unique(nhd_county_c$inventory_year)), 1), ".rds"))
-  saveRDS(nhd_county_c_meta, paste0("./_nature/data/nhd_county_waterways_emissions_", head(sort(unique(nhd_county_c$inventory_year)), 1), "_", tail(sort(unique(nhd_county_c$inventory_year)), 1), "_meta.rds"))
+  saveRDS(nhd_county_c, paste0("./_nature/data/nhd_county_waterways_emissions_2001_2021.rds"))
+  saveRDS(nhd_county_c_meta, paste0("./_nature/data/nhd_county_waterways_emissions_2001_2021_meta.rds"))
  
-  saveRDS(nhd_ctu_c, paste0("./_nature/data/nhd_ctu_waterways_emissions_", head(sort(unique(nhd_ctu_c$inventory_year)), 1), "_", tail(sort(unique(nhd_ctu_c$inventory_year)), 1), ".rds"))
-  saveRDS(nhd_ctu_c_meta, paste0("./_nature/data/nhd_ctu_waterways_emissions_", head(sort(unique(nhd_ctu_c$inventory_year)), 1), "_", tail(sort(unique(nhd_ctu_c$inventory_year)), 1), "_meta.rds"))
+  saveRDS(nhd_ctu_c, paste0("./_nature/data/nhd_ctu_waterways_emissions_2001_2021.rds"))
+  saveRDS(nhd_ctu_c_meta, paste0("./_nature/data/nhd_ctu_waterways_emissions_2001_2021_meta.rds"))
 }
 
 
