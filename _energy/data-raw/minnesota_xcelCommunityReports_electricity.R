@@ -335,7 +335,7 @@ xcel_activityData_NREL_2015_2022 <-  bind_rows(
       sector_mapped == "industrial*" & !is.na(industrial_downscale) ~ "COUNTY",
       TRUE ~ NA_character_
     )
-  ) %>%
+  )
   # nrel value (sector_mapped <--> _____city/downscale)
   # true proportion (for cities with real res/commercial/industrial breakdowns)
 
@@ -344,6 +344,25 @@ xcel_activityData_NREL_2015_2022 <-  bind_rows(
   
   
 write_rds(xcel_activityData_NREL_2015_2022, "_energy/data/xcel_activityData_NREL_2015_2022_process.RDS")
+
+ctu_commDesg <- read.csv("_meta/data-raw/ctus_summary_2018.csv") %>%
+  select(ctu_name = Ctu.Name,
+         community_designation = Community.Designation)
+
+# Validate and repair geometries before dissolving
+cprg_ctu <- cprg_ctu %>%
+  filter(ctu_class == 'CITY') %>% 
+  mutate(geometry = st_make_valid(geometry))  # Ensure all geometries are valid
+
+# Dissolve polygons by ctu_name
+dissolved_ctu <- cprg_ctu %>%
+  select(ctu_name, geometry) %>%     # Keep relevant columns
+  group_by(ctu_name) %>%             # Group by ctu_name
+  summarize(geometry = st_union(geometry)) %>%  # Merge geometries
+  ungroup()     
+
+# View or save the result
+plot(dissolved_ctu["geometry"]) # Quick visualization
 
 # enable comparison of NREL breakdowns to actual breakdowns from Xcel
 complete_city_years <- xcel_activityData_NREL_2015_2022 %>%
@@ -364,7 +383,7 @@ complete_city_years <- xcel_activityData_NREL_2015_2022 %>%
     has_residential & has_commercial & has_industrial
   ) 
     
-# Step 2: Collapse rows to city-year grain
+# Collapse rows to city-year grain
 complete_city_NREL_comparison <- xcel_activityData_NREL_2015_2022 %>%
   semi_join(complete_city_years, by = c("ctu_name", "year")) %>%
   group_by(ctu_name, year) %>%
@@ -383,7 +402,12 @@ complete_city_NREL_comparison <- xcel_activityData_NREL_2015_2022 %>%
     actual_industrial_prop = total_industrial_mWh / total_util_mWh,
     actual_residential_prop = total_residential_mWh / total_util_mWh
   ) %>%
-  left_join(cprg_ctu %>% filter(ctu_class == 'CITY') %>% select(ctu_name, geometry))
+  left_join(ctu_commDesg,
+            by = join_by(ctu_name)) %>%
+  left_join(dissolved_ctu,
+            by = join_by(ctu_name)) %>%
+  st_as_sf()
+
 
 
 
