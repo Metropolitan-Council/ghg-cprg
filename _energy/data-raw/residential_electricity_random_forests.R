@@ -496,6 +496,14 @@ ggplot(prediction_comparison_nonres, aes(x = county_name, y = co2e, fill = sourc
 
 ### look at total mwh
 
+mwh_county <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RDS")
+
+mwh_anoka <- mwh_county %>% filter(county == "Ramsey", !is.na(mWh_delivered)) 
+
+xcel_anoka <- xcel %>% left_join(cprg_ctu, by = c("ctu_class", "ctu_name")) %>% 
+  filter(county_name == "Ramsey", year == 2021) %>% 
+  group_by(ctu_name) %>% 
+  summarize(mwh = sum(mWh_delivered, na.rm = TRUE))
 
 mn_mwh <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RDS") %>% 
   group_by(county) %>% 
