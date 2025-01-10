@@ -34,6 +34,19 @@ xcel_only <- xcel %>%
                    "ctu_class")) %>% 
   filter(!gnis %in% c(ctu_multiple$ctu_id))
 
+xcel_map <- xcel_only %>% 
+  group_by(ctu_name, ctu_class) %>% 
+  summarize(mwh = sum(mWh_delivered, na.rm = TRUE)) %>% 
+  left_join(cprg_ctu %>% select(ctu_name, ctu_class, geometry),
+            by = c("ctu_name",
+                   "ctu_class"))%>%
+  st_as_sf()
+
+ggplot(xcel_map) +
+  geom_sf(aes(fill = mwh), color = "black", size = 0.2) +
+  scale_fill_viridis_c(option = "plasma", name = "mWh_delivered (Xcel)") +
+  theme_minimal()
+
 # for this first approach we are only looking at residential electricity delivery
 # in 2021
 
@@ -224,54 +237,10 @@ ggplot(prediction_comparison_res, aes(x = county_name, y = co2e, fill = source))
 ggplot(ctu_res_predict, aes(x = total_pop, y = mwh_predicted , col = county_name )) +
   geom_point() + theme_bw()
 
-ggplot(electricity, aes(x = total_pop, y = mWh_delivered, col = total_households)) +
+ggplot(electricity_res, aes(x = total_pop, y = mWh_delivered, col = total_households)) +
   geom_point() + geom_smooth(method='lm') + theme_bw()
 
 ### does a linear fit perform better?
-
-res_simple <- lm(mWh_delivered ~ total_pop + total_households, data = electricity)
-
-ctu_res_predict_linear <- cprg_ctu %>% 
-  left_join(urbansim_res, by = c("gnis" = "ctu_id")) %>% 
-  left_join(mn_parcel_res, by = c("gnis" = "ctu_id")) %>% 
-  mutate(mwh_predicted = predict(res_simple, .))
-
-
-county_res_predict_linear <- ctu_res_predict_linear %>% 
-  filter(!is.na(mwh_predicted)) %>% 
-  st_drop_geometry() %>% 
-  group_by(county_name) %>%
-  summarize(mwh_predicted = sum(mwh_predicted))  %>%
-  mutate(
-    # apply emission factor and convert to metric tons
-    co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2) %>%
-      units::as_units("lb") %>%
-      units::set_units("ton") %>%
-      as.numeric(),
-    ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4) %>%
-      units::as_units("lb") %>%
-      units::set_units("ton") %>%
-      as.numeric(),
-    n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O) %>%
-      units::as_units("lb") %>%
-      units::set_units("ton") %>%
-      as.numeric(),
-    co2e =
-      co2 +
-      (ch4 * gwp$n2o) +
-      (n2o * gwp$n2o)
-  )
-
-prediction_comparison_linear <- rbind(county_res_predict_linear %>% 
-                                 select(county_name, co2e) %>% 
-                                 mutate(source = "MC_model_simple"),
-                               nrel_predict_res %>% 
-                                 select(county_name = county, co2e = emissions_metric_tons_co2e) %>% 
-                                 filter(county_name %in% county_res_predict$county_name) %>% 
-                                 mutate(source = "NREL"))
-
-ggplot(prediction_comparison_linear, aes(x = county_name, y = co2e, fill = source)) +
-  geom_bar(stat = "identity", position = "dodge") + theme_bw()
 
 
 
@@ -498,12 +467,21 @@ ggplot(prediction_comparison_nonres, aes(x = county_name, y = co2e, fill = sourc
 
 mwh_county <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RDS")
 
-mwh_anoka <- mwh_county %>% filter(county == "Ramsey", !is.na(mWh_delivered)) 
+mwh_xcel_county <- mwh_county %>% filter(!is.na(mWh_delivered), utility == "XcelEnergy") %>% 
+  mutate(source = "Xcel County Report") %>% 
+  select(county_name = county, mwh = mWh_delivered, source) %>% 
+  filter(!county_name %in% c("Sherburne", "Chisago"))
 
-xcel_anoka <- xcel %>% left_join(cprg_ctu, by = c("ctu_class", "ctu_name")) %>% 
-  filter(county_name == "Ramsey", year == 2021) %>% 
-  group_by(ctu_name) %>% 
-  summarize(mwh = sum(mWh_delivered, na.rm = TRUE))
+xcel_ctu_county <- xcel %>% left_join(cprg_ctu, by = c("ctu_class", "ctu_name")) %>% 
+  filter(year == 2021, !is.na(county_name)) %>% 
+  group_by(county_name) %>% 
+  summarize(mwh = sum(mWh_delivered, na.rm = TRUE)) %>% 
+  mutate(source = "Xcel CTU Report") %>% 
+  select(county_name, mwh, source)
+
+ggplot(rbind(mwh_xcel_county, xcel_ctu_county),
+       aes(x = county_name, y = mwh, fill = source)) +
+  geom_bar(stat = "identity", position = position_dodge(), width = 0.7)
 
 mn_mwh <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RDS") %>% 
   group_by(county) %>% 
@@ -565,3 +543,52 @@ ggplot(mwh, aes(x = source, y = mwh, fill = sector)) +
     axis.text.x = element_text(angle = 45, hjust = 1),
     panel.grid.major.x = element_blank()
   )
+
+
+### linear model predictions
+
+importance(res)
+
+res_simple <- lm(mWh_delivered ~ total_pop + total_households, data = electricity_res)
+
+ctu_res_predict_linear <- cprg_ctu %>% 
+  left_join(urbansim_res, by = c("gnis" = "ctu_id")) %>% 
+  left_join(mn_parcel_res, by = c("gnis" = "ctu_id")) %>% 
+  mutate(mwh_predicted = predict(res_simple, .))
+
+
+county_res_predict_linear <- ctu_res_predict_linear %>% 
+  filter(!is.na(mwh_predicted)) %>% 
+  st_drop_geometry() %>% 
+  group_by(county_name) %>%
+  summarize(mwh_predicted = sum(mwh_predicted))  %>%
+  mutate(
+    # apply emission factor and convert to metric tons
+    co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2) %>%
+      units::as_units("lb") %>%
+      units::set_units("ton") %>%
+      as.numeric(),
+    ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4) %>%
+      units::as_units("lb") %>%
+      units::set_units("ton") %>%
+      as.numeric(),
+    n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O) %>%
+      units::as_units("lb") %>%
+      units::set_units("ton") %>%
+      as.numeric(),
+    co2e =
+      co2 +
+      (ch4 * gwp$n2o) +
+      (n2o * gwp$n2o)
+  )
+
+prediction_comparison_linear <- rbind(county_res_predict_linear %>% 
+                                        select(county_name, co2e) %>% 
+                                        mutate(source = "MC_model_simple"),
+                                      nrel_predict_res %>% 
+                                        select(county_name = county, co2e = emissions_metric_tons_co2e) %>% 
+                                        filter(county_name %in% county_res_predict$county_name) %>% 
+                                        mutate(source = "NREL"))
+
+ggplot(prediction_comparison_linear, aes(x = county_name, y = co2e, fill = source)) +
+  geom_bar(stat = "identity", position = "dodge") + theme_bw()
