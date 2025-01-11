@@ -87,7 +87,7 @@ state_projections %>% filter(sector == "Transportation") %>% distinct(source) %>
 county_emissions %>% filter(sector == "Transportation") %>% distinct(category) %>% 
   print(n = 50)
 
-passenger_vehicles <- c("Light-duty trucks", "Motorcycles", "Passenger cars")
+passenger_vehicles <- c("Light-duty trucks", "Motorcycle", "Passenger cars")
 
 state_projections %>% filter(sector == "Waste") %>% distinct(source) %>% 
   print(n = 50)
@@ -104,9 +104,11 @@ state_projections %>% filter(sector == "LULUCF", values_emissions < 0) %>% disti
 sequestration <- c("Aboveground Biomass", "Belowground Biomass",
                    "Dead Wood", "Litter", "Mineral Soil")
 
-state_projections %>% filter(sector == "Industry") %>% distinct(source) %>% 
+state_projections %>% filter(sector == "Residential") %>% distinct(source) %>% 
   print(n = 50)
 
+county_emissions %>% filter(sector == "Residential") %>% distinct(category) %>% 
+  print(n = 50)
 
 state_projections <- state_projections %>% 
   mutate(subsector_mc = case_when(
@@ -118,10 +120,22 @@ state_projections <- state_projections %>%
     source == "Heavy-duty trucks" ~ "Trucks",
     source == "Bus" ~ "Buses",
     source == "Aviation" ~ "Aviation",
-    #building energy
-    sector == "Commercial" & source == "Natural gas" ~ "Commercial Natural Gas",
-    sector == "Industry" & source == "Natural gas" ~ "Industrial Natural Gas",
-    sector == "Residential" & source == "Natural gas" ~ "Residential Natural Gas",
+    #residential
+    sector == "Residential" & source == "Natural gas" ~ "Residential natural gas",
+    #commercial
+    sector == "Commercial" & source == "Natural gas" ~ "Commercial natural gas",
+    sector == "Commercial" & source %in% c("Natural gas",
+                                           "Biofuel",
+                                           "Coal",
+                                           "Refined Liquids")~ "Commercial fuel combustion",
+    #industrial
+    sector == "Industry" & source == "Natural gas" ~ "Industrial natural gas",
+    sector == "Industry" & source %in% c("Coal", "Refined Liquids") ~ "Industrial fuel combustion",
+    sector == "Industry" & source %in% c("Oil refining") ~ "Refinery processes",
+    sector == "Industry" & source %in% c("Magnesium casting",
+                                         "Other industrial process",
+                                         "Semiconductor manufacture",
+                                         "Paraffinic wax consumption") ~ "Industrial processes",
     #waste
     source %in% waste ~ "Solid waste",
     source == "Wastewater treatment" ~ "Wastewater",
