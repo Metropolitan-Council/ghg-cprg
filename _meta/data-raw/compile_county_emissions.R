@@ -112,7 +112,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   mutate(
     sector = category,
     geog_level = "county",
-    category = "Natural Gas",
+    category = "Natural gas",
     geog_name = county,
     source = source,
     data_source = "Individual natural gas utilities, NREL SLOPE (2021)",

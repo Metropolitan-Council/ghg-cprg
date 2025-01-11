@@ -142,7 +142,7 @@ state_projections <- state_projections %>%
     #electricity
     sector == "Electricity" ~ "Electricity",
     #natural systems
-    source %in% c("Sequestration") ~ "Sequestration",
+    source %in% sequestration & sector != "Agriculture" ~ "Sequestration",
     source == "Urban Trees" ~ "Urban tree",
     TRUE ~ "not_inventoried"
   )) %>% 
@@ -161,9 +161,11 @@ scenarios_sources_annual <- state_projections %>%
   summarize(values_emissions = sum(values_emissions)) %>% 
   #### add proportion relative to 2005
   group_by(scenario, subsector_mc, source_sink,sector, units) %>% 
-  mutate(value_2005 = values_emissions[emissions_year == 2005]) %>% 
+  mutate(value_2005 = values_emissions[emissions_year == 2005],
+         value_2020 = values_emissions[emissions_year == 2020]) %>% 
   # Calculate the proportion
-  mutate(proportion_of_2005 = values_emissions / value_2005) %>% 
+  mutate(proportion_of_2005 = values_emissions / value_2005,
+         proportion_of_2020 = values_emissions / value_2020) %>% 
   ungroup() %>% select(-value_2005) %>% 
   rename(units_emission = units)
 
