@@ -177,7 +177,7 @@ p_nlcd_tcc <- ggplot(cprg_county) +   geom_sf(color="gray20", fill=NA, lwd=0.5) 
 
 ## Introduction
 
-Natural systems are a critical component of capturing carbon from the atmosphere and sequestering it in biomass and terrestrial soils. Photosynthesis is the central mechanism of this process and vegetation is therefore the focal land cover classification for quantifying the potential for regions to both sequester and store carbon. Different ecosystems have varying capacities for carbon capture and this work focuses on five broad classifications: urban trees, urban grasslands (i.e. turf grass), forests, natural grasslands, and wetlands. The distinction between tree and grassland cover in developed areas (i.e. urban) is important as despite having similar sequestration rates, urban natural systems are generally understood to have smaller storage capacities. The preservation and restoration of natural systems will be a key tool in limiting atmospheric greenhouse gases.
+Natural systems are a critical component of capturing carbon from the atmosphere and sequestering it in biomass and terrestrial soils. Photosynthesis is the central mechanism of this process and vegetation is therefore the focal land cover classification for quantifying the potential for regions to both sequester and store carbon. Different ecosystems have varying capacities for carbon capture and this work focuses on five broad classifications: urban trees, urban grasslands (i.e. turf grass, lawns), forests, natural grasslands, and wetlands. The distinction between tree and grassland cover in developed areas (i.e. urban) is important as despite having similar sequestration rates, urban natural systems are generally understood to have smaller storage capacities. The preservation and restoration of natural systems will be a key tool in reducing atmospheric greenhouse gases.
 
 ## Methods
   
@@ -189,7 +189,7 @@ where $i$ is land cover classification. The sequestration rate is based on Midwe
 
 ### Land cover classification
 
-Land cover was determined by using three products from the [USGS's National Land Cover Dataset (NLCD)](https://www.usgs.gov/node/279743), each at a 30 m resolution: (1) land cover type, (2) percent impervious cover, and (3) percent tree canopy cover. First, we used the land cover map to identify the region's various natural cover types (e.g. forests, wetlands, grasslands) that fell outside of 'Developed' lands. In order to classify green spaces that are co-located within the urban sector (e.g. urban trees and grasslands), we overlaid the tree canopy cover map on the impervious cover map. When tree canopy was present in any areas classified as 'Developed', we re-classified these as 'Urban_Tree' and corrected the area covered based on the percent tree canopy value from the NLCD tree map. When an area is classified as 'Developed, Open Space' but contains zero tree canopy coverage, we re-classified this as 'Urban_Grassland'. Using this method, we developed the following land cover classifications: 'Urban_Tree', 'Urban_Grassland', 'Tree', 'Grassland', and 'Wetland'. 
+Land cover was determined by using two products from the [USGS's National Land Cover Dataset (NLCD)](https://www.usgs.gov/node/279743), each at a 30 m resolution: (1) land cover type and (2) percent tree canopy cover. First, we used the land cover map to identify the region's various natural cover types (e.g. forests, wetlands, grasslands) that fell outside of 'Developed' lands. In order to classify green spaces that are co-located within the urban sector (e.g. urban trees and grasslands), we overlaid the tree canopy cover map on the land cover map. When tree canopy was present in any areas classified as 'Developed', we re-classified these as 'Urban_Tree' and corrected the area covered based on the percent tree canopy value from the NLCD tree layer. When an area is classified as 'Developed, Open Space' but contains zero tree canopy coverage, we re-classified this as 'Urban_Grassland'. Using this method, we developed the following land cover classifications: 'Urban_Tree', 'Urban_Grassland', 'Tree', 'Grassland', and 'Wetland'. 
 
 
 ```{r fig-nlcd-lc}
@@ -199,12 +199,6 @@ Land cover was determined by using three products from the [USGS's National Land
 p_nlcd_lc
 ```
 
-```{r fig-nlcd-is}
-#| fig-cap: "USGS National Land Cover Database (NLCD) - Impervious Surfaces"
-#| out-width: "95%"
-
-p_nlcd_is
-```
 ```{r fig-nlcd-tcc}
 #| fig-cap: "USGS National Land Cover Database (NLCD) - Tree Canopy Cover"
 #| out-width: "95%"
@@ -214,7 +208,7 @@ p_nlcd_tcc
 
 ## Results
 
-There is considerable variation across counties in two key components that affect natural system carbon sequestration and stock potential: total area of green spaces and the ratio of 'natural' to 'urban' green spaces. For example, Chisago County features a higher proportion of green spaces in undeveloped lands compared to Hennepin County, and consequently has nearly 40% greater stock potential than Hennepin County owing to the former's higher stock capacity in wetlands and forests. Despite this discrepencancy, Hennepin and Chisago Counties have nearly identical sequestration rates due to Hennepin County's high proportion of urban trees and turf grass (urban grasslands) which have high potential for rapid carbon sequestration. This dichotomy illustrates that different counties curation of natural spaces may play different roles. Highly developed areas may help offset carbon emissions be providing rapid sequestration sinks in urban greenery, whereas less developed counties can provide longer term carbon sinks in natural areas with a higher capacity to continue drawing down atmospheric carbon even if future emissions approach net zero. 
+There is considerable variation across counties in two key components that affect natural system carbon sequestration and stock potential: total area of green spaces and the ratio of 'natural' to 'urban' green spaces. For example, Chisago County features a higher proportion of green spaces in undeveloped lands compared to Hennepin County, and consequently has nearly 40% greater stock potential than Hennepin County owing to the former's higher stock capacity in wetlands and forests. Despite this discrepencancy, Hennepin and Chisago Counties have nearly identical sequestration rates due to Hennepin County's high proportion of urban trees and turf grass (urban grasslands) which have high potential for rapid carbon sequestration. This dichotomy illustrates that different counties curation of natural spaces may play different roles. Highly developed areas may help offset carbon emissions by providing rapid sequestration sinks in urban greenery, whereas less developed counties can provide longer term carbon sinks in natural areas with a higher capacity to continue drawing down atmospheric carbon even if future emissions approach net zero. The high stock capacity also reinforces the need for natural systems protection, as currently captured carbon would be released into the atmosphere upon development.
 
 Two important caveats to these results are that (1) carbon sequestration tends to slow as natural systems mature and (2) present day natural systems exist at some intermediate level of the illustrated carbon stock potential. The former means that these approximations could be higher or lower depending on the average age of natural systems in each county (e.g. time since agricultural abandonment). The latter means that the loss of these natural systems to development or habitat instruction means that not only would the region lose carbon sinks, but a substantial amount of the stored carbon will be transferred to the atmosphere, increasing atmospheric greenhouse gases.
 
