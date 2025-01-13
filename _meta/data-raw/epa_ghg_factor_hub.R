@@ -617,6 +617,7 @@ epa_ghg_factor_hub <- list(
       "Natural Gas",
       "Kerosene-Type Jet Fuel"
     )),
+  "industrial_combustion" = stationary_combustion,
   "mobile_combustion" = kg_co2_per_unit,
   "mobile_combustion_other" = transportation_tbl345,
   "waste" = scope3_cat5_cat12_waste %>%

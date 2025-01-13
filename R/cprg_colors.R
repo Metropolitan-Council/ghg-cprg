@@ -11,35 +11,53 @@ cprg_colors <- list(
 
 # sector colors
 sector_colors <- list(
-  "Transportation" = "#8e440b",
-  "Energy" = "#163c6a",
-  "Waste" = "#8d0c3b"
+  "Electricity" = "#1f77b4",
+  "Transportation" = "#191970",
+  "Residential" = "#9467bd",
+  "Commercial" = "#d62728",
+  "Industrial" = "slategray",
+  "Waste" = "#8c564b",
+  "Agriculture" = "#8fb910",
+  "Natural Systems" = "#006f3c"
 )
+
 
 # category
 category_colors <-
   list(
-    # GnBu
-    "Residential energy" = "#225ea8",
-    "Commercial energy" = "#41b6c4",
-    "Industrial energy" = "#7fcdbb",
-    "Liquid stationary fuels" = "#a8ddb5",
 
+    # Pu
+    "Residential natural gas" = "#483248",
+    "Residential electricity" = "#CF9FFF",
+    "Commercial natural gas" = "#800000",
+    "Commercial fuel combustion" = "#DE3163",
+    "Commercial electricity" = "#FAA0A0",
+
+    # Gray
+    "Industrial electricity" = "#E5E4E2",
+    "Industrial natural gas" = "#36454F",
+    "Industrial processes" = "#B2BEB5",
+    "Industrial fuel combustion" = "#818589",
+    "Refinery processes" = "#708090",
 
     # YlOrBr
-    "Passenger vehicles" = "#993404",
-    "Buses" = "#E9967A",
-    "Trucks" = "#fe9929",
+    "Passenger vehicles" = "#0047AB",
+    "Buses" = "#6F8FAF",
+    "Trucks" = "#6495ED",
+    "Aviation" = "#191970",
 
-    # PuRd
-    "Solid waste" = "#ce1256",
-    "Wastewater" = "#c994c7",
+    # Rd
+    "Solid waste" = "#8B4513",
+    "Wastewater" = "#CD853F",
+
+    # Green
+    "Cropland" = "#c7e960",
+    "Livestock" = "#8fb910",
 
     # Gn
-    "Sequestration" = "#006f3c",
-    "Stock" = "#27b376"
+    "Urban greenery" = "#006f3c",
+    "Natural systems" = "#27b376"
   )
-
 
 # source
 source_colors <- list(
