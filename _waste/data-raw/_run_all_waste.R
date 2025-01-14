@@ -1,6 +1,7 @@
 # wastewater
 
-source("_waste/data-raw/wastewater/epa_state_wastewater.R")
+source("_waste/data-raw/wastewater_v2/00_compile_wastewater_emissions.R")
+# source("_waste/data-raw/wastewater/epa_state_wastewater.R")
 # source("_waste/data-raw/wastewater/metc_wastewater.R")
 # source("_waste/data-raw/wastewater/_wastewater.R")
 
