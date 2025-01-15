@@ -110,6 +110,7 @@ electricity_res <- left_join(residential_2021,
                           "White Bear Lake")) # shared utility! 
   
 ### run residential model
+#### residential RF ####
 
 set.seed(1029)
 ind <- sample(2, nrow(electricity_res), replace = TRUE, prob = c(0.7, 0.3))
@@ -169,7 +170,7 @@ p1 <- predict(rf_res_train, train_res)
 plot(p1, train_res$mWh_delivered)
 abline(0,1)
 
-train %>% cbind(p1) %>% filter(mWh_delivered < 10000 & p1 > 20000)
+train_res %>% cbind(p1) %>% filter(mWh_delivered < 10000 & p1 > 20000)
 
 p2 <- predict(rf_res_train, test_res)
 plot(p2, test_res$mWh_delivered)
@@ -245,8 +246,7 @@ ggplot(electricity_res, aes(x = total_pop, y = mWh_delivered, col = total_househ
 
 
 
-# for this first approach we are only looking at residential electricity delivery
-# in 2021
+# nonresidential processing ####
 
 nonresidential_2021 <- xcel_only %>% 
   filter(year == 2021,
@@ -324,6 +324,8 @@ electricity_nonres <- left_join(nonresidential_2021,
 
 ### run model
 
+#### non residential RF ####
+
 set.seed(1029)
 ind <- sample(2, nrow(electricity_nonres), replace = TRUE, prob = c(0.7, 0.3))
 train_nonres <- electricity_nonres[ind==1,]
@@ -399,8 +401,8 @@ abline(0,1)
 
 #train %>% cbind(p1) %>% filter(mWh_delivered < 10000 & p1 > 20000)
 
-p2 <- predict(rf, test)
-plot(p2, test$mWh_delivered)
+p2 <- predict(rf, test_nonres)
+plot(p2, test_nonres$mWh_delivered)
 abline(0,1)
 
 importance(rf)
@@ -520,7 +522,7 @@ ctu_mwh_predict <- rbind(ctu_res_predict %>% st_drop_geometry() %>%
            mwh_predicted,
            county_name) %>% 
     mutate(sector = "Commercial/Industrial")) %>% 
- mutate(source = "MC Model") 
+ mutate(source = "MC Model - RF") 
 
 
 mwh <- rbind(mn_mwh_sector, ctu_mwh_predict %>% 
@@ -547,20 +549,40 @@ ggplot(mwh, aes(x = source, y = mwh, fill = sector)) +
 
 ### linear model predictions
 
-importance(res)
+importance(rf_res_model)
 
-res_simple <- lm(mWh_delivered ~ total_pop + total_households, data = electricity_res)
+res_simple <- lm(mWh_delivered ~ total_pop + mean_year_single_family_home, data = electricity_res)
+summary(res_simple) # R2 = 0.9863
+plot(mWh_delivered ~ total_pop, data = electricity_res)
+abline(res_simple)
 
-ctu_res_predict_linear <- cprg_ctu %>% 
+varImpPlot(rf_nonres_model)
+
+nonres_simple <- lm(mWh_delivered ~ total_job_spaces, data = electricity_nonres)
+summary(nonres_simple) # R2 = 0.9704
+
+plot(mWh_delivered ~ total_job_spaces, data = electricity_nonres)
+abline(nonres_simple)
+
+ctu_predict_linear <- rbind(cprg_ctu %>% 
   left_join(urbansim_res, by = c("gnis" = "ctu_id")) %>% 
-  left_join(mn_parcel_res, by = c("gnis" = "ctu_id")) %>% 
-  mutate(mwh_predicted = predict(res_simple, .))
+  left_join(mn_parcel_res, by = c("gnis" = "ctu_id", "ctu_name")) %>% 
+  mutate(mwh_predicted = predict(res_simple, .)) %>% 
+  mutate(sector = "Residential") %>% 
+    select(ctu_name, county_name, mwh_predicted, sector),
+  cprg_ctu %>% 
+    left_join(urbansim_nonres, by = c("gnis" = "ctu_id")) %>% 
+    #left_join(mn_parcel_res, by = c("gnis" = "ctu_id")) %>% 
+    mutate(mwh_predicted = predict(nonres_simple, .)) %>% 
+    mutate(sector = "Commercial/Industrial")%>% 
+    select(ctu_name, county_name, mwh_predicted, sector)
+)
 
 
-county_res_predict_linear <- ctu_res_predict_linear %>% 
+county_predict_linear <- ctu_predict_linear %>% 
   filter(!is.na(mwh_predicted)) %>% 
   st_drop_geometry() %>% 
-  group_by(county_name) %>%
+  group_by(county_name, sector) %>%
   summarize(mwh_predicted = sum(mwh_predicted))  %>%
   mutate(
     # apply emission factor and convert to metric tons
@@ -582,13 +604,69 @@ county_res_predict_linear <- ctu_res_predict_linear %>%
       (n2o * gwp$n2o)
   )
 
-prediction_comparison_linear <- rbind(county_res_predict_linear %>% 
-                                        select(county_name, co2e) %>% 
-                                        mutate(source = "MC_model_simple"),
-                                      nrel_predict_res %>% 
-                                        select(county_name = county, co2e = emissions_metric_tons_co2e) %>% 
+prediction_comparison_linear <- rbind(county_predict_linear %>% 
+                                        select(county_name, mwh = mwh_predicted, sector) %>% 
+                                        mutate(source = "MC model linear"),
+                                      mn_mwh_sector %>% 
+                                        select(county_name = county, mwh, sector) %>% 
                                         filter(county_name %in% county_res_predict$county_name) %>% 
                                         mutate(source = "NREL"))
 
-ggplot(prediction_comparison_linear, aes(x = county_name, y = co2e, fill = source)) +
-  geom_bar(stat = "identity", position = "dodge") + theme_bw()
+mwh_add <- rbind(mwh, county_predict_linear %>% 
+                   select(county = county_name, mwh = mwh_predicted, sector) %>% 
+                   mutate(source = "MC model linear"))
+
+mwh_predict_total <- ggplot(mwh_add, aes(x = source, y = mwh, fill = sector)) +
+  geom_bar(stat = "identity", position = position_stack(reverse = TRUE), width = 0.7) +
+  facet_wrap(~county, scales = "free_y") + # Side-by-side sources
+  scale_fill_manual(values = c("Residential" = "cornflowerblue", "Commercial/Industrial" = "cornflowerblue"),
+                    guide = "none") + # Customize colors
+  labs(
+    title = "Electricity Usage by County - Total",
+    x = "County",
+    y = "MWh",
+    fill = "Sector"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank()
+  )
+
+mwh_predict_total
+
+mwh_predict_res <- ggplot(mwh_add %>% filter(sector == "Residential"), 
+                          aes(x = source, y = mwh)) +
+  geom_bar(stat = "identity", position = position_stack(reverse = TRUE), width = 0.7, fill = "firebrick4", col = "black") +
+  facet_wrap(~county, scales = "free_y") + # Side-by-side sources
+  labs(
+    title = "Electricity Usage by County - Residential",
+    x = "County",
+    y = "MWh",
+    fill = "Sector"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank()
+  )
+
+mwh_predict_res
+
+mwh_predict_nonres <- ggplot(mwh_add %>% filter(sector != "Residential"), 
+                          aes(x = source, y = mwh)) +
+  geom_bar(stat = "identity", position = position_stack(reverse = TRUE), width = 0.7, fill = "#FFDB58", col = 'black') +
+  facet_wrap(~county, scales = "free_y") + # Side-by-side sources
+  labs(
+    title = "Electricity Usage by County - Non-Residential",
+    x = "County",
+    y = "MWh",
+    fill = "Sector"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank()
+  )
+
+mwh_predict_nonres
