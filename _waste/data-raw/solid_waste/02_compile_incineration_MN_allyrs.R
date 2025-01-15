@@ -18,8 +18,8 @@ incin_factors <- tibble(
   co2 = co2_factor * c(co2_efficiency_wte, co2_efficiency_onsite),
   n2o = c(n2o_emissions_factor_wte, n2o_emissions_factor_onsite) *
     units::as_units("gram") %>%
-    units::set_units("metric_ton") %>% 
-    as.numeric()
+      units::set_units("metric_ton") %>%
+      as.numeric()
 )
 
 incineration_emissions <- mpca_score %>%
