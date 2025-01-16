@@ -151,7 +151,7 @@ NHD <- sf::st_make_valid(NHD)
 
 # CTU level estimates -----------------------------------------------------
 # Convert the coordinate system to 4269 (ideal for MN)
-cprg_ctu <- sf::st_set_crs(cprg_ctu, 4269)
+cprg_ctu <- sf::st_transform(cprg_ctu, 4269)
 # do this prior to the intersection call, otherwise st_intersection won't work
 cprg_ctu <- st_make_valid(cprg_ctu)
 
