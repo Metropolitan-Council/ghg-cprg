@@ -67,15 +67,7 @@ p_nlcd_lc <- ggplot(cprg_county) +
     height = unit(0.33, "in"), width = unit(0.35, "in"),
     pad_x = unit(1.4, "in"), pad_y = unit(0.35, "in"),
     style = ggspatial::north_arrow_minimal
-  ) +
-  
-  theme(
-    legend.position = c(0.75,0.97), legend.direction = "vertical",  
-    legend.justification = c("left","top"), legend.margin = margin(2, 0, 0, 0), 
-    legend.key.height = unit(0.2, "cm"), legend.key.width = unit(0.2, "cm"), 
-    legend.box = "vertical", legend.box.just = "left", 
-    legend.title = element_text(size=9), legend.text = element_text(size=8)
-  )
+  ) 
 
 
 ```
@@ -105,15 +97,7 @@ p_nlcd_is <- ggplot(cprg_county) +
     height = unit(0.33, "in"), width = unit(0.35, "in"),
     pad_x = unit(1.4, "in"), pad_y = unit(0.35, "in"),
     style = ggspatial::north_arrow_minimal
-  ) +
-  
-  theme(
-    legend.position = c(0.75,0.97), legend.direction = "vertical",  
-    legend.justification = c("left","top"), legend.margin = margin(2, 0, 0, 0), 
-    legend.key.height = unit(0.2, "cm"), legend.key.width = unit(0.2, "cm"), 
-    legend.box = "vertical", legend.box.just = "left", 
-    legend.title = element_text(size=9), legend.text = element_text(size=8)
-  )
+  ) 
 
 ```
 
@@ -141,16 +125,7 @@ p_nlcd_tcc <- ggplot(cprg_county) +
     height = unit(0.33, "in"), width = unit(0.35, "in"),
     pad_x = unit(1.4, "in"), pad_y = unit(0.35, "in"),
     style = ggspatial::north_arrow_minimal
-  ) +
-  
-  theme(
-    legend.position = c(0.75,0.97), legend.direction = "vertical",  
-    legend.justification = c("left","top"), legend.margin = margin(2, 0, 0, 0), 
-    legend.key.height = unit(0.2, "cm"), legend.key.width = unit(0.2, "cm"), 
-    legend.box = "vertical", legend.box.just = "left", 
-    legend.title = element_text(size=9), legend.text = element_text(size=8)
   )
-
 ```
 
 The [USGS's National Land Cover Dataset (NLCD)](https://www.usgs.gov/node/279743) is a comprehensive, nationwide dataset providing detailed information on land cover and land use across the United States. First released in 2001, it is developed by the Multi-Resolution Land Characteristics (MRLC) Consortium to support applications in environmental management, policy-making, and land planning. Updated every five years, the NLCD uses satellite imagery to classify land cover types, track land use change over time, and provide insights into urbanization, forestry, agriculture, and water resources. 
@@ -168,12 +143,6 @@ p_nlcd_lc
 
 First, we used the land cover map to identify the region's various natural cover types (e.g. forests, wetlands, grasslands) that fell outside of 'Developed' lands. In order to classify green spaces that are co-located within the urban sector (e.g. urban trees and grasslands), we overlaid the tree canopy cover map on the impervious cover map. When tree canopy was present in any areas classified as 'Developed', we re-classified these as 'Urban_Tree' and corrected the area covered based on the percent tree canopy value from the NLCD tree map. When an area is classified as 'Developed, Open Space' but contains zero tree canopy coverage, we re-classified this as 'Urban_Grassland'. Using this method, we developed the following land cover classifications: 'Urban_Tree', 'Urban_Grassland', 'Tree', 'Grassland', and 'Wetland'. 
 
-```{r fig-nlcd-is}
-#| fig-cap: "USGS National Land Cover Database (NLCD) - Impervious Surfaces"
-#| out-width: "95%"
-#| echo: false
-p_nlcd_is
-```
 ```{r fig-nlcd-tcc}
 #| fig-cap: "USGS National Land Cover Database (NLCD) - Tree Canopy Cover"
 #| out-width: "95%"
