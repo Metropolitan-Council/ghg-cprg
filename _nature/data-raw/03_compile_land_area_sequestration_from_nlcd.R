@@ -1,4 +1,4 @@
-rm(list = ls())
+rm(list=ls())
 source("R/_load_pkgs.R")
 
 overwrite_RDS <- TRUE
@@ -14,19 +14,15 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 
 # turn your county and ctu layers into dataframes
-cprg_county_df <- cprg_county %>%
-  as.data.frame() %>%
-  select(geoid, county_name, state_name) %>%
-  st_drop_geometry()
+cprg_county_df <- cprg_county %>% as.data.frame() %>%
+  select(geoid, county_name, state_name) %>% st_drop_geometry()
 
-cprg_ctu_df <- cprg_ctu %>%
-  as.data.frame() %>%
-  select(gnis, geoid_wis, ctu_name, ctu_class, county_name, state_name) %>%
+cprg_ctu_df <- cprg_ctu %>% as.data.frame() %>%
+  select(gnis, geoid_wis, ctu_name, ctu_class, county_name, state_name) %>% 
   st_drop_geometry() %>%
   mutate(
     geoid_wis = as.numeric(geoid_wis),
-    gnis = as.numeric(gnis)
-  )
+    gnis = as.numeric(gnis))
 
 
 
@@ -44,10 +40,8 @@ nlcd_county_c <- nlcd_county %>%
   dplyr::select(-c(seq_mtco2e_sqkm, stock_mtco2e_sqkm)) %>%
   left_join( # this creates an empty grid of all desired year, land cover combinations
     x = cprg_county_df %>%
-      crossing(
-        year = seq(2001, 2021, by = 1),
-        land_cover_type = unique(land_cover_c$land_cover_type)
-      ),
+      crossing(year=seq(2001, 2021, by = 1),
+               land_cover_type = unique(land_cover_c$land_cover_type)),
     y = ., by = join_by(county_name, state_name, year, land_cover_type)
   ) %>%
   mutate(source = ifelse(is.na(area), "est", "nlcd")) %>%
@@ -90,10 +84,8 @@ nlcd_ctu_c <- nlcd_ctu %>%
   dplyr::select(-c(seq_mtco2e_sqkm, stock_mtco2e_sqkm)) %>%
   left_join( # this creates an empty grid of all desired year, land cover combinations
     x = cprg_ctu_df %>%
-      crossing(
-        year = seq(2001, 2021, by = 1),
-        land_cover_type = unique(land_cover_c$land_cover_type)
-      ),
+      crossing(year=seq(2001, 2021, by = 1),
+               land_cover_type = unique(land_cover_c$land_cover_type)),
     y = ., by = join_by(ctu_name, ctu_class, county_name, state_name, year, land_cover_type)
   ) %>%
   mutate(source = ifelse(is.na(area), "est", "nlcd")) %>%
@@ -112,10 +104,8 @@ nlcd_ctu_c <- nlcd_ctu %>%
     sequestration_potential = sequestration_potential3,
     stock_potential = stock_potential3
   ) %>%
-  dplyr::select(
-    gnis, geoid_wis, ctu_name, ctu_class, county_name, state_name,
-    year, land_cover_type, area, sequestration_potential, stock_potential, source
-  ) %>%
+  dplyr::select(gnis, geoid_wis, ctu_name, ctu_class, county_name, state_name,
+                year, land_cover_type, area, sequestration_potential, stock_potential, source) %>%
   arrange(year, ctu_name, land_cover_type) %>%
   # Now that we've extrapolated sequestration/stock values despite having no area estimates,
   # we need to calculate area based on the extrapolated sequestration.
@@ -178,10 +168,11 @@ if (overwrite_RDS) {
 # nlcd_ctu_c %>%
 #   filter(ctu_name %in% c("Minneapolis", "Edina", "Saint Paul")) %>%
 #   ggplot() + theme_minimal() +
-#   geom_point(data=. %>% filter(source!= "nlcd"),
+#   geom_point(data=. %>% filter(source!= "nlcd"), 
 #              mapping=aes(x=year,y=-sequestration_potential, fill=source, color=land_cover_type), shape=21) +
 #   scale_fill_manual(breaks=c("interpolated", "extrapolated"), values=c("white","gray70")) +
 #   ggnewscale::new_scale_fill() +
-#   geom_point(data=. %>% filter(source == "nlcd"),
+#   geom_point(data=. %>% filter(source == "nlcd"), 
 #              mapping=aes(x=year,y=-sequestration_potential, fill=land_cover_type, color=land_cover_type), shape=21) +
 #   facet_wrap(~ctu_name)
+
