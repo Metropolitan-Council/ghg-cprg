@@ -50,8 +50,8 @@ epa_all <- rbind(epa_wi, epa_mn)
 cprg_county_proportions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_proportions.RDS"))
 
 federal_inventory_waste_allocated <- cprg_county_proportions %>%
-  filter(year == 2021) %>%
-  left_join(epa_all, join_by(STATE)) %>%
+  filter(population_year == 2021) %>%
+  left_join(epa_all, by = c("state_name" = "STATE")) %>%
   mutate(
     "Landfill" = Landfills * county_proportion_of_state_pop,
     "Compost" = Composting * county_proportion_of_state_pop,
@@ -60,8 +60,8 @@ federal_inventory_waste_allocated <- cprg_county_proportions %>%
     "Total" = Total * county_proportion_of_state_pop
   ) %>%
   select(
-    geoid = GEOID,
-    inventory_year = year,
+    geoid,
+    inventory_year = population_year,
     "Landfill",
     "Compost",
     "Anaerobic digestion",
@@ -80,7 +80,7 @@ federal_inventory_waste_allocated <- cprg_county_proportions %>%
     values_to = "value_emissions"
   ) %>%
   mutate(
-    units_emissions = "Tonnes CO2e",
+    units_emissions = "Metric tons CO2e",
     data_source = "US GHG Inventory"
   )
 

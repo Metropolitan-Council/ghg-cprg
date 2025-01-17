@@ -8,17 +8,21 @@ score_summary <- read_csv(file.path(here::here(), "_waste/data-raw/solid_waste/s
 
 # filter to only counties in 9-county MN region, for years between 2005 and 2021
 
-mt_conversion_factor <- 0.90718474
-
 score_filtered <- score_summary %>%
   group_by(Year, Method) %>%
-  mutate(state_total = sum(Tons) * mt_conversion_factor) %>%
+  mutate(state_total = sum(Tons) %>%
+           units::as_units("ton") %>%
+           units::set_units("metric_ton")%>%
+           as.numeric()) %>%
   filter(
     County %in% cprg_county$county_name,
     Year %in% 2005:2021
   ) %>%
   mutate(
-    value_activity = Tons * mt_conversion_factor, # convert short tons to metric tons (for consistency with IPCC values)
+    value_activity = Tons %>%
+      units::as_units("ton") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(), # convert short tons to metric tons (for consistency with IPCC values)
     units_activity = "metric tons MSW"
   ) %>%
   left_join(cprg_county, by = join_by(County == county_name)) %>%

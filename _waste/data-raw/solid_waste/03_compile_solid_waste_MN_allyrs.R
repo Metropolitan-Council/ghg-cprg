@@ -35,16 +35,16 @@ solid_waste_mn <- solid_waste_mn_by_gas %>%
   ) %>%
   replace(is.na(.), 0) %>%
   mutate(
-    ch4_co2e = `Tonnes CH4` * gwp$ch4,
-    n2o_co2e = `Tonnes N2O` * gwp$n2o,
+    ch4_co2e = `Metric tons CH4` * gwp$ch4,
+    n2o_co2e = `Metric tons N2O` * gwp$n2o,
     sector = "Waste",
     category = "Solid waste",
     data_source = "MPCA SCORE Report",
     factor_source = "IPCC solid waste methodology"
   ) %>%
   mutate(
-    value_emissions = ch4_co2e + n2o_co2e + `Tonnes CO2`,
-    units_emissions = "Tonnes CO2e"
+    value_emissions = ch4_co2e + n2o_co2e + `Metric tons CO2`,
+    units_emissions = "Metric tons CO2e"
   ) %>%
   ungroup() %>%
   select(
