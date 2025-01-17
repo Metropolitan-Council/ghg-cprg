@@ -82,17 +82,11 @@ p_nhd_waterways <- ggplot(cprg_county) +
         height = unit(0.33, "in"), width = unit(0.35, "in"),
         pad_x = unit(1.4, "in"), pad_y = unit(0.35, "in"),
         style = ggspatial::north_arrow_minimal
-    ) +
-    theme(
-        legend.position = c(0.75, 0.97), legend.direction = "vertical",
-        legend.justification = c("left", "top"), legend.margin = margin(2, 0, 0, 0),
-        legend.key.height = unit(0.2, "cm"), legend.key.width = unit(0.2, "cm"),
-        legend.box = "vertical", legend.box.just = "left",
-        legend.title = element_text(size = 9), legend.text = element_text(size = 8)
     )
+
 ```
 
-We have included waterways in our greenhouse gas inventory to account for the natural release of methane (CH~4~) from water bodies, which is emitted during anaerobic decay of organic matter. Here we are using methane emissions factors derived from the Minnesota Pollution Control Agency (MPCA) GHG Technical Support Document (see section on Methane from Inland Waters). Derived from a variety of peer-reviewed literature sources, the MPCA reports *daily* methane fluxes from lakes, rivers and streams, and reservoirs in units of lbs CH~4~ per acre of water surface area, which we have converted to metric tons CH~4~ per square kilometer of water surface area *per year*.
+We have included waterways in our greenhouse gas inventory to account for the natural release of methane (CH~4~) from water bodies, which is emitted during anaerobic decay of organic matter. Here we are using methane emissions factors derived from the Minnesota Pollution Control Agency (MPCA) GHG Technical Support Document (see section on Methane from Inland Waters). Derived from a variety of peer-reviewed literature sources, the MPCA reports *daily* methane fluxes from lakes, rivers and streams, and reservoirs in units of lbs CH~4~ per acre of water surface area, which we have converted to metric tons CH~4~ per square kilometer of water surface area *per year*. Similarly to the MPCA Inventory approach, we assume natural water bodies in the seven-county region are anthropogenically disturbed (e.g. high nitrate runoff, invasive species) which raises methane emissions beyond natural rates.
 
 To scale these emissions factors to the Metropolitan Statistical Area, we leveraged the [USGS's National Hydrography Dataset (NHD)](https://www.usgs.gov/national-hydrography/national-hydrography-dataset), a detailed geospatial dataset that maps the surface water features of the United States, including rivers, streams, lakes, and reservoirs. The NHD provides a standardized framework for analyzing water systems and their connectivity, enabling better decision-making to support water resource management, environmental studies, and emergency planning. 
 
@@ -106,7 +100,7 @@ We used three map products from the NHD to develop our methane inventory for wat
 p_nhd_waterways
 ```
 
-Using the NHDWaterbody and NHDArea maps, we calculated the total area of waterways in each county and CTU. We then multiplied the area of each waterway type by the corresponding methane emissions factor to estimate the total methane emissions from waterways in each county and CTU. The figure below shows the total area of waterways in each county, broken down by waterway type. 
+Using the NHDWaterbody and NHDArea maps, we calculated the total area of waterways in each county and CTU. We then multiplied the area of each waterway type by the corresponding methane emissions factor to estimate the total methane emissions from waterways in each county and CTU. The figure below shows the total area of waterways in each county, broken down by waterway type. Lakes and ponds are the biggest emitters of methane across the region and within each individual county.
 
 
 ```{r fig-nhd-byCounty}
