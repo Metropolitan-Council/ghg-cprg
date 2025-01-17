@@ -243,7 +243,7 @@ fig_economy_net_zero
 ```{r fig-subsector-cp-downscale}
 #| fig-cap: "Economy wide MPCA downscale"
 #| out-width: "95%"
-#| fig.height: 4  # Set height in inches
+#| fig.height: 4  # Set height in inchess
 #| fig.width: 8   # Set width in inches
 
 ### can't currently get sequestration to plot as negative figure
@@ -270,7 +270,7 @@ fig_subsector_current_policies <- plot_ly(
   text = ~scenario # Pass category to hovertext
 ) %>%
   plotly_layout(
-    main_title = "Subsector net-zero downscale",
+    main_title = "Subsector current policies downscale",
     x_title = "Year",
     y_title = "Million metric tons CO<sub>2</sub>e",
     subtitle = ""
