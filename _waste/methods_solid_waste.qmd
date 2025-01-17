@@ -1,0 +1,110 @@
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r, include=FALSE}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+
+hookaddcap()
+```
+
+## Methods
+
+Solid waste emissions for Minnesota and Wisconsin are calculated using two different methods due to a difference in data availability. 
+
+### Minnesota
+
+The previous iteration of this inventory calculated Minnesota's solid waste emissions by multiplying activity totals by emissions factors from the EPA's Emissions Factor Hub. This update instead uses methodologies recommended by the Intergovernmental Panel on Climate Change (IPCC) (cite).The methodologies were selected to align with best practices for community-wide inventories using the IPCC recommendations and the guidance of the Global Protocol for Community-Scale Greenhouse Gas Inventories (cite).
+
+#### Landfill
+
+The IPCC suggests two alternatives for calculating landfill emissions, a first order decay model and a methane commitment model. The first order decay model is often used for larger-scale inventories, such as the US Federal Inventory, and requires waste data going back to 1950. Given the data available and the scope of this inventory, we chose to instead use the simpler methane commitment model to calculate county-level emissions for Minnesota.
+
+The methane commitment model calculates methane emissions from landfills for a given year by multiplying municipal solid waste totals by a methane generation potential and adjusting for oxidation and methane flaring,
+
+$$Emissions_{CH_4} = [(MSW \times L_0 )-rec] \times (1 – ox) $$
+
+$MSW$, or the amount of municipal solid waste processed in landfills, is reported on a county level by MPCA's SCORE report (@sec-mpca-score).
+<!-- make sure the above link refers to the most current information! -->
+It is then multiplied by a methane generation potential $L_0$. In some processes, the amount of methane recovered from landfills, either through methane flaring or landfill gas to energy programs, is subtracted here. Due to data concerns and best practices recommendations, we have chosen not to include methane recovery in our Minnesota emissions calculations. Learn more in @sec-epa-methane. 
+
+After subtracting methane recovered, emissions are multiplied by $1-ox$ to account for oxidation in the landfill. Our oxidation value is assigned the IPCC default of 0.1.
+
+$L_0$, the methane generation potential, is calculated as follows:
+
+$$L_0 = MCF × DOC_f × F × 16/12 \times DOC$$ where
+
+-   $MCF$ = methane commitment factor. Assigned IPCC default of 0.5 for managed, semi-aerobic landfills.
+-   $DOC_f$ = fraction of degradable organic carbon degraded. Assigned IPCC default of 0.6.
+-   $F$ = fraction of methane in landfill gas. Assigned IPCC default of 0.5.
+-   $16/12$ = Methane (CH~4~) to carbon (C) ratio (atomic weight)
+-   $DOC$ = degradable organic carbon. Calculated based on local waste makeup data from MPCA's [2013 Statewide Waste Characterization study](https://www.pca.state.mn.us/sites/default/files/w-sw1-60.pdf), using the equation $DOC = ( 0.4 \times \text{paper/textiles}) + ( 0.17 \times \text{non-food organics}) + ( 0.15 \times \text{food waste}) + ( 0.3 \times \text{wood/straw})$.
+
+#### Compost
+
+Compost produces both methane and nitrous oxide. Emissions are calculated by multiplying waste activity totals by emissions factors divided between aerobic and anaerobic digesters. Since Minnesota only has one anaerobic digester that is outside the inventory area, we assumed 0% anaerobic digestion within the inventory area (source).
+
+$$Emissions_{CH_4} = MSW_{compost} \times 10 \times 10^{-3}$$
+
+$$Emissions_{N_2O} = MSW_{compost} \times 0.6 \times 10^{-3}$$
+
+As in other sections, MSW activity data comes from MPCA's SCORE report. The emissions factors of 10 and 0.6 come from IPCC default values.
+
+#### Incineration
+
+Since incineration data is reported to SCORE as Waste to Energy, it is assumed that all incineration in the MSA is considered Waste to Energy.
+
+Incineration of waste produces CH~4~, CO~2~, and N~2~O emissions. However, the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories reports negligible CH~4~ emissions for continuous incineration facilities. 
+<!-- \[CHECK IF WE USE STOKERS OR FLUIDIZED BEDS - STOKER EF \~0.2\] -->
+
+$$Emissions_{CO_2} = (MSW_{incinerated} \times E_i + MSW_{onsite} \times E_o) \times FCC
+\times FFC \times 44/12$$
+
+$$Emissions_{N_2O} = MSW_{incinerated} \times EF_{N_2O} \times 10^{-6}$$
+
+where:
+
+-   $MSW_{incinerated}$ = municipal solid waste incinerated, as reported by SCORE.
+
+-   $E_i$ = efficiency of combustion for incineration. Assigned IPCC default of 95%.
+
+-   $MSW_{onsite}$ = municipal solid waste burned onsite, as reported by SCORE.
+
+-   $E_o$ = efficiency of combustion for onsite burning. Assigned Greenhouse Gas Protocol default of 71%.
+
+-   $FCC$ = fraction of carbon content in MSW. Assigned IPCC default of 40%.
+
+-   $FFC$ = fraction of fossil carbon in MSW. Assigned IPCC default of 40%.
+
+-   $44/12$ = Ratio of carbon dioxide (CO~2~) to carbon (C) by atomic weight
+
+-   $EF_{N_2O}$ = aggregate N~2~O emission factor for MSW. Assigned GHG Protocol default of 50 g N~2~O/ metric tons waste for continuous and semi-continuous incinerators.
+
+#### Limitations
+
+Because the methane commitment method for landfill emissions calculates emissions slightly differently than the IPCC-encouraged First Order Decay model, landfill results may differ slightly from sources that use First Order Decay, such as the EPA's National Inventory and its State Inventory Tools. Both methods are accepted as valid ways to estimate solid waste emissions.
+
+MPCA SCORE does not report activity data for waste generated and processed by industry. 
+<!-- [check SIT tool - what % does EPA assign industry?] -->
+
+Emissions are not calculated for waste that is recycled, as any emissions generated in the recycling process come from the energy use of the facilities or transportation and are accounted for in other sectors of this inventory.
+
+### Wisconsin
+
+Wisconsin emissions are calculated by interpolating and scaling down state-level data from the Wisconsin DNR [@wisconsindnrGreenhouseGas2021].
+
+This 2021 inventory estimates landfill and waste-to-energy emissions for the years 2005 and 2018, including methane recovery offsets. In order to fill in missing years, emissions between 2005 and 2018 were linearly interpolated. Due to the small amount of change in emissions, it was assumed that emissions from 2018 to 2021 were constant. These emissions were then allocated to counties based on population.
+

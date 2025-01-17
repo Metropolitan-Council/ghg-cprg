@@ -961,6 +961,11 @@ _transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/
 
 _transportation/data-raw/epa/air_emissions_modeling/EQUATES/CMAS_Data_Warehouse/
 
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa_09_2023.xlsb
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa_09_2023.xlsx
+_industrial/data-raw/mn_flight.xls
+
+
 _meta/data-raw/population/co-est00int-01-27.xls
 
 _meta/data-raw/population/co-est00int-01-55.xls
@@ -1145,6 +1150,25 @@ _transportation/data-raw/~$_source_method_compare.xlsx
 
 _transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2024-0812-144242.csv
 
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsb
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsx
+_industrial/data-raw/MPCA_industrial_fuel_throughput.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2010.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2011.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2012.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2013.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2014.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2015.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2016.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2017.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2018.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2019.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2020.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2021.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2022.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2023.xlsx
+_meta/data-raw/state-ghg-inventory.csv
+
 
 _transportation/data-raw/mndot/city_route_system/
 
@@ -1154,4 +1178,6 @@ _transportation/data-raw/mndot/updated_VMT_County_City_Route_System.zip
 
 _agriculture/data-raw/ag-module.xlsx
 
+
 /_nature/data-raw/nhd_gdb
+
