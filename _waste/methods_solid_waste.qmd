@@ -27,7 +27,7 @@ Solid waste emissions for Minnesota and Wisconsin are calculated using two diffe
 
 ### Minnesota
 
-The previous iteration of this inventory calculated Minnesota's solid waste emissions by multiplying activity totals by emissions factors from the EPA's Emissions Factor Hub. This update instead uses methodologies recommended by the Intergovernmental Panel on Climate Change (IPCC) (cite).The methodologies were selected to align with best practices for community-wide inventories using the IPCC recommendations and the guidance of the Global Protocol for Community-Scale Greenhouse Gas Inventories (cite).
+The previous iteration of this inventory calculated Minnesota's solid waste emissions by multiplying activity totals by emissions factors from the EPA's Emissions Factor Hub. This update instead uses methodologies recommended by the Intergovernmental Panel on Climate Change (IPCC) [@eggelston2006IPCCGuidelines2006].The methodologies were selected to align with best practices for community-wide inventories using the IPCC recommendations and the guidance of the Global Protocol for Community-Scale Greenhouse Gas Inventories [@fongGlobalProtocolCommunityScale2021].
 
 #### Landfill
 
@@ -92,6 +92,10 @@ where:
 -   $44/12$ = Ratio of carbon dioxide (CO~2~) to carbon (C) by atomic weight
 
 -   $EF_{N_2O}$ = aggregate N~2~O emission factor for MSW. Assigned GHG Protocol default of 50 g N~2~O/ metric tons waste for continuous and semi-continuous incinerators.
+
+#### City-level estimates
+
+Given that the most granular solid waste data available is at the county level, waste emissions estimates are allocated to cities by population. County emissions are multiplied by the city or municipality's share of county population. This means that city-level estimates do not account for differences in waste collection programs between cities.
 
 #### Limitations
 
