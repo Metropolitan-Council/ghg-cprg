@@ -5,7 +5,6 @@ cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS")
 
 # fetch parcel data from MN Geospatial Commons
 # need to modify import code from councilR to get multiple layers
-
 import_from_gpkg_all_layers <- function(link, save_file = FALSE, save_path = getwd(), .crs = 4326, 
                                         keep_temp = FALSE, .quiet = TRUE) {
   requireNamespace("rlang", quietly = TRUE)
@@ -54,9 +53,13 @@ mn_parcel <- import_from_gpkg_all_layers(
   "https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_metrogis/plan_regonal_parcels_2021/gpkg_plan_regonal_parcels_2021.zip") %>% 
     st_drop_geometry()
 
+### Parcel data is extremely messy and incomplete. The following code attempts 
+### to distill multiple columns with 100s of variable names into sensible classification
 
+### after testing, this column appears to offer the largest percentage of 
+### first pass classification
 mn_parcel %>% distinct(DWELL_TYPE) %>% arrange() %>% 
-  print(n=200) # approximately 1/2 assigned
+  print(n=200)
 
 # large possibility for error in classification. Attempting to structure so overriding of earlier
 # cases happens as necessary
@@ -156,7 +159,10 @@ mn_parcel_assigned <- mn_parcel %>%
                                    mc_classification)) %>% 
   filter(!is.na(mc_classification))
 
+# quick check
 tapply(mn_parcel_assigned$FIN_SQ_FT, mn_parcel_assigned$mc_classification, "median")
+### zero is often the median value :/
+
 big_building <- mn_parcel_assigned %>% filter(FIN_SQ_FT > 50000, mc_classification == "single_family_home")
 test <- mn_parcel_assigned %>% filter(grepl("park", XUSECLASS1, ignore.case = TRUE), mc_classification != "no_building")
 
@@ -219,9 +225,35 @@ group_by(CO_NAME,CTU_NAME, CTU_ID_TXT, mc_classification) %>%
 
 ### save meta data later
 
-saveRDS(mn_parcel_map %>% 
-          st_drop_geometry(),
+ctu_parcel <- mn_parcel_map %>% 
+  ungroup() %>% 
+  st_drop_geometry() %>% 
+  rename(county_name = CO_NAME ) %>% 
+  select(-c(CTU_NAME, CTU_ID_TXT, statefp, state_abb, geoid_wis, cprg_area)) %>% 
+  mutate(inventory_year = 2021)
+
+ctu_parcel_meta <- tibble::tribble(
+  ~"Column", ~"Class", ~"Description",
+  "inventory_year", class(ctu_parcel$inventory_year), "Inventory year",
+  "state_name", class(ctu_parcel$state_name), "State name",
+  "county_name", class(ctu_parcel$county_name), "County name",
+  "ctu_name", class(ctu_parcel$ctu_name), "City-township-unorganized territory name",
+  "ctu_id", class(ctu_parcel$ctu_id), "City-township-unorganized identifier",
+  "ctu_class", class(ctu_parcel$ctu_class), "City, township, or unorganized territory",
+  "mc_classification", class(ctu_parcel$mc_classification), "Met Council assigned building type",
+  "mean_sq_ft", class(ctu_parcel$mean_sq_ft), "Mean square footage of building type in CTU",
+  "total_sq_ft", class(ctu_parcel$total_sq_ft), "Total square footage of building type in CTU",
+  "mean_emv", class(ctu_parcel$mean_emv), "Mean building value of building type in CTU Does not include land value",
+  "total_emv", class(ctu_parcel$total_emv), "Total building value of building type in CTU Does not include land value",
+  "mean_year", class(ctu_parcel$mean_year), "Mean year of construction of building type in CTU"
+  )
+
+saveRDS(ctu_parcel,
         "_meta/data/ctu_parcel_data_2021.RDS")
+saveRDS(ctu_parcel_meta,
+        "_meta/data/ctu_parcel_data_2021_meta.RDS")
+
+# summary maps
 
 ggplot(mn_parcel_map %>% 
          filter(mc_classification == "single_family_home")) +
