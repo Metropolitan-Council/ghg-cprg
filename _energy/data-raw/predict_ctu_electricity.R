@@ -273,6 +273,30 @@ mn_parcel_nonres <- mn_parcel %>%
 
 #urbansim 
 
+
+commercial <- c("total_job_spaces",
+                "max_office",
+                "max_commercial",
+                "max_institutional",
+                "max_school",
+                "js_type_1011",
+                "js_type_13",
+                "js_type_14",
+                "jobs_sector_4",
+                "jobs_sector_5",
+                "jobs_sector_6",
+                "jobs_sector_7",
+                "jobs_sector_8",
+                "jobs_sector_9",
+                "jobs_sector_10")
+
+industrial <- c("total_job_spaces",
+                "max_industrial",
+                "js_type_12",
+                "jobs_sector_1",
+                "jobs_sector_2",
+                "jobs_sector_3")
+
 nonresidential <- c( 'total_job_spaces',
                      'max_office',
                      'max_commercial',
