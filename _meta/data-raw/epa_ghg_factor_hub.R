@@ -411,7 +411,49 @@ egrid <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
   mutate(across(1:4, stringr::str_trim)) %>%
   mutate(Source = "EPA eGRID2019, February 2021")
 
+# Time series eGRID as a separate object 
+# Define the years available in the dataset and manually inout real values
+eGRID_years <- c(2005, 2007, 2009, 2010, 2012, 2014, 2016, 2018, 2019, 2020, 2021, 2022)
+egrid2005_to_2022 <- tibble::tibble(
+  eGrid_Subregion = rep("MROW (MRO West)", length(eGRID_years) * 3), # Repeat for all rows
+  factor_type = rep("Total output", length(eGRID_years) * 3),        # Repeat for all rows
+  emission = rep(c("lb CO2", "lb CH4", "lb N2O"), each = length(eGRID_years)), # Repeat emission types for all eGRID_years
+  per_unit = rep("MWh", length(eGRID_years) * 3),                    # Repeat for all rows
+  value = c(
+    # CO2 values
+    1821.84, 1722.67, 1628.60, 1536.36, 1425.15, 1365.1, 1238.8, 1239.8, 1098.4, 979.5, 995.8, 936.5,
+    # CH4 values (converted from GWh to MWh where applicable)
+    28 / 1000, 28.97 / 1000, 28.80 / 1000, 28.53 / 1000, 27.60 / 1000, 161.4 / 1000, 0.115, 0.138, 0.119, 0.104, 0.107, 0.102,
+    # N2O values (converted from GWh to MWh where applicable)
+    30.71 / 1000, 29.19 / 1000, 27.79 / 1000, 26.29 / 1000, 24.26 / 1000, 23.3 / 1000, 0.020, 0.020, 0.017, 0.015, 0.015, 0.015
+  ),
+  Year = rep(eGRID_years, times = 3), # Repeat each year for each emission
+  Source = paste("EPA eGRID", rep(eGRID_years, times = 3)) # Add source for each emission/year
+)
 
+# Define the full range of years
+full_years <- seq(min(eGRID_years), max(eGRID_years))
+
+# Expand the dataset to include all years for each emission type
+expanded_data <- egrid2005_to_2022 %>%
+  expand(eGrid_Subregion, factor_type, emission, per_unit, Year = full_years) %>%
+  left_join(egrid2005_to_2022, by = c("eGrid_Subregion", "factor_type", "emission", "per_unit", "Year"))
+
+interpolated_data <- expanded_data %>%
+  group_by(emission) %>%
+  mutate(
+    value = ifelse(
+      is.na(value),
+      approx(Year[!is.na(value)], value[!is.na(value)], xout = Year, rule = 2)$y,
+      value
+    ),
+    Source = ifelse(
+      is.na(Source),
+      paste("Interpolated between eGRID", lag(Year), "and", lead(Year)),
+      Source
+    )
+  ) %>%
+  ungroup()
 
 # Table: 7	Steam and Heat ----
 # Note: Emission factors are per mmBtu of steam or heat purchased.
@@ -610,6 +652,7 @@ epa_ghg_factor_hub <- list(
       `eGrid Subregion` == "MROW (MRO West)",
       factor_type == "Total output"
     ),
+  "egridTimeSeries" = interpolated_data,
   "stationary_combustion" = stationary_combustion %>%
     filter(`Fuel type` %in% c(
       "Propane",
@@ -636,9 +679,36 @@ epa_ghg_factor_hub <- list(
     )
 )
 
-# manual adjustment of eGRID MROW values -- 2021 Factor Hub used 2019 eGRID
-new_values <- c(995.8, 0.107, 0.015)
+# manual adjustment of eGRID MROW values -- 2021 Factor Hub used 2019 eGRID; add year to reference
+# need to adjust emissions code that applies these factors to 2021 activity data (and 2005!)
+new_values_2021 <- c(995.8, 0.107, 0.015)
 epa_ghg_factor_hub[[1]] <- epa_ghg_factor_hub[[1]] %>%
-  mutate(across(value, ~ replace(., 1:3, new_values)))
+  mutate(
+    across(
+      value,
+      ~ replace(., 1:3, new_values_2021)
+    ),
+    year = 2021,
+    Source = "EPA eGRID2021, January 2023"
+  )
+
+
+# manually add 2005 eGRID information (CH4 and N2O output emissions rates reported as 28 and 30.71 lb/GWh in 2005, which translate to .028 and .03071 lb/MWh respectively)
+eGRID_values_2005 <- c(1821.84, 0.028, 0.03071)
+
+# Extract/copy the three rows of 2021 data to use as a template for new values
+template_rows <- epa_ghg_factor_hub[[1]][1:3, ]
+
+# Create new rows for 2005 by updating year, source, and value; other columns remain the same as the 2021 values
+new_rows_2005 <- template_rows %>%
+  mutate(
+    value = c(1821.84, 0.028, 0.03071),
+    year = 2005,
+    Source = "EPA eGRID2005, December 2008"
+  )
+
+# Bind the new rows to the original data
+epa_ghg_factor_hub[[1]] <- bind_rows(epa_ghg_factor_hub[[1]], new_rows_2005)
 
 saveRDS(epa_ghg_factor_hub, "_meta/data/epa_ghg_factor_hub.RDS")
+
