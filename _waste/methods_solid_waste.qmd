@@ -95,7 +95,9 @@ where:
 
 #### City-level estimates
 
-Given that the most granular solid waste data available is at the county level, waste emissions estimates are allocated to cities by population. County emissions are multiplied by the city or municipality's share of county population. This means that city-level estimates do not account for differences in waste collection programs between cities.
+Given that the most granular solid waste data available is at the county level, waste emissions estimates are allocated to cities by population. County emissions are multiplied by the city or municipality's share of county population. 
+
+This means that city-level estimates do not account for differences in waste collection programs between cities. The data may, for example, allocate organics emissions to cities that do not have organics processing programs. For this reason, we do not provide a breakdown of city-level emissions by source, and instead use only the total solid waste emissions. This should provide a relatively accurate estimate of total solid waste emissions for your community.
 
 #### Limitations
 
