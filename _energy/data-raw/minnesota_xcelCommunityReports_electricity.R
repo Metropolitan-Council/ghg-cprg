@@ -327,8 +327,9 @@ xcel_activityData_NREL_2015_2022 <-  bind_rows(
       TRUE ~ util_mWh
     ),
     
-    # Create `nrel_source` column to identify which NREL data set was used to disaggregate BUSINESS records (if such disagg was done)
-    nrel_source = case_when(
+    # Create `nrel_breakout_source` column to identify which NREL data set was used to disaggregate BUSINESS records (if such disagg was done)
+    # NA in this field + no asterisk on commercial/industrial means the breakout was directly provided by utility
+    nrel_breakout_source = case_when(
       sector_mapped == "commercial*" & !is.na(commercial_city) ~ "CITY",
       sector_mapped == "industrial*" & !is.na(industrial_city) ~ "CITY",
       sector_mapped == "commercial*" & !is.na(commercial_downscale) ~ "COUNTY",
@@ -336,14 +337,14 @@ xcel_activityData_NREL_2015_2022 <-  bind_rows(
       TRUE ~ NA_character_
     )
   )
-  # nrel value (sector_mapped <--> _____city/downscale)
-  # true proportion (for cities with real res/commercial/industrial breakdowns)
 
+#final cleanup of Xcel Activity data 
+xcel_activityData_NREL_2015_2022_process <- xcel_activityData_NREL_2015_2022 %>%
+  select(-util_reported_co2e, # source numbers, not disaggregated by sector or COCTU
+         -mWh_delivered,  # source numbers, not disaggregated by sector or COCTU
+         -c(10:22)) # intermediate calculations
   
-#df with just true res/commercial/industrial breakouts AND NREL city numbers.
-  
-  
-write_rds(xcel_activityData_NREL_2015_2022, "_energy/data/xcel_activityData_NREL_2015_2022_process.RDS")
+write_rds(xcel_activityData_NREL_2015_2022_process, "_energy/data/xcel_activityData_NREL_2015_2022_process.RDS")
 
 ctu_commDesg <- read.csv("_meta/data-raw/ctus_summary_2018.csv") %>%
   select(ctu_name = Ctu.Name,
@@ -411,15 +412,93 @@ complete_city_NREL_comparison <- xcel_activityData_NREL_2015_2022 %>%
 
 
 
-cor(complete_city_NREL_comparison$commercial_city, complete_city_NREL_comparison$actual_commercial_prop, use = "complete.obs")
-cor(complete_city_NREL_comparison$industrial_city, complete_city_NREL_comparison$actual_industrial_prop, use = "complete.obs")
-cor(complete_city_NREL_comparison$residential_city, complete_city_NREL_comparison$actual_residential_prop, use = "complete.obs")
+# Assessment and analysis of Xcel data v. NREL data
+
+# Data preparation: Transform data to long format, enrich with sector/metric source, calculate diffs for visualization
+data_city_year_sector_props <- complete_city_NREL_comparison %>%
+  st_transform(crs = 32615)  %>% # Projected CRS (UTM Zone 15N for the Twin Cities area)
+  # Pivot to long format to separate sectors and actual/modeled
+  pivot_longer(
+    cols = c(residential_city, commercial_city, industrial_city,
+             actual_residential_prop, actual_commercial_prop, actual_industrial_prop),
+    names_to = "key",
+    values_to = "value"
+  ) %>%
+  mutate(
+    sector = case_when(
+      str_detect(key, "residential") ~ "Residential",
+      str_detect(key, "commercial") ~ "Commercial",
+      str_detect(key, "industrial") ~ "Industrial"
+    ),
+    data_type = case_when(
+      str_detect(key, "actual") ~ "Actual",
+      TRUE ~ "Modeled"
+    )
+  ) 
 
 
-#identify cities with a mix of business and commercial/industrial?
+data_city_year_sector_propDiffs <- data_city_year_sector_props %>%
+  # Pivot wider to create columns for Modeled and Actual values
+  pivot_wider(names_from = data_type, values_from = value) %>%
+  group_by(ctu_name, year, sector, community_designation, geometry) %>%
+  summarize(
+    Modeled = mean(Modeled, na.rm = TRUE),
+    Actual = mean(Actual, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    difference = Modeled - Actual
+  )
 
-# Step 1: Calculate city-level average proportions for Commercial and Industrial, with a default value of 1 for commercial to ensure street lighting is fully allocated there if no commercial or industrial data
+# Remove year and take an overall look at trends in modeled v. actuals by community designation (averages all years -- biases cities with more data)
+commDesg_diff_agg <- data_city_year_sector_propDiffs %>%
+  st_drop_geometry() %>%
+  group_by(community_designation, sector) %>%
+  summarize(avgPropDiff = mean(ifelse(is.na(difference), 0, difference), na.rm = TRUE),
+            .groups = "drop")
 
+
+
+#PLOT ONE -- Bar graphs showing Average Proportion Differences by Community Designation and Sector
+ggplot(commDesg_diff_agg, aes(x = community_designation, y = avgPropDiff, fill = sector)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Side-by-side bars
+  scale_y_continuous() +  # Allow positive and negative values
+  labs(
+    title = "Average Proportion Differences by Community Designation and Sector",
+    x = "Community Designation",
+    y = "Average Proportion Difference",
+    fill = "Sector"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)  # Rotate x-axis labels for readability
+  )
+
+
+# PLOT TWO -- Map showing Spatial Distribution of Proportion Differences (Modeled - Actual)
+ggplot(data_city_year_sector_propDiffs) +
+  geom_sf(aes(geometry = geometry, fill = difference), color = "black") +
+  geom_sf_text(aes(geometry = geometry, label =  ctu_name), size = 3) +
+  scale_fill_distiller(palette = "RdBu", oob = scales::squish) +
+  facet_wrap(~sector) +
+  labs(
+    title = "Spatial Distribution of Proportion Differences (Modeled - Actual)",
+    fill = "Difference"
+  ) +
+  theme_minimal()
+
+# PLOT THREE - Scatter plots comparing Modeled vs Actual Proportions by Sector
+ggplot(data_city_year_sector_propDiffs, aes(x = Actual, y = Modeled, color = community_designation)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  facet_wrap(~sector, scales = "free") +
+  labs(
+    title = "Modeled vs Actual Proportions by Sector",
+    x = "Actual Proportion",
+    y = "Modeled Proportion",
+    color = "Community Designation"
+  ) +
+  theme_minimal()
 
 
 
