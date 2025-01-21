@@ -1,6 +1,7 @@
 # compile emissions from all sectors into a single data table
 source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
+
 cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
   filter(cprg_area == TRUE) %>%
   mutate(
@@ -134,7 +135,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
   ) %>%
   select(names(transportation_emissions))
 
-## agriculture ----
+# agriculture ----
 
 agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds") %>%
   left_join(cprg_county %>% select(county_name, geoid)) %>%
@@ -150,9 +151,28 @@ agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds"
   ) %>%
   select(names(transportation_emissions))
 
-## HOLD FOR INDUSTRIAL
 
-## natural systems ----
+# industrial ----
+
+industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_emissions.RDS") %>%
+  ungroup() %>%
+  mutate(
+    emissions_metric_tons_co2e = value_emissions,
+    emissions_year = as.numeric(inventory_year),
+    geog_level = "county",
+    source = str_to_sentence(source),
+    category = case_when(
+      category == "Stationary combustion" & source == "Natural gas" ~ str_to_sentence(paste(sector,source)),
+      category == "Stationary combustion" & source != "Natural gas" ~ str_to_sentence(paste(sector,"fuel combustion")), 
+      TRUE ~ category)
+  ) %>%
+  group_by(emissions_year, county_name,geog_level, county_id, sector, category, source, data_source, factor_source) %>% 
+  summarize(emissions_metric_tons_co2e = sum(value_emissions)) %>% 
+  ungroup() %>% 
+  select(names(transportation_emissions))
+
+
+# natural systems ----
 
 natural_systems_sequestration <- readRDS("_nature/data/nlcd_county_landcover_sequestration_2001_2021.RDS") %>%
   filter(year >= 2005) %>% 
@@ -175,9 +195,11 @@ natural_systems_sequestration <- readRDS("_nature/data/nlcd_county_landcover_seq
 
 emissions_all <- bind_rows(
   transportation_emissions,
+  aviation_emissions,
   propane_kerosene_emissions,
   electric_emissions,
   natural_gas_emissions,
+  industrial_emissions,
   ww_emissions,
   solid_waste,
   agriculture_emissions,
@@ -194,10 +216,9 @@ emissions_all <- bind_rows(
       category,
       c(
         "Electricity",
-        "Natural Gas",
-        "Passenger vehicles",
-        "Buses",
-        "Trucks",
+        "Building Fuel",
+        "On-road",
+        "Off-road",
         "Wastewater",
         "Solid waste",
         "Livestock",
@@ -214,7 +235,7 @@ emissions_all <- bind_rows(
       ordered = TRUE
     )
   ) %>%
-  join county population and calculate per capita emissions
+#  join county population and calculate per capita emissions
   left_join(
     cprg_county_pop %>%
       select(
@@ -223,25 +244,18 @@ emissions_all <- bind_rows(
         county_total_population = population,
         population_data_source
       ),
-    by = join_by(geoid, year == population_year)
+    by = join_by(geoid, emissions_year == population_year)
   ) %>%
   rowwise() %>%
   mutate(emissions_per_capita = round(emissions_metric_tons_co2e / county_total_population, digits = 2)) %>%
-  select(year, geog_level, geoid, geog_name, everything())
-
-# splitting off carbon stock here as it is a capacity, not a rate
-carbon_stock <- emissions_all %>% filter(category == "Stock")
-emissions_all <- emissions_all %>% filter(category != "Stock")
-
-mean(emissions_all$emissions_per_capita[!emissions_all$category == "Stock"], na.rm = T)
-sum(emissions_all$emissions_metric_tons_co2e[!emissions_all$category == "Stock"], na.rm = T) / sum(cprg_county_pop$population)
+  select(emissions_year, geog_level, geoid, county_name, everything())
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
-  "year", class(emissions_all$year), "Emissions estimation year",
+  "emissions_year", class(emissions_all$emissions_year), "Emissions estimation year",
   "geog_level", class(emissions_all$geog_level), "Geography level; city or county",
   "geoid", class(emissions_all$geoid), "FIPS code",
-  "geog_name", class(emissions_all$geog_name), "Name of geographic area",
+  "county_name", class(emissions_all$emissions_year), "Name of geographic area",
   "sector", class(emissions_all$sector), paste0(
     "Emissions sector. One of ",
     paste0(unique(emissions_all$sector), collapse = ", ")
@@ -262,8 +276,8 @@ write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FAL
 
 county_emissions <- emissions_all
 
-saveRDS(carbon_stock, "_meta/data/cprg_county_carbon_stock.RDS")
-saveRDS(emissions_all_meta, "_meta/data/cprg_county_carbon_stock_meta.RDS")
+# saveRDS(carbon_stock, "_meta/data/cprg_county_carbon_stock.RDS")
+# saveRDS(emissions_all_meta, "_meta/data/cprg_county_carbon_stock_meta.RDS")
 
 # save emissions to shared drive location
 # source("R/fetch_path.R")
