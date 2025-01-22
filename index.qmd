@@ -6,8 +6,9 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
-county_emissions_summary <- county_emissions %>%
-  group_by(year, sector, category, source, data_source, factor_source) %>%
+county_emissions_summary_2021 <- county_emissions %>%
+  filter(emissions_year == 2021) %>% 
+  group_by(sector, category, source, data_source, factor_source) %>%
   summarize(
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     .groups = "keep"
@@ -23,21 +24,21 @@ This document will be updated continuously in preparation of the Metropolitan Co
 :::
 
 ```{r sector-percentages, echo=FALSE, include=FALSE}
-sector_percentages <- county_emissions_summary %>%
+sector_percentages <- county_emissions_summary_2021 %>%
   filter(
-    !sector == "Nature",
-    year == "2021"
+    !sector == "Natural Systems"
   ) %>% # not contributing to emissions
   group_by(sector) %>%
   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
   arrange(-emissions_metric_tons_co2e) %>%
   janitor::adorn_percentages(denominator = "col")
+
 sector_percentages
 
-emissions_total <- sum(county_emissions_summary$emissions_metric_tons_co2e[county_emissions_summary$sector != "Nature"])
-seq_total <- (-1 * sum(county_emissions_summary$emissions_metric_tons_co2e[county_emissions_summary$sector == "Nature"]))
+emissions_total <- sum(county_emissions_summary_2021$emissions_metric_tons_co2e[county_emissions_summary_2021$sector != "Natural Systems"])
+seq_total <- (-1 * sum(county_emissions_summary_2021$emissions_metric_tons_co2e[county_emissions_summary_2021$sector == "Natural Systems"]))
 
-seq_percentage <- (-1 * sum(county_emissions_summary$emissions_metric_tons_co2e[county_emissions_summary$sector == "Nature"])) / sum(county_emissions_summary$emissions_metric_tons_co2e[county_emissions_summary$sector != "Nature"])
+seq_percentage <- (-1 * sum(county_emissions_summary_2021$emissions_metric_tons_co2e[county_emissions_summary_2021$sector == "Natural Systems"])) / sum(county_emissions_summary_2021$emissions_metric_tons_co2e[county_emissions_summary_2021$sector != "Natural Systems"])
 ```
 
 In 2021, the Twin-Cities MSA generated `r round(emissions_total/1000000, digits = 2)` million metric tons CO~2~ equivalent (MMtCO~2~e) emissions from energy, transportation, and waste sectors. `r sector_percentages[[1]][1]` was the largest contributor to GHG emissions (`r scales::percent(sector_percentages[[2]][1], accuracy = 0.1)`), followed by `r sector_percentages[[1]][2]` (`r scales::percent(sector_percentages[[2]][2], accuracy = 0.1)`), and `r sector_percentages[[1]][3]` (`r scales::percent(sector_percentages[[2]][3], accuracy = 0.1)`). Carbon sequestration from natural systems offset `r scales::percent(seq_percentage, accuracy = 0.1)` of total emissions.
@@ -46,18 +47,16 @@ In 2021, the Twin-Cities MSA generated `r round(emissions_total/1000000, digits 
 #| fig-cap: "County emissions by sector and category"
 #| out-width: "95%"
 
+county_emissions_2021 <- county_emissions %>% 
+  filter(emissions_year == 2021)
+
 # reorder to put sequestration at end
-county_emissions$sector <- factor(county_emissions$sector,
-  levels = c("Energy", "Transportation", "Waste", "Nature")
+county_emissions_2021$sector <- factor(county_emissions_2021$sector,
+  levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Nature")
 )
 
 fig_county_emissions_sector <- plot_ly(
-  data = county_emissions %>%
-    filter(
-      category != "Stock",
-      year == "2021",
-      category != "Total energy"
-    ) %>%
+  data = county_emissions_2021 %>%
     group_by(sector, category) %>%
     summarize(
       emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
@@ -89,18 +88,18 @@ fig_county_emissions_sector
 
 ## Emissions by sector
 
-The energy sector generated `r round(emissions_total/1000000 * sector_percentages[[2]][1], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Most of the energy emissions are from electricity followed by natural gas. Other fuels (propane and kerosene) make up a small proportion of energy emissions in the metro.
+The transportation sector generated `r round(emissions_total/1000000 * sector_percentages[[2]][1], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Passenger vehicles generate the most emissions by source, with heavy-duty vehicles and aviation following.
 
-
-```{r fig-energy-emissions}
-#| fig-cap: "Energy county level emissions"
+```{r fig-transportation-emissions}
+#| fig-cap: "Transportation county level emissions"
 #| out-width: "95%"
-fig_energy_emissions <- plot_county_emissions(
-  county_emissions = county_emissions,
-  .sector = "Energy",
-  .plotly_source = "fig-energy-emissions"
+fig_transportation_emissions <- plot_county_emissions(
+  county_emissions = county_emissions %>%
+    filter(year == "2021"),
+  .sector = "Transportation",
+  .plotly_source = "fig-transportation-emissions"
 )
-fig_energy_emissions
+fig_transportation_emissions
 ```
 
 The transportation sector generated `r round(emissions_total/1000000 * sector_percentages[[2]][2], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. This is a county-level estimate. 
