@@ -8,6 +8,10 @@ cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
   ) %>%
   select(-cprg_area)
 
+## load in current county emissions
+county_emissions <- read_rds("_meta/data/cprg_county_emissions.RDS")
+
+
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>% 
   left_join(cprg_county %>% select(geoid, county_name))
 
