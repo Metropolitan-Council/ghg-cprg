@@ -1,4 +1,4 @@
-rm(list = ls())
+rm(list=ls())
 source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
 
@@ -68,8 +68,8 @@ land_cover_c_meta <-
 
 # User chooses whether to overwrite the rds files
 if (overwrite_RDS) {
-  saveRDS(land_cover_c, "./_nature/data/land_cover_carbon.rds")
-  saveRDS(land_cover_c_meta, "./_nature/data/land_cover_carbon_meta.rds")
+saveRDS(land_cover_c, "./_nature/data/land_cover_carbon.rds")
+saveRDS(land_cover_c_meta, "./_nature/data/land_cover_carbon_meta.rds")
 }
 
 message("Done!")
