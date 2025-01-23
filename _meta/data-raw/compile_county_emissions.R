@@ -114,7 +114,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
     geog_level = "county",
     category = "Building Fuel",
     county_name = county,
-    source = paste(sector,"Natural Gas"),
+    source = paste(sector,"natural gas"),
     data_source = "Individual natural gas utilities, NREL SLOPE (2021)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
