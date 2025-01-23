@@ -45,6 +45,7 @@ plot_county_sector_emissions <- function(county_emissions,
     y = ~ reorder(geog_name, emissions_metric_tons_co2e),
     color = ~sector,
     colors = unlist(sector_colors),
+    marker_line=dict(width=2, color='black'),
     marker = list(
       line = list(
         width = 0

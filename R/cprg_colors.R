@@ -24,36 +24,45 @@ sector_colors <- list("Electricity" = "#1f77b4",
 category_colors <-
   list(
     
-    #Pu
+    # Electricity
+    "Electricity" = "#FFEF00",
+    
+    # Residential
     "Residential natural gas" = "#483248",
     "Residential electricity" = "#CF9FFF",
+    "Residential fuel combustion" = "#A2627A",
     
+    # Commercial
     "Commercial natural gas" = "#800000",
     "Commercial fuel combustion" = "#DE3163",
     "Commercial electricity" = "#FAA0A0",
     
-    #Gray
+    # Industrial
     "Industrial electricity" = "#E5E4E2",
     "Industrial natural gas" = "#36454F",
     "Industrial processes" = "#B2BEB5",
     "Industrial fuel combustion" = "#818589",
     "Refinery processes" = "#708090",
     
-    # YlOrBr
+    # Transportation 1
     "Passenger vehicles" = "#0047AB",
     "Buses" = "#6F8FAF",
     "Trucks" = "#6495ED",
     "Aviation" = "#191970",
     
-    # Rd
+    # Transportation 2
+    "On-road" = "#6F8FAF",
+    "Off-road" = "#191970",
+    
+    # Waste
     "Solid waste" = "#8B4513",
     "Wastewater" = "#CD853F",
     
-    # Green
+    # Agriculture
     "Cropland" = "#c7e960",
     "Livestock" = "#8fb910",
     
-    # Gn
+    # Natural systems
     "Urban greenery" = "#006f3c",
     "Natural systems" = "#27b376"
   )

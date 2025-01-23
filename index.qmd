@@ -48,7 +48,10 @@ In 2021, the Twin-Cities MSA generated `r round(emissions_total/1000000, digits 
 #| out-width: "95%"
 
 county_emissions_2021 <- county_emissions %>% 
-  filter(emissions_year == 2021)
+  filter(emissions_year == 2021) %>% 
+  mutate(category = if_else(category %in% c("Building Fuel",
+                                            "Electricity"),
+                            source, category))
 
 # reorder to put sequestration at end
 county_emissions_2021$sector <- factor(county_emissions_2021$sector,
@@ -95,7 +98,7 @@ The transportation sector generated `r round(emissions_total/1000000 * sector_pe
 #| out-width: "95%"
 fig_transportation_emissions <- plot_county_emissions(
   county_emissions = county_emissions %>%
-    filter(year == "2021"),
+    filter(emissions_year == "2021"),
   .sector = "Transportation",
   .plotly_source = "fig-transportation-emissions"
 )

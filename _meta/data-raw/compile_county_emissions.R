@@ -129,7 +129,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     geog_level = "county",
     county_name = NAME,
     category = "Building Fuel",
-    source = paste("Residential", stringr::str_to_sentence(fuel_type)),
+    source = "Residential fuel combustion",
     data_source = "EIA RECS (2020)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
