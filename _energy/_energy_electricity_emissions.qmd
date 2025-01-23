@@ -172,7 +172,7 @@ Content to come
 
 #### Emissions factors
 
-To transform electricity deliveries (recorded in mWh) into emissions in metric tons CO~2~e, we referenced 2021 Emissions & Generation Resource Integrated Database (eGRID) summary data for the MROW subregion (Midwest Reliability Organization - West) [@usepaEGRIDEmissionsGeneration2021].
+To transform electricity deliveries (recorded in mWh) into emissions in metric tons CO~2~e, we referenced Emissions & Generation Resource Integrated Database (eGRID) summary data for the MROW subregion (Midwest Reliability Organization - West) [@usepaEGRIDEmissionsGeneration2021].
 
 This dataset provides estimates in lbs/mWh for CO~2~, CH4, N~2~O, and CO~2~e emissions based on MROW's sub-regional electricity generation grid mix; converting this factor to metric tons per mWh and multiplying the county-level mWh estimates yields an estimate for CO~2~e. To generate this sub-regional estimate, eGRID first calculates estimated emissions at the plant level, and assigns plants to regions. By using an emissions factor that is localized, our inventory accounts for the specific grid mix in our study area (see the grid mix linked to the eGRID MROW emissions factor used in this inventory below). Per the eGRID technical guide, "the subregions were defined to limit the import and export of electricity in order to establish an aggregated area where the determined emission rates most accurately matched the generation and emissions from the plants within that subregion."
 
