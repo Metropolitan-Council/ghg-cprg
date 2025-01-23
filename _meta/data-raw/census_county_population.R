@@ -252,7 +252,7 @@ county_pop_acs <- purrr::map_dfr(
   ) %>%
   mutate(
     population_data_source = "ACS 5-Year Estimates, Table DP05"
-  )%>%
+  ) %>%
   clean_names()
 
 

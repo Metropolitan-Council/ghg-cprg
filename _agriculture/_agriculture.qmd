@@ -1,0 +1,350 @@
+# Agriculture {#sec-agriculture}
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/_agricultural_emissions.RDS"))
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+
+emissions_2021 <- county_emissions %>%
+  filter(year == 2021) %>%
+  pull(emissions_metric_tons_co2e) %>%
+  sum()
+ag_emissions_2021 <- county_emissions %>%
+  filter(year == 2021, sector == "Agriculture") %>%
+  pull(emissions_metric_tons_co2e) %>%
+  sum()
+ag_emissions_2005 <- county_emissions %>%
+  filter(year == 2005, sector == "Agriculture") %>%
+  pull(emissions_metric_tons_co2e) %>%
+  sum()
+
+
+rural_ag_2021 <- county_emissions %>%
+  filter(
+    year == 2021, sector == "Agriculture",
+    geog_name %in% c("St. Croix", "Pierce", "Carver", "Dakota")
+  ) %>%
+  pull(emissions_metric_tons_co2e) %>%
+  sum()
+
+methane_2021 <- ag_emissions %>%
+  filter(
+    inventory_year == 2021,
+    units_emissions == "Metric tons CH4"
+  ) %>%
+  pull(mt_co2e) %>%
+  sum()
+
+n2o_2021 <- ag_emissions %>%
+  filter(
+    inventory_year == 2021,
+    units_emissions == "Metric tons N2O"
+  ) %>%
+  pull(mt_co2e) %>%
+  sum()
+
+hookaddcap()
+```
+
+## Introduction
+
+Agricultural systems are major emitters of methane and nitrous oxide, both from livestock and croplands. Livestock emissions come primarily from enteric fermentation, the formation of methane in ruminants stomachs during digestion, and secondarily from manure emissions of both methane and nitrous oxides. Cropland emissions are predominantly nitrous oxide that is formed from biogeochemical processes related to crop-soil interactions and the direct application of synthetic fertilizers. Carbon dioxide emissions are a smaller share of agricultural emissions, arising predominantly from operation of agricultural equipment, liming of soils, and production of urea used for fertilizer.
+
+
+## Results
+
+### 2021 county and subsector breakdown
+
+Agriculture accounted for `r 100*round(ag_emissions_2021/emissions_2021, digits = 3)`% of total emissions in the 11-county region in 2021. As expected, more rural counties produce a larger share of the agricultural emissions, with St. Croix, Pierce, Dakota, and Carver accounting for `r 100*round(rural_ag_2021/ag_emissions_2021, digits = 3)`% of the regions agricultural emissions.
+
+```{r fig-ag-county-emissions}
+#| fig-cap: "2021 county agricultural emissions"
+#| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 10   # Set width in inches
+
+fig_ag_county_emissions <- plot_ly(
+  type = "bar",
+  source = "fig-ag-county-emissions",
+  data = county_emissions %>%
+    filter(
+      sector == "Agriculture",
+      year == 2021
+    ),
+  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+  x = ~emissions_metric_tons_co2e,
+  color = ~source,
+  colors = unlist(source_colors),
+  hovertemplate = ~ paste0(
+    geog_name, "<br>",
+    source, "<br>",
+    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county agricultural emissions",
+    x_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    ),
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_ag_county_emissions
+```
+
+
+### Baseline emissions
+
+Regional agricultural emissions have decreased by `r 100*round(1 - (ag_emissions_2021/ag_emissions_2005))`% since 2005, potentially reflecting increased agricultural abandonment and suburban expansion in the region.
+
+```{r fig-ag-baseline-emissions}
+#| fig-cap: "Baseline agricultural emissions"
+#| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
+
+fig_ag_baseline <- plot_ly(
+  source = "fig-ag-baseline-emissions",
+  data = county_emissions %>%
+    filter(sector == "Agriculture") %>%
+    group_by(year, category) %>%
+    summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
+  x = ~year,
+  y = ~emissions_metric_tons_co2e,
+  color = ~category, #
+  colors = unlist(category_colors), # Directly map the colors to categories
+  type = "scatter",
+  mode = "lines", # No points or lines, just fill
+  stackgroup = "one", # Fill to the next y value (stacking)
+  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~category # Pass category to hovertext
+) %>%
+  plotly_layout(
+    main_title = "County Agricultural Emissions Over Time",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hovermode = "x unified", # Combine all hovertext under one hover
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_ag_baseline
+```
+
+### Emissions by gas type
+
+The majority of agricultural emissions by weight are methane, but when accounting for the increased warming potential of nitrous oxide, CO<sub>2</sub>e are roughly equivalent. 
+CH<sub>4</sub>: `r 100 * round(methane_2021/ag_emissions_2021, digits = 3)`% 
+N<sub>2</sub>O: `r 100 * round(n2o_2021/ag_emissions_2021, digits = 3)`%
+
+
+
+```{r fig-ag-county-emissions-by-gas-type}
+#| fig-cap: "2021 county agricultural emissions"
+#| out-width: "95%"
+
+fig_ag_gas_type <- plot_ly(
+  type = "bar",
+  source = "fig-ag-county-emissions-by-gas-type",
+  data = ag_emissions %>%
+    left_join(., cprg_county) %>%
+    filter(inventory_year == 2021),
+  y = ~ reorder(county_name, value_emissions),
+  x = ~value_emissions,
+  color = ~units_emissions,
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    source, "<br>",
+    round(value_emissions, digits = 2), "  metric tons of gas", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county agricultural emissions by gas type",
+    x_title = "Metric tons of gas emitted",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    ),
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_ag_gas_type
+```
+
+```{r fig-ag-county-emissions-by-gas-type-co2e}
+#| fig-cap: "2021 county agricultural emissions"
+#| out-width: "95%"
+
+fig_ag_gas_co2e <- plot_ly(
+  type = "bar",
+  source = "fig-ag-county-emissions-by-gas-type-co2e",
+  data = ag_emissions %>%
+    left_join(., cprg_county) %>%
+    filter(inventory_year == 2021),
+  y = ~ reorder(county_name, mt_co2e),
+  x = ~mt_co2e,
+  color = ~units_emissions,
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    source, "<br>",
+    round(mt_co2e, digits = 2), "  metric tons of CO<sub>2</sub>e", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county agricultural emissions by gas type",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    ),
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_ag_gas_co2e
+```
+
+## CTU Estimates
+
+City and township estimates represent county estimates apportioned to their in-boundary CTUs based on the ratio of CTU agricultural land to county agricultural land. As expected, cities and townships on the rural edge show highest agricultural emissions.
+
+```{r fig-ctu-ag-emissions}
+# load the county boundaries layer
+
+### load emissions and downscaling var (proportion of county ag land)
+ctu_ag_proportion <- readRDS(file.path(here::here(), "./_agriculture/data/ctu_ag_proportion.rds"))
+
+agricultural_emissions_2019 <- left_join(ctu_ag_proportion,
+  cprg_county %>%
+    select(geoid, county_name) %>%
+    st_drop_geometry(),
+  by = "county_name"
+) %>%
+  left_join(., ag_emissions %>%
+    group_by(inventory_year, geoid) %>%
+    summarize(mt_co2e = sum(mt_co2e)),
+  by = c("year" = "inventory_year", "geoid")
+  ) %>%
+  filter(year == 2019) %>%
+  mutate(ctu_emissions = proportion_ag_land * mt_co2e)
+
+### map CTU scale agricultural emissions
+
+cprg_ctu_9 <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/bdry_mn_city_township_unorg/gpkg_bdry_mn_city_township_unorg.zip") %>%
+  filter(COUNTY_NAME %in% c(cprg_county$county_name)) %>%
+  mutate(
+    STATEFP = "27",
+    STATE = "Minnesota",
+    STATE_ABB = "MN"
+  ) %>%
+  select(
+    CTU_NAME = FEATURE_NAME,
+    CTU_CLASS,
+    COUNTY_NAME,
+    STATEFP,
+    STATE,
+    STATE_ABB,
+    GNIS_FEATURE_ID,
+    geometry = SHAPE
+  ) %>%
+  arrange(CTU_NAME)
+
+
+ctu_ag_map <- left_join(
+  cprg_ctu_9 %>%
+    rename(ctu = CTU_NAME),
+  agricultural_emissions_2019,
+  by = "ctu"
+) %>%
+  select(ctu, area, ctu_emissions)
+
+
+# Define color palette based on the plasma scale from viridis
+pal <- colorNumeric(palette = "plasma", domain = ctu_ag_map$ctu_emissions)
+
+# Create the leaflet map
+map_ctu_ag <- leaflet(ctu_ag_map) %>%
+  addTiles() %>% # Add default OpenStreetMap tiles
+  addPolygons(
+    fillColor = ~ pal(ctu_emissions),
+    color = "black", # Border color
+    weight = 1,
+    fillOpacity = 0.9, # Transparency of the fill color
+    popup = ~ paste(ctu, " agricultural emissions:", round(ctu_emissions, 2)), # Popup with details
+    label = ~ paste(ctu, " emissions:", round(ctu_emissions, 2)), # Hover text
+    highlightOptions = highlightOptions(
+      weight = 3,
+      color = "blue",
+      bringToFront = TRUE
+    )
+  ) %>%
+  addLegend(
+    pal = pal,
+    values = ~ctu_emissions,
+    title = "CTU Ag Emissions",
+    opacity = 0.7
+  )
+
+# # Plot the emissions on the map - change this to leaflet later
+# map_ctu_ag <- ggplot(data = ctu_ag_map) +
+#   geom_sf(aes(fill = ctu_emissions)) +
+#   scale_fill_viridis_c(option = "plasma") +  # You can change the color scale here
+#   theme_minimal() +
+#   labs(fill = "CTU Ag Emissions", title = "CTU Emissions Map")
+
+map_ctu_ag
+```
+
+## Summary
+Methane production is largely tied to consumer food preferences, with enteric fermentation in cattle raised for meat and dairy production being the central driver of agricultural methane production. Nitrous oxide emissions also derive from livestock via manure emissions, both in managed systems and in manure that is applied to or leaches into soils. Crop production also accounts for a large percentage of agricultural nitrous oxide emissions via synthetic fertilizer production and the biochemical processes that delivers nitrogen to soils. Efficient agricultural techniques, particularly in crop management, can reduce the amount of nitrogen entering soil and therefore the amount that is volatilized into gaseous nitrous oxide.

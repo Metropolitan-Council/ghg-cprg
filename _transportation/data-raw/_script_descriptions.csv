@@ -1,0 +1,51 @@
+﻿file_name,status,prefix,type,description,output_datasets,github_issue
+_calculate_emissions.R,Deprecated,_,function,StreetLight Data - Calculate emissions using vehicle miles traveled ,None,
+_calculate_vmt.R,Deprecated,_,function,StreetLight Data - calculate vehicle miles traveled from a given StreetLight Analysis,None,
+_read_smoke_ff10.R,Active,_,function,"EPA - read, clean, and save a given SMOKE FF10 file.",None,
+_run_all_transportation.R,Active,_,compilation,Sequentially sources critical scripts for generating output datasets,None,
+_source_method_compare.xlsx,Needs update,,dataset,"Comparison of US GHGI, NEI, MPCA, and Met Council inventory characteristics. To be used in documentation ",,
+_transportation_compile.R,Active,_,compilation,"Compiles EPA on-road, EPA non-road, and other transportation emissions datasets for compatability with other sectors","onroad_emissions.RDS, onroad_emissions_meta.RDS",
+_transportation_RDG.R,Deprecated,_,compilation,Compiles EPA NEI on-road datasets to make county emissions time series from 2005-2021,county_emissions_subsectors.RDG.RDS,
+dot_vmt_county_proportions.R,,dot_vmt,validation,Compares county and state VMT and population proportionally for MN and WI,None,
+dot_vmt.R,Active,dot_vmt,compilation,Compiles MnDOT and WisDOT county level VMT data,"dot_vmt.RDS, dot_vmt_meta.RDS",
+epa_air_emissions_modeling_activity.R,Active,epa_air_emissions_modeling,data processing,EPA Air Emissions Modeling activity data read in and cleaning,None,https://github.com/Metropolitan-Council/ghg-cprg/issues/116
+epa_air_emissions_modeling_nonroad.R,Active,epa_air_emissions_modeling,data processing,"EPA Air Emissions Modeling inventory read, clean, save for non-road datasets",nonroad_mn_wi.RDS,
+epa_air_emissions_modeling_onroad.R,Active,epa_air_emissions_modeling,data processing,"EPA Air Emissions Modeling inventory read, clean, save for on-road datasets",onroad_mn_wi.RDS,https://github.com/Metropolitan-Council/ghg-cprg/issues/115
+epa_equates_read.R,Active,epa_equates,data processing,"EPA EQUATES read, clean, save  SMOKE FF10 EQUATES inventory data","equates_mn_wi.RDS, equates_cmas_mn_wi.RDS",
+epa_lggit_tables.R,Needs update,epa_lggit,data processing,"Individual tables from metcouncil_community_ghg_inventorytool_11.28.23, used in epa_lggit.R",None,https://github.com/Metropolitan-Council/ghg-cprg/issues/122
+epa_lggit.R,Needs update,epa_lggit,data processing,"Compile VMT, emissions, TBI data, to create data for inputting into LGGIT tool",lggit_kg_emissions_per_mile.RDS,https://github.com/Metropolitan-Council/ghg-cprg/issues/122
+epa_moves.R,Deprecated,epa,data processing,"Create per-mile emissions factors for passenger, medium-duty, and heavy-duty vehicles","epa_moves.RDS, epa_moves_meta.RDS",
+epa_nei_envirofacts.R,Active,epa_nei,data processing,"EPA NEI fetch, clean, and interpolate missing years for summary transportation sector tables from EnviroFacts API","epa_nei_envirofacts.RDS, epa_nei_envirofacts_meta.RDS, epa_nei_envirofacts_complete.RDS, epa_nei_envirofacts_complete_meta.RDS, epa_nei_envirofacts_county_proportions.RDS",
+epa_nei_nonroad_emissions.R,Active,epa_nei,data processing,"EPA NEI fetch, clean, and save non-road regional emissions summary tables",epa_nei_nonroad_emissions.RDS,https://github.com/Metropolitan-Council/ghg-cprg/issues/115
+epa_nei_onroad_emissions.R,Active,epa_nei,data processing,"EPA NEI fetch, clean, and save on-road regional emissions summary tables",epa_nei_onroad_emissions.RDS,
+epa_nei_smoke_ff.R,Active,epa_nei,data processing,"EPA NEI read, clean, and save on-road emissions data from SMOKE FF10 inventory data",epa_nei_smoke_ff.RDS,
+epa_nei_vmt.R,Active,epa_nei,data processing,"EPA NEI read, clean, and save on-road activity from SMOKE FF10 VMT ",nei_vmt.RDS,
+epa_onroad_emissions_compile.R,Active,epa,compilation,"Compile on-road emissions dataset from EPA NEI, EQUATES, and Air Emissions Modeling to create full time series of on-road emissions, 2002-2022","epa_onroad_emissions_compile.RDS, epa_onroad_emissions_compile_meta.RDS, epa_onroad_source_set.RDS",
+epa_pollutants.R,Active,epa,data processing,Compile EPA pollutant description table,"pollutant_key.RDS, pollutant_key_meta.RDS",
+epa_source_classification_codes.R,Active,epa,data processing,"Compile EPA source classification codes (SCC) description tables from NEI, EQUATES, other documentation","scc_combine.RDS, scc_combine_meta.RDS",
+epa_verify_equates.R,Active,epa,validation,Verify EQUATES data downloaded from EPA FTP site and CMAS Data Warehouse,None,
+epa_verify_n2o_differences.R,Active,epa,validation,Verify and investigate differences in on-road emissions with and without N2O included in CO2e calculation,None,
+epa_verify_emis_type.R,Active,epa,validation,"Review differences in emis_type column availability across NEI , EQUATES, and Air Emissions Modeling",None,
+epa_verify_emis_type_change.R,Active,epa,validation,Verify increase in emisssions when when all process types are included,None,https://github.com/Metropolitan-Council/ghg-cprg/issues/129
+epa_verify_nei_envirofacts_smoke.R,Active,epa,validation,Verify emissions compiled from SMOKE FF10 match summary tables,None,
+mndot_cdp_mode_split.R,Active,mndot,data processing,"Calculate passenger, medium, and heavy-duty mode proportions of on-road traffic for CDP",None,
+mndot_extract_yearly_volume_trends.R,Active,mndot,data processing,Import and clean MnDOT vehicle classification data,most_recent_yearly_volume_percentage_by_class.RDS,
+mndot_stations.R,Deprecated,mndot,data processing,Create calibration points and lines from MnDOT vehicle classification data,"mn_stations_ratios.RDS, mn_stations_ratios_points.RDS",
+mndot_vmt_county_functional_class.R,Active,mndot,data processing,Pulls and processes MnDOT county VMT at the functional class level,None,
+mndot_vmt_county.R,Active,mndot,data processing,Pulls and processes MnDOT county VMT from county route system level data,mndot_vmt_county.RDS,
+mndot_route_system.R,Active,mndot,data processing,Creates index of route system IDs and labels,mndot_route_system.RDS,
+mndot_vmt_ctu.R,Active,mndot,data processing,Pulls and processes MnDOT CTU VMT from CTU route system level data,mndot_vmt_ctu.RDS,
+mpca_mac_aviation_emissions.R,Active,mpca_mac,data processing,Calculates aviation GHG emissions using MPCA and MAC airport emissions data,"aviation_emissions.rds, aviation_emissions_meta.rds, aviation_emissions_data_source_compare.RDS",https://github.com/Metropolitan-Council/ghg-cprg/issues/123
+stl_aadt.R,Deprecated,stl,validation,StreetLight Data - Compiles AADT data from StreetLight analyses for verification,None,
+stl_calibration_lines_points.R,Deprecated,stl,compilation,StreetLight Data - compiles MN and WI point and line datasets for use calibrating StreetLight Index to actual traffic counts for medium and heavy duty traffic,"commercial_calibration_points.RDS, commercial_calibration_lines.RDS, commercial_calibration_meta.RDS",
+stl_fetch_analyses.R,Deprecated,stl,data processing,"StreetLight Data - fetch, clean, and save analysis results directly using streetlightR","county21_data.RDS, ctu21_data.RDS, county21_truck.RDS, county21_truck_data.rds, county21_truck_calib_data.rds",
+stl_run_analyses.R,Deprecated,stl,data processing,StreetLight Data - create StreetLight analyses using streetlightR. Analysis identifying information saved,"county21.RDS, ctu21.RDS, county21_truck.RDS, county21_truck_calib.RDS",
+stl_upload_zone_sets.R,Deprecated,stl,data processing,"StreetLight Data - upload county, CTU, and calibration datasets to StreetLight platform. Some data are then edited within the StreetLight Platform. ",None,
+tbi_cdp_passenger_mode_split.R,Needs update,tbi,data processing,TBI - estimate proportion of passenger travel for each mode using 2023 TBI data,None,https://github.com/Metropolitan-Council/ghg-cprg/issues/125
+tbi_survey_stats.R,Needs update,tbi,data processing,TBI - estimate survey coverage of CPRG  counties,tbi_home_county.RDS,https://github.com/Metropolitan-Council/ghg-cprg/issues/125
+tbi_trip_length.R,Needs update,tbi,data processing,TBI - estimate trip lengths within and between CPRG counties using 2021 TBI data,"tbi_mean_trip_length.RDS, tbi_od_ordered_trip_length.RDS, tbi_regional_trip_length_avg.RDS, trip21.RDS",https://github.com/Metropolitan-Council/ghg-cprg/issues/125
+tbi_vehicle_stats.R,Needs update,tbi,data processing,TBI - find average vehicle age by fuel type for CPRG counties using 2021 TBI data,"tbi_veh_age_orig_fuel_binned.RDS, tbi_veh_age_fuel_binned.RDS, tbi_vehicle_age.RDS, tbi_vehicle_orig_fuel_age.RDS, tbi_vehicle_fuel_age.RDS, veh21.RDS",https://github.com/Metropolitan-Council/ghg-cprg/issues/125
+vmt_emissions.R,Deprecated,vmt,compilation,StreetLight Data - calculate passenger and commercial vehicle emisions values at the county level,"county_vmt_emissions.RDS, county_vmt_emissions_meta.RDS",
+wisdot_stations.R,Active,wisdot,data processing,Fetch and compile WisDOT station passenger/medium/heavy duty traffic ratios and assign to segments,"wi_stations_ratios_lines.RDS, wi_stations_ratios_points.RDS, wi_osm_meta.RDS",
+wisdot_vmt_county.R,Active,wisdot,data processing,Comile WisDOT VMT county reports into time series data table,wisdot_vmt_county.RDS,
+x_epa_scrap.R,Deprecated,x,scrap,Scrap code from various EPA sources. May be useful in the future,,

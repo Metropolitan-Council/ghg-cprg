@@ -6,7 +6,7 @@ project:
   post-render: 
     - R/fix_style.R
 
-quarto-required: 1.4.553
+quarto-required: 1.4.555
 
 book:
   version: 1.1.1
@@ -41,7 +41,7 @@ book:
     - part: "Transportation"
       chapters:
        - _transportation/_transportation.qmd
-       - _transportation/data_transportation.qmd
+       - _transportation/_data_methods_transportation.qmd
        # - _transportation/pa_transportation.qmd
        - _transportation/qc_transportation.qmd
        
@@ -64,6 +64,7 @@ book:
     - _meta/supplementary_tables.qmd
     - _meta/additional_resources.qmd
     - _energy/utility_service_area_maps.qmd
+    - _transportation/inventory_methods_comparison.qmd
     - _meta/lidac_maps.qmd
     - figures.qmd
     - tables.qmd

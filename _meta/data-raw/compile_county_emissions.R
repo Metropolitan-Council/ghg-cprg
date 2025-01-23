@@ -9,17 +9,18 @@ cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
   select(-cprg_area)
 
 # transportation -----
-transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
+transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS") %>%
   ungroup() %>%
   rowwise() %>%
   mutate(
+    year = emissions_year,
     sector = "Transportation",
     geog_level = "county",
-    geog_name = zone,
-    category = paste0(stringr::str_to_sentence(vehicle_type), " vehicles"),
-    source = paste0(vehicle_weight_label, " vehicles"),
-    data_source = "StreetLight Data",
-    factor_source = paste0("EPA MOVES (", moves_year, ")")
+    geog_name = county_name,
+    source = paste0(vehicle_fuel_label, " fueled vehicles"),
+    category = category,
+    data_source = data_source,
+    factor_source = moves_edition
   ) %>%
   select(
     year,
@@ -33,9 +34,23 @@ transportation_emissions <- readRDS("_transportation/data/county_vmt_emissions.R
     factor_source
   )
 
+aviation_emissions <- readRDS("_transportation/data/aviation_emissions.RDS") %>%
+  mutate(
+    sector = "Transportation",
+    geog_level = "county",
+    geog_name = geog_name,
+    category = "Aviation",
+    source = "Aviation",
+    data_source = data_source,
+    factor_source = data_source,
+    emissions_metric_tons_co2e = value_emissions,
+    year = inventory_year
+  ) %>%
+  select(names(transportation_emissions))
+
 # waste -----
 ## wastewater ----
-ww_emissions <- readRDS("_waste/data/epa_county_wastewater.RDS") %>%
+ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
   mutate(
     sector = "Waste",
     geog_level = "county",
@@ -44,14 +59,15 @@ ww_emissions <- readRDS("_waste/data/epa_county_wastewater.RDS") %>%
     source = "Wastewater",
     data_source = "EPA State GHG Inventory and Projection Tool",
     factor_source = data_source,
-    emissions_metric_tons_co2e = epa_co2e,
-    year = 2021
+    emissions_metric_tons_co2e = co2e,
+    year = as.numeric(year)
   ) %>%
   select(names(transportation_emissions))
 
 
+
 ## solid waste -----
-solid_waste <- readRDS("_waste/data/county_sw_emissions.RDS") %>%
+solid_waste <- readRDS("_waste/data/final_solid_waste_allyrs.RDS") %>%
   ungroup() %>%
   mutate(
     sector = "Waste",
@@ -74,6 +90,9 @@ electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_
 
 electric_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Electricity") %>%
+  # avoid duplication and NAs until category is infilled later
+  filter((year == 2005 & category == "Total") |
+    (year == 2021 & category != "Total")) %>%
   mutate(
     sector = "Energy",
     geog_level = "county",
@@ -90,6 +109,9 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
 
 natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Natural gas") %>%
+  # avoid duplication and NAs until category is infilled later
+  filter((year == 2005 & category == "Total") |
+    (year == 2021 & category != "Total")) %>%
   mutate(
     sector = "Energy",
     geog_level = "county",
@@ -112,6 +134,46 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     source = stringr::str_to_sentence(fuel_type),
     data_source = "EIA RECS (2020)",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
+  ) %>%
+  select(names(transportation_emissions))
+
+
+## industrial ----
+
+industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_emissions.RDS") %>%
+  ungroup() %>%
+  mutate(
+    emissions_metric_tons_co2e = value_emissions,
+    emissions_year = as.numeric(inventory_year),
+    geog_level = "county",
+    source = str_to_sentence(source),
+    category = case_when(
+      category == "Stationary combustion" & source == "Natural gas" ~ str_to_sentence(paste(sector, source)),
+      category == "Stationary combustion" & source != "Natural gas" ~ str_to_sentence(paste(sector, "fuel combustion")),
+      TRUE ~ category
+    )
+  ) %>%
+  group_by(emissions_year, county_name, geog_level, county_id, sector, category, source, data_source, factor_source) %>%
+  summarize(emissions_metric_tons_co2e = sum(value_emissions)) %>%
+  rename(year = emissions_year, geog_name = county_name) %>%
+  ungroup() %>%
+  select(names(transportation_emissions))
+
+
+## agriculture ----
+
+agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds") %>%
+  left_join(cprg_county %>% select(county_name, geoid)) %>%
+  mutate(
+    year = inventory_year,
+    sector = "Agriculture",
+    geog_level = "county",
+    geog_name = county_name,
+    category = category,
+    emissions_metric_tons_co2e = mt_co2e,
+    source = stringr::str_to_sentence(source),
+    data_source = data_source,
+    factor_source = factor_source
   ) %>%
   select(names(transportation_emissions))
 
@@ -151,13 +213,15 @@ natural_systems_stock <- readRDS("_nature/data/county_landcover_sequestration_20
 
 emissions_all <- bind_rows(
   transportation_emissions,
+  aviation_emissions,
   propane_kerosene_emissions,
   electric_emissions,
   natural_gas_emissions,
   ww_emissions,
   solid_waste,
-  natural_systems_sequestration,
-  natural_systems_stock
+  agriculture_emissions,
+  industrial_emissions,
+  natural_systems_sequestration
 ) %>%
   left_join(
     cprg_county %>%
@@ -165,51 +229,63 @@ emissions_all <- bind_rows(
       select(county_name, geoid),
     by = c("geog_name" = "county_name")
   ) %>%
-  mutate(
-    source = factor(source,
-      c(
-        # transportation levels
-        "Light-duty vehicles",
-        "Medium-duty vehicles",
-        "Heavy-duty vehicles",
-        # waste levels
-        "Landfill",
-        "Waste to energy",
-        "Recycling",
-        "Organics",
-        "Wastewater",
-        # energy levels
-        "Electricity",
-        "Natural gas",
-        "Propane",
-        "Kerosene",
-        # nature levels
-        "Urban grassland",
-        "Urban tree",
-        "Grassland",
-        "Tree",
-        "Wetland"
-      ),
-      ordered = TRUE
-    ),
-    category = factor(
-      category,
-      c(
-        "Residential energy",
-        "Commercial energy",
-        "Industrial energy",
-        "Total energy",
-        "Liquid stationary fuels",
-        "Passenger vehicles",
-        "Commercial vehicles",
-        "Wastewater",
-        "Solid waste",
-        "Sequestration",
-        "Stock"
-      ),
-      ordered = TRUE
-    )
-  ) %>%
+  # mutate(
+  #   source = factor(source,
+  #     c(
+  #       # transportation levels
+  #       "Gasoline fueled vehicles",
+  #       "Diesel fueled vehicles",
+  #       "Other fueled vehicles",
+  #       # waste levels
+  #       "Landfill",
+  #       "Waste to energy",
+  #       "Recycling",
+  #       "Organics",
+  #       "Wastewater",
+  #       # energy levels
+  #       "Electricity",
+  #       "Natural gas",
+  #       "Propane",
+  #       "Kerosene",
+  #       # agriculture levels
+  #       "Enteric_fermentation",
+  #       "Manure_management",
+  #       "Direct_manure_soil_emissions",
+  #       "Indirect_manure_runoff_emissions",
+  #       "Crop_residue_emissions",
+  #       "Crop_fertilizer_emissions",
+  #       "Runoff_fertilizer_emissions",
+  #       # nature levels
+  #       "Urban grassland",
+  #       "Urban tree",
+  #       "Grassland",
+  #       "Tree",
+  #       "Wetland"
+  #     ),
+  #     ordered = TRUE
+  #   ),
+  #   category = factor(
+  #     category,
+  #     c(
+  #       "Residential energy",
+  #       "Commercial energy",
+  #       "Industrial energy",
+  #       "Total energy",
+  #       "Liquid stationary fuels",
+  #       "Passenger vehicles",
+  #       "Buses",
+  #       "Medium-duty vehicles",
+  #       "Trucks",
+  #       "Wastewater",
+  #       "Solid waste",
+  #       "Livestock",
+  #       "Cropland",
+  #       "Sequestration",
+  #       "Stock"
+  #     ),
+  #     ordered = TRUE
+  #   )
+  # ) %>%
   # join county population and calculate per capita emissions
   left_join(
     cprg_county_pop %>%
