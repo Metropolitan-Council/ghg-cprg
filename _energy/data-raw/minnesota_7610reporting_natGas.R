@@ -172,7 +172,7 @@ cprg_county_pops <- read_rds(here(
   select(county_name, year = population_year, county_population) %>%
   filter(year %in% c(2005, 2021))
 
-MNcounty_level_gas_emissionsQA <- rbind(downscaleMN_gas_basedOnPopProps_2005, MNcounty_level_gas_emissions_2021) %>%
+MNcounty_level_gas_emissions2005_2013to2023 <- rbind(downscaleMN_gas_basedOnPopProps_2005, MNcounty_level_gas_emissions) %>%
   left_join(cprg_county_pops,
     by = join_by(county_name, year)
   ) %>%
@@ -186,8 +186,8 @@ MNcounty_level_gas_emissionsQA <- rbind(downscaleMN_gas_basedOnPopProps_2005, MN
     EST_perCap_CO2e = EST_emissions_metric_tons_co2e / county_population
   )
 
-MNcounty_level_gas_emissions <- MNcounty_level_gas_emissionsQA %>%
-  select(-county_population, -CO2eEmissions_PerCap_Tons, EST_emissions_metric_tons_co2e, EST_perCap_CO2e) %>%
+MNcounty_level_gas_emissions <- MNcounty_level_gas_emissions2005_2013to2023 %>%
+  select(-county_population, -CO2eEmissions_PerCap_Tons, -EST_emissions_metric_tons_co2e, -EST_perCap_CO2e) %>%
   mutate(
     year = as.numeric(year)
   )
