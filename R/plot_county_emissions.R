@@ -1,7 +1,7 @@
 #' Plot county level emissions for any given sector
 #'
 #' @param county_emissions data frame, compiled emissions. Must have columns
-#'   "sector", "geog_name", "emissions_metric_tons_co2e", "source", "category",
+#'   "sector", "county_name", "emissions_metric_tons_co2e", "source", "category",
 #'   and "geog_level"
 #' @param sector character, one of "Transportation", ....
 #' @param plotly_source character, passed to source paramter in `plotly::plot_ly()`
@@ -28,8 +28,8 @@ plot_county_emissions <- function(county_emissions,
     ))
   }
 
-  if ("year" %in% names(plot_data)) {
-    if (length(unique(plot_data$year)) > 1) {
+  if ("emissions_year" %in% names(plot_data)) {
+    if (length(unique(plot_data$emissions_year)) > 1) {
       cli::cli_alert_warning("Plotting more than one year of data")
     }
   }
@@ -41,7 +41,7 @@ plot_county_emissions <- function(county_emissions,
     data = plot_data,
     type = "bar",
     source = .plotly_source,
-    x = ~geog_name,
+    x = ~county_name,
     y = ~emissions_metric_tons_co2e,
     color = ~source,
     split = ~source,
@@ -52,7 +52,7 @@ plot_county_emissions <- function(county_emissions,
       )
     ),
     hovertemplate = ~ paste0(
-      geog_name, " County", "<br>",
+      county_name, " County", "<br>",
       sector, " - ", category, ", ", source, "<br>",
       rounded_tons,
       "<extra></extra>"

@@ -44,13 +44,7 @@ category_colors <-
     "Industrial fuel combustion" = "#818589",
     "Refinery processes" = "#708090",
     
-    # Transportation 1
-    "Passenger vehicles" = "#0047AB",
-    "Buses" = "#6F8FAF",
-    "Trucks" = "#6495ED",
-    "Aviation" = "#191970",
-    
-    # Transportation 2
+    # Transportation
     "On-road" = "#6F8FAF",
     "Off-road" = "#191970",
     
@@ -73,14 +67,17 @@ source_colors <- list(
   # transportation levels
   # "Light-duty vehicles" = "#993404",
   # we still need these colors for DOT VMT docs
-  "Medium-duty vehicles" = "#fe9929",
-  "Heavy-duty vehicles" = "#fee391",
-  "Gasoline fueled vehicles" = "#db4a33",
-  "Diesel fueled vehicles" = "#feb24c",
-  "Other fueled vehicles" = "#ffeda0",
+  # Transportation 1
+  "Passenger vehicles" = "#0047AB",
+  "Buses" = "#6F8FAF",
+  "Trucks" = "#6495ED",
+  "Aviation" = "#191970",
 
-
-
+  #Electricity
+  "Residential electricity" = "#ffc300",
+  "Commercial electricity" = "#9f7a00",
+  "Industrial electricity" = "#604900",
+  
   # waste levels
   "Landfill" = "#ae017e",
   "Recycling" = "#ed2c73",

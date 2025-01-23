@@ -105,19 +105,44 @@ fig_transportation_emissions <- plot_county_emissions(
 fig_transportation_emissions
 ```
 
-The transportation sector generated `r round(emissions_total/1000000 * sector_percentages[[2]][2], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. This is a county-level estimate. 
+The electricity sector generated `r round(emissions_total/1000000 * sector_percentages[[2]][2], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Of emissions from electricity, as estimated XX% come from the residential sector, YY% from the commercial sector, and ZZ% from the industrial sector.
 
 
-```{r fig-transportation-emissions}
+```{r fig-electricity-emissions}
 #| fig-cap: "Transportation county level emissions"
 #| out-width: "95%"
-fig_transportation_emissions <- plot_county_emissions(
-  county_emissions = county_emissions %>%
-    filter(year == "2021"),
-  .sector = "Transportation",
-  .plotly_source = "fig-transportation-emissions"
+
+electricity_emissions <- county_emissions %>% 
+  filter(emissions_year == "2021") %>% 
+  mutate(sector = if_else(category == "Electricity",
+         "Electricity", sector))
+
+fig_electricity_emissions <- plot_county_emissions(
+  electricity_emissions,
+  .sector = "Electricity",
+  .plotly_source = "fig-electricity-emissions"
 )
-fig_transportation_emissions
+
+fig_electricity_emissions
+```
+
+
+```{r fig-building-emissions}
+#| fig-cap: "Transportation county level emissions"
+#| out-width: "95%"
+
+building_emissions <- county_emissions %>% 
+  filter(emissions_year == "2021") %>% 
+  mutate(sector = if_else(category == "Building Fuel",
+         "Electricity", sector))
+
+fig_electricity_emissions <- plot_county_emissions(
+  electricity_emissions,
+  .sector = "Electricity",
+  .plotly_source = "fig-electricity-emissions"
+)
+
+fig_electricity_emissions
 ```
 
 Emissions from waste is the smallest of the three sectors in the Twin Cities MSA. Waste generated `r round(emissions_total/1000000 * sector_percentages[[2]][3], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Solid waste, including landfills, recycling, and organics, generates the largest share of emissions in the waste sector, with wastewater treatment comprising a smaller share of waste emissions. 
@@ -176,15 +201,14 @@ This document is the result of tremendous work across the Metropolitan Council. 
 #### Primary authors {.unnumbered}
  - Liz Roten, Senior Data Scientist, Transportation (MTS)  
  - Sam Limerick, Senior Data Scientist, Electricity and natural gas (CD)  
- - Peter Wilfahrt, Principal Researcher, Liquid stationary energy, wastewater, natural systems (CD)   
+ - Peter Wilfahrt, Principal Researcher, Industrial, Agricultural, Wastewater,  (CD)   
+ - Kenneth Smith, Principal Researcher, LIDAC, natural systems, Wastewater (CD)  
  - Zoey Yandell, Intern, Solid waste (CD)  
 :::
 
 ::: {.column width="50%"}
 #### Contributors {.unnumbered}
- - Kenneth Smith, Principal Researcher, LIDAC, editing (CD)  
  - Laine McNamara, Business Systems Analyst III, editing (CD)  
- - Trevor Prater, Senior Engineer, wastewater (ES)  
 :::
 
 ::::

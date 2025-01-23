@@ -21,8 +21,8 @@ plot_county_sector_emissions <- function(county_emissions,
     dplyr::filter(sector == .sector) %>%
     rowwise()
 
-  if ("year" %in% names(plot_data)) {
-    if (length(unique(plot_data$year)) > 1) {
+  if ("emissions_year" %in% names(plot_data)) {
+    if (length(unique(plot_data$emissions_year)) > 1) {
       cli::cli_alert_warning("Plotting more than one year of data")
     }
   }
@@ -42,7 +42,7 @@ plot_county_sector_emissions <- function(county_emissions,
     type = "bar",
     source = .plotly_source,
     x = ~emissions_metric_tons_co2e,
-    y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+    y = ~ reorder(county_name, emissions_metric_tons_co2e),
     color = ~sector,
     colors = unlist(sector_colors),
     marker_line=dict(width=2, color='black'),
