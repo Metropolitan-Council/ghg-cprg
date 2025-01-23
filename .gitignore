@@ -1181,3 +1181,5 @@ _agriculture/data-raw/ag-module.xlsx
 
 /_nature/data-raw/nhd_gdb
 
+_waste/data-raw/wastewater/epa/EPA_2023_GHG_Emissions_and_Sinks_Table 7-34_Annual_protein_consumption.csv
+_waste/data-raw/wastewater/epa/wastewater-module.xlsx
