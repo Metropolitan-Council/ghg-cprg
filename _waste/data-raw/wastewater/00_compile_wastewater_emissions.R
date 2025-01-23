@@ -97,8 +97,8 @@ wastewater_emissions_meta <-
     "mt_co2e", class(wastewater_emissions$mt_co2e), "Metric tons of gas in CO2 equivalency"
   )
 
-saveRDS(wastewater_emissions, "./_waste/data/_wastewater_emissions.rds")
-saveRDS(wastewater_emissions_meta, "./_waste/data/_wastewater_emissions_meta.rds")
+saveRDS(wastewater_emissions, "./_waste/data/_county_wastewater_emissions.rds")
+saveRDS(wastewater_emissions_meta, "./_waste/data/_county_wastewater_emissions_meta.rds")
 
 
 # wastewater_emissions %>%
