@@ -147,9 +147,9 @@ combined_wi_elecUtil_activityData <- combined_wi_elecUtil_activityData %>%
 # Assuming each row in wi_electricity_data represents a utility's electricity delivery in a county, process and merge data
 processed_wi_elecUtil_activityData <- combined_wi_elecUtil_activityData %>%
   mutate(
-    CO2_emissions = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_CO2,
-    CH4_emissions = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_CH4,
-    N2O_emissions = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_N2O
+    CO2_emissions = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_CO2_2021,
+    CH4_emissions = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_CH4_2021,
+    N2O_emissions = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_N2O_2021
   )
 
 WIcounty_level_electricity_emissions <- processed_wi_elecUtil_activityData %>%
@@ -202,9 +202,9 @@ downscaleEIA_WI_electricRetail <- read_rds(here(
   "data",
   "cprg_county_proportions.RDS"
 )) %>%
-  filter(STATE == "Wisconsin" &
+  filter(state_name == "Wisconsin" &
     population_data_source == "Decennial Census PL 94-171 Redistricting Data Summary File") %>%
-  select(GEOID, county_name = name, county_proportion_of_state_pop) %>%
+  select(geoid, county_name, county_proportion_of_state_pop) %>%
   mutate(
     downscaled_EIA_total_CO2e_emissions_lbs =
       EIA_WI_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1,
