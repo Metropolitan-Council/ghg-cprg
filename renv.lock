@@ -2936,7 +2936,7 @@
     },
     "timeDate": {
       "Package": "timeDate",
-      "Version": "4041.110",
+      "Version": "4032.109",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -2946,7 +2946,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "c5e48e8ac24d4472ddb122bcdeb011ad"
+      "Hash": "fa276a2ec2555d74b4eabf56fba3d209"
     },
     "timechange": {
       "Package": "timechange",
@@ -2971,7 +2971,7 @@
     },
     "tseries": {
       "Package": "tseries",
-      "Version": "0.10-58",
+      "Version": "0.10-56",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -2984,7 +2984,7 @@
         "utils",
         "zoo"
       ],
-      "Hash": "f9269495a613f8e237f01691bf789ead"
+      "Hash": "77d02308731e1d886e962b4e11a88346"
     },
     "tzdb": {
       "Package": "tzdb",

@@ -12,8 +12,9 @@ ctu_estimates_2011 <- readxl::read_xlsx("_meta/data-raw/population/IntercensalEs
     population_data_source = "Met Council Intercensal Estimates 2024"
   ) %>%
   separate_wider_delim(
-    GEONAME, delim = ",", names = c("ctu_name", "county_name", "state")
-    ) %>%
+    GEONAME,
+    delim = ",", names = c("ctu_name", "county_name", "state")
+  ) %>%
   select(
     geoid,
     ctuid = CTU_CODE,
@@ -66,7 +67,7 @@ ctu_estimates_2000 <- read.csv("_meta/data-raw/population/sub-est00int.csv") %>%
     ),
     inventory_year = as.numeric(inventory_year),
     population_data_source = "Census Bureau Intercensal Estimates"
-  ) 
+  )
 
 hassan_population <- ctu_estimates_2000 %>%
   filter(ctu_name == "Hassan township") %>%
@@ -81,7 +82,7 @@ ctu_estimates_2000 <- ctu_estimates_2000 %>%
       TRUE ~ ctu_population
     )
   ) %>%
-  select(-hassan_pop) %>% 
+  select(-hassan_pop) %>%
   filter(ctu_name != "Hassan township")
 
 
@@ -94,11 +95,12 @@ ctu_estimates_2021 <- readxl::read_xlsx("_meta/data-raw/population/EstimateSerie
     population_data_source = "Met Council Intercensal Estimates 2024"
   ) %>%
   separate_wider_delim(
-    GEONAME, delim = ",", names = c("ctu_name", "county_name", "state")
+    GEONAME,
+    delim = ",", names = c("ctu_name", "county_name", "state")
   ) %>%
   select(
     geoid,
-    ctuid = CTU_ID_FIPS,,
+    ctuid = CTU_ID_FIPS, ,
     ctu_name,
     inventory_year = EST_YEAR,
     ctu_population = POPTOTAL_EST,
@@ -113,7 +115,7 @@ ctu_pop_estimates <- ctu_estimates_2000 %>%
     ctu_estimates_2011,
     # ctu_2020,
     ctu_estimates_2021
-  ) %>%  
+  ) %>%
   mutate(
     ctu_class = case_when(
       str_detect(ctu_name, "\\scity") ~ "CITY",
@@ -125,7 +127,7 @@ ctu_pop_estimates <- ctu_estimates_2000 %>%
     ctu_name = str_remove(ctu_name, "\\stownship"),
     ctu_name = str_remove(ctu_name, "\\sUT"),
     ctu_name = str_replace(ctu_name, "St. ", "Saint ")
-  ) %>% 
+  ) %>%
   group_by(
     geoid, inventory_year
   ) %>%
@@ -135,7 +137,7 @@ ctu_pop_estimates <- ctu_estimates_2000 %>%
   ungroup() %>%
   mutate(
     ctu_proportion_of_county_pop = ctu_population / county_population
-  ) %>% 
+  ) %>%
   select(
     geoid,
     ctuid,
@@ -167,9 +169,9 @@ ctu_pop_meta <- tribble(
   "geoid", class(ctu_pop_estimates$geoid), "GEOID tag for MN county",
   "ctuid", class(ctu_pop_estimates$ctuid), "CTU census tag",
   "ctu_name", class(ctu_pop_estimates$ctu_name), "CTU name",
-  "ctu_class", class(ctu_pop_estimates$ctu_class), "CTU class (either CITY, 
+  "ctu_class", class(ctu_pop_estimates$ctu_class), "CTU class (either CITY,
   TOWNSHIP, or UNORGANIZED TERRITORY",
-  "inventory_year", class(ctu_pop_estimates$inventory_year), 
+  "inventory_year", class(ctu_pop_estimates$inventory_year),
   "Population year, between 2000 and 2023",
   "population_data_source", class(ctu_pop_estimates$population_data_source),
   "Source of CTU-level population data",
