@@ -406,8 +406,7 @@ dissolved_ctu <- cprg_ctu %>%
   summarize(geometry = st_union(geometry)) %>%  # Merge geometries
   ungroup()     
 
-# View or save the result
-plot(dissolved_ctu["geometry"]) # Quick visualization
+#plot(dissolved_ctu["geometry"]) # Quick visualization
 
 # enable comparison of NREL breakdowns to actual breakdowns from Xcel
 complete_city_years <- xcel_activityData_NREL_2015_2022 %>%
@@ -503,47 +502,47 @@ commDesg_diff_agg <- data_city_year_sector_propDiffs %>%
 
 
 
-#PLOT ONE -- Bar graphs showing Average Proportion Differences by Community Designation and Sector
-ggplot(commDesg_diff_agg, aes(x = community_designation, y = avgPropDiff, fill = sector)) +
-  geom_bar(stat = "identity", position = "dodge") +  # Side-by-side bars
-  scale_y_continuous() +  # Allow positive and negative values
-  labs(
-    title = "Average Proportion Differences by Community Designation and Sector",
-    x = "Community Designation",
-    y = "Average Proportion Difference",
-    fill = "Sector"
-  ) +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1)  # Rotate x-axis labels for readability
-  )
-
-
-# PLOT TWO -- Map showing Spatial Distribution of Proportion Differences (Modeled - Actual)
-ggplot(data_city_year_sector_propDiffs) +
-  geom_sf(aes(geometry = geometry, fill = difference), color = "black") +
-  geom_sf_text(aes(geometry = geometry, label =  ctu_name), size = 3) +
-  scale_fill_distiller(palette = "RdBu", oob = scales::squish) +
-  facet_wrap(~sector) +
-  labs(
-    title = "Spatial Distribution of Proportion Differences (Modeled - Actual)",
-    fill = "Difference"
-  ) +
-  theme_minimal()
-
-# PLOT THREE - Scatter plots comparing Modeled vs Actual Proportions by Sector
-ggplot(data_city_year_sector_propDiffs, aes(x = Actual, y = Modeled, color = community_designation)) +
-  geom_point() +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
-  facet_wrap(~sector, scales = "free") +
-  labs(
-    title = "Modeled vs Actual Proportions by Sector",
-    x = "Actual Proportion",
-    y = "Modeled Proportion",
-    color = "Community Designation"
-  ) +
-  theme_minimal()
-
+# #PLOT ONE -- Bar graphs showing Average Proportion Differences by Community Designation and Sector
+# ggplot(commDesg_diff_agg, aes(x = community_designation, y = avgPropDiff, fill = sector)) +
+#   geom_bar(stat = "identity", position = "dodge") +  # Side-by-side bars
+#   scale_y_continuous() +  # Allow positive and negative values
+#   labs(
+#     title = "Average Proportion Differences by Community Designation and Sector",
+#     x = "Community Designation",
+#     y = "Average Proportion Difference",
+#     fill = "Sector"
+#   ) +
+#   theme_minimal() +
+#   theme(
+#     axis.text.x = element_text(angle = 45, hjust = 1)  # Rotate x-axis labels for readability
+#   )
+# 
+# 
+# # PLOT TWO -- Map showing Spatial Distribution of Proportion Differences (Modeled - Actual)
+# ggplot(data_city_year_sector_propDiffs) +
+#   geom_sf(aes(geometry = geometry, fill = difference), color = "black") +
+#   geom_sf_text(aes(geometry = geometry, label =  ctu_name), size = 3) +
+#   scale_fill_distiller(palette = "RdBu", oob = scales::squish) +
+#   facet_wrap(~sector) +
+#   labs(
+#     title = "Spatial Distribution of Proportion Differences (Modeled - Actual)",
+#     fill = "Difference"
+#   ) +
+#   theme_minimal()
+# 
+# # PLOT THREE - Scatter plots comparing Modeled vs Actual Proportions by Sector
+# ggplot(data_city_year_sector_propDiffs, aes(x = Actual, y = Modeled, color = community_designation)) +
+#   geom_point() +
+#   geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+#   facet_wrap(~sector, scales = "free") +
+#   labs(
+#     title = "Modeled vs Actual Proportions by Sector",
+#     x = "Actual Proportion",
+#     y = "Modeled Proportion",
+#     color = "Community Designation"
+#   ) +
+#   theme_minimal()
+# 
 
 
 
