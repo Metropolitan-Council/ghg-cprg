@@ -318,7 +318,7 @@ nrel_slope_city_emission_proportions_adjusted <- readRDS("_energy/data-raw/nrel_
     filter(., year == 2017) %>% mutate(year = 2016)
   )
 
-xcel_activityData_NREL_QA_2015_2022 <- Xcel_activityData_2015_2023 %>%
+xcel_activityData_NREL_QA_2015_2023 <- Xcel_activityData_2015_2023 %>%
   left_join(
     nrel_slope_city_emission_proportions_adjusted,
     # implicitly applies same proportions to COCTU splits
@@ -328,8 +328,6 @@ xcel_activityData_NREL_QA_2015_2022 <- Xcel_activityData_2015_2023 %>%
       year == year
     )
   ) %>%
-  # temporarily exclude 2023 since no eGRID data yet
-  filter(year < 2023) %>%
   select(
     -source.x,
     -source.y,
@@ -337,18 +335,18 @@ xcel_activityData_NREL_QA_2015_2022 <- Xcel_activityData_2015_2023 %>%
     -city_name
   )
 
-xcel_activityData_NREL_2015_2022 <- bind_rows(
+xcel_activityData_NREL_2015_2023 <- bind_rows(
   # Keep original rows that are not 'Business'
-  xcel_activityData_NREL_QA_2015_2022 %>%
+  xcel_activityData_NREL_QA_2015_2023 %>%
     filter(sector_mapped != "Business"),
 
   # Expand `Business` rows into 'commercial*'
-  xcel_activityData_NREL_QA_2015_2022 %>%
+  xcel_activityData_NREL_QA_2015_2023 %>%
     filter(sector_mapped == "Business") %>%
     mutate(sector_mapped = "commercial*"),
 
   # Expand `Business` rows into 'industrial*'
-  xcel_activityData_NREL_QA_2015_2022 %>%
+  xcel_activityData_NREL_QA_2015_2023 %>%
     filter(sector_mapped == "Business") %>%
     mutate(sector_mapped = "industrial*")
 ) %>%
@@ -394,14 +392,14 @@ xcel_activityData_NREL_2015_2022 <- bind_rows(
   )
 
 # final cleanup of Xcel Activity data
-xcel_activityData_NREL_2015_2022_process <- xcel_activityData_NREL_2015_2022 %>%
+xcel_activityData_NREL_2015_2023_process <- xcel_activityData_NREL_2015_2023 %>%
   select(
     -util_reported_co2e, # source numbers, not disaggregated by sector or COCTU
     -mWh_delivered, # source numbers, not disaggregated by sector or COCTU
     -c(10:22)
   ) # intermediate calculations
 
-write_rds(xcel_activityData_NREL_2015_2022_process, "_energy/data/xcel_activityData_NREL_2015_2022_process.RDS")
+write_rds(xcel_activityData_NREL_2015_2023_process, "_energy/data/xcel_activityData_NREL_2015_2023_process.RDS")
 
 ctu_commDesg <- read.csv("_meta/data-raw/ctus_summary_2018.csv") %>%
   select(
@@ -424,7 +422,7 @@ dissolved_ctu <- cprg_ctu %>%
 # plot(dissolved_ctu["geometry"]) # Quick visualization
 
 # enable comparison of NREL breakdowns to actual breakdowns from Xcel
-complete_city_years <- xcel_activityData_NREL_2015_2022 %>%
+complete_city_years <- xcel_activityData_NREL_2015_2023 %>%
   filter(
     !is.na(util_mWh),
     !is.na(commercial_city),
@@ -443,7 +441,7 @@ complete_city_years <- xcel_activityData_NREL_2015_2022 %>%
   )
 
 # Collapse rows to city-year grain
-complete_city_NREL_comparison <- xcel_activityData_NREL_2015_2022 %>%
+complete_city_NREL_comparison <- xcel_activityData_NREL_2015_2023 %>%
   semi_join(complete_city_years, by = c("ctu_name", "year")) %>%
   group_by(ctu_name, year) %>%
   summarize(
