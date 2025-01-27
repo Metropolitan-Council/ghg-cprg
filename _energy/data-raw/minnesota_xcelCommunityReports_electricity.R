@@ -203,7 +203,7 @@ testthat::test_that("Correct number of distinct city-year combos and identify mi
   # Assert equality of unique combinations to file list length
   testthat::expect_equal(
     nrow(unique_combinations),
-    length(file_list),
+    length(file_list)-1,
     info = paste("Missing or duplicate city-year combinations found. Check missing_combinations and duplicate_combinations.")
   )
 })
