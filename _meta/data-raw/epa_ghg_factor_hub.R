@@ -435,9 +435,9 @@ egrid2005_to_2023 <- tibble::tibble(
 full_years <- seq(min(eGRID_years), max(eGRID_years))
 
 # Expand the dataset to include all years for each emission type
-expanded_data <- egrid2005_to_2022 %>%
+expanded_data <- egrid2005_to_2023 %>%
   expand(eGrid_Subregion, factor_type, emission, per_unit, Year = full_years) %>%
-  left_join(egrid2005_to_2022, by = c("eGrid_Subregion", "factor_type", "emission", "per_unit", "Year"))
+  left_join(egrid2005_to_2023, by = c("eGrid_Subregion", "factor_type", "emission", "per_unit", "Year"))
 
 interpolated_data <- expanded_data %>%
   group_by(emission) %>%
