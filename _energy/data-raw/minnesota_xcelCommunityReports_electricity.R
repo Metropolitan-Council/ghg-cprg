@@ -66,6 +66,11 @@ get_files <- function(root_dir) {
       # Extract city name from the file
       city_name <- extract_city_name(file)
       
+      # Handle cases where city_name or year is missing
+      if (is.na(city_name) || is.na(year)) {
+        warning(paste("Missing city name or year in file:", file))
+      }
+      
       # Append the file information to the list
       file_info <- append(file_info, list(list(
         file_path = file,
@@ -163,7 +168,46 @@ if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
 
 # Apply process_file to each file identified in get_files() in the nested structure and combine the results
 file_list <- get_files(dir_xcel_communityReports)
+
+# test that number of distinct city year combos = number of files
+# highlight which files if any have NA value for city_name or year 
+testthat::test_that("Correct number of distinct city-year combos and identify missing ones", {
   
+  # Extract combinations of city_name and year from file_list
+  combinations <- lapply(file_list, function(x) {
+    data.frame(city_name = x$city_name, year = x$year, stringsAsFactors = FALSE)
+  })
+  
+  # Convert to a single data frame
+  combinations_df <- do.call(rbind, combinations)
+  
+  # Count unique combinations
+  unique_combinations <- combinations_df %>%
+    distinct(city_name, year)
+  
+  # Identify duplicate or missing rows
+  duplicate_combinations <- combinations_df %>%
+    group_by(city_name, year) %>%
+    filter(n() > 1)
+  
+  # Compare length of file list to unique combinations and find missing
+  missing_combinations <- setdiff(
+    combinations_df %>% distinct(city_name, year),
+    unique_combinations
+  )
+  
+  # Print missing combinations for inspection
+  print("Missing combinations:")
+  print(missing_combinations)
+  
+  # Assert equality of unique combinations to file list length
+  testthat::expect_equal(
+    nrow(unique_combinations),
+    length(file_list),
+    info = paste("Missing or duplicate city-year combinations found. Check missing_combinations and duplicate_combinations.")
+  )
+})
+
 
 # Apply process_file_2015_2019 to each file for years 2015-19 identified in get_files() in the nested structure and combine the results
 file_list_2015_2019 <- Filter(function(x) x$year < 2020, file_list)
@@ -502,24 +546,5 @@ ggplot(data_city_year_sector_propDiffs, aes(x = Actual, y = Modeled, color = com
 
 
 
-# test that number of distinct city year combos = number of files
-# highlight which files if any have NA value for city_name or year 
-testthat::test_that("Correct number of distinct city-year combos", {
-  
-  combinations <- lapply(file_list, function(x) {
-    c(city_name = x$city_name, year = x$year)
-  })
-  
-  # Convert to a data frame for easier processing
-  combinations_df <- do.call(rbind, combinations)
-  
-  # Count unique combinations
-  unique_combinations <- nrow(unique(combinations_df))
-  
-  
-  testthat::expect_equal(
-    length(file_list),
-    unique_combinations
-  )
-})
+
 
