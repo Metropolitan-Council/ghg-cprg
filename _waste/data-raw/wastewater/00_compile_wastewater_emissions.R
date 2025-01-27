@@ -4,15 +4,15 @@ source("R/global_warming_potential.R")
 
 
 # 01 ----------------------------------------------------------------------
-source("_waste/data-raw/wastewater/01_compile_ww_constants.R")                          
-source("_waste/data-raw/wastewater/01_compile_ww_protein_consumption.R")                
+source("_waste/data-raw/wastewater/01_compile_ww_constants.R")
+source("_waste/data-raw/wastewater/01_compile_ww_protein_consumption.R")
 
 # 02 ----------------------------------------------------------------------
-source("_waste/data-raw/wastewater/02_compile_ww_municipal_ch4.R")                      
-source("_waste/data-raw/wastewater/02_compile_ww_municipal_n2o_direct.R")               
+source("_waste/data-raw/wastewater/02_compile_ww_municipal_ch4.R")
+source("_waste/data-raw/wastewater/02_compile_ww_municipal_n2o_direct.R")
 
 # 03 ----------------------------------------------------------------------
-source("_waste/data-raw/wastewater/03_compile_ww_municipal_n2o_effluent.R")             
+source("_waste/data-raw/wastewater/03_compile_ww_municipal_n2o_effluent.R")
 
 
 # Load constants ----------------------------------------------------------
@@ -33,50 +33,63 @@ all_counties <- unique(cprg_census_county_population$county_name)
 all_years <- years_to_analyze
 
 wastewater_emissions <- expand.grid(
-  sector="Waste",
-  category="Wastewater",
-  county_name = all_counties, 
+  sector = "Waste",
+  category = "Wastewater",
+  county_name = all_counties,
   inventory_year = all_years,
-  source=c("Municipal_CH4", "Municipal_N20_direct", "Municipal_N20_effluent"),
-  data_source="EPA State Inventory Tool - Wastewater Module") %>%
+  source = c("Municipal_CH4", "Municipal_N20_direct", "Municipal_N20_effluent"),
+  data_source = "EPA State Inventory Tool - Wastewater Module"
+) %>%
   arrange(county_name, inventory_year, source) %>%
-  left_join(cprg_census_county_population %>% 
-              dplyr::select(county_name, state_name, population_year, population) %>%
-              mutate(inventory_year = as.numeric(population_year)) %>%
-              dplyr::select(-population_year),
-            by = join_by(county_name, inventory_year)) %>%
-  mutate(state = 
-           case_when(state_name == "Minnesota" ~ "MN",
-                     state_name == "Wisconsin" ~ "WI")) %>%
-  relocate(c(population, inventory_year), .after=everything()) %>%
-  mutate(value_emissions=NA, 
-         units_emissions=case_when(
-           source == "Municipal_CH4" ~ "Metric tons CH4",
-           source == "Municipal_N20_direct" ~ "Metric tons N2O",
-           source == "Municipal_N20_effluent" ~ "Metric tons N2O"
-         )) %>% as_tibble()
+  left_join(
+    cprg_census_county_population %>%
+      dplyr::select(county_name, state_name, population_year, population) %>%
+      mutate(inventory_year = as.numeric(population_year)) %>%
+      dplyr::select(-population_year),
+    by = join_by(county_name, inventory_year)
+  ) %>%
+  mutate(
+    state =
+      case_when(
+        state_name == "Minnesota" ~ "MN",
+        state_name == "Wisconsin" ~ "WI"
+      )
+  ) %>%
+  relocate(c(population, inventory_year), .after = everything()) %>%
+  mutate(
+    value_emissions = NA,
+    units_emissions = case_when(
+      source == "Municipal_CH4" ~ "Metric tons CH4",
+      source == "Municipal_N20_direct" ~ "Metric tons N2O",
+      source == "Municipal_N20_effluent" ~ "Metric tons N2O"
+    )
+  ) %>%
+  as_tibble()
 
 
 
 wastewater_emissions <- wastewater_emissions %>%
   group_by(county_name, state_name, inventory_year, source) %>%
-  mutate(value_emissions = 
-           case_when(
-             source == "Municipal_CH4" ~ (calculate_mww_ch4_emissions(year = inventory_year, population = population) %>% pull(value_emissions)),
-             source == "Municipal_N20_direct" ~ (calculate_mww_n2o_direct_emissions(year = inventory_year, population = population) %>% pull(value_emissions)),
-             source == "Municipal_N20_effluent" ~ (calculate_mww_n2o_effluent_emissions(year = inventory_year, population = population) %>% pull(value_emissions))
-           ),
-         mt_co2e = 
-           case_when(
-             units_emissions == "Metric tons CH4" ~ value_emissions * gwp$ch4,
-             units_emissions == "Metric tons N2O" ~ value_emissions * gwp$n2o           
-             )
-         ) %>%
+  mutate(
+    value_emissions =
+      case_when(
+        source == "Municipal_CH4" ~ (calculate_mww_ch4_emissions(year = inventory_year, population = population) %>% pull(value_emissions)),
+        source == "Municipal_N20_direct" ~ (calculate_mww_n2o_direct_emissions(year = inventory_year, population = population) %>% pull(value_emissions)),
+        source == "Municipal_N20_effluent" ~ (calculate_mww_n2o_effluent_emissions(year = inventory_year, population = population) %>% pull(value_emissions))
+      ),
+    mt_co2e =
+      case_when(
+        units_emissions == "Metric tons CH4" ~ value_emissions * gwp$ch4,
+        units_emissions == "Metric tons N2O" ~ value_emissions * gwp$n2o
+      )
+  ) %>%
   arrange(state, county_name, inventory_year, source) %>%
-  relocate(inventory_year, county_name, state_name, state,
-           sector, category, source, data_source, 
-           population, value_emissions,
-           units_emissions, mt_co2e)
+  relocate(
+    inventory_year, county_name, state_name, state,
+    sector, category, source, data_source,
+    population, value_emissions,
+    units_emissions, mt_co2e
+  )
 
 
 
@@ -103,11 +116,6 @@ saveRDS(wastewater_emissions_meta, "./_waste/data/_county_wastewater_emissions_m
 
 # wastewater_emissions %>%
 #   ggplot() + theme_minimal() +
-#   geom_path(aes(x=inventory_year, y=mt_co2e, color=source)) + 
-#   geom_point(aes(x=inventory_year, y=mt_co2e, color=source)) + 
+#   geom_path(aes(x=inventory_year, y=mt_co2e, color=source)) +
+#   geom_point(aes(x=inventory_year, y=mt_co2e, color=source)) +
 #   facet_wrap(~county_name)
-
-
-
-
-

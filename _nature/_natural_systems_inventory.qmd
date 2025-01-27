@@ -50,44 +50,43 @@ crs_use <- terra::crs(nlcd_lc)
 ```{r include=FALSE}
 # Plot NLCD land cover map
 # library(ggplot2)
-p_nlcd_lc <- ggplot(cprg_county) +   geom_sf(color="gray20", fill=NA, lwd=0.5) + #geom_sf(color=NA, fill=NA, lwd=0) +
-  ggspatial::annotation_scale(location = "br", width_hint = 0.3, pad_x = unit(0.23, "in"),unit_category="imperial") +
-  ggspatial::annotation_north_arrow(location = "br", which_north = "true",
-                                    height= unit(0.33, "in"), width= unit(0.35, "in"),
-                                    pad_x = unit(0.1, "in"), pad_y = unit(0.35, "in"),
-                                    style = ggspatial::north_arrow_minimal) +
+p_nlcd_lc <- ggplot(cprg_county) +
+  geom_sf(color = "gray20", fill = NA, lwd = 0.5) + # geom_sf(color=NA, fill=NA, lwd=0) +
+  ggspatial::annotation_scale(location = "br", width_hint = 0.3, pad_x = unit(0.23, "in"), unit_category = "imperial") +
+  ggspatial::annotation_north_arrow(
+    location = "br", which_north = "true",
+    height = unit(0.33, "in"), width = unit(0.35, "in"),
+    pad_x = unit(0.1, "in"), pad_y = unit(0.35, "in"),
+    style = ggspatial::north_arrow_minimal
+  ) +
   councilR::theme_council_geo() +
-  
   tidyterra::geom_spatraster(data = nlcd_lc, alpha = 0.9) +
-  scale_fill_manual(breaks = nlcd.legend$ID,
-                                        labels = nlcd.legend$Class,
-                                        values=nlcd.legend$Color,
-                                        na.value="white",
-                                        name = 'Cover Type',
-                      guide = guide_legend(order = 1)) +
-  
+  scale_fill_manual(
+    breaks = nlcd.legend$ID,
+    labels = nlcd.legend$Class,
+    values = nlcd.legend$Color,
+    na.value = "white",
+    name = "Cover Type",
+    guide = guide_legend(order = 1)
+  ) +
   ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
-  
-  geom_sf(data = cprg_ctu, fill=NA, aes(color=councilR::colors$suppGray), alpha=0.8,  lwd=0.2) +
-  scale_color_manual("", values=councilR::colors$suppGray, labels = "CTU boundary") +
-  
+
+  geom_sf(data = cprg_ctu, fill = NA, aes(color = councilR::colors$suppGray), alpha = 0.8, lwd = 0.2) +
+  scale_color_manual("", values = councilR::colors$suppGray, labels = "CTU boundary") +
   ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
-  
-  geom_sf(aes(color=councilR::colors$suppGray), fill=NA, lwd=0.6) + # add county lines
-  scale_color_manual("", values=councilR::colors$suppGray, labels = "County boundary") +
-  
-   theme(
-    legend.position = "right", legend.direction = "vertical",  legend.justification = c("left","top"),
+
+  geom_sf(aes(color = councilR::colors$suppGray), fill = NA, lwd = 0.6) + # add county lines
+  scale_color_manual("", values = councilR::colors$suppGray, labels = "County boundary") +
+  theme(
+    legend.position = "right", legend.direction = "vertical", legend.justification = c("left", "top"),
     legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
-    legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
+    legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size = 9), legend.text = element_text(size = 8)
   )
-  # theme(
-  #   legend.position = c(-0.08,0.97), legend.direction = "vertical",  legend.justification = c("left","top"),
-  #   legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
-  #   legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
-  # )
-
-
+# theme(
+#   legend.position = c(-0.08,0.97), legend.direction = "vertical",  legend.justification = c("left","top"),
+#   legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+#   legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
+# )
 ```
 
 
@@ -95,40 +94,40 @@ p_nlcd_lc <- ggplot(cprg_county) +   geom_sf(color="gray20", fill=NA, lwd=0.5) +
 ```{r include=FALSE}
 # Plot NLCD impervious cover map
 # library(ggplot2)
-p_nlcd_is <- ggplot(cprg_county) +   geom_sf(color="gray20", fill=NA, lwd=0.5) + #geom_sf(color=NA, fill=NA, lwd=0) +
-  ggspatial::annotation_scale(location = "br", width_hint = 0.3, pad_x = unit(0.23, "in"),unit_category="imperial") +
-  ggspatial::annotation_north_arrow(location = "br", which_north = "true",
-                                    height= unit(0.33, "in"), width= unit(0.35, "in"),
-                                    pad_x = unit(0.1, "in"), pad_y = unit(0.35, "in"),
-                                    style = ggspatial::north_arrow_minimal) +
+p_nlcd_is <- ggplot(cprg_county) +
+  geom_sf(color = "gray20", fill = NA, lwd = 0.5) + # geom_sf(color=NA, fill=NA, lwd=0) +
+  ggspatial::annotation_scale(location = "br", width_hint = 0.3, pad_x = unit(0.23, "in"), unit_category = "imperial") +
+  ggspatial::annotation_north_arrow(
+    location = "br", which_north = "true",
+    height = unit(0.33, "in"), width = unit(0.35, "in"),
+    pad_x = unit(0.1, "in"), pad_y = unit(0.35, "in"),
+    style = ggspatial::north_arrow_minimal
+  ) +
   councilR::theme_council_geo() +
-  
-  
   tidyterra::geom_spatraster(data = nlcd_is, alpha = 0.9, na.rm = TRUE) +
-  scale_fill_gradient(name = "NLCD Impervious Cover (%)", low = "pink", high = "firebrick4", na.value = "white",
-                      guide = guide_legend(order = 1)) +
-  
+  scale_fill_gradient(
+    name = "NLCD Impervious Cover (%)", low = "pink", high = "firebrick4", na.value = "white",
+    guide = guide_legend(order = 1)
+  ) +
   ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
-  
-  geom_sf(data = cprg_ctu, fill=NA, aes(color=councilR::colors$suppGray), alpha=0.8,  lwd=0.2) +
-  scale_color_manual("", values=councilR::colors$suppGray, labels = "CTU boundary") +
-  
-  ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
-  
-  geom_sf(aes(color=councilR::colors$suppGray), fill=NA, lwd=0.6) + # add county lines
-  scale_color_manual("", values=councilR::colors$suppGray, labels = "County boundary") +
-  theme(
-    legend.position = "right", legend.direction = "vertical",  legend.justification = c("left","top"),
-    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
-    legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
-  )
-  
-  # theme(
-  #   legend.position = c(-0.08,0.97), legend.direction = "vertical",  legend.justification = c("left","top"),
-  #   legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
-  #   legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
-  # )
 
+  geom_sf(data = cprg_ctu, fill = NA, aes(color = councilR::colors$suppGray), alpha = 0.8, lwd = 0.2) +
+  scale_color_manual("", values = councilR::colors$suppGray, labels = "CTU boundary") +
+  ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
+
+  geom_sf(aes(color = councilR::colors$suppGray), fill = NA, lwd = 0.6) + # add county lines
+  scale_color_manual("", values = councilR::colors$suppGray, labels = "County boundary") +
+  theme(
+    legend.position = "right", legend.direction = "vertical", legend.justification = c("left", "top"),
+    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+    legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size = 9), legend.text = element_text(size = 8)
+  )
+
+# theme(
+#   legend.position = c(-0.08,0.97), legend.direction = "vertical",  legend.justification = c("left","top"),
+#   legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+#   legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
+# )
 ```
 
 
@@ -136,41 +135,39 @@ p_nlcd_is <- ggplot(cprg_county) +   geom_sf(color="gray20", fill=NA, lwd=0.5) +
 ```{r include=FALSE}
 # Plot NLCD tree canopy cover map
 # library(ggplot2)
-p_nlcd_tcc <- ggplot(cprg_county) +   geom_sf(color="gray20", fill=NA, lwd=0.5) + #geom_sf(color=NA, fill=NA, lwd=0) +
-  ggspatial::annotation_scale(location = "br", width_hint = 0.3, pad_x = unit(0.23, "in"),unit_category="imperial") +
-  ggspatial::annotation_north_arrow(location = "br", which_north = "true",
-                                    height= unit(0.33, "in"), width= unit(0.35, "in"),
-                                    pad_x = unit(0.1, "in"), pad_y = unit(0.35, "in"),
-                                    style = ggspatial::north_arrow_minimal) +
+p_nlcd_tcc <- ggplot(cprg_county) +
+  geom_sf(color = "gray20", fill = NA, lwd = 0.5) + # geom_sf(color=NA, fill=NA, lwd=0) +
+  ggspatial::annotation_scale(location = "br", width_hint = 0.3, pad_x = unit(0.23, "in"), unit_category = "imperial") +
+  ggspatial::annotation_north_arrow(
+    location = "br", which_north = "true",
+    height = unit(0.33, "in"), width = unit(0.35, "in"),
+    pad_x = unit(0.1, "in"), pad_y = unit(0.35, "in"),
+    style = ggspatial::north_arrow_minimal
+  ) +
   councilR::theme_council_geo() +
-  
-  
   tidyterra::geom_spatraster(data = nlcd_tcc, alpha = 0.9, na.rm = TRUE) +
-  scale_fill_gradient(name = "NLCD Tree Canopy Cover (%)", low = "white", high = "forestgreen", na.value = "white",
-                      guide = guide_legend(order = 1)) +
-  
+  scale_fill_gradient(
+    name = "NLCD Tree Canopy Cover (%)", low = "white", high = "forestgreen", na.value = "white",
+    guide = guide_legend(order = 1)
+  ) +
   ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
-  
-  geom_sf(data = cprg_ctu, fill=NA, aes(color=councilR::colors$suppGray), alpha=0.8,  lwd=0.2) +
-  scale_color_manual("", values=councilR::colors$suppGray, labels = "CTU boundary") +
-  
-  ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
-  
-  geom_sf(aes(color=councilR::colors$suppGray), fill=NA, lwd=0.6) + # add county lines
-  scale_color_manual("", values=councilR::colors$suppGray, labels = "County boundary") +
-  
-  
-   theme(
-    legend.position = "right", legend.direction = "vertical",  legend.justification = c("left","top"),
-    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
-    legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
-  )
-  # theme(
-  #   legend.position = c(-0.08,0.97), legend.direction = "vertical",  legend.justification = c("left","top"),
-  #   legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
-  #   legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
-  # )
 
+  geom_sf(data = cprg_ctu, fill = NA, aes(color = councilR::colors$suppGray), alpha = 0.8, lwd = 0.2) +
+  scale_color_manual("", values = councilR::colors$suppGray, labels = "CTU boundary") +
+  ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
+
+  geom_sf(aes(color = councilR::colors$suppGray), fill = NA, lwd = 0.6) + # add county lines
+  scale_color_manual("", values = councilR::colors$suppGray, labels = "County boundary") +
+  theme(
+    legend.position = "right", legend.direction = "vertical", legend.justification = c("left", "top"),
+    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+    legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size = 9), legend.text = element_text(size = 8)
+  )
+# theme(
+#   legend.position = c(-0.08,0.97), legend.direction = "vertical",  legend.justification = c("left","top"),
+#   legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+#   legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size=9), legend.text = element_text(size=8)
+# )
 ```
 
 
@@ -226,8 +223,8 @@ fig_ns_county_stock <- plot_ly(
   source = "fig-ns-county-stock",
   data = county_sequestration %>% filter(year == 2021) %>%
     mutate(land_cover_type = case_when(
-      land_cover_type=="Urban_Grassland"~"Urban grassland",
-      land_cover_type=="Urban_Tree"~"Urban tree", 
+      land_cover_type == "Urban_Grassland" ~ "Urban grassland",
+      land_cover_type == "Urban_Tree" ~ "Urban tree",
       .default = land_cover_type
     )),
   y = ~ reorder(county_name, stock_potential),
@@ -254,8 +251,6 @@ fig_ns_county_stock <- plot_ly(
   )
 
 fig_ns_county_stock
-
-
 ```
 
 {{< pagebreak >}}
@@ -271,8 +266,8 @@ fig_ns_county_sequestration <- plot_ly(
   source = "fig-ns-county-sequestration",
   data = county_sequestration %>% filter(year == 2021) %>%
     mutate(land_cover_type = case_when(
-      land_cover_type=="Urban_Grassland"~"Urban grassland",
-      land_cover_type=="Urban_Tree"~"Urban tree", 
+      land_cover_type == "Urban_Grassland" ~ "Urban grassland",
+      land_cover_type == "Urban_Tree" ~ "Urban tree",
       .default = land_cover_type
     )),
   y = ~ reorder(county_name, sequestration_potential),
@@ -329,7 +324,7 @@ fig_ns_county_sequestration
 #       traceorder = "reversed"
 #     )
 #   )
-# 
+#
 # fig_ns_county_sequestration
 ```
 
@@ -349,13 +344,17 @@ sequestration_area <- left_join(
   county_sequestration %>%
     filter(year == 2021) %>%
     group_by(county_name) %>%
-    summarize(sequestration_potential = sum(sequestration_potential,na.rm=T),
-              stock_potential = sum(stock_potential,na.rm=T),),
+    summarize(
+      sequestration_potential = sum(sequestration_potential, na.rm = T),
+      stock_potential = sum(stock_potential, na.rm = T),
+    ),
   cprg_area,
   by = join_by(county_name)
 ) %>%
-  mutate(seq_per_area = sequestration_potential / area_sq_km,
-         stock_per_area = stock_potential / area_sq_km)
+  mutate(
+    seq_per_area = sequestration_potential / area_sq_km,
+    stock_per_area = stock_potential / area_sq_km
+  )
 
 
 fig_ns_stock_area <- plot_ly(
@@ -463,7 +462,9 @@ cprg_county <- project(vect(cprg_county), crs_use)
 
 
 cprg_7 <- cprg_county %>% filter(!county_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce"))
-county_sequestration_7 <- county_sequestration %>% filter(county_name %in% cprg_7$county_name) %>% filter(year == 2021)
+county_sequestration_7 <- county_sequestration %>%
+  filter(county_name %in% cprg_7$county_name) %>%
+  filter(year == 2021)
 
 
 
@@ -496,9 +497,9 @@ park_county_comp <- bind_rows(
       cols = c(seq_area, stock_area)
     ) %>% mutate(geography = "Regional Parks"),
     sequestration_area %>% dplyr::select(county_name, seq_per_area) %>%
-    filter(county_name %in% park_carbon_agg$county) %>%
-    mutate(name = "seq_area", geography = "County") %>%
-    rename(value = "seq_per_area", county = "county_name")
+      filter(county_name %in% park_carbon_agg$county) %>%
+      mutate(name = "seq_area", geography = "County") %>%
+      rename(value = "seq_per_area", county = "county_name")
   ),
   sequestration_area %>% dplyr::select(county_name, stock_per_area) %>%
     filter(county_name %in% park_carbon_agg$county) %>%

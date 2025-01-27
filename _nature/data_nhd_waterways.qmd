@@ -19,16 +19,16 @@ cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
 
 # grab National Hydrography Dataset (NHD) layers
 nhd_area <- unwrap(read_rds(here(
-    "_nature", "data", "nhd_area_msa.rds" # area-based waterways
+  "_nature", "data", "nhd_area_msa.rds" # area-based waterways
 )))
 
 nhd_flowlines <- unwrap(read_rds(here(
-    "_nature", "data", "nhd_flowlines_msa.rds" # area-based waterways
+  "_nature", "data", "nhd_flowlines_msa.rds" # area-based waterways
 )))
 
 cprg_area <- cprg_county %>%
-    mutate(area_sq_km = sf::st_area(cprg_county) %>% units::set_units("km^2") %>%
-        as.numeric())
+  mutate(area_sq_km = sf::st_area(cprg_county) %>% units::set_units("km^2") %>%
+    as.numeric())
 
 crs_use <- terra::crs(nhd_area)
 ```
@@ -37,53 +37,52 @@ crs_use <- terra::crs(nhd_area)
 ```{r include=FALSE}
 # Plot NHD waterways map
 waterway_colors <- c(
-    "LakePond" = "steelblue",
-    "StreamRiver" = "lightskyblue",
-    "Reservoir" = "maroon3",
-    "SwampMarsh" = "palegreen3",
-    "Lock Chamber" = "purple3",
-    "DamWeir" = "darkslategray4",
-    "Connector" = "red",
-    "CanalDitch" = "goldenrod",
-    "Underground Conduit" = "darkorchid1",
-    "Pipeline" = "darkslategray",
-    "ArtificialPath" = "green"
+  "LakePond" = "steelblue",
+  "StreamRiver" = "lightskyblue",
+  "Reservoir" = "maroon3",
+  "SwampMarsh" = "palegreen3",
+  "Lock Chamber" = "purple3",
+  "DamWeir" = "darkslategray4",
+  "Connector" = "red",
+  "CanalDitch" = "goldenrod",
+  "Underground Conduit" = "darkorchid1",
+  "Pipeline" = "darkslategray",
+  "ArtificialPath" = "green"
 )
 
 p_nhd_waterways <- ggplot(cprg_county) +
-    geom_sf(color = "gray20", fill = NA, lwd = 0.5) +
-    councilR::theme_council_geo() +
-    geom_sf(data = nhd_area, aes(fill = FTYPE, color = FTYPE), lwd = 0.1) +
-    scale_fill_manual("Waterway Type",
-        breaks = names(waterway_colors),
-        values = as.character(waterway_colors), guide = guide_legend(order = 1)
-    ) +
-    scale_color_manual("Waterway Type",
-        breaks = names(waterway_colors),
-        values = as.character(waterway_colors), guide = guide_legend(order = 1)
-    ) +
-    ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
-    ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
+  geom_sf(color = "gray20", fill = NA, lwd = 0.5) +
+  councilR::theme_council_geo() +
+  geom_sf(data = nhd_area, aes(fill = FTYPE, color = FTYPE), lwd = 0.1) +
+  scale_fill_manual("Waterway Type",
+    breaks = names(waterway_colors),
+    values = as.character(waterway_colors), guide = guide_legend(order = 1)
+  ) +
+  scale_color_manual("Waterway Type",
+    breaks = names(waterway_colors),
+    values = as.character(waterway_colors), guide = guide_legend(order = 1)
+  ) +
+  ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
+  ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
 
-    geom_sf(data = nhd_flowlines, aes(color = FTYPE), lwd = 0.2, alpha = 0.7) +
-    scale_color_manual("",
-        breaks = names(waterway_colors),
-        values = as.character(waterway_colors), guide = guide_legend(order = 2,title=NULL)
-    ) +
-    geom_sf(data = cprg_ctu, fill = NA, color = councilR::colors$suppGray, alpha = 0.8, lwd = 0.2) +
-    geom_sf(color = councilR::colors$suppGray, fill = NA, lwd = 0.6) + # add county lines
+  geom_sf(data = nhd_flowlines, aes(color = FTYPE), lwd = 0.2, alpha = 0.7) +
+  scale_color_manual("",
+    breaks = names(waterway_colors),
+    values = as.character(waterway_colors), guide = guide_legend(order = 2, title = NULL)
+  ) +
+  geom_sf(data = cprg_ctu, fill = NA, color = councilR::colors$suppGray, alpha = 0.8, lwd = 0.2) +
+  geom_sf(color = councilR::colors$suppGray, fill = NA, lwd = 0.6) + # add county lines
 
-    ggspatial::annotation_scale(
-        location = "br", width_hint = 0.3,
-        pad_x = unit(0.23, "in"), unit_category = "imperial"
-    ) +
-    ggspatial::annotation_north_arrow(
-        location = "br", which_north = "true",
-        height = unit(0.33, "in"), width = unit(0.35, "in"),
-        pad_x = unit(1.4, "in"), pad_y = unit(0.35, "in"),
-        style = ggspatial::north_arrow_minimal
-    )
-
+  ggspatial::annotation_scale(
+    location = "br", width_hint = 0.3,
+    pad_x = unit(0.23, "in"), unit_category = "imperial"
+  ) +
+  ggspatial::annotation_north_arrow(
+    location = "br", which_north = "true",
+    height = unit(0.33, "in"), width = unit(0.35, "in"),
+    pad_x = unit(1.4, "in"), pad_y = unit(0.35, "in"),
+    style = ggspatial::north_arrow_minimal
+  )
 ```
 
 We have included waterways in our greenhouse gas inventory to account for the natural release of methane (CH~4~) from water bodies, which is emitted during anaerobic decay of organic matter. Here we are using methane emissions factors derived from the Minnesota Pollution Control Agency (MPCA) GHG Technical Support Document (see section on Methane from Inland Waters). Derived from a variety of peer-reviewed literature sources, the MPCA reports *daily* methane fluxes from lakes, rivers and streams, and reservoirs in units of lbs CH~4~ per acre of water surface area, which we have converted to metric tons CH~4~ per square kilometer of water surface area *per year*. Similarly to the MPCA Inventory approach, we assume natural water bodies in the seven-county region are anthropogenically disturbed (e.g. high nitrate runoff, invasive species) which raises methane emissions beyond natural rates.
@@ -112,33 +111,33 @@ Using the NHDWaterbody and NHDArea maps, we calculated the total area of waterwa
 #   filter(!Method == "MSW Compost")
 
 fig_nhd_byCounty <- plot_ly(
-    data = county_waterways_emissions %>% filter(inventory_year == 2021) %>%
-        group_by(county_name) %>% mutate(area_total = sum(area)),
-    x = ~ reorder(county_name, -area_total),
-    y = ~area,
-    source = "fig-nhd-byCounty",
-    type = "bar",
-    hoverinfo = "text",
-    color = ~source,
-    colors = unlist(waterway_colors),
-    hovertemplate = ~ paste0(
-        "County: ", county_name, "<br>",
-        "Waterway type: ", source, "<br>",
-        "Area: ", round(area, 1),
-        "<extra></extra>"
-    )
+  data = county_waterways_emissions %>% filter(inventory_year == 2021) %>%
+    group_by(county_name) %>% mutate(area_total = sum(area)),
+  x = ~ reorder(county_name, -area_total),
+  y = ~area,
+  source = "fig-nhd-byCounty",
+  type = "bar",
+  hoverinfo = "text",
+  color = ~source,
+  colors = unlist(waterway_colors),
+  hovertemplate = ~ paste0(
+    "County: ", county_name, "<br>",
+    "Waterway type: ", source, "<br>",
+    "Area: ", round(area, 1),
+    "<extra></extra>"
+  )
 ) %>%
-    plotly_layout(
-        main_title = "Waterway area per county",
-        subtitle = "National Hydrography Dataset",
-        x_title = "County",
-        y_title = "area (km2)",
-        legend_title = "Waterway type",
-        barmode = "stack"
-    ) %>%
-    layout(
-        barmode = "stack"
-    )
+  plotly_layout(
+    main_title = "Waterway area per county",
+    subtitle = "National Hydrography Dataset",
+    x_title = "County",
+    y_title = "area (km2)",
+    legend_title = "Waterway type",
+    barmode = "stack"
+  ) %>%
+  layout(
+    barmode = "stack"
+  )
 fig_nhd_byCounty
 ```
 

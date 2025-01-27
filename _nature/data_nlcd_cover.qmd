@@ -35,7 +35,7 @@ nlcd_is <- unwrap(read_rds(here(
 
 cprg_area <- cprg_county %>%
   mutate(area_sq_km = sf::st_area(cprg_county) %>% units::set_units("km^2") %>%
-           as.numeric())
+    as.numeric())
 
 crs_use <- terra::crs(nlcd_lc)
 ```
@@ -44,20 +44,20 @@ crs_use <- terra::crs(nlcd_lc)
 
 ```{r include=FALSE}
 # Plot NLCD land cover map
-p_nlcd_lc <- ggplot(cprg_county) +   
+p_nlcd_lc <- ggplot(cprg_county) +
   geom_sf(color = "gray20", fill = NA, lwd = 0.5) +
   councilR::theme_council_geo() +
-  
   tidyterra::geom_spatraster(data = nlcd_lc, alpha = 0.9) +
-  scale_fill_manual(breaks = nlcd.legend$ID,
-                    labels = nlcd.legend$Class,
-                    values=nlcd.legend$Color,
-                    na.value="white",
-                    name = 'Cover Type',
-                    guide = guide_legend(order = 1)) +
-  
-  geom_sf(data = cprg_ctu, fill=NA, color=councilR::colors$suppGray, alpha=0.8,  lwd=0.2) +
-  geom_sf(color=councilR::colors$suppGray, fill=NA, lwd=0.6) + # add county lines
+  scale_fill_manual(
+    breaks = nlcd.legend$ID,
+    labels = nlcd.legend$Class,
+    values = nlcd.legend$Color,
+    na.value = "white",
+    name = "Cover Type",
+    guide = guide_legend(order = 1)
+  ) +
+  geom_sf(data = cprg_ctu, fill = NA, color = councilR::colors$suppGray, alpha = 0.8, lwd = 0.2) +
+  geom_sf(color = councilR::colors$suppGray, fill = NA, lwd = 0.6) + # add county lines
   ggspatial::annotation_scale(
     location = "br", width_hint = 0.3,
     pad_x = unit(0.23, "in"), unit_category = "imperial"
@@ -67,27 +67,24 @@ p_nlcd_lc <- ggplot(cprg_county) +
     height = unit(0.33, "in"), width = unit(0.35, "in"),
     pad_x = unit(1.4, "in"), pad_y = unit(0.35, "in"),
     style = ggspatial::north_arrow_minimal
-  ) 
-
-
+  )
 ```
 
 
 
 ```{r include=FALSE}
 # Plot NLCD impervious cover map
-p_nlcd_is <- ggplot(cprg_county) +   
+p_nlcd_is <- ggplot(cprg_county) +
   geom_sf(color = "gray20", fill = NA, lwd = 0.5) +
-  
-  councilR::theme_council_geo()  +
-  
+  councilR::theme_council_geo() +
   tidyterra::geom_spatraster(data = nlcd_is, alpha = 0.9, na.rm = TRUE) +
-  scale_fill_gradient(name = "NLCD Impervious Cover (%)", low = "pink", high = "firebrick4", 
-                      na.value = "white",
-                      guide = guide_legend(order = 1)) +
-  
-  geom_sf(data = cprg_ctu, fill=NA, color=councilR::colors$suppGray, alpha=0.8,  lwd=0.2) +
-  geom_sf(color=councilR::colors$suppGray, fill=NA, lwd=0.6) + # add county lines
+  scale_fill_gradient(
+    name = "NLCD Impervious Cover (%)", low = "pink", high = "firebrick4",
+    na.value = "white",
+    guide = guide_legend(order = 1)
+  ) +
+  geom_sf(data = cprg_ctu, fill = NA, color = councilR::colors$suppGray, alpha = 0.8, lwd = 0.2) +
+  geom_sf(color = councilR::colors$suppGray, fill = NA, lwd = 0.6) + # add county lines
   ggspatial::annotation_scale(
     location = "br", width_hint = 0.3,
     pad_x = unit(0.23, "in"), unit_category = "imperial"
@@ -97,25 +94,24 @@ p_nlcd_is <- ggplot(cprg_county) +
     height = unit(0.33, "in"), width = unit(0.35, "in"),
     pad_x = unit(1.4, "in"), pad_y = unit(0.35, "in"),
     style = ggspatial::north_arrow_minimal
-  ) 
-
+  )
 ```
 
 
 
 ```{r include=FALSE}
 # Plot NLCD tree canopy cover map
-p_nlcd_tcc <- ggplot(cprg_county) + 
+p_nlcd_tcc <- ggplot(cprg_county) +
   geom_sf(color = "gray20", fill = NA, lwd = 0.5) +
-  councilR::theme_council_geo()  +
-  
+  councilR::theme_council_geo() +
   tidyterra::geom_spatraster(data = nlcd_tcc, alpha = 0.9, na.rm = TRUE) +
-  scale_fill_gradient(name = "NLCD Tree Canopy Cover (%)", low = "white", high = "forestgreen", 
-                      na.value = "white",
-                      guide = guide_legend(order = 1)) +
-  
-  geom_sf(data = cprg_ctu, fill=NA, color=councilR::colors$suppGray, alpha=0.8,  lwd=0.2) +
-  geom_sf(color=councilR::colors$suppGray, fill=NA, lwd=0.6) + # add county lines
+  scale_fill_gradient(
+    name = "NLCD Tree Canopy Cover (%)", low = "white", high = "forestgreen",
+    na.value = "white",
+    guide = guide_legend(order = 1)
+  ) +
+  geom_sf(data = cprg_ctu, fill = NA, color = councilR::colors$suppGray, alpha = 0.8, lwd = 0.2) +
+  geom_sf(color = councilR::colors$suppGray, fill = NA, lwd = 0.6) + # add county lines
   ggspatial::annotation_scale(
     location = "br", width_hint = 0.3,
     pad_x = unit(0.23, "in"), unit_category = "imperial"

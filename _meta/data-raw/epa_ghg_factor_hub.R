@@ -411,14 +411,14 @@ egrid <- readxl::read_xlsx("_meta/data-raw/ghg-emission-factors-hub-2021.xlsx",
   mutate(across(1:4, stringr::str_trim)) %>%
   mutate(Source = "EPA eGRID2019, February 2021")
 
-# Time series eGRID as a separate object 
+# Time series eGRID as a separate object
 # Define the years available in the dataset and manually inout real values
 eGRID_years <- c(2005, 2007, 2009, 2010, 2012, 2014, 2016, 2018, 2019, 2020, 2021, 2022)
 egrid2005_to_2022 <- tibble::tibble(
   eGrid_Subregion = rep("MROW (MRO West)", length(eGRID_years) * 3), # Repeat for all rows
-  factor_type = rep("Total output", length(eGRID_years) * 3),        # Repeat for all rows
+  factor_type = rep("Total output", length(eGRID_years) * 3), # Repeat for all rows
   emission = rep(c("lb CO2", "lb CH4", "lb N2O"), each = length(eGRID_years)), # Repeat emission types for all eGRID_years
-  per_unit = rep("MWh", length(eGRID_years) * 3),                    # Repeat for all rows
+  per_unit = rep("MWh", length(eGRID_years) * 3), # Repeat for all rows
   value = c(
     # CO2 values
     1821.84, 1722.67, 1628.60, 1536.36, 1425.15, 1365.1, 1238.8, 1239.8, 1098.4, 979.5, 995.8, 936.5,

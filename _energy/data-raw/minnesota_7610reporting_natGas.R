@@ -7,25 +7,27 @@ dir_mn_natGas_state <- here("_energy", "data-raw", "mn_ng_utility_reporting_stat
 # Function to get file paths, utility names, and years of utility reports in root directory
 get_files <- function(root_dir) {
   file_info <- list()
-  
+
   # Loop through each utility folder
   utility_folders <- list.dirs(root_dir, recursive = FALSE)
   for (utility_folder in utility_folders) {
     utility_name <- basename(utility_folder)
-    
+
     # Loop through each year sub-folder within each utility folder
     year_folders <- list.dirs(utility_folder, recursive = FALSE)
     for (year_folder in year_folders) {
       year <- basename(year_folder)
-      
+
       # Get list of Excel files in the year folder -- captures both .xls and .xlsx
       files <- list.files(path = year_folder, pattern = "\\.xls(x)?$", full.names = TRUE)
-      
+
       # Append each file path with utility and year information
       for (file in files) {
-        file_info <- append(file_info, list(list(file_path = file,
-                                                 utility_name = utility_name,
-                                                 year = year)))
+        file_info <- append(file_info, list(list(
+          file_path = file,
+          utility_name = utility_name,
+          year = year
+        )))
       }
     }
   }
@@ -34,7 +36,6 @@ get_files <- function(root_dir) {
 
 # Function to process each file and extract county-level utility activity data
 process_file <- function(file_info) {
-  
   # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
   file_path <- file_info$file_path
   utility_name <- file_info$utility_name
@@ -60,19 +61,19 @@ process_file <- function(file_info) {
 
   # Add utility name and year columns
   combined_data$utility <- utility_name
-  combined_data$year <- as.numeric(year)  # Ensure year is numeric if needed
+  combined_data$year <- as.numeric(year) # Ensure year is numeric if needed
 
   return(combined_data)
 }
 
 # Apply process_file to each file identified in get_files() in the nested structure and combine the results
 file_list <- get_files(dir_mn_natGas_state)
-combined_MNgasUtil_activityData <- do.call(rbind, lapply(file_list, process_file)) 
+combined_MNgasUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
 
 # Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county,
 # process and merge data -- this will be a separate data collection process spanning excel reports submitted to state
 processed_mn_gasUtil_activityData <- combined_MNgasUtil_activityData %>%
-  #remove utility-county records with no data
+  # remove utility-county records with no data
   filter(!is.na(mcf_delivered)) %>%
   mutate(
     CO2_emissions = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF,

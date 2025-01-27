@@ -9,37 +9,43 @@ if (!file.exists("_waste/data-raw/wastewater/epa/wastewater-module.xlsx")) {
 ### going to slice and dice this below due to difficult formatting
 ww_control <- suppressMessages(
   readxl::read_xlsx("_waste/data-raw/wastewater/epa/wastewater-module.xlsx",
-                    sheet = "Control"
-  ))
+    sheet = "Control"
+  )
+)
 
-ww_base_constants <- ww_control[c(96, 98:106), c(2,4)] %>%
+ww_base_constants <- ww_control[c(96, 98:106), c(2, 4)] %>%
   row_to_names(row_number = 1) %>%
-  mutate(value = as.numeric(Default)) %>% dplyr::select(-Default) %>%
-  rename(description = 1) %>% 
+  mutate(value = as.numeric(Default)) %>%
+  dplyr::select(-Default) %>%
+  rename(description = 1) %>%
   mutate(
     short_text = case_when(
-    description == "N2O/N2 (molecular weight ratio)" ~ "N2O_N_MWR",
-    description == "C/CO2 (molecular weight ratio)" ~ "CO2_C_MWR",
-    description == "Methane GWP*" ~ "CH4_GWP",
-    description == "Nitrous Oxide GWP*" ~ "N2O_GWP",
-    description == "Number of Days per Year" ~ "n_days_per_year",
-    description == "Million Metric Tons / Metric Tons (MMT/MT)" ~ "MMT_per_MT",
-    description == "Metric Tons / Kg" ~ "MT_per_kg",
-    description == "Liters / Cubic Meter (l/m3)" ~ "L_per_m3",
-    description == "Grams / Teragram (g/Tg)" ~ "g_per_Tg"
-  )) %>%
+      description == "N2O/N2 (molecular weight ratio)" ~ "N2O_N_MWR",
+      description == "C/CO2 (molecular weight ratio)" ~ "CO2_C_MWR",
+      description == "Methane GWP*" ~ "CH4_GWP",
+      description == "Nitrous Oxide GWP*" ~ "N2O_GWP",
+      description == "Number of Days per Year" ~ "n_days_per_year",
+      description == "Million Metric Tons / Metric Tons (MMT/MT)" ~ "MMT_per_MT",
+      description == "Metric Tons / Kg" ~ "MT_per_kg",
+      description == "Liters / Cubic Meter (l/m3)" ~ "L_per_m3",
+      description == "Grams / Teragram (g/Tg)" ~ "g_per_Tg"
+    )
+  ) %>%
   select(value, description, short_text)
-  
-ww_base_constants <- rbind(ww_base_constants, 
-      data.frame(value=1E-6, description="Grams / Metric Ton", short_text="g_per_MT"))
-  
+
+ww_base_constants <- rbind(
+  ww_base_constants,
+  data.frame(value = 1E-6, description = "Grams / Metric Ton", short_text = "g_per_MT")
+)
+
 
 
 ww_default_constants <- ww_control[c(
   16, 18:20, 22, 24:26, 29, 31:32,
-  34, 36:39, 41, 43:46, 48, 49:52, 54, 56:59), c(1, 2, 4)] %>%
-  rename(source = 1, description=2, value=3) %>%
-  mutate(value = as.numeric(value)) %>% 
+  34, 36:39, 41, 43:46, 48, 49:52, 54, 56:59
+), c(1, 2, 4)] %>%
+  rename(source = 1, description = 2, value = 3) %>%
+  mutate(value = as.numeric(value)) %>%
   fill(source) %>%
   # Remove rows where `description` is NA (these are the headers)
   filter(!is.na(description)) %>%
@@ -54,7 +60,8 @@ ww_default_constants <- ww_control[c(
       source == "Industrial Wastewater CH4 Emissions - Pulp and Paper" ~ "pulp_paper_ch4",
       TRUE ~ source # Keep as is for unmatched cases
     )
-  ) %>% mutate(
+  ) %>%
+  mutate(
     short_text = case_when(
       description == "Per capita 5-day Biochemical Oxygen Demand (BOD5) (kg/day)" ~ "Per_capita_BOD5",
       description == "Fraction of wastewater BOD5 anaerobically digested" ~ "Fraction_BOD5_anaerobically_digested",
@@ -62,10 +69,8 @@ ww_default_constants <- ww_control[c(
       description == "Factor non-consumption nitrogen" ~ "Factor_non_consumption_nitrogen",
       description == "Fraction of population not on septic" ~ "Fraction_population_not_on_septic",
       description == "Direct wastewater treatment plant emissions (g N2O/person/year)" ~ "Direct_wwtp_emissions",
-      
       description == "Emission Factor (kg N2O-N/kg sewage N-produced)" ~ "Emission_Factor_N2O_N",
       description == "Fraction of nitrogen in protein (FracNPR)" ~ "Fraction_nitrogen_in_protein",
-      
       str_detect(description, "Wastewater Outflow") ~ paste0("Wastewater_Outflow_", source),
       description == "WW Organic Content - Chemical Oxygen Demand (COD) (g/l)" ~ paste0("COD_", source),
       description == "WW Organic Content - Biochemical Oxygen Demand (BOD) (g/l)" ~ paste0("BOD_", source),
@@ -73,7 +78,8 @@ ww_default_constants <- ww_control[c(
       str_detect(description, "Fraction of BOD anaerobically degraded") ~ paste0("Fraction_BOD_anaerobically_degraded_", source),
       description == "Emission factor (g CH4/g COD)" ~ paste0("Emission_factor_CH4_COD_", source),
       description == "Emission factor (g CH4/g BOD)" ~ paste0("Emission_factor_CH4_BOD_", source)
-    )) %>%
+    )
+  ) %>%
   select(value, description, short_text)
 
 
@@ -92,4 +98,4 @@ saveRDS(ww_constants_formatted, "./_waste/data-raw/wastewater/epa/epa_wastewater
 saveRDS(ww_constants_meta, "./_waste/data-raw/wastewater/epa/epa_wastewater_constants_meta.rds")
 
 
-rm(list=ls(pattern="^ww_"))
+rm(list = ls(pattern = "^ww_"))

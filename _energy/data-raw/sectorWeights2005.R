@@ -5,28 +5,30 @@ source("R/_load_pkgs.R")
 
 # STATE LEVEL residential, commercial, industrial (industrial + farm) proportions BY utility type
 
-MN_elecUtils_2005 <- read_rds(here("_energy", 
-                                   "data", 
-                                   "distinct_electricity_util_type_MN.RDS"))
+MN_elecUtils_2005 <- read_rds(here(
+  "_energy",
+  "data",
+  "distinct_electricity_util_type_MN.RDS"
+))
 
-#add flag for municipal
+# add flag for municipal
 
-#add flag for Great River Energy
+# add flag for Great River Energy
 
 
-#use municipal utility numbers by sector in 2005 and 2021 to compare against NREL-forecasted numbers. (and maybe estiamte farm/industrial breakdown?)
+# use municipal utility numbers by sector in 2005 and 2021 to compare against NREL-forecasted numbers. (and maybe estiamte farm/industrial breakdown?)
 
 mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
   mutate(
     year = 2005,
     unit = "mwh",
-    #reported as "non-farm residential"
+    # reported as "non-farm residential"
     res_consumption = case_when(
       utility_name == "Connexus Energy" ~ 1145680,
       utility_name == "Dakota Electric Assn" ~ 930505,
       utility_name == "East Central Energy" ~ 490578,
       utility_name == "Goodhue County Coop Electric Assn" ~ 28359,
-      utility_name == "McLeod Coop Power Assn" ~ 0, #check definition of farm vs industrial...
+      utility_name == "McLeod Coop Power Assn" ~ 0, # check definition of farm vs industrial...
       utility_name == "Minnesota Valley Electric Coop" ~ 367542,
       utility_name == "Stearns Coop Electric Assn" ~ 189249,
       utility_name == "Wright-Hennepin Coop Electric Assn" ~ 381234,
@@ -42,7 +44,7 @@ mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
       utility_name == "Shakopee Public Utilities" ~ 13377,
       TRUE ~ NA_real_
     ),
-    #reported as "commercial"
+    # reported as "commercial"
     com_consumption = case_when(
       utility_name == "Connexus Energy" ~ 664655,
       utility_name == "Dakota Electric Assn" ~ 62921,
@@ -64,8 +66,8 @@ mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
       utility_name == "Shakopee Public Utilities" ~ 873,
       TRUE ~ NA_real_
     ),
-    #Includes values reported as "farm" and "industrial" 
-    #assumption is that residential energy use is massively outnumbered by farm "productive" uses
+    # Includes values reported as "farm" and "industrial"
+    # assumption is that residential energy use is massively outnumbered by farm "productive" uses
     farm_consumption = case_when(
       utility_name == "Connexus Energy" ~ 7988,
       utility_name == "Dakota Electric Assn" ~ 9885,
@@ -114,17 +116,17 @@ mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
   )
 
 
-#disaggregate farm to farm residential and farm industrial based on popualtion?
+# disaggregate farm to farm residential and farm industrial based on popualtion?
 
 # county x utility x countyPopulation x utilityPop x utilityProportionOfCountyPop (contribution to total)
 
 
 
 
-# For city 2005... 
+# For city 2005...
 
 
-#For city 2021, use NREL-forecasted city proportion of forecasted COUNTY total emissions to allocate actual emissions gathered at county level (Separate from NREL)
+# For city 2021, use NREL-forecasted city proportion of forecasted COUNTY total emissions to allocate actual emissions gathered at county level (Separate from NREL)
 # and then use to allocate city level forecast PROPORTIONS to allocate to sectors
 # do projected activity-emissions at city-sector lefvel add up? a test to write.
 
