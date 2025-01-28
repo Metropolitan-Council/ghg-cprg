@@ -76,10 +76,19 @@ processed_mn_gasUtil_activityData <- combined_MNgasUtil_activityData %>%
   # remove utility-county records with no data
   filter(!is.na(mcf_delivered)) %>%
   mutate(
-    CO2_emissions = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF,
-    CH4_emissions = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF * GWP_CH4,
-    N2O_emissions = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF * GWP_N2O,
-    CO2e_emissions = CO2_emissions + CH4_emissions + N2O_emissions
+    CO2_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    CH4_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF * GWP_CH4 %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    N2O_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF * GWP_N2O %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    CO2e_emissions_mt = CO2_emissions + CH4_emissions + N2O_emissions
   )
 
 # Aggregate data by county, add identifiers for state and sector
@@ -194,7 +203,7 @@ MNcounty_level_gas_emissions <- MNcounty_level_gas_emissions2005_2013to2023 %>%
   )
 
 # since we have more detailed info for 2021, save off as a separate .RDS for safekeeping
-write_rds(processed_mn_gasUtil_activityData, here("_energy", "data", "minnesota_gasUtils_ActivityAndEmissions2021.RDS"))
+write_rds(processed_mn_gasUtil_activityData, here("_energy", "data", "minnesota_gasUtils_ActivityAndEmissions.RDS"))
 
 # write combined 2005 (downscaled) and 2021 (derived from utility reports) activity/emissions data to .RDS
 write_rds(MNcounty_level_gas_emissions, here("_energy", "data", "minnesota_county_GasEmissions.RDS"))
