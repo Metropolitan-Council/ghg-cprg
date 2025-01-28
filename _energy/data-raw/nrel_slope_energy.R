@@ -213,15 +213,15 @@ nrel_emissions_inv_city <- bind_rows(
       # apply emission factor and convert to metric tons
       co2_city = (city_consumption_mwh * `lb CO2`) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       ch4_city = (city_consumption_mwh * `lb CH4`) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       n2o_city = (city_consumption_mwh * `lb N2O`) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       co2e_city =
         co2_city +
@@ -229,15 +229,15 @@ nrel_emissions_inv_city <- bind_rows(
           (n2o_city * gwp$n2o),
       co2_cityPopDownscaled = (cityPopDownscaled_consumption_mwh * `lb CO2`) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       ch4_cityPopDownscaled = (cityPopDownscaled_consumption_mwh * `lb CH4`) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       n2o_cityPopDownscaled = (cityPopDownscaled_consumption_mwh * `lb N2O`) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       co2e_cityPopDownscaled =
         co2_cityPopDownscaled +
@@ -245,15 +245,15 @@ nrel_emissions_inv_city <- bind_rows(
           (n2o_cityPopDownscaled * gwp$n2o),
       co2_county = (county_consumption_mwh * eGRID_MROW_emissionsFactor_CO2_2021) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       ch4_county = (county_consumption_mwh * eGRID_MROW_emissionsFactor_CH4_2021) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       n2o_county = (county_consumption_mwh * eGRID_MROW_emissionsFactor_N2O_2021) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       co2e_county =
         co2_county +
@@ -272,15 +272,15 @@ nrel_emissions_inv_city <- bind_rows(
       # apply emission factor and convert to metric tons
       co2_city = (city_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       ch4_city = (city_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       n2o_city = (city_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       co2e_city =
         co2_city +
@@ -288,15 +288,15 @@ nrel_emissions_inv_city <- bind_rows(
           (n2o_city * gwp$n2o),
       co2_cityPopDownscaled = (cityPopDownscaled_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       ch4_cityPopDownscaled = (cityPopDownscaled_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       n2o_cityPopDownscaled = (cityPopDownscaled_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       co2e_cityPopDownscaled =
         co2_cityPopDownscaled +
@@ -304,15 +304,15 @@ nrel_emissions_inv_city <- bind_rows(
           (n2o_cityPopDownscaled * gwp$n2o),
       co2_county = (county_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       ch4_county = (county_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       n2o_county = (county_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       co2e_county =
         co2_county +
@@ -355,15 +355,15 @@ nrel_emissions_inv_county <- bind_rows(
       # apply emission factor and convert to metric tons
       co2 = (consumption_mwh * eGRID_MROW_emissionsFactor_CO2_2021) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       ch4 = (consumption_mwh * eGRID_MROW_emissionsFactor_CH4_2021) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       n2o = (consumption_mwh * eGRID_MROW_emissionsFactor_N2O_2021) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       co2e =
         co2 +
@@ -381,15 +381,15 @@ nrel_emissions_inv_county <- bind_rows(
       # apply emission factor and convert to metric tons
       co2 = (consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       ch4 = (consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       n2o = (consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF) %>%
         units::as_units("lb") %>%
-        units::set_units("ton") %>%
+        units::set_units("metric_ton") %>%
         as.numeric(),
       co2e =
         co2 +
@@ -487,9 +487,9 @@ nrel_slope_city_emission_proportions <- nrel_emissions_inv_city %>%
   )
 
 
-# Save activity/emissions inventory data
-saveRDS(nrel_emissions_inv_county, "_energy/data-raw/nrel_slope/nrel_emissions_inv_county.RDS")
-saveRDS(nrel_emissions_inv_city, "_energy/data-raw/nrel_slope/nrel_emissions_inv_city.RDS")
+# Save activity/emissions inventory data - ungroup to save memory
+saveRDS(nrel_emissions_inv_county %>% ungroup(), "_energy/data-raw/nrel_slope/nrel_emissions_inv_county.RDS")
+saveRDS(nrel_emissions_inv_city %>% ungroup(), "_energy/data-raw/nrel_slope/nrel_emissions_inv_city.RDS")
 
 # NREL proportions
 # fix downstream references to county level RDS (named nrel_slope_county_proportions)
