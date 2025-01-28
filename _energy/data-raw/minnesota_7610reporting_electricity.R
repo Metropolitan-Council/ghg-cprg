@@ -104,7 +104,7 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
 # New Prague Utilities -- 69,291.725 mWh delivered to customers in 2021,
 # source: pg 18 https://www.ci.new-prague.mn.us/vertical/sites/%7BAD7ECB62-2C5E-4BA0-8F19-1426026AFA3E%7D/uploads/01-24-2022_Utilities_Commission_Meeting_Packet.pdf
 
-scottProp <- 45972 / 65674
+scottProp <- 45972 / 65674 #proportion of utility operation in Scott County
 scottNewPragueMuni_mWh_2021 <- scottProp * 69291.725
 combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
   add_row(
