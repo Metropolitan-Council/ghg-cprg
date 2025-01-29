@@ -1158,3 +1158,14 @@ _agriculture/data-raw/ag-module.xlsx
 _energy/data-raw/Xcel_activityData_2015_2023.csv
 _energy/data-raw/sql_utility_id_ctu_id.csv
 _energy/data-raw/sql_utility_id.csv
+
+_energy/data-raw/xcel_community_reports/
+_energy/data-raw/mn_elec_utility_reporting_state/
+_energy/data-raw/mn_ng_utility_reporting_state/
+
+_industrial/data-raw/ghgrp/
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsb
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsx
+_industrial/data-raw/mn_flight.xls
+_industrial/data-raw/MPCA_industrial_fuel_throughput.xlsx
+
