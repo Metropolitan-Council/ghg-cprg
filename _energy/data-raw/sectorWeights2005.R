@@ -17,6 +17,9 @@ MN_elecUtils_2005 <- read_rds(here(
 
 
 # use municipal utility numbers by sector in 2005 and 2021 to compare against NREL-forecasted numbers. (and maybe estiamte farm/industrial breakdown?)
+# values taken from The Minnesota Utility Data Book:
+# Reference guide to MN electric and natural-gas utility 1965-2005
+# double checked by PAW
 
 mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
   mutate(
