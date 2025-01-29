@@ -1,4 +1,4 @@
-rm(list=ls())
+rm(list = ls())
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
 
@@ -16,52 +16,52 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 
 # tmap::tm_shape(cprg_county) +
-#   tm_borders() 
+#   tm_borders()
 
 
 # National Hydrography Dataset --------------------------------------------
 # NHD Features Overview
-# 
+#
 ## Line features ##
-# -NHDFlowline is the fundamental flow network consisting predominantly of stream/river 
-#  and artificial path vector features. It represents the spatial geometry, carries the 
-#  attributes, and contains linear referencing measures for locating features or “events” 
-#  on the network. Additional NHDFlowline features are canal/ditch, pipeline, connector, 
+# -NHDFlowline is the fundamental flow network consisting predominantly of stream/river
+#  and artificial path vector features. It represents the spatial geometry, carries the
+#  attributes, and contains linear referencing measures for locating features or “events”
+#  on the network. Additional NHDFlowline features are canal/ditch, pipeline, connector,
 #  underground conduit, and coastline.
-# 
+#
 # -NHDLine contains linear features not core to the network.
-# 
-# 
+#
+#
 ## Area features ##
-# -NHDWaterbodies such as lake/pond features are represented in NHDWaterbody. They 
-#  portray the spatial geometry and the attributes of the feature. These water polygons 
-#  may have NHDFlowline artificial paths drawn through them to allow the representation of 
-#  water flow direction. Other NHDWaterbody features are swamp/marsh, reservoir, playa, 
-#  estuary, and ice mass. 
-# 
-# -NHDArea contains many additional water-polygon features. One of the more important 
-#  is the stream/river feature. It represents the areal extent of the water in a wide 
-#  stream/river with a basic set of attributes. These polygons typically encompass NHDFlowline 
-#  artificial paths that represent the stream network. Artificial path carries the critical 
+# -NHDWaterbodies such as lake/pond features are represented in NHDWaterbody. They
+#  portray the spatial geometry and the attributes of the feature. These water polygons
+#  may have NHDFlowline artificial paths drawn through them to allow the representation of
+#  water flow direction. Other NHDWaterbody features are swamp/marsh, reservoir, playa,
+#  estuary, and ice mass.
+#
+# -NHDArea contains many additional water-polygon features. One of the more important
+#  is the stream/river feature. It represents the areal extent of the water in a wide
+#  stream/river with a basic set of attributes. These polygons typically encompass NHDFlowline
+#  artificial paths that represent the stream network. Artificial path carries the critical
 #  attributes of the stream/river, whereas NHDArea represents the geometric extent.
-# 
-# 
+#
+#
 ## Point features ##
 # -NHDPoint contains hydrography related point features.
-# 
-# 
+#
+#
 ## Events ##
-# -NHDPointEventFC, NHDLineEventFC, and NHDAreaEventFC represent point, line, and area 
-#  data events that behave as map features and linearly referenced events. Streamgages, 
-#  which are point features, can be displayed and identified in the network through linear 
+# -NHDPointEventFC, NHDLineEventFC, and NHDAreaEventFC represent point, line, and area
+#  data events that behave as map features and linearly referenced events. Streamgages,
+#  which are point features, can be displayed and identified in the network through linear
 #  referencing with a network address.
-# 
-# 
+#
+#
 ## Tables ##
-# -Information about the NHD also can be obtained in a series of associated tables. 
-#  This includes metadata stored in NHDFeaturetoMetadata and NHDMetadata, sources given 
-#  in NHDSourceCitation, identification of model and data version given in NHDProcessingParameters, 
-#  flow relations given in NHDFlow, reach code histories given in NHDReachCrossReference, the 
+# -Information about the NHD also can be obtained in a series of associated tables.
+#  This includes metadata stored in NHDFeaturetoMetadata and NHDMetadata, sources given
+#  in NHDSourceCitation, identification of model and data version given in NHDProcessingParameters,
+#  flow relations given in NHDFlow, reach code histories given in NHDReachCrossReference, the
 #  domain of feature codes given in NHDFCode, and others.
 
 message("Loading NHD images")
@@ -70,12 +70,16 @@ message("Loading NHD images")
 inpath_nhd_all <- paste0(here::here(), "/_nature/data-raw/nhd_gdb/")
 
 # List all .gdb file paths
-gdb_files <- list.dirs(inpath_nhd_all, 
-                       recursive = TRUE, 
-                       full.names = TRUE)[grepl("\\.gdb", 
-                                                list.dirs(inpath_nhd_all, 
-                                                          recursive = TRUE, 
-                                                          full.names = TRUE))]
+gdb_files <- list.dirs(inpath_nhd_all,
+  recursive = TRUE,
+  full.names = TRUE
+)[grepl(
+  "\\.gdb",
+  list.dirs(inpath_nhd_all,
+    recursive = TRUE,
+    full.names = TRUE
+  )
+)]
 
 
 
@@ -107,10 +111,10 @@ NHDFlowline_combined <- bind_rows(NHDFlowline_list)
 rm(NHDFlowline_list)
 # # Convert the coordinate system to 4269 (ideal for MN)
 # NHDFlowline_combined <- NHDFlowline_combined %>% sf::st_transform(4269)
-# 
+#
 # # st_make_valid can help fix that
 # NHDFlowline_combined <- sf::st_make_valid(NHDFlowline_combined)
-# 
+#
 # # # Now let's compute the area for each type of waterway by county and CTU
 # # # first add an area column to the NHD dataframe, then convert to km2
 # # NHD$area <- sf::st_area(NHD)
@@ -120,25 +124,33 @@ rm(NHDFlowline_list)
 
 message("Binding NHD data")
 
-NHD <- rbind(NHDArea_combined %>%
-               dplyr::select(NHD_ID=permanent_identifier, FTYPE = ftype, 
-                             GNIS_ID = gnis_id, GNIS_NAME = gnis_name) %>%
-               mutate(source="NHDArea"),
-             NHDWaterbody_combined %>%
-               dplyr::select(NHD_ID=permanent_identifier, FTYPE = ftype, 
-                             GNIS_ID = gnis_id, GNIS_NAME = gnis_name) %>%
-               mutate(source="NHDWaterbody"),
-             NHDFlowline_combined %>%
-               dplyr::select(NHD_ID=permanent_identifier, FTYPE = ftype, 
-                             GNIS_ID = gnis_id, GNIS_NAME = gnis_name) %>%
-               mutate(source="NHDFlowline")) %>%
-  relocate(source, .before=everything())
+NHD <- rbind(
+  NHDArea_combined %>%
+    dplyr::select(
+      NHD_ID = permanent_identifier, FTYPE = ftype,
+      GNIS_ID = gnis_id, GNIS_NAME = gnis_name
+    ) %>%
+    mutate(source = "NHDArea"),
+  NHDWaterbody_combined %>%
+    dplyr::select(
+      NHD_ID = permanent_identifier, FTYPE = ftype,
+      GNIS_ID = gnis_id, GNIS_NAME = gnis_name
+    ) %>%
+    mutate(source = "NHDWaterbody"),
+  NHDFlowline_combined %>%
+    dplyr::select(
+      NHD_ID = permanent_identifier, FTYPE = ftype,
+      GNIS_ID = gnis_id, GNIS_NAME = gnis_name
+    ) %>%
+    mutate(source = "NHDFlowline")
+) %>%
+  relocate(source, .before = everything())
 
 
 
-# # Merge the two dataframes 
+# # Merge the two dataframes
 # NHD <- rbind(NHDArea_combined, NHDWaterbody_combined)
-rm(NHDArea_combined,NHDWaterbody_combined,NHDFlowline_combined)
+rm(NHDArea_combined, NHDWaterbody_combined, NHDFlowline_combined)
 # Convert the coordinate system to 4269 (ideal for MN)
 NHD <- NHD %>% sf::st_transform(4269)
 
@@ -164,30 +176,36 @@ message("Intersecting by county")
 geom_list <- list()
 
 cprg_county <- cprg_county %>%
-  mutate(tmpID=paste0(geoid))
-tmpNames <- unique(cprg_county$tmpID) #different munis
+  mutate(tmpID = paste0(geoid))
+tmpNames <- unique(cprg_county$tmpID) # different munis
 i <- 1
-for(i in 1:length(tmpNames)) {
-  message("running ",i," of ",length(tmpNames))
-  x <- cprg_county %>% dplyr::filter(tmpID == tmpNames[[i]]) %>% sf::st_make_valid()
+for (i in 1:length(tmpNames)) {
+  message("running ", i, " of ", length(tmpNames))
+  x <- cprg_county %>%
+    dplyr::filter(tmpID == tmpNames[[i]]) %>%
+    sf::st_make_valid()
   crop <- sf::st_crop(NHD, x) %>% sf::st_make_valid()
-  
+
   # remove invalid polygons
   # this allows the process to continue. Sometimes topology is not perfectly
   # made and tinny pols can ruin your process
-  notvalid <- which(s2::s2_is_valid_detail(crop)==FALSE)
-  if(length(notvalid) > 0){crop <- crop[-notvalid,]}
-  
+  notvalid <- which(s2::s2_is_valid_detail(crop) == FALSE)
+  if (length(notvalid) > 0) {
+    crop <- crop[-notvalid, ]
+  }
+
   # intersection between x and crop
-  x2 <- crop %>% sf::st_intersection(x) %>% sf::st_make_valid()
-  
+  x2 <- crop %>%
+    sf::st_intersection(x) %>%
+    sf::st_make_valid()
+
   # # "dissolve" to get
   # x3 <- x2 %>% group_by(NAME, id, name) %>%
   #   summarize()
-  
+
   # return
   geom_list[[i]] <- x2
-} 
+}
 
 # browser()
 
@@ -210,17 +228,23 @@ NHD_byCounty <- bind_rows(geom_list, .id = "column_label") %>%
     FTYPE == 558 ~ "ArtificialPath" # Abstraction to facilitate hydrologic modeling through open water bodies and along coastal and Great Lakes shorelines and to act as a surrogate for lakes and other water bodies.
   )) %>%
   mutate(
-    FTYPE = factor(FTYPE, 
-                   levels = c("LakePond", "Reservoir", "SwampMarsh", "StreamRiver", 
-                              "Lock Chamber", "DamWeir", "Connector", "CanalDitch", 
-                              "Underground Conduit", "Pipeline", "ArtificialPath")))
-  
+    FTYPE = factor(FTYPE,
+      levels = c(
+        "LakePond", "Reservoir", "SwampMarsh", "StreamRiver",
+        "Lock Chamber", "DamWeir", "Connector", "CanalDitch",
+        "Underground Conduit", "Pipeline", "ArtificialPath"
+      )
+    )
+  )
 
-NHDFlowline_byCounty <- NHD_byCounty %>% filter(source=="NHDFlowline") %>%
+
+NHDFlowline_byCounty <- NHD_byCounty %>%
+  filter(source == "NHDFlowline") %>%
   distinct(SHAPE, .keep_all = TRUE) %>%
   sf::st_make_valid(.)
 
-NHDArea_byCounty <- NHD_byCounty %>% filter(source!="NHDFlowline") %>%
+NHDArea_byCounty <- NHD_byCounty %>%
+  filter(source != "NHDFlowline") %>%
   distinct(SHAPE, .keep_all = TRUE) %>%
   sf::st_make_valid(.)
 
@@ -233,30 +257,35 @@ message("Computing waterway geometry by county")
 # Now let's compute the area for each type of waterway by county and CTU
 # first add an area column to the NHD dataframe, then convert to km2
 NHDFlowline_byCounty <- NHDFlowline_byCounty %>%
-  mutate(distance = sf::st_length(.),
-         distance_km = distance / 1e6)
+  mutate(
+    distance = sf::st_length(.),
+    distance_km = distance / 1e6
+  )
 NHDArea_byCounty <- NHDArea_byCounty %>%
-  mutate(area = sf::st_area(.),
-         area_km2 = area / 1e6)
+  mutate(
+    area = sf::st_area(.),
+    area_km2 = area / 1e6
+  )
 
 
 
-    
+
 
 # Compute area of each waterway type by county
-nhd_county <- NHDArea_byCounty %>% 
+nhd_county <- NHDArea_byCounty %>%
   sf::st_drop_geometry() %>% # drop geom features
   group_by(FTYPE, county_name) %>% # group by waterway type and county
-  summarise(area = as.numeric(sum(area_km2)), .groups="keep") %>% # compute total area
-  ungroup() %>% as_tibble() %>%
+  summarise(area = as.numeric(sum(area_km2)), .groups = "keep") %>% # compute total area
+  ungroup() %>%
+  as_tibble() %>%
   arrange(county_name, FTYPE) %>%
   left_join(cprg_county %>%
-              sf::st_drop_geometry(), by="county_name") %>%
+    sf::st_drop_geometry(), by = "county_name") %>%
   rename(waterway_type = FTYPE) %>%
   relocate(any_of(colnames(cprg_county)), waterway_type, area) %>%
   # use crossing() to create a simulated time series of area change between 2001 and 2021
   # in reality this just duplicates each row in the dataframe for every year in the sequence
-  crossing(year=seq(2001,2021, by=1)) %>% 
+  crossing(year = seq(2001, 2021, by = 1)) %>%
   dplyr::select(c("county_name", "state_name", "year", "waterway_type", "area")) %>%
   arrange(year, county_name, waterway_type)
 
@@ -272,21 +301,22 @@ nhd_area_msa <- NHDArea_byCounty %>% dplyr::select(FTYPE, source, area_km2)
 nhd_flowlines_msa <- NHDFlowline_byCounty %>% dplyr::select(FTYPE, source, distance_km)
 
 
-waterway_colors <- c("LakePond" = "steelblue",
-                     "StreamRiver" = "lightskyblue",
-                     "Reservoir" = "maroon3",
-                     "SwampMarsh" = "palegreen3",
-                     "Lock Chamber" = "purple3",
-                     "DamWeir" = "darkslategray4",
-                     "Connector" = "red",
-                     "CanalDitch" = "goldenrod",
-                     "Underground Conduit" = "darkorchid1",
-                     "Pipeline" = "darkslategray",
-                     "ArtificialPath" = "green"
-                     )
+waterway_colors <- c(
+  "LakePond" = "steelblue",
+  "StreamRiver" = "lightskyblue",
+  "Reservoir" = "maroon3",
+  "SwampMarsh" = "palegreen3",
+  "Lock Chamber" = "purple3",
+  "DamWeir" = "darkslategray4",
+  "Connector" = "red",
+  "CanalDitch" = "goldenrod",
+  "Underground Conduit" = "darkorchid1",
+  "Pipeline" = "darkslategray",
+  "ArtificialPath" = "green"
+)
 
 # browser()
-# 
+#
 # ggplot(cprg_county) +   geom_sf(color="gray20", fill=NA, lwd=0.5) + #geom_sf(color=NA, fill=NA, lwd=0) +
 #   # ggspatial::annotation_scale(location = "br", width_hint = 0.3, pad_x = unit(0.23, "in"),unit_category="imperial") +
 #   # ggspatial::annotation_north_arrow(location = "br", which_north = "true",
@@ -294,28 +324,28 @@ waterway_colors <- c("LakePond" = "steelblue",
 #   #                                   pad_x = unit(0.1, "in"), pad_y = unit(0.35, "in"),
 #   #                                   style = ggspatial::north_arrow_minimal) +
 #   councilR::theme_council_geo() +
-# 
-# 
+#
+#
 #   geom_sf(data = nhd_area_msa, aes(fill=FTYPE, color=FTYPE), lwd=0.1) +
-# 
-# 
+#
+#
 #   scale_fill_manual("waterway type",breaks=names(waterway_colors), values = as.character(waterway_colors), guide = guide_legend(order = 1)) +
 #   scale_color_manual("waterway type",breaks=names(waterway_colors), values = as.character(waterway_colors), guide = guide_legend(order = 1)) +
-# 
+#
 #   ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
 #   ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
-# 
+#
 #   geom_sf(data = nhd_flowlines_msa, aes(color=FTYPE), lwd=0.2) +
 #   scale_color_manual("",breaks=names(waterway_colors), values = as.character(waterway_colors), guide = guide_legend(order = 2)) +
-# 
+#
 #   ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
-# 
-# 
+#
+#
 #   geom_sf(data = cprg_ctu, fill=NA, aes(color=councilR::colors$suppGray), alpha=0.8,  lwd=0.2) +
 #   scale_color_manual("", values=councilR::colors$suppGray, labels = "CTU boundary") +
-# 
+#
 #   ggnewscale::new_scale_color() + ## geoms added after this will use a new scale definition
-# 
+#
 #   geom_sf(aes(color=councilR::colors$suppGray), fill=NA, lwd=0.6) + # add county lines
 #   scale_color_manual("", values=councilR::colors$suppGray, labels = "County boundary") +
 #   theme(
@@ -371,32 +401,13 @@ nhd_flowlines_msa_meta <-
 # User chooses whether to overwrite the rds files
 if (overwrite_RDS) {
   message("Exporting RDS files...")
-  
+
   saveRDS(nhd_county, paste0("./_nature/data/nhd_county_waterways_2001_2021.rds"))
   saveRDS(nhd_county_meta, paste0("./_nature/data/nhd_county_waterways_2001_2021_meta.rds"))
-  
+
   saveRDS(nhd_area_msa, "./_nature/data/nhd_area_msa.rds")
   saveRDS(nhd_area_msa_meta, "./_nature/data/nhd_area_msa_meta.rds")
-  
+
   saveRDS(nhd_flowlines_msa, "./_nature/data/nhd_flowlines_msa.rds")
   saveRDS(nhd_flowlines_msa_meta, "./_nature/data/nhd_flowlines_msa_meta.rds")
-  
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,8 +1,7 @@
 source("R/_load_pkgs.R")
 
 wi_counties <- read_rds("_meta/data/cprg_county.RDS") %>%
-  select(STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD, geometry) %>%
-  filter(STATEFP == 55)
+  filter(statefp == 55)
 
 
 # downloaded from https://psc.wi.gov/Pages/ForConsumers/Maps.aspx. CRS is NAD83(HARN) / Wisconsin Transverse Mercator.
@@ -100,32 +99,29 @@ results <- identify_WIutilities_in_scope(wi_counties, wi_utility_files)
 wi_muni_utilitiesInScope <- results$Muni_repaired %>%
   select(
     LABEL, Util_Type, PSC_ID, ADDRESS_1, ADDRESS_2,
-    CITY, STATE, ZIP, GEOID, NAME, NAMELSAD
+    CITY, STATE, ZIP, geoid, county_name
   ) %>%
   rename(
-    utility_name = LABEL, utility_type = Util_Type,
-    county_name = NAME, county = NAMELSAD
+    utility_name = LABEL, utility_type = Util_Type
   )
 
 wi_iou_utilitiesInScope <- results$IOU %>%
   select(
     LABEL, UTIL_TYPE, PSC_ID, ADDRESS_1, ADDRESS_2,
-    CITY, STATE, ZIP, GEOID, NAME, NAMELSAD
+    CITY, STATE, ZIP, geoid, county_name
   ) %>%
   rename(
-    utility_name = LABEL, utility_type = UTIL_TYPE,
-    county_name = NAME, county = NAMELSAD
+    utility_name = LABEL, utility_type = UTIL_TYPE
   )
 
 
 wi_coop_utilitiesInScope <- results$Coop %>%
   select(
     LABEL, Util_Type, PSC_ID, ADDRESS_1, ADDRESS_2,
-    CITY, STATE, ZIP, GEOID, NAME, NAMELSAD
+    CITY, STATE, ZIP, geoid, county_name
   ) %>%
   rename(
-    utility_name = LABEL, utility_type = Util_Type,
-    county_name = NAME, county = NAMELSAD
+    utility_name = LABEL, utility_type = Util_Type
   )
 
 

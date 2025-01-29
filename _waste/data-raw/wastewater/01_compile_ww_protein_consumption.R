@@ -9,18 +9,22 @@ if (!file.exists("_waste/data-raw/wastewater/epa/EPA_2023_GHG_Emissions_and_Sink
 
 ## Load Table 7-34 from the EPA US Greenhouse Gas Emissions and Sinks 2023 Report
 protein_consumption <- suppressMessages(
-  read_csv("_waste/data-raw/wastewater/epa/EPA_2023_GHG_Emissions_and_Sinks_Table 7-34_Annual_protein_consumption.csv"
-  ))
+  read_csv("_waste/data-raw/wastewater/epa/EPA_2023_GHG_Emissions_and_Sinks_Table 7-34_Annual_protein_consumption.csv")
+)
 
 
-protein_consumption_formatted <- protein_consumption[c(3:34), c(1,4)] %>%
-  rename(year=1, 
-         Protein_kg_per_person_per_year=2) %>%
+protein_consumption_formatted <- protein_consumption[c(3:34), c(1, 4)] %>%
+  rename(
+    year = 1,
+    Protein_kg_per_person_per_year = 2
+  ) %>%
   as_tibble() %>%
-  mutate(Protein_kg_per_person_per_year = as.numeric(Protein_kg_per_person_per_year),
-         # Percentage of biosolids applied as fertilizer
-         pct_of_biosolids_as_fertilizer = 0)
-  
+  mutate(
+    Protein_kg_per_person_per_year = as.numeric(Protein_kg_per_person_per_year),
+    # Percentage of biosolids applied as fertilizer
+    pct_of_biosolids_as_fertilizer = 0
+  )
+
 protein_consumption_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
@@ -32,6 +36,4 @@ protein_consumption_meta <-
 saveRDS(protein_consumption_formatted, "./_waste/data-raw/wastewater/epa/epa_protein_consumption.rds")
 saveRDS(protein_consumption_meta, "./_waste/data-raw/wastewater/epa/epa_protein_consumption_meta.rds")
 
-rm(list=ls(pattern="^protein_"))
-
-
+rm(list = ls(pattern = "^protein_"))
