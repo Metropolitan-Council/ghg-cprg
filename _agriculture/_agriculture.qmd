@@ -20,23 +20,23 @@ ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/_agricultural
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 
 emissions_2021 <- county_emissions %>%
-  filter(year == 2021) %>%
+  filter(emissions_year == 2021) %>%
   pull(emissions_metric_tons_co2e) %>%
   sum()
 ag_emissions_2021 <- county_emissions %>%
-  filter(year == 2021, sector == "Agriculture") %>%
+  filter(emissions_year == 2021, sector == "Agriculture") %>%
   pull(emissions_metric_tons_co2e) %>%
   sum()
 ag_emissions_2005 <- county_emissions %>%
-  filter(year == 2005, sector == "Agriculture") %>%
+  filter(emissions_year == 2005, sector == "Agriculture") %>%
   pull(emissions_metric_tons_co2e) %>%
   sum()
 
 
 rural_ag_2021 <- county_emissions %>%
   filter(
-    year == 2021, sector == "Agriculture",
-    geog_name %in% c("St. Croix", "Pierce", "Carver", "Dakota")
+    emissions_year == 2021, sector == "Agriculture",
+    county_name %in% c("St. Croix", "Pierce", "Carver", "Dakota")
   ) %>%
   pull(emissions_metric_tons_co2e) %>%
   sum()
@@ -83,14 +83,15 @@ fig_ag_county_emissions <- plot_ly(
   data = county_emissions %>%
     filter(
       sector == "Agriculture",
-      year == 2021
+      emissions_year == 2021
     ),
-  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
+  y = ~ reorder(county_name, emissions_metric_tons_co2e),
   x = ~emissions_metric_tons_co2e,
   color = ~source,
   colors = unlist(source_colors),
   hovertemplate = ~ paste0(
-    geog_name, "<br>",
+    county_name, "<br>",
+    category, "<br>",
     source, "<br>",
     round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
@@ -131,9 +132,9 @@ fig_ag_baseline <- plot_ly(
   source = "fig-ag-baseline-emissions",
   data = county_emissions %>%
     filter(sector == "Agriculture") %>%
-    group_by(year, category) %>%
+    group_by(emissions_year, category) %>%
     summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
-  x = ~year,
+  x = ~emissions_year,
   y = ~emissions_metric_tons_co2e,
   color = ~category, #
   colors = unlist(category_colors), # Directly map the colors to categories

@@ -91,6 +91,15 @@ source_colors <- list(
   "Propane" = "#2f4f4f",
   "Kerosene" = "#004242",
 
+  # agriculture
+  "Enteric fermentation" = "#ffcc00",  # Distinct yellow
+  "Manure management" = "#b5c100",     
+  "Direct manure soil emissions" = "#a0b600",  
+  "Indirect manure runoff emissions" = "#8da000", 
+  "Soil residue emissions" = "#7a8a00",           
+  "Onsite fertilizer emissions" = "#b0d400",     
+  "Runoff fertilizer emissions" = "#9ccf00",  
+  
   # nature
   "Tree" = "#006d2c",
   "Grassland" = "#22b600",
