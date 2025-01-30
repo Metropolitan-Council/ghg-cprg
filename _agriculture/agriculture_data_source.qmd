@@ -18,9 +18,9 @@ county_area <- cprg_county %>%
 county_agriculture <- landcover %>%
   filter(!is.na(area), land_cover_type == "Cropland") %>%
   left_join(., county_area,
-    by = c("county" = "county_name")
+    by = c("county_name")
   ) %>%
-  group_by(year, county) %>%
+  group_by(year, county_name) %>%
   mutate(percent_area = area / county_area_sqkm)
 ```
 
@@ -134,11 +134,11 @@ cropland_2021 <- county_agriculture %>%
   left_join(., county_emissions %>%
     filter(
       sector == "Agriculture",
-      year == 2021
+      emissions_year == 2021
     ) %>%
-    group_by(geog_name, category) %>%
+    group_by(county_name, category) %>%
     summarize(ag_emissions = sum(emissions_metric_tons_co2e)),
-  by = c("county" = "geog_name")
+  by = c("county_name")
   )
 
 
@@ -152,7 +152,7 @@ fig_cropland_area_emissions <- plot_ly(
   color = ~category, # Map colors by category
   colors = unlist(category_colors), # Convert list to vector of colors
   hovertemplate = ~ paste0(
-    county, " County", "<br>",
+    county_name, " County", "<br>",
     "Area: ", scales::comma(area), " square kilometers", "<br>",
     "Emissions: ", round(ag_emissions, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
