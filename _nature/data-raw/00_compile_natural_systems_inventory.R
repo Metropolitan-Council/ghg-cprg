@@ -1,4 +1,4 @@
-rm(list=ls())
+rm(list = ls())
 
 # 01 ----------------------------------------------------------------------
 # 01_compile_land_cover_carbon.R
@@ -37,4 +37,3 @@ source("_nature/data-raw/03_compile_land_area_sequestration_from_nlcd.R")
 # Applies emissions factors to area estimates of waterway type to summarize
 # CH4 emissions at the county and ctu scale
 source("_nature/data-raw/03_compile_waterways_emissions_from_nhd.R")
-

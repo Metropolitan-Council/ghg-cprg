@@ -30,7 +30,7 @@ MNutilities_in_scope <- st_intersection(mn_elecUtils, mn_counties) %>%
     eia_utility = eia_utilit,
     county_name = county_name_full,
     county = county_name,
-    mn_utility_id = mn_utility 
+    mn_utility_id = mn_utility
   )
 
 distinct_util_type_MN <- MNutilities_in_scope %>%

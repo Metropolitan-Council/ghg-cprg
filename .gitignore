@@ -1146,6 +1146,7 @@ _transportation/data-raw/~$_source_method_compare.xlsx
 _transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2024-0812-144242.csv
 
 
+
 _meta/data-raw/mpca_ghg_inventory.csv
 _meta/data-raw/Minnesota GCAM Modeling Data.xlsx
 
@@ -1190,13 +1191,13 @@ _energy/data-raw/dataExplorer.twb
 
 _energy/data-raw/modelingDocs
 
-_energy/data-raw/nrel_slope
-
 _energy/data-raw/USDA_ERS_AgriculturalResourceManagementSurvey
 
 _energy/data-raw/XcelCommunityReports
 
 _energy/data-raw/mn_elec_utility_reporting_state
+
+_energy/data-raw/mn_ng_utility_reporting_state
 
 _energy\data-raw\XcelCommunityReports\electricity_all_years_city.csv
 
@@ -1204,4 +1205,17 @@ _energy/data-raw/GRE_individualReports
 
 _energy/data-raw/xcel_community_reports
 
+
+_energy/data-raw/regional_indicators_initiative
+
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsb
+
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsx
+
+_industrial/data-raw/ghgrp/
+
+_industrial/data-raw/mn_flight.xls
+
+_industrial/data-raw/MPCA_industrial_fuel_throughput.xlsx
+_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.zip
 

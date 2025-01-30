@@ -2,8 +2,8 @@
 source("R/_load_pkgs.R")
 
 mn_counties <- read_rds("_meta/data/cprg_county.RDS") %>%
-  select(STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD, geometry) %>%
-  filter(STATEFP == 27)
+  select(statefp, geoid, county_name, geometry) %>%
+  filter(statefp == 27)
 
 fed_natGasUtils <- st_read(here("_energy", "data-raw", "Natural_Gas_Service_Territories", "NG_Service_Terr.shp")) %>%
   select(NAME, TYPE, COUNTY, COUNTYFIPS, SOURCE)
@@ -13,7 +13,7 @@ mn_counties <- st_transform(mn_counties, st_crs(fed_natGasUtils))
 
 # identify utility-county combos present that operate in study area
 MNutilities_in_scope <- st_intersection(fed_natGasUtils, mn_counties) %>%
-  rename(utility_name = NAME, utility_type = TYPE, county_name = COUNTY, dataSource = SOURCE) %>%
+  rename(utility_name = NAME, utility_type = TYPE, dataSource = SOURCE) %>%
   select(utility_name, utility_type, county_name, dataSource, geometry)
 
 
