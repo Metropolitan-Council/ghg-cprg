@@ -83,35 +83,32 @@ combined_WIgasUtil_activityData <- WIutilities_in_scope %>%
 # Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county, process and merge data -- this will be a separate data colelction process spanning excel reports submitted to state
 processed_wi_gasUtil_activityData <- combined_WIgasUtil_activityData %>%
   mutate(
-    CO2_emissions = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF,
-    CH4_emissions = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF * GWP_CH4,
-    N2O_emissions = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF * GWP_N2O,
-    CO2e_emissions = CO2_emissions + CH4_emissions + N2O_emissions
+    CO2_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    CH4_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF * GWP_CH4 %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    N2O_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF * GWP_N2O %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    CO2e_emissions_mt = CO2_emissions_mt + CH4_emissions_mt + N2O_emissions_mt
   )
 
 # Aggregate data by county, add identifiers for state and sector
 WIcounty_level_gas_emissions <- processed_wi_gasUtil_activityData %>%
   group_by(county_name, year) %>%
   summarise(
-    total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
-    total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
-    total_CH4_emissions_lbs = sum(CH4_emissions, na.rm = TRUE),
-    total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
-    total_N2O_emissions_lbs = sum(N2O_emissions, na.rm = TRUE),
-    total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000,
-    total_CO2e_emissions_lbs = sum(
-      CO2_emissions +
-        CH4_emissions +
-        N2O_emissions,
-      na.rm = TRUE
-    ),
-    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
-    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
-      units::as_units("pound") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric(),
-    .groups = "keep"
-  ) %>%
+    total_CO2_emissions_mt = sum(CO2_emissions_mt, na.rm = TRUE),
+    total_CH4_emissions_mt = sum(CH4_emissions_mt, na.rm = TRUE),
+    total_N2O_emissions_mt = sum(N2O_emissions_mt, na.rm = TRUE),
+    emissions_metric_tons_co2e = sum(
+      CO2_emissions_mt + CH4_emissions_mt + N2O_emissions_mt,
+      na.rm = TRUE)
+    ) %>%
   mutate(
     state = "WI",
     sector = "Natural gas",
