@@ -25,7 +25,7 @@ hookaddcap()
 
 In 2013, the MPCA contracted with Burns & McDonnell Engineering Company, Inc. to conduct a waste characterization study of landfill waste, an update to an earlier study in the year 2000. For simplicity, we have chosen to set waste proportions equal to those 2013 values for all years in this inventory.
 
-The study sampled waste makeup from six waste disposal facilities across the state and used the results to model statewide totals. More details can be found in study documentation, (cite).
+The study sampled waste makeup from six waste disposal facilities across the state and used the results to model statewide totals. More details can be found in [study documentation](https://www.pca.state.mn.us/sites/default/files/w-sw1-60.pdf).
 
 This data is a high-quality state-level dataset.
 

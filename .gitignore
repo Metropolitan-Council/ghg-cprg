@@ -1146,26 +1146,37 @@ _transportation/data-raw/~$_source_method_compare.xlsx
 _transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2024-0812-144242.csv
 
 
-_transportation/data-raw/mndot/city_route_system/
+_energy/data-raw/nrel_slope/MNWI
 
-_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/
+_energy/data-raw/dataExplorer.twb
 
-_transportation/data-raw/mndot/updated_VMT_County_City_Route_System.zip
+*.twbr
 
-_agriculture/data-raw/ag-module.xlsx
+_energy/data-raw/modelingDocs
 
-/_nature/data-raw/nlcd_raw_imgs
-_energy/data-raw/Xcel_activityData_2015_2023.csv
-_energy/data-raw/sql_utility_id_ctu_id.csv
-_energy/data-raw/sql_utility_id.csv
+_energy/data-raw/USDA_ERS_AgriculturalResourceManagementSurvey
 
-_energy/data-raw/xcel_community_reports/
-_energy/data-raw/mn_elec_utility_reporting_state/
-_energy/data-raw/mn_ng_utility_reporting_state/
+_energy/data-raw/XcelCommunityReports
+
+_energy/data-raw/mn_elec_utility_reporting_state
+
+_energy/data-raw/mn_ng_utility_reporting_state
+
+_energy\data-raw\XcelCommunityReports\electricity_all_years_city.csv
+
+_energy/data-raw/GRE_individualReports
+
+_energy/data-raw/xcel_community_reports
+
+_energy/data-raw/regional_indicators_initiative
+
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsb
+
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsx
 
 _industrial/data-raw/ghgrp/
-_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsb
-_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsx
-_industrial/data-raw/mn_flight.xls
-_industrial/data-raw/MPCA_industrial_fuel_throughput.xlsx
 
+_industrial/data-raw/mn_flight.xls
+
+_industrial/data-raw/MPCA_industrial_fuel_throughput.xlsx
+_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.zip

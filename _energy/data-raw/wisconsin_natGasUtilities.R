@@ -2,8 +2,8 @@
 source("R/_load_pkgs.R")
 
 wi_counties <- read_rds("_meta/data/cprg_county.RDS") %>%
-  select(STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD, geometry) %>%
-  filter(STATEFP == 55)
+  select(statefp, geoid, county_name, geometry) %>%
+  filter(statefp == 55)
 
 # Wisconsin maintains state-level natural gas service area maps. Downloaded from https://psc.wi.gov/Pages/ForConsumers/Maps.aspx.
 WI_natGasUtils <- st_read(here("_energy", "data-raw", "NG_PSCW_ServTerr", "NG_PSCW_ServTerr.shp")) %>%
@@ -11,11 +11,11 @@ WI_natGasUtils <- st_read(here("_energy", "data-raw", "NG_PSCW_ServTerr", "NG_PS
 
 # reproject WI counties to same projection as wi_natGasUtils to perform intersection
 wi_counties <- st_transform(wi_counties, st_crs(WI_natGasUtils)) %>%
-  select(GEOID, NAME, NAMELSAD, geometry)
+  select(geoid, county_name, geometry)
 
 # identify utilities that operate in study area
 WIutilities_in_scope <- st_intersection(WI_natGasUtils, wi_counties) %>%
-  rename(utility_name = Util_Name, county_name = NAME) %>%
+  rename(utility_name = Util_Name) %>%
   select(utility_name, county_name, geometry)
 
 distinct_natGas_util_WI <- WIutilities_in_scope %>%

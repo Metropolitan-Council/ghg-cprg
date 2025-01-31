@@ -11,13 +11,13 @@ if (exists("eGRID_MROW_emissionsFactor_CO2") == FALSE) {
   # which covers our study area)
   # figures in lbs./mWh
 
-  eGRID_MROW_emissionsFactor_CO2 <- mrow_factors %>%
+  eGRID_MROW_emissionsFactor_CO2_2021 <- mrow_factors %>%
     filter(emission == "lb CO2") %>%
     magrittr::extract2("value")
-  eGRID_MROW_emissionsFactor_CH4 <- mrow_factors %>%
+  eGRID_MROW_emissionsFactor_CH4_2021 <- mrow_factors %>%
     filter(emission == "lb CH4") %>%
     magrittr::extract2("value")
-  eGRID_MROW_emissionsFactor_N2O <- mrow_factors %>%
+  eGRID_MROW_emissionsFactor_N2O_2021 <- mrow_factors %>%
     filter(emission == "lb N2O") %>%
     magrittr::extract2("value")
 

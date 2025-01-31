@@ -1,0 +1,31 @@
+README
+
+This zipped folder contains several files with onroad transportation emissions data compiled from EPA data sources. Minnesota counties included are Anoka, Carver, Chisago, Dakota, Hennepin, Ramsey, Scott, Sherburne, and Washington. Wisconsin counties included are Pierce and St. Croix.
+
+- onroad_emissions.CSV (2,012 rows) contains summarized onroad emissions at the county level, grouped by vehicle and fuel types for years 2002-2022.
+- epa_onroad_emissions_compile.CSV (180,158 rows) contains compiled county emissions from the three EPA sources (NEI, EQUATES, and Air Emissions Modeling) at the source classification code (SCC) level for years 2002-2022. This is the most detailed dataset provided.
+- epa_onroad_source_set.CSV contains metadata for each year and EPA data source, with the original EPA file name and the R scripts used to process them.
+- epa_downloads.xslx contains a log of direct download links used for all EPA downloads, plus some descriptive information about the downloads. 
+
+All files ending with "_meta" are metadata tables containing column descriptions for the referenced dataset.
+
+Please see our GitHub repository for more information: https://github.com/Metropolitan-Council/ghg-cprg.
+
+Please contact Liz Roten (liz.roten@metc.state.mn.us) with any follow-up quuestions.
+
+
+================================================================================
+All estimates are created by the EPA. Consult EPA documentation for more details.
+
+National Emissions Inventory (NEI)
+
+USEPA. (2023). 2020 National Emissions Inventory Technical Support Document: Onroad Mobile Sources (Government EPA-454/R-23-001e; NEI2020 TSD). Office of Air Quality Planning and Standards. https://www.epa.gov/air-emissions-inventories/2020-national-emissions-inventory-nei-technical-support-document-tsd
+
+EQUATES
+
+Foley, K. M., Pouliot, G. A., Eyth, A., Aldridge, M. F., Allen, C., Appel, K. W., Bash, J. O., Beardsley, M., Beidler, J., Choi, D., Farkas, C., Gilliam, R. C., Godfrey, J., Henderson, B. H., Hogrefe, C., Koplitz, S. N., Mason, R., Mathur, R., Misenis, C., … Adams, E. (2023). 2002–2017 anthropogenic emissions data for air quality modeling over the United States. Data in Brief, 47, 109022. https://doi.org/10.1016/j.dib.2023.109022
+
+Air Emissions Modeling
+
+USEPA. (2024a, February 6). 2021 Emissions Modeling Platform [Air Emissions Modeling Platforms]. https://www.epa.gov/air-emissions-modeling/2021-emissions-modeling-platform
+USEPA. (2024b, August 23). 2022v1 Emissions Modeling Platform [Air Emissions Modeling Platforms]. https://www.epa.gov/air-emissions-modeling/2022v1-emissions-modeling-platform

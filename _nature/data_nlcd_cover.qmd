@@ -1,0 +1,153 @@
+# Land cover data sources {#sec-waterways-data-sources}
+```{r include=FALSE}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+hookaddcap()
+
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+county_waterways_emissions <- readRDS(file.path(here::here(), "_nature/data/nhd_county_waterways_emissions_2001_2021.RDS"))
+ctu_waterways_emissions <- readRDS(file.path(here::here(), "_nature/data/nhd_ctu_waterways_emissions_2001_2021.RDS"))
+
+county_carbon_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_sequestration_2001_2021.RDS"))
+ctu_carbon_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_ctu_landcover_sequestration_2001_2021.RDS"))
+
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
+
+
+## Land cover and waterways maps
+# grab nlcd legend
+nlcd.legend <- FedData::pal_nlcd()
+
+# grab National Land Cover Database (NLCD) layers
+nlcd_lc <- unwrap(read_rds(here(
+  "_nature", "data", "nlcd_lc_msa.rds" # land cover map
+)))
+nlcd_tcc <- unwrap(read_rds(here(
+  "_nature", "data", "nlcd_tcc_msa.rds" # tree canopy map
+)))
+nlcd_is <- unwrap(read_rds(here(
+  "_nature", "data", "nlcd_is_msa.rds" # impervious surface map
+)))
+
+
+cprg_area <- cprg_county %>%
+  mutate(area_sq_km = sf::st_area(cprg_county) %>% units::set_units("km^2") %>%
+    as.numeric())
+
+crs_use <- terra::crs(nlcd_lc)
+```
+
+
+
+```{r include=FALSE}
+# Plot NLCD land cover map
+p_nlcd_lc <- ggplot(cprg_county) +
+  geom_sf(color = "gray20", fill = NA, lwd = 0.5) +
+  councilR::theme_council_geo() +
+  tidyterra::geom_spatraster(data = nlcd_lc, alpha = 0.9) +
+  scale_fill_manual(
+    breaks = nlcd.legend$ID,
+    labels = nlcd.legend$Class,
+    values = nlcd.legend$Color,
+    na.value = "white",
+    name = "Cover Type",
+    guide = guide_legend(order = 1)
+  ) +
+  geom_sf(data = cprg_ctu, fill = NA, color = councilR::colors$suppGray, alpha = 0.8, lwd = 0.2) +
+  geom_sf(color = councilR::colors$suppGray, fill = NA, lwd = 0.6) + # add county lines
+  ggspatial::annotation_scale(
+    location = "br", width_hint = 0.3,
+    pad_x = unit(0.23, "in"), unit_category = "imperial"
+  ) +
+  ggspatial::annotation_north_arrow(
+    location = "br", which_north = "true",
+    height = unit(0.33, "in"), width = unit(0.35, "in"),
+    pad_x = unit(1.4, "in"), pad_y = unit(0.35, "in"),
+    style = ggspatial::north_arrow_minimal
+  )
+```
+
+
+
+```{r include=FALSE}
+# Plot NLCD impervious cover map
+p_nlcd_is <- ggplot(cprg_county) +
+  geom_sf(color = "gray20", fill = NA, lwd = 0.5) +
+  councilR::theme_council_geo() +
+  tidyterra::geom_spatraster(data = nlcd_is, alpha = 0.9, na.rm = TRUE) +
+  scale_fill_gradient(
+    name = "NLCD Impervious Cover (%)", low = "pink", high = "firebrick4",
+    na.value = "white",
+    guide = guide_legend(order = 1)
+  ) +
+  geom_sf(data = cprg_ctu, fill = NA, color = councilR::colors$suppGray, alpha = 0.8, lwd = 0.2) +
+  geom_sf(color = councilR::colors$suppGray, fill = NA, lwd = 0.6) + # add county lines
+  ggspatial::annotation_scale(
+    location = "br", width_hint = 0.3,
+    pad_x = unit(0.23, "in"), unit_category = "imperial"
+  ) +
+  ggspatial::annotation_north_arrow(
+    location = "br", which_north = "true",
+    height = unit(0.33, "in"), width = unit(0.35, "in"),
+    pad_x = unit(1.4, "in"), pad_y = unit(0.35, "in"),
+    style = ggspatial::north_arrow_minimal
+  )
+```
+
+
+
+```{r include=FALSE}
+# Plot NLCD tree canopy cover map
+p_nlcd_tcc <- ggplot(cprg_county) +
+  geom_sf(color = "gray20", fill = NA, lwd = 0.5) +
+  councilR::theme_council_geo() +
+  tidyterra::geom_spatraster(data = nlcd_tcc, alpha = 0.9, na.rm = TRUE) +
+  scale_fill_gradient(
+    name = "NLCD Tree Canopy Cover (%)", low = "white", high = "forestgreen",
+    na.value = "white",
+    guide = guide_legend(order = 1)
+  ) +
+  geom_sf(data = cprg_ctu, fill = NA, color = councilR::colors$suppGray, alpha = 0.8, lwd = 0.2) +
+  geom_sf(color = councilR::colors$suppGray, fill = NA, lwd = 0.6) + # add county lines
+  ggspatial::annotation_scale(
+    location = "br", width_hint = 0.3,
+    pad_x = unit(0.23, "in"), unit_category = "imperial"
+  ) +
+  ggspatial::annotation_north_arrow(
+    location = "br", which_north = "true",
+    height = unit(0.33, "in"), width = unit(0.35, "in"),
+    pad_x = unit(1.4, "in"), pad_y = unit(0.35, "in"),
+    style = ggspatial::north_arrow_minimal
+  )
+```
+
+The [USGS's National Land Cover Dataset (NLCD)](https://www.usgs.gov/node/279743) is a comprehensive, nationwide dataset providing detailed information on land cover and land use across the United States. First released in 2001, it is developed by the Multi-Resolution Land Characteristics (MRLC) Consortium to support applications in environmental management, policy-making, and land planning. Updated every five years, the NLCD uses satellite imagery to classify land cover types, track land use change over time, and provide insights into urbanization, forestry, agriculture, and water resources. 
+
+Here, we used three map products from the NLCD to develop our natural systems greenhouse gas inventory: (1) land cover type, (2) percent tree canopy cover, and (3) percent impervious surface. Starting with the land cover dataset (which includes 16 cover classes such as evergreen and deciduous forests, emergent herbaceous wetlands, and developed areas), our goal was to reclassify the land cover pixels into five new categories that distinguish between natural and urban systems: tree, urban_tree, grassland, urban_grassland, and wetland.
+
+
+```{r fig-nlcd-lc}
+#| fig-cap: "USGS National Land Cover Database (NLCD) - Land Cover Types"
+#| out-width: "95%"
+#| echo: false
+p_nlcd_lc
+```
+
+
+First, we used the land cover map to identify the region's various natural cover types (e.g. forests, wetlands, grasslands) that fell outside of 'Developed' lands. In order to classify green spaces that are co-located within the urban sector (e.g. urban trees and grasslands), we overlaid the tree canopy cover map on the impervious cover map. When tree canopy was present in any areas classified as 'Developed', we re-classified these as 'Urban_Tree' and corrected the area covered based on the percent tree canopy value from the NLCD tree map. When an area is classified as 'Developed, Open Space' but contains zero tree canopy coverage, we re-classified this as 'Urban_Grassland'. Using this method, we developed the following land cover classifications: 'Urban_Tree', 'Urban_Grassland', 'Tree', 'Grassland', and 'Wetland'. 
+
+```{r fig-nlcd-tcc}
+#| fig-cap: "USGS National Land Cover Database (NLCD) - Tree Canopy Cover"
+#| out-width: "95%"
+#| echo: false
+p_nlcd_tcc
+```
+
+
+
+
+
+{{< pagebreak >}}

@@ -11,9 +11,9 @@ score_summary <- read_csv(file.path(here::here(), "_waste/data-raw/solid_waste/s
 score_filtered <- score_summary %>%
   group_by(Year, Method) %>%
   mutate(state_total = sum(Tons) %>%
-           units::as_units("ton") %>%
-           units::set_units("metric_ton")%>%
-           as.numeric()) %>%
+    units::as_units("ton") %>%
+    units::set_units("metric_ton") %>%
+    as.numeric()) %>%
   filter(
     County %in% cprg_county$county_name,
     Year %in% 2005:2021
