@@ -1,12 +1,14 @@
+# use nrel proportions to breakout county energy deliveries
+# backcast where possible but be clear about interpolation/data weaknesses
 
-nrel_slope_proportions <- readRDS("_energy/data-raw/nrel_slope/nrel_slope_proportions.RDS")
+nrel_slope_proportions <- readRDS("_energy/data-raw/nrel_slope/nrel_emissions_inv_county.RDS")
 
 
-electric_raw <- readRDS(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS")) %>%
+electric_raw <- readRDS(file.path(here:: here("_energy", "data", "minnesota_county_elec_ActivityAndEmissions.RDS")))%>%
   bind_rows(readRDS(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
               rename(county = county_name))
 
-natgas_raw <- readRDS(file.path(here::here(), "_energy/data/minnesota_county_GasEmissions.RDS")) %>%
+natgas_raw <- readRDS(file.path(here:: here("_energy", "data", "minnesota_county_GasEmissions.RDS"))) %>%
   bind_rows(readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>%
               rename(county = county_name))
 
