@@ -87,11 +87,11 @@ processed_wi_gasUtil_activityData <- combined_WIgasUtil_activityData %>%
       units::as_units("pound") %>%
       units::set_units("metric_ton") %>%
       as.numeric(),
-    CH4_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF * GWP_CH4 %>%
+    CH4_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF %>%
       units::as_units("pound") %>%
       units::set_units("metric_ton") %>%
       as.numeric(),
-    N2O_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF * GWP_N2O %>%
+    N2O_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF %>%
       units::as_units("pound") %>%
       units::set_units("metric_ton") %>%
       as.numeric(),
@@ -106,7 +106,9 @@ WIcounty_level_gas_emissions <- processed_wi_gasUtil_activityData %>%
     total_CH4_emissions_mt = sum(CH4_emissions_mt, na.rm = TRUE),
     total_N2O_emissions_mt = sum(N2O_emissions_mt, na.rm = TRUE),
     emissions_metric_tons_co2e = sum(
-      CO2_emissions_mt + CH4_emissions_mt + N2O_emissions_mt,
+      CO2_emissions_mt +
+        (CH4_emissions_mt * gwp$ch4) +
+        (N2O_emissions_mt * gwp$n2o),
       na.rm = TRUE)
     ) %>%
   mutate(
