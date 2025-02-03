@@ -162,6 +162,9 @@ mn_parcel_assigned <- mn_parcel %>%
   )) %>%
   filter(!is.na(mc_classification))
 
+rm(mn_parcel)
+gc()
+
 # quick check
 tapply(mn_parcel_assigned$FIN_SQ_FT, mn_parcel_assigned$mc_classification, "median")
 ### zero is often the median value :/
@@ -210,6 +213,9 @@ mn_parcel_predict <- mn_parcel_assigned %>%
   # select columns
   select(CO_NAME, CTU_NAME, CTU_ID_TXT, FIN_SQ_FT, EMV_BLDG, YEAR_BUILT, mc_classification)
 
+rm(mn_parcel_assigned)
+gc()
+
 mn_parcel_map <- mn_parcel_predict %>%
   group_by(CO_NAME, CTU_NAME, CTU_ID_TXT, mc_classification) %>%
   summarize(
@@ -232,6 +238,8 @@ mn_parcel_map <- mn_parcel_predict %>%
   )) %>%
   st_as_sf()
 
+rm(mn_parcel_predict)
+gc()
 
 ### save meta data later
 
