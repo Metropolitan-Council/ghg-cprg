@@ -228,15 +228,15 @@ county_res_predict <- ctu_res_predict %>%
   summarize(mwh_predicted = sum(mwh_predicted)) %>%
   mutate(
     # apply emission factor and convert to metric tons
-    co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2) %>%
+    co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2_2021) %>%
       units::as_units("lb") %>%
       units::set_units("ton") %>%
       as.numeric(),
-    ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4) %>%
+    ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4_2021) %>%
       units::as_units("lb") %>%
       units::set_units("ton") %>%
       as.numeric(),
-    n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O) %>%
+    n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O_2021) %>%
       units::as_units("lb") %>%
       units::set_units("ton") %>%
       as.numeric(),
@@ -516,15 +516,15 @@ county_nonres_predict <- ctu_nonres_predict %>%
   summarize(mwh_predicted = sum(mwh_predicted)) %>%
   mutate(
     # apply emission factor and convert to metric tons
-    co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2) %>%
+    co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2_2021) %>%
       units::as_units("lb") %>%
       units::set_units("ton") %>%
       as.numeric(),
-    ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4) %>%
+    ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4_2021) %>%
       units::as_units("lb") %>%
       units::set_units("ton") %>%
       as.numeric(),
-    n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O) %>%
+    n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O_2021) %>%
       units::as_units("lb") %>%
       units::set_units("ton") %>%
       as.numeric(),
@@ -702,15 +702,15 @@ county_predict_linear <- ctu_predict_linear %>%
   summarize(mwh_predicted = sum(mwh_predicted)) %>%
   mutate(
     # apply emission factor and convert to metric tons
-    co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2) %>%
+    co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2_2021) %>%
       units::as_units("lb") %>%
       units::set_units("ton") %>%
       as.numeric(),
-    ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4) %>%
+    ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4_2021) %>%
       units::as_units("lb") %>%
       units::set_units("ton") %>%
       as.numeric(),
-    n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O) %>%
+    n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O_2021) %>%
       units::as_units("lb") %>%
       units::set_units("ton") %>%
       as.numeric(),
