@@ -121,12 +121,19 @@ processed_mn_elecUtil_activityData <- combined_MNelectUtil_activityData %>%
   left_join(egridTimeSeries,
     by = join_by(year == Year)
   ) %>%
-  # temporary, when eGRID 2023 is release 01/2025 this will be removed.
-  filter(year != 2023) %>%
   mutate(
-    CO2_emissions = mWh_delivered * `lb CO2`,
-    CH4_emissions = mWh_delivered * `lb CH4`,
-    N2O_emissions = mWh_delivered * `lb N2O`
+    CO2_emissions_mt = mWh_delivered * `lb CO2` %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    CH4_emissions_mt = mWh_delivered * `lb CH4` %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    N2O_emissions_mt = mWh_delivered * `lb N2O`  %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric()
   ) %>%
   # get rid of unnecessary columns from eGRID factor tables
   select(-eGrid_Subregion,
@@ -142,23 +149,15 @@ MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
   group_by(year, county) %>%
   summarise(
     total_mWh_delivered = sum(mWh_delivered, na.rm = TRUE),
-    total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
-    total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
-    total_CH4_emissions_lbs = sum(CH4_emissions, na.rm = TRUE),
-    total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
-    total_N2O_emissions_lbs = sum(N2O_emissions, na.rm = TRUE),
-    total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000,
-    total_CO2e_emissions_lbs = sum(
-      CO2_emissions +
-        (CH4_emissions * gwp$ch4) +
-        (N2O_emissions * gwp$n2o),
+    total_CO2_emissions_mt = sum(CO2_emissions_mt, na.rm = TRUE),
+    total_CH4_emissions_mt = sum(CH4_emissions_mt, na.rm = TRUE),
+    total_N2O_emissions_mt = sum(N2O_emissions_mt, na.rm = TRUE),
+    emissions_metric_tons_co2e = sum(
+      CO2_emissions_mt +
+        (CH4_emissions_mt * gwp$ch4) +
+        (N2O_emissions_mt * gwp$n2o),
       na.rm = TRUE
-    ),
-    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
-    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
-      units::as_units("pound") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric()
+    )
   ) %>%
   ungroup() %>%
   mutate(
