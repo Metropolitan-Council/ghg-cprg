@@ -147,31 +147,32 @@ combined_wi_elecUtil_activityData <- combined_wi_elecUtil_activityData %>%
 # Assuming each row in wi_electricity_data represents a utility's electricity delivery in a county, process and merge data
 processed_wi_elecUtil_activityData <- combined_wi_elecUtil_activityData %>%
   mutate(
-    CO2_emissions = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_CO2_2021,
-    CH4_emissions = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_CH4_2021,
-    N2O_emissions = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_N2O_2021
+    CO2_emissions_mt = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_CO2_2021 %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    CH4_emissions_mt = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_CH4_2021 %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    N2O_emissions_mt = coalesced_utilityCounty_mWh * eGRID_MROW_emissionsFactor_N2O_2021 %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric()
   )
 
 WIcounty_level_electricity_emissions <- processed_wi_elecUtil_activityData %>%
   group_by(county_name) %>%
   summarise(
-    total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
-    total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
-    total_CH4_emissions_lbs = sum(CH4_emissions, na.rm = TRUE),
-    total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
-    total_N2O_emissions_lbs = sum(N2O_emissions, na.rm = TRUE),
-    total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000,
-    total_CO2e_emissions_lbs = sum(
-      CO2_emissions +
-        (CH4_emissions * gwp$ch4) +
-        (N2O_emissions * gwp$n2o),
+    total_CO2_emissions_mt = sum(CO2_emissions_mt, na.rm = TRUE),
+    total_CH4_emissions_mt = sum(CH4_emissions_mt, na.rm = TRUE),
+    total_N2O_emissions_mt = sum(N2O_emissions_mt, na.rm = TRUE),
+    emissions_metric_tons_co2e = sum(
+      CO2_emissions_mt +
+        (CH4_emissions_mt * gwp$ch4) +
+        (N2O_emissions_mt * gwp$n2o),
       na.rm = TRUE
-    ),
-    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
-    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
-      units::as_units("pound") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric()
+    )
   ) %>%
   mutate(
     state = "WI",
@@ -195,7 +196,7 @@ WI_currentCounty_deliveries <- read_rds(here(
   "data",
   "wisconsin_county_ElecEmissions.RDS"
 )) %>%
-  select(county_name, OURS_total_CO2e_emissions_lbs = total_CO2e_emissions_lbs)
+  select(county_name, OURS_total_CO2e_emissions_mt = emissions_metric_tons_co2e)
 
 downscaleEIA_WI_electricRetail <- read_rds(here(
   "_meta",
@@ -206,8 +207,11 @@ downscaleEIA_WI_electricRetail <- read_rds(here(
     population_data_source == "Decennial Census PL 94-171 Redistricting Data Summary File") %>%
   select(geoid, county_name, county_proportion_of_state_pop) %>%
   mutate(
-    downscaled_EIA_total_CO2e_emissions_lbs =
-      EIA_WI_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1,
+    downscaled_EIA_total_CO2e_emissions_mt =
+      EIA_WI_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1  %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
     state = "WI"
   ) %>%
   left_join(WI_currentCounty_deliveries,

@@ -45,6 +45,9 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(kableExtra, quietly = TRUE))
   suppressMessages(library(gt, quietly = TRUE))
 
+  # analysis -----
+  suppressMessages(library(randomForest, quietly = TRUE))
+  
   load_packages <- TRUE
   cli::cli_inform(
     c("v" = "Packages\n"),
