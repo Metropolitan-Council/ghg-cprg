@@ -49,17 +49,12 @@ aviation_emissions <- readRDS("_transportation/data/aviation_emissions.RDS") %>%
 
 # waste -----
 ## wastewater ----
-ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
+ww_emissions <- readRDS("_waste/data/_county_wastewater_emissions.RDS") %>%
   mutate(
-    sector = "Waste",
     geog_level = "county",
-    county_name = county_name,
-    category = "Wastewater",
-    source = "Wastewater",
-    data_source = "EPA State GHG Inventory and Projection Tool",
     factor_source = data_source,
-    emissions_metric_tons_co2e = co2e,
-    emissions_year = as.numeric(year)
+    emissions_metric_tons_co2e = mt_co2e,
+    emissions_year = as.numeric(inventory_year)
   ) %>%
   select(names(transportation_emissions))
 
