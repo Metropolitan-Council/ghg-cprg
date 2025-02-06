@@ -30,7 +30,7 @@ natgas_ef_scf <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
   pluck("stationary_combustion") %>%
   filter(fuel_category == "Natural Gas" & per_unit == "scf") %>% 
   mutate(# metric ton co2e per mwh 
-    mt_co2e_scf = case_when(
+    mt_co2e_mcf = 10^3 * case_when(
       emission == "g CH4" ~ value * gwp$ch4 %>%
         units::as_units("gram") %>%
         units::set_units("metric_ton") %>%
@@ -47,7 +47,7 @@ natgas_ef_scf <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
     )) %>%
   # get rid of unnecessary columns from eGRID factor tables
   group_by(fuel_category, Source) %>% 
-  summarize(mt_co2e_scf = sum(mt_co2e_scf)) %>% 
+  summarize(mt_co2e_mcf = sum(mt_co2e_mcf)) %>% 
   ungroup()
 
 electric_raw <- readRDS(file.path(here:: here("_energy", "data", "minnesota_county_elec_ActivityAndEmissions.RDS")))%>%
@@ -86,9 +86,13 @@ ggplot(electric_interpolated, aes(x = year, y = mwh_modeled, col = county)) +
   geom_line()
 
 natgas_raw <- readRDS(file.path(here:: here("_energy", "data", "minnesota_county_GasEmissions.RDS"))) %>%
-  bind_rows(readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")))
+  bind_rows(readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS"))) %>% 
+  #back-calculate mcf for two counties
+  mutate(total_mcf = if_else(is.na(total_mcf),
+                             emissions_metric_tons_co2e / natgas_ef_scf$mt_co2e_mcf,
+         total_mcf))
+  
 
-### weird modeling happening for WI counies where CO2e is avail but scf is not. Check.
 natgas_interpolated <- left_join(
   expand.grid(
     year = 2005:2023,
@@ -99,7 +103,7 @@ natgas_interpolated <- left_join(
   mutate(mcf_modeled = na_kalman(total_mcf),
          data_source = if_else(is.na(total_mcf), "Interpolated", "Utility report")) %>% 
   cross_join(natgas_ef_scf) %>% 
-  mutate(value_emissions = mt_co2e_scf * mcf_modeled * 10^3,
+  mutate(value_emissions = mt_co2e_mcf * mcf_modeled,
          unit_emissions = "Metric tons CO2e",
          activity_type = "mcf delivered") %>% 
   select(year,
@@ -112,31 +116,40 @@ natgas_interpolated <- left_join(
          value_emissions,
          unit_emissions)
 
-ggplot(natgas_interpolated, aes(x = year, y = mcf_modeled, col = county_name)) +
+ggplot(natgas_interpolated, aes(x = year, y = value_emissions, col = county_name)) +
   geom_line()
+
+#calculate year proportions and then add mean proportion values in earlier years
 
 nrel_proportions <- nrel_emissions %>% 
   group_by(county_name, source, year) %>% 
   mutate(total_co2e = sum(co2e),
          sector_proportion = co2e / total_co2e) %>% 
-  select(county_name, source, sector_raw, year, sector_proportion)
+  select(county_name, source, sector_raw, year, sector_proportion) 
 
+average_proportions <- nrel_proportions %>% 
+  group_by(county_name, source, sector_raw) %>% 
+  summarize(mean_prop = mean(sector_proportion)) %>% 
+  ungroup()
+
+nrel_proportions_expanded <- nrel_proportions %>% 
+  bind_rows(average_proportions %>% 
+              expand(county_name, source, sector_raw, year = 2005:2016) %>%
+              left_join(average_proportions) %>% 
+              rename(sector_proportion = mean_prop))
   
-electric_natgas_nrel_proportioned <- electric_raw %>%
-  bind_rows(natgas_raw) %>%
-  select(county, source = sector, year, emissions_metric_tons_co2e) %>%
+electric_natgas_nrel_proportioned <- electric_interpolated %>%
+  bind_rows(natgas_interpolated) %>%
+  select(county_name, source = sector, year, value_emissions, unit_emissions, data_source, factor_source) %>%
   mutate(source = str_to_sentence(source)) %>%
-  right_join(nrel_proportions,
-            by = c("county" = "county_name", "source" = "source", "year")
+  left_join(nrel_proportions_expanded,
+            by = c("county_name", "source" = "source", "year")
   ) %>%
   mutate(
-    sector_co2e = sector_proportion * emissions_metric_tons_co2e
+    value_emissions = sector_proportion * value_emissions
   ) %>%
-  pivot_longer(4:7,
-               names_to = "category",
-               values_to = "emissions_metric_tons_co2e"
-  ) %>%
-  mutate(category = str_to_sentence(category))
+  rename(sector = sector_raw) %>% 
+  mutate(category = if_else(source == "Electricity", "Electricity", "Building Fuel"))
 
 waldo::compare(electric_natgas_nrel_proportioned, readRDS("_energy/data/electric_natgas_nrel_proportioned.RDS"))
-saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_proportioned.RDS")
+saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_proportioned_expanded.RDS")
