@@ -1,7 +1,7 @@
 #' Plot county level emissions for any given sector
 #'
 #' @param county_emissions data frame, compiled emissions. Must have columns
-#'   "sector", "county_name", "emissions_metric_tons_co2e", "source", "category",
+#'   "sector", "county_name", "value_emissions", "source", "category",
 #'   and "geog_level"
 #' @param sector character, one of "Transportation", ....
 #' @param plotly_source character, passed to source paramter in `plotly::plot_ly()`
@@ -35,14 +35,14 @@ plot_county_emissions <- function(county_emissions,
   }
 
   plot_data <- plot_data %>%
-    mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
+    mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions))
 
   plot_ly(
     data = plot_data,
     type = "bar",
     source = .plotly_source,
     x = ~county_name,
-    y = ~emissions_metric_tons_co2e,
+    y = ~value_emissions,
     color = ~source,
     split = ~source,
     colors = unlist(source_colors),
