@@ -87,6 +87,7 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Electricity") %>%
   mutate(
     emissions_year = year,
+    sector = str_to_title(sector),
     geog_level = "county",
     source = paste(sector,"electricity")
   ) %>%
@@ -99,6 +100,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   filter(source == "Natural gas") %>%
   mutate(
     emissions_year = year,
+    sector = str_to_title(sector),
     geog_level = "county"
   ) %>%
   select(names(transportation_emissions))
@@ -249,7 +251,7 @@ emissions_all_meta <- tibble::tribble(
   ),
   "category", class(emissions_all$category), "Category of emissions within given sector",
   "source", class(emissions_all$source), "Source of emissions. Most detailed sub-category in this table",
-  "emissions_metric_tons_co2e", class(emissions_all$emissions_metric_tons_co2e), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given geography for given year",
+  "value_emissions", class(emissions_all$value_emissions), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given geography for given year",
   "data_source", class(emissions_all$data_source), "Activity data source",
   "factor_source", class(emissions_all$factor_source), "Emissions factor data source",
   "county_total_population", class(emissions_all$county_total_population), "Total geography population",
