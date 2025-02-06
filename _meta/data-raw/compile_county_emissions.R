@@ -101,7 +101,8 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
   mutate(
     emissions_year = year,
     sector = str_to_title(sector),
-    geog_level = "county"
+    geog_level = "county",
+    source = paste(sector,"natural gas")
   ) %>%
   select(names(transportation_emissions))
 
@@ -114,7 +115,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     geog_level = "county",
     county_name = NAME,
     category = "Building Fuel",
-    source = "Residential fuel combustion",
+    source = "Residential liquid fuel",
     data_source = "EIA RECS (2020)",
     factor_source = "EPA GHG Emission Factors Hub (2021)",
     value_emissions = emissions_metric_tons_co2e,

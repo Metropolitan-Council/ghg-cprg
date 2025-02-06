@@ -30,7 +30,7 @@ category_colors <-
     # Residential
     "Residential natural gas" = "#483248",
     "Residential electricity" = "#CF9FFF",
-    "Residential fuel combustion" = "#A2627A",
+    "Residential liquid fuel" = "#A2627A",
     
     # Commercial
     "Commercial natural gas" = "#800000",
