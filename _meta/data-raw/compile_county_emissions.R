@@ -180,6 +180,20 @@ natural_systems_sequestration <- readRDS("_nature/data/nlcd_county_landcover_seq
   ungroup() %>%
   select(names(transportation_emissions))
 
+freshwater_emissions <- readRDS("_nature/data/nhd_county_waterways_emissions_2001_2021.RDS") %>%
+  filter(inventory_year >= 2005) %>% 
+  mutate(
+    emissions_year = inventory_year,
+    sector = "Natural Systems",
+    geog_level = "county",
+    category = "Freshwater",
+    source = stringr::str_to_sentence(str_replace_all(source , "_", " ")),
+    value_emissions = mt_co2e,
+    unit_emissions = "Metric tons CO2e"
+  ) %>%
+  ungroup() %>%
+  select(names(transportation_emissions))
+
 
 # combine and write metadata----
 
@@ -194,6 +208,7 @@ emissions_all <- bind_rows(
   solid_waste,
   agriculture_emissions,
   natural_systems_sequestration,
+  freshwater_emissions
 ) %>%
   left_join(
     cprg_county %>%
@@ -220,7 +235,8 @@ emissions_all <- bind_rows(
         "Industrial processes",
         "Refinery processes",
         "Natural systems",
-        "Urban greenery"
+        "Urban greenery",
+        "Freshwater"
       ),
       ordered = TRUE
     )
