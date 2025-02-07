@@ -32,24 +32,19 @@ book:
       chapters:
        - _transportation/_transportation.qmd
        - _transportation/_data_methods_transportation.qmd
-       - _transportation/pa_transportation.qmd
-       - _transportation/qc_transportation.qmd
        - _transportation/data_aviation.qmd
     
     - part: "Electricity"
       chapters:
-       - _energy/_energy.qmd
+       - _energy/_energy_electricity_emissions.qmd
        - _energy/data_electricity.qmd
-       - _energy/qc_energy.qmd
 
     - part: "Building Energy"
       chapters:
-       - _energy/_energy.qmd
+       - _energy/_energy_natural_gas_emissions.qmd
        - _energy/data_natural_gas.qmd
        - _energy/data_propane_kerosene.qmd
-       # - _energy/data_energy.qmd
-       # - _energy/pa_energy.qmd
-       - _energy/qc_energy.qmd
+
 
     - part: "Industrial"
       chapters:
