@@ -234,8 +234,7 @@ emissions_all <- bind_rows(
         "Industrial natural gas",
         "Industrial processes",
         "Refinery processes",
-        "Natural systems",
-        "Urban greenery",
+        "Sequestration",
         "Freshwater"
       ),
       ordered = TRUE
@@ -254,7 +253,8 @@ emissions_all <- bind_rows(
   ) %>%
   rowwise() %>%
   mutate(emissions_per_capita = round(value_emissions / county_total_population, digits = 2)) %>%
-  select(emissions_year, geog_level, geoid, county_name, everything())
+  select(emissions_year, geog_level, geoid, county_name, everything()) %>% 
+  ungroup()
 
 emissions_all_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
