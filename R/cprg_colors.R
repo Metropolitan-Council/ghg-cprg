@@ -57,8 +57,8 @@ category_colors <-
     "Livestock" = "#8fb910",
     
     # Natural systems
-    "Urban greenery" = "#006f3c",
-    "Natural systems" = "#27b376"
+    "Sequestration" = "#006f3c",
+    "Freshwater" = "#416bdf"
   )
 
 

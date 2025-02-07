@@ -46,7 +46,7 @@ This document will be updated continuously in preparation of the Metropolitan Co
 ```{r sector-percentages, echo=FALSE, include=FALSE}
 sector_percentages <- county_emissions_summary_2021 %>%
   filter(
-    !sector == "Natural Systems"
+    !category == "Sequestration"
   ) %>% # not contributing to emissions
   group_by(sector) %>%
   summarize(value_emissions = sum(value_emissions)) %>%
@@ -55,12 +55,22 @@ sector_percentages <- county_emissions_summary_2021 %>%
 
 sector_percentages
 
-emissions_total <- sum(county_emissions_summary_2021$value_emissions[county_emissions_summary_2021$sector != "Natural Systems"])
-seq_total <- (-1 * sum(county_emissions_summary_2021$value_emissions[county_emissions_summary_2021$sector == "Natural Systems"]))
+emissions_total <- county_emissions_summary_2021 %>% 
+  filter(category != "Sequestration") %>% 
+  pull(value_emissions) %>% 
+  sum()
 
-seq_percentage <- (-1 * sum(county_emissions_summary_2021$value_emissions[county_emissions_summary_2021$sector == "Natural Systems"])) / sum(county_emissions_summary_2021$value_emissions[county_emissions_summary_2021$sector != "Natural Systems"])
+seq_total <- county_emissions_summary_2021 %>% 
+  filter(category == "Sequestration") %>% 
+  pull(value_emissions) %>% 
+  sum() * -1
 
-emissions_2005 <- sum(county_emissions_summary_2005$value_emissions[county_emissions_summary_2005$sector != "Natural Systems"])
+seq_percentage <- seq_total / emissions_total
+
+emissions_2005 <- county_emissions_summary_2005 %>% 
+  filter(category != "Sequestration") %>% 
+  pull(value_emissions) %>% 
+  sum()
 
 electricity_2021 <- county_emissions_summary_2021 %>% 
   filter(category == "Electricity") %>% 
@@ -88,7 +98,7 @@ county_emissions_2021 <- county_emissions %>%
 
 # reorder to put sequestration at end
 county_emissions_2021$sector <- factor(county_emissions_2021$sector,
-  levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Nature")
+  levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")
 )
 
 fig_county_emissions_sector <- plot_ly(
@@ -208,7 +218,7 @@ Different counties have different emission profiles depending on land-use and co
 county_emissions_2021 <- county_emissions %>% 
       filter(emissions_year == 2021,
              county_name != "MSP Airport",
-             sector != "Natural Systems") 
+             category != "Sequestration") 
 
 county_emissions_raw <- plot_ly(
     data = county_emissions_2021,
@@ -268,94 +278,6 @@ county_emissions_2021_per_capita <- plot_ly(
 county_emissions_2021_per_capita
 
 ```
-
-#### REMOVE ALL SECTOR PROFILES BUT MAKE SURE THEY ARE IN THE SECTOR SUMMARY
-
-## Emissions by sector
-
-
-
-```{r fig-transportation-emissions}
-#| fig-cap: "Transportation county level emissions"
-#| out-width: "95%"
-fig_transportation_emissions <- plot_county_emissions(
-  county_emissions = county_emissions %>%
-    filter(emissions_year == "2021"),
-  .sector = "Transportation",
-  .plotly_source = "fig-transportation-emissions"
-)
-fig_transportation_emissions
-```
-
-The transportation sector generated `r round(emissions_total/1000000 * sector_percentages[[2]][1], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Passenger vehicles generate the most emissions by source, with heavy-duty vehicles and aviation following.
-
-```{r fig-electricity-emissions}
-#| fig-cap: "Transportation county level emissions"
-#| out-width: "95%"
-
-electricity_emissions <- county_emissions %>% 
-  filter(emissions_year == "2021") %>% 
-  mutate(sector = if_else(category == "Electricity",
-         "Electricity", sector))
-
-fig_electricity_emissions <- plot_county_emissions(
-  electricity_emissions,
-  .sector = "Electricity",
-  .plotly_source = "fig-electricity-emissions"
-)
-
-fig_electricity_emissions
-```
-
-The electricity sector generated `r round(emissions_total/1000000 * sector_percentages[[2]][2], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Of emissions from electricity, as estimated XX% come from the residential sector, YY% from the commercial sector, and ZZ% from the industrial sector.
-
-```{r fig-building-emissions}
-#| fig-cap: "Transportation county level emissions"
-#| out-width: "95%"
-
-building_emissions <- county_emissions %>% 
-  filter(emissions_year == "2021") %>% 
-  mutate(sector = if_else(category == "Building Fuel",
-         "Building Fuel", sector))
-
-fig_building_emissions <- plot_county_emissions(
-  building_emissions,
-  .sector = "Building Fuel",
-  .plotly_source = "fig-electricity-emissions"
-)
-
-fig_building_emissions
-```
-
-Emissions from waste is the smallest of the three sectors in the Twin Cities MSA. Waste generated `r round(emissions_total/1000000 * sector_percentages[[2]][3], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Solid waste, including landfills, recycling, and organics, generates the largest share of emissions in the waste sector, with wastewater treatment comprising a smaller share of waste emissions. 
-
-```{r fig-waste-emissions-index}
-#| fig-cap: "Waste and wastewater county level emissions"
-#| out-width: "95%"
-fig_waste_emissions_index <- plot_county_emissions(
-  county_emissions = county_emissions,
-  .sector = "Waste",
-  .plotly_source = "fig-waste-emissions-index"
-)
-
-fig_waste_emissions_index$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
-
-fig_waste_emissions_index
-```
-
-Potential sequestration from natural systems totaled `r round(seq_total/1000000, digits = 2)` MMtCO~2~e in the Twin Cities MSA in 2021. Urban forests and grasslands have high sequestration potential, though are expected to have lower stock potential, capping their potential carbon storage in the future.
-
-```{r fig-nature-sequestration}
-#| fig-cap: "Natural systems county level sequestration"
-#| out-width: "95%"
-fig_nature_sequestration <- plot_county_emissions(
-  county_emissions = county_emissions,
-  .sector = "Nature",
-  .plotly_source = "fig-nature-sequestration"
-)
-fig_nature_sequestration
-```
-
 
 
 ::: {.content-visible when-format="html"}
