@@ -23,7 +23,7 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 #   summarise(
 #     vmt_total = sum(vmt_total),
 #     vmt_same = sum(vmt_same),
-#     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+#     value_emissions = sum(value_emissions)
 #   )
 
 
@@ -32,18 +32,18 @@ onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad
 onroad_county_summary <- onroad_emissions %>%
   group_by(emissions_year, county_name, geoid, data_source) %>%
   summarize(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    value_emissions = sum(value_emissions),
     .groups = "keep"
   ) %>%
   rowwise() %>%
-  mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
+  mutate(rounded_tons = round_value_emissions(value_emissions))
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 county_emissions_summary <- county_emissions %>%
   group_by(sector, category, source, data_source, factor_source) %>%
   summarize(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    value_emissions = sum(value_emissions),
     .groups = "keep"
   )
 
@@ -101,14 +101,14 @@ fig_transportation_county_emissions_by_weight <- plot_ly(
   source = "fig-transportation-county-emissions-by-weight",
   data = onroad_emissions %>%
     filter(emissions_year == transportation_max_year),
-  y = ~ reorder(county_name, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
+  y = ~ reorder(county_name, value_emissions),
+  x = ~value_emissions,
   color = ~vehicle_weight_label,
   colors = unlist(vehicle_weight_colors),
   hovertemplate = ~ paste0(
     county_name, " County", "<br>",
     vehicle_weight_label, "<br>",
-    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -138,14 +138,14 @@ fig_transportation_county_emissions_by_fuel <- plot_ly(
   source = "fig-transportation-county-emissions-by-fuel-type",
   data = onroad_emissions %>%
     filter(emissions_year == transportation_max_year),
-  y = ~ reorder(county_name, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
+  y = ~ reorder(county_name, value_emissions),
+  x = ~value_emissions,
   color = ~vehicle_fuel_label,
   colors = unlist(fuel_type_colors),
   hovertemplate = ~ paste0(
     county_name, " County", "<br>",
     vehicle_fuel_label, "<br>",
-    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -178,7 +178,7 @@ fig_transportation_time_series_county <- onroad_county_summary %>%
   plot_ly(
     source = "fig-transportation-time-series-county",
     x = ~emissions_year,
-    y = ~emissions_metric_tons_co2e,
+    y = ~value_emissions,
     color = ~county_name,
     colors = "Dark2",
     type = "scatter",

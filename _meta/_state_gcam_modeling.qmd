@@ -44,9 +44,9 @@ economy_projections <- county_emissions %>%
                filter(emissions_year >= 2025,
                       source_sink == "Emission") %>% 
                select(emissions_year, scenario, proportion_of_2005)) %>% 
-  mutate(emissions_metric_tons_co2e = proportion_of_2005 * emissions_metric_tons_co2e) %>% 
+  mutate(value_emissions = proportion_of_2005 * value_emissions) %>% 
   group_by(emissions_year, sector, scenario) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>% 
   ungroup()
 
 economy_sequestration_projections <- county_emissions %>%
@@ -56,16 +56,16 @@ economy_sequestration_projections <- county_emissions %>%
                filter(emissions_year >= 2025,
                       source_sink == "Sequestration") %>% 
                select(emissions_year, scenario, proportion_of_2005)) %>% 
-  mutate(emissions_metric_tons_co2e = proportion_of_2005 * emissions_metric_tons_co2e) %>% 
+  mutate(value_emissions = proportion_of_2005 * value_emissions) %>% 
   group_by(emissions_year, sector, scenario) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>% 
   ungroup()
 
 economy_inventory_projections <- bind_rows(
   county_emissions %>%
     filter(year >=2005 & year <= 2021) %>% 
    group_by(year, sector) %>% 
-    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+    summarize(value_emissions = sum(value_emissions)) %>% 
     rename(emissions_year = year) %>% 
     ungroup() %>% 
     right_join(
@@ -81,7 +81,7 @@ economy_inventory_projections <- bind_rows(
     mutate(emissions_year = as.numeric(emissions_year))
 ) %>% 
  group_by(sector) %>% 
- mutate(emissions_metric_tons_co2e = imputeTS::na_kalman(emissions_metric_tons_co2e))
+ mutate(value_emissions = imputeTS::na_kalman(value_emissions))
 
 
 ## now do this by sector emissions
@@ -114,16 +114,16 @@ subsector_projections <- county_emissions %>%
          !geog_name %in% c("Chisago", "St. Croix", "Pierce","Sherburne")) %>%
   left_join(., mpca_subsector_projections_use, 
             by = "subsector_mc") %>% 
-  mutate(emissions_metric_tons_co2e = proportion_of_2005 * emissions_metric_tons_co2e) %>% 
+  mutate(value_emissions = proportion_of_2005 * value_emissions) %>% 
   group_by(emissions_year, sector, scenario) %>% 
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>% 
   ungroup()
 
 subsector_inventory_projections <- bind_rows(
   county_emissions %>%
     filter(year >=2005 & year <= 2021) %>% 
    group_by(year, sector) %>% 
-    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+    summarize(value_emissions = sum(value_emissions)) %>% 
     rename(emissions_year = year) %>% 
     ungroup() %>% 
     right_join(
@@ -136,7 +136,7 @@ subsector_inventory_projections <- bind_rows(
   subsector_projections %>% 
     mutate(emissions_year = as.numeric(emissions_year))) %>% 
  group_by(sector) %>% 
- mutate(emissions_metric_tons_co2e = imputeTS::na_kalman(emissions_metric_tons_co2e))
+ mutate(value_emissions = imputeTS::na_kalman(value_emissions))
 
 ```
 
@@ -158,7 +158,7 @@ fig_economy_current_policies <- plot_ly(
     filter(scenario %in% c("Inventory", "Current policies"),
            sector != "Nature"),
   x = ~emissions_year,
-  y = ~emissions_metric_tons_co2e,
+  y = ~value_emissions,
   color = ~sector, #
   #colors = unlist(category_colors), # Directly map the colors to categories
   type = "scatter",
@@ -207,7 +207,7 @@ fig_economy_net_zero <- plot_ly(
     filter(scenario %in% c("Inventory", "Net-zero pathway"),
            sector != "Nature"),
   x = ~emissions_year,
-  y = ~emissions_metric_tons_co2e,
+  y = ~value_emissions,
   color = ~sector, #
   #colors = unlist(category_colors), # Directly map the colors to categories
   type = "scatter",
@@ -254,7 +254,7 @@ fig_subsector_current_policies <- plot_ly(
     filter(scenario %in% c("Inventory", "Current policies"),
            sector != "Nature"),
   x = ~emissions_year,
-  y = ~emissions_metric_tons_co2e,
+  y = ~value_emissions,
   color = ~sector, #
   #colors = unlist(category_colors), # Directly map the colors to categories
   type = "scatter",
@@ -303,7 +303,7 @@ fig_subsector_net_zero <- plot_ly(
     filter(scenario %in% c("Inventory", "Net-zero pathway"),
            sector != "Nature"),
   x = ~emissions_year,
-  y = ~emissions_metric_tons_co2e,
+  y = ~value_emissions,
   color = ~sector, #
   #colors = unlist(category_colors), # Directly map the colors to categories
   type = "scatter",
@@ -351,14 +351,14 @@ fig_ns_county_sequestration <- plot_ly(
   source = "fig-ns-county-sequestration",
   data = county_emissions %>%
     filter(category == "Sequestration"),
-  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
+  y = ~ reorder(geog_name, value_emissions),
+  x = ~value_emissions,
   color = ~source,
   colors = unlist(source_colors),
   hovertemplate = ~ paste0(
     geog_name, "<br>",
     source, "<br>",
-    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -387,14 +387,14 @@ fig_ns_county_stock <- plot_ly(
   type = "bar",
   source = "fig-ns-county-sequestration",
   data = carbon_stock,
-  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
+  y = ~ reorder(geog_name, value_emissions),
+  x = ~value_emissions,
   color = ~source,
   colors = unlist(source_colors),
   hovertemplate = ~ paste0(
     geog_name, "<br>",
     "Natural Systems", "<br>",
-    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -425,23 +425,23 @@ sequestration_area <- left_join(
   county_emissions %>%
     filter(category == "Sequestration") %>%
     group_by(geog_name) %>%
-    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
+    summarize(value_emissions = sum(value_emissions)),
   cprg_area,
   by = c("geog_name" = "NAME")
 ) %>%
-  mutate(seq_per_area = emissions_metric_tons_co2e / area_sq_km)
+  mutate(seq_per_area = value_emissions / area_sq_km)
 
 fig_ns_sequestration_area <- plot_ly(
   type = "scatter",
   mode = "markers",
   source = "fig-ns-county-sequestration-area",
   data = sequestration_area,
-  y = ~emissions_metric_tons_co2e,
+  y = ~value_emissions,
   x = ~area_sq_km,
   hovertemplate = ~ paste0(
     geog_name, " County", "<br>",
     "Area: ", scales::comma(area_sq_km), " square kilometers", "<br>",
-    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "Emissions: ", round(value_emissions * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
   marker = list(
@@ -477,23 +477,23 @@ fig_ns_sequestration_area
 carbon_stock_area <- left_join(
   carbon_stock %>%
     group_by(geog_name) %>%
-    summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
+    summarize(value_emissions = sum(value_emissions)),
   cprg_area,
   by = c("geog_name" = "NAME")
 ) %>%
-  mutate(stock_per_area = emissions_metric_tons_co2e / area_sq_km)
+  mutate(stock_per_area = value_emissions / area_sq_km)
 
 fig_ns_stock_area <- plot_ly(
   type = "scatter",
   mode = "markers",
   source = "fig-ns-county-stock-area",
   data = carbon_stock_area,
-  y = ~emissions_metric_tons_co2e,
+  y = ~value_emissions,
   x = ~area_sq_km,
   hovertemplate = ~ paste0(
     geog_name, " County", "<br>",
     "Area: ", scales::comma(area_sq_km), " square kilometers", "<br>",
-    "Emissions: ", round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    "Emissions: ", round(value_emissions * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
   marker = list(
@@ -541,8 +541,8 @@ park_area <- data.frame(agency = parks$AgencyMana, area = expanse(parks, unit = 
   group_by(agency) %>%
   summarize(area = sum(area))
 
-park_seq_ratio <- sum(park_carbon$sequestration_potential) / sum(county_seq_7$emissions_metric_tons_co2e) # 5.56%
-park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_stock_7$emissions_metric_tons_co2e) # 7.19%
+park_seq_ratio <- sum(park_carbon$sequestration_potential) / sum(county_seq_7$value_emissions) # 5.56%
+park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_stock_7$value_emissions) # 7.19%
 
 
 park_carbon_agg <- park_carbon %>%

@@ -24,7 +24,7 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 county_emissions_summary <- county_emissions %>%
   group_by(sector, category, source, data_source, factor_source) %>%
   summarize(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    value_emissions = sum(value_emissions),
     .groups = "keep"
   )
 
@@ -37,7 +37,7 @@ elecEmissions_all <- county_emissions %>%
   mutate(county = geog_name) %>%
   group_by(county, year) %>%
   summarise(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    value_emissions = sum(value_emissions),
     .groups = "rowwise"
   )
 
@@ -67,7 +67,7 @@ EIAvMETC_tons <- eiaQA_all %>%
   pivot_longer(
     cols = c("downscaled_EIA_total_CO2e_emissions_tons", "OURS_total_CO2e_emissions_tons"),
     names_to = "inventory_source",
-    values_to = "emissions_metric_tons_co2e"
+    values_to = "value_emissions"
   ) %>%
   mutate(
     inventory_source = recode(inventory_source,
@@ -84,24 +84,24 @@ nrelQA <- read_rds(
 ) %>%
   filter(source == "Electricity" && year == 2021) %>%
   group_by(county_name) %>%
-  summarise(total_emissions_metric_tons_co2e = sum(co2e)) %>%
+  summarise(total_value_emissions = sum(co2e)) %>%
   rename(county = county_name)
 
 nrel_metc_electricity_comp <- nrelQA %>%
   left_join(
     elecEmissions_all %>% select(county,
-      MetC = emissions_metric_tons_co2e
+      MetC = value_emissions
     ),
     by = "county"
   ) %>%
   pivot_longer(
-    cols = c("total_emissions_metric_tons_co2e", "MetC"),
+    cols = c("total_value_emissions", "MetC"),
     names_to = "inventory_source",
-    values_to = "emissions_metric_tons_co2e"
+    values_to = "value_emissions"
   ) %>%
   mutate(
     inventory_source = recode(inventory_source,
-      total_emissions_metric_tons_co2e =
+      total_value_emissions =
         "NREL SLOPE",
       MetC =
         "Metropolitan Council"
@@ -206,14 +206,14 @@ fig_electricity_county_emissions <- plot_ly(
   source = "fig-electricity-county-emissions",
   data = county_emissions %>%
     filter(source == "Electricity"),
-  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
+  y = ~ reorder(geog_name, value_emissions),
+  x = ~value_emissions,
   color = ~source,
   colors = unlist(source_colors),
   hovertemplate = ~ paste0(
     geog_name, "<br>",
     "Electricity", "<br>",
-    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -243,14 +243,14 @@ fig_energy_electricity_sector_emissions <-
     source = "fig-energy-electricity-sector-emissions",
     data = county_emissions %>%
       filter(source == "Electricity"),
-    y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-    x = ~emissions_metric_tons_co2e,
+    y = ~ reorder(geog_name, value_emissions),
+    x = ~value_emissions,
     color = ~category,
     colors = unlist(category_colors),
     hovertemplate = ~ paste0(
       geog_name, " County", "<br>",
       source, ", ", category, "<br>",
-      round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+      round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
     )
   ) %>%
@@ -287,13 +287,13 @@ fig_electricity_emissions_population <- plot_ly(
   data = emissions_population,
   source = "fig-electricity-emissions-population",
   x = ~population,
-  y = ~emissions_metric_tons_co2e,
+  y = ~value_emissions,
   type = "scatter",
   mode = "markers",
   hovertemplate = ~ paste0(
     county, " County", "<br>",
     "Population: ", scales::comma(population), "<br>",
-    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
   marker = list(
@@ -321,8 +321,8 @@ fig_electricity_emissions_population
 region_total_electricity <- county_emissions %>%
   ungroup() %>%
   filter(source == "Electricity") %>%
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
-  magrittr::extract2("emissions_metric_tons_co2e")
+  summarize(value_emissions = sum(value_emissions)) %>%
+  magrittr::extract2("value_emissions")
 
 eia_total_electricity <- eiaQA_all$downscaled_EIA_total_CO2e_emissions_lbs %>%
   sum() %>%
@@ -342,8 +342,8 @@ We compared our county-level emissions figures to emissions estimates derived fr
 # Create the plotly graph
 fig_eia_qa_electricity_plot <- plot_ly(
   data = EIAvMETC_tons,
-  x = ~ reorder(county_name, -emissions_metric_tons_co2e),
-  y = ~emissions_metric_tons_co2e,
+  x = ~ reorder(county_name, -value_emissions),
+  y = ~value_emissions,
   source = "fig-eia-qa-natural-gas-plot",
   color = ~inventory_source,
   type = "bar",
@@ -354,7 +354,7 @@ fig_eia_qa_electricity_plot <- plot_ly(
   hovertemplate = ~ paste0(
     county_name, "<br>",
     inventory_source, "<br>",
-    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -381,8 +381,8 @@ fig_eia_qa_electricity_plot
 ```{r}
 nrel_total_electrcity <- nrel_metc_electricity_comp %>%
   filter(inventory_source == "NREL SLOPE") %>%
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
-  extract2("emissions_metric_tons_co2e")
+  summarize(value_emissions = sum(value_emissions)) %>%
+  extract2("value_emissions")
 ```
 
 The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly forecasted emissions tied to the user of electricity up to 2050 based on 2016 reported data at the county level. In comparing these figures to our own inventory, we observed that, where we estimated `r scales::comma(region_total_electricity, accuracy = 1)` metric tons of emissions linked to electricity deliveries in our study area in the year 2021, NREL SLOPE forecasted `r scales::comma(nrel_total_electrcity, accuracy = 1)`metrics tons in our study area.
@@ -394,8 +394,8 @@ The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly fo
 # Create the plotly graph
 fig_nrel_qa_electricity <- plot_ly(
   data = nrel_metc_electricity_comp,
-  x = ~ reorder(county, -emissions_metric_tons_co2e),
-  y = ~emissions_metric_tons_co2e,
+  x = ~ reorder(county, -value_emissions),
+  y = ~value_emissions,
   source = "fig-nrel-qa-electricity",
   color = ~inventory_source,
   type = "bar",
@@ -406,7 +406,7 @@ fig_nrel_qa_electricity <- plot_ly(
   hovertemplate = ~ paste0(
     county, "<br>",
     inventory_source, "<br>",
-    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%

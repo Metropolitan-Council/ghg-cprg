@@ -24,7 +24,7 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 county_emissions_summary <- county_emissions %>%
   group_by(sector, category, source, data_source, factor_source) %>%
   summarize(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    value_emissions = sum(value_emissions),
     .groups = "keep"
   )
 mn_emissions <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_GasEmissions.RDS"))
@@ -36,7 +36,7 @@ natGasEmissions_all <- county_emissions %>%
   mutate(county = geog_name) %>%
   group_by(county, year, source) %>%
   summarise(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    value_emissions = sum(value_emissions),
     .groups = "rowwise"
   )
 
@@ -53,7 +53,7 @@ nrel_qa_natural_gas <- read_rds(
 ) %>%
   filter(source == "Natural gas" && year == 2021) %>%
   group_by(county_name) %>%
-  summarise(total_emissions_metric_tons_co2e = sum(co2e)) %>%
+  summarise(total_value_emissions = sum(co2e)) %>%
   rename(county = county_name)
 
 nrel_metc_natural_gas_comp <- nrel_qa_natural_gas %>%
@@ -61,18 +61,18 @@ nrel_metc_natural_gas_comp <- nrel_qa_natural_gas %>%
     natGasEmissions_all %>%
       select(county,
         year,
-        MetC = emissions_metric_tons_co2e
+        MetC = value_emissions
       ),
     by = "county"
   ) %>%
   pivot_longer(
-    cols = c("total_emissions_metric_tons_co2e", "MetC"),
+    cols = c("total_value_emissions", "MetC"),
     names_to = "inventory_source",
-    values_to = "emissions_metric_tons_co2e"
+    values_to = "value_emissions"
   ) %>%
   mutate(
     inventory_source = recode(inventory_source,
-      total_emissions_metric_tons_co2e =
+      total_value_emissions =
         "NREL SLOPE",
       MetC =
         "Metropolitan Council"
@@ -130,14 +130,14 @@ fig_ng_county_emissions <- plot_ly(
   type = "bar",
   source = "fig-ng-county-emissions",
   data = natGasEmissions_all,
-  y = ~ reorder(county, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
+  y = ~ reorder(county, value_emissions),
+  x = ~value_emissions,
   color = ~source,
   colors = unlist(source_colors),
   hovertemplate = ~ paste0(
     county, " County", "<br>",
     "Natural gas", "<br>",
-    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -165,14 +165,14 @@ fig_energy_natural_gas_by_sector_emissions <-
     source = "fig-energy-natural-gas-by-sector-emissions",
     data = county_emissions %>%
       filter(source == "Natural gas"),
-    y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-    x = ~emissions_metric_tons_co2e,
+    y = ~ reorder(geog_name, value_emissions),
+    x = ~value_emissions,
     color = ~category,
     colors = unlist(category_colors),
     hovertemplate = ~ paste0(
       geog_name, " County", "<br>",
       source, ", ", category, "<br>",
-      round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+      round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
     )
   ) %>%
@@ -205,13 +205,13 @@ fig_ng_emissions_population <- plot_ly(
   data = emissions_population,
   source = "fig-ng-emissions-population",
   x = ~population,
-  y = ~emissions_metric_tons_co2e,
+  y = ~value_emissions,
   type = "scatter",
   mode = "markers",
   hovertemplate = ~ paste0(
     county, " County", "<br>",
     "Population: ", scales::comma(population), "<br>",
-    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
   marker = list(
@@ -241,13 +241,13 @@ fig_ng_emissions_population
 region_total_natural_gas <- county_emissions %>%
   ungroup() %>%
   filter(source == "Natural gas") %>%
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
-  magrittr::extract2("emissions_metric_tons_co2e")
+  summarize(value_emissions = sum(value_emissions)) %>%
+  magrittr::extract2("value_emissions")
 
 nrel_region_total_natural_gas <- nrel_metc_natural_gas_comp %>%
   filter(inventory_source == "NREL SLOPE") %>%
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
-  magrittr::extract2("emissions_metric_tons_co2e")
+  summarize(value_emissions = sum(value_emissions)) %>%
+  magrittr::extract2("value_emissions")
 ```
 
 The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly forecasted emissions from natural gas through 2050 based on 2016 observed/reported data at the county level. In comparing these figures to our own inventory, we observed that, where we estimated `r scales::comma(region_total_natural_gas, accuracy = 1)` metric tons of emissions linked to natural gas use in our study area in the year 2021, NREL SLOPE forecasted `r scales::comma(nrel_region_total_natural_gas, accuaracy = 1)` metric tons in our study area.
@@ -259,8 +259,8 @@ The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly fo
 # Create the plotly graph
 fig_nrel_metc_comparison_nat_gas <- plot_ly(
   data = nrel_metc_natural_gas_comp,
-  x = ~ reorder(county, -emissions_metric_tons_co2e),
-  y = ~emissions_metric_tons_co2e,
+  x = ~ reorder(county, -value_emissions),
+  y = ~value_emissions,
   source = "fig-nrel-metc-comparison-nat-gas",
   color = ~inventory_source,
   colors = c(
@@ -271,7 +271,7 @@ fig_nrel_metc_comparison_nat_gas <- plot_ly(
   hovertemplate = ~ paste0(
     county, "<br>",
     inventory_source, "<br>",
-    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%

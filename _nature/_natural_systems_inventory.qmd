@@ -302,14 +302,14 @@ fig_ns_county_sequestration
 #   source = "fig-ns-county-sequestration",
 #   data = county_emissions %>%
 #     filter(category == "Sequestration"),
-#   y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-#   x = ~emissions_metric_tons_co2e,
+#   y = ~ reorder(geog_name, value_emissions),
+#   x = ~value_emissions,
 #   color = ~source,
 #   colors = unlist(source_colors),
 #   hovertemplate = ~ paste0(
 #     geog_name, "<br>",
 #     source, "<br>",
-#     round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+#     round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
 #     "<extra></extra>"
 #   )
 # ) %>%
@@ -407,11 +407,11 @@ fig_ns_stock_area
 #   county_emissions %>%
 #     filter(category == "Sequestration") %>%
 #     group_by(geog_name) %>%
-#     summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
+#     summarize(value_emissions = sum(value_emissions)),
 #   cprg_area,
 #   by = c("geog_name" = "NAME")
 # ) %>%
-#   mutate(seq_per_area = emissions_metric_tons_co2e / area_sq_km)
+#   mutate(seq_per_area = value_emissions / area_sq_km)
 
 fig_ns_sequestration_area <- plot_ly(
   type = "scatter",

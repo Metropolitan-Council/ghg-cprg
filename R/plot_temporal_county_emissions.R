@@ -37,7 +37,7 @@ county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") %>%
 ### break out desired years and data sources for RDG 90%
 baseline_emissions_sector <- county_emissions %>% 
   group_by(year, baseline_sector) %>% 
-  summarize(MT_CO2e = sum(emissions_metric_tons_co2e, na.rm = TRUE)) %>% 
+  summarize(MT_CO2e = sum(value_emissions, na.rm = TRUE)) %>% 
   mutate(baseline_sector = factor(baseline_sector, 
                                   levels = c("Electricity", "Transportation", "Building fuel", "Industrial", "Waste", "Agriculture", "Natural Systems"))) %>% 
   filter(!(baseline_sector == "Building fuel" & year %in% c(2006:2020)))
@@ -95,7 +95,7 @@ emissions_sector <- county_emissions %>%
     TRUE ~ category
   )) %>% 
   group_by(year, sector) %>% 
-  summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
+  summarize(MT_CO2e = sum(value_emissions)) %>% 
   mutate(sector = factor(sector, levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")))
 
 
@@ -149,7 +149,7 @@ emissions_subsector <- county_emissions %>%
     TRUE ~ category
   )) %>% 
   group_by(year, sector, category) %>% 
-  summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
+  summarize(MT_CO2e = sum(value_emissions)) %>% 
   mutate(sector = factor(sector, levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")))
 
 category_colors_vector <- unlist(category_colors, use.names = TRUE)
@@ -190,7 +190,7 @@ subsector_comparison
 ### subsector by county population
 
 emissions_subsector_per_capita <- county_emissions %>% 
-  mutate(emissions_per_capita = emissions_metric_tons_co2e / county_total_population) %>% 
+  mutate(emissions_per_capita = value_emissions / county_total_population) %>% 
   group_by(year, geog_name, sector, category) %>% 
   summarize(emissions_per_capita = sum(emissions_per_capita)) %>% 
   mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building energy", "Industrial", "Waste", "Agriculture", "Natural Systems"))) %>% 
@@ -251,7 +251,7 @@ for(i in unique(county_emissions$geog_name)) {
   emissions_subsector_county <- county_emissions %>% 
     filter(geog_name == i) %>% 
     group_by(year, sector, category) %>% 
-    summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
+    summarize(MT_CO2e = sum(value_emissions)) %>% 
     mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Building energy", "Industrial", "Waste", "Agriculture", "Natural Systems"))) %>% 
     mutate(year = if_else(
       category == "Small industrial" & year == 2020,
@@ -310,7 +310,7 @@ for(i in c("Bloomington",
   emissions_subsector_ctu <- ctu_emissions %>% 
     filter(ctu_name == i) %>% 
     group_by(emissions_year, sector, category) %>% 
-    summarize(MT_CO2e = sum(emissions_metric_tons_co2e)) %>% 
+    summarize(MT_CO2e = sum(value_emissions)) %>% 
     mutate(sector = factor(sector, levels = c("Electricity", "Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")))
   
   subsector_comparison <- ggplot(

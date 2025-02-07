@@ -282,7 +282,7 @@ natural_gas_comp <- bind_rows(
     select(
       inventory_year = year,
       county_name = geog_name,
-      value_emissions = emissions_metric_tons_co2e,
+      value_emissions = value_emissions,
       data_source
     ),
   natural_gas_c_2021 %>%
@@ -374,7 +374,7 @@ natural_gas_comp2 <- bind_rows(
     select(
       inventory_year = year,
       county_name = geog_name,
-      values_emissions = emissions_metric_tons_co2e,
+      values_emissions = value_emissions,
       data_source
     ),
   nei_emissions %>%
