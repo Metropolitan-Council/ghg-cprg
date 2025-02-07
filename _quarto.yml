@@ -42,7 +42,7 @@ book:
        - _energy/data_electricity.qmd
        - _energy/qc_energy.qmd
 
-     - part: "Building Energy"
+    - part: "Building Energy"
       chapters:
        - _energy/_energy.qmd
        - _energy/data_natural_gas.qmd
@@ -51,7 +51,7 @@ book:
        # - _energy/pa_energy.qmd
        - _energy/qc_energy.qmd
 
-      - part: "Industrial"
+    - part: "Industrial"
       chapters:
        - _industrial/_industrial.qmd
        - _industrial/industrial_data_source.qmd
