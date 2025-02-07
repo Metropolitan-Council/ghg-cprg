@@ -12,9 +12,7 @@ knitr::opts_chunk$set(
 
 
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
-```
 
-```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
@@ -33,9 +31,8 @@ wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_
   rename(county = county_name)
 
 elecEmissions_all <- county_emissions %>%
-  filter(source == "Electricity") %>%
-  mutate(county = geog_name) %>%
-  group_by(county, year) %>%
+  filter(category == "Electricity") %>%
+  group_by(county_name, emissions_year) %>%
   summarise(
     value_emissions = sum(value_emissions),
     .groups = "rowwise"
@@ -84,15 +81,14 @@ nrelQA <- read_rds(
 ) %>%
   filter(source == "Electricity" && year == 2021) %>%
   group_by(county_name) %>%
-  summarise(total_value_emissions = sum(co2e)) %>%
-  rename(county = county_name)
+  summarise(total_value_emissions = sum(co2e))
 
 nrel_metc_electricity_comp <- nrelQA %>%
   left_join(
-    elecEmissions_all %>% select(county,
+    elecEmissions_all %>% select(county_name,
       MetC = value_emissions
     ),
-    by = "county"
+    by = "county_name"
   ) %>%
   pivot_longer(
     cols = c("total_value_emissions", "MetC"),
@@ -108,13 +104,22 @@ nrel_metc_electricity_comp <- nrelQA %>%
     )
   )
 
+electricity_2005 = elecEmissions_all %>% 
+  filter(emissions_year == 2005) %>% 
+  pull(value_emissions) %>% 
+  sum()
+
+electricity_2021 = elecEmissions_all %>% 
+  filter(emissions_year == 2021) %>% 
+  pull(value_emissions) %>% 
+  sum()
 
 hookaddcap()
 ```
 
 ## Introduction
 
-Emissions from the electricity generation sector have declined by 54% in Minnesota since 2005, largely as a result of transitions in the grid towards energy sources such as wind and solar [@mpcaClimateChangeTrends2023]. In 2023, Minnesota Governor Walz signed a bill mandating a statewide carbon-free electricity standard by 2040. The law "establishes a standard for utilities to supply Minnesota customers with electricity generated or procured from carbon-free resources, beginning at an amount equal to 80% of retail sales for public utility customers in Minnesota in 2030 and increasing every 5 years to reach 100% for all electric utilities by 2040. The bill also requires that, by 2035, an amount equal to at least 55% of an electric utility’s total retail electric sales to customers in Minnesota must be generated or procured from eligible energy technologies." Wisconsin has not adopted a similar carbon-free electricity standard, but a Wisconsin DNR report noted both the economic gains from such to the renewable energy economy in the state, as well as the opportunities for decarbonization [@holtWisconsinCleanEnergy2019].
+Emissions from the electricity generation sector have declined by `r scales::percent((electricity_2005 - electricity_2021) / electricity_2005, accuracy = 0.1)` in the region since 2005, largely as a result of transitions in the grid towards energy sources such as wind and solar [@mpcaClimateChangeTrends2023]. In 2023, Minnesota Governor Walz signed a bill mandating a statewide carbon-free electricity standard by 2040. The law "establishes a standard for utilities to supply Minnesota customers with electricity generated or procured from carbon-free resources, beginning at an amount equal to 80% of retail sales for public utility customers in Minnesota in 2030 and increasing every 5 years to reach 100% for all electric utilities by 2040. The bill also requires that, by 2035, an amount equal to at least 55% of an electric utility’s total retail electric sales to customers in Minnesota must be generated or procured from eligible energy technologies." Wisconsin has not adopted a similar carbon-free electricity standard, but a Wisconsin DNR report noted both the economic gains from such to the renewable energy economy in the state, as well as the opportunities for decarbonization [@holtWisconsinCleanEnergy2019].
 
 ## Methods
 
@@ -197,40 +202,7 @@ eGRID_mix <- data.frame(
 
 ### Results
 
-```{r fig-electricity-county-emissions}
-#| fig-cap: "2021 county electricity emissions"
-#| out-width: "95%"
 
-fig_electricity_county_emissions <- plot_ly(
-  type = "bar",
-  source = "fig-electricity-county-emissions",
-  data = county_emissions %>%
-    filter(source == "Electricity"),
-  y = ~ reorder(geog_name, value_emissions),
-  x = ~value_emissions,
-  color = ~source,
-  colors = unlist(source_colors),
-  hovertemplate = ~ paste0(
-    geog_name, "<br>",
-    "Electricity", "<br>",
-    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  )
-) %>%
-  plotly_layout(
-    main_title = "2021 county electricity emissions",
-    x_title = "Metric tons CO<sub>2</sub>e",
-    subtitle = ""
-  ) %>%
-  layout(
-    barmode = "stack",
-    legend = list(
-      traceorder = "reversed"
-    )
-  )
-
-fig_electricity_county_emissions
-```
 
 ```{r fig-energy-electricity-sector-emissions}
 #| fig-cap: "2021 electricity emissions by sector"
@@ -242,13 +214,14 @@ fig_energy_electricity_sector_emissions <-
     type = "bar",
     source = "fig-energy-electricity-sector-emissions",
     data = county_emissions %>%
-      filter(source == "Electricity"),
-    y = ~ reorder(geog_name, value_emissions),
+      filter(emissions_year == 2021,
+        category == "Electricity"),
+    y = ~ reorder(county_name, value_emissions),
     x = ~value_emissions,
-    color = ~category,
+    color = ~source,
     colors = unlist(category_colors),
     hovertemplate = ~ paste0(
-      geog_name, " County", "<br>",
+      county_name, " County", "<br>",
       source, ", ", category, "<br>",
       round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
@@ -270,6 +243,52 @@ fig_energy_electricity_sector_emissions <-
 fig_energy_electricity_sector_emissions
 ```
 
+```{r fig-electricity-baseline-emissions}
+#| fig-cap: "Baseline electricity emissions"
+#| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
+
+fig_electricity_baseline <- plot_ly(
+  source = "fig-electricity-baseline-emissions",
+  data = county_emissions %>%
+    filter(category == "Electricity") %>%
+    group_by(emissions_year, source) %>%
+    summarise(value_emissions = sum(value_emissions)),
+  x = ~emissions_year,
+  y = ~value_emissions,
+  color = ~source, #
+  colors = unlist(category_colors), # Directly map the colors to categories
+  type = "scatter",
+  mode = "lines", # No points or lines, just fill
+  stackgroup = "one", # Fill to the next y value (stacking)
+  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~source # Pass category to hovertext
+) %>%
+  plotly_layout(
+    main_title = "Electricity Emissions Over Time",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hovermode = "x unified", # Combine all hovertext under one hover
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_electricity_baseline
+```
+
 #### Correlation with related data
 
 We would expect counties with higher population to have higher emissions.
@@ -280,8 +299,9 @@ We would expect counties with higher population to have higher emissions.
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 
 emissions_population <- left_join(elecEmissions_all, cprg_population,
-  by = c("county" = "NAME")
-)
+  by = c("county_name")
+) %>% 
+  filter(emissions_year == 2021)
 
 fig_electricity_emissions_population <- plot_ly(
   data = emissions_population,
@@ -291,7 +311,7 @@ fig_electricity_emissions_population <- plot_ly(
   type = "scatter",
   mode = "markers",
   hovertemplate = ~ paste0(
-    county, " County", "<br>",
+    county_name, " County", "<br>",
     "Population: ", scales::comma(population), "<br>",
     round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
@@ -320,7 +340,8 @@ fig_electricity_emissions_population
 ```{r region-total-electricity}
 region_total_electricity <- county_emissions %>%
   ungroup() %>%
-  filter(source == "Electricity") %>%
+  filter(source == "Electricity",
+         emissions_year == 2021) %>%
   summarize(value_emissions = sum(value_emissions)) %>%
   magrittr::extract2("value_emissions")
 
@@ -331,50 +352,54 @@ eia_total_electricity <- eiaQA_all$downscaled_EIA_total_CO2e_emissions_lbs %>%
   as.numeric()
 ```
 
+<!--
+CURRENTLY NOT WORKING
 ##### Energy Information Administration (EIA)
 
 We compared our county-level emissions figures to emissions estimates derived from the EIA's State Electricity Profiles, which were generated by down-scaling EIA's Minnesota and Wisconsin state-level numbers for total electricity retail sales. We achieved this by applying the proportions of each state's population residing in each of our study area counties to generate county-level emissions estimates. Our inventory quantified `r scales::comma(region_total_electricity, accuracy = 1)` metric tons of electricity in our study area relative to `r scales::comma(eia_total_electricity, accuracy = 1)` metric tons based on the aforementioned downscaled statewide retail numbers.
+
 
 ```{r fig-eia-qa-natural-gas-plot}
 #| fig-cap: "Metropolitan Council emissions inventory vs. downscaled EIA State Electricity Profiles"
 #| out-width: "95%"
 
 # Create the plotly graph
-fig_eia_qa_electricity_plot <- plot_ly(
-  data = EIAvMETC_tons,
-  x = ~ reorder(county_name, -value_emissions),
-  y = ~value_emissions,
-  source = "fig-eia-qa-natural-gas-plot",
-  color = ~inventory_source,
-  type = "bar",
-  colors = c(
-    "EIA" = cprg_colors$cprg_da_yellow,
-    "Metropolitan Council" = colors$councilBlue
-  ),
-  hovertemplate = ~ paste0(
-    county_name, "<br>",
-    inventory_source, "<br>",
-    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  )
-) %>%
-  plotly_layout(
-    main_title = "Electricity Emissions Inventory QA<br><sub>Comparison between Metropolitan Council and EIA State Electricity Profiles</sub>",
-    y_title = "Metric tons CO<sub>2</sub>e",
-    x_title = "County",
-    legend_title = "Inventory source"
-  ) %>%
-  layout(
-    barmode = "group",
-    hovermode = "closest",
-    legend = list(
-      traceorder = "normal"
-    )
-  )
-
-# Show the plot
-fig_eia_qa_electricity_plot
+# fig_eia_qa_electricity_plot <- plot_ly(
+#   data = EIAvMETC_tons,
+#   x = ~ reorder(county_name, -value_emissions),
+#   y = ~value_emissions,
+#   source = "fig-eia-qa-natural-gas-plot",
+#   color = ~inventory_source,
+#   type = "bar",
+#   colors = c(
+#     "EIA" = cprg_colors$cprg_da_yellow,
+#     "Metropolitan Council" = colors$councilBlue
+#   ),
+#   hovertemplate = ~ paste0(
+#     county_name, "<br>",
+#     inventory_source, "<br>",
+#     round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+#     "<extra></extra>"
+#   )
+# ) %>%
+#   plotly_layout(
+#     main_title = "Electricity Emissions Inventory QA<br><sub>Comparison between Metropolitan Council and EIA State Electricity Profiles</sub>",
+#     y_title = "Metric tons CO<sub>2</sub>e",
+#     x_title = "County",
+#     legend_title = "Inventory source"
+#   ) %>%
+#   layout(
+#     barmode = "group",
+#     hovermode = "closest",
+#     legend = list(
+#       traceorder = "normal"
+#     )
+#   )
+# 
+# # Show the plot
+# fig_eia_qa_electricity_plot
 ```
+-->
 
 ##### NREL SLOPE
 
@@ -393,8 +418,9 @@ The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly fo
 
 # Create the plotly graph
 fig_nrel_qa_electricity <- plot_ly(
-  data = nrel_metc_electricity_comp,
-  x = ~ reorder(county, -value_emissions),
+  data = nrel_metc_electricity_comp %>% 
+    filter(emissions_year == 2021),
+  x = ~ reorder(county_name, -value_emissions),
   y = ~value_emissions,
   source = "fig-nrel-qa-electricity",
   color = ~inventory_source,
@@ -404,7 +430,7 @@ fig_nrel_qa_electricity <- plot_ly(
     "Metropolitan Council" = colors$councilBlue
   ),
   hovertemplate = ~ paste0(
-    county, "<br>",
+    county_name, "<br>",
     inventory_source, "<br>",
     round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
@@ -428,11 +454,5 @@ fig_nrel_qa_electricity <- plot_ly(
 fig_nrel_qa_electricity
 ```
 
-```{r echo=FALSE}
-caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
-caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
-saveCap(paste0("cap-", caption_index))
-saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
-```
 
 {{< pagebreak >}}
