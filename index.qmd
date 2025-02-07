@@ -241,7 +241,13 @@ county_emissions_raw <- plot_ly(
       "<extra></extra>"
     )
   ) %>%
-    plotly::layout(barmode = "stack")
+  plotly_layout("County greenhouse gas emissions, 2021",
+    subtitle = "",
+    x_title = "County",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Category",
+    barmode = "stack"
+  )
 
 county_emissions_raw
 
@@ -273,7 +279,13 @@ county_emissions_2021_per_capita <- plot_ly(
       "<extra></extra>"
     )
   ) %>%
-    plotly::layout(barmode = "stack")
+  plotly_layout("County greenhouse gas emissions per capita, 2021",
+    subtitle = "",
+    x_title = "County",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Category",
+    barmode = "stack"
+  )
 
 county_emissions_2021_per_capita
 

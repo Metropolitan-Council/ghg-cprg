@@ -35,24 +35,24 @@ plot_county_sector_emissions <- function(county_emissions,
   }
 
   plot_data <- plot_data %>%
-    mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
+    mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions))
 
   plot_ly(
     data = plot_data,
     type = "bar",
     source = .plotly_source,
-    x = ~emissions_metric_tons_co2e,
-    y = ~ reorder(county_name, emissions_metric_tons_co2e),
-    color = ~sector,
-    colors = unlist(sector_colors),
-    marker_line=dict(width=2, color='black'),
+    x = ~value_emissions,
+    y = ~ reorder(county_name, value_emissions),
+    color = ~source,
+    colors = unlist(source_colors),
+   # marker_line=dict(width=2, color='black'),
     marker = list(
       line = list(
         width = 0
       )
     ),
     hovertemplate = ~ paste0(
-      geog_name, " County", "<br>",
+      county_name, " County", "<br>",
       sector, " - ", category, ", ", source, "<br>",
       rounded_tons,
       "<extra></extra>"
