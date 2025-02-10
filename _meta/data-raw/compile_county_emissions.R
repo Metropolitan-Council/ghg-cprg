@@ -43,7 +43,7 @@ aviation_emissions <- readRDS("_transportation/data/aviation_emissions.RDS") %>%
     category = "Off-road",
     source = "Aviation",
     data_source = data_source,
-    factor_source = data_source, 
+    factor_source = data_source,
     value_emissions,
     unit_emissions = "Metric tons CO2e",
     emissions_year = inventory_year
@@ -89,7 +89,7 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
     emissions_year = year,
     sector = str_to_title(sector),
     geog_level = "county",
-    source = paste(sector,"electricity")
+    source = paste(sector, "electricity")
   ) %>%
   select(names(transportation_emissions))
 
@@ -102,7 +102,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
     emissions_year = year,
     sector = str_to_title(sector),
     geog_level = "county",
-    source = paste(sector,"natural gas")
+    source = paste(sector, "natural gas")
   ) %>%
   select(names(transportation_emissions))
 
@@ -110,7 +110,8 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
 ## propane and kerosene ----
 
 propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
-  mutate(emissions_year = 2021,
+  mutate(
+    emissions_year = 2021,
     sector = "Residential",
     geog_level = "county",
     county_name = NAME,
@@ -152,20 +153,21 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
     geog_level = "county",
     source = str_to_sentence(source),
     category = case_when(
-      category == "Stationary combustion" & source == "Natural gas" ~ str_to_sentence(paste(sector,source)),
-      category == "Stationary combustion" & source != "Natural gas" ~ str_to_sentence(paste(sector,"fuel combustion")), 
-      TRUE ~ category)
+      category == "Stationary combustion" & source == "Natural gas" ~ str_to_sentence(paste(sector, source)),
+      category == "Stationary combustion" & source != "Natural gas" ~ str_to_sentence(paste(sector, "fuel combustion")),
+      TRUE ~ category
+    )
   ) %>%
-  group_by(emissions_year,unit_emissions, county_name,geog_level, county_id, sector, category, source, data_source, factor_source) %>% 
-  summarize(value_emissions = sum(value_emissions)) %>% 
-  ungroup() %>% 
+  group_by(emissions_year, unit_emissions, county_name, geog_level, county_id, sector, category, source, data_source, factor_source) %>%
+  summarize(value_emissions = sum(value_emissions)) %>%
+  ungroup() %>%
   select(names(transportation_emissions))
 
 
 # natural systems ----
 
 natural_systems_sequestration <- readRDS("_nature/data/nlcd_county_landcover_sequestration_2001_2021.RDS") %>%
-  filter(year >= 2005) %>% 
+  filter(year >= 2005) %>%
   mutate(
     emissions_year = year,
     sector = "Natural Systems",
@@ -181,13 +183,13 @@ natural_systems_sequestration <- readRDS("_nature/data/nlcd_county_landcover_seq
   select(names(transportation_emissions))
 
 freshwater_emissions <- readRDS("_nature/data/nhd_county_waterways_emissions_2001_2021.RDS") %>%
-  filter(inventory_year >= 2005) %>% 
+  filter(inventory_year >= 2005) %>%
   mutate(
     emissions_year = inventory_year,
     sector = "Natural Systems",
     geog_level = "county",
     category = "Freshwater",
-    source = stringr::str_to_sentence(str_replace_all(source , "_", " ")),
+    source = stringr::str_to_sentence(str_replace_all(source, "_", " ")),
     value_emissions = mt_co2e,
     unit_emissions = "Metric tons CO2e"
   ) %>%
@@ -240,7 +242,7 @@ emissions_all <- bind_rows(
       ordered = TRUE
     )
   ) %>%
-#  join county population and calculate per capita emissions
+  #  join county population and calculate per capita emissions
   left_join(
     cprg_county_pop %>%
       select(
@@ -253,7 +255,7 @@ emissions_all <- bind_rows(
   ) %>%
   rowwise() %>%
   mutate(emissions_per_capita = round(value_emissions / county_total_population, digits = 2)) %>%
-  select(emissions_year, geog_level, geoid, county_name, everything()) %>% 
+  select(emissions_year, geog_level, geoid, county_name, everything()) %>%
   ungroup()
 
 emissions_all_meta <- tibble::tribble(

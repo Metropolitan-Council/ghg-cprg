@@ -21,8 +21,8 @@ hookaddcap()
 ```{r merge-cprg-mpca-data}
 #| include: false
 
-cprg_county <- read_rds(file.path(here::here(),"_meta/data/cprg_county.RDS"))
-county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS")) 
+cprg_county <- read_rds(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 mpca_economy_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_economy_wide_gcam.RDS"))
 mpca_sector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_sector_gcam.RDS"))
 mpca_subsector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/mpca_subsector_gcam.RDS"))
@@ -30,58 +30,67 @@ mpca_subsector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/m
 ### match county emissions to mpca projections
 
 county_emissions <- county_emissions %>%
- mutate(sector = case_when(
+  mutate(sector = case_when(
     source == "Electricity" ~ "Electricity",
-    source %in% c("Natural gas","Propane","Kerosene") ~ "Building energy",
+    source %in% c("Natural gas", "Propane", "Kerosene") ~ "Building energy",
     TRUE ~ sector
   ))
-  
+
 # Create economy wide projections
 economy_projections <- county_emissions %>%
-  filter(year == 2005, sector != "Nature",
-         !geog_name %in% c("Chisago", "St. Croix", "Pierce","Sherburne")) %>%
-  cross_join(mpca_economy_projections %>% 
-               filter(emissions_year >= 2025,
-                      source_sink == "Emission") %>% 
-               select(emissions_year, scenario, proportion_of_2005)) %>% 
-  mutate(value_emissions = proportion_of_2005 * value_emissions) %>% 
-  group_by(emissions_year, sector, scenario) %>% 
-  summarize(value_emissions = sum(value_emissions)) %>% 
+  filter(
+    year == 2005, sector != "Nature",
+    !geog_name %in% c("Chisago", "St. Croix", "Pierce", "Sherburne")
+  ) %>%
+  cross_join(mpca_economy_projections %>%
+    filter(
+      emissions_year >= 2025,
+      source_sink == "Emission"
+    ) %>%
+    select(emissions_year, scenario, proportion_of_2005)) %>%
+  mutate(value_emissions = proportion_of_2005 * value_emissions) %>%
+  group_by(emissions_year, sector, scenario) %>%
+  summarize(value_emissions = sum(value_emissions)) %>%
   ungroup()
 
 economy_sequestration_projections <- county_emissions %>%
-  filter(year == 2005, sector == "Nature",
-         !geog_name %in% c("Chisago", "St. Croix", "Pierce","Sherburne")) %>%
-  cross_join(mpca_economy_projections %>% 
-               filter(emissions_year >= 2025,
-                      source_sink == "Sequestration") %>% 
-               select(emissions_year, scenario, proportion_of_2005)) %>% 
-  mutate(value_emissions = proportion_of_2005 * value_emissions) %>% 
-  group_by(emissions_year, sector, scenario) %>% 
-  summarize(value_emissions = sum(value_emissions)) %>% 
+  filter(
+    year == 2005, sector == "Nature",
+    !geog_name %in% c("Chisago", "St. Croix", "Pierce", "Sherburne")
+  ) %>%
+  cross_join(mpca_economy_projections %>%
+    filter(
+      emissions_year >= 2025,
+      source_sink == "Sequestration"
+    ) %>%
+    select(emissions_year, scenario, proportion_of_2005)) %>%
+  mutate(value_emissions = proportion_of_2005 * value_emissions) %>%
+  group_by(emissions_year, sector, scenario) %>%
+  summarize(value_emissions = sum(value_emissions)) %>%
   ungroup()
 
 economy_inventory_projections <- bind_rows(
   county_emissions %>%
-    filter(year >=2005 & year <= 2021) %>% 
-   group_by(year, sector) %>% 
-    summarize(value_emissions = sum(value_emissions)) %>% 
-    rename(emissions_year = year) %>% 
-    ungroup() %>% 
+    filter(year >= 2005 & year <= 2021) %>%
+    group_by(year, sector) %>%
+    summarize(value_emissions = sum(value_emissions)) %>%
+    rename(emissions_year = year) %>%
+    ungroup() %>%
     right_join(
-    #fill in missing years
-    expand.grid(
-    emissions_year = seq(2005, 2021, by = 1),
-    sector = unique(county_emissions$sector)
-  )) %>% 
+      # fill in missing years
+      expand.grid(
+        emissions_year = seq(2005, 2021, by = 1),
+        sector = unique(county_emissions$sector)
+      )
+    ) %>%
     mutate(scenario = "Inventory"),
-  economy_projections %>% 
+  economy_projections %>%
     mutate(emissions_year = as.numeric(emissions_year)),
-  economy_sequestration_projections%>% 
+  economy_sequestration_projections %>%
     mutate(emissions_year = as.numeric(emissions_year))
-) %>% 
- group_by(sector) %>% 
- mutate(value_emissions = imputeTS::na_kalman(value_emissions))
+) %>%
+  group_by(sector) %>%
+  mutate(value_emissions = imputeTS::na_kalman(value_emissions))
 
 
 ## now do this by sector emissions
@@ -89,7 +98,7 @@ economy_inventory_projections <- bind_rows(
 unique(mpca_subsector_projections$subsector_mc)
 unique(county_emissions$category)
 
-county_emissions <- county_emissions %>% 
+county_emissions <- county_emissions %>%
   mutate(subsector_mc = case_when(
     source != "Electricity" & category == "Residential energy" ~ "Residential Natural Gas",
     source != "Electricity" & category == "Commercial energy" ~ "Commercial Natural Gas",
@@ -99,45 +108,52 @@ county_emissions <- county_emissions %>%
     TRUE ~ category
   ))
 
-mpca_subsector_projections_use <- mpca_subsector_projections %>% 
-               filter(emissions_year >= 2025,
-                      source_sink == "Emission",
-                      !grepl("not_inventoried", subsector_mc)) %>% 
-               mutate(subsector_mc = if_else(grepl("Natural Gas", subsector_mc),
-                                             "Natural Gas",
-                                             subsector_mc)) %>% 
-               group_by(emissions_year, scenario, subsector_mc) %>% 
+mpca_subsector_projections_use <- mpca_subsector_projections %>%
+  filter(
+    emissions_year >= 2025,
+    source_sink == "Emission",
+    !grepl("not_inventoried", subsector_mc)
+  ) %>%
+  mutate(subsector_mc = if_else(grepl("Natural Gas", subsector_mc),
+    "Natural Gas",
+    subsector_mc
+  )) %>%
+  group_by(emissions_year, scenario, subsector_mc) %>%
   summarize(proportion_of_2005 = mean(proportion_of_2005))
 
 subsector_projections <- county_emissions %>%
-  filter(year == 2005, sector != "Nature",
-         !geog_name %in% c("Chisago", "St. Croix", "Pierce","Sherburne")) %>%
-  left_join(., mpca_subsector_projections_use, 
-            by = "subsector_mc") %>% 
-  mutate(value_emissions = proportion_of_2005 * value_emissions) %>% 
-  group_by(emissions_year, sector, scenario) %>% 
-  summarize(value_emissions = sum(value_emissions)) %>% 
+  filter(
+    year == 2005, sector != "Nature",
+    !geog_name %in% c("Chisago", "St. Croix", "Pierce", "Sherburne")
+  ) %>%
+  left_join(., mpca_subsector_projections_use,
+    by = "subsector_mc"
+  ) %>%
+  mutate(value_emissions = proportion_of_2005 * value_emissions) %>%
+  group_by(emissions_year, sector, scenario) %>%
+  summarize(value_emissions = sum(value_emissions)) %>%
   ungroup()
 
 subsector_inventory_projections <- bind_rows(
   county_emissions %>%
-    filter(year >=2005 & year <= 2021) %>% 
-   group_by(year, sector) %>% 
-    summarize(value_emissions = sum(value_emissions)) %>% 
-    rename(emissions_year = year) %>% 
-    ungroup() %>% 
+    filter(year >= 2005 & year <= 2021) %>%
+    group_by(year, sector) %>%
+    summarize(value_emissions = sum(value_emissions)) %>%
+    rename(emissions_year = year) %>%
+    ungroup() %>%
     right_join(
-    #fill in missing years
-    expand.grid(
-    emissions_year = seq(2005, 2021, by = 1),
-    sector = unique(county_emissions$sector)
-  )) %>% 
+      # fill in missing years
+      expand.grid(
+        emissions_year = seq(2005, 2021, by = 1),
+        sector = unique(county_emissions$sector)
+      )
+    ) %>%
     mutate(scenario = "Inventory"),
-  subsector_projections %>% 
-    mutate(emissions_year = as.numeric(emissions_year))) %>% 
- group_by(sector) %>% 
- mutate(value_emissions = imputeTS::na_kalman(value_emissions))
-
+  subsector_projections %>%
+    mutate(emissions_year = as.numeric(emissions_year))
+) %>%
+  group_by(sector) %>%
+  mutate(value_emissions = imputeTS::na_kalman(value_emissions))
 ```
 
 ## Introduction
@@ -154,13 +170,15 @@ Natural systems are a critical component of capturing carbon from the atmosphere
 
 fig_economy_current_policies <- plot_ly(
   source = "fig-economy-downscale",
-  data = economy_inventory_projections %>% 
-    filter(scenario %in% c("Inventory", "Current policies"),
-           sector != "Nature"),
+  data = economy_inventory_projections %>%
+    filter(
+      scenario %in% c("Inventory", "Current policies"),
+      sector != "Nature"
+    ),
   x = ~emissions_year,
   y = ~value_emissions,
   color = ~sector, #
-  #colors = unlist(category_colors), # Directly map the colors to categories
+  # colors = unlist(category_colors), # Directly map the colors to categories
   type = "scatter",
   mode = "lines", # No points or lines, just fill
   stackgroup = "relative", # Fill to the next y value (stacking)
@@ -203,13 +221,15 @@ fig_economy_current_policies
 
 fig_economy_net_zero <- plot_ly(
   source = "fig-economy-nz-downscale",
-  data = economy_inventory_projections %>% 
-    filter(scenario %in% c("Inventory", "Net-zero pathway"),
-           sector != "Nature"),
+  data = economy_inventory_projections %>%
+    filter(
+      scenario %in% c("Inventory", "Net-zero pathway"),
+      sector != "Nature"
+    ),
   x = ~emissions_year,
   y = ~value_emissions,
   color = ~sector, #
-  #colors = unlist(category_colors), # Directly map the colors to categories
+  # colors = unlist(category_colors), # Directly map the colors to categories
   type = "scatter",
   mode = "lines", # No points or lines, just fill
   stackgroup = "relative", # Fill to the next y value (stacking)
@@ -250,13 +270,15 @@ fig_economy_net_zero
 
 fig_subsector_current_policies <- plot_ly(
   source = "fig-subsector-cp-downscale",
-  data = subsector_inventory_projections %>% 
-    filter(scenario %in% c("Inventory", "Current policies"),
-           sector != "Nature"),
+  data = subsector_inventory_projections %>%
+    filter(
+      scenario %in% c("Inventory", "Current policies"),
+      sector != "Nature"
+    ),
   x = ~emissions_year,
   y = ~value_emissions,
   color = ~sector, #
-  #colors = unlist(category_colors), # Directly map the colors to categories
+  # colors = unlist(category_colors), # Directly map the colors to categories
   type = "scatter",
   mode = "lines", # No points or lines, just fill
   stackgroup = "relative", # Fill to the next y value (stacking)
@@ -299,13 +321,15 @@ fig_subsector_current_policies
 
 fig_subsector_net_zero <- plot_ly(
   source = "fig-subsector-nz-downscale",
-  data = subsector_inventory_projections %>% 
-    filter(scenario %in% c("Inventory", "Net-zero pathway"),
-           sector != "Nature"),
+  data = subsector_inventory_projections %>%
+    filter(
+      scenario %in% c("Inventory", "Net-zero pathway"),
+      sector != "Nature"
+    ),
   x = ~emissions_year,
   y = ~value_emissions,
   color = ~sector, #
-  #colors = unlist(category_colors), # Directly map the colors to categories
+  # colors = unlist(category_colors), # Directly map the colors to categories
   type = "scatter",
   mode = "lines", # No points or lines, just fill
   stackgroup = "relative", # Fill to the next y value (stacking)

@@ -11,16 +11,19 @@ state_population <- census_county_population %>%
     state_population = sum(population, na.rm = T),
     .groups = "keep"
   ) %>%
-  clean_names() %>% 
-  mutate(population_year = as.numeric(population_year)) %>% 
+  clean_names() %>%
+  mutate(population_year = as.numeric(population_year)) %>%
   # use state demography office for 2021 on state ests
-  filter(population_year < 2021) %>% 
-  bind_rows(.,
-            demographer_state_population %>% 
-              filter(inventory_year >= 2021) %>% 
-              select(- households) %>% 
-              rename(state_population = population,
-                     population_year = inventory_year)
+  filter(population_year < 2021) %>%
+  bind_rows(
+    .,
+    demographer_state_population %>%
+      filter(inventory_year >= 2021) %>%
+      select(-households) %>%
+      rename(
+        state_population = population,
+        population_year = inventory_year
+      )
   )
 
 # create metadata

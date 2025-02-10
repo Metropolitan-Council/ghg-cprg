@@ -47,7 +47,7 @@ if (exists("load_packages") == FALSE) {
 
   # analysis -----
   suppressMessages(library(randomForest, quietly = TRUE))
-  
+
   load_packages <- TRUE
   cli::cli_inform(
     c("v" = "Packages\n"),

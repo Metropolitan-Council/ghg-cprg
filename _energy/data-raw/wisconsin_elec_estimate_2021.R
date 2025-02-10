@@ -208,10 +208,10 @@ downscaleEIA_WI_electricRetail <- read_rds(here(
   select(geoid, county_name, county_proportion_of_state_pop) %>%
   mutate(
     downscaled_EIA_total_CO2e_emissions_mt =
-      EIA_WI_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1  %>%
-      units::as_units("pound") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric(),
+      EIA_WI_elecRetailEst_mWh * county_proportion_of_state_pop * 1003.1 %>%
+        units::as_units("pound") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
     state = "WI"
   ) %>%
   left_join(WI_currentCounty_deliveries,

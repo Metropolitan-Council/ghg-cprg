@@ -24,7 +24,7 @@ cprg_census_county_population <- readRDS(file.path(here::here(), "_meta/data/cen
   mutate(population_year = as.numeric(population_year))
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
-onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS"))%>% 
+onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>%
   rename(value_emissions = emissions_metric_tons_co2e)
 
 transportation_max_year <- onroad_emissions %>%

@@ -10,8 +10,12 @@ nlcd_ctu <- readRDS("./_nature/data/nlcd_ctu_landcover_2001_2021_v2.rds")
 
 land_cover_c <- readRDS("./_nature/data/land_cover_carbon.rds")
 
-cprg_county <- readRDS("_meta/data/cprg_county.RDS") %>% as.data.frame() %>% as_tibble()
-cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS") %>% as.data.frame() %>% as_tibble()
+cprg_county <- readRDS("_meta/data/cprg_county.RDS") %>%
+  as.data.frame() %>%
+  as_tibble()
+cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS") %>%
+  as.data.frame() %>%
+  as_tibble()
 
 
 # nlcd_county countains the area of each land cover type in each county for each year
@@ -19,7 +23,7 @@ cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS") %>% as.data.frame() %>% as_tibble
 # Let's modify nlcd_county at this stage to include every combination of year, county, and land cover type,
 # but assign NA to area where the land cover type is not present in the county for that year.
 nlcd_county_rc <- nlcd_county %>%
-  as_tibble() %>% 
+  as_tibble() %>%
   dplyr::select(-state_name) %>%
   left_join( # this creates an empty grid of all desired year, land_cover_type combinations
     x = expand.grid(
@@ -29,7 +33,7 @@ nlcd_county_rc <- nlcd_county %>%
     ),
     y = ., by = join_by(year, county_name, land_cover_type)
   ) %>%
-  mutate(source = ifelse(is.na(area), "est", "nlcd")) %>% #filter(land_cover_type == "Urban_Tree")
+  mutate(source = ifelse(is.na(area), "est", "nlcd")) %>% # filter(land_cover_type == "Urban_Tree")
   group_by(county_name, land_cover_type) %>%
   arrange(county_name, land_cover_type, year) %>%
   mutate(
@@ -45,7 +49,7 @@ nlcd_county_rc <- nlcd_county %>%
       source == "interpolated" ~ area2,
       source == "extrapolated" ~ area3
     )
-  ) %>% 
+  ) %>%
   dplyr::select(year, county_name, land_cover_type, area, source) %>%
   arrange(county_name, land_cover_type, year) %>%
   left_join(cprg_county, by = join_by(county_name))
@@ -96,23 +100,22 @@ saveRDS(nlcd_county_c_meta, paste0("./_nature/data/nlcd_county_landcover_sequest
 
 
 nlcd_ctu_rc <- nlcd_ctu %>%
-  as_tibble() %>% 
-  mutate(tmp1 = paste(ctu_name, ctu_class, county_name, state_name, sep="_")) %>%
+  as_tibble() %>%
+  mutate(tmp1 = paste(ctu_name, ctu_class, county_name, state_name, sep = "_")) %>%
   dplyr::select(year, land_cover_type, area, tmp1) %>%
-
   left_join( # this creates an empty grid of all desired year, land_cover_type combinations
     x = expand.grid(
       year = seq(2001, 2021, by = 1),
       tmp1 = cprg_ctu %>%
-        dplyr::select(ctu_name, ctu_class, county_name, state_name) %>% 
+        dplyr::select(ctu_name, ctu_class, county_name, state_name) %>%
         # create a new column that concatenates the ctu_name, ctu_class, county_name, and state_name
-        mutate(tmp1 = paste(ctu_name, ctu_class, county_name, state_name, sep="_")) %>%
+        mutate(tmp1 = paste(ctu_name, ctu_class, county_name, state_name, sep = "_")) %>%
         pull(tmp1),
       land_cover_type = unique(nlcd_ctu$land_cover_type)
     ),
     y = ., by = join_by(year, land_cover_type, tmp1)
   ) %>%
-  mutate(source = ifelse(is.na(area), "est", "nlcd")) %>% #filter(land_cover_type == "Urban_Tree")
+  mutate(source = ifelse(is.na(area), "est", "nlcd")) %>% # filter(land_cover_type == "Urban_Tree")
   group_by(tmp1, land_cover_type) %>%
   arrange(tmp1, land_cover_type, year) %>%
   mutate(
@@ -128,11 +131,10 @@ nlcd_ctu_rc <- nlcd_ctu %>%
       source == "interpolated" ~ area2,
       source == "extrapolated" ~ area3
     )
-  ) %>% 
+  ) %>%
   dplyr::select(year, tmp1, land_cover_type, area, source) %>%
   # Let's take the tmp1 column and split it into its constituent parts
   separate(tmp1, c("ctu_name", "ctu_class", "county_name", "state_name"), sep = "_") %>%
-
   arrange(ctu_name, land_cover_type, year) %>%
   left_join(cprg_ctu, by = join_by(ctu_name, ctu_class, county_name, state_name))
 
@@ -157,8 +159,10 @@ nlcd_ctu_c <- nlcd_ctu_rc %>%
     stock_potential = area * stock_mtco2e_sqkm
   ) %>%
   dplyr::select(-c(seq_mtco2e_sqkm, stock_mtco2e_sqkm)) %>%
-  dplyr::select(year, ctu_name, ctu_class, county_name, state_name, land_cover_type, 
-                area, sequestration_potential, stock_potential, source) %>%
+  dplyr::select(
+    year, ctu_name, ctu_class, county_name, state_name, land_cover_type,
+    area, sequestration_potential, stock_potential, source
+  ) %>%
   arrange(year, ctu_name, land_cover_type)
 
 
@@ -181,5 +185,3 @@ nlcd_ctu_c_meta <-
 
 saveRDS(nlcd_ctu_c, paste0("./_nature/data/nlcd_ctu_landcover_sequestration_", head(sort(unique(nlcd_ctu_c$year)), 1), "_", tail(sort(unique(nlcd_ctu_c$year)), 1), "_v2.rds"))
 saveRDS(nlcd_ctu_c_meta, paste0("./_nature/data/nlcd_ctu_landcover_sequestration_", head(sort(unique(nlcd_ctu_c$year)), 1), "_", tail(sort(unique(nlcd_ctu_c$year)), 1), "_meta_v2.rds"))
-
-
