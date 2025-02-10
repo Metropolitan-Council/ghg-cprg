@@ -31,11 +31,11 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 
 emissions_2021 <- county_emissions %>%
-  filter(year == 2021) %>%
+  filter(emissions_year == 2021) %>%
   pull(value_emissions) %>%
   sum()
 ind_emissions_2021 <- county_emissions %>%
-  filter(year == 2021, sector == "Industrial") %>%
+  filter(emissions_year == 2021, sector == "Industrial") %>%
   pull(value_emissions) %>%
   sum()
 refinery_emissions_2021 <- ghgrp_emissions %>%
@@ -44,12 +44,12 @@ refinery_emissions_2021 <- ghgrp_emissions %>%
   sum()
 
 ind_emissions_2011 <- county_emissions %>%
-  filter(year == 2011, sector == "Industrial") %>%
+  filter(emissions_year == 2011, sector == "Industrial") %>%
   pull(value_emissions) %>%
   sum()
 
 ind_emissions_2005 <- county_emissions %>%
-  filter(year == 2005, sector == "Industrial") %>%
+  filter(emissions_year == 2005, sector == "Industrial") %>%
   pull(value_emissions) %>%
   sum()
 
@@ -107,14 +107,14 @@ fig_ind_county_emissions <- plot_ly(
   data = county_emissions %>%
     filter(
       sector == "Industrial",
-      year == 2021
+      emissions_year == 2021
     ),
-  y = ~ reorder(geog_name, value_emissions),
+  y = ~ reorder(county_name, value_emissions),
   x = ~value_emissions,
   color = ~category,
   colors = unlist(category_colors),
   hovertemplate = ~ paste0(
-    geog_name, "<br>",
+    county_name, "<br>",
     source, "<br>",
     round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
@@ -153,10 +153,11 @@ Regional industrial emissions have increased by `r 100*round((ind_emissions_2021
 fig_ind_baseline <- plot_ly(
   source = "fig-ind-baseline-emissions",
   data = county_emissions %>%
-    filter(sector == "Industrial") %>%
-    group_by(year, category) %>%
+    filter(sector == "Industrial",
+           emissions_year <= 2022) %>%
+    group_by(emissions_year, category) %>%
     summarise(value_emissions = sum(value_emissions)),
-  x = ~year,
+  x = ~emissions_year,
   y = ~value_emissions,
   color = ~category, #
   colors = unlist(category_colors), # Directly map the colors to categories
