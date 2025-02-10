@@ -1219,3 +1219,7 @@ _industrial/data-raw/mn_flight.xls
 _industrial/data-raw/MPCA_industrial_fuel_throughput.xlsx
 _energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.zip
 
+
+_transportation/data-raw/regional_indicators_initiative/2025-01-15_transportation_emissions/
+
+_transportation/data-raw/metc_travel_model~Updated upstream
