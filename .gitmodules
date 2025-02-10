@@ -1,3 +1,0 @@
-[submodule "_transportation/data-raw/metc_travel_model"]
-	path = _transportation/data-raw/metc_travel_model
-	url = git@github.com:Metropolitan-Council/metc_travel_model.git
