@@ -36,12 +36,12 @@ xcel_activityData_NREL_2015_2023 <- bind_rows(
   # Keep original rows that are not 'Business'
   xcel_activityData_NREL_QA_2015_2023 %>%
     filter(sector_mapped != "Business"),
-  
+
   # Expand `Business` rows into 'commercial*'
   xcel_activityData_NREL_QA_2015_2023 %>%
     filter(sector_mapped == "Business") %>%
     mutate(sector_mapped = "commercial*"),
-  
+
   # Expand `Business` rows into 'industrial*'
   xcel_activityData_NREL_QA_2015_2023 %>%
     filter(sector_mapped == "Business") %>%
@@ -51,7 +51,7 @@ xcel_activityData_NREL_2015_2023 <- bind_rows(
   mutate(
     util_co2e = coalesce(disagg_util_reported_co2e, util_reported_co2e),
     util_mWh = coalesce(disagg_mWh_delivered, mWh_delivered),
-    
+
     # Adjust values for 'commercial*' and 'industrial*' rows
     # breaks out the Business records into two pieces based oon the proportional breakdown of NREL-modeled commercial/industrial
     util_co2e = case_when(
@@ -76,7 +76,7 @@ xcel_activityData_NREL_2015_2023 <- bind_rows(
       ),
       TRUE ~ util_mWh
     ),
-    
+
     # Create `nrel_breakout_source` column to identify which NREL data set was used to disaggregate BUSINESS records (if such disagg was done)
     # NA in this field + no asterisk on commercial/industrial means the breakout was directly provided by utility
     nrel_breakout_source = case_when(
@@ -157,10 +157,10 @@ complete_city_NREL_comparison <- xcel_activityData_NREL_2015_2023 %>%
     actual_residential_prop = total_residential_mWh / total_util_mWh
   ) %>%
   left_join(ctu_commDesg,
-            by = join_by(ctu_name)
+    by = join_by(ctu_name)
   ) %>%
   left_join(dissolved_ctu,
-            by = join_by(ctu_name)
+    by = join_by(ctu_name)
   ) %>%
   st_as_sf()
 

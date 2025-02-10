@@ -10,52 +10,54 @@ cprg_colors <- list(
 )
 
 # sector colors
-sector_colors <- list("Electricity" = "#1f77b4", 
-                      "Transportation" = "#191970", 
-                      "Residential" = "#9467bd", 
-                      "Commercial" = "#d62728", 
-                      "Industrial" = "slategray",
-                      "Waste" = "#8c564b",
-                      "Agriculture" = "#8fb910", 
-                      "Natural Systems" = "#006f3c")
+sector_colors <- list(
+  "Electricity" = "#1f77b4",
+  "Transportation" = "#191970",
+  "Residential" = "#9467bd",
+  "Commercial" = "#d62728",
+  "Industrial" = "slategray",
+  "Waste" = "#8c564b",
+  "Agriculture" = "#8fb910",
+  "Natural Systems" = "#006f3c"
+)
 
 
 # category
 category_colors <-
   list(
-    
+
     # Electricity
     "Electricity" = "#FFEF00",
-    
+
     # Residential
     "Residential natural gas" = "#483248",
     "Residential electricity" = "#CF9FFF",
     "Residential liquid fuel" = "#A2627A",
-    
+
     # Commercial
     "Commercial natural gas" = "#800000",
     "Commercial fuel combustion" = "#DE3163",
     "Commercial electricity" = "#FAA0A0",
-    
+
     # Industrial
     "Industrial electricity" = "#E5E4E2",
     "Industrial natural gas" = "#36454F",
     "Industrial processes" = "#B2BEB5",
     "Industrial fuel combustion" = "#818589",
     "Refinery processes" = "#708090",
-    
+
     # Transportation
     "On-road" = "#6F8FAF",
     "Off-road" = "#191970",
-    
+
     # Waste
     "Solid waste" = "#8B4513",
     "Wastewater" = "#CD853F",
-    
+
     # Agriculture
     "Cropland" = "#c7e960",
     "Livestock" = "#8fb910",
-    
+
     # Natural systems
     "Sequestration" = "#006f3c",
     "Freshwater" = "#416bdf"
@@ -73,11 +75,11 @@ source_colors <- list(
   "Trucks" = "#6495ED",
   "Aviation" = "#191970",
 
-  #Electricity
+  # Electricity
   "Residential electricity" = "#ffc300",
   "Commercial electricity" = "#9f7a00",
   "Industrial electricity" = "#604900",
-  
+
   # waste levels
   "Landfill" = "#ae017e",
   "Recycling" = "#ed2c73",
@@ -92,14 +94,14 @@ source_colors <- list(
   "Kerosene" = "#004242",
 
   # agriculture
-  "Enteric fermentation" = "#ffcc00",  # Distinct yellow
-  "Manure management" = "#b5c100",     
-  "Direct manure soil emissions" = "#a0b600",  
-  "Indirect manure runoff emissions" = "#8da000", 
-  "Soil residue emissions" = "#7a8a00",           
-  "Onsite fertilizer emissions" = "#b0d400",     
-  "Runoff fertilizer emissions" = "#9ccf00",  
-  
+  "Enteric fermentation" = "#ffcc00", # Distinct yellow
+  "Manure management" = "#b5c100",
+  "Direct manure soil emissions" = "#a0b600",
+  "Indirect manure runoff emissions" = "#8da000",
+  "Soil residue emissions" = "#7a8a00",
+  "Onsite fertilizer emissions" = "#b0d400",
+  "Runoff fertilizer emissions" = "#9ccf00",
+
   # nature
   "Tree" = "#006d2c",
   "Grassland" = "#22b600",

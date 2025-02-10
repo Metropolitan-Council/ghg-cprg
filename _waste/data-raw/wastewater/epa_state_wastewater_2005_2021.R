@@ -40,12 +40,13 @@ wi_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-wi-wastewater.csv"
 wastewater_epa <- bind_rows(mn_epa, wi_epa) %>%
   filter(!CO2e == "-") %>%
   group_by(Year, STATE) %>%
-  summarize(co2e_state = sum(as.numeric(CO2e)) * 10^6)%>% 
+  summarize(co2e_state = sum(as.numeric(CO2e)) * 10^6) %>%
   mutate(year = as.numeric(Year))
 
-wastewater_2005_2021 <- left_join(cprg_population %>% 
-                                    mutate(population_year = as.numeric(population_year)) %>% 
-                                    filter(population_year  >= 2005 & population_year  <= 2021),
+wastewater_2005_2021 <- left_join(
+  cprg_population %>%
+    mutate(population_year = as.numeric(population_year)) %>%
+    filter(population_year >= 2005 & population_year <= 2021),
   wastewater_epa,
   by = c("population_year" = "year", "state_name" = "STATE")
 ) %>%

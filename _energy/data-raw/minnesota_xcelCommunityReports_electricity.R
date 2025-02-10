@@ -305,4 +305,3 @@ if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
 
   write_rds(Xcel_activityData_2015_2023, "_energy/data/Xcel_activityData_2015_2023.RDS")
 }
-

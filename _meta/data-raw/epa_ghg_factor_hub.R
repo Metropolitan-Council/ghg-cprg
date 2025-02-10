@@ -711,4 +711,3 @@ new_rows_2005 <- template_rows %>%
 epa_ghg_factor_hub[[1]] <- bind_rows(epa_ghg_factor_hub[[1]], new_rows_2005)
 
 saveRDS(epa_ghg_factor_hub, "_meta/data/epa_ghg_factor_hub.RDS")
-

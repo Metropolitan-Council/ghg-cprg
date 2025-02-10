@@ -103,8 +103,9 @@ MNcounty_level_gas_emissions <- processed_mn_gasUtil_activityData %>%
       CO2_emissions_mt +
         (CH4_emissions_mt * gwp$ch4) +
         (N2O_emissions_mt * gwp$n2o),
-      na.rm = TRUE)
-    ) %>%
+      na.rm = TRUE
+    )
+  ) %>%
   mutate(
     state = "MN",
     sector = "Natural gas"

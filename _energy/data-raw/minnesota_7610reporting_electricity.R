@@ -105,7 +105,7 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
 # New Prague Utilities -- 69,291.725 mWh delivered to customers in 2021,
 # source: pg 18 https://www.ci.new-prague.mn.us/vertical/sites/%7BAD7ECB62-2C5E-4BA0-8F19-1426026AFA3E%7D/uploads/01-24-2022_Utilities_Commission_Meeting_Packet.pdf
 
-scottProp <- 45972 / 65674 #proportion of utility operation in Scott County
+scottProp <- 45972 / 65674 # proportion of utility operation in Scott County
 scottNewPragueMuni_mWh_2021 <- scottProp * 72086.211
 scottNewPragueMuni_mWh_2020 <- scottProp * 67435.726
 combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
@@ -115,7 +115,7 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
     mWh_delivered = scottNewPragueMuni_mWh_2021,
     utility = "New Prague Utilities Commission",
     year = 2021
-  ) %>% 
+  ) %>%
   add_row(
     countyCode = 70,
     county = "Scott",
@@ -161,7 +161,7 @@ processed_mn_elecUtil_activityData <- interpolated_mn_utility_activity %>%
       units::as_units("pound") %>%
       units::set_units("metric_ton") %>%
       as.numeric(),
-    N2O_emissions_mt = mWh_delivered * `lb N2O`  %>%
+    N2O_emissions_mt = mWh_delivered * `lb N2O` %>%
       units::as_units("pound") %>%
       units::set_units("metric_ton") %>%
       as.numeric()

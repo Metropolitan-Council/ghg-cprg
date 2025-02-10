@@ -104,14 +104,14 @@ nrel_metc_electricity_comp <- nrelQA %>%
     )
   )
 
-electricity_2005 = elecEmissions_all %>% 
-  filter(emissions_year == 2005) %>% 
-  pull(value_emissions) %>% 
+electricity_2005 <- elecEmissions_all %>%
+  filter(emissions_year == 2005) %>%
+  pull(value_emissions) %>%
   sum()
 
-electricity_2021 = elecEmissions_all %>% 
-  filter(emissions_year == 2021) %>% 
-  pull(value_emissions) %>% 
+electricity_2021 <- elecEmissions_all %>%
+  filter(emissions_year == 2021) %>%
+  pull(value_emissions) %>%
   sum()
 
 hookaddcap()
@@ -214,8 +214,10 @@ fig_energy_electricity_sector_emissions <-
     type = "bar",
     source = "fig-energy-electricity-sector-emissions",
     data = county_emissions %>%
-      filter(emissions_year == 2021,
-        category == "Electricity"),
+      filter(
+        emissions_year == 2021,
+        category == "Electricity"
+      ),
     y = ~ reorder(county_name, value_emissions),
     x = ~value_emissions,
     color = ~source,
@@ -300,7 +302,7 @@ cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.R
 
 emissions_population <- left_join(elecEmissions_all, cprg_population,
   by = c("county_name")
-) %>% 
+) %>%
   filter(emissions_year == 2021)
 
 fig_electricity_emissions_population <- plot_ly(
@@ -340,8 +342,10 @@ fig_electricity_emissions_population
 ```{r region-total-electricity}
 region_total_electricity <- county_emissions %>%
   ungroup() %>%
-  filter(source == "Electricity",
-         emissions_year == 2021) %>%
+  filter(
+    source == "Electricity",
+    emissions_year == 2021
+  ) %>%
   summarize(value_emissions = sum(value_emissions)) %>%
   magrittr::extract2("value_emissions")
 
@@ -395,7 +399,7 @@ We compared our county-level emissions figures to emissions estimates derived fr
 #       traceorder = "normal"
 #     )
 #   )
-# 
+#
 # # Show the plot
 # fig_eia_qa_electricity_plot
 ```
@@ -418,7 +422,7 @@ The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly fo
 
 # Create the plotly graph
 fig_nrel_qa_electricity <- plot_ly(
-  data = nrel_metc_electricity_comp %>% 
+  data = nrel_metc_electricity_comp %>%
     filter(emissions_year == 2021),
   x = ~ reorder(county_name, -value_emissions),
   y = ~value_emissions,

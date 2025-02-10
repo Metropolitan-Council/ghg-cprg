@@ -27,7 +27,7 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 #   )
 
 
-onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>% 
+onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>%
   rename(value_emissions = emissions_metric_tons_co2e)
 
 onroad_county_summary <- onroad_emissions %>%
@@ -64,19 +64,19 @@ modes_included <-
   unique() %>%
   stringr::str_to_lower()
 
-transportation_2005 = onroad_emissions %>% 
-  filter(emissions_year == 2005) %>% 
-  pull(value_emissions) %>% 
+transportation_2005 <- onroad_emissions %>%
+  filter(emissions_year == 2005) %>%
+  pull(value_emissions) %>%
   sum()
 
-transportation_2021 = onroad_emissions %>% 
-  filter(emissions_year == 2021) %>% 
-  pull(value_emissions) %>% 
+transportation_2021 <- onroad_emissions %>%
+  filter(emissions_year == 2021) %>%
+  pull(value_emissions) %>%
   sum()
 
-transportation_2020 = onroad_emissions %>% 
-  filter(emissions_year == 2020) %>% 
-  pull(value_emissions) %>% 
+transportation_2020 <- onroad_emissions %>%
+  filter(emissions_year == 2020) %>%
+  pull(value_emissions) %>%
   sum()
 
 hookaddcap()
@@ -104,7 +104,6 @@ fig_transportation_county_emissions <- plot_county_sector_emissions(
 )
 
 fig_transportation_county_emissions
-
 ```
 
 <!--
