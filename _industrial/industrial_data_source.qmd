@@ -13,7 +13,7 @@ ghgrp_emissions <- readRDS(file.path(here::here(), "_industrial/data/ghgrp_indus
 nei_emissions <- readRDS(file.path(here::here(), "_industrial/data/nei_county_industrial_emissions.RDS"))
 subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))
 nrel_emissions <- county_emissions %>%
-  filter(category == "Industrial energy" & source == "Natural gas")
+  filter(sector == "Industrial" & source == "Natural gas")
 mpca_emissions <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions.RDS"))
 
 ### remove doublecount from NEI emissions with FLIGHT data
@@ -277,12 +277,12 @@ mpca_natural_gas <- mpca_emissions %>%
 
 natural_gas_comp <- bind_rows(
   nrel_emissions %>%
-    filter(year == 2021) %>%
+    filter(emissions_year == 2021) %>%
     mutate(data_source = "NREL") %>%
     select(
-      inventory_year = year,
-      county_name = geog_name,
-      value_emissions = value_emissions,
+      inventory_year = emissions_year,
+      county_name,
+      value_emissions,
       data_source
     ),
   natural_gas_c_2021 %>%
@@ -369,11 +369,11 @@ nei_2020_no_doublecount <- left_join(
 
 natural_gas_comp2 <- bind_rows(
   nrel_emissions %>%
-    filter(year == 2021) %>%
+    filter(emissions_year == 2021) %>%
     mutate(data_source = "NREL") %>%
     select(
-      inventory_year = year,
-      county_name = geog_name,
+      inventory_year = emissions_year,
+      county_name,
       values_emissions = value_emissions,
       data_source
     ),
