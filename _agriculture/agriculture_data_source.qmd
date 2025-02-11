@@ -307,3 +307,10 @@ Estimates from the census and surveys are reasonably close for dairy cows and be
 
 In the absence of CTU level livestock or crop production data, the ICLEI U.S. Community Protocol recommends downscaling from county data using the ratio of agricultural land in the community to agricultural land in the county. We followed this approach for downscaling county level emissions using NLCD land cover data to find the ratio of CTU agricultural land to county agricultural land. Future work should seek to downscale livestock counts and crop production (i.e. activity data) and recalculate emissions, enabling more direct reduction measure estimations for various agricultural components (e.g. changes to cattle feed additives that may reduce enteric fermentation).
 
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+

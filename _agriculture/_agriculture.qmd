@@ -349,3 +349,11 @@ map_ctu_ag
 
 ## Summary
 Methane production is largely tied to consumer food preferences, with enteric fermentation in cattle raised for meat and dairy production being the central driver of agricultural methane production. Nitrous oxide emissions also derive from livestock via manure emissions, both in managed systems and in manure that is applied to or leaches into soils. Crop production also accounts for a large percentage of agricultural nitrous oxide emissions via synthetic fertilizer production and the biochemical processes that delivers nitrogen to soils. Efficient agricultural techniques, particularly in crop management, can reduce the amount of nitrogen entering soil and therefore the amount that is volatilized into gaseous nitrous oxide.
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
