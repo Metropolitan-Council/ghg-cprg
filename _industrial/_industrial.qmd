@@ -153,8 +153,10 @@ Regional industrial emissions have increased by `r 100*round((ind_emissions_2021
 fig_ind_baseline <- plot_ly(
   source = "fig-ind-baseline-emissions",
   data = county_emissions %>%
-    filter(sector == "Industrial",
-           emissions_year <= 2022) %>%
+    filter(
+      sector == "Industrial",
+      emissions_year <= 2022
+    ) %>%
     group_by(emissions_year, category) %>%
     summarise(value_emissions = sum(value_emissions)),
   x = ~emissions_year,

@@ -18,10 +18,12 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
-fuel_use <- readRDS(file.path(here::here(), "_energy/data/fuel_use.RDS")) %>% 
-  rename(county_name = NAME,
-         emissions_year = year,
-         value_emissions = emissions_metric_tons_co2e)
+fuel_use <- readRDS(file.path(here::here(), "_energy/data/fuel_use.RDS")) %>%
+  rename(
+    county_name = NAME,
+    emissions_year = year,
+    value_emissions = emissions_metric_tons_co2e
+  )
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
