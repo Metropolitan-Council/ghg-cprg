@@ -23,6 +23,7 @@ cprg_census_county_population <- readRDS(file.path(here::here(), "_meta/data/cen
   filter(cprg_area == TRUE) %>%
   mutate(population_year = as.numeric(population_year))
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+lggit_totals <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_totals.RDS"))
 
 onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>%
   rename(value_emissions = emissions_metric_tons_co2e)
@@ -304,12 +305,12 @@ fig_emissions_pop_transportation
 <!-- {{< pagebreak >}} -->
 
 
-<!-- ```{r echo=FALSE} -->
-<!-- caption_index <- readRDS(file.path(here::here(), "caption_index.RDS")) -->
-<!-- caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0") -->
-<!-- saveCap(paste0("cap-", caption_index)) -->
-<!-- saveRDS(caption_index, file.path(here::here(), "caption_index.RDS")) -->
-<!-- ``` -->
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
 
 {{< pagebreak >}}
 
