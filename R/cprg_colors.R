@@ -140,3 +140,18 @@ esa_color <- c(
   "forestgreen", "brown4", "yellow2", "wheat3", "red",
   "plum", "lightblue", "navy", "mediumturquoise"
 )
+
+waterway_colors <- c(
+  "LakePond" = "steelblue",
+  "StreamRiver" = "lightskyblue",
+  "Reservoir" = "maroon3",
+  "SwampMarsh" = "palegreen3",
+  "Lock Chamber" = "purple3",
+  "DamWeir" = "darkslategray4",
+  "Connector" = "red",
+  "CanalDitch" = "goldenrod",
+  "Underground Conduit" = "darkorchid1",
+  "Pipeline" = "darkslategray",
+  "ArtificialPath" = "green"
+)
+
