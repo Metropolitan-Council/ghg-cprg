@@ -61,7 +61,7 @@ ww_emissions <- readRDS("_waste/data/_county_wastewater_emissions.RDS") %>%
     unit_emissions = "Metric tons CO2e",
     emissions_year = as.numeric(inventory_year)
   ) %>%
-  ungroup() %>% 
+  ungroup() %>%
   select(names(transportation_emissions))
 
 
@@ -74,7 +74,7 @@ solid_waste <- readRDS("_waste/data/final_solid_waste_allyrs.RDS") %>%
     emissions_year = as.numeric(inventory_year),
     unit_emissions = "Metric tons CO2e"
   ) %>%
-  ungroup() %>% 
+  ungroup() %>%
   select(names(transportation_emissions))
 
 
@@ -93,7 +93,7 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
     geog_level = "county",
     source = paste(sector, "electricity")
   ) %>%
-  ungroup() %>% 
+  ungroup() %>%
   select(names(transportation_emissions))
 
 
@@ -107,7 +107,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
     geog_level = "county",
     source = paste(sector, "natural gas")
   ) %>%
-  ungroup() %>% 
+  ungroup() %>%
   select(names(transportation_emissions))
 
 
@@ -126,7 +126,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
     value_emissions = emissions_metric_tons_co2e,
     unit_emissions = "Metric tons CO2e"
   ) %>%
-  ungroup() %>% 
+  ungroup() %>%
   select(names(transportation_emissions))
 
 # agriculture ----
@@ -144,7 +144,7 @@ agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds"
     data_source = data_source,
     factor_source = factor_source
   ) %>%
-  ungroup() %>% 
+  ungroup() %>%
   select(names(transportation_emissions))
 
 

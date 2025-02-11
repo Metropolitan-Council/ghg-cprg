@@ -21,10 +21,14 @@ testthat::test_that("Park carbon data values are as expected", {
 
 
   cprg_7 <- vect(cprg_county %>% filter(!county_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce")))
-  county_seq_7 <- county_emissions %>% filter(county_name %in% cprg_7$county_name, sector == "Natural Systems",
-                                              emissions_year == 2021)
-  county_stock_7 <- carbon_stock_area %>% filter(county_name %in% cprg_7$county_name,
-                                                 emissions_year == 2021)
+  county_seq_7 <- county_emissions %>% filter(
+    county_name %in% cprg_7$county_name, sector == "Natural Systems",
+    emissions_year == 2021
+  )
+  county_stock_7 <- carbon_stock_area %>% filter(
+    county_name %in% cprg_7$county_name,
+    emissions_year == 2021
+  )
 
 
   park_area_total <- sum(expanse(parks, unit = "km")) # 307.684
