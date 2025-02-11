@@ -1,4 +1,4 @@
-# Electricity
+# Methods and data sources
 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(

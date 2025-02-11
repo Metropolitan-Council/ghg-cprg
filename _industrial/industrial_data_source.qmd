@@ -1,4 +1,17 @@
-# Industrial methods and data sources
+# Methods and data sources
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
 ```{r include=FALSE}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -13,7 +26,7 @@ ghgrp_emissions <- readRDS(file.path(here::here(), "_industrial/data/ghgrp_indus
 nei_emissions <- readRDS(file.path(here::here(), "_industrial/data/nei_county_industrial_emissions.RDS"))
 subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))
 nrel_emissions <- county_emissions %>%
-  filter(category == "Industrial energy" & source == "Natural gas")
+  filter(sector == "Industrial" & source == "Natural gas")
 mpca_emissions <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions.RDS"))
 
 ### remove doublecount from NEI emissions with FLIGHT data
@@ -277,12 +290,12 @@ mpca_natural_gas <- mpca_emissions %>%
 
 natural_gas_comp <- bind_rows(
   nrel_emissions %>%
-    filter(year == 2021) %>%
+    filter(emissions_year == 2021) %>%
     mutate(data_source = "NREL") %>%
     select(
-      inventory_year = year,
-      county_name = geog_name,
-      value_emissions = emissions_metric_tons_co2e,
+      inventory_year = emissions_year,
+      county_name,
+      value_emissions,
       data_source
     ),
   natural_gas_c_2021 %>%
@@ -327,7 +340,7 @@ fig_industrial_ng_emissions
 ```
 
 
-```{r fig-natural-gas-comparison}
+```{r fig-natural-gas-comparison-doublecount}
 #| fig-cap: "Comparison of natural gas combustion data"
 #| out-width: "95%"
 
@@ -369,12 +382,12 @@ nei_2020_no_doublecount <- left_join(
 
 natural_gas_comp2 <- bind_rows(
   nrel_emissions %>%
-    filter(year == 2021) %>%
+    filter(emissions_year == 2021) %>%
     mutate(data_source = "NREL") %>%
     select(
-      inventory_year = year,
-      county_name = geog_name,
-      values_emissions = emissions_metric_tons_co2e,
+      inventory_year = emissions_year,
+      county_name,
+      values_emissions = value_emissions,
       data_source
     ),
   nei_emissions %>%
@@ -434,4 +447,12 @@ fig_industrial_ng_emissions2
 
 ### Scaling to CTUs
 
+Industrial emissions are provided as point sources from federal and state databases, allowing straightforward attribution to cities and townships. One remaining issue is to ensure proper attribution for cities and townships that share a name.
 
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```

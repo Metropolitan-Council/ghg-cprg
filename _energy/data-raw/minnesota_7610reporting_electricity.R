@@ -84,6 +84,7 @@ combined_MNelectUtil_activityData <- do.call(rbind, lapply(file_list, process_fi
 
 
 
+
 # manual data collection to fill in gaps for 2021 as needed
 
 # Elk River -- 341,047.71 mWh delivered to customers in 2021, all goes to Sherburne county (marginal amounts to Hennepin in other years)
@@ -104,8 +105,9 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
 # New Prague Utilities -- 69,291.725 mWh delivered to customers in 2021,
 # source: pg 18 https://www.ci.new-prague.mn.us/vertical/sites/%7BAD7ECB62-2C5E-4BA0-8F19-1426026AFA3E%7D/uploads/01-24-2022_Utilities_Commission_Meeting_Packet.pdf
 
-scottProp <- 45972 / 65674 #proportion of utility operation in Scott County
-scottNewPragueMuni_mWh_2021 <- scottProp * 69291.725
+scottProp <- 45972 / 65674 # proportion of utility operation in Scott County
+scottNewPragueMuni_mWh_2021 <- scottProp * 72086.211
+scottNewPragueMuni_mWh_2020 <- scottProp * 67435.726
 combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
   add_row(
     countyCode = 70,
@@ -113,20 +115,56 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
     mWh_delivered = scottNewPragueMuni_mWh_2021,
     utility = "New Prague Utilities Commission",
     year = 2021
+  ) %>%
+  add_row(
+    countyCode = 70,
+    county = "Scott",
+    mWh_delivered = scottNewPragueMuni_mWh_2020,
+    utility = "New Prague Utilities Commission",
+    year = 2020
   )
 
 # Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county,
 # process and merge data -- this will be a separate data collection process spanning excel reports submitted to state
-processed_mn_elecUtil_activityData <- combined_MNelectUtil_activityData %>%
+
+## interpolate missing county-utility combinations
+
+full_grid <- expand.grid(
+  year = 2013:2023,
+  county = unique(combined_MNelectUtil_activityData$county),
+  utility = unique(combined_MNelectUtil_activityData$utility)
+) %>%
+  inner_join(combined_MNelectUtil_activityData %>% distinct(county, utility), by = c("county", "utility"))
+
+# Merge with original data
+interpolated_mn_utility_activity <- full_grid %>%
+  left_join(combined_MNelectUtil_activityData, by = c("year", "county", "utility")) %>%
+  arrange(county, utility, year) %>%
+  group_by(county, utility) %>%
+  mutate(
+    data_source = if_else(is.na(mWh_delivered), "Interpolated", "Utility report"),
+    mWh_delivered = na_kalman(mWh_delivered)
+  ) %>%
+  ungroup()
+
+
+processed_mn_elecUtil_activityData <- interpolated_mn_utility_activity %>%
   left_join(egridTimeSeries,
     by = join_by(year == Year)
   ) %>%
-  # temporary, when eGRID 2023 is release 01/2025 this will be removed.
-  filter(year != 2023) %>%
   mutate(
-    CO2_emissions = mWh_delivered * `lb CO2`,
-    CH4_emissions = mWh_delivered * `lb CH4`,
-    N2O_emissions = mWh_delivered * `lb N2O`
+    CO2_emissions_mt = mWh_delivered * `lb CO2` %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    CH4_emissions_mt = mWh_delivered * `lb CH4` %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    N2O_emissions_mt = mWh_delivered * `lb N2O` %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric()
   ) %>%
   # get rid of unnecessary columns from eGRID factor tables
   select(-eGrid_Subregion,
@@ -142,23 +180,15 @@ MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
   group_by(year, county) %>%
   summarise(
     total_mWh_delivered = sum(mWh_delivered, na.rm = TRUE),
-    total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
-    total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
-    total_CH4_emissions_lbs = sum(CH4_emissions, na.rm = TRUE),
-    total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
-    total_N2O_emissions_lbs = sum(N2O_emissions, na.rm = TRUE),
-    total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000,
-    total_CO2e_emissions_lbs = sum(
-      CO2_emissions +
-        (CH4_emissions * gwp$ch4) +
-        (N2O_emissions * gwp$n2o),
+    total_CO2_emissions_mt = sum(CO2_emissions_mt, na.rm = TRUE),
+    total_CH4_emissions_mt = sum(CH4_emissions_mt, na.rm = TRUE),
+    total_N2O_emissions_mt = sum(N2O_emissions_mt, na.rm = TRUE),
+    emissions_metric_tons_co2e = sum(
+      CO2_emissions_mt +
+        (CH4_emissions_mt * gwp$ch4) +
+        (N2O_emissions_mt * gwp$n2o),
       na.rm = TRUE
-    ),
-    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
-    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
-      units::as_units("pound") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric()
+    )
   ) %>%
   ungroup() %>%
   mutate(

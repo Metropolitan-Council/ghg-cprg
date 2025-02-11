@@ -1,4 +1,4 @@
-## National Emissions Inventory {#sec-epa-nei}
+### National Emissions Inventory {#sec-epa-nei}
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -41,7 +41,7 @@ nei_emissions_all <- epa_nei %>%
 ```
 
 
-## Verification and validation
+#### Verification and validation
 
 NEI data were cross-verified by comparing county level emissions totals compiled from NEI EnviroFacts, NEI data summaries by region, and compiled SMOKE FF10. 
 
@@ -50,13 +50,13 @@ NEI data were cross-verified by comparing county level emissions totals compiled
 Data published on the EPA website are subject to change at any time. Every effort was taken to align versions, model runs, and other opportunities for differentiation. 
 
 
-### Activity data
+##### Activity data
 
 Compare underlying activity data with data from state DOTs
 
-### Emissions factors
+##### Emissions factors
 
-## Limitations 
+#### Limitations 
 
 
 

@@ -20,25 +20,25 @@ ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/_agricultural
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 
 emissions_2021 <- county_emissions %>%
-  filter(year == 2021) %>%
-  pull(emissions_metric_tons_co2e) %>%
+  filter(emissions_year == 2021) %>%
+  pull(value_emissions) %>%
   sum()
 ag_emissions_2021 <- county_emissions %>%
-  filter(year == 2021, sector == "Agriculture") %>%
-  pull(emissions_metric_tons_co2e) %>%
+  filter(emissions_year == 2021, sector == "Agriculture") %>%
+  pull(value_emissions) %>%
   sum()
 ag_emissions_2005 <- county_emissions %>%
-  filter(year == 2005, sector == "Agriculture") %>%
-  pull(emissions_metric_tons_co2e) %>%
+  filter(emissions_year == 2005, sector == "Agriculture") %>%
+  pull(value_emissions) %>%
   sum()
 
 
 rural_ag_2021 <- county_emissions %>%
   filter(
-    year == 2021, sector == "Agriculture",
-    geog_name %in% c("St. Croix", "Pierce", "Carver", "Dakota")
+    emissions_year == 2021, sector == "Agriculture",
+    county_name %in% c("St. Croix", "Pierce", "Carver", "Dakota")
   ) %>%
-  pull(emissions_metric_tons_co2e) %>%
+  pull(value_emissions) %>%
   sum()
 
 methane_2021 <- ag_emissions %>%
@@ -83,16 +83,17 @@ fig_ag_county_emissions <- plot_ly(
   data = county_emissions %>%
     filter(
       sector == "Agriculture",
-      year == 2021
+      emissions_year == 2021
     ),
-  y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
+  y = ~ reorder(county_name, value_emissions),
+  x = ~value_emissions,
   color = ~source,
   colors = unlist(source_colors),
   hovertemplate = ~ paste0(
-    geog_name, "<br>",
+    county_name, "<br>",
+    category, "<br>",
     source, "<br>",
-    round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -131,10 +132,10 @@ fig_ag_baseline <- plot_ly(
   source = "fig-ag-baseline-emissions",
   data = county_emissions %>%
     filter(sector == "Agriculture") %>%
-    group_by(year, category) %>%
-    summarise(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
-  x = ~year,
-  y = ~emissions_metric_tons_co2e,
+    group_by(emissions_year, category) %>%
+    summarise(value_emissions = sum(value_emissions)),
+  x = ~emissions_year,
+  y = ~value_emissions,
   color = ~category, #
   colors = unlist(category_colors), # Directly map the colors to categories
   type = "scatter",
@@ -348,3 +349,11 @@ map_ctu_ag
 
 ## Summary
 Methane production is largely tied to consumer food preferences, with enteric fermentation in cattle raised for meat and dairy production being the central driver of agricultural methane production. Nitrous oxide emissions also derive from livestock via manure emissions, both in managed systems and in manure that is applied to or leaches into soils. Crop production also accounts for a large percentage of agricultural nitrous oxide emissions via synthetic fertilizer production and the biochemical processes that delivers nitrogen to soils. Efficient agricultural techniques, particularly in crop management, can reduce the amount of nitrogen entering soil and therefore the amount that is volatilized into gaseous nitrous oxide.
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```

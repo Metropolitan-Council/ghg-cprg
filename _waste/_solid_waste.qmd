@@ -23,29 +23,29 @@ cprg_county <- readRDS(file.path(
 ))
 
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
-# county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 # this file is currently out of date. please update before adding full sector graphs
 
-# county_emissions_summary <- county_emissions %>%
-#   group_by(sector, category, source, data_source, factor_source) %>%
-#   summarize(
-#     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
-#     .groups = "keep"
-#   )
+county_emissions_summary <- county_emissions %>%
+  group_by(sector, category, source, data_source, factor_source) %>%
+  summarize(
+    value_emissions = sum(value_emissions),
+    .groups = "keep"
+  )
 
-# sector_percentages <- county_emissions_summary %>%
-#   group_by(sector) %>%
-#   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
-#   arrange(-emissions_metric_tons_co2e) %>%
-#   janitor::adorn_percentages(denominator = "col")
+sector_percentages <- county_emissions_summary %>%
+  group_by(sector) %>%
+  summarize(value_emissions = sum(value_emissions)) %>%
+  arrange(-value_emissions) %>%
+  janitor::adorn_percentages(denominator = "col")
 
 
-# waste_percentages <- county_emissions_summary %>%
-#   filter(sector == "Waste") %>%
-#   group_by(category, source) %>%
-#   summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e), .groups = "keep") %>%
-#   arrange(-emissions_metric_tons_co2e) %>%
-#   janitor::adorn_percentages(denominator = "col")
+waste_percentages <- county_emissions_summary %>%
+  filter(sector == "Waste") %>%
+  group_by(category, source) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
+  arrange(-value_emissions) %>%
+  janitor::adorn_percentages(denominator = "col")
 
 solid_waste_emissions <- readRDS(file.path(
   here::here(),
@@ -70,11 +70,11 @@ solid_waste_named <- solid_waste_emissions %>%
 sw_county_summary <- solid_waste_named %>%
   group_by(inventory_year, county_name) %>%
   summarize(
-    emissions_metric_tons_co2e = sum(value_emissions),
+    value_emissions = sum(value_emissions),
     .groups = "keep"
   ) %>%
   rowwise() %>%
-  mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions))
 
 solid_waste_max_year <- solid_waste_emissions %>%
   filter(inventory_year == max(inventory_year)) %>%
@@ -106,7 +106,7 @@ There are already some actions in place to reduce waste emissions in Minnesota. 
 
 ### Overview
 
-Emissions from waste generated `r round(sum(county_emissions$emissions_metric_tons_co2e)/1000000 * sector_percentages[[2]][3], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Solid waste, including landfills, incineration, and organics, generates the largest share of emissions in the waste sector, with municipal wastewater treatment comprising a smaller share of waste emissions. 
+Emissions from waste generated `r round(sum(county_emissions$value_emissions)/1000000 * sector_percentages[[2]][3], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Solid waste, including landfills, incineration, and organics, generates the largest share of emissions in the waste sector, with municipal wastewater treatment comprising a smaller share of waste emissions. 
 
 <!-- Waste emissions in Minnesota have declined nearly 40% since 2005 - update with our figures, due to a variety of factors including gas capture technologies and aging waste in open landfills [@mpcaClimateChangeTrends2023]. Waste emissions in Wisconsin show no significant change from 2005 to 2018, possibly due to increased waste generation offsetting reductions from gas capture [@wisconsindnrGreenhouseGas2021]. The Metropolitan Council, which oversees wastewater services for the majority of the urbanized extent of the metropolitan region, continues to work to reduce wastewater emissions across its 9 wastewater treatment plants. -->
 
@@ -153,8 +153,8 @@ over time
 solid_waste_percentages <- solid_waste_emissions %>%
   filter(inventory_year == 2021) %>%
   group_by(category, source) %>%
-  summarize(emissions_metric_tons_co2e = sum(value_emissions)) %>%
-  arrange(-emissions_metric_tons_co2e) %>%
+  summarize(value_emissions = sum(value_emissions)) %>%
+  arrange(-value_emissions) %>%
   janitor::adorn_percentages(denominator = "col")
 
 
@@ -162,11 +162,11 @@ total_solid_waste <-
   solid_waste_emissions %>%
   ungroup() %>%
   filter(inventory_year == 2021) %>%
-  summarise(emissions_metric_tons_co2e = sum(value_emissions)) %>%
-  extract2("emissions_metric_tons_co2e")
+  summarise(value_emissions = sum(value_emissions)) %>%
+  extract2("value_emissions")
 ```
 
-Solid waste generated `r round(total_solid_waste/1000000, digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Of that total, `r scales::percent(solid_waste_percentages$emissions_metric_tons_co2e[1], accuracy = 0.1)` of emissions came from `r str_to_lower(solid_waste_percentages$source[1])`, `r scales::percent(solid_waste_percentages$emissions_metric_tons_co2e[2], accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[2])` facilities, and the remaining `r scales::percent(sum(solid_waste_percentages$emissions_metric_tons_co2e[3:4]), accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[3])` and `r str_to_lower(solid_waste_percentages$source[4])`.  
+Solid waste generated `r round(total_solid_waste/1000000, digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Of that total, `r scales::percent(solid_waste_percentages$value_emissions[1], accuracy = 0.1)` of emissions came from `r str_to_lower(solid_waste_percentages$source[1])`, `r scales::percent(solid_waste_percentages$value_emissions[2], accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[2])` facilities, and the remaining `r scales::percent(sum(solid_waste_percentages$value_emissions[3:4]), accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[3])` and `r str_to_lower(solid_waste_percentages$source[4])`.  
 
 ```{r fig-solid-waste-emissions}
 #| fig-cap: "2021 solid waste emissions"
@@ -273,7 +273,7 @@ fig_solid_waste_time_series_county <- sw_county_summary %>%
   plot_ly(
     source = "fig-solid-waste-time-series-county",
     x = ~inventory_year,
-    y = ~emissions_metric_tons_co2e,
+    y = ~value_emissions,
     color = ~county_name,
     colors = "Dark2",
     type = "scatter",
@@ -304,18 +304,18 @@ sw_source_summary <- solid_waste_named %>%
   group_by(inventory_year, source) %>%
   filter(source != "Onsite") %>%
   summarize(
-    emissions_metric_tons_co2e = sum(value_emissions),
+    value_emissions = sum(value_emissions),
     .groups = "keep"
   ) %>%
   rowwise() %>%
-  mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions))
 
 fig_solid_waste_time_series_source <- sw_source_summary %>%
   filter(source == "Landfill") %>%
   plot_ly(
     source = "fig-solid-waste-time-series-source",
     x = ~inventory_year,
-    y = ~emissions_metric_tons_co2e,
+    y = ~value_emissions,
     name = "Landfill",
     fillcolor = source_colors$Landfill,
     type = "scatter",
@@ -329,13 +329,13 @@ fig_solid_waste_time_series_source <- sw_source_summary %>%
   ) %>%
   add_trace(
     data = sw_source_summary %>% filter(source == "Organics"),
-    y = ~emissions_metric_tons_co2e,
+    y = ~value_emissions,
     name = "Organics",
     fillcolor = source_colors$Organics
   ) %>%
   add_trace(
     data = sw_source_summary %>% filter(source == "Waste to energy"),
-    y = ~emissions_metric_tons_co2e,
+    y = ~value_emissions,
     name = "Waste to energy",
     fillcolor = source_colors$`Waste to energy`
   ) %>%

@@ -1,4 +1,4 @@
-## EQUATES {#sec-epa-equates}
+### EQUATES {#sec-epa-equates}
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -33,21 +33,21 @@ Between the 2008 and 2011 NEI releases, the EPA completed major changes to their
 
 EQUATES is based on the 2017 NEI and uses MOVES3 [@foleyEQUATESAnthropogenic2023]. 
 
-EQUATES data are available for years `r equates_years[[2]]$emissions_year %>% listify()`.  
+EQUATES data are available for years `r equates_years[[1]]$emissions_year %>% listify()`.  
 
 EQUATES SMOKE FF10 data are processed in [epa_equates_read.R](data-raw/epa_equates_read.R). 
 
-## Verification and validation
+#### Verification and validation
 
 Though EQUATES datasets are available on the EPA file transfer site and the CMAS Data Warehouse Google Drive, individual file names and file contents were identical.
 
-### Activity data
+##### Activity data
 
 Compare underlying activity data with data from state DOTs
 
-### Emissions factors
+##### Emissions factors
 
-## Limitations 
+#### Limitations 
 
 In addition to limitations described in @sec-epa-emissions-limitations, EQUATES has its own set of limitations.
 
