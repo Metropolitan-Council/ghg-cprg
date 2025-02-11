@@ -40,14 +40,18 @@ wi_epa <- readr::read_csv("_waste/data-raw/wastewater/epa/epa-wi-wastewater.csv"
 wastewater_epa <- bind_rows(mn_epa, wi_epa) %>%
   filter(!CO2e == "-") %>%
   group_by(Year, STATE) %>%
-  summarize(co2e_state = sum(as.numeric(CO2e)) * 10^6)
+  summarize(co2e_state = sum(as.numeric(CO2e)) * 10^6) %>%
+  mutate(year = as.numeric(Year))
 
-wastewater_2005_2021 <- left_join(cprg_county_proportions %>% filter(year >= 2005 & year <= 2021),
+wastewater_2005_2021 <- left_join(
+  cprg_population %>%
+    mutate(population_year = as.numeric(population_year)) %>%
+    filter(population_year >= 2005 & population_year <= 2021),
   wastewater_epa,
-  by = c("year" = "Year", "STATE" = "STATE")
+  by = c("population_year" = "year", "state_name" = "STATE")
 ) %>%
   mutate(co2e = county_proportion_of_state_pop * co2e_state) %>%
-  select(STATE, STATEFP, NAME, GEOG_UNIT_ID = COUNTYFP, year, co2e)
+  select(state_name, county_name, year = population_year, co2e)
 
 # and save
 saveRDS(wastewater_2005_2021, "_waste/data/epa_county_wastewater_2005_2021.RDS")

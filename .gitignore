@@ -1146,6 +1146,43 @@ _transportation/data-raw/~$_source_method_compare.xlsx
 _transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2024-0812-144242.csv
 
 
+
+_meta/data-raw/mpca_ghg_inventory.csv
+_meta/data-raw/Minnesota GCAM Modeling Data.xlsx
+
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsb
+_industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsx
+_industrial/data-raw/MPCA_industrial_fuel_throughput.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2010.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2011.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2012.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2013.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2014.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2015.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2016.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2017.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2018.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2019.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2020.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2021.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2022.xlsx
+_industrial/data-raw/ghgrp/ghgp_data_2023.xlsx
+_meta/data-raw/state-ghg-inventory.csv
+
+
+
+_transportation/data-raw/mndot/city_route_system/
+
+_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/
+
+_transportation/data-raw/mndot/updated_VMT_County_City_Route_System.zip
+
+_agriculture/data-raw/ag-module.xlsx
+
+
+/_nature/data-raw/nhd_gdb
+
+
 _energy/data-raw/nrel_slope/MNWI
 
 _energy/data-raw/dataExplorer.twb
@@ -1168,6 +1205,7 @@ _energy/data-raw/GRE_individualReports
 
 _energy/data-raw/xcel_community_reports
 
+
 _energy/data-raw/regional_indicators_initiative
 
 _industrial/data-raw/emissions_by_unit_and_fuel_type_c_d_aa.xlsb
@@ -1180,3 +1218,14 @@ _industrial/data-raw/mn_flight.xls
 
 _industrial/data-raw/MPCA_industrial_fuel_throughput.xlsx
 _energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.zip
+
+
+_transportation/data-raw/regional_indicators_initiative/2025-01-15_transportation_emissions/
+
+_transportation/data-raw/metc_travel_model~Updated upstream
+
+index_files/
+
+_nature/data_nlcd_cover_files/
+
+_nature/_natural_systems_inventory_files/
