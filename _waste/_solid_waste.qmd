@@ -74,7 +74,7 @@ sw_county_summary <- solid_waste_named %>%
     .groups = "keep"
   ) %>%
   rowwise() %>%
-  mutate(rounded_tons = round_value_emissions(value_emissions))
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions))
 
 solid_waste_max_year <- solid_waste_emissions %>%
   filter(inventory_year == max(inventory_year)) %>%
@@ -308,7 +308,7 @@ sw_source_summary <- solid_waste_named %>%
     .groups = "keep"
   ) %>%
   rowwise() %>%
-  mutate(rounded_tons = round_value_emissions(value_emissions))
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions))
 
 fig_solid_waste_time_series_source <- sw_source_summary %>%
   filter(source == "Landfill") %>%
