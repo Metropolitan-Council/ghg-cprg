@@ -34,7 +34,7 @@ wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_
 natGasEmissions_all <- county_emissions %>%
   filter(source == "Natural gas") %>%
   mutate(county = county_name) %>%
-  group_by(county, year, source) %>%
+  group_by(county, emissions_year, source) %>%
   summarise(
     value_emissions = sum(value_emissions),
     .groups = "rowwise"
@@ -42,7 +42,7 @@ natGasEmissions_all <- county_emissions %>%
 
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 emissions_population <- left_join(natGasEmissions_all, cprg_population,
-  by = c("county" = "NAME")
+  by = c("county" = "county_name")
 )
 
 nrel_qa_natural_gas <- read_rds(
@@ -60,7 +60,7 @@ nrel_metc_natural_gas_comp <- nrel_qa_natural_gas %>%
   left_join(
     natGasEmissions_all %>%
       select(county,
-        year,
+        emissions_year,
         MetC = value_emissions
       ),
     by = "county"
@@ -189,6 +189,7 @@ fig_energy_natural_gas_by_sector_emissions <-
       traceorder = "reversed"
     )
   )
+
 fig_energy_natural_gas_by_sector_emissions
 ```
 
@@ -230,6 +231,7 @@ fig_ng_emissions_population <- plot_ly(
     x_title = "Total population",
     y_title = "Metric tons CO<sub>2</sub>e"
   )
+
 fig_ng_emissions_population
 ```
 
