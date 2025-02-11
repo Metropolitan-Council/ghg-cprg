@@ -33,7 +33,7 @@ wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_
 
 natGasEmissions_all <- county_emissions %>%
   filter(source == "Natural gas") %>%
-  mutate(county = geog_name) %>%
+  mutate(county = county_name) %>%
   group_by(county, year, source) %>%
   summarise(
     value_emissions = sum(value_emissions),
@@ -165,12 +165,12 @@ fig_energy_natural_gas_by_sector_emissions <-
     source = "fig-energy-natural-gas-by-sector-emissions",
     data = county_emissions %>%
       filter(source == "Natural gas"),
-    y = ~ reorder(geog_name, value_emissions),
+    y = ~ reorder(county_name, value_emissions),
     x = ~value_emissions,
     color = ~category,
     colors = unlist(category_colors),
     hovertemplate = ~ paste0(
-      geog_name, " County", "<br>",
+      county_name, " County", "<br>",
       source, ", ", category, "<br>",
       round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
