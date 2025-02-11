@@ -1,4 +1,4 @@
-# Methods and data sources  
+# Methods and data sources  {#sec-waste-methods}
 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
