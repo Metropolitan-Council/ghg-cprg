@@ -288,9 +288,25 @@ saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
 write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)
 
-county_emissions <- emissions_all
+### carbon stock
 
-# saveRDS(carbon_stock, "_meta/data/cprg_county_carbon_stock.RDS")
+natural_systems_stock <- readRDS("_nature/data/nlcd_county_landcover_sequestration_2001_2021.RDS") %>%
+  filter(year >= 2005) %>%
+  mutate(
+    emissions_year = year,
+    sector = "Natural Systems",
+    geog_level = "county",
+    category = "Sequestration",
+    source = stringr::str_to_sentence(str_replace_all(land_cover_type, "_", " ")),
+    data_source = "USGS National Landcover Database",
+    factor_source = "Various primary literature",
+    value_emissions = stock_potential,
+    unit_emissions = "Metric tons CO2e"
+  ) %>%
+  ungroup() %>%
+  select(names(transportation_emissions))
+
+saveRDS(natural_systems_stock, "_meta/data/cprg_county_carbon_stock.RDS")
 # saveRDS(emissions_all_meta, "_meta/data/cprg_county_carbon_stock_meta.RDS")
 
 # save emissions to shared drive location
