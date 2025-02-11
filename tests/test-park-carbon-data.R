@@ -12,7 +12,7 @@ testthat::test_that("Park carbon data values are as expected", {
 
   carbon_stock_area <- left_join(
     carbon_stock %>%
-      group_by(county_name) %>%
+      group_by(county_name, emissions_year) %>%
       summarize(value_emissions = sum(value_emissions)),
     cprg_area,
     by = c("county_name" = "county_name")
@@ -23,7 +23,8 @@ testthat::test_that("Park carbon data values are as expected", {
   cprg_7 <- vect(cprg_county %>% filter(!county_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce")))
   county_seq_7 <- county_emissions %>% filter(county_name %in% cprg_7$county_name, sector == "Natural Systems",
                                               emissions_year == 2021)
-  county_stock_7 <- carbon_stock_area %>% filter(geog_name %in% cprg_7$county_name)
+  county_stock_7 <- carbon_stock_area %>% filter(county_name %in% cprg_7$county_name,
+                                                 emissions_year == 2021)
 
 
   park_area_total <- sum(expanse(parks, unit = "km")) # 307.684
@@ -41,8 +42,8 @@ testthat::test_that("Park carbon data values are as expected", {
     summarize(area = sum(area))
 
   park_seq_ratio <- sum(park_carbon$sequestration_potential) / sum(county_seq_7$value_emissions) # 5.56%
-  park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_stock_7$emissions_metric_tons_co2e) # 7.19%
+  park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_stock_7$value_emissions) # 7.19%
 
   testthat::expect_equal(park_seq_ratio * 100, 6.77, tolerance = 0.01)
-  testthat::expect_equal(park_stock_ratio * 100, 7.19, tolerance = 0.01)
+  testthat::expect_equal(park_stock_ratio * 100, 6.60, tolerance = 0.01)
 })
