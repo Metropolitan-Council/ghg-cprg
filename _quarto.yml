@@ -55,7 +55,7 @@ book:
       chapters:
        - _waste/_solid_waste.qmd
        - _waste/data_solid_waste.qmd
-       - _waste/data_mpca_score.qmd
+       # - _waste/data_mpca_score.qmd
        - _waste/methods_solid_waste.qmd
        - _waste/qc_waste_other.qmd
     

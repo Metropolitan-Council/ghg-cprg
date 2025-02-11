@@ -23,29 +23,29 @@ cprg_county <- readRDS(file.path(
 ))
 
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
-# county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 # this file is currently out of date. please update before adding full sector graphs
 
-# county_emissions_summary <- county_emissions %>%
-#   group_by(sector, category, source, data_source, factor_source) %>%
-#   summarize(
-#     value_emissions = sum(value_emissions),
-#     .groups = "keep"
-#   )
+county_emissions_summary <- county_emissions %>%
+  group_by(sector, category, source, data_source, factor_source) %>%
+  summarize(
+    value_emissions = sum(value_emissions),
+    .groups = "keep"
+  )
 
-# sector_percentages <- county_emissions_summary %>%
-#   group_by(sector) %>%
-#   summarize(value_emissions = sum(value_emissions)) %>%
-#   arrange(-value_emissions) %>%
-#   janitor::adorn_percentages(denominator = "col")
+sector_percentages <- county_emissions_summary %>%
+  group_by(sector) %>%
+  summarize(value_emissions = sum(value_emissions)) %>%
+  arrange(-value_emissions) %>%
+  janitor::adorn_percentages(denominator = "col")
 
 
-# waste_percentages <- county_emissions_summary %>%
-#   filter(sector == "Waste") %>%
-#   group_by(category, source) %>%
-#   summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
-#   arrange(-value_emissions) %>%
-#   janitor::adorn_percentages(denominator = "col")
+waste_percentages <- county_emissions_summary %>%
+  filter(sector == "Waste") %>%
+  group_by(category, source) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
+  arrange(-value_emissions) %>%
+  janitor::adorn_percentages(denominator = "col")
 
 solid_waste_emissions <- readRDS(file.path(
   here::here(),

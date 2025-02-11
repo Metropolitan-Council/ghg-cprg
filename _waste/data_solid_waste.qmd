@@ -19,7 +19,7 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
-{{< include data_mpca_score.qmd >}}
+<!-- {{< include data_mpca_score.qmd >}} -->
 
 ### MPCA Waste Characterization Study
 
