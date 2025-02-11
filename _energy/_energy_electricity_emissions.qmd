@@ -163,7 +163,7 @@ No regulatory requirements in Minnesota or Wisconsin directly require utilities 
 
 ##### Processing utility-provided data
 
-Xcel, the largest electric utility in our region, publishes Community Energy Reports [@xcelenergy] that document energy deliveries to specific communities in their service area. We gathered this data for years 2015-2022 and compiled it into the final .RDS file [xcel_activityData_NREL_2015_2022_process.RDS](data/xcel_activityData_NREL_2015_2022_process.RDS).
+Xcel, the largest electric utility in our region, publishes Community Energy Reports [@xcelEnergyCommunityEnergyReports] that document energy deliveries to specific communities in their service area. We gathered this data for years 2015-2022 and compiled it into the final .RDS file [xcel_activityData_NREL_2015_2022_process.RDS](data/xcel_activityData_NREL_2015_2022_process.RDS).
 
 [minnesota_xcelCommunityReports_electricity.R](_energy/data-raw/minnesota_xcelCommunityReports_electricity.R) includes all data processing steps necessary to process the nearly 1000 files (one for each city-year combination) made available on the Community Energy Reports site. The function `get_files` identifies and extracts relevant info (e.g., city name) from all data files, while `process_file` reads detailed electricity consumption data from sections titled “Standard Community Report” in each Excel workbook. Key metrics, such as kilowatt-hours delivered (`kWh_delivered`) and utility-reported carbon emissions (`util_reported_co2e`), are then transformed into aggregated datasets (`Xcel_activityData_2015_2023`) at the utility-year-county level.
 
