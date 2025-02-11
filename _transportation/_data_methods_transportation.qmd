@@ -10,10 +10,8 @@ knitr::opts_chunk$set(
   dpi = 300
 )
 
-
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
-
 ```{r include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
@@ -38,6 +36,7 @@ transportation_min_year <- onroad_emissions %>%
   unique()
 
 hookaddcap()
+
 ```
 
 ## Methodological framework
