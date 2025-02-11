@@ -79,7 +79,7 @@ p_nlcd_lc <- ggplot(cprg_county) +
   scale_color_manual("", values = councilR::colors$suppGray, labels = "County boundary") +
   theme(
     legend.position = "right", legend.direction = "vertical", legend.justification = c("left", "top"),
-    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+    legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
     legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size = 9), legend.text = element_text(size = 8)
   )
 # theme(
@@ -119,7 +119,7 @@ p_nlcd_is <- ggplot(cprg_county) +
   scale_color_manual("", values = councilR::colors$suppGray, labels = "County boundary") +
   theme(
     legend.position = "right", legend.direction = "vertical", legend.justification = c("left", "top"),
-    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+    legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
     legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size = 9), legend.text = element_text(size = 8)
   )
 
@@ -160,7 +160,7 @@ p_nlcd_tcc <- ggplot(cprg_county) +
   scale_color_manual("", values = councilR::colors$suppGray, labels = "County boundary") +
   theme(
     legend.position = "right", legend.direction = "vertical", legend.justification = c("left", "top"),
-    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+    legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
     legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size = 9), legend.text = element_text(size = 8)
   )
 # theme(
