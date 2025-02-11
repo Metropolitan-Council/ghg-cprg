@@ -154,4 +154,3 @@ waterway_colors <- c(
   "Pipeline" = "darkslategray",
   "ArtificialPath" = "green"
 )
-
