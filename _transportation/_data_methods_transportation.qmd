@@ -124,7 +124,7 @@ fig_emissions_pop_transportation
 
 <!-- NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and processed in R scripts: [epa_nei.R](../_meta/data-raw/epa_nei.R) and [epa_nei_envirofacts.R](data-raw/epa_nei_envirofacts.R) -->
 
-```{r read-nei}
+```{r read-process-nei}
 epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei_envirofacts.RDS"))
 
 
