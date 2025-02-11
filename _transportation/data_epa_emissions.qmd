@@ -9,7 +9,9 @@ pollutant_key <- readRDS(file.path(here::here(), "_transportation/data/pollutant
 pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key_meta.RDS"))
 epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
 
-onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS"))
+onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>% 
+  rename(value_emissions = emissions_metric_tons_co2e)
+
 
 epa_onroad_year_source <- epa_onroad_emissions_compile %>%
   mutate(emissions_year = as.character(emissions_year)) %>%
