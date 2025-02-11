@@ -23,7 +23,6 @@ cprg_census_county_population <- readRDS(file.path(here::here(), "_meta/data/cen
   filter(cprg_area == TRUE) %>%
   mutate(population_year = as.numeric(population_year))
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
-lggit_totals <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_totals.RDS"))
 
 onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>%
   rename(value_emissions = emissions_metric_tons_co2e)
@@ -125,16 +124,36 @@ fig_emissions_pop_transportation
 
 <!-- NEI data were pulled using the [EnviroFacts](https://enviro.epa.gov/) API and processed in R scripts: [epa_nei.R](../_meta/data-raw/epa_nei.R) and [epa_nei_envirofacts.R](data-raw/epa_nei_envirofacts.R) -->
 
-<!-- ```{r read-nei} -->
-<!-- epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei_envirofacts.RDS")) -->
+```{r read-nei}
+epa_nei <- readRDS(file.path(here::here(), "_transportation/data/epa_nei_envirofacts.RDS"))
 
-<!-- nei_emissions_all <- epa_nei %>% -->
-<!--   filter(nei_inventory_year == 2020) %>% -->
-<!--   group_by(zone = county_name) %>% -->
-<!--   summarize( -->
-<!--     value_emissions = sum(value_emissions) -->
-<!--   ) -->
-<!-- ``` -->
+
+vmt_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS"))
+vmt_emissions_all <- vmt_emissions %>%
+  group_by(zone) %>%
+  summarise(
+    vmt_total = sum(vmt_total),
+    vmt_same = sum(vmt_same),
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+  )
+
+
+nei_emissions_all <- epa_nei %>%
+  filter(nei_inventory_year == 2020) %>%
+  group_by(zone = county_name) %>%
+  summarize(
+    value_emissions = sum(emissions_metric_tons_co2e)
+  )
+
+nei_cprg_combine <- left_join(
+  vmt_emissions_all %>%
+    mutate(cprg_emissions = emissions_metric_tons_co2e) %>%
+    select(-emissions_metric_tons_co2e),
+  nei_emissions_all %>%
+    mutate(nei_emissions = value_emissions) %>%
+    select(-value_emissions)
+)
+```
 
 <!-- We expect that the NEI data will show higher emissions, because it is based on overall activity, not explicit origin-destination travel.  -->
 
@@ -280,30 +299,19 @@ fig_emissions_pop_transportation
 <!-- ``` -->
 
 
-<!-- ```{r lggit-calculations} -->
-<!-- cprg_total_emiss <- vmt_emissions_all %>% -->
-<!--   ungroup() %>% -->
-<!--   summarise(value_emissions = sum(value_emissions)) %>% -->
-<!--   magrittr::extract2("value_emissions") %>% -->
-<!--   scales::comma() -->
+```{r lggit-calculations}
+cprg_total_emiss <- vmt_emissions_all %>%
+  ungroup() %>%
+  summarise(value_emissions = sum(emissions_metric_tons_co2e)) %>%
+  magrittr::extract2("value_emissions") %>%
+  scales::comma()
 
-<!-- lggit_totals <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_totals.RDS")) -->
+lggit_totals <- readRDS(file.path(here::here(), "_transportation/data-raw/epa/lggit_totals.RDS"))
 
-<!-- lggit_total_emiss <- (lggit_totals$total %>% sum()) %>% scales::comma() -->
-<!-- ``` -->
+lggit_total_emiss <- (lggit_totals$total %>% sum()) %>% scales::comma()
+```
 
 <!-- The results from the LGGIT tool estimate a regional emissions total of **`r lggit_total_emiss` metric tons CO~2~e**, while our calculations estimate **`r cprg_total_emiss` metric tons CO~2~e**. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. Additionally, LGGIT uses global warming potential (GWP) values from the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5) [@ipccClimateChange2014], while our calculations use slightly higher values from the 6th Assessment Report (AR6) [@ipccAR62021]. See @sec-epa-moves for a more detailed comparison. -->
-
-
-<!-- ```{r echo=FALSE} -->
-<!-- caption_index <- readRDS(file.path(here::here(), "caption_index.RDS")) -->
-<!-- caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0") -->
-<!-- saveCap(paste0("cap-", caption_index)) -->
-<!-- saveRDS(caption_index, file.path(here::here(), "caption_index.RDS")) -->
-<!-- ``` -->
-
-<!-- {{< pagebreak >}} -->
-
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
