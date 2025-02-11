@@ -41,7 +41,7 @@ Direct URLs and download information are available in the [EPA downloads guide](
 epa_onroad_source_set %>%
   select(data_source, dataset, process_source) %>%
   unique() %>%
-  mutate(process_source = stringr::str_remove(process_source, "_transportation/")) %>% 
+  mutate(process_source = stringr::str_remove(process_source, "_transportation/")) %>%
   mutate(
     direct_link = map(process_source, ~ htmltools::a(href = .x, .x)) %>%
       map(~ gt::html(as.character(.x)))

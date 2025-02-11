@@ -36,7 +36,6 @@ transportation_min_year <- onroad_emissions %>%
   unique()
 
 hookaddcap()
-
 ```
 
 ## Methodological framework
