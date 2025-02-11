@@ -1,4 +1,17 @@
 ## Aviation Data
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
