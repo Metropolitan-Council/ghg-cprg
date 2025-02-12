@@ -48,7 +48,7 @@ More information on the US GHGI is available on the [EPA website](https://www.ep
 
 The US GHGI is a top-down method, starting from fuel sale information. 
 
-Discuss differences between NEI and GHG Inventory (yes they sound like the same thing but they are different).
+<!-- Discuss differences between NEI and GHG Inventory (yes they sound like the same thing but they are different). -->
 
 We chose the NEI for our baseline because
 
@@ -61,7 +61,7 @@ We chose the NEI for our baseline because
 
 ## On-road transportation accounting methods
 
-Ultimately, any estimation framework or method will have advantages and limitations. Multiple methods may prove most useful for guiding policy decisions [@lylykangasTerritorialConsumptionBasedGreenhouse2023]. 
+Ultimately, any estimation framework or method will have advantages and limitations. Multiple methods may prove most useful for guiding policy decisions [@lylykangasTerritorialConsumptionBasedGreenhouse2023]. Starting from version 2.0.0 of this document, we are using a geographic VMT-based method to account for transportation emissions. 
 
 ::: {.callout-note}
 ### Key concepts
@@ -120,6 +120,8 @@ The Metropolitan Council is obligated under @sec473145 to provide support to com
 There are efforts to harmonize and improve emissions inventory reporting at the federal level [@iwgGHGMMIS2023], though implications for the CPRG and Met Council's efforts are unclear. 
 
 Met Council staff are in active communication and collaboration with the [Regional Indicators Initiative (RII)](https://www.regionalindicatorsmn.com/), ensuring complementary datasets wherever possible.  
+
+Additionally, the Council is working with Minnesota statewide agencies, including MnDOT and MPCA, to inform and understand differences in GHG accounting methods and emissions reduction priorities. See more information in @sec-resources. 
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
