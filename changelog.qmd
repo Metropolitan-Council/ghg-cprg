@@ -47,7 +47,7 @@ Natural Systems
 - Sequestration now relies entirely on USGS NLCD model (WorldCover data removed for now)
 - Adds freshwater emissions data following National Hydrography Database and state emission factors
 
-Meta
+Other data
 - County and CTU population data back to 2005. 
 
 See full changelog in GitHub release [v2.0.0](https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v2.0.0)
