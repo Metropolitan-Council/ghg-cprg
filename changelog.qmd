@@ -7,6 +7,8 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 
 ## v2.0.0 (February 2025) {.unnumbered}
 
+This release incorporates major changes to all sectors, including temporal data back to 2005 and fundemental changes in inventory methodology. We also account for industrial and agricultural 
+
 Executive summary
 
 - Adds temporal data back to 2005 for all sectors 
@@ -14,13 +16,14 @@ Executive summary
 - Addition of two new sectors, industrial and agriculture 
 - Rearranging of energy sector breakout
 
-Energy changes
+Energy  
 - Electricity and natural gas data have utility report data for 2005 and 2013-2021
 - Electricity and natural gas data are split into residential, commercial, and industrial per NREL modeling for all years
 - Electricity and natural gas are now categories in the sectors residential, commercial, and industrial
 
-Transportation changes
+Transportation  
 - Transportation emissions are calculated using a different method; in previous versions, we used a 100/50/50 origin-destination method. Now we are using an activity or VMT-based method. 
+- Emissions from previous releases (1.0.0, 1.1.1, etc.) should *not* be directly compared with this and all future releases.
 - Transportation emissions are compiled from EPA data sources, including the National Emissions Inventory (NEI), EPA EQUATES, and the Air Emissions Modeling Platform. 
 - Bus, passenger, and commercial modes are accounted for. 
 <!-- - Activity data (VMT) is now based on federal data sources instead of StreetLight -->
@@ -43,6 +46,9 @@ Agriculture
 Natural Systems
 - Sequestration now relies entirely on USGS NLCD model (WorldCover data removed for now)
 - Adds freshwater emissions data following National Hydrography Database and state emission factors
+
+Meta
+- County and CTU population data back to 2005. 
 
 See full changelog in GitHub release [v2.0.0](https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v2.0.0)
 
