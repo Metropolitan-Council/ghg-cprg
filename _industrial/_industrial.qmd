@@ -198,6 +198,9 @@ fig_ind_baseline
 As industrial emissions are provided as point sources, scaling to cities is already done. Note that the color ramp in the map below is on a log scale due to the oil refinery in Rosemount - pop-up values are reported as untransformed values, however.
 
 ```{r fig-ctu-ind-emissions}
+#| fig-cap: "2021 city level industrial emissions"
+#| out-width: "95%"
+
 # load the county boundaries layer
 
 ind_emissions_ctu_2021 <- baseline_emissions %>%

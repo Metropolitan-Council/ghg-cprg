@@ -88,7 +88,7 @@ electricity_2005 <- county_emissions_summary_2005 %>%
 In 2021, the Twin-Cities MSA generated `r round(emissions_total/1000000, digits = 2)` million metric tons CO~2~ equivalent (MMtCO~2~e) emissions from energy, transportation, and waste sectors. `r sector_percentages[[1]][1]` was the largest contributor to GHG emissions (`r scales::percent(sector_percentages[[2]][1], accuracy = 0.1)`), followed by `r sector_percentages[[1]][2]` (`r scales::percent(sector_percentages[[2]][2], accuracy = 0.1)`), and `r sector_percentages[[1]][3]` (`r scales::percent(sector_percentages[[2]][3], accuracy = 0.1)`). Carbon sequestration from natural systems offset `r scales::percent(seq_percentage, accuracy = 0.1)` of total emissions.
 
 ```{r fig-county-emissions-sector}
-#| fig-cap: "County emissions by sector and category"
+#| fig-cap: "Regional emissions by sector and category"
 #| out-width: "95%"
 
 county_emissions_2021 <- county_emissions %>%
@@ -142,6 +142,9 @@ fig_county_emissions_sector
 Emissions in the region fell by `r scales::percent((emissions_2005 - emissions_total) / emissions_2005, accuracy = 0.1)` from 2005 to 2021. This is principally attributed to decarbonization of the electric grid, which fell `r scales::percent((electricity_2005 - electricity_2021) / electricity_2005, accuracy = 0.1)` from 2005 to 2021. Other sectors showed small increases or decreases.
 
 ```{r fig-temporal-emissions}
+#| fig-cap: "Regional emissions by sector through time"
+#| out-width: "95%"
+
 baseline_comparison_facet <- ggplot(
   county_emissions %>%
     filter(emissions_year >= 2005 & emissions_year <= 2021) %>%
@@ -223,6 +226,9 @@ baseline_comparison_facet
 Different counties have different emission profiles depending on land-use and community characteristics.
 
 ``` {r fig-county-emissions}
+#| fig-cap: "County emissions by sector in 2021"
+#| out-width: "95%"
+
 county_emissions_2021 <- county_emissions %>%
   filter(
     emissions_year == 2021,
@@ -262,9 +268,12 @@ county_emissions_raw <- plot_ly(
 county_emissions_raw
 ```
 
-However, most emissiosn are closely tied to population and a per capita emissions profile shows a more even distribution.
+However, most emissions are closely tied to population and a per capita emissions profile shows a more even distribution.
 
 ``` {r fig-county-emissions-per-capita}
+#| fig-cap: "County emissions per capita by sector in 2021"
+#| out-width: "95%"
+
 county_emissions_2021_per_capita <- plot_ly(
   data = county_emissions_2021,
   type = "bar",

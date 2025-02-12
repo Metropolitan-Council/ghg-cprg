@@ -201,6 +201,9 @@ fig_subpart_c_comparison
 Most emissions are on or sufficiently close to the one-to-one line. The exception is the Hennepin Energy Recovery Center, a waste burning facility. This requires further exploration but will be omitted in any case as waste-to-energy emissions are counted in the waste subsector.
 
 ```{r fig-stationary-combustion}
+#| fig-cap: "Comparison of industrial combustion emissions from FLIGHT and subpart C analysis"
+#| out-width: "95%"
+
 # compare fuel combustion to ghgrp stationary combustion
 stationary_combustion <- ghgrp_emissions %>%
   filter(source == "stationary_combustion") %>%

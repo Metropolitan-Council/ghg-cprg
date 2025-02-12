@@ -138,7 +138,7 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 We would expect that counties with higher amounts of agricultural land would have higher emissions associated with crop production and likly livestock, though the latter may be more poorly predicted as area required for livestock can vary greatly depending on management.
 
 ```{r fig-cropland-area-emissions}
-#| fig-cap: "A scatter plot"
+#| fig-cap: "Cropland by agricultural emissions comparison"
 #| out-width: "95%"
 
 
@@ -241,7 +241,7 @@ As expected, we see that livestock and crop emissions increases with area devote
 Most USDA data is available from a five year census; we interpolate 
 
 ```{r fig-cattle-comparison}
-#| fig-cap: "A scatter plot"
+#| fig-cap: "Comparison of heads of cattle - USDA Census vs Survey"
 #| out-width: "95%"
 
 cattle_survey <- readRDS(file.path(here::here(), "_agriculture/data/usda_cattle_survey.RDS")) %>%
