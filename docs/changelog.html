@@ -412,7 +412,8 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#v1.1.1-july-2024" id="toc-v1.1.1-july-2024" class="nav-link active" data-scroll-target="#v1.1.1-july-2024">v1.1.1 (July 2024)</a></li>
+  <li><a href="#v2.0.0-february-2025" id="toc-v2.0.0-february-2025" class="nav-link active" data-scroll-target="#v2.0.0-february-2025">v2.0.0 (February 2025)</a></li>
+  <li><a href="#v1.1.1-july-2024" id="toc-v1.1.1-july-2024" class="nav-link" data-scroll-target="#v1.1.1-july-2024">v1.1.1 (July 2024)</a></li>
   <li><a href="#v1.1.0-june-2024" id="toc-v1.1.0-june-2024" class="nav-link" data-scroll-target="#v1.1.0-june-2024">v1.1.0 (June 2024)</a></li>
   <li><a href="#v1.0.0-march-2024" id="toc-v1.0.0-march-2024" class="nav-link" data-scroll-target="#v1.0.0-march-2024">v1.0.0 (March 2024)</a></li>
   </ul>
@@ -423,7 +424,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./_meta/supplementary_data.html">Appendices</a></li><li class="breadcrumb-item"><a href="./changelog.html"><span class="chapter-number">I</span>&nbsp; <span class="chapter-title">Release notes</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Appendix I — Release notes</h1>
+<h1 class="title"><span id="sec-changelog" class="quarto-section-identifier">Appendix I — Release notes</span></h1>
 </div>
 
 
@@ -439,6 +440,69 @@ div.csl-indent {
 
 </header>
 
+<section id="v2.0.0-february-2025" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="v2.0.0-february-2025">v2.0.0 (February 2025)</h2>
+<p>This release incorporates major changes to all sectors, including temporal data back to 2005 and fundamental changes in methodology. We also now account for industrial and agricultural emissions.</p>
+<ul>
+<li>Energy
+<ul>
+<li>Electricity and natural gas data have utility report data for 2005 and 2013-2021<br>
+</li>
+<li>Electricity and natural gas data are split into residential, commercial, and industrial per NREL modeling for all years<br>
+</li>
+<li>Electricity and natural gas are now categories in the sectors residential, commercial, and industrial<br>
+</li>
+</ul></li>
+<li>Transportation
+<ul>
+<li>Transportation emissions are calculated using a different method; in previous versions, we used a 100/50/50 origin-destination method. Now we are using a VMT-based method.<br>
+</li>
+<li><strong>Emissions estimates from previous releases should not be directly compared with this and all future releases.</strong><br>
+</li>
+<li>Transportation emissions are compiled from EPA data sources, including the National Emissions Inventory (NEI), EPA EQUATES, and the Air Emissions Modeling Platform.<br>
+</li>
+<li>Bus, passenger, and commercial modes are accounted for.<br>
+</li>
+<li>Preliminary aviation emissions accounted for.<br>
+</li>
+</ul></li>
+<li>Waste
+<ul>
+<li>Solid waste now follows IPCC guidelines instead of previous simplistic activity-EF model<br>
+</li>
+<li>Solid waste emissions are apportioned to CTU by population<br>
+</li>
+<li>Wastewater is now calculated based off county and CTU population, instead of apportioned from state totals<br>
+</li>
+</ul></li>
+<li>Industrial
+<ul>
+<li>New sector, partially informed by previous energy work<br>
+</li>
+<li>New emissions data from state and federal point source data includes process emissions and additional fuel combustion<br>
+</li>
+</ul></li>
+<li>Agriculture
+<ul>
+<li>New sector detailing emissions from livestock and crop production<br>
+</li>
+<li>Data sources are USDA county agriculture censuses and EPA emission factors<br>
+</li>
+</ul></li>
+<li>Natural Systems
+<ul>
+<li>Sequestration now relies entirely on USGS NLCD model (WorldCover data removed for now)<br>
+</li>
+<li>Adds freshwater emissions data following National Hydrography Database and state emission factors<br>
+</li>
+</ul></li>
+<li>Other data
+<ul>
+<li>County and CTU population data back to 2005.</li>
+</ul></li>
+</ul>
+<p>See full changelog in GitHub release <a href="https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v2.0.0">v2.0.0</a></p>
+</section>
 <section id="v1.1.1-july-2024" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="v1.1.1-july-2024">v1.1.1 (July 2024)</h2>
 <p>Minor changes across all sectors (excluding natural systems) by updating GWP values to AR6 <span class="citation" data-cites="ipccAR62021">(<a href="references.html#ref-ipccAR62021" role="doc-biblioref">IPCC 2023</a>)</span>.</p>
