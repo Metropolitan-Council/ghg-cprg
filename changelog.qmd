@@ -1,4 +1,4 @@
-# Release notes
+# Release notes {#sec-changelog}
 
 ```{r, echo=FALSE, message = FALSE, results='markup'}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -20,10 +20,12 @@ Energy changes
 - Electricity and natural gas are now categories in the sectors residential, commercial, and industrial
 
 Transportation changes
-- Activity data (VMT) is now based on federal data sources instead of StreetLight
-- The activity data is now TAZ based instead of an origin-destination model
-- Activity data is apportioned to cities and townships based on MnDOT VMT data where available
-- Adds aviation emissions
+- Transportation emissions are calculated using a different method; in previous versions, we used a 100/50/50 origin-destination method. Now we are using an activity or VMT-based method. 
+- Transportation emissions are compiled from EPA data sources, including the National Emissions Inventory (NEI), EPA EQUATES, and the Air Emissions Modeling Platform. 
+- Bus, passenger, and commercial modes are accounted for. 
+<!-- - Activity data (VMT) is now based on federal data sources instead of StreetLight -->
+<!-- - Activity data is apportioned to cities and townships based on MnDOT VMT data where available -->
+- Adds preliminary aviation emissions
 
 Waste
 - Solid waste now follows IPCC guidelines instead of previous simplistic activity-EF model
@@ -41,6 +43,8 @@ Agriculture
 Natural Systems
 - Sequestration now relies entirely on USGS NLCD model (WorldCover data removed for now)
 - Adds freshwater emissions data following National Hydrography Database and state emission factors
+
+See full changelog in GitHub release [v2.0.0](https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v2.0.0)
 
 
 ## v1.1.1 (July 2024) {.unnumbered}
