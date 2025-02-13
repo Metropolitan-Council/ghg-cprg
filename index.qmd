@@ -220,8 +220,8 @@ county_emissions_2021 <- county_emissions %>%
 
 county_emissions_raw <- plot_ly(
   data = county_emissions_2021,
-  type = "bar",
   source = "fig-county-emissions",
+  type = "bar",
   x = ~county_name,
   y = ~value_emissions,
   color = ~sector,
@@ -258,8 +258,8 @@ However, most emissions are closely tied to population and a per capita emission
 
 county_emissions_2021_per_capita <- plot_ly(
   data = county_emissions_2021,
-  type = "bar",
   source = "fig-county-emissions-per-capita",
+  type = "bar",
   x = ~county_name,
   y = ~emissions_per_capita,
   color = ~sector,
@@ -316,7 +316,7 @@ This document is the result of tremendous work across the Metropolitan Council. 
  - Liz Roten, Senior Data Scientist, Transportation (MTS)  
  - Kenneth Smith, Principal Researcher, LIDAC, Natural Systems, Wastewater (CD)  
  - Peter Wilfahrt, Principal Researcher, Industrial, Agricultural, Wastewater,  (CD)  
- - Zoey Yandell, Intern, Solid waste (CD)  
+ - Zoey Yandell, Intern, Solid Waste (CD)  
 :::
 
 ::: {.column width="50%"}
