@@ -1,0 +1,63 @@
+### EQUATES {#sec-epa-equates}
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+hookaddcap()
+
+
+epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_source_set.RDS"))
+pollutant_key <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key.RDS"))
+pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key_meta.RDS"))
+epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
+
+
+epa_onroad_year_source <- epa_onroad_emissions_compile %>%
+  mutate(emissions_year = as.character(emissions_year)) %>%
+  select(emissions_year, data_source) %>%
+  unique()
+
+equates_years <- epa_onroad_emissions_compile %>%
+  filter(data_source == "EQUATES") %>%
+  select(data_source, emissions_year, interpolation) %>%
+  unique() %>%
+  group_by(interpolation) %>%
+  group_split()
+```
+
+<!-- EQUATES official citation is foleyEQUATESAnthropogenic2023 -->
+
+EQUATES (EPA’s Air QUAlity TimE Series) is a set of modeled emissions and supporting data developed by EPA scientists spanning years 2002 to 2019. EQUATES is particularly useful in that it uses modern source classification codes (SCCs) to provide a continuous time series [@foleyEQUATESAnthropogenic2023].
+
+Between the 2008 and 2011 NEI releases, the EPA completed major changes to their source classification codes (SCCs), which rendered direct comparison between 2008 and prior years with 2011 and later years impossible.
+
+EQUATES is based on the 2017 NEI and uses MOVES3 [@foleyEQUATESAnthropogenic2023]. 
+
+EQUATES data are available for years `r equates_years[[1]]$emissions_year %>% listify()`.  
+
+EQUATES SMOKE FF10 data are processed in [epa_equates_read.R](data-raw/epa_equates_read.R). 
+
+#### Verification and validation
+
+Though EQUATES datasets are available on the EPA file transfer site and the CMAS Data Warehouse Google Drive, individual file names and file contents were identical.
+
+##### Activity data
+
+Compare underlying activity data with data from state DOTs
+
+##### Emissions factors
+
+#### Limitations 
+
+In addition to limitations described in @sec-epa-emissions-limitations, EQUATES has its own set of limitations.
+
+- EQUATES does not contain emissions estimates for N~2~O (nitrous oxide) for years 2002-2017. N~2~O was added to the EPA Emissions Modeling Framework (EMF) after EQUATES was compiled. N~2~O does not affect air quality monitoring and so was not included in older emissions work [@foleyNitrousOxideCMASForum2024]. When compared with the NEI and Air Emissions Modeling, including N~2~O in total CO~2~e resulted in a maximum difference of around 3% for some counties and years. See [epa_verify_n2o_differences.R](data-raw/epa_verify_n2o_differences.R) for more detail. 
+- EQUATES includes only on-road emission sources. 
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}

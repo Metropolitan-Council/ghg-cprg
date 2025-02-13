@@ -1,0 +1,132 @@
+# Transportation method comparison
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+```{r}
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+hookaddcap()
+```
+
+- Which method we chose is inextricably linked to the data sources available. 
+
+- Review GPC scope definitions
+- Consumption based emissions inventories (CBEI)
+- Pros and cons
+- Why we changed
+- Other regions/states/CPRG recipients, findings from TAFs
+
+
+```{r}
+# include table source_method_compare.xlsx
+```
+
+
+## EPA emissions data sources
+
+The EPA provides many datasets and tools for estimating and forecasting greenhouse gas emissions. For our purposes, we want data disaggregated to the county level, though we can work with state-level data if necessary.
+
+The National Emissions Inventory (NEI) 
+
+The NEI is discussed further in @sec-epa-nei. 
+
+Inventory of US Greenhouse Gas Emissions and Sinks (US GHGI) is an annual report 
+
+More information on the US GHGI is available on the [EPA website](https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks). 
+
+
+The US GHGI is a top-down method, starting from fuel sale information. 
+
+<!-- Discuss differences between NEI and GHG Inventory (yes they sound like the same thing but they are different). -->
+
+We chose the NEI for our baseline because
+
+- time series
+- consistent definitions over time
+- compatible with forecasts using our regional travel demand model
+- Based on MOVES, and therefore easier to (hopefully) reproduce/replicate with our own MOVES runs
+- compatible with MOVES emissions estimates
+
+
+## On-road transportation accounting methods
+
+Ultimately, any estimation framework or method will have advantages and limitations. Multiple methods may prove most useful for guiding policy decisions [@lylykangasTerritorialConsumptionBasedGreenhouse2023]. Starting from version 2.0.0 of this document, we are using a geographic VMT-based method to account for transportation emissions. 
+
+::: {.callout-note}
+### Key concepts
+
+Most emissions inventories fall into two approaches
+
+- **Top-down** approaches start with fuel consumption or sales data as a proxy for transportation activity [@fongGlobalProtocolCommunityScale2021]. These approaches will then attempt to disaggregate by vehicle types and other identifiable fuel users. Examples include the US GHGI.
+- **Bottom-up** approaches begin with activity data, such as vehicle miles traveled or trip counts, and use additional data, like mode-share, energy intensity, and fuel factors to estimate emissions [@schipperTransportCarbonDioxide2009].
+
+::: 
+
+Pros and cons from @dunnebeilBalancingTransportGreenhouse2012
+
+Both territorial and activity-induced methods are detailed as valid methods for estimating Scope 1 emissions by the GPC [@fongGlobalProtocolCommunityScale2021]. 
+
+### Geographic
+
+Geographic or territorial methods account for any transportation emissions taking place within a geographic boundary, regardless of origin or destination [@fongGlobalProtocolCommunityScale2021].
+
+Geographic emissions are essential for quantifying air pollution experienced by people living in the area, but they do not give information on the logistic decisions of individuals.
+
+Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a small town with a major freeway. The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction.
+
+Met Council researchers chose to use an activity-induced method to provide the most actionable information for jurisdictions within our region in both the recent PCAP and the 2018 Metro Climate Stats inventory.
+
+### Induced activity
+
+Induced activity, or city-induced activity, methods remedy the responsibility gap left in geographic methods. 
+
+Activity-induced methods estimate the emissions from trips that begin, end, or both begin and end within a given geographic boundary. All passthrough trips (those that neither begin or end in the geographic boundary, but pass through without stopping) are excluded. 
+
+This method most comprehensively covers the emissions caused by a given city or county (and those that live and/or work therein), thus within its area of influence [@dunnebeilBalancingTransportGreenhouse2012]. 
+
+Though both geographic and activity-induced methods fulfill Scope 1 requirements [@fongGlobalProtocolCommunityScale2021], the resulting values are significantly different.
+
+Ultimately, the GPC recommends the induced activity method for cities, as it provides results more suited to local policy making, though notes the geographic method as a viable alternative depending on data availability.
+
+However, the Twin Cities metropolitan area includes over 250 individual jurisdictions, with cities ranging from over 400,000 people to under 500 people. The entirety of the 11-county CPRG study area is larger than some US states. 
+
+The origin-destination activity method is used in regional PCAPs, including metro areas such as Santa Clara MSA [@countyofsanbenitoCountySanBenito2024] and the Southern California Association of Governments [@scagAngelesLongBeachAnaheimPCAPCA2024]. 
+
+ [^With the exception of heavy commercial vehicle traffic, which only includes trips that begin and end in the same geographic boundary]
+
+### Consumption-based 
+
+Consumption-based emissions inventories (CBEIs) are a calculation of all of the greenhouse gas emissions associated with the production, transportation, use and disposal of products and services consumed by a particular community or entity in a given time period [@broekhoffEstimatingConsumptionbasedGreenhouse2019]. CBEIs are frequently referred to as city carbon footprints. Emissions are modeled from massive datasets containing demographic, economic, and consumer information [@ecodatalabNYCHouseholdConsumption2023]. 
+
+Several cities have conducted CBEIs, including Seattle, New York City, and Bristol, UK, among others [@jonesSFConsumptionBasedGreenhouse2020, @ecodatalabNYCHouseholdConsumption2023, @millwardHopkinsUncoveringBlindSpots2017]. CBEIs are particularly useful for comparing cities across the globe. 
+
+Consumption-based methods require significant data access and are not easily translated into IPCC sectors or GPC Scopes. A typical CBEI would not meet the standards required for the CCAP. 
+
+## Looking forward
+
+The Metropolitan Council is obligated under @sec473145 to provide support to communities in their climate mitigation and adaptation efforts. We plan to provide city-level activity-based GHG inventories to communities as they develop comprehensive plans in the coming years.  
+
+There are efforts to harmonize and improve emissions inventory reporting at the federal level [@iwgGHGMMIS2023], though implications for the CPRG and Met Council's efforts are unclear. 
+
+Met Council staff are in active communication and collaboration with the [Regional Indicators Initiative (RII)](https://www.regionalindicatorsmn.com/), ensuring complementary datasets wherever possible.  
+
+Additionally, the Council is working with Minnesota statewide agencies, including MnDOT and MPCA, to inform and understand differences in GHG accounting methods and emissions reduction priorities. See more information in @sec-resources. 
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}

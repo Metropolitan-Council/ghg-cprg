@@ -2,8 +2,7 @@
 source("R/_load_pkgs.R")
 
 mn_counties <- read_rds("_meta/data/cprg_county.RDS") %>%
-  select(STATEFP, COUNTYFP, GEOID, NAME, NAMELSAD, geometry) %>%
-  filter(STATEFP == 27)
+  filter(statefp == 27)
 
 
 # Downloaded from https://gisdata.mn.gov/dataset/util-eusa. Minnesota provides
@@ -23,16 +22,19 @@ mn_counties <- st_transform(mn_counties, st_crs(mn_elecUtils))
 # identify utilities that operate in study area
 MNutilities_in_scope <- st_intersection(mn_elecUtils, mn_counties) %>%
   select(
-    comments, type, street, city, state, zip, website, mpuc_name,
-    mn_utility, eia_utilit, NAME, NAMELSAD, geometry
+    comments, municipal, type, street, city, state, zip, website, mpuc_name,
+    mn_utility, eia_utilit, county_name_full, county_name, state_name, statefp, geometry
   ) %>%
   rename(
-    utility_name = mpuc_name, utility_type = type,
-    mn_utility_id = mn_utility, county_name = NAME, county = NAMELSAD
+    utility_type = type,
+    eia_utility = eia_utilit,
+    county_name = county_name_full,
+    county = county_name,
+    mn_utility_id = mn_utility
   )
 
 distinct_util_type_MN <- MNutilities_in_scope %>%
-  distinct(utility_name, utility_type)
+  distinct(mpuc_name, utility_type)
 
 write_rds(mn_elecUtils, here(
   "_energy",

@@ -4,7 +4,7 @@
 #'   "sector", "geog_name", "emissions_metric_tons_co2e", "source", "category",
 #'   and "geog_level"
 #' @param sector character, one of "Transportation", ....
-#' @param plotly_source character, passed to source paramter in `plotly::plot_ly()`
+#' @param plotly_source character, passed to source parameter in `plotly::plot_ly()`
 #'
 #' @return Plotly object
 #' @export
@@ -13,12 +13,19 @@
 #' @importFrom dplyr filter
 #' @importFrom stringr str_to_title
 #' @importFrom councilR plotly_layout
+#' @importFrom cli cli_alert_warning
 plot_county_sector_emissions <- function(county_emissions,
                                          .sector,
                                          .plotly_source) {
   plot_data <- county_emissions %>%
     dplyr::filter(sector == .sector) %>%
     rowwise()
+
+  if ("emissions_year" %in% names(plot_data)) {
+    if (length(unique(plot_data$emissions_year)) > 1) {
+      cli::cli_alert_warning("Plotting more than one year of data")
+    }
+  }
 
   if (nrow(plot_data) == 0) {
     return(plot_ly(
@@ -28,30 +35,24 @@ plot_county_sector_emissions <- function(county_emissions,
   }
 
   plot_data <- plot_data %>%
-    mutate(
-      rounded_tons = ifelse(
-        max(emissions_metric_tons_co2e) > 1000000,
-        paste0(round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>"),
-        paste0(round(emissions_metric_tons_co2e / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>")
-      )
-    )
-
+    mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions))
 
   plot_ly(
     data = plot_data,
     type = "bar",
     source = .plotly_source,
-    x = ~emissions_metric_tons_co2e,
-    y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-    color = ~sector,
-    colors = unlist(sector_colors),
+    x = ~value_emissions,
+    y = ~ reorder(county_name, value_emissions),
+    color = ~source,
+    colors = unlist(source_colors),
+    # marker_line=dict(width=2, color='black'),
     marker = list(
       line = list(
         width = 0
       )
     ),
     hovertemplate = ~ paste0(
-      geog_name, " County", "<br>",
+      county_name, " County", "<br>",
       sector, " - ", category, ", ", source, "<br>",
       rounded_tons,
       "<extra></extra>"

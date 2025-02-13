@@ -6,10 +6,10 @@ project:
   post-render: 
     - R/fix_style.R
 
-quarto-required: 1.4.553
+quarto-required: 1.5.57
 
 book:
-  version: 1.1.1
+  version: 2.0.0
   title: "Twin Cities MSA Greenhouse Gas Inventory"
   subtitle: "Climate Pollution Reduction Grant Documentation"
   author: "Metropolitan Council"
@@ -28,35 +28,49 @@ book:
     # footer: "*On request, this publication will be made available in alternative formats to people with disabilities. Call Metropolitan Council information at 651-602-1140 or TTY 651-291-0904.*"
   chapters:
     - index.qmd
-    - part: "Energy"
-      chapters:
-       - _energy/_energy.qmd
-       - _energy/data_electricity.qmd
-       - _energy/data_natural_gas.qmd
-       - _energy/data_propane_kerosene.qmd
-       # - _energy/data_energy.qmd
-       # - _energy/pa_energy.qmd
-       - _energy/qc_energy.qmd
-
     - part: "Transportation"
       chapters:
        - _transportation/_transportation.qmd
-       - _transportation/data_transportation.qmd
-       # - _transportation/pa_transportation.qmd
-       - _transportation/qc_transportation.qmd
-       
+       - _transportation/_data_methods_transportation.qmd
+       - _transportation/data_aviation.qmd
+    
+    - part: "Electricity"
+      chapters:
+       - _energy/_energy_electricity_emissions.qmd
+       - _energy/data_electricity.qmd
+
+    - part: "Building Energy"
+      chapters:
+       - _energy/_energy_natural_gas_emissions.qmd
+       - _energy/data_natural_gas.qmd
+       - _energy/data_propane_kerosene.qmd
+
+
+    - part: "Industrial"
+      chapters:
+       - _industrial/_industrial.qmd
+       - _industrial/industrial_data_source.qmd
+
     - part: "Waste and Wastewater"
       chapters:
-       - _waste/_waste.qmd
-       - _waste/data_waste.qmd
-       # - _waste/pa_waste.qmd
-       - _waste/qc_waste.qmd
+       - _waste/_solid_waste.qmd
+       # - _waste/_data_methods_waste.qmd
+       - _waste/data_solid_waste.qmd
+       # - _waste/data_mpca_score.qmd
+       - _waste/methods_solid_waste.qmd
        - _waste/qc_waste_other.qmd
+    
+    - part: "Agriculture"
+      chapters:
+       - _agriculture/_agriculture.qmd
+       - _agriculture/agriculture_data_source.qmd
     
     - part: "Natural Systems"
       chapters:
-       - _nature/_natural_systems.qmd
-       - _nature/data_land_area_sequestration.qmd
+       - _nature/_natural_systems_inventory.qmd
+       - _nature/data_nlcd_cover.qmd
+       - _nature/data_nhd_waterways.qmd
+       # - _nature/data_land_area_sequestration.qmd
        
   appendices:
     # - _meta/data_request_template.qmd
@@ -64,6 +78,7 @@ book:
     - _meta/supplementary_tables.qmd
     - _meta/additional_resources.qmd
     - _energy/utility_service_area_maps.qmd
+    - _transportation/inventory_methods_comparison.qmd
     - _meta/lidac_maps.qmd
     - figures.qmd
     - tables.qmd

@@ -1,0 +1,213 @@
+## EPA emissions data
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+epa_onroad_source_set <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_source_set.RDS"))
+pollutant_key <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key.RDS"))
+pollutant_key_meta <- readRDS(file.path(here::here(), "_transportation/data/pollutant_key_meta.RDS"))
+epa_onroad_emissions_compile <- readRDS(file.path(here::here(), "_transportation/data/epa_onroad_emissions_compile.RDS"))
+
+onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>%
+  rename(value_emissions = emissions_metric_tons_co2e)
+
+
+epa_onroad_year_source <- epa_onroad_emissions_compile %>%
+  mutate(emissions_year = as.character(emissions_year)) %>%
+  select(emissions_year, data_source) %>%
+  unique()
+
+
+hookaddcap()
+```
+
+The EPA releases various emissions estimates as part of several programs and initiatives. 
+
+All datasets are compiled from Sparse Matrix Operator Kernel Emissions (SMOKE) Flat File 10 (FF10) formatted data downloaded from the EPA website. SMOKE FF10 is a standardized format regularly released by the EPA for NEI, EQUATES, and Air Emissions Modeling platforms [@cmasSMOKEV51Users2024, section 2.2.3].
+
+SMOKE FF10 files were processed using [`read_smoke_ff10()`](data-raw/_read_smoke_ff10.R), which reads in the raw data, records relevant metadata, filters to only include relevant counties and pollutants, and saves an intermediary dataset. These intermediary datasets are read back in, combined, and saved. 
+
+SMOKE FF10 data were aggregated to include all MOVES processes for on- and off-network vehicle operation, including running, starting, and idling exhaust, tire and brake wear, evaporative permeation, fuel leaks, and fuel vapor venting, and crankcase exhaust [@cmasSMOKEV51Users2024, section 2.7.4.9]. ^[ All six MOVES emissions processes, including rate per distance (RPD), rate per vehicle (RPV), rate per hour (RPH), rate per profile (RPP), rate per start (RPS), and rate per hour for off-network idling (RPHO) were summed for each vehicle type, fuel type, and pollutant [@beidlerBlankEmis_typeCMASForum2024]]
+
+<!-- SMOKE FF10 data were filtered to include MOVES processes associated with on-roadway vehicle operation [^These pollutants account for emissions from RatePerDistance (RPD) MOVES process types, including running exhaust, crankcase running exhaust, tire wear, brake wear, on-road evaporative permeation, on-road evaporative fuel leaks on-road evaporative fuel vapor, and venting [@cmasSMOKEV51Users2024, section 2.7.4.9]]. -->
+
+Direct URLs and download information are available in the [EPA downloads guide](data-raw/epa/README_epa_downloads.html). 
+
+```{r tbl-epa-intermediary-smoke-datasets}
+#| tbl-cap: "Intermediary datasets and processing scripts"
+#| out-width: "95%"
+
+epa_onroad_source_set %>%
+  select(data_source, dataset, process_source) %>%
+  unique() %>%
+  mutate(process_source = stringr::str_remove(process_source, "_transportation/")) %>%
+  mutate(
+    direct_link = map(process_source, ~ htmltools::a(href = .x, .x)) %>%
+      map(~ gt::html(as.character(.x)))
+  ) %>%
+  select(
+    `Data source` = data_source,
+    `Dataset` = dataset,
+    `Processing script` = direct_link
+  ) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::cols_align(align = "left")
+```
+
+Each data source and year uses a different MOVES edition. These are listed in @tbl-epa-source-moves-edition-year.
+
+```{r tbl-epa-source-moves-edition-year}
+#| tbl-cap: "On-road pollutants available by year and EPA data source"
+#| out-width: "95%"
+
+epa_onroad_source_set %>%
+  inner_join(epa_onroad_year_source, join_by(data_source, emissions_year)) %>%
+  select(data_source, moves_edition, emissions_year) %>%
+  unique() %>%
+  group_by(data_source, moves_edition) %>%
+  summarize(
+    emissions_years = paste0(emissions_year, collapse = ", "),
+    .groups = "keep"
+  ) %>%
+  ungroup() %>%
+  arrange(desc(emissions_years)) %>%
+  select(
+    `Data source` = data_source,
+    `MOVES edition` = moves_edition,
+    `Years` = emissions_years,
+  ) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
+
+Various pollutants are available. 
+
+```{r tbl-epa-source-pollutant-year}
+#| tbl-cap: "On-road pollutants available by year and EPA data source"
+#| out-width: "95%"
+
+epa_onroad_emissions_compile %>%
+  filter(
+    !is.na(emissions),
+    pollutant != "emissions_metric_tons_co2e"
+  ) %>%
+  select(emissions_year, data_source, pollutant, pollutant_format) %>%
+  unique() %>%
+  group_by(data_source, emissions_year) %>%
+  summarize(
+    emissions_years = paste0(sort(unique(emissions_year)), collapse = ", "),
+    pollutants_available = paste0(unique(pollutant_format), collapse = ", "),
+    .groups = "keep"
+  ) %>%
+  group_by(data_source, pollutants_available) %>%
+  summarize(
+    emissions_years = paste0(emissions_years, collapse = ", "),
+    .groups = "keep"
+  ) %>%
+  ungroup() %>%
+  arrange(desc(emissions_years)) %>%
+  select(
+    `Data source` = data_source,
+    `Years` = emissions_years,
+    `Pollutants` = pollutants_available
+  ) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  fmt_markdown(columns = 3) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
+
+Pollutant descriptions
+
+```{r tbl-epa-pollutants}
+#| tbl-cap: "Pollutants provided by EPA datasets"
+#| out-width: "95%"
+
+pollutant_key %>%
+  filter(pollutant != "emissions_metric_tons_co2e") %>%
+  arrange(pollutant_code) %>%
+  select(
+    Pollutant = pollutant_format,
+    `Pollutant code` = pollutant_code,
+    `Description` = pollutant_desc
+  ) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  fmt_markdown(columns = 1) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
+
+Vehicle and fuel types
+
+```{r tbl-epa-vehicle-fuel-types}
+#| tbl-cap: "Vehicle and fuel types provided by EPA datasets"
+#| out-width: "95%"
+
+onroad_emissions %>%
+  select(vehicle_weight_label, vehicle_types_included, fuel_types_included) %>%
+  unique() %>%
+  arrange(vehicle_weight_label) %>%
+  select(
+    `Vehicle weight label` = vehicle_weight_label,
+    `Fuel types` = fuel_types_included,
+    `Vehicle types` = vehicle_types_included
+  ) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
+
+{{< include data_epa_nei.qmd >}}
+
+{{< include data_epa_equates.qmd >}}
+
+{{< include data_epa_air_emissions_modeling.qmd >}}
+
+
+### Consistent limitations {#sec-epa-emissions-limitations}
+
+
+- The NEI, EQUATES, and Air Emissions Modeling platforms are based on MOVES, which does not account for activity on local roads. 
+- NEI, EQUATES, and Air Emissions modeling use different MOVES editions (see @tbl-epa-source-pollutant-year), which may result in discrepancies between years. 
+- To reduce run times, the EPA uses fuel months to represent summer and winter fuels. The month of January represents October through April (winter), while July represents May through September (summer) [@usepa2020NationalEmissions2023onroad, section 5.6.6.2]. Variation within the summer and winter months is not accounted for using this method. 
+- The 2020 NEI had particular challenges due to the COVID-19 pandemic
+- Minnesota did not submit custom data inputs for the 2020 NEI, meaning that inputs to MOVES were based on national default values. Wisconsin submitted custom data for VMT, vehicle population, and road type distribution. Both Minnesota and Wisconsin submitted data for 2017, 2014, and 2011 [@usepa2017NationalEmissions2021, @usepa2014NationalEmissions2018, @usepa2011NationalEmissions2015]. 
+- The NEI augmented vehicle miles traveled (VMT) data for Minnesota and Wisconsin in 2020 using federal and state-level datasets due to data availability issues [@usepaDevelopment2020DefaultData2022]. 
+- To reduce model run-time, the EPA groups counties together and only runs MOVES on a single representative county. The resulting MOVES emissions factors are multiplied by county-specific activity data (including VMT, vehicle population, hourly speed distribution, among others) to get county-specific emissions [@usepa2020NationalEmissions2023onroad, section 5.6.2.1]. Effectively, emissions factors are generated on a single representative county, and are then applied to similar counties. 
+
+#### Nitrous oxide (N~2~O) availability
+
+Though nitrous oxide  N~2~O has a high global warming potential (@sec-gwp), the amount of N~2~O released is relatively small when compared to other sectors. 
+
+N~2~O is unavailable in EQUATES, except years 2018 and 2019. 
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}

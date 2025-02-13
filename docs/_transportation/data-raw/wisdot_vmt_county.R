@@ -1,105 +1,152 @@
 source("R/_load_pkgs.R")
+# https://wisconsindot.gov/Pages/projects/data-plan/veh-miles/default.aspx
 # NOTE: this is a run-once script. It should not be regularly re-run
 
 # NOTE
-# you may need to install a Java binary to work with tabulizer
+# you may need to install a Java binary to work with tabulapdf
 # I suggest installing the Adoptium distribution: https://adoptium.net/
 # then, go to your terminal and run `R CMD javareconf` and check for errors
-install.package("tabulizer")
-library(tabulizer)
+# install.package("tabulapdf")
+library(tabulapdf)
 # each of these calls launch a shiny app that has you manually select the table
 # areas with your mouse
-wi_vmt22 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2022-c.pdf",
-  output = "data.frame"
-)
+# wi_vmt23 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2023-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/"
+# )
+# wi_vmt22 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2022-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/"
+# )
+#
+# wi_vmt21 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2021-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt20 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2020-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt19 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2019-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt18 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2018-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt17 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2017-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt16 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2016-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt15 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2015-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt14 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2014-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt13 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2013-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt12 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2012-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt11 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2011-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt10 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2010-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
+#
+# wi_vmt09 <- tabulapdf::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2009-c.pdf",
+#                                      output = "csv",
+#                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
-wi_vmt21 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2021-c.pdf",
-  output = "data.frame"
-)
-
-wi_vmt20 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2020-c.pdf",
-  output = "data.frame"
-)
-
-wi_vmt19 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2019-c.pdf",
-  output = "data.frame"
-)
-
-wi_vmt18 <- tabulizer::extract_areas("_transportation/data-raw/wisdot/vmt_by_county/vmt2018-c.pdf",
-  output = "data.frame"
-)
-
-
-
-
-
-# the second page 2019 table does not have column headers
-# and read in a row as the column names
-# take the column names and add it to the table as a row
-wi_vmt19[[2]][32, ] <- names(wi_vmt19[[2]])
-wi_vmt18[[2]][32, ] <- names(wi_vmt18[[2]])
-
-
-# change column names of second table to be same as first
-names(wi_vmt19[[2]]) <- names(wi_vmt19[[1]])
-names(wi_vmt18[[2]]) <- names(wi_vmt18[[1]])
 
 
 # combine all tables
+wisconsin_vmt_raw <- purrr::map_dfr(
+  list.files("_transportation/data-raw/wisdot/vmt_by_county/",
+    pattern = "*.csv",
+    full.names = TRUE
+  ),
+  function(x) {
+    read_csv(x,
+      col_names = c("COUNTY", "Daily", "ANNUAL"),
+      skip_empty_rows = TRUE,
+      n_max = 45,
+      col_types = "ccc"
+    ) %>%
+      mutate(year = x %>%
+        stringr::str_remove_all("_transportation/data-raw/wisdot/vmt_by_county//vmt") %>%
+        stringr::str_remove_all("-c-2.csv") %>%
+        stringr::str_remove_all("-c-1.csv")) %>%
+      filter(
+        stringr::str_detect(COUNTY, "COUNTY", negate = TRUE),
+        stringr::str_detect(COUNTY, "Statewide", negate = TRUE),
+        stringr::str_detect(COUNTY, "Notes", negate = TRUE),
+        stringr::str_detect(COUNTY, "Source", negate = TRUE),
+        stringr::str_detect(COUNTY, "/", negate = TRUE)
+      )
+  }
+)
 
-wi_vmt_county <- bind_rows(wi_vmt22) %>%
-  clean_names() %>%
-  mutate(
-    year = 2022
-  ) %>%
+wisconsin_vmt <- wisconsin_vmt_raw %>%
+  filter(!is.na(ANNUAL)) %>%
   bind_rows(
-    bind_rows(wi_vmt21) %>%
-      clean_names() %>%
-      mutate(year = 2021),
-    bind_rows(wi_vmt20) %>%
-      clean_names() %>%
-      mutate(year = 2020),
-    bind_rows(wi_vmt19) %>%
-      clean_names() %>%
-      # clean data to remove extra characters
+    # the second page of 2009 reads in oddly
+    wisconsin_vmt_raw %>%
+      filter(is.na(ANNUAL)) %>%
       mutate(
-        year = 2019,
-        county = stringr::str_remove(county, "[:digit:]"),
-        annual = stringr::str_remove(annual, "X") %>%
-          stringr::str_remove_all("\\."),
-        daily = stringr::str_remove(daily, "X") %>%
-          stringr::str_remove_all("\\.")
-      ),
-    bind_rows(wi_vmt18) %>%
-      clean_names() %>%
-      # clean data to remove extra characters
-      mutate(
-        year = 2018,
-        county = stringr::str_remove(county, "[:digit:]"),
-        annual = stringr::str_remove(annual, "X") %>%
-          stringr::str_remove_all("\\."),
-        daily = stringr::str_remove(daily, "X") %>%
-          stringr::str_remove_all("\\.")
+        ANNUAL = Daily,
+        Daily = stringr::str_remove_all(COUNTY, "[:alpha:]") %>%
+          str_trim(),
+        COUNTY = stringr::str_remove_all(COUNTY, "[:digit:]") %>%
+          stringr::str_remove_all(",") %>%
+          str_trim()
       )
   ) %>%
   mutate(
-    daily = stringr::str_remove_all(daily, ",") %>% as.numeric(),
-    annual = stringr::str_remove_all(annual, ",") %>% as.numeric(),
-    county = stringr::str_to_title(county)
+    Daily = str_remove_all(Daily, "[:punct:]") %>%
+      str_remove_all(" ") %>%
+      as.numeric(),
+    ANNUAL = str_remove_all(ANNUAL, ",") %>% as.numeric()
+  ) %>%
+  clean_names() %>%
+  mutate(
+    county = stringr::str_to_title(county),
+    county = ifelse(county == "St.croix", "St. Croix", county),
+    year = as.character(year)
   ) %>%
   select(year,
     county,
     daily_vmt = daily,
     annual_vmt = annual
   ) %>%
-  filter(county %in% c("Pierce", "St.croix")) %>%
-  # fix St. Croix name
   mutate(
-    county = ifelse(county == "St.croix", "St. Croix", county),
-    year = as.character(year)
+    cprg_area = ifelse(county %in% c(
+      "St. Croix",
+      "Pierce"
+    ), TRUE, FALSE)
   )
 
 
-nrow(wi_vmt_county) == 10
+
+
+wi_vmt_county <- wisconsin_vmt %>%
+  filter(cprg_area == TRUE)
+
+# double check that there are the right number of observations
+# 2 counties for each year of data
+nrow(wi_vmt_county) == (2 * length(unique(wi_vmt_county$year)))
 
 saveRDS(wi_vmt_county, "_transportation/data-raw/wisdot/wisdot_vmt_county.RDS")

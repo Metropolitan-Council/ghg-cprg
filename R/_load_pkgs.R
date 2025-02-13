@@ -13,6 +13,11 @@ if (exists("load_packages") == FALSE) {
   # suppressMessages(library(tidycensus, quietly = TRUE))
   suppressMessages(library(councilR, quietly = TRUE))
   suppressMessages(library(lubridate, quietly = TRUE))
+  suppressMessages(library(datapasta, quietly = TRUE))
+  suppressMessages(library(data.table, quietly = TRUE))
+  suppressMessages(library(imputeTS, quietly = TRUE))
+
+
 
   # Workflow ------
   # suppressMessages(library(keyring, quietly = TRUE))
@@ -33,11 +38,15 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(terra, quietly = TRUE))
   suppressMessages(library(tidyterra, quietly = TRUE))
   suppressMessages(library(FedData, quietly = TRUE))
+  suppressMessages(library(tidyUSDA, quietly = TRUE))
 
   # tables -----
   suppressMessages(library(knitr, quietly = TRUE))
   suppressMessages(library(kableExtra, quietly = TRUE))
   suppressMessages(library(gt, quietly = TRUE))
+
+  # analysis -----
+  suppressMessages(library(randomForest, quietly = TRUE))
 
   load_packages <- TRUE
   cli::cli_inform(

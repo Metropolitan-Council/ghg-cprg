@@ -132,44 +132,44 @@ tbl_waste_factors <-
 tbl_waste_factors
 ```
 
-Transportation emissions factors were processed in [epa_moves.R](../_transportation/data-raw/epa_moves.R). Read more about these emission factors in @sec-epa-moves. 
+<!-- Transportation emissions factors were processed in [epa_moves.R](../_transportation/data-raw/epa_moves.R). Read more about these emission factors in @sec-epa-moves.  -->
 
-```{r tbl-moves-factors}
-#| tbl-cap: "Transportation emissions factors. Source: EPA MOVES"
-#| out-width: "95%"
-tbl_moves_factors <- epa_moves %>%
-  pivot_longer(
-    cols = 3:6,
-    names_to = "GHG",
-    values_to = "Value"
-  ) %>%
-  mutate(
-    `Grams per vehicle mile traveled` = Value,
-    Source = paste0("EPA MOVES (", moves_year, ")"),
-    GHG = case_when(
-      GHG == "co2" ~ "CO₂",
-      GHG == "ch4" ~ "CH₄",
-      GHG == "n2o" ~ "N₂O",
-      GHG == "cf4" ~ "CF₄",
-      GHG == "co2_co2_equivalent" ~ "CO₂e",
-      GHG == "HFC-152a" ~ GHG
-    )
-  ) %>%
-  select(
-    `Vehicle weight` = vehicle_weight,
-    GHG,
-    `Grams per vehicle mile traveled`
-  ) %>%
-  group_by(`Vehicle weight`) %>%
-  gt() %>%
-  gt::opt_row_striping() %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_labels()
-  )
-
-tbl_moves_factors
-```
+<!-- ```{r tbl-moves-factors} -->
+<!-- #| tbl-cap: "Transportation emissions factors. Source: EPA MOVES" -->
+<!-- #| out-width: "95%" -->
+<!-- # tbl_moves_factors <- epa_moves %>% -->
+<!-- #   pivot_longer( -->
+<!-- #     cols = 3:6, -->
+<!-- #     names_to = "GHG", -->
+<!-- #     values_to = "Value" -->
+<!-- #   ) %>% -->
+<!-- #   mutate( -->
+<!-- #     `Grams per vehicle mile traveled` = Value, -->
+<!-- #     Source = paste0("EPA MOVES (", moves_year, ")"), -->
+<!-- #     GHG = case_when( -->
+<!-- #       GHG == "co2" ~ "CO₂", -->
+<!-- #       GHG == "ch4" ~ "CH₄", -->
+<!-- #       GHG == "n2o" ~ "N₂O", -->
+<!-- #       GHG == "cf4" ~ "CF₄", -->
+<!-- #       GHG == "co2_co2_equivalent" ~ "CO₂e", -->
+<!-- #       GHG == "HFC-152a" ~ GHG -->
+<!-- #     ) -->
+<!-- #   ) %>% -->
+<!-- #   select( -->
+<!-- #     `Vehicle weight` = vehicle_weight, -->
+<!-- #     GHG, -->
+<!-- #     `Grams per vehicle mile traveled` -->
+<!-- #   ) %>% -->
+<!-- #   group_by(`Vehicle weight`) %>% -->
+<!-- #   gt() %>% -->
+<!-- #   gt::opt_row_striping() %>% -->
+<!-- #   tab_style( -->
+<!-- #     style = cell_text(weight = "bold"), -->
+<!-- #     locations = cells_column_labels() -->
+<!-- #   ) -->
+<!-- #  -->
+<!-- # tbl_moves_factors -->
+<!-- ``` -->
 
 ## Global Warming Potential (GWP) {#sec-gwp}
 
@@ -185,7 +185,7 @@ Across all sectors, we used the GWP values established in the Intergovernmental 
 tbl_gwp <- tibble(
   "Gas" = names(gwp),
   "100-year GWP value" = unlist(gwp),
-  "Source" = "IPCC AR5 (2014)"
+  "Source" = "IPCC AR6 (2021)"
 ) %>%
   mutate(Gas = case_when(
     Gas == "co2" ~ "CO₂",

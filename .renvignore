@@ -50,3 +50,5 @@ _transportation/data-raw/mndot/~$Current_CC_StationList.xlsx
 _transportation/data-raw/wisdot_vmt_county.R
 
 docs/_transportation/data-raw/wisdot_vmt_county.R
+
+_transportation/data-raw/metc_travel_model/

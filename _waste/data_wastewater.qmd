@@ -15,7 +15,7 @@ metc_service_area <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater
 
 mc_ww_cty <- mc_ww %>%
   group_by(year, COUNTY_NAM, scope) %>%
-  summarize(co2e = sum(emissions_metric_tons_co2e), .groups = "keep") %>%
+  summarize(co2e = sum(value_emissions), .groups = "keep") %>%
   filter(year == 2021 & scope == "Scope 1")
 
 hookaddcap()
@@ -54,14 +54,14 @@ metc_ww <- readRDS(file.path(here::here(), "_waste/data-raw/wastewater/metc_wast
 metc_ww_summary <- metc_ww %>%
   group_by(COUNTY_NAM, year, scope) %>%
   summarize(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    value_emissions = sum(value_emissions),
     .groups = "keep"
   )
 
 fig_mn_county_ww_emissions <- plot_ly(
   data = metc_ww_summary,
-  x = ~ reorder(COUNTY_NAM, -emissions_metric_tons_co2e),
-  y = ~emissions_metric_tons_co2e,
+  x = ~ reorder(COUNTY_NAM, -value_emissions),
+  y = ~value_emissions,
   source = "fig-mn-county-ww-emissions",
   color = ~scope,
   colors = c(
@@ -72,7 +72,7 @@ fig_mn_county_ww_emissions <- plot_ly(
   hovertemplate = ~ paste0(
     COUNTY_NAM, " County", "<br>",
     scope, "<br>",
-    round(emissions_metric_tons_co2e / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%

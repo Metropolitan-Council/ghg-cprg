@@ -11,41 +11,74 @@ cprg_colors <- list(
 
 # sector colors
 sector_colors <- list(
-  "Transportation" = "#8e440b",
-  "Energy" = "#163c6a",
-  "Waste" = "#8d0c3b"
+  "Electricity" = "#1f77b4",
+  "Transportation" = "#191970",
+  "Residential" = "#9467bd",
+  "Commercial" = "#d62728",
+  "Industrial" = "slategray",
+  "Waste" = "#8c564b",
+  "Agriculture" = "#8fb910",
+  "Natural Systems" = "#006f3c"
 )
+
 
 # category
 category_colors <-
   list(
-    # GnBu
-    "Residential energy" = "#225ea8",
-    "Commercial energy" = "#41b6c4",
-    "Industrial energy" = "#7fcdbb",
-    "Liquid stationary fuels" = "#a8ddb5",
 
+    # Electricity
+    "Electricity" = "#FFEF00",
 
-    # YlOrBr
-    "Passenger vehicles" = "#ec7014",
-    "Commercial vehicles" = "#fec44f",
+    # Residential
+    "Residential natural gas" = "#483248",
+    "Residential electricity" = "#CF9FFF",
+    "Residential liquid fuel" = "#A2627A",
 
-    # PuRd
-    "Solid waste" = "#ce1256",
-    "Wastewater" = "#c994c7",
+    # Commercial
+    "Commercial natural gas" = "#800000",
+    "Commercial fuel combustion" = "#DE3163",
+    "Commercial electricity" = "#FAA0A0",
 
-    # Gn
+    # Industrial
+    "Industrial electricity" = "#E5E4E2",
+    "Industrial natural gas" = "#36454F",
+    "Industrial processes" = "#B2BEB5",
+    "Industrial fuel combustion" = "#818589",
+    "Refinery processes" = "#708090",
+
+    # Transportation
+    "On-road" = "#6F8FAF",
+    "Off-road" = "#191970",
+
+    # Waste
+    "Solid waste" = "#8B4513",
+    "Wastewater" = "#CD853F",
+
+    # Agriculture
+    "Cropland" = "#c7e960",
+    "Livestock" = "#8fb910",
+
+    # Natural systems
     "Sequestration" = "#006f3c",
-    "Stock" = "#27b376"
+    "Freshwater" = "#416bdf"
   )
 
 
 # source
 source_colors <- list(
   # transportation levels
-  "Light-duty vehicles" = "#993404",
-  "Medium-duty vehicles" = "#fe9929",
-  "Heavy-duty vehicles" = "#fee391",
+  # "Light-duty vehicles" = "#993404",
+  # we still need these colors for DOT VMT docs
+  # Transportation 1
+  "Passenger vehicles" = "#0047AB",
+  "Buses" = "#6F8FAF",
+  "Trucks" = "#6495ED",
+  "Aviation" = "#191970",
+
+  # Electricity
+  "Residential electricity" = "#ffc300",
+  "Commercial electricity" = "#9f7a00",
+  "Industrial electricity" = "#604900",
 
   # waste levels
   "Landfill" = "#ae017e",
@@ -60,6 +93,15 @@ source_colors <- list(
   "Propane" = "#2f4f4f",
   "Kerosene" = "#004242",
 
+  # agriculture
+  "Enteric fermentation" = "#ffcc00", # Distinct yellow
+  "Manure management" = "#b5c100",
+  "Direct manure soil emissions" = "#a0b600",
+  "Indirect manure runoff emissions" = "#8da000",
+  "Soil residue emissions" = "#7a8a00",
+  "Onsite fertilizer emissions" = "#b0d400",
+  "Runoff fertilizer emissions" = "#9ccf00",
+
   # nature
   "Tree" = "#006d2c",
   "Grassland" = "#22b600",
@@ -70,12 +112,18 @@ source_colors <- list(
 
 
 vehicle_weight_colors <- list(
-  "Passenger" = source_colors$`Light-duty vehicles`,
-  "Medium" = source_colors$`Medium-duty vehicles`,
-  "Heavy" = source_colors$`Heavy-duty vehicles`,
-  "Light-duty" = source_colors$`Light-duty vehicles`,
+  "Passenger" = category_colors$`Passenger vehicles`,
+  "Buses" = category_colors$Buses,
+  "Trucks" = category_colors$Trucks,
+  # we still need these colors for DOT VMT docs
   "Medium-duty" = source_colors$`Medium-duty vehicles`,
   "Heavy-duty" = source_colors$`Heavy-duty vehicles`
+)
+
+fuel_type_colors <- list(
+  "Gasoline" = "#ffc300",
+  "Diesel" = "#9f7a00",
+  "Other" = "#604900"
 )
 
 management_method_colors <- list(
@@ -91,4 +139,18 @@ management_method_colors <- list(
 esa_color <- c(
   "forestgreen", "brown4", "yellow2", "wheat3", "red",
   "plum", "lightblue", "navy", "mediumturquoise"
+)
+
+waterway_colors <- c(
+  "LakePond" = "steelblue",
+  "StreamRiver" = "lightskyblue",
+  "Reservoir" = "maroon3",
+  "SwampMarsh" = "palegreen3",
+  "Lock Chamber" = "purple3",
+  "DamWeir" = "darkslategray4",
+  "Connector" = "red",
+  "CanalDitch" = "goldenrod",
+  "Underground Conduit" = "darkorchid1",
+  "Pipeline" = "darkslategray",
+  "ArtificialPath" = "green"
 )
