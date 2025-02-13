@@ -85,7 +85,7 @@ electricity_2005 <- county_emissions_summary_2005 %>%
   sum()
 ```
 
-In 2021, the Twin-Cities MSA generated `r round(emissions_total/1000000, digits = 2)` million metric tons CO~2~ equivalent (MMtCO~2~e) emissions from energy, transportation, and waste sectors. `r sector_percentages[[1]][1]` was the largest contributor to GHG emissions (`r scales::percent(sector_percentages[[2]][1], accuracy = 0.1)`), followed by `r sector_percentages[[1]][2]` (`r scales::percent(sector_percentages[[2]][2], accuracy = 0.1)`), and `r sector_percentages[[1]][3]` (`r scales::percent(sector_percentages[[2]][3], accuracy = 0.1)`). Carbon sequestration from natural systems offset `r scales::percent(seq_percentage, accuracy = 0.1)` of total emissions.
+In 2021, the Twin-Cities MSA generated `r round(emissions_total/1000000, digits = 2)` million metric tons CO~2~ equivalent (MMtCO~2~e) emissions from the energy, transportation, industrial, waste, and agricultural sectors. `r sector_percentages[[1]][1]` was the largest contributor to GHG emissions (`r scales::percent(sector_percentages[[2]][1], accuracy = 0.1)`), followed by `r sector_percentages[[1]][2]` (`r scales::percent(sector_percentages[[2]][2], accuracy = 0.1)`), and `r sector_percentages[[1]][3]` (`r scales::percent(sector_percentages[[2]][3], accuracy = 0.1)`). Carbon sequestration from natural systems offset `r scales::percent(seq_percentage, accuracy = 0.1)` of total emissions. In the methodology sector breakdown, we explain how electricity and natural gas emissions are calculated and apportioned to the residential, commercial, and industrial sectors.
 
 ```{r fig-county-emissions-sector}
 #| fig-cap: "Regional emissions by sector and category"
@@ -145,79 +145,61 @@ Emissions in the region fell by `r scales::percent((emissions_2005 - emissions_t
 #| fig-cap: "Regional emissions by sector through time"
 #| out-width: "95%"
 
-baseline_comparison_facet <- ggplot(
-  county_emissions %>%
-    filter(emissions_year >= 2005 & emissions_year <= 2021) %>%
-    group_by(sector, emissions_year) %>%
-    summarize(value_emissions = sum(value_emissions, na.rm = TRUE)),
-  aes(
-    x = emissions_year, y = value_emissions / 1000000,
-    fill = sector,
-    col = sector
-  )
-) +
-  geom_area(alpha = 0.4) +
-  geom_line(size = 1.2) +
-  geom_hline(yintercept = 0, size = 1.2, col = "black", linetype = "dashed") +
-  labs(fill = "sector") +
-  ggtitle("Regional Emissions Inventory: 2005-2021") +
-  scale_fill_manual(values = unlist(sector_colors), guide = "none") +
-  scale_color_manual(values = unlist(sector_colors), guide = "none") +
-  theme_bw() +
-  xlab("") +
-  ylab(expression(paste("Million metric tons of ", CO[2], "e"))) +
-  theme(
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.text.x = element_text(size = 15, angle = -90, vjust = .25),
-    text = element_text(size = 20, family = "sans")
-  ) +
-  facet_grid(. ~ sector)
 
-baseline_comparison_facet
+sector_order <- county_emissions %>%
+  filter(emissions_year >= 2005 & emissions_year <= 2021, category != "Sequestration") %>%
+  group_by(sector) %>%
+  mutate(sector = if_else(sector == "Natural Systems", "Freshwater", sector)) %>% 
+  summarize(total_emissions = sum(value_emissions, na.rm = TRUE)) %>%
+  arrange((total_emissions)) %>%  # Sort descending (biggest at top)
+  pull(sector)
 
-# problematic plotly attempt, return to later
+emissions_data <- county_emissions %>%
+  filter(emissions_year >= 2005 & emissions_year <= 2021,
+         category != "Sequestration") %>%
+  group_by(sector, emissions_year) %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
+  mutate(value_emissions = value_emissions / 1000000,
+         sector = if_else(sector == "Natural Systems", "Freshwater", sector),
+         sector = factor(sector, levels = sector_order))
+  
 
-# baseline_data <- county_emissions %>%
-#   filter(emissions_year >= 2005 & emissions_year <= 2021) %>%
-#   group_by(sector, emissions_year, category) %>%
-#   summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
-#   mutate(value_emissions = value_emissions / 1000000,
-#          sector = factor(sector,
-#                          levels = c(
-#                            "Transportation",
-#                            "Residential",
-#                            "Commercial",
-#                            "Industrial",
-#                            "Waste",
-#                            "Agriculture",
-#                            "Natural Systems")))
-#
-# # Create plotly traces for each sector
-# plot_list <- lapply(unique(baseline_data$sector), function(sector) {
-#   sector_data <- filter(plot_data, sector == !!sector)
-#
-#   plot_ly(sector_data, x = ~emissions_year, y = ~value_emissions,
-#           type = "scatter", mode = "lines", fill = "tozeroy",
-#           color = ~category,
-#           colors = unlist(category_colors),
-#           hoverinfo = "text",
-#           text = ~paste0("Year: ", emissions_year, "<br>",
-#                          "Emissions: ", round(value_emissions, 2), " MtCO2e<br>",
-#                          "Category: ", category),
-#           name = sector)
-# })
-#
-# # Arrange the plots in facets
-# final_plot <- subplot(plot_list, nrows = length(sector_levels), shareX = TRUE, titleX = FALSE) %>%
-#   layout(title = "Regional Emissions Inventory: 2005-2021",
-#          yaxis = list(title = "Million metric tons of CO2e"),
-#          shapes = list(
-#            list(type = "line", x0 = 2005, x1 = 2021, y0 = 0, y1 = 0,
-#                 line = list(color = "black", width = 1.2, dash = "dash"))
-#          ))
-#
-# final_plot
+sequestration_data <- county_emissions %>%
+  filter(emissions_year >= 2005 & emissions_year <= 2021,
+         category == "Sequestration") %>%
+  group_by(sector, emissions_year) %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
+  mutate(value_emissions = value_emissions / 1000000) #
+
+p <- plot_ly()
+
+# Create plotly traces for each sector
+emissions_through_time <- p %>% add_trace(
+  data = emissions_data,
+  source = "fig-temporal-emissions",
+  x = ~emissions_year, y = ~value_emissions,
+  type = "scatter", mode = "none", fill = "tonexty",
+  stackgroup = "one",  # Stack sectors
+  color = ~sector, colors = c(unlist(sector_colors),Freshwater = "#1E90FF"),  
+  hoverinfo = "text",
+  text = ~paste0("Year: ", emissions_year, "<br>",
+                 "Sector: ", sector, "<br>",
+                 "Emissions: ", round(value_emissions, 2), " MtCO2e"),
+  name = ~sector
+) %>% add_trace(
+  data = sequestration_data,
+  x = ~emissions_year, y = ~value_emissions,
+  type = "scatter", mode = "none", fill = "tozeroy",  # Prevent stacking
+  color = ~sector, colors = unlist(sector_colors),
+  hoverinfo = "text",
+  text = ~paste0("Year: ", emissions_year, "<br>",
+                 "Sector: ", sector, "<br>",
+                 "Sequestration: ", round(value_emissions, 2), " MtCO2e"),
+  name = "Natural Systems"
+)
+        
+
+emissions_through_time
 ```
 
 
@@ -330,10 +312,10 @@ This document is the result of tremendous work across the Metropolitan Council. 
 
 ::: {.column width="50%"}
 #### Primary authors {.unnumbered}
+ - Sam Limerick, Senior Data Scientist, Electricity and Natural Gas (CD)  
  - Liz Roten, Senior Data Scientist, Transportation (MTS)  
- - Sam Limerick, Senior Data Scientist, Electricity and natural gas (CD)  
- - Peter Wilfahrt, Principal Researcher, Industrial, Agricultural, Wastewater,  (CD)   
- - Kenneth Smith, Principal Researcher, LIDAC, natural systems, Wastewater (CD)  
+ - Kenneth Smith, Principal Researcher, LIDAC, Natural Systems, Wastewater (CD)  
+ - Peter Wilfahrt, Principal Researcher, Industrial, Agricultural, Wastewater,  (CD)  
  - Zoey Yandell, Intern, Solid waste (CD)  
 :::
 
