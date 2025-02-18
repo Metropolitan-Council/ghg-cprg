@@ -243,7 +243,7 @@ county_emissions_raw <- plot_ly(
     subtitle = "",
     x_title = "County",
     y_title = "Metric tons CO<sub>2</sub>e",
-    legend_title = "Category",
+    legend_title = "Sector",
     barmode = "stack"
   )
 
@@ -281,7 +281,7 @@ county_emissions_2021_per_capita <- plot_ly(
     subtitle = "",
     x_title = "County",
     y_title = "Metric tons CO<sub>2</sub>e",
-    legend_title = "Category",
+    legend_title = "Sector",
     barmode = "stack"
   )
 
