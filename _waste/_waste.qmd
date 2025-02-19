@@ -18,6 +18,8 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
+source(file.path(here::here(), "R/global_warming_potential.R"))
+
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 cprg_county <- readRDS(file.path(
   here::here(),
@@ -26,6 +28,12 @@ cprg_county <- readRDS(file.path(
 
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+solid_waste_gas <- readRDS(file.path(here::here(), "_waste/data/solid_waste_MN_by_gas.RDS")) %>% 
+  left_join(cprg_county %>% st_drop_geometry() %>% 
+              select(geoid, county_name))
+
+wastewater_gas <- readRDS(file.path(here::here(), "_waste/data/_county_wastewater_emissions.RDS"))
+
 # this file is currently out of date. please update before adding full sector graphs
 
 
@@ -41,6 +49,45 @@ waste_emissions_2005 <- county_emissions %>%
   filter(emissions_year == 2005, sector == "Waste") %>%
   pull(value_emissions) %>%
   sum()
+
+county_gas_type <- bind_rows(wastewater_gas  %>% 
+                               group_by(inventory_year, county_name, units_emissions) %>% 
+                               summarize(value_emissions = sum(value_emissions)),
+                             solid_waste_gas %>% 
+                               group_by(inventory_year, county_name, units_emissions) %>% 
+                               summarize(value_emissions = sum(value_emissions))
+) %>% 
+  ungroup() %>% 
+  mutate(co2e = case_when(
+    units_emissions == "Metric tons CH4" ~ value_emissions * gwp$ch4,
+    units_emissions == "Metric tons N2O" ~ value_emissions * gwp$n2o,
+    units_emissions == "Metric tons CO2" ~ value_emissions * gwp$co2
+  ))
+
+co2_2021 <- county_gas_type %>%
+  filter(
+    inventory_year == 2021,
+    units_emissions == "Metric tons CO2"
+  ) %>%
+  pull(co2e) %>%
+  sum()
+
+methane_2021 <- county_gas_type %>%
+  filter(
+    inventory_year == 2021,
+    units_emissions == "Metric tons CH4"
+  ) %>%
+  pull(co2e) %>%
+  sum()
+
+n2o_2021 <- county_gas_type %>%
+  filter(
+    inventory_year == 2021,
+    units_emissions == "Metric tons N2O"
+  ) %>%
+  pull(co2e) %>%
+  sum()
+
 
 hookaddcap()
 ```
@@ -160,211 +207,91 @@ fig_waste_baseline <- plot_ly(
 fig_waste_baseline
 ```
 
-#### 2021 emissions
+### Emissions by gas type
 
-```{r solid-waste-percentages, include=FALSE}
-solid_waste_percentages <- solid_waste_emissions %>%
-  filter(inventory_year == 2021) %>%
-  group_by(category, source) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
-  arrange(-value_emissions) %>%
-  janitor::adorn_percentages(denominator = "col")
+The majority of waste emissions by weight are CO<sub>2</sub>, but when accounting for the increased warming potential of methane, CO<sub>2</sub>e, methane contributes the most to global warming. 
+CO<sub>2</sub>: `r 100 * round(co2_2021/waste_emissions_2021, digits = 3)`% 
+CH<sub>4</sub>: `r 100 * round(methane_2021/waste_emissions_2021, digits = 3)`% 
+N<sub>2</sub>O: `r 100 * round(n2o_2021/ag_emissions_2021, digits = 3)`%
 
 
-total_solid_waste <-
-  solid_waste_emissions %>%
-  ungroup() %>%
-  filter(inventory_year == 2021) %>%
-  summarise(value_emissions = sum(value_emissions)) %>%
-  extract2("value_emissions")
-```
 
-Solid waste generated `r round(total_solid_waste/1000000, digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Of that total, `r scales::percent(solid_waste_percentages$value_emissions[1], accuracy = 0.1)` of emissions came from `r str_to_lower(solid_waste_percentages$source[1])`, `r scales::percent(solid_waste_percentages$value_emissions[2], accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[2])` facilities, and the remaining `r scales::percent(sum(solid_waste_percentages$value_emissions[3:4]), accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[3])` and `r str_to_lower(solid_waste_percentages$source[4])`.  
-
-```{r fig-solid-waste-emissions}
-#| fig-cap: "2021 solid waste emissions"
+```{r fig-waste-county-emissions-by-gas-type}
+#| fig-cap: "2021 county waste emissions by gas type"
 #| out-width: "95%"
-fig_solid_waste_emissions <-
-  plot_ly(
-    type = "bar",
-    source = "fig-solid-waste-emissions",
-    data = solid_waste_named %>%
-      filter(
-        category == "Solid waste",
-        inventory_year == 2021
-      ),
-    y = ~ reorder(county_name, value_emissions),
-    x = ~value_emissions,
-    color = ~category,
-    colors = unlist(category_colors),
-    marker = list(
-      line = list(
-        color = colors$councilBlue
+
+fig_waste_gas_type <- plot_ly(
+  type = "bar",
+  source = "fig-waste-county-emissions-by-gas-type",
+  data = county_gas_type %>%
+    filter(inventory_year == 2021),
+  y = ~ reorder(county_name, value_emissions),
+  x = ~value_emissions,
+  color = ~units_emissions,
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    units_emissions, "<br>",
+    round(value_emissions, digits = 2), "  metric tons of gas", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = "2021 county waste emissions by gas type",
+    x_title = "Metric tons of gas emitted",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    ),
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
       )
-    ),
-    hovertemplate = ~ paste0(
-      county_name, " County", "<br>",
-      category, ", ", source, "<br>",
-      round(value_emissions / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
-      "<extra></extra>"
     )
-  ) %>%
+  )
+
+fig_waste_gas_type
+```
+```{r fig-waste-county-emissions-by-gas-type-co2e}
+#| fig-cap: "2021 county waste emissions by gas type - CO2e"
+#| out-width: "95%"
+
+fig_waste_gas_type_co2e <- plot_ly(
+  type = "bar",
+  source = "fig-waste-county-emissions-by-gas-type-co2e",
+  data = county_gas_type %>%
+    filter(inventory_year == 2021),
+  y = ~ reorder(county_name, co2e),
+  x = ~co2e,
+  color = ~units_emissions,
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    units_emissions, "<br>",
+    round(co2e, digits = 2), "  metric tons of gas", "<br>",
+    "<extra></extra>"
+  )
+) %>%
   plotly_layout(
-    main_title = "2021 solid waste emissions",
-    subtitle = "",
-    y_title = "County",
-    x_title = "Metric tons CO<sub>2</sub>e",
-    legend_title = "Category"
+    main_title = "2021 county waste emissions by gas type in CO2e",
+    x_title = "Metric tons of CO2e",
+    subtitle = ""
   ) %>%
   layout(
     barmode = "stack",
     legend = list(
       traceorder = "reversed"
     ),
-    yaxis = list(categoryorder = "total ascending")
-  )
-fig_solid_waste_emissions
-```
-
-Greenhouse gas emissions from solid waste are dominated by the landfill sector. In Hennepin, Ramsey, and Washington counties, municipal centers where a significant portion of waste is incinerated, waste-to-energy or incineration makes up a large fraction of emissions as well. 
-
-```{r fig-solid-waste-sector-emissions-by-category}
-#| fig-cap: "2021 solid waste emissions by category"
-#| out-width: "95%"
-
-fig_solid_waste_sector_emissions_by_category <-
-  plot_ly(
-    type = "bar",
-    source = "fig-solid-waste-sector-emissions-by-category",
-    data = solid_waste_named %>%
-      filter(
-        category == "Solid waste",
-        inventory_year == 2021,
-        source != "Onsite"
-      ),
-    y = ~ reorder(county_name, value_emissions),
-    x = ~value_emissions,
-    color = ~source,
-    colors = unlist(source_colors),
-    hovertemplate = ~ paste0(
-      county_name, " County", "<br>",
-      category, ", ", source, "<br>",
-      round(value_emissions / 1000, digits = 0), " thousand metric tons CO<sub>2</sub>e", "<br>",
-      "<extra></extra>"
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
     )
-  ) %>%
-  plotly_layout(
-    main_title = "2021 solid waste emissions by category",
-    subtitle = "",
-    y_title = "County",
-    x_title = "Metric tons CO<sub>2</sub>e",
-    legend_title = "Category"
-  ) %>%
-  layout(
-    barmode = "stack",
-    legend = list(
-      traceorder = "reversed"
-    ),
-    yaxis = list(categoryorder = "total ascending")
-  )
-fig_solid_waste_sector_emissions_by_category
-```
-
-
-<!-- consider inserting CTU estimates here -->
-
-#### Historical emissions
-
-The variation of solid waste emissions over the past 16 years is mainly due to variations in amount of waste collected. It does not take into account changes in methane capture and removal technology or adoption.
-
-```{r fig-solid-waste-times-series-county}
-#| fig-cap: "Solid waste emissions by county, 2005-2021"
-#| out-width: "95%"
-
-fig_solid_waste_time_series_county <- sw_county_summary %>%
-  group_by(county_name) %>%
-  plot_ly(
-    source = "fig-solid-waste-time-series-county",
-    x = ~inventory_year,
-    y = ~value_emissions,
-    color = ~county_name,
-    colors = "Dark2",
-    type = "scatter",
-    mode = "lines+markers",
-    marker = list(size = 10),
-    hoverinfo = "text",
-    hovertext = ~ paste0(
-      county_name, "County, ", inventory_year, " ", "<br>",
-      rounded_tons
-    )
-  ) %>%
-  plotly_layout(
-    main_title = paste0("Solid Waste emissions, ", solid_waste_min_year, " - ", solid_waste_max_year),
-    subtitle = "",
-    x_title = "Year",
-    y_title = "Metric tons CO<sub>2</sub>e",
-    legend_title = "County"
   )
 
-fig_solid_waste_time_series_county
+fig_waste_gas_type_co2e
 ```
-
-```{r fig-solid-waste-time-series-source}
-#| fig-cap: "Solid waste emissions by source, 2005-2021"
-#| out-width: "95%"
-#|
-sw_source_summary <- solid_waste_named %>%
-  group_by(inventory_year, source) %>%
-  filter(source != "Onsite") %>%
-  summarize(
-    value_emissions = sum(value_emissions),
-    .groups = "keep"
-  ) %>%
-  rowwise() %>%
-  mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions))
-
-fig_solid_waste_time_series_source <- sw_source_summary %>%
-  filter(source == "Landfill") %>%
-  plot_ly(
-    source = "fig-solid-waste-time-series-source",
-    x = ~inventory_year,
-    y = ~value_emissions,
-    name = "Landfill",
-    fillcolor = source_colors$Landfill,
-    type = "scatter",
-    mode = "none",
-    stackgroup = "one",
-    hoverinfo = "text",
-    hovertext = ~ paste0(
-      source, " emissions, ", inventory_year, " ", "<br>",
-      rounded_tons
-    )
-  ) %>%
-  add_trace(
-    data = sw_source_summary %>% filter(source == "Organics"),
-    y = ~value_emissions,
-    name = "Organics",
-    fillcolor = source_colors$Organics
-  ) %>%
-  add_trace(
-    data = sw_source_summary %>% filter(source == "Waste to energy"),
-    y = ~value_emissions,
-    name = "Waste to energy",
-    fillcolor = source_colors$`Waste to energy`
-  ) %>%
-  plotly_layout(
-    main_title = paste0("Solid Waste emissions, ", solid_waste_min_year, " - ", solid_waste_max_year),
-    subtitle = "",
-    x_title = "Year",
-    y_title = "Metric tons CO<sub>2</sub>e",
-    legend_title = "Source"
-  )
-
-fig_solid_waste_time_series_source
-```
-
-### Wastewater
-
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
