@@ -322,8 +322,6 @@ We compared our county-level emissions figures to emissions estimates derived fr
 
 ##### NREL SLOPE
 
-The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly forecasted emissions tied to the user of electricity up to 2050 based on 2016 reported data at the county level. In comparing these figures to our own inventory, we observed that, where we estimated `r scales::comma(region_total_electricity, accuracy = 1)` metric tons of emissions linked to electricity deliveries in our study area in the year 2021, NREL SLOPE forecasted `r scales::comma(nrel_total_electrcity, accuracy = 1)`metrics tons in our study area.
-
 ```{r fig-nrel-qa-electricity}
 #| fig-cap: "Metropolitan Council emissions inventory v. NREL SLOPE modeled emissions"
 #| out-width: "95%"
@@ -371,6 +369,9 @@ fig_nrel_qa_electricity <- plot_ly(
 fig_nrel_qa_electricity
 
 ```
+
+
+The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly forecasted emissions tied to the user of electricity up to 2050 based on 2016 reported data at the county level. In comparing these figures to our own inventory, we observed that, where we estimated `r scales::comma(region_total_electricity, accuracy = 1)` metric tons of emissions linked to electricity deliveries in our study area in the year 2021, NREL SLOPE forecasted `r scales::comma(nrel_total_electrcity, accuracy = 1)`metrics tons in our study area.
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
