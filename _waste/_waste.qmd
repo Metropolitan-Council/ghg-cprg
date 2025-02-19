@@ -101,17 +101,6 @@ Municipal waste can broadly be divided into biogenic wastewater emissions and so
 
 ## Results
 
-### Overview
-
-Emissions from waste generated `r round(sum(county_emissions$value_emissions)/1000000 * sector_percentages[[2]][3], digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Solid waste, including landfills, incineration, and organics, generates the largest share of emissions in the waste sector, with municipal wastewater treatment comprising a smaller share of waste emissions. 
-
-<!-- Waste emissions in Minnesota have declined nearly 40% since 2005 - update with our figures, due to a variety of factors including gas capture technologies and aging waste in open landfills [@mpcaClimateChangeTrends2023]. Waste emissions in Wisconsin show no significant change from 2005 to 2018, possibly due to increased waste generation offsetting reductions from gas capture [@wisconsindnrGreenhouseGas2021]. The Metropolitan Council, which oversees wastewater services for the majority of the urbanized extent of the metropolitan region, continues to work to reduce wastewater emissions across its 9 wastewater treatment plants. -->
-
-<!-- We are underestimating the impact of waste management technologies. -->
-
-2021 by county and subsector
-over time
-
 ```{r fig-waste-county-emissions}
 #| fig-cap: "2021 county agricultural emissions"
 #| out-width: "95%"
