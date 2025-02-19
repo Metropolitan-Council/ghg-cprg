@@ -202,7 +202,7 @@ fig_waste_baseline
 The majority of waste emissions by weight are CO<sub>2</sub>, but when accounting for the increased warming potential of methane, CO<sub>2</sub>e, methane contributes the most to global warming. 
 CO<sub>2</sub>: `r 100 * round(co2_2021/waste_emissions_2021, digits = 3)`% 
 CH<sub>4</sub>: `r 100 * round(methane_2021/waste_emissions_2021, digits = 3)`% 
-N<sub>2</sub>O: `r 100 * round(n2o_2021/ag_emissions_2021, digits = 3)`%
+N<sub>2</sub>O: `r 100 * round(n2o_2021/waste_emissions_2021, digits = 3)`%
 
 
 
