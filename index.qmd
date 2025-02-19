@@ -149,24 +149,30 @@ Emissions in the region fell by `r scales::percent((emissions_2005 - emissions_t
 sector_order <- county_emissions %>%
   filter(emissions_year >= 2005 & emissions_year <= 2021, category != "Sequestration") %>%
   group_by(sector) %>%
-  mutate(sector = if_else(sector == "Natural Systems", "Freshwater", sector)) %>% 
+  mutate(sector = if_else(sector == "Natural Systems", "Freshwater", sector)) %>%
   summarize(total_emissions = sum(value_emissions, na.rm = TRUE)) %>%
-  arrange((total_emissions)) %>%  # Sort descending (biggest at top)
+  arrange((total_emissions)) %>% # Sort descending (biggest at top)
   pull(sector)
 
 emissions_data <- county_emissions %>%
-  filter(emissions_year >= 2005 & emissions_year <= 2021,
-         category != "Sequestration") %>%
+  filter(
+    emissions_year >= 2005 & emissions_year <= 2021,
+    category != "Sequestration"
+  ) %>%
   group_by(sector, emissions_year) %>%
   summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
-  mutate(value_emissions = value_emissions / 1000000,
-         sector = if_else(sector == "Natural Systems", "Freshwater", sector),
-         sector = factor(sector, levels = sector_order))
-  
+  mutate(
+    value_emissions = value_emissions / 1000000,
+    sector = if_else(sector == "Natural Systems", "Freshwater", sector),
+    sector = factor(sector, levels = sector_order)
+  )
+
 
 sequestration_data <- county_emissions %>%
-  filter(emissions_year >= 2005 & emissions_year <= 2021,
-         category == "Sequestration") %>%
+  filter(
+    emissions_year >= 2005 & emissions_year <= 2021,
+    category == "Sequestration"
+  ) %>%
   group_by(sector, emissions_year) %>%
   summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
   mutate(value_emissions = value_emissions / 1000000) #
@@ -174,30 +180,36 @@ sequestration_data <- county_emissions %>%
 p <- plot_ly()
 
 # Create plotly traces for each sector
-emissions_through_time <- p %>% add_trace(
-  data = emissions_data,
-  source = "fig-temporal-emissions",
-  x = ~emissions_year, y = ~value_emissions,
-  type = "scatter", mode = "none", fill = "tonexty",
-  stackgroup = "one",  # Stack sectors
-  color = ~sector, colors = c(unlist(sector_colors),Freshwater = "#1E90FF"),  
-  hoverinfo = "text",
-  text = ~paste0("Year: ", emissions_year, "<br>",
-                 "Sector: ", sector, "<br>",
-                 "Emissions: ", round(value_emissions, 2), " MtCO2e"),
-  name = ~sector
-) %>% add_trace(
-  data = sequestration_data,
-  x = ~emissions_year, y = ~value_emissions,
-  type = "scatter", mode = "none", fill = "tozeroy",  # Prevent stacking
-  color = ~sector, colors = unlist(sector_colors),
-  hoverinfo = "text",
-  text = ~paste0("Year: ", emissions_year, "<br>",
-                 "Sector: ", sector, "<br>",
-                 "Sequestration: ", round(value_emissions, 2), " MtCO2e"),
-  name = "Natural Systems"
-)
-        
+emissions_through_time <- p %>%
+  add_trace(
+    data = emissions_data,
+    source = "fig-temporal-emissions",
+    x = ~emissions_year, y = ~value_emissions,
+    type = "scatter", mode = "none", fill = "tonexty",
+    stackgroup = "one", # Stack sectors
+    color = ~sector, colors = c(unlist(sector_colors), Freshwater = "#1E90FF"),
+    hoverinfo = "text",
+    text = ~ paste0(
+      "Year: ", emissions_year, "<br>",
+      "Sector: ", sector, "<br>",
+      "Emissions: ", round(value_emissions, 2), " MtCO2e"
+    ),
+    name = ~sector
+  ) %>%
+  add_trace(
+    data = sequestration_data,
+    x = ~emissions_year, y = ~value_emissions,
+    type = "scatter", mode = "none", fill = "tozeroy", # Prevent stacking
+    color = ~sector, colors = unlist(sector_colors),
+    hoverinfo = "text",
+    text = ~ paste0(
+      "Year: ", emissions_year, "<br>",
+      "Sector: ", sector, "<br>",
+      "Sequestration: ", round(value_emissions, 2), " MtCO2e"
+    ),
+    name = "Natural Systems"
+  )
+
 
 emissions_through_time
 ```

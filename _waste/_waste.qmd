@@ -28,9 +28,9 @@ cprg_county <- readRDS(file.path(
 
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
-solid_waste_gas <- readRDS(file.path(here::here(), "_waste/data/solid_waste_MN_by_gas.RDS")) %>% 
-  left_join(cprg_county %>% st_drop_geometry() %>% 
-              select(geoid, county_name))
+solid_waste_gas <- readRDS(file.path(here::here(), "_waste/data/solid_waste_MN_by_gas.RDS")) %>%
+  left_join(cprg_county %>% st_drop_geometry() %>%
+    select(geoid, county_name))
 
 wastewater_gas <- readRDS(file.path(here::here(), "_waste/data/_county_wastewater_emissions.RDS"))
 
@@ -50,14 +50,15 @@ waste_emissions_2005 <- county_emissions %>%
   pull(value_emissions) %>%
   sum()
 
-county_gas_type <- bind_rows(wastewater_gas  %>% 
-                               group_by(inventory_year, county_name, units_emissions) %>% 
-                               summarize(value_emissions = sum(value_emissions)),
-                             solid_waste_gas %>% 
-                               group_by(inventory_year, county_name, units_emissions) %>% 
-                               summarize(value_emissions = sum(value_emissions))
-) %>% 
-  ungroup() %>% 
+county_gas_type <- bind_rows(
+  wastewater_gas %>%
+    group_by(inventory_year, county_name, units_emissions) %>%
+    summarize(value_emissions = sum(value_emissions)),
+  solid_waste_gas %>%
+    group_by(inventory_year, county_name, units_emissions) %>%
+    summarize(value_emissions = sum(value_emissions))
+) %>%
+  ungroup() %>%
   mutate(co2e = case_when(
     units_emissions == "Metric tons CH4" ~ value_emissions * gwp$ch4,
     units_emissions == "Metric tons N2O" ~ value_emissions * gwp$n2o,
