@@ -18,7 +18,7 @@ book:
   search: true
   repo-url: https://github.com/Metropolitan-Council/ghg-cprg
   repo-actions: source
-  reader-mode: true
+  reader-mode: false
   sidebar:
     pinned: true
     align: center
