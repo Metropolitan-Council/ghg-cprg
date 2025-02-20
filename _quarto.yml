@@ -9,7 +9,7 @@ project:
 quarto-required: 1.5.57
 
 book:
-  version: 2.0.0
+  version: 2.0.1
   title: "Twin Cities MSA Greenhouse Gas Inventory"
   subtitle: "Climate Pollution Reduction Grant Documentation"
   author: "Metropolitan Council"
@@ -18,7 +18,7 @@ book:
   search: true
   repo-url: https://github.com/Metropolitan-Council/ghg-cprg
   repo-actions: source
-  reader-mode: true
+  reader-mode: false
   sidebar:
     pinned: true
     align: center
@@ -36,7 +36,7 @@ book:
     
     - part: "Electricity"
       chapters:
-       - _energy/_energy_electricity_emissions.qmd
+       - _energy/_electricity.qmd
        - _energy/data_electricity.qmd
 
     - part: "Building Energy"
@@ -53,6 +53,7 @@ book:
 
     - part: "Waste and Wastewater"
       chapters:
+       - _waste/_waste.qmd
        - _waste/_solid_waste.qmd
        # - _waste/_data_methods_waste.qmd
        - _waste/data_solid_waste.qmd

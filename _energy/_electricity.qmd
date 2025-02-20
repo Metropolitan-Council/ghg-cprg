@@ -1,0 +1,245 @@
+# Electricity
+
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+county_emissions_summary <- county_emissions %>%
+  group_by(sector, category, source, data_source, factor_source) %>%
+  summarize(
+    value_emissions = sum(value_emissions),
+    .groups = "keep"
+  )
+
+mn_emissions <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS"))
+wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
+  rename(county = county_name)
+
+elecEmissions_all <- county_emissions %>%
+  filter(category == "Electricity") %>%
+  group_by(county_name, emissions_year) %>%
+  summarise(
+    value_emissions = sum(value_emissions),
+    .groups = "rowwise"
+  )
+
+
+
+
+eiaQA_all <- bind_rows(
+  read_rds(
+    file.path(
+      here::here(),
+      "_energy/data/minnesota_QA_versusEIAStateProfile.RDS"
+    )
+  ),
+  read_rds(
+    file.path(
+      here::here(),
+      "_energy/data/wisconsin_QA_versusEIAStateProfile.RDS"
+    )
+  )
+)
+
+EIAvMETC_tons <- eiaQA_all %>%
+  mutate(
+    downscaled_EIA_total_CO2e_emissions_tons = downscaled_EIA_total_CO2e_emissions_lbs / 2000,
+    OURS_total_CO2e_emissions_tons = OURS_total_CO2e_emissions_lbs / 2000
+  ) %>%
+  pivot_longer(
+    cols = c("downscaled_EIA_total_CO2e_emissions_tons", "OURS_total_CO2e_emissions_tons"),
+    names_to = "inventory_source",
+    values_to = "value_emissions"
+  ) %>%
+  mutate(
+    inventory_source = recode(inventory_source,
+      downscaled_EIA_total_CO2e_emissions_tons = "EIA",
+      OURS_total_CO2e_emissions_tons = "Metropolitan Council"
+    )
+  )
+
+nrelQA <- read_rds(
+  file.path(
+    here::here(),
+    "_energy/data-raw/nrel_slope/nrel_emissions.RDS"
+  )
+) %>%
+  filter(source == "Electricity" && year == 2021) %>%
+  group_by(county_name) %>%
+  summarise(total_value_emissions = sum(co2e))
+
+nrel_metc_electricity_comp <- nrelQA %>%
+  left_join(
+    elecEmissions_all %>% select(county_name,
+      MetC = value_emissions
+    ),
+    by = "county_name"
+  ) %>%
+  pivot_longer(
+    cols = c("total_value_emissions", "MetC"),
+    names_to = "inventory_source",
+    values_to = "value_emissions"
+  ) %>%
+  mutate(
+    inventory_source = recode(inventory_source,
+      total_value_emissions =
+        "NREL SLOPE",
+      MetC =
+        "Metropolitan Council"
+    )
+  )
+
+electricity_2005 <- elecEmissions_all %>%
+  filter(emissions_year == 2005) %>%
+  pull(value_emissions) %>%
+  sum()
+
+electricity_2021 <- elecEmissions_all %>%
+  filter(emissions_year == 2021) %>%
+  pull(value_emissions) %>%
+  sum()
+
+hookaddcap()
+```
+
+## Introduction
+
+Emissions from the electricity generation sector have declined by `r scales::percent((electricity_2005 - electricity_2021) / electricity_2005, accuracy = 0.1)` in the region since 2005, largely as a result of transitions in the grid towards energy sources such as wind and solar [@mpcaClimateChangeTrends2023]. In 2023, Minnesota Governor Walz signed a bill mandating a statewide carbon-free electricity standard by 2040. The law "establishes a standard for utilities to supply Minnesota customers with electricity generated or procured from carbon-free resources, beginning at an amount equal to 80% of retail sales for public utility customers in Minnesota in 2030 and increasing every 5 years to reach 100% for all electric utilities by 2040. The bill also requires that, by 2035, an amount equal to at least 55% of an electric utility’s total retail electric sales to customers in Minnesota must be generated or procured from eligible energy technologies." Wisconsin has not adopted a similar carbon-free electricity standard, but a Wisconsin DNR report noted both the economic gains from such to the renewable energy economy in the state, as well as the opportunities for decarbonization [@holtWisconsinCleanEnergy2019].
+
+
+```{r tbl-elec-mrow-proportions}
+#| tbl-cap: "Grid Mix for MROW subregion of 2021 eGRID"
+#| out-width: "95%"
+
+eGRID_mix <- data.frame(
+  "Energy Source" = c("Coal", "Oil", "Gas", "Other Fossil", "Nuclear", "Hydro", "Biomass", "Wind", "Solar", "Geothermal", "Other", "Unknown/Purchased Fuel"),
+  Percentage = c("39.6%", "0.2%", "10.6%", "0.10%", "8.6%", "4.4%", "0.8%", "34.6%", "0.9%", "0.0%", "0.2%", "N/A")
+)
+
+(eGRID_mix) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
+
+### Results
+### 2021 county and subsector breakdown
+
+```{r fig-energy-electricity-sector-emissions}
+#| fig-cap: "2021 electricity emissions by sector"
+#| out-width: "95%"
+
+
+fig_energy_electricity_sector_emissions <-
+  plot_ly(
+    type = "bar",
+    source = "fig-energy-electricity-sector-emissions",
+    data = county_emissions %>%
+      filter(
+        emissions_year == 2021,
+        category == "Electricity"
+      ),
+    y = ~ reorder(county_name, value_emissions),
+    x = ~value_emissions,
+    color = ~source,
+    colors = unlist(category_colors),
+    hovertemplate = ~ paste0(
+      county_name, " County", "<br>",
+      source, ", ", category, "<br>",
+      round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
+  plotly_layout(
+    main_title = "2021 electricity emissions by sector",
+    subtitle = "",
+    y_title = "County",
+    x_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Energy sector"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    )
+  )
+fig_energy_electricity_sector_emissions
+```
+
+```{r fig-electricity-baseline-emissions}
+#| fig-cap: "Baseline electricity emissions"
+#| out-width: "95%"
+#| fig.height: 4  # Set height in inches
+#| fig.width: 8   # Set width in inches
+
+fig_electricity_baseline <- plot_ly(
+  source = "fig-electricity-baseline-emissions",
+  data = county_emissions %>%
+    filter(category == "Electricity") %>%
+    group_by(emissions_year, source) %>%
+    summarise(value_emissions = sum(value_emissions)),
+  x = ~emissions_year,
+  y = ~value_emissions,
+  color = ~source, #
+  colors = unlist(category_colors), # Directly map the colors to categories
+  type = "scatter",
+  mode = "lines", # No points or lines, just fill
+  stackgroup = "one", # Fill to the next y value (stacking)
+  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Category: %{text}<br>",
+    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~source # Pass category to hovertext
+) %>%
+  plotly_layout(
+    main_title = "Electricity Emissions Over Time",
+    x_title = "Year",
+    y_title = "Million metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    hovermode = "x unified", # Combine all hovertext under one hover
+    hoverlabel = list(
+      font = list(
+        color = "black" # Set hovertext color to black
+      )
+    )
+  )
+
+fig_electricity_baseline
+```
+
+
+
+```
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+
+{{< pagebreak >}}

@@ -108,7 +108,8 @@ fig_ind_county_emissions <- plot_ly(
     filter(
       sector == "Industrial",
       emissions_year == 2021
-    ),
+    ) %>%
+    mutate(category = if_else(category == "Building Fuel", "Industrial natural gas", category)),
   y = ~ reorder(county_name, value_emissions),
   x = ~value_emissions,
   color = ~category,
@@ -157,6 +158,7 @@ fig_ind_baseline <- plot_ly(
       sector == "Industrial",
       emissions_year <= 2022
     ) %>%
+    mutate(category = if_else(category == "Building Fuel", "Industrial natural gas", category)) %>%
     group_by(emissions_year, category) %>%
     summarise(value_emissions = sum(value_emissions)),
   x = ~emissions_year,
