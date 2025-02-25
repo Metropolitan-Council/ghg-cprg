@@ -20,35 +20,37 @@ mcf_per_therm <- 1/10.38
 
 
 
-# Read CSV, treating first two rows as data
-df_raw <- read_csv("your_file.csv", col_names = FALSE)
+# Read CSV, ignoring the first two rows (nested headers) and extraneous notes outside the main data structure
+df_raw <- read_xlsx(here("_energy", "data-raw", "centerpointDataRequest", "2015_2023MetCouncilCommunityNGData_PUBLIC.xlsx"),
+                    range = "A3:U288",
+                    col_names = FALSE) %>%
+  select(,-3) # drop county column
 
-# Extract headers
-years <- df_raw[1,]  # First row contains years
-headers <- df_raw[2,]  # Second row contains actual column names
+# Define column names manually to reflect nesting structure
+expected_columns <- c(
+  "Rate Class", "ctu_name",
+  "2015_Energy", "2015_Customers",
+  "2016_Energy", "2016_Customers",
+  "2017_Energy", "2017_Customers",
+  "2018_Energy", "2018_Customers",
+  "2019_Energy", "2019_Customers",
+  "2020_Energy", "2020_Customers",
+  "2021_Energy", "2021_Customers",
+  "2022_Energy", "2022_Customers",
+  "2023_Energy", "2023_Customers"
+)
 
-# Combine years and headers to create unique column names
-col_names <- paste(headers, years, sep = "_")  # Concatenate year with variable names
-col_names[1:2] <- c("Rate Class", "ctu_name")  # Rename columns and drop "County"
+# Assign the cleaned column names
+colnames(df_raw) <- expected_columns
 
-# Assign new column names
-df_clean <- df_raw[-c(1,2), ]  # Remove first two rows
-colnames(df_clean) <- col_names  # Apply new column names
-
-# Pivot data into long format
-df_long <- df_clean %>%
+# Pivot to long format
+df_long <- df_raw %>%
   pivot_longer(
-    cols = starts_with("Energy") | starts_with("Customer"),  # Select all year-specific columns
-    names_to = c("Variable", "Year"),
-    names_sep = "_",
-    values_drop_na = FALSE  # Keep NA values
-  ) %>%
-  pivot_wider(names_from = "Variable", values_from = "value") %>%
-  rename(
-    Energy_Quantity = `Energy Quantity (Therms)`,
-    Customer_Count = `Customer Count by Installation`
+    cols = starts_with("20"),  
+    names_to = c("Year", ".value"), # decompose nested column names into a year and value column for 1) Energy and 2) Customers
+    names_sep = "_"
   ) %>%
   mutate(
-    Year = as.integer(Year),  # Convert Year to integer
-    ctu_name = str_to_title(ctu_name)  # Convert ctu_name to regular capitalization
+    Year = as.integer(Year),
+    ctu_name = str_to_title(ctu_name)  # e.g., BLOOMINGTON --> Bloomington
   )
