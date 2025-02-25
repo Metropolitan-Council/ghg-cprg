@@ -34,7 +34,7 @@ pop_trends <- imagine[1:201,1:8] %>%
 mpca_2020 <- mpca_economy_projections %>%
   filter(emissions_year == 2020, scenario == "Current policies") %>%
   mutate(
-    geography = "State",
+    geography = "State (MN)",
     value_emissions = values_emissions
   ) %>%
   select(source_sink, value_emissions, geography)
@@ -44,7 +44,7 @@ mc_2021 <- county_emissions %>%
   mutate(source_sink = if_else(value_emissions > 0, "Emission", "Sequestration")) %>%
   group_by(source_sink) %>%
   summarize(value_emissions = sum(value_emissions) / 10^6) %>%
-  mutate(geography = "MSA")
+  mutate(geography = "11-county region")
 
 ggplot(rbind(mpca_2020, mc_2021), aes(x = source_sink, y = value_emissions, fill = source_sink)) +
   geom_bar(stat = "identity", col = "black") +
@@ -183,6 +183,11 @@ subsector_inventory_projections <- subsector_inventory_projections %>%
     )
   ))
 
+
+## define path to save graphics
+
+save_path <- ""
+
 # Create the plots
 
 #Business as usual
@@ -195,7 +200,7 @@ bau <- ggplot(subsector_inventory_projections %>%
          )) +
   geom_area(position = "stack", alpha = 0.8) + # Stacked area chart
   labs(
-    title = "Subsector Business As Usual Downscale", # Main title
+    title = "Business As Usual", # Main title
     subtitle = "", # Subtitle
     x = "Year", # X-axis label
     y = "Million Metric Tons CO2e", # Y-axis label
@@ -210,6 +215,10 @@ bau <- ggplot(subsector_inventory_projections %>%
     legend.title = element_text(size = 16), # Legend title size
     legend.text = element_text(size = 14) # Legend text size
   )
+
+ggsave(paste0(save_path, "regional_bau.tiff"),
+       width = 5, height = 6,
+       bau, dpi = 300)
 
 # Current policies
 cp <- ggplot(subsector_inventory_projections %>%
@@ -221,7 +230,7 @@ cp <- ggplot(subsector_inventory_projections %>%
 )) +
   geom_area(position = "stack", alpha = 0.8) + # Stacked area chart
   labs(
-    title = "Subsector Current Policies Downscale", # Main title
+    title = "Current Policies (MN)", # Main title
     subtitle = "", # Subtitle
     x = "Year", # X-axis label
     y = "Million Metric Tons CO2e", # Y-axis label
@@ -237,6 +246,10 @@ cp <- ggplot(subsector_inventory_projections %>%
     legend.text = element_text(size = 14) # Legend text size
   )
 
+ggsave(paste0(save_path, "regional_cp.tiff"),
+       width = 5, height = 6,
+       cp, dpi = 300)
+
 # Net zero
 nz <- ggplot(subsector_inventory_projections %>%
   filter(scenario %in% c("Inventory", "Net-zero pathway")), aes(
@@ -247,7 +260,7 @@ nz <- ggplot(subsector_inventory_projections %>%
 )) +
   geom_area(position = "stack", alpha = 0.8) + # Stacked area chart
   labs(
-    title = "Subsector Current Policies Downscale", # Main title
+    title = "State Net-Zero", # Main title
     subtitle = "", # Subtitle
     x = "Year", # X-axis label
     y = "Million Metric Tons CO2e", # Y-axis label
@@ -263,6 +276,16 @@ nz <- ggplot(subsector_inventory_projections %>%
     legend.text = element_text(size = 14) # Legend text size
   )
 
+ggsave(paste0(save_path, "regional_net_zero.tiff"),
+       width = 6.6, height = 6,
+       nz, dpi = 300)
+
+#Net-zero 2050 numbers
+subsector_inventory_projections %>%
+  filter(scenario  == "Net-zero pathway",
+         emissions_year == 2050,
+         sector == "Natural Systems") %>% 
+  pull(value_emissions) %>% sum()
 
 ### map combined projections together
 
@@ -330,3 +353,6 @@ scenarios_plot <- ggplot(combined_proj, aes(
   )
 
 scenarios_plot
+
+ggsave(paste0(save_path, "regional_scenarios.tiff"),
+       scenarios_plot, dpi = 300)
