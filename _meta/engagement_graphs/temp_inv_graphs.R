@@ -4,7 +4,7 @@ source("R/_load_pkgs.R")
 
 ### directory to save ggplot items in
 
-wd <- "C:/Users/WilfahPA/OneDrive - Metropolitan Council/CPRG/Climate summit graphics/"
+wd <- ""
 
 ### county graphs
 
