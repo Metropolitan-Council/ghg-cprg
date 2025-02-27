@@ -36,47 +36,13 @@ urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
 
 
-### reduce xcel list down to cities that don't have second utility service
-ctu_multiple <- ctu_utility %>%
-  mutate(duplicate = duplicated(ctu_id)) %>%
-  filter(duplicate == TRUE) %>%
-  distinct(ctu_id)
-
-xcel_only <- xcel %>%
-  left_join(
-    cprg_ctu %>% select(ctu_name, ctu_class, gnis) %>%
-      st_drop_geometry() %>%
-      distinct(ctu_name, ctu_class, gnis),
-    by = c(
-      "ctu_name",
-      "ctu_class"
-    )
-  ) %>%
-  filter(!gnis %in% c(ctu_multiple$ctu_id))
-
-xcel_map <- xcel_only %>%
-  group_by(ctu_name, ctu_class) %>%
-  summarize(mwh = sum(mWh_delivered, na.rm = TRUE)) %>%
-  left_join(cprg_ctu %>% select(ctu_name, ctu_class, geometry),
-    by = c(
-      "ctu_name",
-      "ctu_class"
-    )
-  ) %>%
-  st_as_sf()
-
-ggplot(xcel_map) +
-  geom_sf(aes(fill = mwh), color = "black", size = 0.2) +
-  scale_fill_viridis_c(option = "plasma", name = "mWh_delivered (Xcel)") +
-  theme_minimal()
 
 # for this first approach we are only looking at residential electricity delivery
 # in 2021
 
-residential_2021 <- xcel_only %>%
+residential_elec <- electricity %>%
   filter(
-    year == 2021,
-    sector == "Residential"
+    customer_class  == "Residential"
   )
 
 # residential predictors
