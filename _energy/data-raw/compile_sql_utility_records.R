@@ -4,21 +4,29 @@ source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
 ### load in from SQL
-elec_view <-  import_from_emissions("metro_energy.vw_utility_electricity_by_ctu")
+elec_view <- import_from_emissions("metro_energy.vw_utility_electricity_by_ctu")
 ng_view <- import_from_emissions("metro_energy.vw_utility_natural_gas_by_ctu")
 
 ### determine if any cities only have "Total" (mostly looks like aggregation i.e. duplicate)
 
-elec_view %>% distinct(ctu_name, year) %>% nrow() #690
-ng_view %>% distinct(ctu_name, year) %>% nrow() #694
+elec_view %>%
+  distinct(ctu_name, year) %>%
+  nrow() # 690
+ng_view %>%
+  distinct(ctu_name, year) %>%
+  nrow() # 694
 
-elec_view %>% filter(customer_class_name != "Total") %>% 
-  distinct(ctu_name, year) %>% nrow() #676
+elec_view %>%
+  filter(customer_class_name != "Total") %>%
+  distinct(ctu_name, year) %>%
+  nrow() # 676
 
-ng_view %>% filter(customer_class_name != "Total") %>% 
-  distinct(ctu_name, year) %>% nrow() #526
+ng_view %>%
+  filter(customer_class_name != "Total") %>%
+  distinct(ctu_name, year) %>%
+  nrow() # 526
 
-##remove totals where alternatives exist
+## remove totals where alternatives exist
 
 elec_view_filtered <- elec_view %>%
   group_by(ctu_name, year) %>%
@@ -32,51 +40,57 @@ ng_view_filtered <- ng_view %>%
 
 ### apply emission factors
 
-electricity_emissions <- elec_view_filtered %>% 
+electricity_emissions <- elec_view_filtered %>%
   left_join(epa_ghg_factor_hub$egridTimeSeries, ## yearly egrid series
-  by = c("year" = "Year")
+    by = c("year" = "Year")
   ) %>%
   mutate(
-    value_emissions = mwh_per_year  * value %>%
+    value_emissions = mwh_per_year * value %>%
       units::as_units("pound") %>%
       units::set_units("metric_ton") %>%
       as.numeric(),
-    units_emissions = str_replace_all(emission,"lb", "Metric tons"),
+    units_emissions = str_replace_all(emission, "lb", "Metric tons"),
     mt_co2e = case_when(
-      grepl("CH4",units_emissions) ~ value_emissions *GWP_CH4,
-      grepl("N2O",units_emissions) ~ value_emissions *GWP_N2O,
+      grepl("CH4", units_emissions) ~ value_emissions * GWP_CH4,
+      grepl("N2O", units_emissions) ~ value_emissions * GWP_N2O,
       TRUE ~ value_emissions
     )
-    ) %>% 
-  select(ctu_name, emissions_year = year, customer_class = customer_class_name,
-         data_source = utility_name, mwh_per_year, number_of_customers,
-         factor_source = Source, value_emissions, units_emissions, mt_co2e)
-
-ng_emissions <- ng_view_filtered %>% 
-  cross_join(epa_ghg_factor_hub$stationary_combustion %>% 
-              filter(fuel_category == "Natural Gas",
-                     per_unit == "mmBtu")
   ) %>%
+  select(ctu_name,
+    emissions_year = year, customer_class = customer_class_name,
+    data_source = utility_name, mwh_per_year, number_of_customers,
+    factor_source = Source, value_emissions, units_emissions, mt_co2e
+  )
+
+ng_emissions <- ng_view_filtered %>%
+  cross_join(epa_ghg_factor_hub$stationary_combustion %>%
+    filter(
+      fuel_category == "Natural Gas",
+      per_unit == "mmBtu"
+    )) %>%
   mutate(
     value_emissions = case_when(
       emission == "kg CO2" ~ therms_per_year * 10^-1 * value %>% # therm is 100,000 btus
-      units::as_units("kilogram") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric(),
+        units::as_units("kilogram") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
       TRUE ~ therms_per_year * 10^-5 * value %>% # therm is 100,000 btus
         units::as_units("gram") %>%
         units::set_units("metric_ton") %>%
-        as.numeric()),
+        as.numeric()
+    ),
     units_emissions = str_replace_all(emission, "^[^ ]+", "Metric tons"),
     mt_co2e = case_when(
-      grepl("CH4",units_emissions) ~ value_emissions *GWP_CH4,
-      grepl("N2O",units_emissions) ~ value_emissions *GWP_N2O,
+      grepl("CH4", units_emissions) ~ value_emissions * GWP_CH4,
+      grepl("N2O", units_emissions) ~ value_emissions * GWP_N2O,
       TRUE ~ value_emissions
     )
-  ) %>% 
-  select(ctu_name, emissions_year = year, customer_class = customer_class_name,
-         data_source = utility_name, therms_per_year, number_of_customers,
-         factor_source = Source, value_emissions, units_emissions, mt_co2e)  
+  ) %>%
+  select(ctu_name,
+    emissions_year = year, customer_class = customer_class_name,
+    data_source = utility_name, therms_per_year, number_of_customers,
+    factor_source = Source, value_emissions, units_emissions, mt_co2e
+  )
 
 electricity_emissions
 
