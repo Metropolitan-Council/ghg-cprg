@@ -5,6 +5,7 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
   filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce")) 
 
+county_activity <- readRDS("_energy/data/minnesota_county_elec_ActivityAndEmissions.rds")
 
 ## load formatted SQL utility data
 electricity <- readRDS("_energy/data/ctu_electricity_emissions_2015_2018.rds") %>% 
@@ -34,7 +35,7 @@ nat_gas <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
 mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
-
+noaa <- readRDS("_meta/data/noaa_weather_2015-2021.rds")
 
 
 # for this first approach we are only looking at residential electricity delivery
@@ -43,7 +44,9 @@ urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 residential_elec <- electricity %>%
   filter(
     customer_class  == "Residential"
-  )
+  ) %>% 
+  group_by(ctu_name, ctu_id, emissions_year,ctu_class) %>% 
+  summarize(mwh = sum(mwh_per_year))
 
 # residential predictors
 mn_parcel_res <- mn_parcel %>%
@@ -86,33 +89,25 @@ residential <- c(
 # operating at ctu not coctu for now
 
 urbansim_res <- urbansim %>%
-  filter(Variable %in% residential) %>%
-  group_by(Variable, ctu_id) %>%
+  filter(variable %in% residential,
+         inventory_year == 2020) %>%
+  group_by(variable, ctu_id) %>%
   summarize(value = sum(value)) %>%
   ungroup() %>%
   pivot_wider(
     id_cols = ctu_id,
-    names_from = Variable,
+    names_from = variable,
     values_from = value
   )
 
 # merge into xcel
-electricity_res <- left_join(residential_2021,
+electricity_res <- left_join(residential_elec,
   urbansim_res,
-  by = c("gnis" = "ctu_id")
+  by ="ctu_id"
 ) %>%
   left_join(mn_parcel_res %>% select(-ctu_name),
-    by = c("gnis" = "ctu_id")
-  ) %>%
-  filter(
-    !is.na(mWh_delivered), !is.na(gnis),
-    !ctu_name %in% c(
-      "Shakopee",
-      "Coon Rapids",
-      "Blaine",
-      "White Bear Lake"
-    )
-  ) # shared utility!
+    by = "ctu_id"
+  )
 
 ### run residential model
 #### residential RF ####
@@ -129,8 +124,9 @@ test_res <- electricity_res[ind == 2, ]
 
 ### full model
 rf_res_model <- randomForest(
-  mWh_delivered ~
+  mwh ~
     ctu_class + # get community designation here
+    emissions_year +
     total_pop + total_households + total_residential_units + mean_year_apartment +
     mean_year_multifamily_home + mean_year_single_family_home +
     total_emv_apartment + total_emv_single_family_home + total_emv_multifamily_home +
@@ -141,12 +137,15 @@ rf_res_model <- randomForest(
     single_fam_attached_rent +
     multi_fam_own +
     multi_fam_rent,
-  importance = T, data = electricity_res
-)
+  importance = T, 
+  na.action = na.omit,
+  data = electricity_res %>% 
+    mutate(emissions_year == as.factor(emissions_year)))
+
 
 rf_res_model
 p_full <- predict(rf_res_model, electricity_res)
-plot(p_full, electricity_res$mWh_delivered)
+plot(p_full, electricity_res$mwh)
 abline(0, 1)
 # struggles with two big cities
 
@@ -158,8 +157,9 @@ varImpPlot(rf_res_model,
 
 ### can subset predict test model?
 rf_res_train <- randomForest(
-  mWh_delivered ~
+  mwh ~
     ctu_class + # get community designation here
+    emissions_year +
     total_pop + total_households + total_residential_units + mean_year_apartment +
     mean_year_multifamily_home + mean_year_single_family_home +
     total_emv_apartment + total_emv_single_family_home + total_emv_multifamily_home +
@@ -170,22 +170,20 @@ rf_res_train <- randomForest(
     single_fam_attached_rent +
     multi_fam_own +
     multi_fam_rent,
-  data = train_res,
+  na.action = na.omit,
+  data = train_res%>% 
+    mutate(emissions_year == as.factor(emissions_year)),
   importance = T
 )
 
 print(rf_res_train)
 
 p1 <- predict(rf_res_train, train_res)
-plot(p1, train_res$mWh_delivered)
+plot(p1, train_res$mwh)
 abline(0, 1)
 
-train_res %>%
-  cbind(p1) %>%
-  filter(mWh_delivered < 10000 & p1 > 20000)
-
 p2 <- predict(rf_res_train, test_res)
-plot(p2, test_res$mWh_delivered)
+plot(p2, test_res$mwh)
 abline(0, 1)
 
 importance(rf_res_train)
