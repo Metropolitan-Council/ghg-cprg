@@ -163,42 +163,6 @@ Municipal waste can broadly be divided into biogenic wastewater emissions and so
 
 ## Results
 
-### Overview
-
-<!-- Waste emissions in Minnesota have declined nearly 40% since 2005 - update with our figures, due to a variety of factors including gas capture technologies and aging waste in open landfills [@mpcaClimateChangeTrends2023]. Waste emissions in Wisconsin show no significant change from 2005 to 2018, possibly due to increased waste generation offsetting reductions from gas capture [@wisconsindnrGreenhouseGas2021]. The Metropolitan Council, which oversees wastewater services for the majority of the urbanized extent of the metropolitan region, continues to work to reduce wastewater emissions across its 9 wastewater treatment plants. -->
-
-<!-- We are underestimating the impact of waste management technologies. -->
-
-```{r fig-waste-wastewater-county-emissions}
-#| fig-cap: "Solid waste and wastewater county emissions"
-#| out-width: "95%"
-# fig_waste_wastewater_county_emissions <-
-#   plot_county_sector_emissions(county_emissions,
-#     .sector = "Waste",
-#     .plotly_source = "fig-waste-wastewater-county-emissions"
-#   )
-#
-# fig_waste_wastewater_county_emissions$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
-#
-# fig_waste_wastewater_county_emissions
-```
-
-
-```{r fig-waste-county-emissions-by-category}
-#| fig-cap: "Solid waste and wastewater county emissions by category"
-#| out-width: "95%"
-
-# fig_waste_county_emissions_by_category <- plot_county_emissions(
-#   county_emissions = county_emissions,
-#   .sector = "Waste",
-#   .plotly_source = "fig-waste-county-emissions-by-category"
-# )
-#
-# fig_waste_county_emissions_by_category$x$layoutAttrs[[1]]$title$text <- "Solid waste and wastewater emissions"
-#
-# fig_waste_county_emissions_by_category
-```
-
 ### Baseline emissions
 
 Regional waste emissions have increased by `r round(100 * ((waste_emissions_2021/waste_emissions_2005) - 1), digits = 2)`% since 2005, likely tied to population growth despite successful measures to reduce emissions per capita.
