@@ -1,11 +1,55 @@
-### Develop Random Forests model for predicting CTU residential electricity usage ###
+### Develop model for predicting CTU residential electricity usage ###
+### 
 
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
   filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce")) 
+cprg_county <- read_rds("_meta/data/cprg_county.RDS") %>%
+  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce")) 
+ctu_population <- read_rds("_meta/data/ctu_population.RDS") %>% 
+  left_join(cprg_county %>% st_drop_geometry() %>% select(geoid, county_name)) %>%
+  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce")) 
+  
+# assign CTUs to where the majority of their population is for those that cross counties
+ctu_county_unique <- ctu_population %>%
+  group_by(ctu_name, ctu_class) %>%
+  filter(ctu_population == max(ctu_population)) %>%
+  ungroup() %>% 
+  distinct(geoid, ctuid, ctu_name, ctu_class, county_name)
 
-county_activity <- readRDS("_energy/data/minnesota_county_elec_ActivityAndEmissions.rds")
+## first, develop understanding of how yearly weather variation impacts activity
+
+#weather data
+noaa <- readRDS("_meta/data/noaa_weather_2015-2021.rds")
+
+# county activity data
+county_mwh <- readRDS("_energy/data/minnesota_county_elec_ActivityAndEmissions.rds")
+county_scf <- readRDS("_energy/data/minnesota_county_GasEmissions.rds")
+
+
+noaa_year <- noaa %>% 
+  group_by(inventory_year) %>% 
+  summarize(heating_degree_days = sum(heating_degree_days),
+            cooling_degree_days = sum(cooling_degree_days),
+            temperature = mean(dry_bulb_temp))
+
+lm(total_mwh ~ cooling_degree_days + heating_degree_days, data = county_mwh %>% 
+         group_by(year) %>% 
+         summarize(total_mwh = sum(total_mWh_delivered)) %>% 
+         left_join(noaa_year, by = c("year" = "inventory_year"))
+) %>% summary()
+#no relationship
+
+lm(total_mcf ~  cooling_degree_days + heating_degree_days,
+  data = county_scf %>% 
+         group_by(year) %>% 
+         summarize(total_mcf = sum(total_mcf)) %>% 
+         left_join(noaa_year, by = c("year" = "inventory_year"))
+) %>% summary()
+# strong relationship with heating_degree_days (R2 = 0.897)
+
+### bring in CTU level data
 
 ## load formatted SQL utility data
 electricity <- readRDS("_energy/data/ctu_electricity_emissions_2015_2018.rds") %>% 
@@ -17,8 +61,14 @@ electricity <- readRDS("_energy/data/ctu_electricity_emissions_2015_2018.rds") %
                              ctu_class)) %>% 
   left_join(cprg_ctu %>% st_drop_geometry() %>% distinct(ctu_name, ctu_class, ctu_id = gnis),
             by = c("ctu_name", "ctu_class")) %>% 
-  filter(units_emissions == "Metric tons CO2") # reduces duplicates
-
+  filter(units_emissions == "Metric tons CO2",
+         !is.na(mwh_per_year)) %>%  # removes duplicates
+  left_join(ctu_county_unique,
+            by = c("ctu_name", "ctu_class")) %>% 
+  group_by(county_name) %>% 
+  mutate(county_total_mwh = sum(mwh_per_year),
+         proportion_mwh = mwh_per_year / county_total_mwh)
+  
 nat_gas <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>% 
   mutate(ctu_class = if_else(grepl("Twp.", ctu_name), "TOWNSHIP", "CITY"),
          ctu_name = str_replace_all(ctu_name, " Twp.", ""),
@@ -28,15 +78,19 @@ nat_gas <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
                              ctu_class)) %>% 
   left_join(cprg_ctu %>% st_drop_geometry() %>% distinct(ctu_name, ctu_class, ctu_id = gnis),
             by = c("ctu_name", "ctu_class")) %>% 
-  filter(units_emissions == "Metric tons CO2") # reduces duplicates
+  filter(units_emissions == "Metric tons CO2")%>%  # removes duplicates
+  left_join(ctu_county_unique,
+            by = c("ctu_name", "ctu_class")) %>% 
+  group_by(county_name) %>% 
+  mutate(county_total_therms = sum(therms_per_year),
+         proportion_therms = therms_per_year/ county_total_therms)
+
+## calculate percentage of county total as well
 
 
 # predictor data
 mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
-
-noaa <- readRDS("_meta/data/noaa_weather_2015-2021.rds")
-
 
 # for this first approach we are only looking at residential electricity delivery
 # in 2021
