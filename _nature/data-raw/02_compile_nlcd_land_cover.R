@@ -49,7 +49,10 @@ inpath_nlcd <- "./_nature/data-raw/nlcd_raw_imgs"
 nlcd_files_all <- list.files(inpath_nlcd, full.names = TRUE)
 
 # Grab only the .tiff file names that match the string "Land_Cover"
-nlcd_lc_files <- nlcd_files_all[grep("Land_Cover", nlcd_files_all)]
+# nlcd_lc_files <- nlcd_files_all[grep("Land_Cover", nlcd_files_all)]
+nlcd_lc_files <- nlcd_files_all[grep("LndCov", nlcd_files_all)]
+
+
 # Grab only the .tiff file names that match the string "Land_Cover"
 nlcd_tcc_files <- nlcd_files_all[grep("tcc", nlcd_files_all)]
 
@@ -70,38 +73,31 @@ get_year <- function(filename) {
 # Make sure the number of rows corresponds to the number of unique combinations between:
 # no. counties * no. years * no. land cover types
 start_year <- 2001
-end_year <- 2021
+end_year <- 2022
 
+# List out your new land cover types
+rc_cover_types <- c("Bare", "Built-up", "Cropland", "Grassland", "Shrubland", 
+                    "Tree", "Water", "Wetland", "Urban_Grassland", "Urban_Tree")
 
 # by county
-nlcd_county <- data.frame(
-  geoid = as.numeric(),
-  county_name = as.character(),
-  state_name = as.character(),
-  year = as.numeric(),
-  land_cover_type = as.character(),
-  area = as.numeric()
-)
+nlcd_county <- cprg_county_df %>%
+  crossing(year=seq(start_year,end_year),       # accounts for all unique years  
+           land_cover_type=rc_cover_types) %>%  # accounts for all unique cover types 
+  mutate(area = as.numeric(NA),
+         total_county_area = as.numeric(NA))
 
 
-
-# by ctu
-nlcd_ctu <- data.frame(
-  gnis = as.numeric(),
-  geoid_wis = as.numeric(),
-  ctu_name = as.character(),
-  ctu_class = as.character(),
-  county_name = as.character(),
-  state_name = as.character(),
-  year = as.numeric(),
-  land_cover_type = as.character(),
-  area = as.numeric()
-)
+# by CTU
+nlcd_ctu <- cprg_ctu_df %>%
+  crossing(year=seq(start_year,end_year),       # accounts for all unique years  
+           land_cover_type=rc_cover_types) %>%  # accounts for all unique cover types 
+  mutate(area = as.numeric(NA),
+         total_ctu_area = as.numeric(NA))
 
 
 
 
-
+year <- 2010
 # Loop through all years of NLCD data and extract area estimates by land cover type and by county
 lapply(start_year:end_year, function(year) {
   # browser()
@@ -121,12 +117,17 @@ lapply(start_year:end_year, function(year) {
       terra::crop(., cprg_county) %>%
       # Mask the raster with county boundary
       terra::mask(., cprg_county)
+    
+    # terra::plot(nlcd_lc)
+    
   } else {
     # Move to the next year if the land cover type layer is missing
     message(paste0("\nSTOP! No land cover layers for ", year, ".\nMoving to next year..."))
     return(NULL)
   }
 
+  
+  
 
 
   # Test to see if the current year is in your list of tcc files
@@ -176,6 +177,10 @@ lapply(start_year:end_year, function(year) {
     # with its associated land cover value
     nlcd_lc_values <- terra::extract(nlcd_lc, cprg_county)
     # nlcd_is_values <- terra::extract(nlcd_is, cprg_county)
+    
+    # Align nlcd_tcc to nlcd_lc's grid
+    nlcd_tcc <- resample(nlcd_tcc, nlcd_lc, method = "near")
+    
     nlcd_tcc_values <- terra::extract(nlcd_tcc, cprg_county)
 
     message(paste0("50%  |==========__________|"))
@@ -217,22 +222,25 @@ lapply(start_year:end_year, function(year) {
     #
     #
     message(paste0("80%  |================____|"))
-
+    lc_df <- lc_df %>%
+      left_join(cprg_county_df, by = join_by(county_name)) %>% # add county spatial info
+      left_join(cprg_ctu_df, by = join_by(county_name, ctu_name, ctu_class, state_name)) %>% # add CTU spatial info
+      left_join(nlcd.legend %>%
+                  dplyr::select(ID, Class) %>%
+                  rename(
+                    nlcd_cover = ID,
+                    nlcd_cover_class = Class
+                  ), by = "nlcd_cover")
 
     # Recompute area based on new land cover designations
     # Here we treat "Developed, Open Space" as "Urban_Grassland" if tree canopy cover is 0
     # If tree canopy cover is > 0, we treat "Developed" as "Urban_Tree"
     # If tree canopy cover is 0, we treat "Developed" as "Built-up" (so long as it's not "Developed, Open Space")
     # The rest of the land cover types are pretty straightforward
+  
+    
+    
     lc_rc <- lc_df %>%
-      left_join(cprg_county_df, by = join_by(county_name)) %>% # add county spatial info
-      left_join(cprg_ctu_df, by = join_by(county_name, ctu_name, ctu_class, state_name)) %>% # add CTU spatial info
-      left_join(nlcd.legend %>%
-        dplyr::select(ID, Class) %>%
-        rename(
-          nlcd_cover = ID,
-          nlcd_cover_class = Class
-        ), by = "nlcd_cover") %>%
       mutate(
         land_cover_type = case_when(
           grepl("Developed, Open Space", nlcd_cover_class) & tree_canopy_cover == 0 ~ "Urban_Grassland",
@@ -251,16 +259,43 @@ lapply(start_year:end_year, function(year) {
           grepl("Perennial Ice/Snow", nlcd_cover_class) ~ "Snow",
           grepl("Open Water", nlcd_cover_class) ~ "Water",
           grepl("Woody Wetlands", nlcd_cover_class) ~ "Tree", ## Changed from "Wetland"
-          grepl("Emergent Herbaceous Wetlands", nlcd_cover_class) ~ "Wetland"
+          grepl("Emergent Herbaceous Wetlands", nlcd_cover_class) ~ "Wetland",
+          
+         .default="CHECK" 
         )
       ) %>%
       mutate(
         # Here we correct the area based on the tree canopy cover
         # When a pixel is classified as "Urban_Tree", we multiply the area by the tree canopy cover percentage
-        area_corrected = if_else(land_cover_type == "Urban_Tree", area * (tree_canopy_cover / 100), area)
+        area_corrected = if_else(land_cover_type == "Urban_Tree", area * (tree_canopy_cover / 100), area),
+        # Since area corrected is a percentage of the land area that's occupied by tree canopy,
+        # let's make a new column that accounts for the residual area (we'll call this Urban_Grass)
+        area_residual = area - area_corrected
       )
+    
+  
+    # Below we're going to take the residual area of Developed,Open Space 
+    # after applying tree_canopy percentage
+    # Here we'll call this Urban_Grassland and then use rowbind to add this back
+    # to the original dataset
+    lc_rc_residual_grassland <- lc_rc %>% 
+      filter(area_residual>0 & nlcd_cover_class == "Developed, Open Space") %>%
+      mutate(
+        land_cover_type = case_when(
+          land_cover_type == "Urban_Tree" ~ "Urban_Grassland",
+          .default = "CHECK"
+        ) 
+      ) %>%
+      dplyr::select(-area_corrected) %>%
+      rename(area_corrected=area_residual) %>%
+      mutate(area_residual = NA,
+             area=NA)
+    
 
-
+    # Bind the residual grassland area to the main dataframe
+    lc_rc <- rbind(lc_rc, lc_rc_residual_grassland)
+  
+    
     message(paste0("90%  |==================__|"))
 
     # Summarize the area of each land cover type by county
@@ -268,6 +303,8 @@ lapply(start_year:end_year, function(year) {
       filter(!is.na(land_cover_type) & !is.na(county_name)) %>%
       group_by(county_name, state_name, land_cover_type) %>%
       summarize(area = sum(area_corrected), .groups = "keep") %>%
+      ungroup() %>% group_by(county_name,state_name) %>%
+      mutate(total_area = sum(area)) %>%
       mutate(year = year, .before = everything()) %>%
       left_join(cprg_county_df, by = join_by(county_name, state_name))
 
@@ -276,6 +313,8 @@ lapply(start_year:end_year, function(year) {
       filter(!is.na(land_cover_type) & !is.na(ctu_name)) %>%
       group_by(ctu_name, ctu_class, county_name, state_name, land_cover_type) %>%
       summarize(area = sum(area_corrected), .groups = "keep") %>%
+      ungroup() %>% group_by(ctu_name, ctu_class, county_name, state_name) %>%
+      mutate(total_area = sum(area)) %>%
       mutate(year = year, .before = everything()) %>%
       left_join(cprg_ctu_df, by = join_by(ctu_name, ctu_class, county_name, state_name))
 
@@ -289,6 +328,7 @@ lapply(start_year:end_year, function(year) {
       year = lc_county$year,
       land_cover_type = lc_county$land_cover_type,
       area = lc_county$area,
+      total_area = lc_county$total_area,
       stringsAsFactors = FALSE
     ))
 
@@ -305,6 +345,7 @@ lapply(start_year:end_year, function(year) {
       year = lc_ctu$year,
       land_cover_type = lc_ctu$land_cover_type,
       area = lc_ctu$area,
+      total_area = lc_ctu$total_area,
       stringsAsFactors = FALSE
     ))
 
@@ -364,16 +405,45 @@ lapply(start_year:end_year, function(year) {
 
     message(paste0("80%  |================____|"))
 
-    # sort(unique(lc_df$nlcd_cover))
-    lc_rc <- lc_df %>%
-      left_join(cprg_county_df, by = join_by(county_name)) %>%
-      left_join(cprg_ctu_df, by = join_by(county_name, ctu_name, ctu_class, state_name)) %>%
+    lc_df <- lc_df %>%
+      left_join(cprg_county_df, by = join_by(county_name)) %>% # add county spatial info
+      left_join(cprg_ctu_df, by = join_by(county_name, ctu_name, ctu_class, state_name)) %>% # add CTU spatial info
       left_join(nlcd.legend %>%
-        dplyr::select(ID, Class) %>%
-        rename(
-          nlcd_cover = ID,
-          nlcd_cover_class = Class
-        ), by = "nlcd_cover") %>%
+                  dplyr::select(ID, Class) %>%
+                  rename(
+                    nlcd_cover = ID,
+                    nlcd_cover_class = Class
+                  ), by = "nlcd_cover")
+    
+    # since we're clipping a raster (land cover) using a vector boundary (counties),
+    # we end up with some pixels that do not have county information assigned to them, 
+    # but they do have area and land cover 
+    
+    
+    browser()
+    
+    lc_df <- lc_df %>%
+      filter(!is.na(county_name))
+    
+    area_by_county <- lc_df %>%
+      group_by(county_name, state_name) %>%
+      summarize(county_total_area=sum(area),.groups="keep") %>%
+      mutate(year=.env$year)
+    
+    area_by_ctu <- lc_df %>%
+      group_by(ctu_name, ctu_class, county_name, state_name) %>%
+      summarize(ctu_total_area=sum(area),.groups="keep") %>%
+      mutate(year=.env$year)
+
+    
+    
+    
+    # Recompute area based on new land cover designations
+    # Here we treat "Developed, Open Space" as "Urban_Grassland" if tree canopy cover is 0
+    # If tree canopy cover is > 0, we treat "Developed" as "Urban_Tree"
+    # If tree canopy cover is 0, we treat "Developed" as "Built-up" (so long as it's not "Developed, Open Space")
+    # The rest of the land cover types are pretty straightforward
+    lc_rc <- lc_df %>%
       mutate(
         land_cover_type = case_when(
           # grepl("Developed, Open Space", nlcd_cover_class) & tree_canopy_cover == 0 ~ "Urban_Grassland",
@@ -395,12 +465,9 @@ lapply(start_year:end_year, function(year) {
           grepl("Woody Wetlands", nlcd_cover_class) ~ "Tree", ## Changed from "Wetland"
           grepl("Emergent Herbaceous Wetlands", nlcd_cover_class) ~ "Wetland"
         )
-      ) # %>%
-    # mutate(
-    #   area_corrected = if_else(land_cover_type == "Urban_Tree", area * (tree_canopy_cover / 100), area)
-    # )
-
-
+      ) 
+    
+   
 
     message(paste0("90%  |==================__|"))
 
@@ -409,6 +476,8 @@ lapply(start_year:end_year, function(year) {
       filter(!is.na(land_cover_type) & !is.na(county_name)) %>%
       group_by(county_name, state_name, land_cover_type) %>%
       summarize(area = sum(area), .groups = "keep") %>%
+      ungroup() %>% group_by(county_name,state_name) %>%
+      mutate(total_county_area = sum(area)) %>%
       mutate(year = year, .before = everything()) %>%
       left_join(cprg_county_df, by = join_by(county_name, state_name))
 
@@ -417,39 +486,67 @@ lapply(start_year:end_year, function(year) {
       filter(!is.na(land_cover_type) & !is.na(ctu_name)) %>%
       group_by(ctu_name, ctu_class, county_name, state_name, land_cover_type) %>%
       summarize(area = sum(area), .groups = "keep") %>%
+      ungroup() %>% group_by(ctu_name, ctu_class, county_name, state_name) %>%
+      mutate(total_ctu_area = sum(area)) %>%
       mutate(year = year, .before = everything()) %>%
       left_join(cprg_ctu_df, by = join_by(ctu_name, ctu_class, county_name, state_name))
+    
 
-
-
+    browser()
+    
+    
+    
     # Add the results for the current year to the results dataframe
-    nlcd_county <<- rbind(nlcd_county, data.frame(
-      geoid = lc_county$geoid,
-      county_name = lc_county$county_name,
-      state_name = lc_county$state_name,
-      year = lc_county$year,
-      land_cover_type = lc_county$land_cover_type,
-      area = lc_county$area,
-      stringsAsFactors = FALSE
-    ))
-
-
-
+    nlcd_county <- nlcd_county %>%
+      left_join(lc_county %>% rename(a1=area,a2=total_county_area),
+                by = join_by(geoid, county_name, state_name, year, land_cover_type)) %>% 
+      mutate(
+        area = coalesce(area, a1),
+        total_county_area = coalesce(total_county_area, a2)
+      ) %>%
+      dplyr::select(names(nlcd_county)) 
+    
+    
+    # nlcd_county <<- rbind(nlcd_county, data.frame(
+    #   geoid = lc_county$geoid,
+    #   county_name = lc_county$county_name,
+    #   state_name = lc_county$state_name,
+    #   year = lc_county$year,
+    #   land_cover_type = lc_county$land_cover_type,
+    #   area = lc_county$area,
+    #   total_area = lc_county$total_area,
+    #   stringsAsFactors = FALSE
+    # ))
+    
+    
+    
     # Add the results for the current year to the results dataframe
-    nlcd_ctu <<- rbind(nlcd_ctu, data.frame(
-      gnis = lc_ctu$gnis,
-      geoid_wis = lc_ctu$geoid_wis,
-      ctu_name = lc_ctu$ctu_name,
-      ctu_class = lc_ctu$ctu_class,
-      county_name = lc_ctu$county_name,
-      state_name = lc_ctu$state_name,
-      year = lc_ctu$year,
-      land_cover_type = lc_ctu$land_cover_type,
-      area = lc_ctu$area,
-      stringsAsFactors = FALSE
-    ))
-
-
+    nlcd_ctu <- nlcd_ctu %>%
+      left_join(lc_ctu %>% rename(a1=area,a2=total_ctu_area),
+                by = join_by(gnis, geoid_wis, ctu_name, ctu_class, 
+                             county_name, state_name, year, land_cover_type)) %>% 
+      mutate(
+        area = coalesce(area, a1),
+        total_ctu_area = coalesce(total_ctu_area, a2)
+      ) %>%
+      dplyr::select(names(nlcd_ctu)) 
+    
+    
+    # nlcd_ctu <<- rbind(nlcd_ctu, data.frame(
+    #   gnis = lc_ctu$gnis,
+    #   geoid_wis = lc_ctu$geoid_wis,
+    #   ctu_name = lc_ctu$ctu_name,
+    #   ctu_class = lc_ctu$ctu_class,
+    #   county_name = lc_ctu$county_name,
+    #   state_name = lc_ctu$state_name,
+    #   year = lc_ctu$year,
+    #   land_cover_type = lc_ctu$land_cover_type,
+    #   area = lc_ctu$area,
+    #   total_area = lc_ctu$total_area,
+    #   stringsAsFactors = FALSE
+    # ))
+    
+   
 
     message(paste0("100% |====================|"))
   } # end else
@@ -458,7 +555,7 @@ lapply(start_year:end_year, function(year) {
 
 message("Finished!")
 
-
+browser()
 nlcd_county <- nlcd_county %>%
   as_tibble() %>%
   dplyr::select(-c(geoid))
@@ -475,7 +572,8 @@ nlcd_county_meta <-
     "state_name", class(nlcd_county$state_name), "State name",
     "year", class(nlcd_county$year), "Year",
     "land_cover_type", class(nlcd_county$land_cover_type), "Land cover type from National Land Cover Database. 'Urban_' indicates a natural area within NLCD designated developed land cover",
-    "area", class(nlcd_county$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas"
+    "area", class(nlcd_county$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas",
+    "total_area", class(nlcd_county$total_area), "Sum of area from all cover types in square kilometers (by county)."
   )
 
 nlcd_ctu_meta <-
@@ -487,7 +585,8 @@ nlcd_ctu_meta <-
     "state_name", class(nlcd_ctu$state_name), "State name",
     "year", class(nlcd_ctu$year), "Year",
     "land_cover_type", class(nlcd_ctu$land_cover_type), "Land cover type from National Land Cover Database. 'Urban_' indicates a natural area within NLCD designated developed land cover",
-    "area", class(nlcd_ctu$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas"
+    "area", class(nlcd_ctu$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas",
+    "total_area", class(nlcd_ctu$total_area), "Sum of area from all cover types in square kilometers (by CTU)."
   )
 
 
@@ -503,3 +602,4 @@ if (overwrite_RDS) {
   saveRDS(nlcd_ctu, paste0("./_nature/data/nlcd_ctu_landcover_", head(sort(unique(nlcd_ctu$year)), 1), "_", tail(sort(unique(nlcd_ctu$year)), 1), ".rds"))
   saveRDS(nlcd_ctu_meta, paste0("./_nature/data/nlcd_ctu_landcover_", head(sort(unique(nlcd_ctu$year)), 1), "_", tail(sort(unique(nlcd_ctu$year)), 1), "_meta.rds"))
 }
+

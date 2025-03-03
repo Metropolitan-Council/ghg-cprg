@@ -3,10 +3,21 @@ source("R/_load_pkgs.R")
 
 overwrite_RDS <- TRUE
 
-nlcd_county <- readRDS("./_nature/data/nlcd_county_landcover_2001_2021.rds")
-nlcd_ctu <- readRDS("./_nature/data/nlcd_ctu_landcover_2001_2021.rds")
+nlcd_county <- readRDS("./_nature/data/nlcd_county_landcover_2001_2022.rds")
+nlcd_ctu <- readRDS("./_nature/data/nlcd_ctu_landcover_2001_2022.rds")
 land_cover_c <- readRDS("./_nature/data/land_cover_carbon.rds")
 
+
+# nlcd_county <- readRDS("./_nature/data/nlcd_county_landcover_2001_2021.rds")
+# nlcd_ctu <- readRDS("./_nature/data/nlcd_ctu_landcover_2001_2021.rds")
+# land_cover_c <- readRDS("./_nature/data/land_cover_carbon.rds")
+
+nlcd_county %>%
+  group_by(county_name, year) %>%
+  summarize(total_area = head(total_area,1)) %>%
+  ggplot() + theme_minimal() +
+  geom_path(aes(x=year,y=total_area)) +
+  facet_wrap(~county_name)
 
 
 # load the county and ctu boundaries layer
