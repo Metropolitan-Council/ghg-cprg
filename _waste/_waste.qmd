@@ -150,6 +150,10 @@ waste_emissions_2021 <- county_emissions %>%
   filter(emissions_year == 2021, sector == "Waste") %>%
   pull(value_emissions) %>%
   sum()
+waste_emissions_2005 <- county_emissions %>%
+  filter(emissions_year == 2005, sector == "Waste") %>%
+  pull(value_emissions) %>%
+  sum()
 ```
 
 
@@ -197,7 +201,7 @@ Municipal waste can broadly be divided into biogenic wastewater emissions and so
 
 ### Baseline emissions
 
-Regional waste emissions have increased by `r 100*round(1 - (waste_emissions_2021/waste_emissions_2005))`% since 2005, likely tied to population growth despite successful measures to reduce emissions per capita.
+Regional waste emissions have increased by `r round(100 * ((waste_emissions_2021/waste_emissions_2005) - 1), digits = 2)`% since 2005, likely tied to population growth despite successful measures to reduce emissions per capita.
 
 ```{r fig-waste-baseline-emissions}
 #| fig-cap: "Baseline agricultural emissions"

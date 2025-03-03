@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.3.353">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>5&nbsp; Methods and data sources – Twin Cities MSA Greenhouse Gas Inventory</title>
+<title>Twin Cities MSA Greenhouse Gas Inventory - 5&nbsp; Methods and data sources</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,7 +23,6 @@ ul.task-list li input[type="checkbox"] {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -65,13 +64,7 @@ div.csl-indent {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 50,
-  "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
-  ],
-  "show-item-context": false,
+  "limit": 20,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -80,30 +73,19 @@ div.csl-indent {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
-    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit",
-    "search-label": "Search"
+    "search-submit-button-title": "Submit"
   }
 }</script>
 <link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
-
 <script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
-
 <script src="../site_libs/plotly-binding-4.10.4/plotly.js"></script>
-
 <script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
-
 <script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
-
 <link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
-
 <script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
-
 <link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
-
 <script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
-
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -114,16 +96,17 @@ div.csl-indent {
 </section>
 
 
+
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_energy/_electricity.html">Electricity</a></li><li class="breadcrumb-item"><a href="../_energy/data_electricity.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods and data sources</span></a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-        </a>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_energy/_electricity.html">Electricity</a></li><li class="breadcrumb-item"><a href="../_energy/data_electricity.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods and data sources</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
@@ -133,7 +116,7 @@ div.csl-indent {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-center sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Twin Cities MSA Greenhouse Gas Inventory</a> 
@@ -157,9 +140,9 @@ div.csl-indent {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
  <span class="menu-text">Transportation</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -186,9 +169,9 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
  <span class="menu-text">Electricity</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -209,9 +192,9 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
  <span class="menu-text">Building Energy</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -238,9 +221,9 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
  <span class="menu-text">Industrial</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -261,9 +244,9 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
  <span class="menu-text">Waste and Wastewater</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -276,35 +259,17 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../_waste/_solid_waste.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Waste and wastewater</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../_waste/data_solid_waste.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">MPCA Waste Characterization Study</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../_waste/methods_solid_waste.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../_waste/qc_waste_other.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Deliverables (Other sources)</span></span></a>
+  <a href="../_waste/_data_methods_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
  <span class="menu-text">Agriculture</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -312,22 +277,22 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_agriculture/_agriculture.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Agriculture</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Agriculture</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_agriculture/agriculture_data_source.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
  <span class="menu-text">Natural Systems</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -335,28 +300,28 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_nature/_natural_systems_inventory.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Natural Systems</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Natural Systems</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_nature/data_nlcd_cover.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Land cover data sources</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Land cover data sources</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_nature/data_nhd_waterways.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Waterways data sources</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Waterways data sources</span></span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
  <span class="menu-text">Appendices</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -426,7 +391,7 @@ div.csl-indent {
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -444,12 +409,12 @@ div.csl-indent {
   <li><a href="#wisconsin-1" id="toc-wisconsin-1" class="nav-link" data-scroll-target="#wisconsin-1"><span class="header-section-number">5.2.2</span> Wisconsin</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/Metropolitan-Council/ghg-cprg/blob/main/_energy/data_electricity.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/Metropolitan-Council/ghg-cprg/blob/main/_energy/data_electricity.qmd" class="toc-action">View source</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_energy/_electricity.html">Electricity</a></li><li class="breadcrumb-item"><a href="../_energy/data_electricity.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods and data sources</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods and data sources</span></h1>
 </div>
@@ -464,12 +429,11 @@ div.csl-indent {
   </div>
   
 
-
 </header>
 
 <section id="methods" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="methods"><span class="header-section-number">5.1</span> Methods</h2>
-<p>The general workflow for quantifying electricity emissions is to identify all of the electric utilities that operate within our study area, collect any reporting they provide to the states of Minnesota and Wisconsin about the amount of energy delivered to all their customers (with reference to federal reporting sources where state-level reporting gaps exist), and apply EPA-provided emissions factors to the reported activity/energy deliveries to calculate estimated emissions. Methodologies for allocating utility activity reports to counties varies across MN and WI and are further described in the following section. Most inputs we use in the construction of our electricity emissions data set are of the highest quality rank (<a href="../_meta/supplementary_tables.html#tbl-quality-rank" class="quarto-xref">Table&nbsp;<span>B.2</span></a>), as they are either direct government-created data (e.g., emissions factors) or data reported to state/federal authorities (e.g., regulatory filings). However, for two Minnesota electric utilities – Elk River Municipal Utilities <span class="citation" data-cites="elkrivermunicipalutilities2021AnnualFinancial2022">(<a href="../references.html#ref-elkrivermunicipalutilities2021AnnualFinancial2022" role="doc-biblioref">Elk River Municipal Utilities 2022</a>)</span> and New Prague Utilities Commission <span class="citation" data-cites="newpragueutilitiescommissionAgendaPacket242022">(<a href="../references.html#ref-newpragueutilitiescommissionAgendaPacket242022" role="doc-biblioref">New Prague Utilities Commission 2022</a>)</span> – where regulatory filing data could not be sourced to quantify electricity deliveries, we referred to financial reporting documents published by the utilities.</p>
+<p>The general workflow for quantifying electricity emissions is to identify all of the electric utilities that operate within our study area, collect any reporting they provide to the states of Minnesota and Wisconsin about the amount of energy delivered to all their customers (with reference to federal reporting sources where state-level reporting gaps exist), and apply EPA-provided emissions factors to the reported activity/energy deliveries to calculate estimated emissions. Methodologies for allocating utility activity reports to counties varies across MN and WI and are further described in the following section. Most inputs we use in the construction of our electricity emissions data set are of the highest quality rank (<a href="../_meta/supplementary_tables.html#tbl-quality-rank">Table&nbsp;<span>B.2</span></a>), as they are either direct government-created data (e.g., emissions factors) or data reported to state/federal authorities (e.g., regulatory filings). However, for two Minnesota electric utilities – Elk River Municipal Utilities <span class="citation" data-cites="elkrivermunicipalutilities2021AnnualFinancial2022">(<a href="../references.html#ref-elkrivermunicipalutilities2021AnnualFinancial2022" role="doc-biblioref">Elk River Municipal Utilities 2022</a>)</span> and New Prague Utilities Commission <span class="citation" data-cites="newpragueutilitiescommissionAgendaPacket242022">(<a href="../references.html#ref-newpragueutilitiescommissionAgendaPacket242022" role="doc-biblioref">New Prague Utilities Commission 2022</a>)</span> – where regulatory filing data could not be sourced to quantify electricity deliveries, we referred to financial reporting documents published by the utilities.</p>
 <p>Total regional emissions (Emissions<sub>r</sub>) represents the sum of all recorded energy deliveries by utility <em>i</em> within county <em>j</em>, where <em>i</em> refers to each of the electric utilities operating across our region, and <em>j</em> refers to the eleven counties included in this inventory. Our regional total therefore represents an aggregation of electricity deliveries for all distinct utility-county records.</p>
 <p><span class="math display">\[Emissions_r = \Sigma (mWhDelivered_iCounty_j \times {Emissions Factor}) \]</span></p>
 <p>Our inventory takes a “demand-side” approach to emissions quantification and seeks to aggregate all reported delivery of energy to ALL customers served by utilities (meaning all customer types, inclusive of residential, commercial, industrial, and government accounts). This means that energy loss and use experienced by utilities in the process of energy generation and transmission, and delivery and resale to utilities operating outside of our study area, are <em>not</em> directly reflected in the numbers attributed to counties. The U.S. Energy Information Administration (EIA) estimates that annual electricity transmission and distribution (T&amp;D) losses averaged about 5% of the electricity transmitted and distributed in the United States in 2018 through 2022. <span class="citation" data-cites="u.s.energyinformationadministrationHowMuchElectricity2023">(<a href="../references.html#ref-u.s.energyinformationadministrationHowMuchElectricity2023" role="doc-biblioref">Administration 2023</a>)</span></p>
@@ -537,16 +501,12 @@ div.csl-indent {
 <section id="correlation-with-related-data" class="level4" data-number="5.2.2.1">
 <h4 data-number="5.2.2.1" class="anchored" data-anchor-id="correlation-with-related-data"><span class="header-section-number">5.2.2.1</span> Correlation with related data</h4>
 <p>We would expect counties with higher population to have higher emissions.</p>
-<div class="cell">
-<div id="fig-electricity-emissions-population" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-electricity-emissions-population-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5.1: County population and electricity emissions
-</figcaption>
-<div aria-describedby="fig-electricity-emissions-population-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-c14b75c777231a5b9100" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-c14b75c777231a5b9100">{"x":{"visdat":{"775058d843a3":["function () ","plotlyVisDat"]},"cur_data":"775058d843a3","attrs":{"775058d843a3":{"x":{},"y":{},"mode":"markers","hovertemplate":{},"marker":{"size":18,"color":"#0054A4","line":{"color":"lightgray","width":2}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County population and emissions","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"2021 ACS 5-year population estimates","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-electricity-emissions-population","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":[360773,105694,56328,435863,1270283,549377,149568,96295,264818],"y":[2018744.3126465855,477140.54401548812,188449.57951478034,2246287.0207849541,5352550.5820350647,2158579.6506493511,661761.79100141511,630614.88396808738,1174712.4628999156],"mode":"markers","hovertemplate":["Anoka County<br>Population: 360,773<br>2.02 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Population: 105,694<br>0.48 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Population: 56,328<br>0.19 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Population: 435,863<br>2.25 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Population: 1,270,283<br>5.35 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Population: 549,377<br>2.16 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Population: 149,568<br>0.66 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Population: 96,295<br>0.63 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Population: 264,818<br>1.17 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
+<div class="cell" data-hash="data_electricity_cache/html/fig-electricity-emissions-population_9b3a0b4d3ddadae18788ef0e305ad7c1">
+<div id="fig-electricity-emissions-population" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;5.1: County population and electricity emissions</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-f516507a5dc709baa52b" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-f516507a5dc709baa52b">{"x":{"visdat":{"40b468b131b8":["function () ","plotlyVisDat"]},"cur_data":"40b468b131b8","attrs":{"40b468b131b8":{"x":{},"y":{},"mode":"markers","hovertemplate":{},"marker":{"size":18,"color":"#0054A4","line":{"color":"lightgray","width":2}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County population and emissions","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"2021 ACS 5-year population estimates","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-electricity-emissions-population","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":[360773,105694,56328,435863,1270283,549377,149568,96295,264818],"y":[2018744.3126465855,477140.54401548812,188449.57951478034,2246287.0207849541,5352550.5820350647,2158579.6506493511,661761.79100141511,630614.88396808738,1174712.4628999156],"mode":"markers","hovertemplate":["Anoka County<br>Population: 360,773<br>2.02 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Population: 105,694<br>0.48 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Population: 56,328<br>0.19 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Population: 435,863<br>2.25 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Population: 1,270,283<br>5.35 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Population: 549,377<br>2.16 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Population: 149,568<br>0.66 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Population: 96,295<br>0.63 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Population: 264,818<br>1.17 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </figure>
 </div>
 </div>
@@ -561,27 +521,19 @@ We compared our county-level emissions figures to emissions estimates derived fr
 
 
 
-
-
-::: {.cell}
+::: {.cell hash='data_electricity_cache/html/fig-eia-qa-natural-gas-plot_d0e5a64fef88bda06838db8e6f951ce0'}
 
 :::
-
-
 
 -->
 <section id="nrel-slope" class="level5" data-number="5.2.2.2.1">
 <h5 data-number="5.2.2.2.1" class="anchored" data-anchor-id="nrel-slope"><span class="header-section-number">5.2.2.2.1</span> NREL SLOPE</h5>
-<div class="cell">
-<div id="fig-nrel-qa-electricity" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-nrel-qa-electricity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5.2: Metropolitan Council emissions inventory v. NREL SLOPE modeled emissions
-</figcaption>
-<div aria-describedby="fig-nrel-qa-electricity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-8c1f6f69af6e40b36a86" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-8c1f6f69af6e40b36a86">{"x":{"visdat":{"77501c2774f":["function () ","plotlyVisDat"]},"cur_data":"77501c2774f","attrs":{"77501c2774f":{"x":{},"y":{},"hovertemplate":{},"color":{},"colors":["#4a9c2d","#0054A4"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"Electricity Emissions Inventory QA<br><sub>Comparison between Metropolitan Council and NREL SLOPE<\/sub>","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Inventory source","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"normal"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["Hennepin","Ramsey","Dakota","Anoka","Washington","Scott","Sherburne","Carver","Chisago"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-nrel-qa-electricity","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[2018744.3126465855,477140.54401548812,188449.57951478034,2246287.0207849541,5352550.5820350647,2158579.6506493511,661761.79100141511,630614.88396808738,1174712.4628999156],"hovertemplate":["Anoka<br>Metropolitan Council<br>2.02 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Metropolitan Council<br>0.48 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Metropolitan Council<br>0.19 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Metropolitan Council<br>2.25 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Metropolitan Council<br>5.35 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Metropolitan Council<br>2.16 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Metropolitan Council<br>0.66 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Metropolitan Council<br>0.63 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Metropolitan Council<br>1.17 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"Metropolitan Council","marker":{"color":"rgba(0,84,164,1)","line":{"color":"rgba(0,84,164,1)"}},"textfont":{"color":"rgba(0,84,164,1)"},"error_y":{"color":"rgba(0,84,164,1)"},"error_x":{"color":"rgba(0,84,164,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[1642249.0606356554,507244.55934761558,342678.11318372516,2808282.771154088,7501397.7901854813,3361708.7907387139,656187.67251976859,388134.72820974083,1473313.0165463134],"hovertemplate":["Anoka<br>NREL SLOPE<br>1.64 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>NREL SLOPE<br>0.51 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>NREL SLOPE<br>0.34 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>NREL SLOPE<br>2.81 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>NREL SLOPE<br>7.5 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>NREL SLOPE<br>3.36 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>NREL SLOPE<br>0.66 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>NREL SLOPE<br>0.39 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>NREL SLOPE<br>1.47 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"NREL SLOPE","marker":{"color":"rgba(74,156,45,1)","line":{"color":"rgba(74,156,45,1)"}},"textfont":{"color":"rgba(74,156,45,1)"},"error_y":{"color":"rgba(74,156,45,1)"},"error_x":{"color":"rgba(74,156,45,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
+<div class="cell" data-hash="data_electricity_cache/html/fig-nrel-qa-electricity_e425e45cf8f7114e97683d3b3f963526">
+<div id="fig-nrel-qa-electricity" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<figcaption class="figure-caption">Figure&nbsp;5.2: Metropolitan Council emissions inventory v. NREL SLOPE modeled emissions</figcaption>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-82b71df92ff7b1214413" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-82b71df92ff7b1214413">{"x":{"visdat":{"40b453c27d5e":["function () ","plotlyVisDat"]},"cur_data":"40b453c27d5e","attrs":{"40b453c27d5e":{"x":{},"y":{},"hovertemplate":{},"color":{},"colors":["#4a9c2d","#0054A4"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"Electricity Emissions Inventory QA<br><sub>Comparison between Metropolitan Council and NREL SLOPE<\/sub>","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Inventory source","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"normal"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["Hennepin","Ramsey","Dakota","Anoka","Washington","Scott","Sherburne","Carver","Chisago"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-nrel-qa-electricity","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[2018744.3126465855,477140.54401548812,188449.57951478034,2246287.0207849541,5352550.5820350647,2158579.6506493511,661761.79100141511,630614.88396808738,1174712.4628999156],"hovertemplate":["Anoka<br>Metropolitan Council<br>2.02 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Metropolitan Council<br>0.48 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Metropolitan Council<br>0.19 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Metropolitan Council<br>2.25 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Metropolitan Council<br>5.35 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Metropolitan Council<br>2.16 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Metropolitan Council<br>0.66 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Metropolitan Council<br>0.63 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Metropolitan Council<br>1.17 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"Metropolitan Council","marker":{"color":"rgba(0,84,164,1)","line":{"color":"rgba(0,84,164,1)"}},"textfont":{"color":"rgba(0,84,164,1)"},"error_y":{"color":"rgba(0,84,164,1)"},"error_x":{"color":"rgba(0,84,164,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[1642249.0606356554,507244.55934761558,342678.11318372516,2808282.771154088,7501397.7901854813,3361708.7907387139,656187.67251976859,388134.72820974083,1473313.0165463134],"hovertemplate":["Anoka<br>NREL SLOPE<br>1.64 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>NREL SLOPE<br>0.51 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>NREL SLOPE<br>0.34 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>NREL SLOPE<br>2.81 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>NREL SLOPE<br>7.5 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>NREL SLOPE<br>3.36 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>NREL SLOPE<br>0.66 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>NREL SLOPE<br>0.39 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>NREL SLOPE<br>1.47 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"NREL SLOPE","marker":{"color":"rgba(74,156,45,1)","line":{"color":"rgba(74,156,45,1)"}},"textfont":{"color":"rgba(74,156,45,1)"},"error_y":{"color":"rgba(74,156,45,1)"},"error_x":{"color":"rgba(74,156,45,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </figure>
 </div>
 </div>
@@ -589,7 +541,49 @@ Figure&nbsp;5.2: Metropolitan Council emissions inventory v. NREL SLOPE modeled 
 <div style="page-break-after: always;"></div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-u.s.energyinformationadministrationHowMuchElectricity2023" class="csl-entry" role="listitem">
+Administration, U. S. Energy Information. 2023. <span>“How Much Electricity Is Lost in Electricity Transmission and Distribution in the <span>United States</span>?”</span> Frequently Asked Questions. 2023. <a href="https://www.eia.gov/tools/faqs/faq.php?id=105">https://www.eia.gov/tools/faqs/faq.php?id=105</a>.
+</div>
+<div id="ref-mndocCHAPTER7610ENERGY2005" class="csl-entry" role="listitem">
+Commerce, Minnesota Department of. 2005. <em><span>CHAPTER</span> 7610, <span>ENERGY INFORMATION REPORTING</span></em>. <a href="https://www.revisor.mn.gov/rules/7610/">https://www.revisor.mn.gov/rules/7610/</a>.
+</div>
+<div id="ref-elkrivermunicipalutilities2021AnnualFinancial2022" class="csl-entry" role="listitem">
+Elk River Municipal Utilities. 2022. <span>“2021 <span>Annual Financial Report</span>.”</span> Financial report. <a href="https://www.ermumn.com/application/files/3316/5668/9846/2021_Annual_Financial_Report.pdf">https://www.ermumn.com/application/files/3316/5668/9846/2021_Annual_Financial_Report.pdf</a>.
+</div>
+<div id="ref-xcelEnergyCommunityEnergyReports" class="csl-entry" role="listitem">
+Energy, Xcel. n.d. <span>“Xcel <span>Energy Community Energy Reports</span>.”</span> Xcel Energy. <a href="https://www.xcelenergy.com/community_energy_reports">https://www.xcelenergy.com/community_energy_reports</a>.
+</div>
+<div id="ref-maSectorSpecificMethodologiesSubnatonal2019" class="csl-entry" role="listitem">
+Ma, Ookie, Ricardo P Cardoso De Oliveira, Evan Rosenlieb, and Megan H Day. 2019. <span>“Sector-<span>Specific Methodologies</span> for <span>Subnatonal Energy Modeling</span>.”</span> NREL/TP-7A40-72748, 1506626. <a href="https://doi.org/10.2172/1506626">https://doi.org/10.2172/1506626</a>.
+</div>
+<div id="ref-minnesotadepartmentofcommerceAnnualReportingForms2022" class="csl-entry" role="listitem">
+Minnesota Department of Commerce. 2022. <span>“Annual Reporting Forms for Electric and Gas Utilities.”</span> Government/regulatory filings. Annual Reporting. 2022. <a href="https://mn.gov/commerce/energy/industry-government/utilities/annual-reporting.jsp">https://mn.gov/commerce/energy/industry-government/utilities/annual-reporting.jsp</a>.
+</div>
+<div id="ref-newpragueutilitiescommissionAgendaPacket242022" class="csl-entry" role="listitem">
+New Prague Utilities Commission. 2022. <span>“Agenda &amp; <span>Packet</span>, 1/24/2022 Meeting of the <span>New Prague Utilities Commission</span> (Incl. Financial Report).”</span> Utility. <a href="https://www.ci.new-prague.mn.us/vertical/sites/%7BAD7ECB62-2C5E-4BA0-8F19-1426026AFA3E%7D/uploads/01-24-2022_Utilities_Commission_Meeting_Packet.pdf">https://www.ci.new-prague.mn.us/vertical/sites/%7BAD7ECB62-2C5E-4BA0-8F19-1426026AFA3E%7D/uploads/01-24-2022_Utilities_Commission_Meeting_Packet.pdf</a>.
+</div>
+<div id="ref-nrelSLOPEStateLocal2017" class="csl-entry" role="listitem">
+NREL. 2017. <span>“<span>SLOPE</span>: <span>State</span> and <span>Local Planning</span> for <span>Energy</span>.”</span> <a href="https://maps.nrel.gov/slope/">https://maps.nrel.gov/slope/</a>.
+</div>
+<div id="ref-minnesotaitgeospatialinformationofficeElectricUtilityService2023" class="csl-entry" role="listitem">
+Office, Minnesota IT Geospatial Information. 2023. <span>“Electric <span>Utility Service Areas</span>, <span>Minnesota</span>, <span>January</span> 2023.”</span> <a href="https://gisdata.mn.gov/dataset/util-eusa">https://gisdata.mn.gov/dataset/util-eusa</a>.
+</div>
+<div id="ref-publicservicecommwisconsinAnnualReportsView2022" class="csl-entry" role="listitem">
+Public Service Commission of Wisconsin. 2022. <span>“Annual <span>Reports</span> : <span>View PDFs</span>, <span>Queries</span>, and <span>Programs</span>.”</span> Government/regulatory filings. Annual Reporting. 2022. <a href="https://apps.psc.wi.gov/ARS/annualReports/default.aspx">https://apps.psc.wi.gov/ARS/annualReports/default.aspx</a>.
+</div>
+<div id="ref-eia861" class="csl-entry" role="listitem">
+U.S. Energy Information Administration. 2023. <span>“Annual <span>Electric Power Industry Report</span>, <span>Form EIA-861</span> Detailed Data Files (2021).”</span> <a href="https://www.eia.gov/electricity/data/eia861/">https://www.eia.gov/electricity/data/eia861/</a>.
+</div>
+<div id="ref-usepaEGRIDEmissionsGeneration2021" class="csl-entry" role="listitem">
+USEPA. 2021. <span>“<span class="nocase">eGRID</span> (<span>Emissions</span> &amp; <span>Generation Resource Integrated Database</span>) 2021 <span>Summary Data</span>.”</span> <a href="https://www.epa.gov/egrid/summary-data">https://www.epa.gov/egrid/summary-data</a>.
+</div>
+<div id="ref-wisconsinpublicservicecommissionElectricServiceTerritories2024" class="csl-entry" role="listitem">
+Wisconsin Public Service Commission, Division of Energy Regulation, and Tyler Tomaszewski. 2024. <span>“Electric <span>Service Territories</span>.”</span> <a href="https://maps.psc.wi.gov/portal/apps/webappviewer/index.html?id=bb1a9f501e3d472cbde970310540b466">https://maps.psc.wi.gov/portal/apps/webappviewer/index.html?id=bb1a9f501e3d472cbde970310540b466</a>.
+</div>
+<div id="ref-wisconsinstatelegChapter196Regulation2024" class="csl-entry" role="listitem">
+Wisconsin State Legislature. 2024. <em>Chapter 196, <span>Regulation</span> of <span>Public Utilities</span></em>. <em>35.18</em>. <a href="https://docs.legis.wisconsin.gov/statutes/statutes/196">https://docs.legis.wisconsin.gov/statutes/statutes/196</a>.
+</div>
 <div id="ref-u.s.energyinformationadministrationHowMuchElectricity2023" class="csl-entry" role="listitem">
 Administration, U. S. Energy Information. 2023. <span>“How Much Electricity Is Lost in Electricity Transmission and Distribution in the <span>United States</span>?”</span> Frequently Asked Questions. 2023. <a href="https://www.eia.gov/tools/faqs/faq.php?id=105">https://www.eia.gov/tools/faqs/faq.php?id=105</a>.
 </div>
@@ -674,7 +668,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const onCopySuccess = function(e) {
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -706,57 +711,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
   });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io");
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-    }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
-          // target, if specified
-          link.setAttribute("target", "_blank");
-          if (link.getAttribute("rel") === null) {
-            link.setAttribute("rel", "noopener");
-          }
-          // default icon
-          link.classList.add("external");
-      }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+  function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,
+      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -766,17 +725,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start',
+      placement: 'bottom-start'
     };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -788,130 +738,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
-        }
-      }
-    }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
-          }
-        }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
-        }
-        return container.innerHTML
-      } else {
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(note);
-        }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      // TODO in 1.5, we should make sure this works without a callout special case
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
-      }
-    }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
-          }
-        } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
-          .then(res => res.text())
-          .then(html => {
-            const parser = new DOMParser();
-            const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
-            if (note !== null) {
-              const html = processXRef(id, note);
-              instance.setContent(html);
-            } 
-          }).finally(() => {
-            instance.enable();
-            instance.show();
-          });
-        }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
+      return note.innerHTML;
     });
   }
       let selectedAnnoteEl;
@@ -955,7 +782,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
-            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -981,32 +807,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1064,23 +864,39 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       });
     }
   }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp("metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          // default icon
+          link.classList.add("external");
+      }
+    }
 });
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../_energy/_electricity.html" class="pagination-link" aria-label="Electricity">
+      <a href="../_energy/_electricity.html" class="pagination-link">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Electricity</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../_energy/_energy_natural_gas_emissions.html" class="pagination-link" aria-label="Natural Gas">
+      <a href="../_energy/_energy_natural_gas_emissions.html" class="pagination-link">
         <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Natural Gas</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Metropolitan-Council/ghg-cprg/blob/main/_energy/data_electricity.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer><section class="footer-social standalone-footer">
+<section class="footer-social standalone-footer">
   <div class="wrapper1 cf">
     <nav class="footer-columns" aria-label="Footer">
       <div>
