@@ -96,4 +96,3 @@ solid_waste_wi_meta <-
 
 saveRDS(solid_waste_wi, paste0("_waste/data/solid_waste_WI_allyrs.RDS"))
 saveRDS(solid_waste_wi_meta, paste0("_waste/data/solid_waste_WI_allyrs_meta.RDS"))
-

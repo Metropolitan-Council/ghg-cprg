@@ -93,7 +93,7 @@ solid_waste_min_year <- solid_waste_emissions %>%
 # gas emissions ----
 solid_waste_gas <- readRDS(file.path(here::here(), "_waste/data/solid_waste_MN_by_gas.RDS")) %>%
   left_join(cprg_county %>% st_drop_geometry() %>%
-    select(geoid, county_name)) %>% 
+    select(geoid, county_name)) %>%
   select(
     -c(value_activity, units_activity)
   )
@@ -102,9 +102,9 @@ wastewater_gas <- readRDS(file.path(here::here(), "_waste/data/_county_wastewate
 
 solid_waste_gas_wi <- readRDS(file.path(here::here(), "_waste/data/solid_waste_gas_WI_allyrs.RDS")) %>%
   left_join(cprg_county %>% st_drop_geometry() %>%
-    select(geoid, county_name)) %>% 
+    select(geoid, county_name)) %>%
   select(names(solid_waste_gas))
-  
+
 
 county_gas_type <- bind_rows(
   wastewater_gas %>%

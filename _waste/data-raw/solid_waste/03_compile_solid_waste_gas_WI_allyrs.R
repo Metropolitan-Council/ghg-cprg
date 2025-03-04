@@ -1,8 +1,10 @@
 source("R/_load_pkgs.R")
 source(file.path(here::here(), "R/global_warming_potential.R"))
 
-solid_waste_wi <- readRDS(file.path(here::here(), 
-"_waste/data/solid_waste_WI_allyrs.RDS"))
+solid_waste_wi <- readRDS(file.path(
+  here::here(),
+  "_waste/data/solid_waste_WI_allyrs.RDS"
+))
 
 # incineration factors ----
 # see 02_compile_incineration_MN_allyrs.R
@@ -14,8 +16,8 @@ n2o_factor <- 50 * units::as_units("gram") %>%
   as.numeric() # aggregate emissions factor for incineration, g N2O/metric tons waste, GHG Protocol default
 
 
-co2_disaggregate = 1/(1 + (n2o_factor * gwp$n2o)/co2_factor)
-n2o_disaggregate = 1/(co2_factor/n2o_factor + gwp$n2o)
+co2_disaggregate <- 1 / (1 + (n2o_factor * gwp$n2o) / co2_factor)
+n2o_disaggregate <- 1 / (co2_factor / n2o_factor + gwp$n2o)
 
 # co2_disaggregate + n2o_disaggregate*gwp$n2o == 1
 
@@ -29,15 +31,16 @@ units_assign <- tibble::tribble(
 solid_waste_gas_wi <- solid_waste_wi %>%
   select(
     -units_emissions
-  ) %>% 
+  ) %>%
   left_join(
-    units_assign, relationship = "many-to-many"
-  ) %>% 
+    units_assign,
+    relationship = "many-to-many"
+  ) %>%
   mutate(
     value_emissions = case_when(
-      units_emissions == "Metric tons CH4" ~ value_emissions/gwp$ch4,
-      units_emissions == "Metric tons CO2" ~ value_emissions*co2_disaggregate,
-      units_emissions == "Metric tons N2O" ~ value_emissions*n2o_disaggregate
+      units_emissions == "Metric tons CH4" ~ value_emissions / gwp$ch4,
+      units_emissions == "Metric tons CO2" ~ value_emissions * co2_disaggregate,
+      units_emissions == "Metric tons N2O" ~ value_emissions * n2o_disaggregate
     )
   )
 
@@ -82,7 +85,7 @@ saveRDS(solid_waste_gas_wi_meta, paste0("_waste/data/solid_waste_gas_WI_allyrs_m
 #   group_by(units_emissions) %>%
 #   mutate(
 #     co2e_state = zoo::na.approx(co2e_state, na.rm = FALSE)
-#   ) %>% 
+#   ) %>%
 #   mutate(
 #     co2e_state = co2e_state * 10^6,
 #     # mmt to mt
@@ -92,8 +95,8 @@ saveRDS(solid_waste_gas_wi_meta, paste0("_waste/data/solid_waste_gas_WI_allyrs_m
 #       units_emissions == "Metric tons other gas" ~ co2e_state/gwp$`HFC-152a`,
 #       units_emissions == "Metric tons CO2" ~ co2e_state/gwp$co2
 #     )
-#   ) 
-# 
+#   )
+#
 # solid_waste_gas_wi <- wi_pop %>%
 #   mutate(population_year = as.numeric(population_year)) %>%
 #   left_join(
@@ -117,4 +120,4 @@ saveRDS(solid_waste_gas_wi_meta, paste0("_waste/data/solid_waste_gas_WI_allyrs_m
 #     units_emissions,
 #     co2e
 #   )
-# 
+#
