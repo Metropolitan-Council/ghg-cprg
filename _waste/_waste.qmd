@@ -97,6 +97,9 @@ solid_waste_gas <- readRDS(file.path(here::here(), "_waste/data/solid_waste_MN_b
 
 wastewater_gas <- readRDS(file.path(here::here(), "_waste/data/_county_wastewater_emissions.RDS"))
 
+# solid_waste_gas_wi <- readRDS(file.path(here::here(), "_waste/data/solid_waste_gas_WI_allyrs.RDS")) %>% 
+#   select(-geoid)
+
 county_gas_type <- bind_rows(
   wastewater_gas %>%
     group_by(inventory_year, county_name, units_emissions) %>%
