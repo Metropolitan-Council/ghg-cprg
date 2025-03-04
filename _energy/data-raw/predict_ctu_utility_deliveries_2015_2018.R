@@ -65,27 +65,48 @@ electricity <- readRDS("_energy/data/ctu_electricity_emissions_2015_2018.rds") %
          !is.na(mwh_per_year)) %>%  # removes duplicates
   left_join(ctu_county_unique,
             by = c("ctu_name", "ctu_class")) %>% 
-  group_by(county_name) %>% 
-  mutate(county_total_mwh = sum(mwh_per_year),
-         proportion_mwh = mwh_per_year / county_total_mwh)
+  group_by(county_name, emissions_year) %>% 
+  mutate(county_sql_total_mwh = sum(mwh_per_year)) %>%  
+  ungroup() %>% 
+  left_join(county_mwh %>% select(year, county, total_mWh_delivered),
+            by = c("county_name" = "county", "emissions_year" = "year")) %>% 
+  mutate(county_sql_mwh_prop = mwh_per_year / county_sql_total_mwh,
+         county_util_mwh_prop = mwh_per_year  / total_mWh_delivered)
   
+ggplot(electricity %>% distinct(emissions_year, county_name, county_sql_total_mwh, total_mWh_delivered),
+       aes(x = county_sql_total_mwh, y = total_mWh_delivered, col = county_name)) +
+         geom_point() + facet_wrap(~emissions_year, scales = "free") +
+  geom_abline(slope = 1) + xlab("Utility CTU mwh reports (aggregated)") +
+  ylab("Utility county mwh reports")
+
 nat_gas <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>% 
   mutate(ctu_class = if_else(grepl("Twp.", ctu_name), "TOWNSHIP", "CITY"),
          ctu_name = str_replace_all(ctu_name, " Twp.", ""),
          ctu_name = str_replace_all(ctu_name, "St. ", "Saint "),
          ctu_class = if_else(ctu_name %in% c("Credit River", "Empire"),
                              "CITY",
-                             ctu_class)) %>% 
+                             ctu_class),
+         mcf_per_year = therms_per_year * 0.1 * (1/epa_ghg_factor_hub$stationary_combustion$value[1]) / 1000) %>% 
   left_join(cprg_ctu %>% st_drop_geometry() %>% distinct(ctu_name, ctu_class, ctu_id = gnis),
             by = c("ctu_name", "ctu_class")) %>% 
   filter(units_emissions == "Metric tons CO2")%>%  # removes duplicates
   left_join(ctu_county_unique,
             by = c("ctu_name", "ctu_class")) %>% 
-  group_by(county_name) %>% 
-  mutate(county_total_therms = sum(therms_per_year),
-         proportion_therms = therms_per_year/ county_total_therms)
+  group_by(county_name, emissions_year) %>% 
+  mutate(county_sql_total_mcf = sum(mcf_per_year, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  left_join(county_scf %>% select(year, county_name, total_mcf),
+            by = c("county_name", "emissions_year" = "year")) %>% 
+  mutate(county_sql_prop = mcf_per_year / county_sql_total_mcf,
+         county_util_prop = mcf_per_year / total_mcf)
 
-## calculate percentage of county total as well
+ggplot(nat_gas %>% distinct(emissions_year, county_name, county_sql_total_mcf, total_mcf),
+       aes(x = county_sql_total_mcf, y = total_mcf, col = county_name)) +
+  geom_point() + facet_wrap(~emissions_year, scales = "free") +
+  geom_abline(slope = 1) + xlab("Utility CTU scf reports (aggregated)") +
+  ylab("Utility county scf reports") + theme_bw()
+
+
 
 
 # predictor data
