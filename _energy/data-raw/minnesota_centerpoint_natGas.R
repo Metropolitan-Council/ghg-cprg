@@ -59,42 +59,54 @@ ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   filter(state_abb == "MN") %>%
   rename(year = inventory_year)
 
-# Calculate unique total population by city-year-county
-city_total_population <- ctu_population %>%
+# Calculate unique total population by individual COCTU unit, as well as CTU (across all counties), and finally across ALL units (city AND township)
+ctu_total_population <- ctu_population %>%
   distinct(ctu_name, ctu_class, year, county_name, ctu_population) %>% # Ensure unique rows per city-county-year
   group_by(ctu_name, ctu_class, year) %>%
   mutate(
-    total_ctu_population = sum(ctu_population, na.rm = TRUE), # Sum populations across counties for each city-year
+    total_ctu_population = sum(ctu_population,
+                               na.rm = TRUE), # Sum populations across counties for each city-year
     multi_county = n_distinct(county_name) > 1
   ) %>%
+  ungroup() %>%
+  group_by(ctu_name, year) %>%
+  mutate(total_population_across_all_units = sum(ctu_population,
+                                                 na.rm = TRUE),
+         same_named = n_distinct(ctu_class) > 1) %>%
   ungroup()
+  
 
+
+# ctu_name 
+# ctu_name, ctu_class, county_name, year 
 
 centerpoint_activityData_2015_2023 <- df_long %>%
   # Remove records with no or unusable data -- may need to revisit to snag years like 2022 if 2021 or other years of interest are missing
   filter(!is.na(mcf_delivered)) %>%
   # Join city_total_population back to main dataset
-  full_join(city_total_population,
+  full_join(ctu_total_population,
             by = c("ctu_name", "year"),
             relationship = "many-to-many"
   ) %>%
   # Calculate proportions and disaggregated values
   group_by(ctu_name, ctu_class, year, county_name) %>%
   mutate(
-    ctu_population_proportion = ctu_population / total_ctu_population, # Calculate proportions
+    coctu_population_proportion = ctu_population / total_population_across_all_units, # Calculate proportions
     disagg_util_reported_customers = ifelse(
-      multi_county,
-      Customers * ctu_population_proportion,
+      multi_county | same_named,
+      Customers * coctu_population_proportion,
       NA
     ),
     disagg_mcf_delivered = ifelse(
-      multi_county,
-      mcf_delivered * ctu_population_proportion,
+      multi_county | same_named,
+      mcf_delivered * coctu_population_proportion,
       NA
     )
   ) %>%
   ungroup() %>%
   # Filter to core metro counties while keeping `county_name` intact
   filter(county_name %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington")) %>%
+  # exclude cities statutorily not in METC area despite presence in core counties
+  filter(!ctu_name %in% c("Northfield", "Hanover", "New Prague", "Cannon Falls", "Rockford")) %>%
   filter(!is.na(sector)) %>%
   filter(sector != "All")
