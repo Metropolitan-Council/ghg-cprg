@@ -1,6 +1,8 @@
 # allocate WI state emissions by county population
 
 source("R/_load_pkgs.R")
+source(file.path(here::here(), "R/global_warming_potential.R"))
+
 
 # from https://widnr.widen.net/view/pdf/o9xmpot5x7/AM610.pdf?t.download=true
 # WI GHG Emissions Inventory from the DNR, 2018 data
@@ -38,7 +40,6 @@ wi_inventory <- read.csv(file.path(here::here(), "_waste/data-raw/solid_waste/ta
   mutate(
     value_emissions = zoo::na.approx(value_emissions, na.rm = FALSE)
   )
-
 
 wi_pop <- cprg_county_proportions %>%
   filter(
@@ -90,7 +91,7 @@ solid_waste_wi_meta <-
     "data_source", class(solid_waste_wi$data_source), "Activity data source",
     "factor_source", class(solid_waste_wi$factor_source), "Emissions factor data source",
     "value_emissions", class(solid_waste_wi$value_emissions), "Emissions value",
-    "units_emissions", class(solid_waste_wi$units_emissions), "Emissions units",
+    "units_emissions", class(solid_waste_wi$units_emissions), "Emissions units"
   )
 
 saveRDS(solid_waste_wi, paste0("_waste/data/solid_waste_WI_allyrs.RDS"))
