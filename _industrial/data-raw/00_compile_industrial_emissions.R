@@ -16,10 +16,17 @@ ind_fuel_combustion <- ind_fuel_combustion %>%
   mutate(fuel_type = case_when(
     specific_fuel_type == "Fuel Gas" ~ "Fuel Gas",
     TRUE ~ general_fuel_type
-  ))
+  ),
+  # Current research indicates only the refineries are likely to have non-utility derived natural gas combustion
+  doublecount = if_else(specific_fuel_type == "Natural Gas" &
+                          !facility_name %in% c("St. Paul Park Refining Company, LLC",
+                                               "Flint Hills Resources Pine Bend Refinery"),
+  "Yes", "No"))
+
 
 county_fuel_combustion <- ind_fuel_combustion %>%
-  filter(units_emissions != "avg_activity") %>%
+  filter(units_emissions != "avg_activity",
+         doublecount == "No") %>%
   mutate(mt_co2e = case_when(
     units_emissions == "mt_ch4" ~ values_emissions * gwp$ch4,
     units_emissions == "mt_n2o" ~ values_emissions * gwp$n2o,
