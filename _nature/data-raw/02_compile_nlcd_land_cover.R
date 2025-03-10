@@ -494,7 +494,6 @@ lapply(start_year:end_year, function(year) {
 
 message("Finished!")
 
-# browser()
 nlcd_county <- nlcd_county %>%
   as_tibble() %>%
   rename(county_id = geoid,
