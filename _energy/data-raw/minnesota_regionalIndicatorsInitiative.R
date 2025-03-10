@@ -99,7 +99,7 @@ df_final <- df_long %>%
   group_by(ctu_name, ctu_class, year, county_name) %>%
   mutate(
     ctu_population_proportion = ctu_population / total_ctu_population, # Calculate proportions
-    disagg_mWh_delivered = ifelse(
+    disagg_mwh_delivered = ifelse(
       multi_county & !is.na(mwh_delivered),
       mwh_delivered * ctu_population_proportion,
       NA),
@@ -117,13 +117,22 @@ df_final <- df_long %>%
 
 
 minnesota_electricity_rii <- df_final %>%
-  filter(source == "Electricity") 
+  filter(source == "Electricity") %>%
+  mutate(
+    mwh_delivered = coalesce(disagg_mwh_delivered, mwh_delivered)
+  ) %>%
+  select(1:7,9) # exclude NG and interstitial calculation columns
 
 minnesota_natGas_rii <- df_final %>%
-  filter(source == "Natural Gas")
+  filter(source == "Natural Gas") %>%
+  mutate(
+    mcf_delivered = coalesce(disagg_mcf_delivered, mcf_delivered)
+  ) %>%
+  select(1:6, 8:9) # exclude elec and interstitial calculation columns
 
 
-write_rds(minnesota_electricity_rii, here("_energy", "data", "rii_electricity_" ))
+write_rds(minnesota_electricity_rii, here("_energy", "data", "rii_electricity_2007_2023.RDS"))
+write_rds(minnesota_natGas_rii, here("_energy", "data", "rii_natGas_2007_2023.RDS"))
 
   
 
