@@ -68,7 +68,7 @@ get_year <- function(filename) {
   year <- as.numeric(sub(".*_(\\d{4})_.*", "\\1", filename))
   return(year)
 }
-pctBar <- function(percentage) {
+pctBar <- function(percentage, msg=NULL) {
   if (percentage < 0 || percentage > 100) {
     stop("Percentage must be between 0 and 100")
   }
@@ -78,7 +78,7 @@ pctBar <- function(percentage) {
   empty_length <- total_length - filled_length
   
   bar <- paste0("|", strrep("=", filled_length), strrep("_", empty_length), "|")
-  message(sprintf("%3d%%  %s", percentage, bar))
+  message(paste0(sprintf("%3d%%  %s", percentage, bar)," ", msg))
 }
 
 
@@ -187,13 +187,13 @@ lapply(start_year:end_year, function(year) {
   county_values <- terra::extract(county_raster, cprg_county)
   ctu_values <- terra::extract(ctu_raster, cprg_county)
   ctu_class_values <- terra::extract(ctu_class_raster, cprg_county)
-  pctBar(70)
+  
   
 
   
   
   if (tcc_available) {
-    message(paste0("Tree canopy data available for ", year))
+    pctBar(70, paste0("Tree canopy data available for ", year))
     nlcd_tcc <- resample(nlcd_tcc, nlcd_lc, method = "near")
     nlcd_tcc_values <- terra::extract(nlcd_tcc, cprg_county)
     nlcd_tcc_values <- nlcd_tcc_values %>%
@@ -362,11 +362,11 @@ lapply(start_year:end_year, function(year) {
       dplyr::select(names(nlcd_ctu)) 
     
     
-    pctBar(100)
+    pctBar(100,"- Moving to next year")
     
     
   } else {
-    message(paste0("Tree canopy data NOT available for ", year))
+    pctBar(70, paste0("Tree canopy data NOT available for ", year))
     
     lc_df <- as_tibble(data.frame(
       county_name = county_values[, 2],
@@ -477,6 +477,8 @@ lapply(start_year:end_year, function(year) {
         total_ctu_area = coalesce(total_ctu_area, a2)
       ) %>%
       dplyr::select(names(nlcd_ctu)) 
+    
+    pctBar(100,"- Moving to next year")
     
 
   }
