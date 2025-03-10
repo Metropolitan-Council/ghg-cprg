@@ -1,24 +1,19 @@
-#' Calculate GHG emissions from municipal solid waste sent to landfills and waste composition.
+#' Calculate GHG emissions from municipal solid waste sent to landfills using waste composition.
 #' 
 #' @param solid_waste_data table, waste activity data
 #' @param waste_characterization table, output of 01_mpca_waste_characterization.R
-#' @param methane_recovery table, methane recovery percentage for each year in 
-#' solid_waste_data
-#' @return a data table with ___
+#' @param methane_recovery single value, percentage of landfills using methane recovery
+#' @return a data table with geoid, source, inventory_year, value_activity, 
+#' units_activity, value_emissions, and units_emissions
 #' 
 calculate_landfill_emissions <- function(solid_waste_data, waste_characterization,
-                                         methane_recovery = FALSE) {
+                                         methane_recovery = 0) {
   # create empty methane recovery df
   inventory_year = unique(solid_waste_data$inventory_year)
-  if (!is.data.frame(methane_recovery)){
-    methane_recovery = tibble::tibble(
-      inventory_year, percent_recovered = rep(0, length(inventory_year))
-      )
-  }
-  if (!setequal(methane_recovery$inventory_year, inventory_year)){
-    cli::cli_abort("Methane recovery data does not cover all years")
-  }
-  
+  methane_recovery_table = tibble::tibble(
+    inventory_year, percent_recovered = rep(methane_recovery, length(inventory_year))
+    )
+
   # methane correction factor (MCF)
   # assuming landfills managed well, semi-aerobic (see GHG Protocol)
   mcf <- 0.5
@@ -51,13 +46,13 @@ calculate_landfill_emissions <- function(solid_waste_data, waste_characterizatio
   
   landfill_emissions <- solid_waste_data %>%
     dplyr::filter(source == "Landfill") %>%
-    dplyr::left_join(methane_recovery, by = dplyr::join_by(inventory_year)) %>%
+    dplyr::left_join(methane_recovery_table, by = dplyr::join_by(inventory_year)) %>%
     dplyr::mutate(
       value_emissions = (value_activity * l_0) * (1 - ox) * (1-percent_recovered),
       units_emissions = "Metric tons CH4"
     ) %>%
     dplyr::select(
-      -state_total
+      -c(state_total, percent_recovered)
     )
   
   return(landfill_emissions)
