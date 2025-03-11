@@ -309,7 +309,7 @@ if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
       mwh_delivered = coalesce(disagg_mwh_delivered, mwh_delivered),
       util_reported_co2e = coalesce(disagg_util_reported_co2e, util_reported_co2e)
     ) %>% 
-    select(1,3:4,6:11) # exclude interstitial calculation columns
+    select(1,3:4,6:12) # exclude interstitial calculation columns
 
   write_rds(Xcel_activityData_2015_2023, "_energy/data/Xcel_activityData_2015_2023.RDS")
 }
