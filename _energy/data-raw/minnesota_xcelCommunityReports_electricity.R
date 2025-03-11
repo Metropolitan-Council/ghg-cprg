@@ -146,9 +146,9 @@ process_file <- function(file_info, start_cell) {
       util_reported_co2e = `Carbon Emissions (metric tons CO2) [6]`
     ) %>%
     mutate(
-      mWh_delivered = kwh_delivered / 1000,
+      mwh_delivered = kwh_delivered / 1000,
       city_name = city_name,
-      utility_name = utility,
+      utility = utility,
       year = year,
       source = "Electricity"
     )
@@ -293,15 +293,23 @@ if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
         util_reported_co2e * ctu_population_proportion,
         NA
       ),
-      disagg_mWh_delivered = ifelse(
+      disagg_mwh_delivered = ifelse(
         multi_county,
-        mWh_delivered * ctu_population_proportion,
+        mwh_delivered * ctu_population_proportion,
         NA
       )
     ) %>%
     ungroup() %>%
     # Filter to core metro counties while keeping `county_name` intact
-    filter(county_name %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington"))
+    filter(county_name %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington")) %>%
+    # exclude cities statutorily not in METC area despite presence in core counties
+    filter(!ctu_name %in% c("Northfield", "Hanover", "New Prague", "Cannon Falls", "Rockford")) %>%
+    arrange(ctu_name, county_name, sector, year) %>%
+    mutate(
+      mwh_delivered = coalesce(disagg_mwh_delivered, mwh_delivered),
+      util_reported_co2e = coalesce(disagg_util_reported_co2e, util_reported_co2e)
+    ) %>% 
+    select(1,3:4,6:11) # exclude interstitial calculation columns
 
   write_rds(Xcel_activityData_2015_2023, "_energy/data/Xcel_activityData_2015_2023.RDS")
 }
