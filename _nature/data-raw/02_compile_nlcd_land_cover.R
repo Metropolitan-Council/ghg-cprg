@@ -227,30 +227,19 @@ lapply(start_year:end_year, function(year) {
       filter(!is.na(county_name))
     
     pctBar(80, "Recomputing area based on new land cover definitions")
-    
-    
-    # area_by_county <- lc_df %>%
-    #   group_by(county_name, state_name) %>%
-    #   summarize(county_total_area=sum(area),.groups="keep") %>%
-    #   mutate(year=.env$year)
-    # 
-    # area_by_ctu <- lc_df %>%
-    #   group_by(ctu_name, ctu_class, county_name, state_name) %>%
-    #   summarize(ctu_total_area=sum(area),.groups="keep") %>%
-    #   mutate(year=.env$year)
-    
+
     
     # Recompute area based on new land cover designations
     # Here we treat "Developed, Open Space" as "Urban_Grassland" if tree canopy cover is 0
     # If tree canopy cover is > 0, we treat "Developed" as "Urban_Tree"
-    # If tree canopy cover is 0, we treat "Developed" as "Built-up" (so long as it's not "Developed, Open Space")
+    # If tree canopy cover is 0, we treat "Developed" as "Built_Up" (so long as it's not "Developed, Open Space")
     # The rest of the land cover types are pretty straightforward
     lc_rc <- lc_df %>%
       mutate(
         land_cover_type = case_when(
           grepl("Developed, Open Space", nlcd_cover_class) & tree_canopy_cover == 0 ~ "Urban_Grassland",
           grepl("Developed", nlcd_cover_class) & tree_canopy_cover > 0 ~ "Urban_Tree",
-          grepl("Developed", nlcd_cover_class) & !grepl("Developed, Open Space", nlcd_cover_class) & tree_canopy_cover == 0 ~ "Built-up",
+          grepl("Developed", nlcd_cover_class) & !grepl("Developed, Open Space", nlcd_cover_class) & tree_canopy_cover == 0 ~ "Built_Up",
           grepl("Deciduous Forest", nlcd_cover_class) ~ "Tree",
           grepl("Evergreen Forest", nlcd_cover_class) ~ "Tree",
           grepl("Mixed Forest", nlcd_cover_class) ~ "Tree",
@@ -300,12 +289,12 @@ lapply(start_year:end_year, function(year) {
 
     # We still need to account for a little bit of area that gets missed due to filtering
     # In this case, we want the area of land after taking into account tree canopy area, 
-    # but in this case, the residual is Built-up (not Urban_Grassland)
+    # but in this case, the residual is Built_Up (not Urban_Grassland)
     lc_rc_residual_impervious <- lc_rc %>%
       filter(area_residual > 0 & nlcd_cover_class != "Developed, Open Space") %>%
       mutate(
         land_cover_type = case_when(
-          land_cover_type == "Urban_Tree" ~ "Built-up",
+          land_cover_type == "Urban_Tree" ~ "Built_Up",
           .default = "CHECK"
         ) 
       ) %>%
@@ -394,30 +383,19 @@ lapply(start_year:end_year, function(year) {
     
     pctBar(80, "Recomputing area based on new land cover definitions")
     
-    
-    # area_by_county <- lc_df %>%
-    #   group_by(county_name, state_name) %>%
-    #   summarize(county_total_area=sum(area),.groups="keep") %>%
-    #   mutate(year=.env$year)
-    # 
-    # area_by_ctu <- lc_df %>%
-    #   group_by(ctu_name, ctu_class, county_name, state_name) %>%
-    #   summarize(ctu_total_area=sum(area),.groups="keep") %>%
-    #   mutate(year=.env$year)
-    
-    
+  
     # Recompute area based on new land cover designations
     # Here we treat "Developed, Open Space" as "Urban_Grassland" if tree canopy cover is 0
     # If tree canopy cover is > 0, we treat "Developed" as "Urban_Tree"
-    # If tree canopy cover is 0, we treat "Developed" as "Built-up" (so long as it's not "Developed, Open Space")
+    # If tree canopy cover is 0, we treat "Developed" as "Built_Up" (so long as it's not "Developed, Open Space")
     # The rest of the land cover types are pretty straightforward
     lc_rc <- lc_df %>%
       mutate(
         land_cover_type = case_when(
           # grepl("Developed, Open Space", nlcd_cover_class) & tree_canopy_cover == 0 ~ "Urban_Grassland",
           # grepl("Developed", nlcd_cover_class) & tree_canopy_cover > 0 ~ "Urban_Tree",
-          # grepl("Developed", nlcd_cover_class) & !grepl("Developed, Open Space", nlcd_cover_class) & tree_canopy_cover == 0 ~ "Built-up",
-          grepl("Developed", nlcd_cover_class) ~ "Built-up",
+          # grepl("Developed", nlcd_cover_class) & !grepl("Developed, Open Space", nlcd_cover_class) & tree_canopy_cover == 0 ~ "Built_Up",
+          grepl("Developed", nlcd_cover_class) ~ "Built_Up",
           grepl("Deciduous Forest", nlcd_cover_class) ~ "Tree",
           grepl("Evergreen Forest", nlcd_cover_class) ~ "Tree",
           grepl("Mixed Forest", nlcd_cover_class) ~ "Tree",
@@ -518,59 +496,218 @@ nlcd_ctu <- nlcd_ctu %>%
                 inventory_year, land_cover_type, area, total_area, tcc_available)
 
 
-
-
-
-
 nlcd_county <- nlcd_county %>%
   # Let's create an new column called "land_cover_main" which accounts for the fact
-  # that "Urban_Tree" and "Urban_Grassland" are subcategories within "Built-Up".
+  # that "Urban_Tree" and "Urban_Grassland" are subcategories within "Built_Up".
   mutate(
     land_cover_main = case_when(
-    land_cover_type %in% c("Urban_Tree", "Urban_Grassland")~"Built-Up",
+    land_cover_type %in% c("Urban_Tree", "Urban_Grassland")~"Built_Up",
     .default = land_cover_type
   ),.before=land_cover_type)
 
 
 nlcd_ctu <- nlcd_ctu %>%
   # Let's create an new column called "land_cover_main" which accounts for the fact
-  # that "Urban_Tree" and "Urban_Grassland" are subcategories within "Built-Up".
+  # that "Urban_Tree" and "Urban_Grassland" are subcategories within "Built_Up".
   mutate(
     land_cover_main = case_when(
-      land_cover_type %in% c("Urban_Tree", "Urban_Grassland")~"Built-Up",
+      land_cover_type %in% c("Urban_Tree", "Urban_Grassland")~"Built_Up",
       .default = land_cover_type
     ),.before=land_cover_type)
 
 #+ In years where tree canopy data was available, we first selected any "Developed"
 #+ lands where tree canopy was >0% and then we called these pixels "Urban_Tree" and
 #+ recomputed the area of that pixel based on its tree coverage. This left a residual area
-#+ which we call "Built-Up".
+#+ which we call "Built_Up".
 #+ 
 #+ In the cases where we have "Developed, Open Space" and some tree canopy, the residual
 #+ area is renamed "Urban_Grassland". In the cases where we have "Developed, Low-High Intensity"
-#+ the residual area is called "Built-Up"
+#+ the residual area is called "Built_Up"
 #+ 
 #+ The good news is that this method conserves the total area covered (i.e. if you 
 #+ compute the area sum across all cover types for a given county, the county area remains 
 #+ constant through time):
 nlcd_county %>%
   group_by(inventory_year,county_name) %>%
-  summarize(total_area = sum(area)) %>% arrange(county_name) %>% View()
+  summarize(total_area = sum(area)) %>% arrange(county_name)
 
-#+ The bad news is that from a time-series standpoint, the Built-Up
+#+ The bad news is that from a time-series standpoint, the Built_Up
 #+ area steadily increases until 2011 where there's a sharp decrease. This is because
-#+ 2011 is the first year with tree canopy data, which implicitly divides the "Built-Up" area
-#+ into three parts (Urban_Tree, Urban_Grassland, and...Built-Up)
+#+ 2011 is the first year with tree canopy data, which implicitly divides the "Built_Up" area
+#+ into three parts (Urban_Tree, Urban_Grassland, and...Built_Up)
 nlcd_county %>%
-  ggplot() + theme_council_geo() +
+  ggplot() + theme_minimal() +
   geom_path(aes(x=inventory_year, y=area, color=land_cover_type)) +
-  geom_point(aes(x=inventory_year, y=area, color=land_cover_type)) +
+  geom_point(aes(x=inventory_year, y=area, color=land_cover_type), size=0.5) +
   facet_wrap(~county_name)
 
+nlcd_county %>%
+  group_by(county_name, inventory_year) %>%
+  summarize(area = sum(area)) %>%
+  ggplot() + theme_minimal() +
+  geom_path(aes(x=inventory_year, y=area)) +
+  geom_point(aes(x=inventory_year, y=area), size=0.5) +
+  facet_wrap(~county_name)
+
+
+
 #+ The best way to deal with it is to treat "Urban_Grassland" and
-#+ "Urban_Tree" as subcategories within "Built-Up". So for future modeling efforts
-#+ make sure that the total "Developed" lands within any given year is a sum of 
-#+ Urban_Tree, Urban_Grassland, and Built-Up (when applicable)
+#+ "Urban_Tree" as subcategories within "Built_Up". So for future modeling efforts
+#+ make sure that the total "Built_Up" lands within any given year is a sum of 
+#+ Urban_Tree, Urban_Grassland, and Built_Up.
+
+
+
+#+ At this point, I want to do the following:
+#+ - calculate the proportions of Urban_Tree, Urban_Grassland, and Built_Up in 2011 and 2021
+#+ - extrapolate those proportions for years where tree canopy is not available, keeping the total
+#+ sum equal to the area of "Built_Up"
+
+builtUp_byCountyYear <- nlcd_county %>%
+  filter(tcc_available & land_cover_main =="Built_Up") %>% 
+  pivot_wider(names_from = land_cover_type, values_from = area) %>%
+  mutate(Built_Up_Total = Built_Up + Urban_Grassland + Urban_Tree) %>%
+  group_by(county_name, inventory_year) %>%
+  summarize(Urban_Tree_pct = Urban_Tree/Built_Up_Total,
+            Urban_Grassland_pct = Urban_Grassland/Built_Up_Total,
+            Built_Up_pct = Built_Up/Built_Up_Total) %>% 
+  slice(c(1,n()))
+
+
+
+# Rather than hard-code the years where tree canopy data was available,
+# let's use coding logic
+tcc_start_year <- builtUp_byCountyYear %>% ungroup() %>%
+  arrange(inventory_year) %>% 
+  slice(1) %>% pull(inventory_year)
+tcc_end_year <- builtUp_byCountyYear %>% ungroup() %>%
+  arrange(-inventory_year) %>% 
+  slice(1) %>% pull(inventory_year)
+
+
+# Extrapolate area covered by Urban_Tree and Urban_Grassland as a proportion of the 
+# Built_Up area by county (and ctu). First let's extrapolate for the years PRECEDING
+# tree canopy data availability. Next we'll do the years that come after.
+nlcd_county_extrapBefore <- nlcd_county %>%
+  filter(!tcc_available & land_cover_main == "Built_Up" & inventory_year < tcc_start_year) %>%
+  dplyr::select(-c(land_cover_type, total_area, tcc_available)) %>%
+  left_join(builtUp_byCountyYear %>% filter(inventory_year == tcc_start_year) %>% dplyr::select(-inventory_year)) %>%
+  mutate(Urban_Tree = Urban_Tree_pct*area,
+         Urban_Grassland = Urban_Grassland_pct*area,
+         Built_Up = Built_Up_pct*area) %>%
+  dplyr::select(-c(area, ends_with("_pct"))) %>%
+  pivot_longer(cols = c(Urban_Tree, Urban_Grassland, Built_Up), names_to = "land_cover_type", values_to = "area") %>%
+  mutate(tcc_available = FALSE)
+
+# Now let's extrapolate for years after tree canopy is available
+nlcd_county_extrapAfter <- nlcd_county %>%
+  filter(!tcc_available & land_cover_main == "Built_Up" & inventory_year > tcc_end_year) %>%
+  dplyr::select(-c(land_cover_type, total_area, tcc_available)) %>%
+  left_join(builtUp_byCountyYear %>% filter(inventory_year == tcc_end_year) %>% dplyr::select(-inventory_year)) %>%
+  mutate(Urban_Tree = Urban_Tree_pct*area,
+         Urban_Grassland = Urban_Grassland_pct*area,
+         Built_Up = Built_Up_pct*area) %>%
+  dplyr::select(-c(area, ends_with("_pct"))) %>%
+  pivot_longer(cols = c(Urban_Tree, Urban_Grassland, Built_Up), names_to = "land_cover_type", values_to = "area") %>%
+  mutate(tcc_available = FALSE)
+
+
+# Row bind your extrapolated dataset with your original dataset (ensuring no duplicates!)
+nlcd_county_final <- rbind(nlcd_county_extrapBefore, 
+      nlcd_county_extrapAfter,
+      nlcd_county %>% 
+        dplyr::select(-total_area) %>%
+        filter(!tcc_available & land_cover_main != "Built_Up"),
+      nlcd_county %>% 
+        dplyr::select(-total_area) %>%
+        filter(tcc_available)) %>%
+  arrange(inventory_year, county_name, land_cover_main, land_cover_type) %>% 
+  mutate(source = case_when(
+    tcc_available~"nlcd",
+    !tcc_available~"extrapolated"
+  )) %>% ungroup() %>%
+  group_by(county_name, inventory_year) %>%
+  mutate(total_area = sum(area), .after="area")
+  
+## Check figure
+# nlcd_county_final %>%
+#   ggplot() + theme_minimal() +
+#   geom_path(aes(x=inventory_year, y=area, color=land_cover_type)) +
+#   geom_point(data=. %>% filter(source=="extrapolated" & land_cover_main == "Built_Up"), shape=21, fill="white",
+#              mapping=aes(x=inventory_year, y=area, color=land_cover_type), size=1.2) +
+#   geom_point(data=. %>% filter(source=="nlcd" | (source == "extrapolated" & land_cover_main != "Built_Up")), shape=21, 
+#              mapping=aes(x=inventory_year, y=area, color=land_cover_type, fill=land_cover_type), size=1) +
+#   facet_wrap(~county_name)
+
+
+
+# Now do the same for CTU scale
+builtUp_byCTUYear <- nlcd_ctu %>%
+  filter(tcc_available & land_cover_main =="Built_Up") %>% 
+  pivot_wider(names_from = land_cover_type, values_from = area) %>%
+  mutate(Built_Up_Total = Built_Up + Urban_Grassland + Urban_Tree) %>%
+  group_by(ctu_name, ctu_class, county_name, inventory_year) %>%
+  summarize(Urban_Tree_pct = Urban_Tree/Built_Up_Total,
+            Urban_Grassland_pct = Urban_Grassland/Built_Up_Total,
+            Built_Up_pct = Built_Up/Built_Up_Total) %>% 
+  slice(c(1,n()))
+
+# Let's extrapolate for years BEFORE tree canopy is available
+nlcd_ctu_extrapBefore <- nlcd_ctu %>%
+  filter(!tcc_available & land_cover_main == "Built_Up" & inventory_year < tcc_start_year) %>%
+  dplyr::select(-c(land_cover_type, total_area, tcc_available)) %>%
+  left_join(builtUp_byCTUYear %>% filter(inventory_year == tcc_start_year) %>% dplyr::select(-inventory_year)) %>%
+  mutate(Urban_Tree = Urban_Tree_pct*area,
+         Urban_Grassland = Urban_Grassland_pct*area,
+         Built_Up = Built_Up_pct*area) %>%
+  dplyr::select(-c(area, ends_with("_pct"))) %>%
+  pivot_longer(cols = c(Urban_Tree, Urban_Grassland, Built_Up), names_to = "land_cover_type", values_to = "area") %>%
+  mutate(tcc_available = FALSE)
+
+# Now let's extrapolate for years AFTER tree canopy is available
+nlcd_ctu_extrapAfter <- nlcd_ctu %>%
+  filter(!tcc_available & land_cover_main == "Built_Up" & inventory_year > tcc_end_year) %>%
+  dplyr::select(-c(land_cover_type, total_area, tcc_available)) %>%
+  left_join(builtUp_byCTUYear %>% filter(inventory_year == tcc_end_year) %>% dplyr::select(-inventory_year)) %>%
+  mutate(Urban_Tree = Urban_Tree_pct*area,
+         Urban_Grassland = Urban_Grassland_pct*area,
+         Built_Up = Built_Up_pct*area) %>%
+  dplyr::select(-c(area, ends_with("_pct"))) %>%
+  pivot_longer(cols = c(Urban_Tree, Urban_Grassland, Built_Up), names_to = "land_cover_type", values_to = "area") %>%
+  mutate(tcc_available = FALSE)
+
+
+
+nlcd_ctu_final <- rbind(nlcd_ctu_extrapBefore, 
+                           nlcd_ctu_extrapAfter,
+                           nlcd_ctu %>% 
+                             dplyr::select(-total_area) %>%
+                             filter(!tcc_available & land_cover_main != "Built_Up"),
+                           nlcd_ctu %>% 
+                             dplyr::select(-total_area) %>%
+                             filter(tcc_available)) %>%
+  arrange(inventory_year, ctu_name, land_cover_main, land_cover_type) %>% 
+  mutate(source = case_when(
+    tcc_available~"nlcd",
+    !tcc_available~"extrapolated"
+  )) %>% ungroup() %>%
+  group_by(ctu_name, ctu_class, county_name, state_name, inventory_year) %>%
+  mutate(total_area = sum(area), .after="area")
+
+
+
+
+# nlcd_ctu_final %>%
+#   filter(ctu_name == "Roseville") %>%
+#   ggplot() + theme_minimal() +
+#   geom_path(aes(x=inventory_year, y=area, color=land_cover_type)) +
+#   geom_point(data=. %>% filter(source=="extrapolated" & land_cover_main == "Built_Up"), shape=21, fill="white",
+#              mapping=aes(x=inventory_year, y=area, color=land_cover_type), size=1.2) +
+#   geom_point(data=. %>% filter(source=="nlcd" | (source == "extrapolated" & land_cover_main != "Built_Up")), shape=21,
+#              mapping=aes(x=inventory_year, y=area, color=land_cover_type, fill=land_cover_type), size=1) 
+
+
+
 
 
 
@@ -578,32 +715,34 @@ nlcd_county %>%
 nlcd_county_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "county_id", class(nlcd_county$county_id), "County ID (5 digit)",
-    "county_name", class(nlcd_county$county_name), "County name",
-    "state_name", class(nlcd_county$state_name), "State name",
-    "inventory_year", class(nlcd_county$inventory_year), "Year",
-    "land_cover_main", class(nlcd_county$land_cover_main), "Land cover type from National Land Cover Database. This column ignores the 'Urban_' designation of land_cover_type (see below)",
-    "land_cover_type", class(nlcd_county$land_cover_type), "Land cover type from National Land Cover Database. 'Urban_' indicates a natural area within NLCD designated developed land cover",
-    "area", class(nlcd_county$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas",
-    "total_area", class(nlcd_county$total_area), "Sum of area from all cover types in square kilometers (by county)",
-    "tcc_available", class(nlcd_county$tcc_available), "Indicates whether tree canopy data was available for the current year"
+    "county_id", class(nlcd_county_final$county_id), "County ID (5 digit)",
+    "county_name", class(nlcd_county_final$county_name), "County name",
+    "state_name", class(nlcd_county_final$state_name), "State name",
+    "inventory_year", class(nlcd_county_final$inventory_year), "Year",
+    "land_cover_main", class(nlcd_county_final$land_cover_main), "Land cover type from National Land Cover Database. This column ignores the 'Urban_' designation of land_cover_type (see below)",
+    "land_cover_type", class(nlcd_county_final$land_cover_type), "Land cover type from National Land Cover Database. 'Urban_' indicates a natural area within NLCD designated developed land cover",
+    "area", class(nlcd_county_final$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas",
+    "total_area", class(nlcd_county_final$total_area), "Sum of area from all cover types in square kilometers (by county)",
+    "tcc_available", class(nlcd_county_final$tcc_available), "Indicates whether tree canopy data was available for the current year",
+    "source", class(nlcd_county_final$source), "Indicates whether the area of 'Urban_Tree' or 'Urban_Grassland' is extrapolated or pulled directly from an NLCD layer"
   )
 
 nlcd_ctu_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "county_id", class(nlcd_ctu$county_id), "County ID (5 digit)",
-    "ctu_id", class(nlcd_ctu$ctu_id), "CTU ID",
-    "ctu_name", class(nlcd_ctu$ctu_name), "CTU name",
-    "ctu_class", class(nlcd_ctu$county_name), "CTU class",
-    "county_name", class(nlcd_ctu$county_name), "County name",
-    "state_name", class(nlcd_ctu$state_name), "State name",
-    "inventory_year", class(nlcd_ctu$inventory_year), "Year",
-    "land_cover_main", class(nlcd_ctu$land_cover_main), "Land cover type from National Land Cover Database. This column ignores the 'Urban_' designation of land_cover_type (see below)",
-    "land_cover_type", class(nlcd_ctu$land_cover_type), "Land cover type from National Land Cover Database. 'Urban_' indicates a natural area within NLCD designated developed land cover",
-    "area", class(nlcd_ctu$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas",
-    "total_area", class(nlcd_ctu$total_area), "Sum of area from all cover types in square kilometers (by CTU)",
-    "tcc_available", class(nlcd_ctu$tcc_available), "Indicates whether tree canopy data was available for the current year"
+    "county_id", class(nlcd_ctu_final$county_id), "County ID (5 digit)",
+    "ctu_id", class(nlcd_ctu_final$ctu_id), "CTU ID",
+    "ctu_name", class(nlcd_ctu_final$ctu_name), "CTU name",
+    "ctu_class", class(nlcd_ctu_final$county_name), "CTU class",
+    "county_name", class(nlcd_ctu_final$county_name), "County name",
+    "state_name", class(nlcd_ctu_final$state_name), "State name",
+    "inventory_year", class(nlcd_ctu_final$inventory_year), "Year",
+    "land_cover_main", class(nlcd_ctu_final$land_cover_main), "Land cover type from National Land Cover Database. This column ignores the 'Urban_' designation of land_cover_type (see below)",
+    "land_cover_type", class(nlcd_ctu_final$land_cover_type), "Land cover type from National Land Cover Database. 'Urban_' indicates a natural area within NLCD designated developed land cover",
+    "area", class(nlcd_ctu_final$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas",
+    "total_area", class(nlcd_ctu_final$total_area), "Sum of area from all cover types in square kilometers (by CTU)",
+    "tcc_available", class(nlcd_ctu_final$tcc_available), "Indicates whether tree canopy data was available for the current year",
+    "source", class(nlcd_ctu_final$source), "Indicates whether the area of 'Urban_Tree' or 'Urban_Grassland' is extrapolated or pulled directly from an NLCD layer"
   )
 
 
@@ -617,10 +756,10 @@ nlcd_ctu_meta <-
 if (overwrite_RDS) {
   message("Exporting RDS files...")
 
-  saveRDS(nlcd_county, paste0("./_nature/data/nlcd_county_landcover_allyrs.rds"))
+  saveRDS(nlcd_county_final, paste0("./_nature/data/nlcd_county_landcover_allyrs.rds"))
   saveRDS(nlcd_county_meta, paste0("./_nature/data/nlcd_county_landcover_allyrs_meta.rds"))
 
-  saveRDS(nlcd_ctu, paste0("./_nature/data/nlcd_ctu_landcover_allyrs.rds"))
+  saveRDS(nlcd_ctu_final, paste0("./_nature/data/nlcd_ctu_landcover_allyrs.rds"))
   saveRDS(nlcd_ctu_meta, paste0("./_nature/data/nlcd_ctu_landcover_allyrs_meta.rds"))
 }
 
