@@ -221,7 +221,7 @@ Despite a `r scales::percent((transportation_2005 - transportation_2020) / trans
 
 
 fig_transportation_time_series_county <- onroad_county_summary %>%
-  filter(emissions_year <= transportation_max_year) %>% 
+  filter(emissions_year <= transportation_max_year) %>%
   group_by(county_name) %>%
   plot_ly(
     source = "fig-transportation-time-series-county",
@@ -239,8 +239,10 @@ fig_transportation_time_series_county <- onroad_county_summary %>%
     )
   ) %>%
   plotly_layout(
-    main_title = paste0("Transportation emissions, ", transportation_min_year,
-                        " - ", transportation_max_year),
+    main_title = paste0(
+      "Transportation emissions, ", transportation_min_year,
+      " - ", transportation_max_year
+    ),
     subtitle = "",
     x_title = "Year",
     y_title = "Metric tons CO<sub>2</sub>e",
