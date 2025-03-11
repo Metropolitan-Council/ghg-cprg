@@ -70,8 +70,8 @@ df_long <- df_cleaned %>%
     # Assign units as MMBtu
     units = "MMBtu",
     
-    # Assign data source
-    dataSource = "Regional Indicators Initiative"
+    # Cite data source
+    utility = "Regional Indicators Initiative"
   ) %>%
   select(-metric)  # Remove original metric column
 
@@ -82,7 +82,7 @@ mmbtu_to_mcf <- 1 / 1.038  # 0.96339...
 # Ensure all necessary fields are included and properly ordered
 df_final <- df_long %>%
   select(
-    sector, value, units, ctu_name, year, source, dataSource, ctu_class
+    sector, value, units, ctu_name, year, source, utility, ctu_class
   ) %>%
   mutate(
     mwh_delivered = ifelse(source == "Electricity", value * mmbtu_to_mwh, NA_real_),
@@ -128,7 +128,7 @@ minnesota_natGas_rii <- df_final %>%
   mutate(
     mcf_delivered = coalesce(disagg_mcf_delivered, mcf_delivered)
   ) %>%
-  select(1:6, 8:9) # exclude elec and interstitial calculation columns
+  select(1:6, 8:9) #exclude elec and interstitial calculation columns
 
 
 write_rds(minnesota_electricity_rii, here("_energy", "data", "rii_electricity_2007_2023.RDS"))

@@ -109,4 +109,16 @@ centerpoint_activityData_2015_2023 <- df_long %>%
   # exclude cities statutorily not in METC area despite presence in core counties
   filter(!ctu_name %in% c("Northfield", "Hanover", "New Prague", "Cannon Falls", "Rockford")) %>%
   filter(!is.na(sector)) %>%
-  filter(sector != "All")
+  filter(sector != "All") %>%
+  arrange(ctu_name, county_name, sector, year) %>%
+  rename(
+    customer_count = Customers
+  ) %>%
+  mutate(
+    source = "Natural Gas",
+    utility = "CenterPoint",
+    mcf_delivered = coalesce(disagg_mcf_delivered, mcf_delivered)
+    ) %>%
+  select(1:3,5:7,16:17) # exclude interstitial calculation columns
+  
+write_rds(centerpoint_activityData_2015_2023, here("_energy", "data", "centerpoint_activityData_2015_2023.RDS"))
