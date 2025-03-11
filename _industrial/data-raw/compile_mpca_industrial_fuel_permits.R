@@ -179,6 +179,36 @@ mpca_fuel_emissions_co2e <- mpca_fuel_formatted %>%
   ) %>%
   summarize(value_emissions = sum(value_emissions))
 
+
+# remove natural gas doublecounts from gas and co2e data.frames 
+
+# With natural gas, assumption is ALL is utility provided (i.e. doublecount)
+# except petroleum refineries (working to follow up on bigger emitters to check)
+mpca_naics <- mpca_fuel_emissions_co2e %>%
+  filter(
+    sector == "Industrial",
+    fuel_type == "Natural Gas"
+  ) %>% 
+  group_by(naics_description) %>% 
+  summarize(naics_emissions = sum(value_emissions))
+### Largest NG emissions are refineries, then paper mills, then asphalt plants
+
+mpca_doublecount <- mpca_fuel_emissions_co2e %>%
+  filter(
+    naics_description != "Petroleum Refineries",
+    fuel_type == "Natural Gas"
+  )
+
+mpca_fuel_emissions_co2e <- mpca_fuel_emissions_co2e %>%
+  filter(
+    fuel_type != "Natural Gas" | naics_description == "Petroleum Refineries"
+  )
+
+mpca_fuel_emissions_gas <- mpca_fuel_emissions_gas %>% 
+  filter(
+  fuel_type != "Natural Gas" | naics_description == "Petroleum Refineries"
+)
+
 mpca_fuel_emissions_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
@@ -199,5 +229,6 @@ mpca_fuel_emissions_meta <-
 
 saveRDS(mpca_fuel_emissions_gas, "./_industrial/data/mpca_fuel_emissions_by_gas.rds")
 saveRDS(mpca_fuel_emissions_co2e, "./_industrial/data/mpca_fuel_emissions.rds")
+saveRDS(mpca_doublecount, "./_industrial/data/mpca_fuel_emissions_naturalgas_doublecount.rds")
 saveRDS(mpca_fuel_emissions_meta, "./_industrial/data/mpca_fuel_emissions_meta.rds")
 saveRDS(mpca_fuel_emissions_meta, "./_industrial/data/mpca_fuel_emissions_by_gas_meta.rds")
