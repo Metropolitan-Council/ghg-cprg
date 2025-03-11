@@ -119,7 +119,7 @@ format:
       margin-width: 100px
     toc-depth: 3
     number-sections: true
-    # number-depth: 4
+    number-depth: 3
     copyright: "Metropolitan Council"
     fig-responsive: true
     link-external-filter: "metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io"
