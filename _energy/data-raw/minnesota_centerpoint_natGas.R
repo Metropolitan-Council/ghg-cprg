@@ -46,6 +46,7 @@ df_long <- df_raw %>%
     ctu_name = str_to_title(ctu_name), # e.g., BLOOMINGTON --> Bloomington
     mcf_delivered = Energy * mcf_per_therm
   ) %>%
+  #fix issue with City of Nowthen
   select(-Energy)
 
 
@@ -76,13 +77,7 @@ ctu_total_population <- ctu_population %>%
   ungroup()
   
 
-
-# ctu_name 
-# ctu_name, ctu_class, county_name, year 
-
 centerpoint_activityData_2015_2023 <- df_long %>%
-  # Remove records with no or unusable data -- may need to revisit to snag years like 2022 if 2021 or other years of interest are missing
-  filter(!is.na(mcf_delivered)) %>%
   # Join city_total_population back to main dataset
   full_join(ctu_total_population,
             by = c("ctu_name", "year"),
@@ -109,7 +104,6 @@ centerpoint_activityData_2015_2023 <- df_long %>%
   # exclude cities statutorily not in METC area despite presence in core counties
   filter(!ctu_name %in% c("Northfield", "Hanover", "New Prague", "Cannon Falls", "Rockford")) %>%
   filter(!is.na(sector)) %>%
-  filter(sector != "All") %>%
   arrange(ctu_name, county_name, sector, year) %>%
   rename(
     customer_count = Customers
