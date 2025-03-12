@@ -37,15 +37,47 @@ ghgrp <- lapply(as.character(2011:2023), function(y) {
 
 ### split out emissions by gas type
 ghgrp_gas <- ghgrp %>%
-  select(1:26) %>%
+  select(1:26,66) %>%
   pivot_longer(
     cols = 14:26,
     names_to = "gas_type",
     values_to = "value_emissions"
   ) %>%
-  filter(!is.na(value_emissions))
+  filter(!is.na(value_emissions)) %>% 
+  mutate(gas_type = str_replace_all(gas_type, "_emissions",""))
 # not doing anything with this for now as it can't clearly be broken down by source
 # potentially interesting for later
+# March 2025 update: Going to recover gas emissions from process emissions here (refineries, other)
+# Gas emissions from fuel combustion are recovered in 'compile_fuel_combustion.R'
+
+tapply(ghgrp_gas$value_emissions,ghgrp_gas$gas_type, sum)
+# look at names of fluorinated gas emitters
+fc_emitters <- ghgrp_gas %>% filter(gas_type %in% c("nf3", "hfc", "pfc", "sf6", "other_fully_fluorinated_ghg")) %>% 
+  select(inventory_year,
+         facility_id,
+         facility_name,
+         primary_naics_code,
+         industry_type_sectors, 
+         city_name = city,
+         county_name = county,
+         value_emissions,
+         gas_type
+  ) %>% 
+  mutate(unit_emisisons = "Metric tons CO2e",
+         county_name = str_to_title(county_name),
+         city_name = str_to_title(city_name))
+fc_emitters %>% distinct(facility_name)
+# 7 total, 3m and superconductor manufacturers
+
+# look at methane and n2o
+ghgrp_gas %>% filter(gas_type %in% c("methane_ch4", "nitrous_oxide_n2o"),
+                     value_emissions > 5000) %>% 
+  distinct(facility_name)
+# large emitters are powerplants and landfills.
+
+# saving fluorinated gas data
+
+saveRDS(fc_emitters, "./_industrial/data/fluorinated_gas_emissions.rds")
 
 ### split out by emissions source (mt co2e)
 ghgrp_source <- ghgrp %>%
