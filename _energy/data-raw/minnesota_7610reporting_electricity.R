@@ -196,9 +196,26 @@ MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
     sector = "Electricity"
   )
 
+distinct_electricity_util_type_MN <- readRDS(here("_energy", "data", "distinct_electricity_util_type_MN.RDS"))
+
+
+# parcel out municipal utility reporting to be leveraged in city-level reporting/analysis
+muni_activity_separated <- processed_mn_elecUtil_activityData %>%
+  right_join(distinct_electricity_util_type_MN %>% filter(utility_type == "Municipal"),
+             by = join_by(utility == mpuc_name)) %>%
+  # remove out of scope utilities
+  filter(!utility %in% c("Delano Municipal Utilities,", "Elk River Municipal Utilities")) %>%
+  select(1:3, 5) %>%
+  mutate(
+    sector = "All",
+    source = "Electricity"
+  )
+
+  
 
 write_rds(processed_mn_elecUtil_activityData, here("_energy", "data", "minnesota_elecUtils_ActivityAndEmissions.RDS"))
 write_rds(MNcounty_level_electricity_emissions, here("_energy", "data", "minnesota_county_elec_ActivityAndEmissions.RDS"))
+write_rds(muni_activity_separated, here("_energy", "data", "minnesota_municipalElectric_activity_2013_2023.RDS"))
 
 
 # OUT OF DATE -- written for just 2021
