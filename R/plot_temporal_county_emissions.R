@@ -3,7 +3,7 @@ source("R/_load_pkgs.R")
 
 
 ### directory to save ggplot items in
-wd <- "C:/Users/WilfahPA/OneDrive - Metropolitan Council/CPRG/Climate summit graphics/"
+wd <- "C:/Users/WilfahPA/OneDrive - Metropolitan Council/CPRG/story session graphics/"
 
 ### county graphs
 
@@ -141,6 +141,12 @@ baseline_comparison_facet_spanish <- ggplot(
 
 
 baseline_comparison_facet_spanish
+
+ggsave(paste0(wd,"ghg_sector_2021_spanish.png"),
+       baseline_comparison_facet_spanish,
+       width = 12,
+       height = 8,
+       units = "in")
 
 emissions_sector <- county_emissions %>%
   mutate(category = case_when(
