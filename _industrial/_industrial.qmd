@@ -34,8 +34,10 @@ emissions_2021 <- county_emissions %>%
   filter(emissions_year == 2021) %>%
   pull(value_emissions) %>%
   sum()
-ind_emissions_2021 <- county_emissions %>%
-  filter(emissions_year == 2021, sector == "Industrial") %>%
+
+## not going to include electricity here
+ind_emissions_2021 <- baseline_emissions %>%
+  filter(inventory_year == 2021, sector == "Industrial") %>%
   pull(value_emissions) %>%
   sum()
 refinery_emissions_2021 <- ghgrp_emissions %>%
@@ -43,13 +45,13 @@ refinery_emissions_2021 <- ghgrp_emissions %>%
   pull(value_emissions) %>%
   sum()
 
-ind_emissions_2011 <- county_emissions %>%
-  filter(emissions_year == 2011, sector == "Industrial") %>%
+ind_emissions_2011 <- baseline_emissions %>%
+  filter(inventory_year == 2011, sector == "Industrial") %>%
   pull(value_emissions) %>%
   sum()
 
-ind_emissions_2005 <- county_emissions %>%
-  filter(emissions_year == 2005, sector == "Industrial") %>%
+ind_emissions_2005 <- baseline_emissions %>%
+  filter(inventory_year == 2005, sector == "Industrial") %>%
   pull(value_emissions) %>%
   sum()
 
@@ -86,13 +88,13 @@ nei_small <- left_join(
 ```
 
 ## Introduction
-Industrial facilities are major emitters stemming from high electricity demand, on-site fuel combustion, and industrial processes. The data presented here are aggregations of industrial point source reporting to state and federal agencies. Care must be taken to avoid double-counting in this sector, as industry includes emissions from power plants, waste facilities, and natural gas combustion that can be counted in other sectors. Natural gas combustion is the most difficult class to account for, as natural gas is delivered both within and without the services of utilities. Additionally, smaller emitters are not required to report to state and federal agencies, meaning a small but potentially significant slice of industrial emissions may be missing.
+Industrial facilities are major emitters stemming from high electricity demand, on-site fuel combustion, and industrial processes. The data presented here are aggregations of industrial point source reporting to state and federal agencies. Care must be taken to avoid double-counting in this sector, as industry includes emissions from power plants, waste facilities, and natural gas combustion that can be counted in other sectors. Natural gas combustion is the most difficult class to account for, as natural gas is delivered both within and without the services of utilities. Our analysis assumes (and thus omits) all natural gas combustion reported to EPA and MPCA are utility sourced except for the two refineries in boundary, which appear to have direct natural gas pipeline access. Smaller emitters are not required to report to state and federal agencies, meaning a small but potentially significant slice of industrial emissions may be missing, though any natural gas combustion is likely to be included in our utility demand analysis.
 
 ## Results
 
 ### 2021 county and subsector breakdown
 
-Industry accounted for `r 100*round(ind_emissions_2021/emissions_2021, digits = 3)`% of total emissions in the 11-county region in 2021. County emissions vary widely and seemingly randomly due to the point source approach of industrial emissions, as opposed to the demand-side approach of electricity, residential building fuel, waste, and functionally on-road transportation. The largest example is that two oil refineries in Dakota County account for `r 100*round(refinery_emissions_2021/ind_emissions_2021, digits = 3)`% of industrial emissions in 2021.
+Industrial point-source emissions (i.e. excluding electricity usage and utility provided natural gas) accounted for `r 100*round(ind_emissions_2021/emissions_2021, digits = 3)`% of total emissions in the 11-county region in 2021. County emissions vary widely due to the point source approach of industrial emissions, as opposed to the demand-side approach of electricity, residential building fuel, waste, and functionally on-road transportation. The largest example is that two in-boundary oil refineries account for `r 100*round(refinery_emissions_2021/ind_emissions_2021, digits = 3)`% of point-source industrial emissions in 2021.
 
 ```{r fig-ind-county-emissions}
 #| fig-cap: "2021 county industrial emissions"
@@ -104,12 +106,12 @@ Industry accounted for `r 100*round(ind_emissions_2021/emissions_2021, digits = 
 fig_ind_county_emissions <- plot_ly(
   type = "bar",
   source = "fig-ind-county-emissions",
-  data = county_emissions %>%
+  data = baseline_emissions %>%
     filter(
       sector == "Industrial",
-      emissions_year == 2021
+      inventory_year == 2021
     ) %>%
-    mutate(category = if_else(category == "Building Fuel", "Industrial natural gas", category)),
+    mutate(category = if_else(category == "Stationary combustion", "Industrial fuel combustion", category)),
   y = ~ reorder(county_name, value_emissions),
   x = ~value_emissions,
   color = ~category,
@@ -153,15 +155,15 @@ Regional industrial emissions have increased by `r 100*round((ind_emissions_2021
 
 fig_ind_baseline <- plot_ly(
   source = "fig-ind-baseline-emissions",
-  data = county_emissions %>%
+  data = baseline_emissions %>%
     filter(
       sector == "Industrial",
-      emissions_year <= 2022
+      inventory_year <= 2022
     ) %>%
-    mutate(category = if_else(category == "Building Fuel", "Industrial natural gas", category)) %>%
-    group_by(emissions_year, category) %>%
+    mutate(category = if_else(category == "Stationary combustion", "Industrial fuel combustion", category)) %>%
+    group_by(inventory_year, category) %>%
     summarise(value_emissions = sum(value_emissions)),
-  x = ~emissions_year,
+  x = ~inventory_year,
   y = ~value_emissions,
   color = ~category, #
   colors = unlist(category_colors), # Directly map the colors to categories
