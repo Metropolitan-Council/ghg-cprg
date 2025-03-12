@@ -100,4 +100,10 @@ connexus_activityData_2014_2023 <- connexus_activityData_2014_2023 %>%
   filter(county_name %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington")) %>%
   # exclude non-METC cities in metro
   filter(!ctu_name %in% c("Northfield", "Hanover", "New Prague", "Cannon Falls", "Rockford")) %>%
-  select(1:7)
+  mutate(
+    source = "Electricity",
+    utility = "Connexus Energy"
+  ) %>%
+  select(1:7, 13:14)
+  
+write_rds(connexus_activityData_2014_2023, here("_energy", "data", "connexus_activityData_2014_2023.RDS"))
