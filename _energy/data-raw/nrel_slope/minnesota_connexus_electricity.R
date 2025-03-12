@@ -1,7 +1,5 @@
-# Process Connexus Community Reports data
+# Process Connexus data
 source("R/_load_pkgs.R")
-source("_energy/data-raw/_energy_emissions_factors.R")
-
 
 # Read city data
 city_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connexus_County_City_Township_Consumption_2014_2024.xlsx"),
@@ -13,7 +11,7 @@ city_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connex
   rename(
     sector = Class,
     customer_count = Premises,
-    mWh_delivered = Consumption,
+    mwh_delivered = Consumption,
     year = Year
   ) %>%
   select(
@@ -30,14 +28,21 @@ township_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Co
   rename(
     sector = Class,
     customer_count = Premises,
-    mWh_delivered = Consumption,
+    mwh_delivered = Consumption,
     year = Year
   ) %>%
   select(
     -Township
   )
 
-connexus_activityData_2014_2024 <- rbind(city_raw, township_raw)
+city_township_connexus <- rbind(city_raw, township_raw)
+  
+connexus_activityData_2014_2024 <- city_township_connexus %>%
+  mutate(
+    mwh_delivered = case_when(
+      mwh_delivered == "REDACTED" ~ NA_character_,
+      TRUE ~ mwh_delivered)
+  )
 
 
 # ctu and county reference, incl. population -- necessary for disaggregation to COCTU
