@@ -45,7 +45,7 @@ get_files <- function(root_dir) {
   return(file_info)
 }
 
-# function to process the file associatedf with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
+# function to process the file associated with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
 process_file <- function(file_info) {
   # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
   file_path <- file_info$file_path
@@ -78,7 +78,7 @@ process_file <- function(file_info) {
   return(combined_data)
 }
 
-
+# function designed to extract "electricity by class" (read: sector) for municipal utilities to derive additional city-sector level observations for modeling
 process_municipal_elecByClass <- function(file_info) {
   # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
   file_path <- file_info$file_path
@@ -98,18 +98,23 @@ process_municipal_elecByClass <- function(file_info) {
   return(data_A_C)
 }
 
+
 # Apply process_file to each file identified in get_files() in the nested structure and combine the results
 file_list <- get_files(dir_mn_electricity_state)
 combined_MNelectUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
 
-#identify subset of files attached to municipal utilities, then create a table with elec by class for each utility-year
+
+#identify subset of files attached to municipal utilities, then create a table with elec by class for each utility-year and export it 
 MN_elecMunis <- readRDS(here("_energy", "data", "distinct_electricity_util_type_MN.RDS")) %>% 
   filter(utility_type == "Municipal")
 muni_files <- keep(file_list, ~ .x$utility_name %in% unique(MN_elecMunis$mpuc_name))
 combined_MNelecMunis_elecByClass <- do.call(rbind, lapply(muni_files, process_municipal_elecByClass))
 
+# raw 7610 data for elec is processed and enriched with city level geo data in muniElectrics_7610_elecByClass_2013_2023.R
+write_rds(combined_MNelecMunis_elecByClass, here("_energy", "data", "combined_MNelecMunis_elecByClass_raw7610.RDS"))
 
-# manual data collection to fill in gaps for 2021 as needed
+
+# manual data collection to fill in gaps for 2021 as needed -- need to check if 2022 is available
 
 # Elk River -- 341,047.71 mWh delivered to customers in 2021, all goes to Sherburne county (marginal amounts to Hennepin in other years)
 # source: pg 54 https://www.ermumn.com/application/files/3316/5668/9846/2021_Annual_Financial_Report.pdf
@@ -123,8 +128,6 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
     utility = "Elk River Municipal Utilities",
     year = 2021
   )
-
-
 
 # New Prague Utilities -- 69,291.725 mWh delivered to customers in 2021,
 # source: pg 18 https://www.ci.new-prague.mn.us/vertical/sites/%7BAD7ECB62-2C5E-4BA0-8F19-1426026AFA3E%7D/uploads/01-24-2022_Utilities_Commission_Meeting_Packet.pdf
@@ -148,11 +151,8 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
     year = 2020
   )
 
-# Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county,
-# process and merge data -- this will be a separate data collection process spanning excel reports submitted to state
 
 ## interpolate missing county-utility combinations
-
 full_grid <- expand.grid(
   year = 2013:2023,
   county = unique(combined_MNelectUtil_activityData$county),
@@ -221,7 +221,7 @@ MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
   )
 
 
-# parcel out municipal utility reporting to be leveraged in city-level reporting/analysis
+# parcel out municipal utility reporting to be leveraged as QA against the sector-level numbers pulled separately
 muni_activity_separated <- processed_mn_elecUtil_activityData %>%
   right_join(MN_elecMunis,
              by = join_by(utility == mpuc_name)) %>%
@@ -233,11 +233,10 @@ muni_activity_separated <- processed_mn_elecUtil_activityData %>%
     source = "Electricity"
   )
 
-  
 
 write_rds(processed_mn_elecUtil_activityData, here("_energy", "data", "minnesota_elecUtils_ActivityAndEmissions.RDS"))
 write_rds(MNcounty_level_electricity_emissions, here("_energy", "data", "minnesota_county_elec_ActivityAndEmissions.RDS"))
-write_rds(muni_activity_separated, here("_energy", "data", "minnesota_municipalElectric_activity_2013_2023.RDS"))
+write_rds(muni_activity_separated, here("_energy", "data-raw", "minnesota_municipalElectric_activity_2013_2023_QA.RDS"))
 
 
 # OUT OF DATE -- written for just 2021
