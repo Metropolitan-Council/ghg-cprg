@@ -6,16 +6,20 @@ city_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connex
                     sheet = "City") %>%
   mutate(
     ctu_name = str_to_title(City),
-    ctu_class = "CITY"
+    ctu_class = "CITY",
+    mwh_delivered = case_when(
+      Consumption == "REDACTED" ~ NA_real_, 
+      grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption),  # checks if only numeric values are present
+      TRUE ~ NA_real_  
+    )
   ) %>%
   rename(
     sector = Class,
     customer_count = Premises,
-    mwh_delivered = Consumption,
     year = Year
   ) %>%
   select(
-    -City
+    -City, -Consumption
   )
 
 # Read township data
@@ -23,33 +27,44 @@ township_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Co
                       sheet = "Township") %>%
   mutate(
     ctu_name = str_to_title(Township),
-    ctu_class = "TOWNSHIP"
+    ctu_class = "TOWNSHIP",
+    mwh_delivered = case_when(
+      Consumption == "REDACTED" ~ NA_real_, 
+      grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption), # checks if only numeric values are present
+      TRUE ~ NA_real_ 
+    )
   ) %>%
   rename(
     sector = Class,
     customer_count = Premises,
-    mwh_delivered = Consumption,
     year = Year
   ) %>%
   select(
-    -Township
+    -Township,
+    -Consumption
+  ) %>%
+  mutate(
+    ctu_name = case_when(
+      grepl(" Twp$", ctu_name) ~ sub(" Twp$", "", ctu_name)
+    )
   )
 
 city_township_connexus <- rbind(city_raw, township_raw)
   
-connexus_activityData_2014_2024 <- city_township_connexus %>%
+connexus_activityData_2014_2023 <- city_township_connexus %>%
   mutate(
     mwh_delivered = case_when(
-      mwh_delivered == "REDACTED" ~ NA_character_,
+      mwh_delivered == "REDACTED" ~ as.numeric(NA),
       TRUE ~ mwh_delivered)
-  )
+  ) %>%
+  filter(year != 2024)
 
 
 # ctu and county reference, incl. population -- necessary for disaggregation to COCTU
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
-  filter(inventory_year > 2014) %>%
+  filter(inventory_year > 2013 & inventory_year != 2024) %>%
   left_join(cprg_county %>% select(geoid, county_name, state_abb), by = "geoid") %>%
   filter(state_abb == "MN") %>%
   rename(year = inventory_year)
@@ -65,31 +80,24 @@ city_total_population <- ctu_population %>%
   ungroup()
 
 
-centerpoint_activityData_2015_2023 <- df_long %>%
-  # Remove records with no or unusable data -- may need to revisit to snag years like 2022 if 2021 or other years of interest are missing
-  filter(!is.na(mcf_delivered)) %>%
+connexus_activityData_2014_2023 <- connexus_activityData_2014_2023 %>%
   # Join city_total_population back to main dataset
   full_join(city_total_population,
-            by = c("ctu_name", "year"),
+            by = c("ctu_name", "ctu_class", "year"),
             relationship = "many-to-many"
   ) %>%
   # Calculate proportions and disaggregated values
   group_by(ctu_name, ctu_class, year, county_name) %>%
   mutate(
-    ctu_population_proportion = ctu_population / total_ctu_population, # Calculate proportions
-    disagg_util_reported_customers = ifelse(
+    ctu_population_proportion = ctu_population / total_ctu_population,
+    disagg_mwh_delivered = ifelse(
       multi_county,
-      Customers * ctu_population_proportion,
-      NA
-    ),
-    disagg_mcf_delivered = ifelse(
-      multi_county,
-      mcf_delivered * ctu_population_proportion,
-      NA
-    )
-  ) %>%
+      mwh_delivered * ctu_population_proportion,
+      NA)
+    ) %>%
   ungroup() %>%
   # Filter to core metro counties while keeping `county_name` intact
   filter(county_name %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington")) %>%
-  filter(!is.na(sector)) %>%
-  filter(sector != "All")
+  # exclude non-METC cities in metro
+  filter(!ctu_name %in% c("Northfield", "Hanover", "New Prague", "Cannon Falls", "Rockford")) %>%
+  select(1:7)
