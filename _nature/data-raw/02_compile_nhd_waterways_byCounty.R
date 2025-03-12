@@ -285,7 +285,7 @@ nhd_county <- NHDArea_byCounty %>%
   relocate(any_of(colnames(cprg_county)), waterway_type, area) %>%
   # use crossing() to create a simulated time series of area change between 2001 and 2021
   # in reality this just duplicates each row in the dataframe for every year in the sequence
-  crossing(inventory_year = seq(2001, 2021, by = 1)) %>%
+  crossing(inventory_year = seq(2001, 2022, by = 1)) %>%
   dplyr::select(c("county_name", "state_name", "inventory_year", "waterway_type", "area")) %>%
   arrange(inventory_year, county_name, waterway_type)
 

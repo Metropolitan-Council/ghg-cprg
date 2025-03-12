@@ -240,7 +240,7 @@ nhd_ctu <- NHD_byCTU %>%
   relocate(any_of(colnames(cprg_ctu)), waterway_type, area) %>%
   # use crossing() to create a simulated time series of area change between 2001 and 2021
   # in reality this just duplicates each row in the dataframe for every year in the sequence
-  crossing(inventory_year = seq(2001, 2021, by = 1)) %>%
+  crossing(inventory_year = seq(2001, 2022, by = 1)) %>%
   dplyr::select(c("ctu_name", "ctu_class", "county_name", "state_name", "inventory_year", "waterway_type", "area")) %>%
   arrange(inventory_year, ctu_name, waterway_type)
 
