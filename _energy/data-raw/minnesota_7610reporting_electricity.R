@@ -78,6 +78,26 @@ process_file <- function(file_info) {
   return(combined_data)
 }
 
+
+process_municipal_elecByClass <- function(file_info) {
+  # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
+  file_path <- file_info$file_path
+  utility_name <- file_info$utility_name
+  year <- file_info$year
+  
+  # Read specific ranges from each file
+  data_A_C <- read_excel(file_path, sheet = "ElectricityByClass", range = "A10:C16")
+  
+  # Rename columns
+  colnames(data_A_C) <- c("sector", "customer_count", "mwh_delivered")
+  
+  # Add utility name and year columns
+  combined_data$utility <- utility_name
+  combined_data$year <- as.numeric(year) # Ensure year is numeric if needed
+  
+  return(combined_data)
+}
+
 # Apply process_file to each file identified in get_files() in the nested structure and combine the results
 file_list <- get_files(dir_mn_electricity_state)
 combined_MNelectUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
