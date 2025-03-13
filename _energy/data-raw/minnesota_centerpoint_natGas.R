@@ -47,6 +47,12 @@ df_long <- df_raw %>%
     mcf_delivered = Energy * mcf_per_therm
   ) %>%
   #fix issue with City of Nowthen
+  mutate(
+    ctu_name = case_when(
+      str_trim(str_to_lower(ctu_name)) == "city of nowthen" ~ "Nowthen",
+      TRUE ~ ctu_name
+    )
+  ) %>%
   select(-Energy)
 
 
