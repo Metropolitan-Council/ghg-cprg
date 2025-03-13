@@ -7,6 +7,7 @@ city_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connex
   mutate(
     ctu_name = str_to_title(City),
     ctu_class = "CITY",
+    mwh_delivered = case_when(
       Consumption == "REDACTED" ~ NA_real_, 
       grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption),  # checks if only numeric values are present
       TRUE ~ NA_real_  
