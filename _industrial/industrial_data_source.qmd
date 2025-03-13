@@ -145,8 +145,10 @@ Currently, GHGRP and MPCA data can be reliably used to avoid double-counting by 
 #| fig-cap: "Comparison of industrial combustion emissions from FLIGHT and subpart C analysis"
 #| out-width: "95%"
 
-subpart_c_total <- bind_rows(subpart_c_emissions,
-                             ng_doublecount)
+subpart_c_total <- bind_rows(
+  subpart_c_emissions,
+  ng_doublecount
+)
 
 subpart_c <- flight_emissions %>%
   filter(subparts == "C") %>%
@@ -214,28 +216,30 @@ Given overall compliance between our subpart C analysis and EPA reporting, natur
 #| fig-cap: "Comparison of natural gas combustion data"
 #| out-width: "95%"
 
-#load ghgrp and mpca double counts
+# load ghgrp and mpca double counts
 natural_gas_dc_2021 <- ng_doublecount %>%
   filter(
     reporting_year == 2021
   ) %>%
-  ungroup() %>% 
-  select(county_name, value_emissions = values_emissions) %>% 
-    bind_rows(mpca_doublecount %>% 
-              filter(inventory_year == 2021) %>% 
-                ungroup() %>% 
-                select(county_name, value_emissions)) %>% 
+  ungroup() %>%
+  select(county_name, value_emissions = values_emissions) %>%
+  bind_rows(mpca_doublecount %>%
+    filter(inventory_year == 2021) %>%
+    ungroup() %>%
+    select(county_name, value_emissions)) %>%
   group_by(
     county_name
   ) %>%
-  summarize(value_emissions = sum(value_emissions)) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>%
   mutate(data_source = "GHGRP & MPCA - Natural Gas Doublecount")
 
-refinery_ng <- subpart_c_emissions %>% 
-  filter(reporting_year == 2021,
-         general_fuel_type == "Natural Gas") %>% 
-  group_by(county_name) %>% 
-  summarize(value_emissions = sum(values_emissions)) %>% 
+refinery_ng <- subpart_c_emissions %>%
+  filter(
+    reporting_year == 2021,
+    general_fuel_type == "Natural Gas"
+  ) %>%
+  group_by(county_name) %>%
+  summarize(value_emissions = sum(values_emissions)) %>%
   mutate(data_source = "GHGRP - Refinery natural gas")
 
 natural_gas_comp <- bind_rows(

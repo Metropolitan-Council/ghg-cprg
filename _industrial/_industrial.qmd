@@ -14,7 +14,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
-source(file.path(here::here(),"R/global_warming_potential.R"))
+source(file.path(here::here(), "R/global_warming_potential.R"))
 
 hookaddcap()
 
@@ -27,11 +27,13 @@ nei_emissions <- readRDS(file.path(here::here(), "_industrial/data/nei_county_in
 subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))
 mpca_emissions <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions.RDS"))
 
-fg_emissions <- readRDS(file.path(here::here(), 
-                                  "_industrial/data/fluorinated_gas_emissions.RDS"))
-  
+fg_emissions <- readRDS(file.path(
+  here::here(),
+  "_industrial/data/fluorinated_gas_emissions.RDS"
+))
+
 fuel_emissions_by_gas <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions_by_gas.RDS"))
-mpca_emissions_by_gas <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions_by_gas.RDS")) %>% 
+mpca_emissions_by_gas <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions_by_gas.RDS")) %>%
   filter(sector == "Industrial")
 
 # calculate some useful summary numbers
@@ -218,37 +220,43 @@ Industrial emissions are varied, including carbon dioxide, methane, nitrous oxid
 #| fig-cap: "2021 county agricultural emissions by gas type"
 #| out-width: "95%"
 
-fg_emissions_2021 <- fg_emissions %>% 
-  filter(inventory_year == 2021) %>% 
-  mutate(county_name = str_replace_all(county_name, " County", ""),
-         gas_type = str_to_upper(gas_type)) %>% 
-  group_by(county_name,gas_type) %>% 
-  summarize(mt_co2e = sum(value_emissions)) 
+fg_emissions_2021 <- fg_emissions %>%
+  filter(inventory_year == 2021) %>%
+  mutate(
+    county_name = str_replace_all(county_name, " County", ""),
+    gas_type = str_to_upper(gas_type)
+  ) %>%
+  group_by(county_name, gas_type) %>%
+  summarize(mt_co2e = sum(value_emissions))
 
-mpca_gas_emissions_2021 <- mpca_emissions_by_gas %>% 
-  filter(inventory_year == 2021,
-         !ctu_name %in% unique(fuel_emissions_by_gas$city_name)) %>% 
+mpca_gas_emissions_2021 <- mpca_emissions_by_gas %>%
+  filter(
+    inventory_year == 2021,
+    !ctu_name %in% unique(fuel_emissions_by_gas$city_name)
+  ) %>%
   mutate(mt_co2e = case_when(
     grepl("CH4", unit_emissions) ~ value_emissions * gwp$ch4,
     grepl("N2O", unit_emissions) ~ value_emissions * gwp$n2o,
     grepl("CO2", unit_emissions) ~ value_emissions
-  )) %>% 
-  group_by(county_name,unit_emissions) %>% 
-  summarize(mt_co2e = sum(mt_co2e)) %>% 
-  rename(gas_type = unit_emissions) %>% 
+  )) %>%
+  group_by(county_name, unit_emissions) %>%
+  summarize(mt_co2e = sum(mt_co2e)) %>%
+  rename(gas_type = unit_emissions) %>%
   mutate(gas_type = str_replace_all(gas_type, "Metric tons ", ""))
 
-fuel_gas_emissions_2021 <- fuel_emissions_by_gas %>% 
-  filter(reporting_year == 2021,
-         units_emissions != "avg_activity") %>% 
+fuel_gas_emissions_2021 <- fuel_emissions_by_gas %>%
+  filter(
+    reporting_year == 2021,
+    units_emissions != "avg_activity"
+  ) %>%
   mutate(mt_co2e = case_when(
     grepl("ch4", units_emissions) ~ values_emissions * gwp$ch4,
     grepl("n2o", units_emissions) ~ values_emissions * gwp$n2o,
     grepl("co2", units_emissions) ~ values_emissions
-  )) %>% 
-  group_by(county_name,units_emissions) %>% 
-  summarize(mt_co2e = sum(mt_co2e)) %>% 
-  rename(gas_type = units_emissions) %>% 
+  )) %>%
+  group_by(county_name, units_emissions) %>%
+  summarize(mt_co2e = sum(mt_co2e)) %>%
+  rename(gas_type = units_emissions) %>%
   mutate(gas_type = str_to_upper(str_replace_all(gas_type, "mt_", "")))
 
 emissions_by_gas_2021 <- bind_rows(

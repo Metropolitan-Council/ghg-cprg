@@ -13,20 +13,24 @@ mpca_subsector_projections <- readRDS(file.path(here::here(), "_meta/data/gcam/m
 
 ### hold for processing imagine 2050 forecasts
 
-imagine <- read_xlsx(file.path(here::here(), "_meta/data-raw/imagine_2050_forecasts.xlsx"), skip = 3) %>% 
+imagine <- read_xlsx(file.path(here::here(), "_meta/data-raw/imagine_2050_forecasts.xlsx"), skip = 3) %>%
   clean_names()
 
 ## bring in households for residential growth and jobs for commercial/industrial?
-pop_trends <- imagine[1:201,1:8] %>% 
-  pivot_longer(cols = contains("population"),
-               values_to = "population",
-               names_to = "projection_year") %>% 
-  mutate(projection_year = as.numeric(str_extract(projection_year, "\\d+"))) %>% 
-  #just keep counties and regional totals for now
-  filter(grepl("County", city_or_township) | grepl("region", city_or_township)) %>% 
+pop_trends <- imagine[1:201, 1:8] %>%
+  pivot_longer(
+    cols = contains("population"),
+    values_to = "population",
+    names_to = "projection_year"
+  ) %>%
+  mutate(projection_year = as.numeric(str_extract(projection_year, "\\d+"))) %>%
+  # just keep counties and regional totals for now
+  filter(grepl("County", city_or_township) | grepl("region", city_or_township)) %>%
   group_by(county) %>%
-  mutate(pop_2020 = population[projection_year == 2020],
-         pop_percent_2020 = (population / pop_2020)) %>% 
+  mutate(
+    pop_2020 = population[projection_year == 2020],
+    pop_percent_2020 = (population / pop_2020)
+  ) %>%
   ungroup()
 
 # 2020/2021 emissions/sequestration state/metro comparison
@@ -109,32 +113,38 @@ population_sectors <- c("Electricity", "Residential", "Commercial", "Industry", 
 population_projections <- expand.grid(
   emissions_year = as.numeric(c(2020, unique(mpca_subsector_projections_use$emissions_year))),
   sector = unique(mpca_subsector_projections$sector)
-) %>% 
-  left_join(pop_trends %>% 
-              filter(county == "Region") %>% 
-              select(projection_year, pop_percent_2020),
-              by = c("emissions_year" = "projection_year")) %>% 
-  mutate(pop_percent_2020 = approx(emissions_year, pop_percent_2020, emissions_year, rule = 2)$y,
-         pop_percent_2020 = if_else(sector %in% population_sectors, pop_percent_2020, 1)) %>% 
-  left_join(mpca_subsector_projections %>% 
-              distinct(sector, subsector_mc)) %>% 
+) %>%
+  left_join(
+    pop_trends %>%
+      filter(county == "Region") %>%
+      select(projection_year, pop_percent_2020),
+    by = c("emissions_year" = "projection_year")
+  ) %>%
+  mutate(
+    pop_percent_2020 = approx(emissions_year, pop_percent_2020, emissions_year, rule = 2)$y,
+    pop_percent_2020 = if_else(sector %in% population_sectors, pop_percent_2020, 1)
+  ) %>%
+  left_join(mpca_subsector_projections %>%
+    distinct(sector, subsector_mc)) %>%
   filter(
     emissions_year >= 2025,
     # source_sink == "Emission",
     !grepl("not_inventoried", subsector_mc)
-  ) %>% 
-  select(emissions_year, subsector_mc, proportion_of_2020 = pop_percent_2020) %>% 
+  ) %>%
+  select(emissions_year, subsector_mc, proportion_of_2020 = pop_percent_2020) %>%
   mutate(scenario = "Business as usual")
 
-mpca_subsector_projections_use <- bind_rows(mpca_subsector_projections_use %>% 
-                                              mutate(emissions_year = as.numeric(emissions_year)),
-                                            population_projections)
+mpca_subsector_projections_use <- bind_rows(
+  mpca_subsector_projections_use %>%
+    mutate(emissions_year = as.numeric(emissions_year)),
+  population_projections
+)
 
 subsector_projections <- county_emissions %>%
   filter(
     emissions_year == 2021
   ) %>%
-  select(-emissions_year) %>% 
+  select(-emissions_year) %>%
   left_join(., mpca_subsector_projections_use,
     by = "subsector_mc"
   ) %>%
@@ -190,14 +200,14 @@ save_path <- ""
 
 # Create the plots
 
-#Business as usual
+# Business as usual
 bau <- ggplot(subsector_inventory_projections %>%
-         filter(scenario %in% c("Inventory", "Business as usual")), aes(
-           x = emissions_year,
-           y = value_emissions / 10^6,
-           fill = sector, # Fill by sector to create stack groups
-           group = sector # Ensure stacking is by sector
-         )) +
+  filter(scenario %in% c("Inventory", "Business as usual")), aes(
+  x = emissions_year,
+  y = value_emissions / 10^6,
+  fill = sector, # Fill by sector to create stack groups
+  group = sector # Ensure stacking is by sector
+)) +
   geom_area(position = "stack", alpha = 0.8) + # Stacked area chart
   labs(
     title = "Business As Usual", # Main title
@@ -217,8 +227,9 @@ bau <- ggplot(subsector_inventory_projections %>%
   )
 
 ggsave(paste0(save_path, "regional_bau.tiff"),
-       width = 5, height = 6,
-       bau, dpi = 300)
+  width = 5, height = 6,
+  bau, dpi = 300
+)
 
 # Current policies
 cp <- ggplot(subsector_inventory_projections %>%
@@ -247,8 +258,9 @@ cp <- ggplot(subsector_inventory_projections %>%
   )
 
 ggsave(paste0(save_path, "regional_cp.tiff"),
-       width = 5, height = 6,
-       cp, dpi = 300)
+  width = 5, height = 6,
+  cp, dpi = 300
+)
 
 # Net zero
 nz <- ggplot(subsector_inventory_projections %>%
@@ -277,29 +289,35 @@ nz <- ggplot(subsector_inventory_projections %>%
   )
 
 ggsave(paste0(save_path, "regional_net_zero.tiff"),
-       width = 6.6, height = 6,
-       nz, dpi = 300)
+  width = 6.6, height = 6,
+  nz, dpi = 300
+)
 
-#Net-zero 2050 numbers
+# Net-zero 2050 numbers
 subsector_inventory_projections %>%
-  filter(scenario  == "Net-zero pathway",
-         emissions_year == 2050,
-         sector == "Natural Systems") %>% 
-  pull(value_emissions) %>% sum()
+  filter(
+    scenario == "Net-zero pathway",
+    emissions_year == 2050,
+    sector == "Natural Systems"
+  ) %>%
+  pull(value_emissions) %>%
+  sum()
 
 ### map combined projections together
 
-combined_proj <- subsector_inventory_projections %>% 
-  filter(sector != "Natural Systems") %>% 
-  group_by(emissions_year, scenario) %>% 
-  summarize(total_emissions = sum(value_emissions)) %>% 
-  bind_rows(., subsector_inventory_projections %>% 
-              filter(sector == "Natural Systems",
-                     scenario %in% c("Inventory","Net-zero pathway")) %>% 
-              select(-sector) %>% 
-              mutate(scenario = "Sequestration") %>% 
-              rename(total_emissions = value_emissions)) %>% 
- filter(!is.na(total_emissions)) %>% 
+combined_proj <- subsector_inventory_projections %>%
+  filter(sector != "Natural Systems") %>%
+  group_by(emissions_year, scenario) %>%
+  summarize(total_emissions = sum(value_emissions)) %>%
+  bind_rows(., subsector_inventory_projections %>%
+    filter(
+      sector == "Natural Systems",
+      scenario %in% c("Inventory", "Net-zero pathway")
+    ) %>%
+    select(-sector) %>%
+    mutate(scenario = "Sequestration") %>%
+    rename(total_emissions = value_emissions)) %>%
+  filter(!is.na(total_emissions)) %>%
   ungroup()
 
 inventory_2021 <- combined_proj %>%
@@ -310,11 +328,11 @@ combined_proj <- combined_proj %>%
   bind_rows(
     combined_proj %>%
       filter(scenario != "Sequestration") %>%
-      distinct(scenario) %>%  
+      distinct(scenario) %>%
       mutate(emissions_year = 2021) %>%
-      left_join(inventory_2021, by = "emissions_year") 
+      left_join(inventory_2021, by = "emissions_year")
   ) %>%
-  arrange(scenario, emissions_year) 
+  arrange(scenario, emissions_year)
 
 scenario_colors <- c(
   "Business as usual" = "black",
@@ -328,16 +346,16 @@ scenarios_plot <- ggplot(combined_proj, aes(
   x = emissions_year,
   y = total_emissions / 10^6,
   group = scenario,
-  color = scenario  # Color lines by scenario
+  color = scenario # Color lines by scenario
 )) +
-  geom_line(size = 1.2) +  # Bolder lines
-  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50", size = 1) +  # Horizontal line at y=0
-  scale_color_manual(values = scenario_colors) +  # Apply custom colors
+  geom_line(size = 1.2) + # Bolder lines
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50", size = 1) + # Horizontal line at y=0
+  scale_color_manual(values = scenario_colors) + # Apply custom colors
   labs(
     title = "Regional Emission Scenarios",
     x = "Year",
     y = "Million Metric Tons CO2e",
-    color = "Scenario",  # Update legend title
+    color = "Scenario", # Update legend title
     linetype = "Scenario"
   ) +
   theme_minimal() +
@@ -355,4 +373,6 @@ scenarios_plot <- ggplot(combined_proj, aes(
 scenarios_plot
 
 ggsave(paste0(save_path, "regional_scenarios.tiff"),
-       scenarios_plot, dpi = 300)
+  scenarios_plot,
+  dpi = 300
+)

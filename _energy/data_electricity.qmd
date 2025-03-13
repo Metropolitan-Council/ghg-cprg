@@ -367,7 +367,6 @@ fig_nrel_qa_electricity <- plot_ly(
 
 # Show the plot
 fig_nrel_qa_electricity
-
 ```
 
 

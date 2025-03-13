@@ -74,7 +74,9 @@ ghgrp_emissions %>%
   ungroup() %>%
   select(category, source, value_emissions)
 
-mpca_industrial_inv %>% filter(year == 2020, co2e > 0) %>% print(n = 50)
+mpca_industrial_inv %>%
+  filter(year == 2020, co2e > 0) %>%
+  print(n = 50)
 
 ### create six categories - ind process, ref process, nat gas, oil, coal, other fuel combustion
 ghgrp_simplified <- ghgrp_emissions_combustion %>%
@@ -102,7 +104,7 @@ ghgrp_simplified <- ghgrp_emissions_combustion %>%
   filter(mpca_subsector != "Municipal Solid Waste") %>%
   group_by(inventory_year, city_name, county_name, mpca_subsector) %>%
   summarize(value_emissions = sum(value_emissions)) %>%
-  mutate(data_source = "GHGRP") %>% 
+  mutate(data_source = "GHGRP") %>%
   ungroup()
 
 ### Now add in MPCA data for cities without industrial emissions in GHGRP
@@ -170,22 +172,22 @@ ghgrp_mpca_emissions <-
 
 ### create grid of needed city-subsector-year combinations
 ghgrp_extrapolated <- expand.grid(
-    inventory_year = seq(2005, 2020, by = 1),
-    city_name = unique(ghgrp_mpca_emissions$city_name),
-    county_name = unique(ghgrp_mpca_emissions$county_name),
-    mpca_subsector = unique(ghgrp_mpca_emissions$mpca_subsector)
-  ) %>%
-    #filter to combinations found in inventory
-    semi_join(., ghgrp_mpca_emissions %>%
-      ungroup() %>%
-      distinct(city_name, county_name, mpca_subsector)) %>% 
-  # bring in inventory data
-    left_join(
-  ghgrp_mpca_emissions %>%
-    ungroup() %>%
-    select(inventory_year, city_name, county_name, mpca_subsector, value_emissions, emission_percent),
-  by = c("inventory_year", "city_name", "county_name", "mpca_subsector")
+  inventory_year = seq(2005, 2020, by = 1),
+  city_name = unique(ghgrp_mpca_emissions$city_name),
+  county_name = unique(ghgrp_mpca_emissions$county_name),
+  mpca_subsector = unique(ghgrp_mpca_emissions$mpca_subsector)
 ) %>%
+  # filter to combinations found in inventory
+  semi_join(., ghgrp_mpca_emissions %>%
+    ungroup() %>%
+    distinct(city_name, county_name, mpca_subsector)) %>%
+  # bring in inventory data
+  left_join(
+    ghgrp_mpca_emissions %>%
+      ungroup() %>%
+      select(inventory_year, city_name, county_name, mpca_subsector, value_emissions, emission_percent),
+    by = c("inventory_year", "city_name", "county_name", "mpca_subsector")
+  ) %>%
   ### use na.kalman to extrapolate across time-series
   group_by(city_name, county_name, mpca_subsector) %>%
   arrange(inventory_year) %>%

@@ -12,7 +12,7 @@ cprg_colors <- source("R/cprg_colors.R")
 # create baseline and subsector sectors
 county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") %>%
   ## keep 7 counties only for CTU estimates
-  #filter(!county_name %in% c("St. Croix", "Pierce", "Chisago", "Sherburne")) %>%
+  # filter(!county_name %in% c("St. Croix", "Pierce", "Chisago", "Sherburne")) %>%
   mutate(baseline_sector = case_when(
     category == "Electricity" ~ "Electricity",
     category == "Building Fuel" ~ "Building Fuel",
@@ -97,7 +97,7 @@ baseline_comparison_facet <- ggplot(
 
 baseline_comparison_facet
 
-#add Spanish version
+# add Spanish version
 
 baseline_emissions_sector <- mutate(baseline_emissions_sector,
   sector_spanish = case_when(
@@ -136,17 +136,20 @@ baseline_comparison_facet_spanish <- ggplot(
     axis.text.x = element_text(size = 15, angle = -90, vjust = .25),
     text = element_text(size = 20, family = "sans")
   ) +
-  facet_grid(. ~ baseline_sector, labeller = as_labeller(setNames(baseline_emissions_sector$sector_spanish, 
-                                                                            baseline_emissions_sector$baseline_sector)))
+  facet_grid(. ~ baseline_sector, labeller = as_labeller(setNames(
+    baseline_emissions_sector$sector_spanish,
+    baseline_emissions_sector$baseline_sector
+  )))
 
 
 baseline_comparison_facet_spanish
 
-ggsave(paste0(wd,"ghg_sector_2021_spanish.png"),
-       baseline_comparison_facet_spanish,
-       width = 12,
-       height = 8,
-       units = "in")
+ggsave(paste0(wd, "ghg_sector_2021_spanish.png"),
+  baseline_comparison_facet_spanish,
+  width = 12,
+  height = 8,
+  units = "in"
+)
 
 emissions_sector <- county_emissions %>%
   mutate(category = case_when(

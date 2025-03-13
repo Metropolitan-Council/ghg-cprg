@@ -206,11 +206,11 @@ ind_fuel_activity_out <- ind_fuel_activity %>%
     specific_fuel_type = corrected_fuel_type,
     units_activity = per_unit,
     value_activity = avg_activity
-  ) %>% 
-### add flag for likely doublecounts - will filter from emissions
+  ) %>%
+  ### add flag for likely doublecounts - will filter from emissions
   mutate(doublecount = if_else(
     general_fuel_type == "Natural Gas" &
-    !grepl("Y",industry_type_subparts),
+      !grepl("Y", industry_type_subparts),
     "Yes", "No"
   ))
 
@@ -249,9 +249,9 @@ ind_fuel_gas_emissions_out <- ind_fuel_emissions %>%
     specific_fuel_type = corrected_fuel_type,
     units_emissions,
     values_emissions
-  ) %>% 
+  ) %>%
   filter((general_fuel_type != "Natural Gas" |
-               grepl("Y",industry_type_subparts)))
+    grepl("Y", industry_type_subparts)))
 
 ind_fuel_gas_emissions_meta <-
   tibble::tribble(
@@ -293,9 +293,9 @@ ind_fuel_co2e_emissions_out_doublecount <- ind_fuel_emissions %>%
   ) %>%
   summarize(values_emissions = sum(values_emissions)) %>%
   mutate(units_emissions = "Metric tons of CO2 equivalency") %>%
-  rename(specific_fuel_type = corrected_fuel_type) %>% 
+  rename(specific_fuel_type = corrected_fuel_type) %>%
   filter((general_fuel_type == "Natural Gas" &
-            !grepl("Y",industry_type_subparts)))
+    !grepl("Y", industry_type_subparts)))
 
 
 ind_fuel_co2e_emissions_out <- ind_fuel_emissions %>%
@@ -316,9 +316,9 @@ ind_fuel_co2e_emissions_out <- ind_fuel_emissions %>%
   ) %>%
   summarize(values_emissions = sum(values_emissions)) %>%
   mutate(units_emissions = "Metric tons of CO2 equivalency") %>%
-  rename(specific_fuel_type = corrected_fuel_type) %>% 
+  rename(specific_fuel_type = corrected_fuel_type) %>%
   filter((general_fuel_type != "Natural Gas" |
-            grepl("Y",industry_type_subparts)))
+    grepl("Y", industry_type_subparts)))
 
 ind_fuel_co2e_emissions_meta <-
   tibble::tribble(
