@@ -35,12 +35,22 @@ transportation_min_year <- onroad_emissions %>%
   extract2("emissions_year") %>%
   unique()
 
+modes_included <-
+  stringr::str_split(onroad_emissions$vehicle_types_included, pattern = ", ", simplify = TRUE)[, 1] %>%
+  unique() %>%
+  stringr::str_to_lower()
+
+
 hookaddcap()
 ```
 
 ## Methodological framework
 
-We are following these guidelines:
+Transportation emissions are available for `r listify(modes_included)` using EPA data sources. We use a geographic, or territorial accounting method, aligning with Scope 1 in the Greenhouse Gas Protocol. Geographic methods account for any transportation emissions taking place within a geographic boundary, regardless of origin or destination [@fongGlobalProtocolCommunityScale2021].
+
+Geographic emissions are essential for quantifying air pollution experienced by people living in the area, but they do not give information on the logistic decisions of individuals.
+
+<!-- Met Council researchers chose to use an alternative activity-induced method to provide the most actionable information for jurisdictions within our region in both the recent PCAP and the 2018 Metro Climate Stats inventory. -->
 
 ## Data sources
 
@@ -55,6 +65,13 @@ We are following these guidelines:
 <!-- {{< include data_epa_moves.qmd >}} -->
 
 <!-- {{< include data_tbi.qmd >}} -->
+
+## Limitations {#sec-transportation-data-limitations}
+
+- Geographic accounting methods
+  - Geographic accounting methods do not account for the decisions or travel behavior of individuals within the geographic boundaries. 
+  - Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a small town with a major freeway. The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction.
+  - We will take these limitations into account and plan to mitigate wherever possible for CTU-level inventories and forecasts.
 
 ## Validation
 
@@ -114,7 +131,7 @@ fig_emissions_pop_transportation <- plot_ly(
 fig_emissions_pop_transportation
 ```
 
-### Comparison with other inventories
+<!-- ### Comparison with other inventories -->
 
 <!-- #### National Emissions Inventory -->
 

@@ -78,7 +78,7 @@ book:
     - _meta/supplementary_tables.qmd
     - _meta/additional_resources.qmd
     - _energy/utility_service_area_maps.qmd
-    - _transportation/inventory_methods_comparison.qmd
+    # - _transportation/inventory_methods_comparison.qmd
     - _meta/lidac_maps.qmd
     - figures.qmd
     - tables.qmd
@@ -119,7 +119,7 @@ format:
       margin-width: 100px
     toc-depth: 3
     number-sections: true
-    # number-depth: 4
+    number-depth: 3
     copyright: "Metropolitan Council"
     fig-responsive: true
     link-external-filter: "metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io"

@@ -1,4 +1,4 @@
-## EPA emissions data
+### EPA emissions data
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -187,7 +187,7 @@ onroad_emissions %>%
 {{< include data_epa_air_emissions_modeling.qmd >}}
 
 
-### Consistent limitations {#sec-epa-emissions-limitations}
+#### Consistent limitations {#sec-epa-emissions-limitations}
 
 
 - The NEI, EQUATES, and Air Emissions Modeling platforms are based on MOVES, which does not account for activity on local roads. 
@@ -198,7 +198,7 @@ onroad_emissions %>%
 - The NEI augmented vehicle miles traveled (VMT) data for Minnesota and Wisconsin in 2020 using federal and state-level datasets due to data availability issues [@usepaDevelopment2020DefaultData2022]. 
 - To reduce model run-time, the EPA groups counties together and only runs MOVES on a single representative county. The resulting MOVES emissions factors are multiplied by county-specific activity data (including VMT, vehicle population, hourly speed distribution, among others) to get county-specific emissions [@usepa2020NationalEmissions2023onroad, section 5.6.2.1]. Effectively, emissions factors are generated on a single representative county, and are then applied to similar counties. 
 
-#### Nitrous oxide (N~2~O) availability
+##### Nitrous oxide (N~2~O) availability
 
 Though nitrous oxide  N~2~O has a high global warming potential (@sec-gwp), the amount of N~2~O released is relatively small when compared to other sectors. 
 
