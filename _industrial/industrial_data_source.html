@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>10&nbsp; Methods and data sources – Twin Cities MSA Greenhouse Gas Inventory</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../_waste/_waste.html" rel="next">
+<link href="../_industrial/_industrial.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<script src="../site_libs/plotly-binding-4.10.4/plotly.js"></script>
+
+<script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
+
+<script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
+
+<link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+
+<script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+<link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+
+<script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+
+</head>
+<body class="nav-sidebar docked fullcontent"><section id="navigation" class="navigation standalone-navigation">
+  	<link href="style/standalone_header_footer.css" type="text/css" rel="stylesheet">
+</section>
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_industrial/_industrial.html">Industrial</a></li><li class="breadcrumb-item"><a href="../_industrial/industrial_data_source.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Methods and data sources</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Twin Cities MSA Greenhouse Gas Inventory</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/Metropolitan-Council/ghg-cprg" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Executive summary</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Transportation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_transportation/_transportation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Mobile combustion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_transportation/_data_methods_transportation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_transportation/data_aviation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Aviation Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Electricity</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/_electricity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Electricity</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/data_electricity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Building Energy</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/_energy_natural_gas_emissions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Natural Gas</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/data_natural_gas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/data_propane_kerosene.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Propane and kerosene</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Industrial</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_industrial/_industrial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Industrial</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_industrial/industrial_data_source.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Waste and Wastewater</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Waste and wastewater</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/_solid_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Waste and wastewater</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/data_solid_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">MPCA Waste Characterization Study</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/methods_solid_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/qc_waste_other.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Deliverables (Other sources)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Agriculture</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_agriculture/_agriculture.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Agriculture</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_agriculture/agriculture_data_source.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Natural Systems</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_nature/_natural_systems_inventory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Natural Systems</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_nature/data_nlcd_cover.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Land cover data sources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_nature/data_nhd_waterways.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Waterways data sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/supplementary_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Supplementary data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/supplementary_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Supplementary tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/additional_resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Additional resources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/utility_service_area_maps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Utility service area maps</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_transportation/inventory_methods_comparison.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Transportation method comparison</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/lidac_maps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">Low-Income and Disadvantaged Communities</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../figures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">G</span>&nbsp; <span class="chapter-title">List of Figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">H</span>&nbsp; <span class="chapter-title">List of Tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../changelog.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">I</span>&nbsp; <span class="chapter-title">Release notes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#double-counting" id="toc-double-counting" class="nav-link active" data-scroll-target="#double-counting"><span class="header-section-number">10.1</span> Double counting</a></li>
+  <li><a href="#electricity-generation" id="toc-electricity-generation" class="nav-link" data-scroll-target="#electricity-generation"><span class="header-section-number">10.2</span> Electricity generation</a></li>
+  <li><a href="#natural-gas" id="toc-natural-gas" class="nav-link" data-scroll-target="#natural-gas"><span class="header-section-number">10.3</span> Natural gas</a></li>
+  <li><a href="#waste" id="toc-waste" class="nav-link" data-scroll-target="#waste"><span class="header-section-number">10.4</span> Waste</a></li>
+  <li><a href="#data-source-comparisons" id="toc-data-source-comparisons" class="nav-link" data-scroll-target="#data-source-comparisons"><span class="header-section-number">11</span> Data source comparisons</a></li>
+  <li><a href="#natural-gas-1" id="toc-natural-gas-1" class="nav-link" data-scroll-target="#natural-gas-1"><span class="header-section-number">12</span> Natural Gas</a>
+  <ul class="collapse">
+  <li><a href="#scaling-to-ctus" id="toc-scaling-to-ctus" class="nav-link" data-scroll-target="#scaling-to-ctus"><span class="header-section-number">12.0.1</span> Scaling to CTUs</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Metropolitan-Council/ghg-cprg/blob/main/_industrial/industrial_data_source.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_industrial/_industrial.html">Industrial</a></li><li class="breadcrumb-item"><a href="../_industrial/industrial_data_source.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Methods and data sources</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Methods and data sources</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+<p>##Summary Industrial emissions are derived from MN Pollution Control Agency (MPCA) fuel combustion data and from two EPA sources: the Greenhouse Gas Reporting Program (GHGRP; via FLIGHT: Facility Level Information on GHG Tool) and the National Emissions Inventory (NEI). These datasets have strengths and limitations which complement one another. The MPCA data has smaller facilities and commercial fuel combustion, but dates back only to 2016. GHGRP has facility source data dating back to 2010, but only facilities with 25,000+ metric tons of annual CO2e emissions are required to report to this program. The NEI aggregate county data includes smaller facilities, but only has GHG emission estimates for 2017 and 2020 and lacks the source level specificity. Additional data resources may be available via the federal US Energy Information Administration datasets.</p>
+<section id="double-counting" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="double-counting"><span class="header-section-number">10.1</span> Double counting</h2>
+<p>A key concern for industrial emissions is avoiding double counting, particularly natural gas combustion, electricity generation, and waste management. Our energy analysis uses a demand side approach to allocate electricity usage and natural gas combustion to residential, commercial, and industrial sectors. For electricity, this means avoiding industrial emissions that arise from electricty generation (note GHGRP and NEI already avoid counting electricity consumption at industrial facilities in their analyses). Natural gas consumption requires greater care, as combustion for industrial units (e.g.&nbsp;boilers) may be one of or some combination of natural gas, petroleum products, coal, or other fuel sources; additionally utility provisioning of natural gas may not account for all natural gas combustion at industrial sources. Our current approach assumes only the two major refineries in-bounds have natural gas access outside of the utilities; thus all other natural gas combustion reported by industrial point sources are assumed to be counted in utility reporting. We explore this below. Our waste sector accounts for municipal waste emissions, though it does not inventory industrial waste processing.</p>
+</section>
+<section id="electricity-generation" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="electricity-generation"><span class="header-section-number">10.2</span> Electricity generation</h2>
+<p>Electricity generation is indicated as industrial subpart “D”, and can be omitted from GHGRP data easily. Note that power plants also have some fuel combustion that are not directly for electricity generation and it is currently unclear if that is accounted for in our egrid analysis. However, in NEI data, powerplants are grouped under NEC (Not Elsewhere Classified), which includes non-powerpoint sources, requiring care to avoid double-counting (e.g.&nbsp;subtracting away GHGRP power plant data)</p>
+</section>
+<section id="natural-gas" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="natural-gas"><span class="header-section-number">10.3</span> Natural gas</h2>
+<p>Detailed data can be found in the GHGRP, particularly for fuel combustion. That allows us to subtract away natural gas combustion emissions from industrial combustion, to avoid potential double counting of natural gas utility data. Note that further inquiry is required to ensure that industrial natural gas is provisioned by the utilities. An additional subpart that requires investigation is “Y” which includes flaring data, which is often flaring of natural gas. MPCA data separates gas consumption for flaring.</p>
+</section>
+<section id="waste" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="waste"><span class="header-section-number">10.4</span> Waste</h2>
+<p>We are omitting in-bound municipal waste facilities from our industrial analysis to avoid double counting with our waste emissions analyses (based on county waste volume in Minnesota). Industrial waste facilities will be analyzed here.</p>
+</section>
+<section id="data-source-comparisons" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Data source comparisons</h1>
+<p>Due to the reasons listed above, the expectation should be that MPCA (smaller facilities, no process emissions), GHGRP (only larger facilities), and NEI (all facilities, no point source specificity means double-counting) provide substantially different values.</p>
+<div class="cell">
+<div id="fig-emissions-source-comparison" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-emissions-source-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.1: Comparison of 2020 industrial emissions from FLIGHT, MPCA, NEI
+</figcaption>
+<div aria-describedby="fig-emissions-source-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-03c244fcdff7de01ae2f" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-03c244fcdff7de01ae2f">{"x":{"visdat":{"3418c7e3980":["function () ","plotlyVisDat"]},"cur_data":"3418c7e3980","attrs":{"3418c7e3980":{"x":{},"y":{},"hovertemplate":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"Industrial Data Source Comaparison","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Data source","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"normal"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-emissions-source-comparison","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[4520041,799043,307710,82563,176513,918203],"hovertemplate":["Dakota<br>FLIGHT<br>4520.04 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>FLIGHT<br>799.04 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>FLIGHT<br>307.71 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>FLIGHT<br>82.56 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>FLIGHT<br>176.51 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>FLIGHT<br>918.2 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"FLIGHT","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[4496691.7060000002,673392.64977849997,308040.19400000002,84278.317999999999,176752.89799999999,944378.71088499995],"hovertemplate":["Dakota<br>GHGRP<br>4496.69 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>GHGRP<br>673.39 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>GHGRP<br>308.04 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>GHGRP<br>84.28 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>GHGRP<br>176.75 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>GHGRP<br>944.38 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"GHGRP","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[8370.2917451064986,354.1693639165,0.46966000000000002,6650710.6539539732,4310.1151710903405,877.40730154130006,583.61282036398006,8549.0890062569997,1037427.7574556121],"hovertemplate":["Anoka<br>MPCA<br>8.37 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>MPCA<br>0.35 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>MPCA<br>0 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>MPCA<br>6650.71 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>MPCA<br>4.31 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>MPCA<br>0.88 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>MPCA<br>0.58 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>MPCA<br>8.55 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>MPCA<br>1037.43 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"MPCA","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"y":[29619.146469778003,26146.878576280003,11173.794442580001,4292860.899570372,953532.46378238802,7342.7532855600002,677463.56967266626,138493.21172206401,42031.013605941087,6714.9814454800007,933900.70032283012],"hovertemplate":["Anoka<br>NEI<br>29.62 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>NEI<br>26.15 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>NEI<br>11.17 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>NEI<br>4292.86 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>NEI<br>953.53 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>NEI<br>7.34 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>NEI<br>677.46 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>NEI<br>138.49 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>NEI<br>42.03 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>NEI<br>6.71 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>NEI<br>933.9 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"NEI","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</figure>
+</div>
+</div>
+<p>Currently, we are seeing large deviations (high and low) between MPCA data and federal sources, particularly in Dakota (Refinery) and Hennepin counties. MPCA data only accounts for fuel combustion, not process emissions that are common from semi-conductor manufacturing in Hennepin.</p>
+<p>Currently, GHGRP and MPCA data can be reliably used to avoid double-counting by avoiding emissions from Natural Gas. We can compare how subpart C (Industrial combustion) analyses compares to facilities with only subpart C FLIGHT aggregates. This includes natural gas doublecounts, but validates that our subpart C analysis accurately recaptures EPA aggregated FLIGHT emissions .</p>
+<div class="cell">
+<div id="fig-subpart-c-emissions" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-subpart-c-emissions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.2: Comparison of industrial combustion emissions from FLIGHT and subpart C analysis
+</figcaption>
+<div aria-describedby="fig-subpart-c-emissions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-5a606fbf57b083c1437d" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-5a606fbf57b083c1437d">{"x":{"visdat":{"34184f142c67":["function () ","plotlyVisDat"]},"cur_data":"34184f142c67","attrs":{"34184f142c67":{"mode":"markers","y":{},"x":{},"hovertemplate":{},"marker":{"size":18,"line":{"color":"lightgray","width":2}},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"34184f142c67.1":{"type":"scatter","mode":"lines","x":[0,363668.08706083888],"y":[0,363668.08706083888],"line":{"dash":"dash","color":"black","width":2},"showlegend":false,"hoverinfo":"none","inherit":false}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"value_emissions_subpart"},"yaxis":{"domain":[0,1],"automargin":true,"title":"value_emissions_flight"},"hovermode":"closest","showlegend":true},"source":"fig-subpart-c-emissions","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"mode":"markers","y":[76373,35500,148215,23312,4573,159922,130817],"x":[74604.857657767003,35902.853764219159,353405.78136445716,23615.926165048542,4830.5303519417466,162094.05133061719,132465.21176375405],"hovertemplate":["3M CO<br>FLIGHT emissions: 76373 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 74604.86 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","FORD MOTOR COMPANY - TWIN CITIES ASSEMBLY PLANT<br>FLIGHT emissions: 35500 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 35902.85 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 148215 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 353405.78 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 23312 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 23615.93 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","RAHR MALTING CO - SHAKOPEE<br>FLIGHT emissions: 4573 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 4830.53 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 159922 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 162094.05 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 130817 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 132465.21 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(102,194,165,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2011","textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","y":[72407,4873,127038,23019,131897,127779],"x":[73058.557436286384,4928.2767679253539,350743.80110954825,23079.200570388348,124654.78773968447,52879.368932038837],"hovertemplate":["3M CO<br>FLIGHT emissions: 72407 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 73058.56 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","FORD MOTOR COMPANY - TWIN CITIES ASSEMBLY PLANT<br>FLIGHT emissions: 4873 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 4928.28 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 127038 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 350743.8 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 23019 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 23079.2 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 131897 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 124654.79 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 127779 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 52879.37 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(211,164,122,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2012","textfont":{"color":"rgba(211,164,122,1)"},"error_y":{"color":"rgba(211,164,122,1)"},"error_x":{"color":"rgba(211,164,122,1)"},"line":{"color":"rgba(211,164,122,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","y":[80335,121312,27912,174827,131372],"x":[81646.166950849511,324268.75808047433,29023.045625074006,171936.00439513955,132500.54846952533],"hovertemplate":["3M CO<br>FLIGHT emissions: 80335 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 81646.17 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 121312 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 324268.76 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 27912 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 29023.05 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 174827 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 171936 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 131372 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 132500.55 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(229,147,127,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2013","textfont":{"color":"rgba(229,147,127,1)"},"error_y":{"color":"rgba(229,147,127,1)"},"error_x":{"color":"rgba(229,147,127,1)"},"line":{"color":"rgba(229,147,127,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","y":[81855,148477,28613,164468,128837],"x":[82713.292856085725,341243.46612295997,28571.067019447073,149390.57900261212,130149.62565668824],"hovertemplate":["3M CO<br>FLIGHT emissions: 81855 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 82713.29 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 148477 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 341243.47 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 28613 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 28571.07 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 164468 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 149390.58 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 128837 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 130149.63 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(156,159,194,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2014","textfont":{"color":"rgba(156,159,194,1)"},"error_y":{"color":"rgba(156,159,194,1)"},"error_x":{"color":"rgba(156,159,194,1)"},"line":{"color":"rgba(156,159,194,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","y":[79440,143225,25106,149462,124739],"x":[80032.847544325705,325738.57132518169,25289.979511529124,142922.32814417256,126130.51474514561],"hovertemplate":["3M CO<br>FLIGHT emissions: 79440 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 80032.85 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 143225 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 325738.57 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 25106 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 25289.98 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 149462 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 142922.33 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 124739 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 126130.51 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(194,150,199,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2015","textfont":{"color":"rgba(194,150,199,1)"},"error_y":{"color":"rgba(194,150,199,1)"},"error_x":{"color":"rgba(194,150,199,1)"},"line":{"color":"rgba(194,150,199,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","y":[79174,160937,24559,140440,126558],"x":[80160.62736199089,337653.33320517017,25069.520799490881,131340.28452819292,127740.69152912623],"hovertemplate":["3M CO<br>FLIGHT emissions: 79174 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 80160.63 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 160937 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 337653.33 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 24559 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 25069.52 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 140440 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 131340.28 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 126558 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 127740.69 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(223,155,177,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2016","textfont":{"color":"rgba(223,155,177,1)"},"error_y":{"color":"rgba(223,155,177,1)"},"error_x":{"color":"rgba(223,155,177,1)"},"line":{"color":"rgba(223,155,177,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","y":[76595,168778,25307,135623,126850],"x":[77352.36219356794,359340.08976633172,25571.185509856732,118677.8411639619,127740.69152912623],"hovertemplate":["3M CO<br>FLIGHT emissions: 76595 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 77352.36 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 168778 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 359340.09 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 25307 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 25571.19 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 135623 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 118677.84 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 126850 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 127740.69 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(182,204,108,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2017","textfont":{"color":"rgba(182,204,108,1)"},"error_y":{"color":"rgba(182,204,108,1)"},"error_x":{"color":"rgba(182,204,108,1)"},"line":{"color":"rgba(182,204,108,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","y":[104996,150290,28139,214682,130678],"x":[105891.49760493131,350088.71520318132,28005.539092913801,200111.97937461108,132249.85402508092],"hovertemplate":["3M CO<br>FLIGHT emissions: 104996 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 105891.5 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 150290 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 350088.72 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 28139 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 28005.54 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 214682 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 200111.98 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 130678 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 132249.85 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(209,217,69,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2018","textfont":{"color":"rgba(209,217,69,1)"},"error_y":{"color":"rgba(209,217,69,1)"},"error_x":{"color":"rgba(209,217,69,1)"},"line":{"color":"rgba(209,217,69,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","y":[106258,151541,27881,165226,128183],"x":[107217.33911437367,344699.50651937828,27845.841013497513,187731.46343660087,129307.53180690401],"hovertemplate":["3M CO<br>FLIGHT emissions: 106258 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 107217.34 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 151541 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 344699.51 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 27881 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 27845.84 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 165226 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 187731.46 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 128183 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 129307.53 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(253,215,61,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2019","textfont":{"color":"rgba(253,215,61,1)"},"error_y":{"color":"rgba(253,215,61,1)"},"error_x":{"color":"rgba(253,215,61,1)"},"line":{"color":"rgba(253,215,61,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","y":[82308,149790,22717,204687,132237],"x":[82908.131897791856,325911.0775695662,23267.714328010301,180705.41608434563,133644.67307038832],"hovertemplate":["3M CO<br>FLIGHT emissions: 82308 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 82908.13 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 149790 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 325911.08 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 22717 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 23267.71 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 204687 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 180705.42 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 132237 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 133644.67 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(237,202,125,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2020","textfont":{"color":"rgba(237,202,125,1)"},"error_y":{"color":"rgba(237,202,125,1)"},"error_x":{"color":"rgba(237,202,125,1)"},"line":{"color":"rgba(237,202,125,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","y":[82788,162739,24708,219649,126775],"x":[83502.422117200447,363668.08706083888,24817.130479368931,207350.94511151395,127740.69152912623],"hovertemplate":["3M CO<br>FLIGHT emissions: 82788 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 83502.42 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 162739 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 363668.09 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 24708 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 24817.13 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 219649 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 207350.95 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 126775 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 127740.69 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(212,190,160,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2021","textfont":{"color":"rgba(212,190,160,1)"},"error_y":{"color":"rgba(212,190,160,1)"},"error_x":{"color":"rgba(212,190,160,1)"},"line":{"color":"rgba(212,190,160,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"markers","y":[87926,169122,29140,189569,114739],"x":[88965.499580718693,359966.56089282449,28762.723399612245,204593.37886885824,115396.00285194174],"hovertemplate":["3M CO<br>FLIGHT emissions: 87926 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 88965.5 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin Energy Recovery Center<br>FLIGHT emissions: 169122 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 359966.56 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","METROPOLITAN AIRPORTS COMMISSION<br>FLIGHT emissions: 29140 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 28762.72 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","UNIVERSITY OF MN - TWIN CITIES<br>FLIGHT emissions: 189569 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 204593.38 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","WestRock MN Corporation<br>FLIGHT emissions: 114739 metric tons CO<sub>2<\/sub>e<br>SUBPART C Emissions: 115396 metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"rgba(179,179,179,1)","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","name":"2022","textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"line":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null},{"type":"scatter","mode":"lines","x":[0,363668.08706083888],"y":[0,363668.08706083888],"line":{"color":"black","dash":"dash","width":2},"showlegend":false,"hoverinfo":["none","none"],"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</figure>
+</div>
+</div>
+<p>Most emissions are on or sufficiently close to the one-to-one line. The exception is the Hennepin Energy Recovery Center, a waste burning facility. This requires further exploration but will be omitted in any case as waste-to-energy emissions are counted in the waste subsector.</p>
+</section>
+<section id="natural-gas-1" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> Natural Gas</h1>
+<p>Given overall compliance between our subpart C analysis and EPA reporting, natural gas combustion was pulled out from MPCA and subpart C analyses for non-refinery industries and compared to our estimates of utility-supplied natural gas deliveries to the industrial sector (via NREL). Generally it looks like NREL greatly over-apportions natural gas consumption by industrial sources in all counties, and may include refinery natural gas consumption in Dakota and Washington. Future analysis will looks at utility breakdowns of natural gas delivery to utilities as a more accurate apportionment.</p>
+<div class="cell">
+<div id="fig-natural-gas-comparison" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-natural-gas-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.1: Comparison of natural gas combustion data
+</figcaption>
+<div aria-describedby="fig-natural-gas-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-b7f7273af652f67c0aca" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-b7f7273af652f67c0aca">{"x":{"visdat":{"34183eb43204":["function () ","plotlyVisDat"]},"cur_data":"34183eb43204","attrs":{"34183eb43204":{"x":{},"y":{},"hovertemplate":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"Industrial Natural Gas Emissions Inventory Comaparison","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Data source","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"normal"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-natural-gas-comparison","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington"],"y":[66533.509609847402,24684.279687353501,6810.8756306014711,220068.39926074239,750707.97156268195,516825.67788347864,108309.18600804366,19919.064468018001,108032.23119414187],"hovertemplate":["Anoka<br>GHGRP & MPCA - Natural Gas Doublecount<br>66.53 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>GHGRP & MPCA - Natural Gas Doublecount<br>24.68 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>GHGRP & MPCA - Natural Gas Doublecount<br>6.81 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>GHGRP & MPCA - Natural Gas Doublecount<br>220.07 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>GHGRP & MPCA - Natural Gas Doublecount<br>750.71 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>GHGRP & MPCA - Natural Gas Doublecount<br>516.83 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>GHGRP & MPCA - Natural Gas Doublecount<br>108.31 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>GHGRP & MPCA - Natural Gas Doublecount<br>19.92 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>GHGRP & MPCA - Natural Gas Doublecount<br>108.03 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"GHGRP & MPCA - Natural Gas Doublecount","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Dakota","Washington"],"y":[571612.75831310672,105198.21655339806],"hovertemplate":["Dakota<br>GHGRP - Refinery natural gas<br>571.61 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>GHGRP - Refinery natural gas<br>105.2 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"GHGRP - Refinery natural gas","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington","Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington","Pierce","St. Croix"],"y":[595297.09517125657,152093.43464096321,97322.770570158376,784268.8771483762,796532.42305301246,534598.54411296535,143613.28263891919,149510.88602275521,422587.33209789434,281212.87091792776,106513.20273384127,73681.021433167902,345216.79492337693,566931.19184861693,795147.45102246676,147536.28209693695,51976.690747487068,421574.64978496614,8205.5838299901516,43891.245152054536],"hovertemplate":["Anoka<br>NREL<br>595.3 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>NREL<br>152.09 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>NREL<br>97.32 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>NREL<br>784.27 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>NREL<br>796.53 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>NREL<br>534.6 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>NREL<br>143.61 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>NREL<br>149.51 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>NREL<br>422.59 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Anoka<br>NREL<br>281.21 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>NREL<br>106.51 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>NREL<br>73.68 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>NREL<br>345.22 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>NREL<br>566.93 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>NREL<br>795.15 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>NREL<br>147.54 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>NREL<br>51.98 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>NREL<br>421.57 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>NREL<br>8.21 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>NREL<br>43.89 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"NREL","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</figure>
+</div>
+</div>
+<section id="scaling-to-ctus" class="level3" data-number="12.0.1">
+<h3 data-number="12.0.1" class="anchored" data-anchor-id="scaling-to-ctus"><span class="header-section-number">12.0.1</span> Scaling to CTUs</h3>
+<p>Industrial emissions are provided as point sources from federal and state databases, allowing straightforward attribution to cities and townships. One remaining issue is to ensure proper attribution for cities and townships that share a name.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+          // default icon
+          link.classList.add("external");
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../_industrial/_industrial.html" class="pagination-link" aria-label="Industrial">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Industrial</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../_waste/_waste.html" class="pagination-link" aria-label="Waste and wastewater">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Waste and wastewater</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Metropolitan-Council/ghg-cprg/blob/main/_industrial/industrial_data_source.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer><section class="footer-social standalone-footer">
+  <div class="wrapper1 cf">
+    <nav class="footer-columns" aria-label="Footer">
+      <div>
+        <div class="footer-col">
+          <div class="wysiwyg">
+            <div class="footer-textblue"><a href="https://metrocouncil.org/"><img src="style/footer-logo.png" alt="Met Council Logo "></a></div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-divider-small"></div>
+            <h4 class="footer-textblue">390 Robert Street North<br>
+              St. Paul, MN 55101<br>
+              <a href="tel:651-602-1000">651-602-1000</a></h4>
+            <p>&nbsp;</p>
+            <p><span class="copyright">© Metropolitan Council</span></p>
+        </div>
+        <div class="footer-col">
+          <div class="footer-divider-small"></div>
+            <h4 class="footer-textblue"><a href="https://metrocouncil.org/About-Us/Contact-Us-(1).aspx">Contact Us</a></h4>
+          <h4 class="footer-textblue"><a href="https://metrocouncil.org/Terms-Conditions.aspx">Terms &amp; Conditions</a></h4>
+          <h4 class="footer-textblue"><a href="https://metrocouncil.org/Privacy-Policy.aspx">Privacy Policy</a></h4>
+        </div>
+      </div>
+    </nav>
+  </div>
+</section>
+
+
+
+</body></html>

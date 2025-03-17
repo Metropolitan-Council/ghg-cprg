@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>18&nbsp; Natural Systems – Twin Cities MSA Greenhouse Gas Inventory</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../_nature/data_nlcd_cover.html" rel="next">
+<link href="../_agriculture/agriculture_data_source.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<script src="../site_libs/plotly-binding-4.10.4/plotly.js"></script>
+
+<script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
+
+<script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
+
+<link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+
+<script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+<link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+
+<script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+<body class="nav-sidebar docked fullcontent"><section id="navigation" class="navigation standalone-navigation">
+  	<link href="style/standalone_header_footer.css" type="text/css" rel="stylesheet">
+</section>
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_nature/_natural_systems_inventory.html">Natural Systems</a></li><li class="breadcrumb-item"><a href="../_nature/_natural_systems_inventory.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Natural Systems</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Twin Cities MSA Greenhouse Gas Inventory</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/Metropolitan-Council/ghg-cprg" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Executive summary</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Transportation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_transportation/_transportation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Mobile combustion</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_transportation/_data_methods_transportation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_transportation/data_aviation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Aviation Data</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Electricity</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/_electricity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Electricity</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/data_electricity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Building Energy</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/_energy_natural_gas_emissions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Natural Gas</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/data_natural_gas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/data_propane_kerosene.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Propane and kerosene</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Industrial</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_industrial/_industrial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Industrial</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_industrial/industrial_data_source.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Waste and Wastewater</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Waste and wastewater</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/_solid_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Waste and wastewater</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/data_solid_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">MPCA Waste Characterization Study</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/methods_solid_waste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_waste/qc_waste_other.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Deliverables (Other sources)</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Agriculture</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_agriculture/_agriculture.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Agriculture</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_agriculture/agriculture_data_source.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Natural Systems</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_nature/_natural_systems_inventory.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Natural Systems</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_nature/data_nlcd_cover.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Land cover data sources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_nature/data_nhd_waterways.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Waterways data sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/supplementary_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Supplementary data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/supplementary_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Supplementary tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/additional_resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Additional resources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_energy/utility_service_area_maps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Utility service area maps</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_transportation/inventory_methods_comparison.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Transportation method comparison</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../_meta/lidac_maps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">Low-Income and Disadvantaged Communities</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../figures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">G</span>&nbsp; <span class="chapter-title">List of Figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">H</span>&nbsp; <span class="chapter-title">List of Tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../changelog.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">I</span>&nbsp; <span class="chapter-title">Release notes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">18.1</span> Introduction</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">18.2</span> Methods</a>
+  <ul class="collapse">
+  <li><a href="#land-cover-classification" id="toc-land-cover-classification" class="nav-link" data-scroll-target="#land-cover-classification"><span class="header-section-number">18.2.1</span> Land cover classification</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">18.3</span> Results</a>
+  <ul class="collapse">
+  <li><a href="#correlation-with-county-area" id="toc-correlation-with-county-area" class="nav-link" data-scroll-target="#correlation-with-county-area"><span class="header-section-number">18.3.1</span> Correlation with county area</a></li>
+  <li><a href="#regional-parks" id="toc-regional-parks" class="nav-link" data-scroll-target="#regional-parks"><span class="header-section-number">18.3.2</span> Regional parks</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/Metropolitan-Council/ghg-cprg/blob/main/_nature/_natural_systems_inventory.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_nature/_natural_systems_inventory.html">Natural Systems</a></li><li class="breadcrumb-item"><a href="../_nature/_natural_systems_inventory.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Natural Systems</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-natural-systems" class="quarto-section-identifier"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Natural Systems</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+<section id="introduction" class="level2" data-number="18.1">
+<h2 data-number="18.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">18.1</span> Introduction</h2>
+<p>Natural systems are a critical component of capturing carbon from the atmosphere and sequestering it in biomass and terrestrial soils. Photosynthesis is the central mechanism of this process and vegetation is therefore the focal land cover classification for quantifying the potential for regions to both sequester and store carbon. Different ecosystems have varying capacities for carbon capture and this work focuses on five broad classifications: urban trees, urban grasslands (i.e.&nbsp;turf grass, lawns), forests, natural grasslands, and wetlands. The distinction between tree and grassland cover in developed areas (i.e.&nbsp;urban) is important as despite having similar sequestration rates, urban natural systems are generally understood to have smaller storage capacities. The preservation and restoration of natural systems will be a key tool in reducing atmospheric greenhouse gases.</p>
+</section>
+<section id="methods" class="level2" data-number="18.2">
+<h2 data-number="18.2" class="anchored" data-anchor-id="methods"><span class="header-section-number">18.2</span> Methods</h2>
+<p>The approach for calculating carbon sequestration potential for a given geography, <span class="math inline">\(j\)</span>, is,</p>
+<p><span class="math display">\[\text{Sequestration}_j = \Sigma (\text{area}_i \times {\text{Sequestration Rate}_i}) \]</span></p>
+<p>where <span class="math inline">\(i\)</span> is land cover classification. The sequestration rate is based on Midwest specific sequestration rate estimates found in the primary scientific literature (<a href="#tbl-sequestration" class="quarto-xref">Table&nbsp;<span class="quarto-unresolved-ref">tbl-sequestration</span></a>).</p>
+<section id="land-cover-classification" class="level3" data-number="18.2.1">
+<h3 data-number="18.2.1" class="anchored" data-anchor-id="land-cover-classification"><span class="header-section-number">18.2.1</span> Land cover classification</h3>
+<p>Land cover was determined by using two products from the <a href="https://www.usgs.gov/node/279743">USGS’s National Land Cover Dataset (NLCD)</a>, each at a 30 m resolution: (1) land cover type and (2) percent tree canopy cover. First, we used the land cover map to identify the region’s various natural cover types (e.g.&nbsp;forests, wetlands, grasslands) that fell outside of ‘Developed’ lands. In order to classify green spaces that are co-located within the urban sector (e.g.&nbsp;urban trees and grasslands), we overlaid the tree canopy cover map on the land cover map. When tree canopy was present in any areas classified as ‘Developed’, we re-classified these as ‘Urban_Tree’ and corrected the area covered based on the percent tree canopy value from the NLCD tree layer. When an area is classified as ‘Developed, Open Space’ but contains zero tree canopy coverage, we re-classified this as ‘Urban_Grassland’. Using this method, we developed the following land cover classifications: ‘Urban_Tree’, ‘Urban_Grassland’, ‘Tree’, ‘Grassland’, and ‘Wetland’.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-nlcd-lc" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-pos="H">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-nlcd-lc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18.1: USGS National Land Cover Database (NLCD) - Land Cover Types
+</figcaption>
+<div aria-describedby="fig-nlcd-lc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="_natural_systems_inventory_files/figure-html/fig-nlcd-lc-1.png" style="width:95.0%;height:60.0%" data-fig-pos="H" class="figure-img">
+</div>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-nlcd-tcc" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-pos="H">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-nlcd-tcc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18.2: USGS National Land Cover Database (NLCD) - Tree Canopy Cover
+</figcaption>
+<div aria-describedby="fig-nlcd-tcc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="_natural_systems_inventory_files/figure-html/fig-nlcd-tcc-1.png" style="width:95.0%;height:60.0%" data-fig-pos="H" class="figure-img">
+</div>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="results" class="level2" data-number="18.3">
+<h2 data-number="18.3" class="anchored" data-anchor-id="results"><span class="header-section-number">18.3</span> Results</h2>
+<p>There is considerable variation across counties in two key components that affect natural system carbon sequestration and stock potential: total area of green spaces and the ratio of ‘natural’ to ‘urban’ green spaces. For example, Chisago County features a higher proportion of green spaces in undeveloped lands compared to Hennepin County, and consequently has nearly 40% greater stock potential than Hennepin County owing to the former’s higher stock capacity in wetlands and forests. Despite this discrepencancy, Hennepin and Chisago Counties have nearly identical sequestration rates due to Hennepin County’s high proportion of urban trees and turf grass (urban grasslands) which have high potential for rapid carbon sequestration. This dichotomy illustrates that different counties curation of natural spaces may play different roles. Highly developed areas may help offset carbon emissions by providing rapid sequestration sinks in urban greenery, whereas less developed counties can provide longer term carbon sinks in natural areas with a higher capacity to continue drawing down atmospheric carbon even if future emissions approach net zero. The high stock capacity also reinforces the need for natural systems protection, as currently captured carbon would be released into the atmosphere upon development.</p>
+<p>Two important caveats to these results are that (1) carbon sequestration tends to slow as natural systems mature and (2) present day natural systems exist at some intermediate level of the illustrated carbon stock potential. The former means that these approximations could be higher or lower depending on the average age of natural systems in each county (e.g.&nbsp;time since agricultural abandonment). The latter means that the loss of these natural systems to development or habitat instruction means that not only would the region lose carbon sinks, but a substantial amount of the stored carbon will be transferred to the atmosphere, increasing atmospheric greenhouse gases.</p>
+<div class="cell">
+<div id="fig-ns-county-stock" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-ns-county-stock-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18.3: 2021 county natural system carbon stock potential
+</figcaption>
+<div aria-describedby="fig-ns-county-stock-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-c352d1eaeab8ae9ac0cd" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-c352d1eaeab8ae9ac0cd">{"x":{"visdat":{"6f802cbb74ec":["function () ","plotlyVisDat"]},"cur_data":"6f802cbb74ec","attrs":{"6f802cbb74ec":{"y":{},"x":{},"hovertemplate":{},"color":{},"colors":["#0047AB","#6F8FAF","#6495ED","#191970","#ffc300","#9f7a00","#604900","#ae017e","#ed2c73","#fcc5c0","#994d96","#df65b0","#0868ac","#4eb3d3","#2f4f4f","#004242","#ffcc00","#b5c100","#a0b600","#8da000","#7a8a00","#b0d400","#9ccf00","#006d2c","#22b600","#26cc00","#7be382","#a1d99b"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"stack","title":{"text":"2021 county natural system stock potential","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"reversed"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16},"type":"category","categoryorder":"array","categoryarray":["Anoka","Sherburne","Chisago","Hennepin","St. Croix","Pierce","Washington","Scott","Dakota","Carver","Ramsey"]},"yaxis2":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-ns-county-stock","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[-152249.09715044886,-68280.256487147097,-213326.90697601976,-531818.0841772987,-173463.24683179849,-71366.041992863058,-53690.976557041016,-211765.32606475049,-307638.10666113446,-219260.03166628958,-222424.03222699728],"hovertemplate":["Anoka<br>Grassland<br>-0.15 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Grassland<br>-0.07 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Grassland<br>-0.21 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Grassland<br>-0.53 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Grassland<br>-0.17 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>Grassland<br>-0.07 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Grassland<br>-0.05 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Grassland<br>-0.21 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Grassland<br>-0.31 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>Grassland<br>-0.22 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Grassland<br>-0.22 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Grassland","marker":{"color":"rgba(34,182,0,1)","line":{"color":"rgba(34,182,0,1)"}},"textfont":{"color":"rgba(34,182,0,1)"},"error_y":{"color":"rgba(34,182,0,1)"},"error_x":{"color":"rgba(34,182,0,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[-10736405.276640119,-5066864.083818323,-14275552.055334538,-7228544.2663781662,-6929035.2652042313,-21031580.818175238,-1449732.0337853027,-6790049.9131704224,-13181526.345891567,-19545528.130438641,-10878754.580608889],"hovertemplate":["Anoka<br>Tree<br>-10.74 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Tree<br>-5.07 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Tree<br>-14.28 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Tree<br>-7.23 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Tree<br>-6.93 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>Tree<br>-21.03 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Tree<br>-1.45 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Tree<br>-6.79 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Tree<br>-13.18 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>Tree<br>-19.55 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Tree<br>-10.88 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Tree","marker":{"color":"rgba(0,109,44,1)","line":{"color":"rgba(0,109,44,1)"}},"textfont":{"color":"rgba(0,109,44,1)"},"error_y":{"color":"rgba(0,109,44,1)"},"error_x":{"color":"rgba(0,109,44,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[-510335.63716309937,-364724.42388452287,-434468.28718823922,-612044.40037183184,-617847.26277596562,-500518.19514369138,-126887.66450693693,-406979.21661555965,-426326.00566878292,-831922.50428242853,-396292.48743258539],"hovertemplate":["Anoka<br>Urban grassland<br>-0.51 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Urban grassland<br>-0.36 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Urban grassland<br>-0.43 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Urban grassland<br>-0.61 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Urban grassland<br>-0.62 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>Urban grassland<br>-0.5 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Urban grassland<br>-0.13 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Urban grassland<br>-0.41 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Urban grassland<br>-0.43 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>Urban grassland<br>-0.83 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Urban grassland<br>-0.4 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Urban grassland","marker":{"color":"rgba(161,217,155,1)","line":{"color":"rgba(161,217,155,1)"}},"textfont":{"color":"rgba(161,217,155,1)"},"error_y":{"color":"rgba(161,217,155,1)"},"error_x":{"color":"rgba(161,217,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[-921706.27498790983,-303349.2488185612,-256071.49429174734,-1387894.3901035713,-2741294.4687490887,-246621.42970126829,-1142699.1834553017,-374593.14236119355,-334532.10423191293,-398197.70201334928,-936140.3399144304],"hovertemplate":["Anoka<br>Urban tree<br>-0.92 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Urban tree<br>-0.3 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Urban tree<br>-0.26 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Urban tree<br>-1.39 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Urban tree<br>-2.74 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>Urban tree<br>-0.25 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Urban tree<br>-1.14 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Urban tree<br>-0.37 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Urban tree<br>-0.33 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>Urban tree<br>-0.4 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Urban tree<br>-0.94 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Urban tree","marker":{"color":"rgba(123,227,130,1)","line":{"color":"rgba(123,227,130,1)"}},"textfont":{"color":"rgba(123,227,130,1)"},"error_y":{"color":"rgba(123,227,130,1)"},"error_x":{"color":"rgba(123,227,130,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[-36662314.610010065,-8044684.9360281294,-19745815.653419055,-4918839.3655812591,-14520798.676461011,-1175507.3381256389,-2618091.0474660327,-9415822.6098595858,-21794924.360953931,-2805247.7580071758,-7201596.934404728],"hovertemplate":["Anoka<br>Wetland<br>-36.66 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Wetland<br>-8.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Wetland<br>-19.75 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Wetland<br>-4.92 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Wetland<br>-14.52 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>Wetland<br>-1.18 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Wetland<br>-2.62 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Wetland<br>-9.42 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Wetland<br>-21.79 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>Wetland<br>-2.81 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Wetland<br>-7.2 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Wetland","marker":{"color":"rgba(38,204,0,1)","line":{"color":"rgba(38,204,0,1)"}},"textfont":{"color":"rgba(38,204,0,1)"},"error_y":{"color":"rgba(38,204,0,1)"},"error_x":{"color":"rgba(38,204,0,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</figure>
+</div>
+</div>
+<div style="page-break-after: always;"></div>
+<div class="cell">
+<div id="fig-ns-county-sequestration" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-ns-county-sequestration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18.4: 2021 county natural system carbon sequestration potential
+</figcaption>
+<div aria-describedby="fig-ns-county-sequestration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-d1dd2ad3e01df2c094c1" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-d1dd2ad3e01df2c094c1">{"x":{"visdat":{"6f8075987bb1":["function () ","plotlyVisDat"]},"cur_data":"6f8075987bb1","attrs":{"6f8075987bb1":{"y":{},"x":{},"hovertemplate":{},"color":{},"colors":["#0047AB","#6F8FAF","#6495ED","#191970","#ffc300","#9f7a00","#604900","#ae017e","#ed2c73","#fcc5c0","#994d96","#df65b0","#0868ac","#4eb3d3","#2f4f4f","#004242","#ffcc00","#b5c100","#a0b600","#8da000","#7a8a00","#b0d400","#9ccf00","#006d2c","#22b600","#26cc00","#7be382","#a1d99b"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"stack","title":{"text":"2021 county natural system sequestration","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"reversed"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16},"type":"category","categoryorder":"array","categoryarray":["Anoka","Sherburne","Hennepin","Chisago","St. Croix","Washington","Pierce","Dakota","Scott","Carver","Ramsey"]},"yaxis2":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-ns-county-sequestration","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[-772.60735867391952,-346.49682396462708,-1082.5544533111452,-2698.7783376161424,-880.26125257927583,-362.1560339936334,-272.46167208050662,-1074.6300128658982,-1561.1486009669509,-1112.6628472617681,-1128.7189695101354],"hovertemplate":["Anoka<br>Grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>Grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>Grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Grassland","marker":{"color":"rgba(34,182,0,1)","line":{"color":"rgba(34,182,0,1)"}},"textfont":{"color":"rgba(34,182,0,1)"},"error_y":{"color":"rgba(34,182,0,1)"},"error_x":{"color":"rgba(34,182,0,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[-78267.665962328916,-36937.095365770183,-104067.80583495421,-52695.597218722462,-50512.196922945972,-153318.79709479416,-10568.448156672468,-49499.003137284126,-96092.432646761852,-142485.57383530602,-79305.382729340199],"hovertemplate":["Anoka<br>Tree<br>-0.08 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Tree<br>-0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Tree<br>-0.1 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Tree<br>-0.05 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Tree<br>-0.05 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>Tree<br>-0.15 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Tree<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Tree<br>-0.05 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Tree<br>-0.1 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>Tree<br>-0.14 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Tree<br>-0.08 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Tree","marker":{"color":"rgba(0,109,44,1)","line":{"color":"rgba(0,109,44,1)"}},"textfont":{"color":"rgba(0,109,44,1)"},"error_y":{"color":"rgba(0,109,44,1)"},"error_x":{"color":"rgba(0,109,44,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[-9092.230262071058,-6497.9950500683372,-7740.5640935489027,-10904.291633886858,-11007.676460098079,-8917.3209731152838,-2260.6531449121208,-7250.8139347583137,-7595.4997612889892,-14821.678946785425,-7060.417271456231],"hovertemplate":["Anoka<br>Urban grassland<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Urban grassland<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Urban grassland<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Urban grassland<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Urban grassland<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>Urban grassland<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Urban grassland<br>0 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Urban grassland<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Urban grassland<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>Urban grassland<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Urban grassland<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Urban grassland","marker":{"color":"rgba(161,217,155,1)","line":{"color":"rgba(161,217,155,1)"}},"textfont":{"color":"rgba(161,217,155,1)"},"error_y":{"color":"rgba(161,217,155,1)"},"error_x":{"color":"rgba(161,217,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[-35401.900107490175,-11651.368875076556,-9835.4733034784767,-53307.761801705346,-105290.62845877181,-9472.5049135259869,-43890.036819078625,-14387.782058873116,-12849.074003453019,-15294.411736421824,-35956.29941944062],"hovertemplate":["Anoka<br>Urban tree<br>-0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Urban tree<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Urban tree<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Urban tree<br>-0.05 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Urban tree<br>-0.11 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>Urban tree<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Urban tree<br>-0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Urban tree<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Urban tree<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>Urban tree<br>-0.02 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Urban tree<br>-0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Urban tree","marker":{"color":"rgba(123,227,130,1)","line":{"color":"rgba(123,227,130,1)"}},"textfont":{"color":"rgba(123,227,130,1)"},"error_y":{"color":"rgba(123,227,130,1)"},"error_x":{"color":"rgba(123,227,130,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"x":[-304866.9566720709,-66895.90223425001,-164197.12692176783,-40902.80724758438,-120748.28739077496,-9774.978708578381,-21770.841760040868,-78297.652894184779,-181236.57307244354,-23327.150939381532,-59885.16993336341],"hovertemplate":["Anoka<br>Wetland<br>-0.3 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver<br>Wetland<br>-0.07 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago<br>Wetland<br>-0.16 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota<br>Wetland<br>-0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin<br>Wetland<br>-0.12 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce<br>Wetland<br>-0.01 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey<br>Wetland<br>-0.02 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott<br>Wetland<br>-0.08 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne<br>Wetland<br>-0.18 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix<br>Wetland<br>-0.02 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington<br>Wetland<br>-0.06 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","orientation":"h","name":"Wetland","marker":{"color":"rgba(38,204,0,1)","line":{"color":"rgba(38,204,0,1)"}},"textfont":{"color":"rgba(38,204,0,1)"},"error_y":{"color":"rgba(38,204,0,1)"},"error_x":{"color":"rgba(38,204,0,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</figure>
+</div>
+</div>
+<section id="correlation-with-county-area" class="level3" data-number="18.3.1">
+<h3 data-number="18.3.1" class="anchored" data-anchor-id="correlation-with-county-area"><span class="header-section-number">18.3.1</span> Correlation with county area</h3>
+<p>The expectation is that larger counties have higher carbon sequestration and storage capacities due to more acreage for green spaces; this is indeed observed.</p>
+<div class="cell">
+<div id="fig-ns-county-stock-area" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-ns-county-stock-area-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18.5: 2021 carbon stock by county area
+</figcaption>
+<div aria-describedby="fig-ns-county-stock-area-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-20ac873c2202a336a2e5" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-20ac873c2202a336a2e5">{"x":{"visdat":{"6f8041fd41cd":["function () ","plotlyVisDat"]},"cur_data":"6f8041fd41cd","attrs":{"6f8041fd41cd":{"mode":"markers","y":{},"x":{},"hovertemplate":{},"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"stack","title":{"text":"County area and stock potential","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"reversed"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Area km<sup>2","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Area km<sup>2","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Area km<sup>2","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Area km<sup>2","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-ns-county-stock-area","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"mode":"markers","y":[-48983010.895951644,-13847902.949036684,-34925234.3972096,-14679140.506612128,-24982438.920022096,-23025593.823138699,-5391100.9057706147,-17199210.208071511,-36044946.923407331,-23800156.126407884,-19635208.374587629],"x":[1152.6810663918345,971.48994275368568,1143.087653616396,1516.75084298554,1567.97930576211,1531.8421176515501,439.35230989108078,952.07967355626545,1165.4243360814103,1899.8736015714578,1093.9229962981174],"hovertemplate":["Anoka County<br>Area: 1,152.7 square kilometers<br>Emissions: -48.98 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Area: 971.5 square kilometers<br>Emissions: -13.85 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Area: 1,143.1 square kilometers<br>Emissions: -34.93 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Area: 1,516.8 square kilometers<br>Emissions: -14.68 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Area: 1,568.0 square kilometers<br>Emissions: -24.98 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Area: 1,531.8 square kilometers<br>Emissions: -23.03 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Area: 439.4 square kilometers<br>Emissions: -5.39 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Area: 952.1 square kilometers<br>Emissions: -17.2 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Area: 1,165.4 square kilometers<br>Emissions: -36.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Area: 1,899.9 square kilometers<br>Emissions: -23.8 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Area: 1,093.9 square kilometers<br>Emissions: -19.64 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</figure>
+</div>
+</div>
+<div class="cell">
+<div id="fig-ns-county-sequestration-area" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-ns-county-sequestration-area-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18.6: 2021 carbon sequestration by county area
+</figcaption>
+<div aria-describedby="fig-ns-county-sequestration-area-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-a217de69b0850c830ba7" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-a217de69b0850c830ba7">{"x":{"visdat":{"6f80744d4a25":["function () ","plotlyVisDat"]},"cur_data":"6f80744d4a25","attrs":{"6f80744d4a25":{"mode":"markers","y":{},"x":{},"hovertemplate":{},"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"stack","title":{"text":"County area and sequestration potential","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"reversed"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Area km<sup>2","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Area km<sup>2","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Area km<sup>2","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Area km<sup>2","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-ns-county-sequestration-area","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"mode":"markers","y":[-428401.36036263499,-122328.85834912972,-286923.52460706059,-160509.23623951519,-288439.0504851701,-181845.75772400745,-78762.441552784585,-150509.88203796622,-299334.72808491433,-197041.47830515658,-183335.98832311059],"x":[1152.6810663918345,971.48994275368568,1143.087653616396,1516.75084298554,1567.97930576211,1531.8421176515501,439.35230989108078,952.07967355626545,1165.4243360814103,1899.8736015714578,1093.9229962981174],"hovertemplate":["Anoka County<br>Area: 1,152.7 square kilometers<br>Emissions: -0.43 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Area: 971.5 square kilometers<br>Emissions: -0.12 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Area: 1,143.1 square kilometers<br>Emissions: -0.29 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Area: 1,516.8 square kilometers<br>Emissions: -0.16 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Area: 1,568.0 square kilometers<br>Emissions: -0.29 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Area: 1,531.8 square kilometers<br>Emissions: -0.18 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Area: 439.4 square kilometers<br>Emissions: -0.08 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Area: 952.1 square kilometers<br>Emissions: -0.15 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Area: 1,165.4 square kilometers<br>Emissions: -0.3 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Area: 1,899.9 square kilometers<br>Emissions: -0.2 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Area: 1,093.9 square kilometers<br>Emissions: -0.18 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="regional-parks" class="level3" data-number="18.3.2">
+<h3 data-number="18.3.2" class="anchored" data-anchor-id="regional-parks"><span class="header-section-number">18.3.2</span> Regional parks</h3>
+<p>Parks play an important role in climate change resilience by protecting existing natural systems and acquiring lands for natural system restoration. The regional park system of the seven county Twin Cities region provides an excellent example of this. The following graphs show how regional parks, on a per area basis, are more efficient carbon sinks than the counties they reside in. For both sequestration and stock potential, this is in large part due to a much small proportion of non-green spaces (e.g.. impervious surfaces, agricultural lands), but stock potential in particular has a higher capacity due to a larger proportion of natural green spaces as opposed to urban green spaces. Regional parks represent 4.0% of the total land area of the seven county region, but 5.6% of its carbon sequestration potential and 6.6% of its carbon stock potential.</p>
+<div class="cell">
+<div id="fig-park-county-stock-comp" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-park-county-stock-comp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18.7: 2021 comparison of carbon stock per square kilometer in counties and regional parks
+</figcaption>
+<div aria-describedby="fig-park-county-stock-comp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-88b21274f5c7ce5134d4" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-88b21274f5c7ce5134d4">{"x":{"visdat":{"6f80471e5d56":["function () ","plotlyVisDat"]},"cur_data":"6f80471e5d56","attrs":{"6f80471e5d56":{"y":{},"x":{},"hovertemplate":{},"color":{},"colors":["lightgreen","darkgreen"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"2021 county vs park natural system stock potential","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"reversed"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e / km<sup>2<\/sup>","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e / km<sup>2<\/sup>","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e / km<sup>2<\/sup>","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e / km<sup>2<\/sup>","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["Anoka","Carver","Dakota","Hennepin","Ramsey","Scott","Washington"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-park-county-stock-comp","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"y":[-42494.851632533617,-14254.293677796437,-9678.0170418221242,-15932.888162627556,-12270.564611591812,-18064.885414293094,-17949.351500090976],"x":["Anoka","Carver","Dakota","Hennepin","Ramsey","Scott","Washington"],"hovertemplate":["County<br>Natural Systems<br>-42.49 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-14.25 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-9.68 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-15.93 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-12.27 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-18.06 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-17.95 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>"],"type":"bar","name":"County","marker":{"color":"rgba(144,238,144,1)","line":{"color":"rgba(144,238,144,1)"}},"textfont":{"color":"rgba(144,238,144,1)"},"error_y":{"color":"rgba(144,238,144,1)"},"error_x":{"color":"rgba(144,238,144,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[-35105.887550702151,-36765.913777825059,-36851.785092782877,-37928.621784308547,-35314.56241923137,-40909.259234122641,-35283.859190390678],"x":["Anoka","Carver","Dakota","Hennepin","Ramsey","Scott","Washington"],"hovertemplate":["Regional Parks<br>Natural Systems<br>-35.11 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-36.77 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-36.85 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-37.93 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-35.31 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-40.91 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-35.28 thousand metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>"],"type":"bar","name":"Regional Parks","marker":{"color":"rgba(0,100,0,1)","line":{"color":"rgba(0,100,0,1)"}},"textfont":{"color":"rgba(0,100,0,1)"},"error_y":{"color":"rgba(0,100,0,1)"},"error_x":{"color":"rgba(0,100,0,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</figure>
+</div>
+</div>
+<div class="cell">
+<div id="fig-park-county-comp" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-park-county-comp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18.8: 2021 comparison of carbon sequestration per square kilometer in counties and regional parks
+</figcaption>
+<div aria-describedby="fig-park-county-comp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-2d7115d786a86eaceaf4" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-2d7115d786a86eaceaf4">{"x":{"visdat":{"6f80503131c":["function () ","plotlyVisDat"]},"cur_data":"6f80503131c","attrs":{"6f80503131c":{"y":{},"x":{},"hovertemplate":{},"color":{},"colors":["lightgreen","darkgreen"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"2021 county vs park natural system sequestration potential","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v","traceorder":"reversed"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e / km<sup>2<\/sup>","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e / km<sup>2<\/sup>","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e / km<sup>2<\/sup>","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e / km<sup>2<\/sup>","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["Anoka","Carver","Dakota","Hennepin","Ramsey","Scott","Washington"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-park-county-comp","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"y":[-371.65645628554739,-125.91881085499341,-105.82439230663108,-183.95590389821851,-179.26943771459963,-158.08538530790457,-167.5949668701796],"x":["Anoka","Carver","Dakota","Hennepin","Ramsey","Scott","Washington"],"hovertemplate":["County<br>Natural Systems<br>-371.66 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-125.92 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-105.82 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-183.96 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-179.27 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-158.09 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","County<br>Natural Systems<br>-167.59 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>"],"type":"bar","name":"County","marker":{"color":"rgba(144,238,144,1)","line":{"color":"rgba(144,238,144,1)"}},"textfont":{"color":"rgba(144,238,144,1)"},"error_y":{"color":"rgba(144,238,144,1)"},"error_x":{"color":"rgba(144,238,144,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[-270.40283830193954,-302.18667520330979,-300.4719030660425,-319.38275764769145,-350.60355089420318,-302.09899320247445,-255.46699800451267],"x":["Anoka","Carver","Dakota","Hennepin","Ramsey","Scott","Washington"],"hovertemplate":["Regional Parks<br>Natural Systems<br>-270.4 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-302.19 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-300.47 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-319.38 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-350.6 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-302.1 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>","Regional Parks<br>Natural Systems<br>-255.47 metric tons CO<sub>2<\/sub>e per square kilometers<br><extra><\/extra>"],"type":"bar","name":"Regional Parks","marker":{"color":"rgba(0,100,0,1)","line":{"color":"rgba(0,100,0,1)"}},"textfont":{"color":"rgba(0,100,0,1)"},"error_y":{"color":"rgba(0,100,0,1)"},"error_x":{"color":"rgba(0,100,0,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</figure>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+          // default icon
+          link.classList.add("external");
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../_agriculture/agriculture_data_source.html" class="pagination-link" aria-label="Methods and data sources">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../_nature/data_nlcd_cover.html" class="pagination-link" aria-label="Land cover data sources">
+        <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Land cover data sources</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/Metropolitan-Council/ghg-cprg/blob/main/_nature/_natural_systems_inventory.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer><section class="footer-social standalone-footer">
+  <div class="wrapper1 cf">
+    <nav class="footer-columns" aria-label="Footer">
+      <div>
+        <div class="footer-col">
+          <div class="wysiwyg">
+            <div class="footer-textblue"><a href="https://metrocouncil.org/"><img src="style/footer-logo.png" alt="Met Council Logo "></a></div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-divider-small"></div>
+            <h4 class="footer-textblue">390 Robert Street North<br>
+              St. Paul, MN 55101<br>
+              <a href="tel:651-602-1000">651-602-1000</a></h4>
+            <p>&nbsp;</p>
+            <p><span class="copyright">© Metropolitan Council</span></p>
+        </div>
+        <div class="footer-col">
+          <div class="footer-divider-small"></div>
+            <h4 class="footer-textblue"><a href="https://metrocouncil.org/About-Us/Contact-Us-(1).aspx">Contact Us</a></h4>
+          <h4 class="footer-textblue"><a href="https://metrocouncil.org/Terms-Conditions.aspx">Terms &amp; Conditions</a></h4>
+          <h4 class="footer-textblue"><a href="https://metrocouncil.org/Privacy-Policy.aspx">Privacy Policy</a></h4>
+        </div>
+      </div>
+    </nav>
+  </div>
+</section>
+
+
+
+</body></html>
