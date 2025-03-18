@@ -6,6 +6,8 @@
 #' 
 calculate_incin_emissions <- function(solid_waste_data){
   # assign factors
+  # future workflow (ghg-ccap): save all relevant factors in global table (incl landfill, compost)
+  # check with liz
   fcc <- .4 # fraction of carbon content in MSW, IPCC default
   ffc <- .4 # fraction of fossil carbon in MSW, IPCC default
   co2_factor <- fcc * ffc * 44 / 12 # atomic weight of CO2:C
@@ -38,4 +40,6 @@ calculate_incin_emissions <- function(solid_waste_data){
     dplyr::select(
       -c(state_total, co2, n2o)
     )
+  
+  return(incineration_emissions)
 }
