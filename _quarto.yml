@@ -9,7 +9,7 @@ project:
 quarto-required: 1.5.57
 
 book:
-  version: 2.0.0
+  version: 2.0.1
   title: "Twin Cities MSA Greenhouse Gas Inventory"
   subtitle: "Climate Pollution Reduction Grant Documentation"
   author: "Metropolitan Council"
@@ -18,7 +18,7 @@ book:
   search: true
   repo-url: https://github.com/Metropolitan-Council/ghg-cprg
   repo-actions: source
-  reader-mode: true
+  reader-mode: false
   sidebar:
     pinned: true
     align: center
@@ -36,7 +36,7 @@ book:
     
     - part: "Electricity"
       chapters:
-       - _energy/_energy_electricity_emissions.qmd
+       - _energy/_electricity.qmd
        - _energy/data_electricity.qmd
 
     - part: "Building Energy"
@@ -53,12 +53,12 @@ book:
 
     - part: "Waste and Wastewater"
       chapters:
-       - _waste/_solid_waste.qmd
-       # - _waste/_data_methods_waste.qmd
-       - _waste/data_solid_waste.qmd
+       - _waste/_waste.qmd
+       - _waste/_data_methods_waste.qmd
+       # - _waste/data_solid_waste.qmd
        # - _waste/data_mpca_score.qmd
-       - _waste/methods_solid_waste.qmd
-       - _waste/qc_waste_other.qmd
+       # - _waste/methods_solid_waste.qmd
+       # - _waste/qc_waste_other.qmd
     
     - part: "Agriculture"
       chapters:
@@ -78,7 +78,7 @@ book:
     - _meta/supplementary_tables.qmd
     - _meta/additional_resources.qmd
     - _energy/utility_service_area_maps.qmd
-    - _transportation/inventory_methods_comparison.qmd
+    # - _transportation/inventory_methods_comparison.qmd
     - _meta/lidac_maps.qmd
     - figures.qmd
     - tables.qmd
@@ -119,7 +119,7 @@ format:
       margin-width: 100px
     toc-depth: 3
     number-sections: true
-    # number-depth: 4
+    number-depth: 3
     copyright: "Metropolitan Council"
     fig-responsive: true
     link-external-filter: "metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io"

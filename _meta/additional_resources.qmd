@@ -1,4 +1,4 @@
-# Additional resources
+# Additional resources {#sec-resources}
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -19,15 +19,21 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
-## Climate Pollution Reduction Grants (CPRG) 
+## Climate Pollution Reduction Grants (CPRG) {.unnumbered}
 
 - Climate Pollution Reduction Grants [EPA site](https://www.epa.gov/inflation-reduction-act/climate-pollution-reduction-grants) and [SAM.gov](https://sam.gov/fal/6ccff3d73583450ba88ecef4bee21212/view)
 - Funding information for this project on [USASpending.gov](https://www.usaspending.gov/award/ASST_NON_00E03476_6800)
-- Minnesota statewide Priority Climate Action Plan (PCAP) [engagement page](https://engage.eqb.state.mn.us/climate-priorities)
 
-## Energy
+## Energy {.unnumbered}
 
 - U.S. Energy Information Administration (EIA) Glossary, available on their [website](https://www.eia.gov/tools/glossary/).
+
+## Minnesota statewide efforts  {.unnumbered}
+
+- [Transportation Greenhouse Gas Emissions Impact Assessment Technical Advisory Committee](https://www.dot.state.mn.us/sustainability/ghg-tac.html)  
+- [Other MnDOT committees, councils, and working groups](https://www.dot.state.mn.us/sustainability/committees.html)  
+- Minnesota statewide Priority Climate Action Plan (PCAP) [engagement page](https://engage.eqb.state.mn.us/climate-priorities)
+- [Minnesota Climate Action Framework (CAF)](https://climate.state.mn.us/minnesotas-climate-action-framework)  
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))

@@ -1183,7 +1183,20 @@ _energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_cou
 
 _energy/data-raw/rii
 
+
 _energy/data-raw/OneDrive_1_2-4-2025.zip
 _energy/data-raw/ctu_xcel_not_reported_yet.csv
 /_energy/data-raw/centerpointDataRequest
 /_energy/data-raw/connexusDataRequest
+
+_transportation/data-raw/regional_indicators_initiative/2025-01-15_transportation_emissions/
+
+_transportation/data-raw/metc_travel_model~Updated upstream
+
+index_files/
+
+_nature/data_nlcd_cover_files/
+
+_nature/_natural_systems_inventory_files/
+_meta/data-raw/imagine_2050_forecasts.xlsx
+

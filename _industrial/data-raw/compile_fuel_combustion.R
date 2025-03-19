@@ -133,7 +133,7 @@ ggplot(ind_fuel_activity, aes(x = unit_ch4, y = unit_n2o)) +
   facet_wrap(~per_unit, scales = "free")
 # looks good overall, very little disagreement, will take average unit btw gas calcs
 
-# arrange to back-back-calculate activity to all gas emissions (i.e. include co2)
+# arrange to back-calculate activity to all gas emissions (i.e. include co2)
 unit_to_mt <- industrial_hub %>%
   filter(fuel_type %in% ind_fuel_data$corrected_fuel_type) %>%
   mutate(gas = sub(".*? ", "", emission)) %>%
@@ -206,7 +206,13 @@ ind_fuel_activity_out <- ind_fuel_activity %>%
     specific_fuel_type = corrected_fuel_type,
     units_activity = per_unit,
     value_activity = avg_activity
-  )
+  ) %>%
+  ### add flag for likely doublecounts - will filter from emissions
+  mutate(doublecount = if_else(
+    general_fuel_type == "Natural Gas" &
+      !grepl("Y", industry_type_subparts),
+    "Yes", "No"
+  ))
 
 ind_fuel_activity_meta <-
   tibble::tribble(
@@ -221,7 +227,8 @@ ind_fuel_activity_meta <-
     "general_fuel_type", class(ind_fuel_activity_out$general_fuel_type), "General category of fuel combusted: Natural Gas, Petroleum, Coal, Other",
     "specific_fuel_type", class(ind_fuel_activity_out$specific_fuel_type), "Specific type of fuel combusted",
     "value_activity", class(ind_fuel_activity_out$value_activity), "Numerical value of activity data",
-    "units_activity", class(ind_fuel_activity_out$units_activity), "Units of activity data"
+    "units_activity", class(ind_fuel_activity_out$units_activity), "Units of activity data",
+    "doublecount", class(ind_fuel_activity_out$doublecount), "Whether activity is likely to be double counted in utility analysis"
   )
 
 saveRDS(ind_fuel_activity_out, "./_industrial/data/fuel_combustion_activity.rds")
@@ -242,7 +249,9 @@ ind_fuel_gas_emissions_out <- ind_fuel_emissions %>%
     specific_fuel_type = corrected_fuel_type,
     units_emissions,
     values_emissions
-  )
+  ) %>%
+  filter((general_fuel_type != "Natural Gas" |
+    grepl("Y", industry_type_subparts)))
 
 ind_fuel_gas_emissions_meta <-
   tibble::tribble(
@@ -265,6 +274,30 @@ saveRDS(ind_fuel_gas_emissions_meta, "./_industrial/data/fuel_combustion_emissio
 
 ## fuel combustion by co2e
 
+
+ind_fuel_co2e_emissions_out_doublecount <- ind_fuel_emissions %>%
+  filter(
+    grepl("co2e", units_emissions),
+    !values_emissions == 0
+  ) %>%
+  group_by(
+    facility_id,
+    facility_name,
+    industry_type_subparts,
+    county_name,
+    city_name,
+    reporting_year,
+    unit_name,
+    general_fuel_type,
+    corrected_fuel_type
+  ) %>%
+  summarize(values_emissions = sum(values_emissions)) %>%
+  mutate(units_emissions = "Metric tons of CO2 equivalency") %>%
+  rename(specific_fuel_type = corrected_fuel_type) %>%
+  filter((general_fuel_type == "Natural Gas" &
+    !grepl("Y", industry_type_subparts)))
+
+
 ind_fuel_co2e_emissions_out <- ind_fuel_emissions %>%
   filter(
     grepl("co2e", units_emissions),
@@ -283,7 +316,9 @@ ind_fuel_co2e_emissions_out <- ind_fuel_emissions %>%
   ) %>%
   summarize(values_emissions = sum(values_emissions)) %>%
   mutate(units_emissions = "Metric tons of CO2 equivalency") %>%
-  rename(specific_fuel_type = corrected_fuel_type)
+  rename(specific_fuel_type = corrected_fuel_type) %>%
+  filter((general_fuel_type != "Natural Gas" |
+    grepl("Y", industry_type_subparts)))
 
 ind_fuel_co2e_emissions_meta <-
   tibble::tribble(
@@ -302,4 +337,5 @@ ind_fuel_co2e_emissions_meta <-
   )
 
 saveRDS(ind_fuel_co2e_emissions_out, "./_industrial/data/fuel_combustion_emissions.rds")
+saveRDS(ind_fuel_co2e_emissions_out_doublecount, "./_industrial/data/fuel_combustion_emissions_doublecount.rds")
 saveRDS(ind_fuel_co2e_emissions_meta, "./_industrial/data/fuel_combustion_emissions_meta.rds")

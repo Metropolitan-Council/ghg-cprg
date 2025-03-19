@@ -11,12 +11,13 @@ ind_nei_emissions <- readRDS("./_industrial/data/nei_county_industrial_emissions
 ### subtract away flight from NEI and call it 'small industrial'
 ### If flight > NEI, call 'small industrial' 0
 
-### need to do more research into what 'fuel gas' is
+### Research suggest 'fuel gas' is typically natural gas, but occasionally gaseous propane, butane, etc
 ind_fuel_combustion <- ind_fuel_combustion %>%
   mutate(fuel_type = case_when(
-    specific_fuel_type == "Fuel Gas" ~ "Fuel Gas",
+    specific_fuel_type == "Natural Gas" ~ "Fuel Gas",
     TRUE ~ general_fuel_type
   ))
+
 
 county_fuel_combustion <- ind_fuel_combustion %>%
   filter(units_emissions != "avg_activity") %>%

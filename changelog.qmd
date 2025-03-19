@@ -1,9 +1,42 @@
-# Release notes
+# Release notes {#sec-changelog}
 
 ```{r, echo=FALSE, message = FALSE, results='markup'}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 ```
+
+## v2.0.0 (February 2025) {.unnumbered}
+
+This release incorporates major changes to all sectors, including temporal data back to 2005 and fundamental changes in methodology. We also now account for industrial and agricultural emissions.  
+
+- Energy  
+  - Electricity and natural gas data have utility report data for 2005 and 2013-2021  
+  - Electricity and natural gas data are split into residential, commercial, and industrial per NREL modeling for all years  
+  - Electricity and natural gas are now categories in the sectors residential, commercial, and industrial  
+- Transportation  
+  - Transportation emissions are calculated using a different method; in previous versions, we used a 100/50/50 origin-destination method. Now we are using a VMT-based method.    
+  - **Emissions estimates from previous releases should not be directly compared with this and all future releases.**   
+  - Transportation emissions are compiled from EPA data sources, including the National Emissions Inventory (NEI), EPA EQUATES, and the Air Emissions Modeling Platform.   
+  - Bus, passenger, and commercial modes are accounted for.   
+  - Preliminary aviation emissions accounted for.  
+- Waste  
+  - Solid waste now follows IPCC guidelines instead of previous simplistic activity-EF model  
+  - Solid waste emissions are apportioned to CTU by population  
+  - Wastewater is now calculated based off county and CTU population, instead of apportioned from state totals  
+- Industrial  
+  - New sector, partially informed by previous energy work  
+  - New emissions data from state and federal point source data includes process emissions and additional fuel combustion  
+- Agriculture   
+  - New sector detailing emissions from livestock and crop production  
+  - Data sources are USDA county agriculture censuses and EPA emission factors  
+- Natural Systems  
+  - Sequestration now relies entirely on USGS NLCD model (WorldCover data removed for now)  
+  - Adds freshwater emissions data following National Hydrography Database and state emission factors  
+- Other data  
+  - County and CTU population data back to 2005.   
+
+See full changelog in GitHub release [v2.0.0](https://github.com/Metropolitan-Council/ghg-cprg/releases/tag/v2.0.0)
+
 
 ## v1.1.1 (July 2024) {.unnumbered}
 

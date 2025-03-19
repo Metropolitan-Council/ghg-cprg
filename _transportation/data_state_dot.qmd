@@ -1,4 +1,4 @@
-## State DOT data
+### State DOT data
 
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
@@ -59,13 +59,13 @@ hookaddcap()
 
 As required by federal law, Minnesota and Wisconsin state departments of transportation (MnDOT and WisDOT) report various traffic measures for planning, forecasting, and various analysis endeavors.
 
-### Vehicle miles traveled
+#### Vehicle miles traveled
 
 Vehicle miles traveled (VMT) is a standardized measure created by multiplying average annual daily traffic (AADT) by centerline miles. AADT is an estimate of the total vehicles on a road segment on any given day of the year in all directions of travel. VMT and AADT are common traffic measures and standardized across the United States. 
 
 MnDOT and WisDOT derive VMT using traffic counts from continuous and short term traffic monitoring sites. These raw counts are adjusted by multiplying seasonal, day-of-week, and axle adjustment factors [@mndotTFADataCollection2023, @wisdotTransportationPlanningManual2023]. Data is not collected for every site every year, but the data are sufficient for year-over-year comparisons. 
 
-#### County vehicle miles traveled
+##### County vehicle miles traveled
 
 We consider county-level data to be of the highest quality and most reliable measure of VMT.
 
@@ -119,7 +119,7 @@ fig_dot_vmt <- plot_ly(
 fig_dot_vmt
 ```
 
-#### City vehicle miles traveled
+##### City vehicle miles traveled
 
 City VMT is available only for a select number of cities, townships, unorganized areas (CTUs). 
 
@@ -315,7 +315,7 @@ mndot_ctu_summary %>%
 <!-- ``` -->
 
 
-### Limitations
+#### Limitations
 
 - AADT/VMT data rely on modeling, and not every site will have new observed data every year. 
 - AADT/VMT are generally estimated for high-use arterial roads and highways, leaving most local roads out.
