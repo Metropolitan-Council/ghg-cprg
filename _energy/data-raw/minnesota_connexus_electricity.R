@@ -11,7 +11,7 @@ city_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connex
       Consumption == "REDACTED" ~ NA_real_, 
       grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption),  # checks if only numeric values are present
       TRUE ~ NA_real_  
-    )
+    ) * 1e-3
   ) %>%
   rename(
     sector = Class,
@@ -32,7 +32,7 @@ township_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Co
       Consumption == "REDACTED" ~ NA_real_, 
       grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption), # checks if only numeric values are present
       TRUE ~ NA_real_ 
-    )
+    )* 1e-3
   ) %>%
   rename(
     sector = Class,
@@ -47,6 +47,32 @@ township_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Co
     ctu_name = case_when(
       grepl(" Twp$", ctu_name) ~ sub(" Twp$", "", ctu_name)
     )
+  )
+
+# Read county data
+county_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connexus_County_City_Township_Consumption_2014_2024.xlsx"),
+                          sheet = "County") %>%
+  mutate(
+    county_name = str_to_title(County),
+    geog_level = "COUNTY",
+    mwh_delivered = case_when(
+      Consumption == "REDACTED" ~ NA_real_, 
+      grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption), # checks if only numeric values are present
+      TRUE ~ NA_real_ 
+    ) * 1e-3
+  ) %>%
+  rename(
+    sector = Class,
+    customer_count = Premises,
+    year = Year
+  ) %>%
+  select(
+    -County,
+    -Consumption
+  ) %>% 
+  mutate(
+    source = "Electricity",
+    utility = "Connexus Energy"
   )
 
 city_township_connexus <- rbind(city_raw, township_raw)
@@ -107,3 +133,4 @@ connexus_activityData_2014_2023 <- connexus_activityData_2014_2023 %>%
   select(1:7, 13:14)
   
 write_rds(connexus_activityData_2014_2023, here("_energy", "data", "connexus_activityData_2014_2023.RDS"))
+write_rds(county_raw, here("_energy", "data", "connexus_county_activityData_2014_2023.RDS"))
