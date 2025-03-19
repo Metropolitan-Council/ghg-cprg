@@ -1180,6 +1180,7 @@ _industrial/data-raw/mn_flight.xls
 
 _industrial/data-raw/MPCA_industrial_fuel_throughput.xlsx
 _energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.zip
+
 _nature/data-raw/nlcd_raw_imgs/Annual_NLCD_LndCov_2000_CU_C1V0_WSiI2L1o3YwMlMy5S67Z.tiff
 _nature/data-raw/nlcd_raw_imgs/Annual_NLCD_LndCov_2001_CU_C1V0_WSiI2L1o3YwMlMy5S67Z.tiff
 _nature/data-raw/nlcd_raw_imgs/Annual_NLCD_LndCov_2002_CU_C1V0_WSiI2L1o3YwMlMy5S67Z.tiff
@@ -1216,3 +1217,25 @@ _nature/data-raw/nlcd_raw_imgs/nlcd_tcc_conus_2019_v2021-4_WSiI2L1o3YwMlMy5S67Z.
 _nature/data-raw/nlcd_raw_imgs/nlcd_tcc_conus_2020_v2021-4_WSiI2L1o3YwMlMy5S67Z.tiff
 _nature/data-raw/nlcd_raw_imgs/nlcd_tcc_conus_2021_v2021-4_WSiI2L1o3YwMlMy5S67Z.tiff
 /_nature/data-raw/nhd_gdb
+
+
+_energy/data-raw/rii
+
+
+_energy/data-raw/OneDrive_1_2-4-2025.zip
+_energy/data-raw/ctu_xcel_not_reported_yet.csv
+/_energy/data-raw/centerpointDataRequest
+/_energy/data-raw/connexusDataRequest
+
+_transportation/data-raw/regional_indicators_initiative/2025-01-15_transportation_emissions/
+
+_transportation/data-raw/metc_travel_model~Updated upstream
+
+index_files/
+
+_nature/data_nlcd_cover_files/
+
+_nature/_natural_systems_inventory_files/
+_meta/data-raw/imagine_2050_forecasts.xlsx
+
+

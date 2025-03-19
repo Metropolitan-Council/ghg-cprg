@@ -1,4 +1,4 @@
-## Air Emissions Modeling Platforms {#sec-epa-air-emissions-modeling}
+#### Air Emissions Modeling Platforms {#sec-epa-air-emissions-modeling}
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -31,20 +31,21 @@ Both the 2021 and 2022 estimates are based on the 2020 NEI [@usepa2022v1Emission
 
 Air Emissions Modeling SMOKE FF10 data are processed in [epa_air_emissions_modeling_onroad.R](data-raw/epa_air_emissions_modeling_onroad.R). 
 
-## Verification and validation
+##### Verification and validation {#sec-epa-air-emis-verif-valid}
 
 Air Emissions Modeling data are only available from a single consistent website, and so verification across locations was not necessary. 
 
-### Activity data
+<!-- ##### Activity data {#sec-epa-air-emis-activity-data} -->
 
-Compare underlying activity data with data from state DOTs
+<!-- TODO Compare underlying activity data with data from state DOTs -->
 
-### Emissions factors
+<!-- ##### Emissions factors -->
 
-## Limitations 
+##### Limitations {#sec-epa-air-emis-mod-limit}
 
 In addition to limitations described in @sec-epa-emissions-limitations, Air Emissions Modeling has its own set of limitations.
 
+- Air Emissions Modeling datasets are in active development and subject to change.   
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))

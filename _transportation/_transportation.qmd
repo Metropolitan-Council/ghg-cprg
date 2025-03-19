@@ -23,35 +23,37 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 #   summarise(
 #     vmt_total = sum(vmt_total),
 #     vmt_same = sum(vmt_same),
-#     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)
+#     value_emissions = sum(value_emissions)
 #   )
 
 
-onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS"))
+onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>%
+  rename(value_emissions = emissions_metric_tons_co2e)
 
 onroad_county_summary <- onroad_emissions %>%
   group_by(emissions_year, county_name, geoid, data_source) %>%
   summarize(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    value_emissions = sum(value_emissions),
     .groups = "keep"
   ) %>%
   rowwise() %>%
-  mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions))
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 county_emissions_summary <- county_emissions %>%
   group_by(sector, category, source, data_source, factor_source) %>%
   summarize(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    value_emissions = sum(value_emissions),
     .groups = "keep"
   )
 
-transportation_max_year <- onroad_emissions %>%
-  filter(emissions_year == max(emissions_year)) %>%
-  extract2("emissions_year") %>%
-  unique()
+# transportation_max_year <- onroad_emissions %>%
+#   filter(emissions_year == max(emissions_year)) %>%
+#   extract2("emissions_year") %>%
+#   unique()
 
+transportation_max_year <- 2021
 
 transportation_min_year <- onroad_emissions %>%
   filter(emissions_year == min(emissions_year)) %>%
@@ -63,32 +65,72 @@ modes_included <-
   unique() %>%
   stringr::str_to_lower()
 
+transportation_2005 <- onroad_emissions %>%
+  filter(emissions_year == 2005) %>%
+  pull(value_emissions) %>%
+  sum()
+
+transportation_2021 <- onroad_emissions %>%
+  filter(emissions_year == 2021) %>%
+  pull(value_emissions) %>%
+  sum()
+
+transportation_2020 <- onroad_emissions %>%
+  filter(emissions_year == 2020) %>%
+  pull(value_emissions) %>%
+  sum()
+
+county_emissions_summary_2021 <- county_emissions %>%
+  filter(emissions_year == 2021) %>%
+  group_by(sector, category, source, data_source, factor_source) %>%
+  summarize(
+    value_emissions = sum(value_emissions),
+    emissions_per_capita = sum(emissions_per_capita),
+    .groups = "keep"
+  )
+
+sector_percentages <- county_emissions_summary_2021 %>%
+  filter(
+    !category == "Sequestration"
+  ) %>% # not contributing to emissions
+  group_by(sector) %>%
+  summarize(value_emissions = sum(value_emissions)) %>%
+  arrange(-value_emissions) %>%
+  janitor::adorn_percentages(denominator = "col")
+
+
 hookaddcap()
 ```
 
 ## Introduction
 
-Transportation emissions, when grouped together, are one of the largest sources of greenhouse gas emissions nationally, statewide, and locally. [more information here on transportation emissions, what is included/not included, ]
+Transportation emissions, when grouped together, are one of the largest sources of greenhouse gas emissions nationally, statewide, and locally. 
 
-This is the transportation section for estimating on-road emissions. Modes included are `r listify(modes_included)`. 
+This is the transportation section for estimating on-road emissions. Modes included are `r listify(modes_included)`. Aviation data provided are considered preliminary at this time. 
 
 Note that this does not include freight rail, light rail, and other transportation emissions.
 
 ## `r transportation_max_year` emissions
 
+<!-- TODO add section with emissions by gas type (CO2, CH4, etc) -->
+
+Transportation emissions totaled `r round(transportation_2021/1000000, digits = 2)` MMtCO~2~e, accounting for `r scales::percent(sector_percentages %>% filter(sector == "Transportation") %>% extract2("value_emissions"))` of regional emissions in `r transportation_max_year`. 
+
 ```{r fig-transportation-county-emissions}
-#| fig-cap: "2022 onroad transportation emissions by county"
+#| fig-cap: "2021 transportation emissions by county"
 #| out-width: "95%"
 
 fig_transportation_county_emissions <- plot_county_sector_emissions(
   county_emissions %>%
-    filter(year == transportation_max_year),
+    filter(emissions_year == transportation_max_year),
   .sector = "Transportation",
   .plotly_source = "fig-transportation-county-emissions"
 )
+
 fig_transportation_county_emissions
 ```
 
+<!--
 We can also view this data broken out by vehicle weight in @fig-transportation-county-emissions-by-weight. 
 
 
@@ -101,14 +143,14 @@ fig_transportation_county_emissions_by_weight <- plot_ly(
   source = "fig-transportation-county-emissions-by-weight",
   data = onroad_emissions %>%
     filter(emissions_year == transportation_max_year),
-  y = ~ reorder(county_name, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
+  y = ~ reorder(county_name, value_emissions),
+  x = ~value_emissions,
   color = ~vehicle_weight_label,
   colors = unlist(vehicle_weight_colors),
   hovertemplate = ~ paste0(
     county_name, " County", "<br>",
     vehicle_weight_label, "<br>",
-    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -128,9 +170,11 @@ fig_transportation_county_emissions_by_weight <- plot_ly(
 fig_transportation_county_emissions_by_weight
 ```
 
+-->
+We can also view this data broken out by fuel type.
 
 ```{r fig-transportation-county-emissions-by-fuel-type}
-#| fig-cap: "2022 annual emissions transportation by fuel type"
+#| fig-cap: "2021 annual emissions transportation by fuel type"
 #| out-width: "95%"
 
 fig_transportation_county_emissions_by_fuel <- plot_ly(
@@ -138,14 +182,14 @@ fig_transportation_county_emissions_by_fuel <- plot_ly(
   source = "fig-transportation-county-emissions-by-fuel-type",
   data = onroad_emissions %>%
     filter(emissions_year == transportation_max_year),
-  y = ~ reorder(county_name, emissions_metric_tons_co2e),
-  x = ~emissions_metric_tons_co2e,
+  y = ~ reorder(county_name, value_emissions),
+  x = ~value_emissions,
   color = ~vehicle_fuel_label,
   colors = unlist(fuel_type_colors),
   hovertemplate = ~ paste0(
     county_name, " County", "<br>",
     vehicle_fuel_label, "<br>",
-    round(emissions_metric_tons_co2e * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions * 1e-6, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
@@ -166,19 +210,23 @@ fig_transportation_county_emissions_by_fuel
 ```
 
 
+
 ## Historical emissions
 
+Despite a `r scales::percent((transportation_2005 - transportation_2020) / transportation_2005, accuracy = 0.1)` reduction in the transportation sector due to the Covid pandemic, emissions in this sector rebounded to in 2021.
+
 ```{r fig-transportation-time-series-county}
-#| fig-cap: "Transportation emissions, 2002-2022"
+#| fig-cap: "Transportation emissions, 2002-2021"
 #| out-width: "95%"
 
 
 fig_transportation_time_series_county <- onroad_county_summary %>%
+  filter(emissions_year <= transportation_max_year) %>%
   group_by(county_name) %>%
   plot_ly(
     source = "fig-transportation-time-series-county",
     x = ~emissions_year,
-    y = ~emissions_metric_tons_co2e,
+    y = ~value_emissions,
     color = ~county_name,
     colors = "Dark2",
     type = "scatter",
@@ -191,7 +239,10 @@ fig_transportation_time_series_county <- onroad_county_summary %>%
     )
   ) %>%
   plotly_layout(
-    main_title = paste0("Transportation emissions, ", transportation_min_year, " - ", transportation_max_year),
+    main_title = paste0(
+      "Transportation emissions, ", transportation_min_year,
+      " - ", transportation_max_year
+    ),
     subtitle = "",
     x_title = "Year",
     y_title = "Metric tons CO<sub>2</sub>e",

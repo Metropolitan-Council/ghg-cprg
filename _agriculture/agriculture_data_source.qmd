@@ -1,4 +1,17 @@
-# Agriculture methods and data sources
+# Methods and data sources
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
 ```{r include=FALSE}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -18,9 +31,9 @@ county_area <- cprg_county %>%
 county_agriculture <- landcover %>%
   filter(!is.na(area), land_cover_type == "Cropland") %>%
   left_join(., county_area,
-    by = c("county" = "county_name")
+    by = c("county_name")
   ) %>%
-  group_by(year, county) %>%
+  group_by(year, county_name) %>%
   mutate(percent_area = area / county_area_sqkm)
 ```
 
@@ -125,7 +138,7 @@ Be sure to add a citation of this dataset to the Zotero shared library.
 We would expect that counties with higher amounts of agricultural land would have higher emissions associated with crop production and likly livestock, though the latter may be more poorly predicted as area required for livestock can vary greatly depending on management.
 
 ```{r fig-cropland-area-emissions}
-#| fig-cap: "A scatter plot"
+#| fig-cap: "Cropland by agricultural emissions comparison"
 #| out-width: "95%"
 
 
@@ -134,11 +147,11 @@ cropland_2021 <- county_agriculture %>%
   left_join(., county_emissions %>%
     filter(
       sector == "Agriculture",
-      year == 2021
+      emissions_year == 2021
     ) %>%
-    group_by(geog_name, category) %>%
-    summarize(ag_emissions = sum(emissions_metric_tons_co2e)),
-  by = c("county" = "geog_name")
+    group_by(county_name, category) %>%
+    summarize(ag_emissions = sum(value_emissions)),
+  by = c("county_name")
   )
 
 
@@ -152,7 +165,7 @@ fig_cropland_area_emissions <- plot_ly(
   color = ~category, # Map colors by category
   colors = unlist(category_colors), # Convert list to vector of colors
   hovertemplate = ~ paste0(
-    county, " County", "<br>",
+    county_name, " County", "<br>",
     "Area: ", scales::comma(area), " square kilometers", "<br>",
     "Emissions: ", round(ag_emissions, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
@@ -228,7 +241,7 @@ As expected, we see that livestock and crop emissions increases with area devote
 Most USDA data is available from a five year census; we interpolate 
 
 ```{r fig-cattle-comparison}
-#| fig-cap: "A scatter plot"
+#| fig-cap: "Comparison of heads of cattle - USDA Census vs Survey"
 #| out-width: "95%"
 
 cattle_survey <- readRDS(file.path(here::here(), "_agriculture/data/usda_cattle_survey.RDS")) %>%
@@ -307,4 +320,10 @@ Estimates from the census and surveys are reasonably close for dairy cows and be
 
 In the absence of CTU level livestock or crop production data, the ICLEI U.S. Community Protocol recommends downscaling from county data using the ratio of agricultural land in the community to agricultural land in the county. We followed this approach for downscaling county level emissions using NLCD land cover data to find the ratio of CTU agricultural land to county agricultural land. Future work should seek to downscale livestock counts and crop production (i.e. activity data) and recalculate emissions, enabling more direct reduction measure estimations for various agricultural components (e.g. changes to cattle feed additives that may reduce enteric fermentation).
 
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
 

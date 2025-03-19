@@ -1,4 +1,4 @@
-# Methods and data sources  
+# Methods and data sources  {#sec-waste-methods}
 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
@@ -117,8 +117,6 @@ hookaddcap()
 
 # Solid waste
 
-## Methods
-
 {{< include methods_solid_waste.qmd >}}
 
 ## Data sources
@@ -133,11 +131,9 @@ hookaddcap()
 
 ## Data sources
 
-{{< include data_wastewater.qmd >}}
+# Data Validation
 
-## Data Validation
-
-### Correlation with related data
+## Correlation with related data
 
 We would expect counties with a higher population to have higher solid waste emissions.
 
@@ -182,11 +178,13 @@ fig_emissions_population_solidwaste
 
 ## Comparison with other inventories {#sec-waste-inventory-comparison}
 
-#### US Greenhouse Gas Emissions Inventory
+### US Greenhouse Gas Emissions Inventory
 
 The United States EPA conducts a comprehensive yearly estimate of greenhouse gas emissions from multiple sectors and gases. It also publishes statewide totals consistent with the national inventory. These emissions totals are consistent with international standards for greenhouse gas accounting, although they may differ from inventories completed at the state level for various reasons.
 
 US Inventory data for the waste sector in both Minnesota and Wisconsin was downloaded from the [Greenhouse Gas Inventory Data Explorer](https://cfpub.epa.gov/ghgdata/inventoryexplorer/) and processed in R script: [epa_inventory_data.R](/data-raw/epa_inventory_data.R), where it was apportioned from state to county level by population.
+
+Here, we compare federal inventory data with our current data as well as a previous version of the Met Council inventory, which instead of using IPCC protocols multiplied SCORE data by the EPA's emission factors.
 
 ```{r fig-federal-inventory-compare}
 #| fig-cap:  "Solid waste emissions comparison: US GHG Inventory"
@@ -279,65 +277,30 @@ plot_waste_comparison <- function(waste_source,
 }
 ```
 
-Wastewater comparisons are very consistent, with the US GHG Inventory consistently estimating more emissions than the EPA derived Met Council estimate. 
 
-```{r fig-metc-epa-ghg-wastewater}
+```{r fig-metc-epa-ghg-wastewater, include = FALSE}
 #| fig-cap: "Wastewater emissions comparison by county, EPA-derived Met Council and US GHG Inventory. US inventory consistently higher than Council. "
 #| out-width: "95%"
 
 fig_metc_epa_ghg_wastewater <- plot_waste_comparison("Wastewater",
   plotly_source = "fig-metc-epa-ghg-wastewater"
 )
-fig_metc_epa_ghg_wastewater
+# fig_metc_epa_ghg_wastewater
 ```
 
-Solid waste emissions differences vary by county; while Ramsey, Hennepin and Washington county estimates from the US GHG Inventory are higher than the Council estimates, the opposite is true for Dakota and Anoka counties. This is likely related to the fact that Ramsey, Hennepin and Washington counties process a significant portion of their waste in waste-to-energy facilities, reducing the amount of emissions accounted for under the landfill category.
+<!-- Solid waste emissions differences vary by county; while Ramsey, Hennepin and Washington county estimates from the US GHG Inventory are higher than the Council estimates, the opposite is true for Dakota and Anoka counties. This is likely related to the fact that Ramsey, Hennepin and Washington counties process a significant portion of their waste in waste-to-energy facilities, reducing the amount of emissions accounted for under the landfill category. -->
 
-```{r fig-metc-epa-ghg-landfill}
+```{r fig-metc-epa-ghg-landfill, include = FALSE}
 #| fig-cap: "Landfill emissions comparison by county, Met Council and US GHG Inventory. Results vary by county."
 #| out-width: "95%"
 
 fig_metc_epa_ghg_landfill <- plot_waste_comparison("Landfill",
   plotly_source = "fig-metc-epa-ghg-landfill"
 )
-fig_metc_epa_ghg_landfill
+# fig_metc_epa_ghg_landfill
 ```
 
-```{r fig-solid-waste-versions-compare}
-#| fig-cap:  "Solid waste emissions comparison: Met Council and US GHG Inventory"
-#| out-width: "95%"
 
-fig_sw_versions_compare <- plot_ly(
-  data = waste_federal,
-  source = "fig-solid-waste-versions-compare",
-  x = ~county_name,
-  y = ~value_emissions,
-  color = ~data_source,
-  type = "bar",
-  colors = c(
-    "Met Council V1" = colors$councilBlue,
-    "Met Council V2" = cprg_colors$cprg_green,
-    "US GHG Inventory" = cprg_colors$cprg_da_yellow
-  ),
-  hovertemplate = ~ paste0(
-    county_name, " County", "<br>",
-    data_source, "<br>",
-    round(value_emissions * 1e-3, digits = 0),
-    " thousand metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  )
-) %>%
-  councilR::plotly_layout(
-    main_title = "Solid waste emissions comparison",
-    subtitle = "Met Council estimates compared to US GHG Inventory",
-    x_title = "County",
-    y_title = "Metric tons CO<sub>2</sub>e",
-    legend_title = "Emissions Source"
-  ) %>%
-  plotly::layout(barmode = "group")
-
-fig_sw_versions_compare
-```
 
 
 {{< pagebreak >}}

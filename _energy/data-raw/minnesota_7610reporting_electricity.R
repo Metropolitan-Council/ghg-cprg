@@ -45,7 +45,7 @@ get_files <- function(root_dir) {
   return(file_info)
 }
 
-# function to process the file associatedf with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
+# function to process the file associated with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
 process_file <- function(file_info) {
   # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
   file_path <- file_info$file_path
@@ -78,13 +78,43 @@ process_file <- function(file_info) {
   return(combined_data)
 }
 
+# function designed to extract "electricity by class" (read: sector) for municipal utilities to derive additional city-sector level observations for modeling
+process_municipal_elecByClass <- function(file_info) {
+  # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
+  file_path <- file_info$file_path
+  utility_name <- file_info$utility_name
+  year <- file_info$year
+  
+  # Read specific ranges from each file
+  data_A_C <- read_excel(file_path, sheet = "ElectricityByClass", range = "A10:C16")
+  
+  # Rename columns
+  colnames(data_A_C) <- c("sector", "customer_count", "mwh_delivered")
+  
+  # Add utility name and year columns
+  data_A_C$utility <- utility_name
+  data_A_C$year <- as.numeric(year) # Ensure year is numeric if needed
+  
+  return(data_A_C)
+}
+
+
 # Apply process_file to each file identified in get_files() in the nested structure and combine the results
 file_list <- get_files(dir_mn_electricity_state)
 combined_MNelectUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
 
 
+#identify subset of files attached to municipal utilities, then create a table with elec by class for each utility-year and export it 
+MN_elecMunis <- readRDS(here("_energy", "data", "distinct_electricity_util_type_MN.RDS")) %>% 
+  filter(utility_type == "Municipal")
+muni_files <- keep(file_list, ~ .x$utility_name %in% unique(MN_elecMunis$mpuc_name))
+combined_MNelecMunis_elecByClass <- do.call(rbind, lapply(muni_files, process_municipal_elecByClass))
 
-# manual data collection to fill in gaps for 2021 as needed
+# raw 7610 data for elec is processed and enriched with city level geo data in muniElectrics_7610_elecByClass_2013_2023.R
+write_rds(combined_MNelecMunis_elecByClass, here("_energy", "data", "combined_MNelecMunis_elecByClass_raw7610.RDS"))
+
+
+# manual data collection to fill in gaps for 2021 as needed -- need to check if 2022 is available
 
 # Elk River -- 341,047.71 mWh delivered to customers in 2021, all goes to Sherburne county (marginal amounts to Hennepin in other years)
 # source: pg 54 https://www.ermumn.com/application/files/3316/5668/9846/2021_Annual_Financial_Report.pdf
@@ -99,13 +129,12 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
     year = 2021
   )
 
-
-
 # New Prague Utilities -- 69,291.725 mWh delivered to customers in 2021,
 # source: pg 18 https://www.ci.new-prague.mn.us/vertical/sites/%7BAD7ECB62-2C5E-4BA0-8F19-1426026AFA3E%7D/uploads/01-24-2022_Utilities_Commission_Meeting_Packet.pdf
 
-scottProp <- 45972 / 65674 #proportion of utility operation in Scott County
-scottNewPragueMuni_mWh_2021 <- scottProp * 69291.725
+scottProp <- 45972 / 65674 # proportion of utility operation in Scott County
+scottNewPragueMuni_mWh_2021 <- scottProp * 72086.211
+scottNewPragueMuni_mWh_2020 <- scottProp * 67435.726
 combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
   add_row(
     countyCode = 70,
@@ -113,20 +142,53 @@ combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
     mWh_delivered = scottNewPragueMuni_mWh_2021,
     utility = "New Prague Utilities Commission",
     year = 2021
+  ) %>%
+  add_row(
+    countyCode = 70,
+    county = "Scott",
+    mWh_delivered = scottNewPragueMuni_mWh_2020,
+    utility = "New Prague Utilities Commission",
+    year = 2020
   )
 
-# Assuming each row in mn_electricity_data represents a utility's electricity delivery in a county,
-# process and merge data -- this will be a separate data collection process spanning excel reports submitted to state
-processed_mn_elecUtil_activityData <- combined_MNelectUtil_activityData %>%
+
+## interpolate missing county-utility combinations
+full_grid <- expand.grid(
+  year = 2013:2023,
+  county = unique(combined_MNelectUtil_activityData$county),
+  utility = unique(combined_MNelectUtil_activityData$utility)
+) %>%
+  inner_join(combined_MNelectUtil_activityData %>% distinct(county, utility), by = c("county", "utility"))
+
+# Merge with original data
+interpolated_mn_utility_activity <- full_grid %>%
+  left_join(combined_MNelectUtil_activityData, by = c("year", "county", "utility")) %>%
+  arrange(county, utility, year) %>%
+  group_by(county, utility) %>%
+  mutate(
+    data_source = if_else(is.na(mWh_delivered), "Interpolated", "Utility report"),
+    mWh_delivered = na_kalman(mWh_delivered)
+  ) %>%
+  ungroup()
+
+
+processed_mn_elecUtil_activityData <- interpolated_mn_utility_activity %>%
   left_join(egridTimeSeries,
     by = join_by(year == Year)
   ) %>%
-  # temporary, when eGRID 2023 is release 01/2025 this will be removed.
-  filter(year != 2023) %>%
   mutate(
-    CO2_emissions = mWh_delivered * `lb CO2`,
-    CH4_emissions = mWh_delivered * `lb CH4`,
-    N2O_emissions = mWh_delivered * `lb N2O`
+    CO2_emissions_mt = mWh_delivered * `lb CO2` %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    CH4_emissions_mt = mWh_delivered * `lb CH4` %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    N2O_emissions_mt = mWh_delivered * `lb N2O` %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric()
   ) %>%
   # get rid of unnecessary columns from eGRID factor tables
   select(-eGrid_Subregion,
@@ -142,23 +204,15 @@ MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
   group_by(year, county) %>%
   summarise(
     total_mWh_delivered = sum(mWh_delivered, na.rm = TRUE),
-    total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
-    total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
-    total_CH4_emissions_lbs = sum(CH4_emissions, na.rm = TRUE),
-    total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
-    total_N2O_emissions_lbs = sum(N2O_emissions, na.rm = TRUE),
-    total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000,
-    total_CO2e_emissions_lbs = sum(
-      CO2_emissions +
-        (CH4_emissions * gwp$ch4) +
-        (N2O_emissions * gwp$n2o),
+    total_CO2_emissions_mt = sum(CO2_emissions_mt, na.rm = TRUE),
+    total_CH4_emissions_mt = sum(CH4_emissions_mt, na.rm = TRUE),
+    total_N2O_emissions_mt = sum(N2O_emissions_mt, na.rm = TRUE),
+    emissions_metric_tons_co2e = sum(
+      CO2_emissions_mt +
+        (CH4_emissions_mt * gwp$ch4) +
+        (N2O_emissions_mt * gwp$n2o),
       na.rm = TRUE
-    ),
-    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
-    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
-      units::as_units("pound") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric()
+    )
   ) %>%
   ungroup() %>%
   mutate(
@@ -167,8 +221,22 @@ MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
   )
 
 
+# parcel out municipal utility reporting to be leveraged as QA against the sector-level numbers pulled separately
+muni_activity_separated <- processed_mn_elecUtil_activityData %>%
+  right_join(MN_elecMunis,
+             by = join_by(utility == mpuc_name)) %>%
+  # remove out of scope utilities
+  filter(!utility %in% c("Delano Municipal Utilities,", "Elk River Municipal Utilities")) %>%
+  select(1:3, 5) %>%
+  mutate(
+    sector = "All",
+    source = "Electricity"
+  )
+
+
 write_rds(processed_mn_elecUtil_activityData, here("_energy", "data", "minnesota_elecUtils_ActivityAndEmissions.RDS"))
 write_rds(MNcounty_level_electricity_emissions, here("_energy", "data", "minnesota_county_elec_ActivityAndEmissions.RDS"))
+write_rds(muni_activity_separated, here("_energy", "data-raw", "minnesota_municipalElectric_activity_2013_2023_QA.RDS"))
 
 
 # OUT OF DATE -- written for just 2021

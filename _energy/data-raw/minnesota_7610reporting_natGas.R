@@ -80,15 +80,15 @@ processed_mn_gasUtil_activityData <- combined_MNgasUtil_activityData %>%
       units::as_units("pound") %>%
       units::set_units("metric_ton") %>%
       as.numeric(),
-    CH4_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF * GWP_CH4 %>%
+    CH4_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF %>%
       units::as_units("pound") %>%
       units::set_units("metric_ton") %>%
       as.numeric(),
-    N2O_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF * GWP_N2O %>%
+    N2O_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF %>%
       units::as_units("pound") %>%
       units::set_units("metric_ton") %>%
       as.numeric(),
-    CO2e_emissions_mt = CO2_emissions + CH4_emissions + N2O_emissions
+    CO2e_emissions_mt = CO2_emissions_mt + CH4_emissions_mt + N2O_emissions_mt
   )
 
 # Aggregate data by county, add identifiers for state and sector
@@ -96,23 +96,15 @@ MNcounty_level_gas_emissions <- processed_mn_gasUtil_activityData %>%
   group_by(county, year) %>%
   summarise(
     total_mcf = sum(mcf_delivered, na.rm = TRUE),
-    total_CO2_emissions_lbs = sum(CO2_emissions, na.rm = TRUE),
-    total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
-    total_CH4_emissions_lbs = sum(CH4_emissions, na.rm = TRUE),
-    total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
-    total_N2O_emissions_lbs = sum(N2O_emissions, na.rm = TRUE),
-    total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000,
-    total_CO2e_emissions_lbs = sum(
-      CO2_emissions +
-        CH4_emissions +
-        N2O_emissions,
+    total_CO2_emissions_mt = sum(CO2_emissions_mt, na.rm = TRUE),
+    total_CH4_emissions_mt = sum(CH4_emissions_mt, na.rm = TRUE),
+    total_N2O_emissions_mt = sum(N2O_emissions_mt, na.rm = TRUE),
+    emissions_metric_tons_co2e = sum(
+      CO2_emissions_mt +
+        (CH4_emissions_mt * gwp$ch4) +
+        (N2O_emissions_mt * gwp$n2o),
       na.rm = TRUE
-    ),
-    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
-    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
-      units::as_units("pound") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric()
+    )
   ) %>%
   mutate(
     state = "MN",
@@ -145,22 +137,21 @@ downscaleMN_gas_basedOnPopProps <- read_rds(here(
     )
   ) %>%
   mutate(
-    total_CO2_emissions_lbs = total_mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF,
-    total_CH4_emissions_lbs = total_mcf * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF * GWP_CH4,
-    total_N2O_emissions_lbs = total_mcf * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF * GWP_N2O,
-  ) %>%
-  mutate(
-    total_CO2e_emissions_lbs = total_CO2_emissions_lbs + total_CH4_emissions_lbs + total_N2O_emissions_lbs,
-    total_CO2_emissions_tons = total_CO2_emissions_lbs / 2000,
-    total_CH4_emissions_tons = total_CH4_emissions_lbs / 2000,
-    total_N2O_emissions_tons = total_N2O_emissions_lbs / 2000
-  ) %>%
-  mutate(
-    total_CO2e_emissions_tons = total_CO2e_emissions_lbs / 2000,
-    emissions_metric_tons_co2e = total_CO2e_emissions_lbs %>%
+    total_CO2_emissions_mt = total_mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    total_CH4_emissions_mt = total_mcf * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF * GWP_CH4 %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    total_N2O_emissions_mt = total_mcf * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF * GWP_N2O %>%
       units::as_units("pound") %>%
       units::set_units("metric_ton") %>%
       as.numeric()
+  ) %>%
+  mutate(
+    emissions_metric_tons_co2e = total_CO2_emissions_mt + total_CH4_emissions_mt + total_N2O_emissions_mt
   ) %>%
   mutate(
     state = "MN",

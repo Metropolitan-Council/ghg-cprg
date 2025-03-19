@@ -2103,6 +2103,17 @@
       ],
       "Hash": "59321b609790f8ccf92145810e4dd507"
     },
+    "randomForest": {
+      "Package": "randomForest",
+      "Version": "4.7-1.2",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "stats"
+      ],
+      "Hash": "72e840ba2949bbeb517f7a1ae04cf56c"
+    },
     "rapidjsonr": {
       "Package": "rapidjsonr",
       "Version": "1.2.0",

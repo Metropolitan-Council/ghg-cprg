@@ -79,7 +79,7 @@ p_nlcd_lc <- ggplot(cprg_county) +
   scale_color_manual("", values = councilR::colors$suppGray, labels = "County boundary") +
   theme(
     legend.position = "right", legend.direction = "vertical", legend.justification = c("left", "top"),
-    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+    legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
     legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size = 9), legend.text = element_text(size = 8)
   )
 # theme(
@@ -119,7 +119,7 @@ p_nlcd_is <- ggplot(cprg_county) +
   scale_color_manual("", values = councilR::colors$suppGray, labels = "County boundary") +
   theme(
     legend.position = "right", legend.direction = "vertical", legend.justification = c("left", "top"),
-    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+    legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
     legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size = 9), legend.text = element_text(size = 8)
   )
 
@@ -160,7 +160,7 @@ p_nlcd_tcc <- ggplot(cprg_county) +
   scale_color_manual("", values = councilR::colors$suppGray, labels = "County boundary") +
   theme(
     legend.position = "right", legend.direction = "vertical", legend.justification = c("left", "top"),
-    legend.margin = margin(2, 0, 0, 0), legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
+    legend.key.height = unit(0.3, "cm"), legend.key.width = unit(0.3, "cm"),
     legend.box = "vertical", legend.box.just = "left", legend.title = element_text(size = 9), legend.text = element_text(size = 8)
   )
 # theme(
@@ -302,14 +302,14 @@ fig_ns_county_sequestration
 #   source = "fig-ns-county-sequestration",
 #   data = county_emissions %>%
 #     filter(category == "Sequestration"),
-#   y = ~ reorder(geog_name, emissions_metric_tons_co2e),
-#   x = ~emissions_metric_tons_co2e,
+#   y = ~ reorder(geog_name, value_emissions),
+#   x = ~value_emissions,
 #   color = ~source,
 #   colors = unlist(source_colors),
 #   hovertemplate = ~ paste0(
 #     geog_name, "<br>",
 #     source, "<br>",
-#     round(emissions_metric_tons_co2e / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+#     round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
 #     "<extra></extra>"
 #   )
 # ) %>%
@@ -407,11 +407,11 @@ fig_ns_stock_area
 #   county_emissions %>%
 #     filter(category == "Sequestration") %>%
 #     group_by(geog_name) %>%
-#     summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)),
+#     summarize(value_emissions = sum(value_emissions)),
 #   cprg_area,
 #   by = c("geog_name" = "NAME")
 # ) %>%
-#   mutate(seq_per_area = emissions_metric_tons_co2e / area_sq_km)
+#   mutate(seq_per_area = value_emissions / area_sq_km)
 
 fig_ns_sequestration_area <- plot_ly(
   type = "scatter",
@@ -583,4 +583,9 @@ park_county_plot
 ```
 
 
-
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```

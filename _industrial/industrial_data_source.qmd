@@ -1,4 +1,18 @@
-# Industrial methods and data sources
+# Methods and data sources
+```{r  include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
 ```{r include=FALSE}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -12,9 +26,12 @@ flight_emissions <- readRDS(file.path(here::here(), "_industrial/data/flight_ind
 ghgrp_emissions <- readRDS(file.path(here::here(), "_industrial/data/ghgrp_industrial_point_sources_ctu.rds"))
 nei_emissions <- readRDS(file.path(here::here(), "_industrial/data/nei_county_industrial_emissions.RDS"))
 subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))
+ng_doublecount <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions_doublecount.RDS"))
+
 nrel_emissions <- county_emissions %>%
-  filter(category == "Industrial energy" & source == "Natural gas")
+  filter(sector == "Industrial" & data_source == "Utility report")
 mpca_emissions <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions.RDS"))
+mpca_doublecount <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions_naturalgas_doublecount.RDS"))
 
 ### remove doublecount from NEI emissions with FLIGHT data
 nei_no_doublecount <- left_join(
@@ -40,10 +57,10 @@ nei_no_doublecount <- left_join(
 ```
 
 ##Summary
-Industrial emissions are derived MN Pollution Control Agency (MPCA) fuel combustion data from two EPA sources: the Greenhouse Gas Reporting Program (GHGRP; via FLIGHT: Facility Level Information on GHG Tool) and the National Emissions Inventory (NEI). These datasets have strengths and limitations which complement one another. The MPCA data has smaller facilities and commercial fuel combustion, but dates back only to 2016. GHGRP has facility source data dating back to 2010, but only facilities with 25,000+ metric tons of annual CO2e emissions are required to report to this program. The NEI aggregate county data includes smaller facilities, but only has GHG emission estimates for 2017 and 2020 and lacks the source level specificity. Additional data resources may be available via the federal US Energy Information Administration datasets.
+Industrial emissions are derived from MN Pollution Control Agency (MPCA) fuel combustion data and from two EPA sources: the Greenhouse Gas Reporting Program (GHGRP; via FLIGHT: Facility Level Information on GHG Tool) and the National Emissions Inventory (NEI). These datasets have strengths and limitations which complement one another. The MPCA data has smaller facilities and commercial fuel combustion, but dates back only to 2016. GHGRP has facility source data dating back to 2010, but only facilities with 25,000+ metric tons of annual CO2e emissions are required to report to this program. The NEI aggregate county data includes smaller facilities, but only has GHG emission estimates for 2017 and 2020 and lacks the source level specificity. Additional data resources may be available via the federal US Energy Information Administration datasets.
 
 ## Double counting
-A key concern for industrial emissions is avoiding double counting, particularly natural gas combustion, electricity generation, and waste management. Our energy analysis uses a demand side approach to allocate electricity usage and natural gas combustion to residential, commercial, and industrial sectors. For electricity, this means avoiding industrial emissions that arise from electricty generation (note GHGRP and NEI already avoid counting electricity consumption at industrial facilities in their analyses). Natural gas consumption requires greater care, as combustion for industrial units (e.g. boilers) may be one of or some combination of natural gas, petroleum products, coal, or other fuel sources; additionally utility provisioning of natural gas may not account for all natural gas combustion at industrial sources. Our waste sector accounts for municipal waste emissions, though it does not inventory industrial waste processing.
+A key concern for industrial emissions is avoiding double counting, particularly natural gas combustion, electricity generation, and waste management. Our energy analysis uses a demand side approach to allocate electricity usage and natural gas combustion to residential, commercial, and industrial sectors. For electricity, this means avoiding industrial emissions that arise from electricty generation (note GHGRP and NEI already avoid counting electricity consumption at industrial facilities in their analyses). Natural gas consumption requires greater care, as combustion for industrial units (e.g. boilers) may be one of or some combination of natural gas, petroleum products, coal, or other fuel sources; additionally utility provisioning of natural gas may not account for all natural gas combustion at industrial sources. Our current approach assumes only the two major refineries in-bounds have natural gas access outside of the utilities; thus all other natural gas combustion reported by industrial point sources are assumed to be counted in utility reporting. We explore this below. Our waste sector accounts for municipal waste emissions, though it does not inventory industrial waste processing.
 
 ## Electricity generation
 Electricity generation is indicated as industrial subpart "D", and can be omitted from GHGRP data easily. Note that power plants also have some fuel combustion that are not directly for electricity generation and it is currently unclear if that is accounted for in our egrid analysis. However, in NEI data, powerplants are grouped under NEC (Not Elsewhere Classified), which includes non-powerpoint sources, requiring care to avoid double-counting (e.g. subtracting away GHGRP power plant data)
@@ -120,18 +137,22 @@ fig_industrial_emissions <- plot_ly(
 fig_industrial_emissions
 ```
 
-Currently, we are seeing large deviations (high and low) between MPCA data and federal sources, particularly in Dakota (Refinery) and Hennepin counties. MPCA data only accounts for fuel combustion, not process emissions.
+Currently, we are seeing large deviations (high and low) between MPCA data and federal sources, particularly in Dakota (Refinery) and Hennepin counties. MPCA data only accounts for fuel combustion, not process emissions that are common from semi-conductor manufacturing in Hennepin.
 
-Currently, GHGRP and MPCA data can be reliably used to avoid double-counting by avoiding emissions from Natural Gas. We can compare how subpart C (Industrial combustion) analyses compares to facilities with only subpart C FLIGHT aggregates.
+Currently, GHGRP and MPCA data can be reliably used to avoid double-counting by avoiding emissions from Natural Gas. We can compare how subpart C (Industrial combustion) analyses compares to facilities with only subpart C FLIGHT aggregates. This includes natural gas doublecounts, but validates that our subpart C analysis accurately recaptures EPA aggregated FLIGHT emissions .
 
 ```{r fig-subpart-c-emissions}
 #| fig-cap: "Comparison of industrial combustion emissions from FLIGHT and subpart C analysis"
 #| out-width: "95%"
 
+subpart_c_total <- bind_rows(
+  subpart_c_emissions,
+  ng_doublecount
+)
 
 subpart_c <- flight_emissions %>%
   filter(subparts == "C") %>%
-  left_join(., subpart_c_emissions %>%
+  left_join(., subpart_c_total %>%
     filter(industry_type_subparts == "C") %>%
     group_by(facility_id, reporting_year) %>%
     summarise(value_emissions = sum(values_emissions)),
@@ -187,107 +208,51 @@ fig_subpart_c_comparison
 
 Most emissions are on or sufficiently close to the one-to-one line. The exception is the Hennepin Energy Recovery Center, a waste burning facility. This requires further exploration but will be omitted in any case as waste-to-energy emissions are counted in the waste subsector.
 
-```{r fig-stationary-combustion}
-# compare fuel combustion to ghgrp stationary combustion
-stationary_combustion <- ghgrp_emissions %>%
-  filter(source == "stationary_combustion") %>%
-  left_join(., subpart_c_emissions %>%
-    group_by(facility_id, reporting_year) %>%
-    summarise(value_emissions = sum(values_emissions)),
-  by = c(
-    "facility_id" = "facility_id",
-    "inventory_year" = "reporting_year"
-  ),
-  suffix = c("_ghgrp", "_subpart")
-  )
-
-fig_stationary_combustion <- plot_ly(
-  type = "scatter",
-  mode = "markers",
-  source = "fig-stationary-combustion",
-  data = stationary_combustion,
-  y = ~value_emissions_ghgrp,
-  x = ~value_emissions_subpart,
-  color = ~ as.character(inventory_year), # Map colors by year
-  hovertemplate = ~ paste0(
-    facility_name, "<br>",
-    "GHGRP emissions: ", round(value_emissions_ghgrp, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
-    "SUBPART C Emissions: ", round(value_emissions_subpart, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  ),
-  marker = list(
-    size = 18,
-    line = list(
-      color = "lightgray",
-      width = 2
-    )
-  )
-)
-
-fig_stationary_combustion <- fig_stationary_combustion %>%
-  add_trace(
-    type = "scatter",
-    mode = "lines",
-    x = c(0, max(stationary_combustion$value_emissions_subpart, na.rm = TRUE)),
-    y = c(0, max(stationary_combustion$value_emissions_subpart, na.rm = TRUE)),
-    line = list(
-      dash = "dash",
-      color = "black",
-      width = 2
-    ),
-    showlegend = FALSE, # Hide this trace from the legend
-    inherit = FALSE, # Ensure no properties are inherited from the previous trace
-    hoverinfo = "none" # Disable hover for this line
-  )
-
-fig_stationary_combustion
-```
-
-When comparing subpart C analysis of fuel combustion to the EPA provided 'stationary combustion' category of the GHG RP, we see general agreement, with our subpart analysis appear to overpredict emissions from HERC and the large in-bounds oil refinery of the region, relative to the EPA data. As the refinery emits via hydrogen production and natural gas flaring, it is possible those emissions are otherwise categorized in GHG RP.
-
-
 # Natural Gas
 
-Given overall compliance between our subpart C analysis and EPA reporting, natural gas combustion can be pulled out from a subpart C analysis and compared to our estimates of utility-supplied natural gas deliveries to the industrial sector (via NREL).
+Given overall compliance between our subpart C analysis and EPA reporting, natural gas combustion was pulled out from MPCA and subpart C analyses for non-refinery industries and compared to our estimates of utility-supplied natural gas deliveries to the industrial sector (via NREL). Generally it looks like NREL greatly over-apportions natural gas consumption by industrial sources in all counties, and may include refinery natural gas consumption in Dakota and Washington. Future analysis will looks at utility breakdowns of natural gas delivery to utilities as a more accurate apportionment.
 
 ```{r fig-natural-gas-comparison}
 #| fig-cap: "Comparison of natural gas combustion data"
 #| out-width: "95%"
 
-natural_gas_c_2021 <- subpart_c_emissions %>%
+# load ghgrp and mpca double counts
+natural_gas_dc_2021 <- ng_doublecount %>%
   filter(
-    specific_fuel_type == "Natural Gas",
     reporting_year == 2021
   ) %>%
+  ungroup() %>%
+  select(county_name, value_emissions = values_emissions) %>%
+  bind_rows(mpca_doublecount %>%
+    filter(inventory_year == 2021) %>%
+    ungroup() %>%
+    select(county_name, value_emissions)) %>%
   group_by(
-    county_name,
-    reporting_year
+    county_name
   ) %>%
-  summarize(value_emissions = sum(values_emissions)) %>%
-  mutate(data_source = "GHGRP - Natural Gas Combustion")
-
-mpca_natural_gas <- mpca_emissions %>%
-  filter(
-    fuel_type == "Natural Gas",
-    inventory_year == 2021
-  ) %>%
-  group_by(county_name, inventory_year) %>%
   summarize(value_emissions = sum(value_emissions)) %>%
-  mutate(data_source = "MPCA - Natural Gas Combustion")
+  mutate(data_source = "GHGRP & MPCA - Natural Gas Doublecount")
+
+refinery_ng <- subpart_c_emissions %>%
+  filter(
+    reporting_year == 2021,
+    general_fuel_type == "Natural Gas"
+  ) %>%
+  group_by(county_name) %>%
+  summarize(value_emissions = sum(values_emissions)) %>%
+  mutate(data_source = "GHGRP - Refinery natural gas")
 
 natural_gas_comp <- bind_rows(
   nrel_emissions %>%
-    filter(year == 2021) %>%
+    filter(emissions_year == 2021) %>%
     mutate(data_source = "NREL") %>%
     select(
-      inventory_year = year,
-      county_name = geog_name,
-      value_emissions = emissions_metric_tons_co2e,
+      county_name,
+      value_emissions,
       data_source
     ),
-  natural_gas_c_2021 %>%
-    rename(inventory_year = reporting_year),
-  mpca_natural_gas
+  natural_gas_dc_2021,
+  refinery_ng
 )
 
 
@@ -327,111 +292,14 @@ fig_industrial_ng_emissions
 ```
 
 
-```{r fig-natural-gas-comparison}
-#| fig-cap: "Comparison of natural gas combustion data"
-#| out-width: "95%"
-
-natural_gas_c_2020 <- subpart_c_emissions %>%
-  filter(
-    specific_fuel_type == "Natural Gas",
-    reporting_year == 2020
-  ) %>%
-  group_by(
-    county_name,
-    reporting_year
-  ) %>%
-  summarize(values_emissions = sum(values_emissions)) %>%
-  mutate(data_source = "GHGRP - Fuel combustion")
-
-nei_2020_no_doublecount <- left_join(
-  nei_emissions %>%
-    filter(inventory_year == 2020) %>%
-    group_by(county_name) %>%
-    summarize(values_emissions = sum(values_emissions)),
-  flight_emissions %>%
-    filter(
-      inventory_year == 2020,
-      doublecount == "Yes"
-    ) %>%
-    group_by(county_name) %>%
-    summarize(values_emissions = sum(value_emissions)),
-  by = "county_name",
-  suffix = c("_NEI", "_FLIGHT")
-) %>%
-  mutate(values_emissions_FLIGHT = if_else(is.na(values_emissions_FLIGHT), 0, values_emissions_FLIGHT)) %>%
-  mutate(
-    values_emissions = as.numeric(values_emissions_NEI) - values_emissions_FLIGHT,
-    data_source = "NEI - all",
-    inventory_year = 2020
-  ) %>%
-  select(county_name, values_emissions, data_source, inventory_year)
-
-
-natural_gas_comp2 <- bind_rows(
-  nrel_emissions %>%
-    filter(year == 2021) %>%
-    mutate(data_source = "NREL") %>%
-    select(
-      inventory_year = year,
-      county_name = geog_name,
-      values_emissions = emissions_metric_tons_co2e,
-      data_source
-    ),
-  nei_emissions %>%
-    filter(
-      inventory_year == 2020,
-      sector_three == "Natural Gas"
-    ) %>%
-    ungroup() %>%
-    mutate(
-      data_source = "NEI - NG combustion",
-      values_emissions = as.numeric(values_emissions)
-    ) %>%
-    select(
-      inventory_year,
-      county_name,
-      values_emissions,
-      data_source
-    ),
-  natural_gas_c_2020 %>%
-    rename(inventory_year = reporting_year)
-)
-
-fig_industrial_ng_emissions2 <- plot_ly(
-  data = natural_gas_comp2,
-  source = "fig-natural-gas-comparison",
-  x = ~county_name,
-  y = ~values_emissions,
-  color = ~data_source,
-  type = "bar",
-  # colors = c(
-  #   "EIA" = cprg_colors$cprg_da_yellow,
-  #   "Metropolitan Council" = colors$councilBlue
-  # ),
-  hovertemplate = ~ paste0(
-    county_name, "<br>",
-    data_source, "<br>",
-    round(values_emissions / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  )
-) %>%
-  plotly_layout(
-    main_title = "Industrial Natural Gas Emissions Inventory Comaparison",
-    y_title = "Metric tons CO<sub>2</sub>e",
-    x_title = "County",
-    legend_title = "Data source"
-  ) %>%
-  layout(
-    barmode = "group",
-    hovermode = "closest",
-    legend = list(
-      traceorder = "normal"
-    )
-  )
-
-fig_industrial_ng_emissions2
-```
-
 ### Scaling to CTUs
 
+Industrial emissions are provided as point sources from federal and state databases, allowing straightforward attribution to cities and townships. One remaining issue is to ensure proper attribution for cities and townships that share a name.
 
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```

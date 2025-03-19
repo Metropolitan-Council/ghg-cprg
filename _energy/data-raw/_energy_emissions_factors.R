@@ -12,13 +12,13 @@ if (exists("eGRID_MROW_emissionsFactor_CO2") == FALSE) {
   # figures in lbs./mWh
 
   eGRID_MROW_emissionsFactor_CO2_2021 <- mrow_factors %>%
-    filter(emission == "lb CO2") %>%
+    filter(emission == "lb CO2", year == 2021) %>%
     magrittr::extract2("value")
   eGRID_MROW_emissionsFactor_CH4_2021 <- mrow_factors %>%
-    filter(emission == "lb CH4") %>%
+    filter(emission == "lb CH4", year == 2021) %>%
     magrittr::extract2("value")
   eGRID_MROW_emissionsFactor_N2O_2021 <- mrow_factors %>%
-    filter(emission == "lb N2O") %>%
+    filter(emission == "lb N2O", year == 2021) %>%
     magrittr::extract2("value")
 
   # Natural Gas emissions factor from https://www.epa.gov/system/files/documents/2023-04/emission-factors_sept2021.pdf

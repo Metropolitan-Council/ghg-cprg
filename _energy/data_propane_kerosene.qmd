@@ -18,13 +18,19 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
-fuel_use <- readRDS(file.path(here::here(), "_energy/data/fuel_use.RDS"))
+fuel_use <- readRDS(file.path(here::here(), "_energy/data/fuel_use.RDS")) %>%
+  rename(
+    county_name = NAME,
+    emissions_year = year,
+    value_emissions = emissions_metric_tons_co2e
+  )
+
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 county_emissions_summary <- county_emissions %>%
   group_by(sector, category, source, data_source, factor_source) %>%
   summarize(
-    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    value_emissions = sum(value_emissions),
     .groups = "keep"
   )
 hookaddcap()
@@ -43,14 +49,14 @@ fig_energy_liquid_stationary_fuel_emissions <-
     type = "bar",
     source = "fig-energy-liquid-stationary-fuel-emissions",
     data = fuel_use,
-    y = ~ reorder(NAME, emissions_metric_tons_co2e),
-    x = ~emissions_metric_tons_co2e,
+    y = ~ reorder(county_name, value_emissions),
+    x = ~value_emissions,
     color = ~fuel_type,
     colors = unlist(source_colors),
     hovertemplate = ~ paste0(
-      NAME, " County", "<br>",
+      county_name, " County", "<br>",
       fuel_type, "<br>",
-      round(emissions_metric_tons_co2e / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
+      round(value_emissions / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
       "<extra></extra>"
     )
   ) %>%
@@ -67,6 +73,7 @@ fig_energy_liquid_stationary_fuel_emissions <-
       traceorder = "reversed"
     )
   )
+
 fig_energy_liquid_stationary_fuel_emissions
 ```
 
