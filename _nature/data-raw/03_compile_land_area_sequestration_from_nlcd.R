@@ -12,7 +12,10 @@ land_cover_c <- readRDS("./_nature/data/land_cover_carbon.rds")
 nlcd_county_c <- nlcd_county %>%
   as_tibble() %>% dplyr::select(-land_cover_main,-total_area) %>%
   left_join(., land_cover_c, by = join_by(land_cover_type)) %>%
-  rename(flag=source, source=land_cover_type) %>%
+  mutate(data_source = if_else(source == "extrapolated",
+                          "Extrapolated from NLCD",
+                          "National Land Cover Database"),
+         source = land_cover_type) %>% 
   filter(seq_mtco2e_sqkm < 0) %>%
   mutate(
     sequestration_potential = area * seq_mtco2e_sqkm,
@@ -20,13 +23,12 @@ nlcd_county_c <- nlcd_county %>%
   ) %>%
   dplyr::select(-c(seq_mtco2e_sqkm, stock_mtco2e_sqkm))  %>%
   mutate(
-    sector = "Nature",
-    category = "LandCover",
-    data_source = "National Land Cover Dataset"
+    sector = "Natural Systems",
+    category = "Sequestration"
   ) %>%
   dplyr::select(county_id, county_name, state_name,
                 inventory_year, sector, category, source, data_source,
-                area, flag, sequestration_potential, stock_potential
+                area, sequestration_potential, stock_potential
   ) %>%
   arrange(inventory_year, county_name, source)
 
@@ -35,7 +37,10 @@ nlcd_county_c <- nlcd_county %>%
 nlcd_ctu_c <- nlcd_ctu %>%
   as_tibble() %>% dplyr::select(-land_cover_main,-total_area) %>%
   left_join(., land_cover_c, by = join_by(land_cover_type)) %>%
-  rename(flag=source, source=land_cover_type) %>%
+  mutate(data_source = if_else(source == "extrapolated",
+                               "Extrapolated from NLCD",
+                               "National Land Cover Database"),
+         source = land_cover_type) %>%
   filter(seq_mtco2e_sqkm < 0) %>%
   mutate(
     sequestration_potential = area * seq_mtco2e_sqkm,
@@ -43,13 +48,12 @@ nlcd_ctu_c <- nlcd_ctu %>%
   ) %>%
   dplyr::select(-c(seq_mtco2e_sqkm, stock_mtco2e_sqkm))  %>%
   mutate(
-    sector = "Nature",
-    category = "LandCover",
-    data_source = "National Land Cover Dataset"
+    sector = "Natural Systems",
+    category = "Sequestration"
   ) %>%
   dplyr::select(county_id, ctu_id, ctu_name, ctu_class, county_name, state_name,
                 inventory_year, sector, category, source, data_source,
-                area, flag, sequestration_potential, stock_potential
+                area, sequestration_potential, stock_potential
   ) %>%
   arrange(inventory_year, ctu_name, source)
 
