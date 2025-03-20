@@ -7,6 +7,8 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 counties <- toupper(cprg_county$county_name)
 counties <- if_else(counties == "ST. CROIX", "ST CROIX", counties)
 
+### load in ctu_ag_proportions to split out livestock to ctu at end
+ctu_ag_proportion <- read_rds("./_agriculture/data/ctu_ag_proportion.rds")
 
 #### Census data ####
 #### census data is collected every five years (years ending in 2 and 7) and is the only inventory source data for non-cattle past 2012
@@ -182,6 +184,7 @@ poultry_interpolated <- left_join( # this creates an empty grid of all desired y
 livestock_interpolated <- bind_rows(census_interpolated, poultry_interpolated) %>%
   mutate(county_name = if_else(county_name == "ST CROIX", "St. Croix", str_to_sentence(county_name))) # homogenize county case to other data
 
+
 # create metadata
 livestock_census_meta <-
   tibble::tribble(
@@ -195,3 +198,27 @@ livestock_census_meta <-
 
 saveRDS(livestock_interpolated, "./_agriculture/data/usda_census_data.rds")
 saveRDS(livestock_census_meta, "./_agriculture/data/usda_census_data_meta.rds")
+
+### assigning livestock to TOWNSHIPs only. Assuming livestock within city limits is rare
+township_ag_proportion <- ctu_ag_proportion %>%
+  filter(grepl("TOWN",ctu_class) |
+           (county_name == "Hennepin" & ctu_ag_area > 10)) %>% #no townships in Hennepin, making minimum ag area for now 
+  group_by(county_name, inventory_year) %>%
+  mutate(
+    total_township_ag_area = sum(ctu_ag_area[grepl("TOWN",ctu_class)], na.rm = TRUE),
+    proportion_ag_land = ctu_ag_area / total_township_ag_area
+  ) %>%
+  select(-total_township_ag_area) %>%
+  ungroup()
+
+livestock_township <- left_join(township_ag_proportion,
+                                livestock_interpolated,
+                                by = c("county_name",
+                                       "inventory_year" = "year")) %>% 
+  mutate(township_head_count = proportion_ag_land * head_count) %>% 
+  filter(!is.na(township_head_count)) %>% 
+  select(ctu_id, ctu_name, ctu_class, county_name, state_name,
+         inventory_year, livestock_type, township_head_count, data_type)
+
+
+saveRDS(livestock_township, "./_agriculture/data/township_usda_census_data.rds")
