@@ -240,9 +240,9 @@ nhd_ctu <- NHD_byCTU %>%
   relocate(any_of(colnames(cprg_ctu)), waterway_type, area) %>%
   # use crossing() to create a simulated time series of area change between 2001 and 2021
   # in reality this just duplicates each row in the dataframe for every year in the sequence
-  crossing(year = seq(2001, 2021, by = 1)) %>%
-  dplyr::select(c("ctu_name", "ctu_class", "county_name", "state_name", "year", "waterway_type", "area")) %>%
-  arrange(year, ctu_name, waterway_type)
+  crossing(inventory_year = seq(2001, 2022, by = 1)) %>%
+  dplyr::select(c("ctu_name", "ctu_class", "county_name", "state_name", "inventory_year", "waterway_type", "area")) %>%
+  arrange(inventory_year, ctu_name, waterway_type)
 
 
 
@@ -257,7 +257,7 @@ nhd_ctu_meta <-
     "ctu_class", class(nhd_ctu$county_name), "CTU class",
     "county_name", class(nhd_ctu$county_name), "County name",
     "state_name", class(nhd_ctu$state_name), "State name",
-    "year", class(nhd_ctu$year), "Year",
+    "inventory_year", class(nhd_ctu$inventory_year), "Year",
     "waterway_type", class(nhd_ctu$waterway_type), "Waterway type from National Hydrogaphy Dataset",
     "area", class(nhd_ctu$area), "Area of land cover in square kilometers"
   )
@@ -270,6 +270,6 @@ nhd_ctu_meta <-
 if (overwrite_RDS) {
   message("Exporting RDS files...")
 
-  saveRDS(nhd_ctu, paste0("./_nature/data/nhd_ctu_waterways_", head(sort(unique(nhd_ctu$year)), 1), "_", tail(sort(unique(nhd_ctu$year)), 1), ".rds"))
-  saveRDS(nhd_ctu_meta, paste0("./_nature/data/nhd_ctu_waterways_", head(sort(unique(nhd_ctu$year)), 1), "_", tail(sort(unique(nhd_ctu$year)), 1), "_meta.rds"))
+  saveRDS(nhd_ctu, paste0("./_nature/data/nhd_ctu_waterways_allyrs.rds"))
+  saveRDS(nhd_ctu_meta, paste0("./_nature/data/nhd_ctu_waterways_allyrs_meta.rds"))
 }
