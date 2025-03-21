@@ -5,6 +5,9 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 # formatted files
 ag_constants <- readRDS("_agriculture/data/ag_constants.rds")
 
+### load in ctu_ag_proportions to split out crop production to ctu at end
+ctu_ag_proportion <- read_rds("./_agriculture/data/ctu_ag_proportion.rds")
+
 ## convert to named vector for easier indexing
 ag_mtb <- ag_constants %>%
   filter(grepl("mtb", short_text)) %>%
@@ -104,3 +107,16 @@ crop_production_meta <-
 
 saveRDS(usda_survey_formatted, "./_agriculture/data/county_crop_production.rds")
 saveRDS(crop_production_meta, "./_agriculture/data/county_crop_production_meta.rds")
+
+### split crops out based on CTU cropland proportion
+
+ctu_crop <- left_join(ctu_ag_proportion,
+                      usda_survey_formatted,
+                                by = c("county_name",
+                                       "inventory_year")) %>% 
+  mutate(ctu_metric_tons = proportion_ag_land * metric_tons) %>% 
+  filter(!is.na(ctu_metric_tons)) %>% 
+  select(ctu_id, ctu_name, ctu_class, county_name, state_name,
+         inventory_year, crop_type, ctu_metric_tons)
+
+saveRDS(ctu_crop, "./_agriculture/data/ctu_usda_crop_data.rds")
