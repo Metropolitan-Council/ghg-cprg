@@ -8,6 +8,7 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 ### waiting to see if data exists outside of pdfs
 ### Fertilizer expenses are recorded in USDA 5 year census
 fert_prop <- readRDS("./_agriculture/data/county_fertilizer_proportion.rds")
+ctu_fert_prop <- readRDS("_agriculture/data/ctu_fertilizer_proportion.rds")
 
 # formatted files
 ag_constants <- readRDS("_agriculture/data/ag_constants.rds")
@@ -67,7 +68,7 @@ county_fertilizer_emissions <- left_join(fert_prop, cprg_county %>%
     state_fertilizer,
     by = c("state_abb" = "state", "inventory_year" = "year")
   ) %>%
-  filter(inventory_year >= 2005 & inventory_year <= 2021) %>%
+  filter(inventory_year >= 2005) %>%
   mutate(
     mt_n_synthetic_cty = fertilizer_proportion * mt_n_synthetic,
     mt_n_organic_cty = fertilizer_proportion * mt_n_organic
@@ -145,7 +146,6 @@ fertilizer_emissions <- bind_rows(
     select(inventory_year, geoid, value_emissions = mt_n2o, mt_co2e) %>%
     mutate(category = "cropland", source = "Runoff_fertilizer_emissions", units_emissions = "Metric tons N2O")
 ) %>%
-  filter(inventory_year != 2022) %>%
   mutate(
     sector = "Agriculture",
     category = str_to_sentence(category),
