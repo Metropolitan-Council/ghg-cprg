@@ -53,7 +53,7 @@ aviation_emissions <- readRDS("_transportation/data/aviation_emissions.RDS") %>%
 
 # waste -----
 ## wastewater ----
-ww_emissions <- readRDS("_waste/data/_county_wastewater_emissions.RDS") %>%
+ww_emissions <- readRDS("_waste/data/final_wastewater_allyrs.RDS") %>%
   mutate(
     geog_level = "county",
     factor_source = data_source,
