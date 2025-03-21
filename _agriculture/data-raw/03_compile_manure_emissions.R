@@ -102,9 +102,9 @@ solids <- ag_manure_mgmt %>%
 
 manure_n2o <- left_join(
   livestock %>%
-    filter(year >= 2005 & year <= 2021),
+    filter(year >= 2005),
   nex %>%
-    filter(year >= 2005 & year <= 2021) %>%
+    filter(year >= 2005) %>%
     mutate(state = if_else(state == "MN",
       "Minnesota",
       "Wisconsin"
@@ -188,7 +188,7 @@ manure_mgmt_perc <- manure_mgmt_perc %>%
   mutate(state = if_else(state == "MN", "Minnesota", "Wisconsin"))
 
 
-manure_soils <- left_join(KN_excretion_runoff %>% filter(year != 2022),
+manure_soils <- left_join(KN_excretion_runoff,
   manure_mgmt_perc %>% filter(management_type == "Managed") %>%
     dplyr::select(-management_type) %>%
     rename(percent_managed = percentage),
@@ -291,7 +291,6 @@ manure_emissions <- bind_rows(
     ) %>%
     mutate(category = "livestock", source = "indirect_manure_runoff_emissions", gas_type = "n2o")
 ) %>%
-  filter(year != 2022) %>%
   replace(is.na(.), 0) ## Anoka has missing enteric fermentation data from 2018-2021. They should have some livestock according to online USDA, revisit.
 
 ### format to match style guide
