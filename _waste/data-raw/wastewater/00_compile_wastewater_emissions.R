@@ -117,8 +117,8 @@ county_wastewater_emissions_meta <-
     "mt_co2e", class(county_wastewater_emissions$mt_co2e), "Metric tons of gas in CO2 equivalency"
   )
 
-saveRDS(county_wastewater_emissions, "./_waste/data/_county_wastewater_emissions.rds")
-saveRDS(county_wastewater_emissions_meta, "./_waste/data/_county_wastewater_emissions_meta.rds")
+saveRDS(county_wastewater_emissions, "./_waste/data/final_wastewater_allyrs.rds")
+saveRDS(county_wastewater_emissions_meta, "./_waste/data/final_wastewater_allyrs_meta.rds")
 
 
 # county_wastewater_emissions %>%
@@ -216,8 +216,8 @@ ctu_wastewater_emissions_meta <-
     "mt_co2e", class(ctu_wastewater_emissions$mt_co2e), "Metric tons of gas in CO2 equivalency"
   )
 
-saveRDS(ctu_wastewater_emissions, "./_waste/data/_ctu_wastewater_emissions.rds")
-saveRDS(ctu_wastewater_emissions_meta, "./_waste/data/_ctu_wastewater_emissions_meta.rds")
+saveRDS(ctu_wastewater_emissions, "./_waste/data/final_wastewater_ctu_allyrs.rds")
+saveRDS(ctu_wastewater_emissions_meta, "./_waste/data/final_wastewater_ctu_allyrs_meta.rds")
 
 
 
