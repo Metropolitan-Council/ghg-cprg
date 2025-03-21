@@ -18,9 +18,11 @@ ag_constants_vec <- ag_constants %>%
 usda_livestock <- readRDS("_agriculture/data/usda_census_data.rds") %>%
   mutate(state = if_else(county_name %in% c("St. Croix", "Pierce"), "Wisconsin", "Minnesota"))
 
+township_livestock <- readRDS("_agriculture/data/township_usda_census_data.rds")
+
 ## merge livestock data with enteric emission factors, multiply and convert to co2e
 animal_burps <- left_join(
-  usda_livestock %>% filter(year >= 2005 & year <= 2021),
+  usda_livestock %>% filter(year >= 2005),
   enteric_ef,
   by = c("year", "livestock_type", "state")
 ) %>%
@@ -78,3 +80,40 @@ animal_burps_meta <-
 
 saveRDS(animal_burps_out, "./_agriculture/data/enteric_fermentation_emissions.rds")
 saveRDS(animal_burps_meta, "./_agriculture/data/enteric_fermentation_emissions_meta.rds")
+
+### repeat for township
+
+animal_burps_township <- left_join(
+  township_livestock %>% filter(inventory_year >= 2005),
+  enteric_ef,
+  by = c("inventory_year"="year", "livestock_type", "state_name" = "state")
+) %>%
+  filter(!is.na(mt_ch4_head_yr)) %>% # poultry do not contribute to enteric fermentation
+  mutate(
+    gas_type = "ch4",
+    mt_gas = mt_ch4_head_yr * township_head_count,
+    mt_co2e = mt_gas * gwp$ch4,
+  ) %>%
+  group_by(inventory_year, ctu_id, ctu_name, ctu_class, county_name, gas_type) %>%
+  summarize(mt_gas = sum(mt_gas), mt_co2e = sum(mt_co2e)) %>%
+  select(inventory_year, ctu_name, ctu_class, county_name, units_emissions = gas_type, 
+         value_emissions = mt_gas, mt_co2e) %>%
+  mutate(
+    sector = "Agriculture",
+    category = "Livestock",
+    source = "Enteric fermentation",
+    units_emissions = case_when(
+      units_emissions == "ch4" ~ "Metric tons CH4",
+      units_emissions == "n2o" ~ "Metric tons N2O",
+      units_emissions == "co2" ~ "Metric tons CO2"
+    ),
+    data_source = "USDA livestock census",
+    factor_source = "EPA SIT"
+  ) %>%
+  ungroup() %>%
+  select(
+    ctu_id, ctu_name, ctu_class, county_name, inventory_year, sector, category, source,
+    data_source, factor_source, value_emissions, units_emissions, mt_co2e
+  )
+
+saveRDS(animal_burps_township, "./_agriculture/data/ctu_enteric_fermentation_emissions.rds")

@@ -6,6 +6,9 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 counties <- toupper(cprg_county$county_name)
 counties <- if_else(counties == "ST. CROIX", "ST CROIX", counties)
 
+### load in ctu_ag_proportions to split out crop production to ctu at end
+ctu_ag_proportion <- read_rds("./_agriculture/data/ctu_ag_proportion.rds")
+
 
 ### pull in county values of fertilizer purchased as proxy for us
 usda_fertilizer_mn_wi <- tidyUSDA::getQuickstat(
@@ -89,3 +92,17 @@ fertilizer_proportion_meta <-
 
 saveRDS(fert_prop_interpolated, "./_agriculture/data/county_fertilizer_proportion.rds")
 saveRDS(fertilizer_proportion_meta, "./_agriculture/data/county_fertilizer_proportion_meta.rds")
+
+
+### split fertilizer purchase out based on CTU cropland proportion
+
+ctu_fertilizer <- left_join(ctu_ag_proportion,
+                      fert_prop_interpolated,
+                      by = c("county_name",
+                             "inventory_year")) %>% 
+  mutate(ctu_fertilizer_proportion = proportion_ag_land * fertilizer_proportion) %>% 
+  filter(!is.na(ctu_fertilizer_proportion)) %>% 
+  select(ctu_id, ctu_name, ctu_class, county_name, state_name,
+         inventory_year, ctu_fertilizer_proportion, data_type)
+
+saveRDS(ctu_fertilizer, "./_agriculture/data/ctu_fertilizer_proportion.rds")
