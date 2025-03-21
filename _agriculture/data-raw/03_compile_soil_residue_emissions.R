@@ -3,6 +3,7 @@ source("R/global_warming_potential.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 crops <- read_rds("_agriculture/data/county_crop_production.rds")
+ctu_crops <- read_rds("_agriculture/data/ctu_usda_crop_data.rds")
 
 ag_constants <- readRDS("_agriculture/data/ag_constants_formatted.rds")
 ## convert to named vector for easier indexing
@@ -110,3 +111,46 @@ soil_residue_emissions_meta <-
 
 saveRDS(soil_residue_emissions, "./_agriculture/data/soil_residue_emissions.rds")
 saveRDS(soil_residue_emissions_meta, "./_agriculture/data/soil_residue_emissions_meta.rds")
+
+
+### repeat for CTUs
+
+ctu_soil_residue_emissions <- ctu_crops %>%
+  left_join(., ag_values) %>%
+  mutate(
+    MT_N_to_soil = if_else(
+      crop_type == "alfalfa",
+      0, # no N to soil via residue for alfalfa
+      ctu_metric_tons  * value_rcmr * value_rdmf * value_fra * value_ncr
+    ),
+    MT_N_fixation = if_else(
+      crop_type %in% c("alfalfa", "soybeans", "dry beans"),
+      ctu_metric_tons * (1 + value_rcmr) * value_rdmf * ag_constants_vec["N_content_legume"],
+      # last value is constant of N content of N-fixer biomass
+      0
+    )
+  ) %>%
+  filter(!is.na(MT_N_fixation)) %>%
+  group_by(ctu_id, ctu_name, ctu_class, county_name, inventory_year) %>%
+  summarize(mt_n_soils = sum(MT_N_to_soil + MT_N_fixation)) %>%
+  mutate(
+    # clarify how this is being converted
+    mt_n2o = mt_n_soils * ag_constants_vec["EF_Dir"] * ag_constants_vec["N2O_N2"],
+    mt_co2e = mt_n2o * gwp$n2o
+  ) %>%
+  # format to style guide
+  rename(value_emissions = mt_n2o) %>%
+  mutate(
+    sector = "Agriculture",
+    category = "Cropland",
+    source = "Soil residue emissions",
+    units_emissions = "Metric tons N2O",
+    data_source = "USDA crop production survey",
+    factor_source = "EPA SIT"
+  ) %>%
+  select(
+    ctu_id, ctu_name, ctu_class, county_name, inventory_year, sector, category, source,
+    data_source, factor_source, value_emissions, units_emissions, mt_co2e
+  )
+
+saveRDS(ctu_soil_residue_emissions, "./_agriculture/data/ctu_soil_residue_emissions.rds")
