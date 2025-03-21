@@ -59,7 +59,6 @@ state_fertilizer <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   filter(!is.na(metric_tons_n_applied))
 
 
-## KS Note 11-24-24: Everything looks great here!!
 #### merge fertilize proportion estimates with state fertilizer values
 county_fertilizer_emissions <- left_join(fert_prop, cprg_county %>%
   st_drop_geometry() %>%
@@ -175,3 +174,80 @@ fertilizer_emissions_meta <-
 
 saveRDS(fertilizer_emissions, "./_agriculture/data/fertilizer_emissions.rds")
 saveRDS(fertilizer_emissions_meta, "./_agriculture/data/fertilizer_emissions_meta.rds")
+
+### repeat the same for CTUs
+
+ctu_fertilizer_emissions <- left_join(ctu_fert_prop %>% 
+                                        mutate(state = if_else(state_name == "Minnesota",
+                                                               "MN",
+                                                               "WI")),
+            state_fertilizer,
+            by = c("state", "inventory_year" = "year")
+  ) %>%
+  filter(inventory_year >= 2005) %>%
+  mutate(
+    mt_n_synthetic_cty = ctu_fertilizer_proportion * mt_n_synthetic,
+    mt_n_organic_cty = ctu_fertilizer_proportion * mt_n_organic
+  ) %>%
+  #### separating mutates as this is where we will calculate emissions
+  #### from estimated fertilizer application
+  mutate(
+    # unvolatilized N from synthetic fertilizer
+    n2o_direct = (mt_n_synthetic_cty * (1 - ag_constants_vec["VolSyn"]) +
+                    # un-volatilized N from organic fertilizer
+                    mt_n_organic_cty * ag_constants_vec["NOrg"] * (1 - ag_constants_vec["VolOrg"])) *
+      ## multiplied by the EF of un-volatilized N and N2O N: N2O
+      ag_constants_vec["EF_Dir"] * ag_constants_vec["N2O_N2"],
+    # volatilized N from synthetic fertilizer
+    n2o_indirect = (mt_n_synthetic_cty * ag_constants_vec["VolSyn"] +
+                      # volatized N from organic fertilizer
+                      mt_n_organic_cty * ag_constants_vec["NOrg"] * ag_constants_vec["VolOrg"]) *
+      ## multiplied by the EF of volatized N and N2O N: N2O
+      ag_constants_vec["Vol_EF"] * ag_constants_vec["N2O_N2"],
+    mt_n2o = n2o_direct + n2o_indirect,
+    mt_co2e = mt_n2o * gwp$n2o
+  ) %>%
+  select(
+    inventory_year, ctu_id, ctu_name, ctu_class, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty,
+    n2o_direct, n2o_indirect,
+    mt_n2o, mt_co2e
+  )
+
+
+ctu_fertilizer_runoff_emissions <- ctu_fertilizer_emissions %>%
+  select(inventory_year, ctu_id, ctu_name, ctu_class, county_name, data_type, mt_n_synthetic_cty, mt_n_organic_cty) %>%
+  ## KS: Minor correction
+  ## the Ag_Soils-Animals worksheet uses the estimates of unvolatized synthetic
+  ## and organic fertilizer, not the total fertilizer use of each kind
+  mutate(
+    # unvolatilized N from synthetic fertilizer
+    mt_uv_n_synthetic_cty = mt_n_synthetic_cty * (1 - ag_constants_vec["VolSyn"]),
+    # unvolatilized N from organic fertilizer
+    mt_uv_n_organic_cty = mt_n_organic_cty * ag_constants_vec["NOrg"] * (1 - ag_constants_vec["VolOrg"]),
+    mt_n2o = (mt_uv_n_synthetic_cty + mt_uv_n_organic_cty) *
+      ag_constants_vec["LeachEF"] * ag_constants_vec["LeachEF2"] *
+      ag_constants_vec["N2O_N2"],
+    mt_co2e = mt_n2o * gwp$n2o
+  )
+
+ctu_total_fertilizer_emissions <- bind_rows(
+  ctu_fertilizer_emissions %>% ungroup() %>%
+    select(inventory_year, ctu_id, ctu_name, ctu_class, county_name, value_emissions = mt_n2o, mt_co2e) %>%
+    mutate(category = "cropland", source = "Onsite_fertilizer_emissions", units_emissions = "Metric tons N2O"),
+  ctu_fertilizer_runoff_emissions %>% ungroup() %>%
+    select(inventory_year, ctu_id, ctu_name, ctu_class, county_name, value_emissions = mt_n2o, mt_co2e) %>%
+    mutate(category = "cropland", source = "Runoff_fertilizer_emissions", units_emissions = "Metric tons N2O")
+) %>%
+  mutate(
+    sector = "Agriculture",
+    category = str_to_sentence(category),
+    source = str_to_sentence(gsub("_", " ", source)),
+    data_source = "USDA fertilizer purchase census and EPA SIT fertilizer application data",
+    factor_source = "EPA SIT"
+  ) %>%
+  select(
+    ctu_id, ctu_name, ctu_class, county_name, inventory_year, sector, category, source,
+    data_source, factor_source, value_emissions, units_emissions, mt_co2e
+  )
+
+saveRDS(ctu_total_fertilizer_emissions, "./_agriculture/data/ctu_fertilizer_emissions.rds")
