@@ -205,10 +205,10 @@ township_ag_proportion <- ctu_ag_proportion %>%
            (county_name == "Hennepin" & ctu_ag_area > 10)) %>% #no townships in Hennepin, making minimum ag area for now 
   group_by(county_name, inventory_year) %>%
   mutate(
-    total_township_ag_area = sum(ctu_ag_area[grepl("TOWN",ctu_class)], na.rm = TRUE),
-    proportion_ag_land = ctu_ag_area / total_township_ag_area
+    total_rural_ag_area = sum(ctu_ag_area, na.rm = TRUE),
+    proportion_ag_land = ctu_ag_area / total_rural_ag_area
   ) %>%
-  select(-total_township_ag_area) %>%
+  select(-total_rural_ag_area) %>%
   ungroup()
 
 livestock_township <- left_join(township_ag_proportion,
