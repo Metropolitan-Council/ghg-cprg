@@ -40,7 +40,7 @@ usda_survey <- tidyUSDA::getQuickstat(
   program = "SURVEY",
   data_item = NULL,
   geographic_level = "COUNTY",
-  year = as.character(2005:2021),
+  year = as.character(2005:2023),
   state = c("MINNESOTA", "WISCONSIN"),
   geometry = TRUE,
   lower48 = TRUE,

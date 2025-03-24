@@ -12,19 +12,6 @@ ag_ctu <- read_rds("_nature/data/nlcd_ctu_landcover_allyrs.rds")  %>%
   filter(land_cover_type == "Cropland")
 
 
-# ### for now assigning COCTU to where majority of land area is manually
-# ctu_co <- cprg_ctu_9 %>%
-#   filter(
-#     !(CTU_NAME == "Chanhassen" & COUNTY_NAME == "Hennepin"),
-#     !(CTU_NAME == "Blaine" & COUNTY_NAME == "Ramsey"),
-#     !(CTU_NAME == "Hastings" & COUNTY_NAME == "Washington"),
-#     !(CTU_NAME == "Saint Anthony" & COUNTY_NAME == "Ramsey"),
-#     !(CTU_NAME == "Shorewood" & COUNTY_NAME == "Carver"),
-#     !(CTU_NAME == "Spring Lake Park" & COUNTY_NAME == "Ramsey"),
-#     !(CTU_NAME == "White Bear Lake" & COUNTY_NAME == "Washington")
-#   ) %>%
-#   filter(!duplicated(CTU_NAME))
-
 ctu_ag_proportion <- left_join(ag_ctu %>% 
   select(ctu_id, ctu_name, ctu_class, county_name, state_name, inventory_year, ctu_ag_area = area), 
                                ag_county %>%
