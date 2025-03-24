@@ -74,7 +74,6 @@ county_wastewater_emissions <- expand.grid(
   as_tibble()
 
 
-
 county_wastewater_emissions <- county_wastewater_emissions %>%
   group_by(county_name, state_name, inventory_year, source) %>%
   mutate(
@@ -96,7 +95,8 @@ county_wastewater_emissions <- county_wastewater_emissions %>%
     sector, category, source, data_source,
     population, value_emissions,
     units_emissions, mt_co2e
-  ) %>% dplyr::select(-population)
+  ) %>% dplyr::select(-population) %>% 
+  ungroup()
 
 
 
@@ -198,6 +198,18 @@ ctu_wastewater_emissions <- ctu_wastewater_emissions %>%
     units_emissions, mt_co2e
   ) %>% dplyr::select(-population)
 
+### county and ctu emissions should add up to be identical
+
+waldo::compare(county_wastewater_emissions %>% 
+                 filter(!county_name %in% c("St. Croix", "Pierce", "Sherburne", "Chisago")) %>% 
+                 group_by(inventory_year) %>% 
+                 summarize(mt_co2e = sum(mt_co2e)),
+               ctu_wastewater_emissions %>% 
+                 group_by(inventory_year) %>% 
+                 summarize(mt_co2e = sum(mt_co2e, na.rm = TRUE)),
+               max_diffs = 20
+               )
+### values are very close except for 2010, which appears to have an error for county
 
 ctu_wastewater_emissions_meta <-
   tibble::tribble(
