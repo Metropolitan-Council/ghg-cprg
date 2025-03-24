@@ -363,7 +363,7 @@ ts_manure_ch4 <- left_join(township_livestock,
     mt_ch4 = township_head_count  * mt_vs_head_yr * Bo * mcf_percent * ag_constants_vec["kg_m3"],
     mt_co2e = mt_ch4 * gwp$ch4
   ) %>%
-  group_by(inventory_year, ctu_id) %>%
+  group_by(inventory_year, ctu_id, ctu_name, ctu_class, county_name) %>%
   summarize(mt_ch4 = sum(mt_ch4), mt_co2e = sum(mt_co2e))
 
 #manure n2o
@@ -428,7 +428,7 @@ ts_KN_excretion_runoff <- left_join(
 ) %>%
   mutate(total_kn_excretion_kg = township_head_count * kg_nex_head_yr)
 
-nex_runoff_emissions <- ts_KN_excretion_runoff %>%
+ts_nex_runoff_emissions <- ts_KN_excretion_runoff %>%
   group_by(inventory_year, ctu_id, ctu_name, ctu_class, county_name, data_type) %>%
   summarize(mt_total_kn_excretion = sum(total_kn_excretion_kg / 1000)) %>%
   mutate(
@@ -505,28 +505,28 @@ ts_manure_soils_emissions <- ts_manure_soils %>%
     MT_co2e_pasture = MT_n2o_pasture * gwp$n2o
   )
 
-ts_manure_soils_emissions <- ts_manure_soils_emissions %>%
+manure_soils_emissions_ts <- ts_manure_soils_emissions %>%
   mutate(co2e_combined = MT_co2e_manure_application + MT_co2e_pasture) %>%
   group_by(inventory_year, ctu_id, ctu_name, ctu_class, county_name) %>%
   summarize(co2e = sum(co2e_combined))
 
-ts_manure_soils_emissions %>%
+manure_soils_emissions_ts %>%
   filter(inventory_year == 2021) %>%
   pull(co2e) %>%
   sum()
 # 69983.24
-# for later: make test for this value
+# same value as county pull above
 
 ### compile all emissions for export
 
-manure_emissions <- bind_rows(
-  manure_ch4 %>% group_by(year, county_name) %>%
+ts_manure_emissions <- bind_rows(
+  ts_manure_ch4 %>% group_by(inventory_year, ctu_id, ctu_name, ctu_class, county_name) %>%
     summarize(mt_co2e = sum(mt_co2e), mt_gas = sum(mt_ch4)) %>%
     mutate(category = "livestock", source = "manure_management", gas_type = "ch4"),
-  manure_n2o %>% group_by(year, county_name) %>%
+  ts_manure_n2o %>% group_by(inventory_year, ctu_id, ctu_name, ctu_class, county_name) %>%
     summarize(mt_co2e = sum(mt_co2e), mt_gas = sum(mt_n2o)) %>%
     mutate(category = "livestock", source = "manure_management", gas_type = "n2o"),
-  manure_soils_emissions %>% group_by(year, county_name) %>%
+  ts_manure_soils_emissions %>% group_by(inventory_year, ctu_id, ctu_name, ctu_class, county_name) %>%
     summarize(
       mt_co2e = sum(MT_co2e_manure_application + MT_co2e_pasture),
       mt_gas = sum(MT_n2o_manure_application + MT_n2o_pasture)
@@ -536,8 +536,8 @@ manure_emissions <- bind_rows(
       source = "direct_manure_soil_emissions",
       gas_type = "n2o"
     ),
-  nex_runoff_emissions %>%
-    group_by(year, county_name) %>% summarize(
+  ts_nex_runoff_emissions %>%
+    group_by(inventory_year, ctu_id, ctu_name, ctu_class, county_name) %>% summarize(
       mt_co2e = sum(mt_co2e),
       mt_gas = sum(mt_n2o)
     ) %>%
@@ -547,12 +547,8 @@ manure_emissions <- bind_rows(
 
 ### format to match style guide
 
-manure_emissions_out <- manure_emissions %>%
-  left_join(., cprg_county %>% select(geoid, county_name) %>% st_drop_geometry(),
-            by = c("county_name")
-  ) %>%
+ts_manure_emissions_out <- ts_manure_emissions %>%
   rename(
-    inventory_year = year,
     value_emissions = mt_gas,
     units_emissions = gas_type
   ) %>%
@@ -569,6 +565,20 @@ manure_emissions_out <- manure_emissions %>%
     factor_source = "EPA SIT"
   ) %>%
   select(
-    geoid, inventory_year, sector, category, source,
+    ctu_id,, ctu_name, ctu_class, county_name, inventory_year, sector, category, source,
     data_source, factor_source, value_emissions, units_emissions, mt_co2e
   )
+
+## do CTU emissions match county?
+
+waldo::compare(manure_emissions_out %>% 
+                 filter(inventory_year == 2021) %>% 
+                 pull(mt_co2e) %>% 
+                 sum(),
+               ts_manure_emissions_out %>% 
+                 filter(inventory_year == 2021) %>% 
+                 pull(mt_co2e) %>% 
+                 sum()
+) # checks out
+
+saveRDS(ts_manure_emissions_out, "./_agriculture/data/ctu_manure_emissions.rds")
