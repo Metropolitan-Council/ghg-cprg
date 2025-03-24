@@ -111,12 +111,17 @@ saveRDS(crop_production_meta, "./_agriculture/data/county_crop_production_meta.r
 ### split crops out based on CTU cropland proportion
 
 ctu_crop <- left_join(ctu_ag_proportion,
-                      usda_survey_formatted,
-                                by = c("county_name",
-                                       "inventory_year")) %>% 
-  mutate(ctu_metric_tons = proportion_ag_land * metric_tons) %>% 
-  filter(!is.na(ctu_metric_tons)) %>% 
-  select(ctu_id, ctu_name, ctu_class, county_name, state_name,
-         inventory_year, crop_type, ctu_metric_tons)
+  usda_survey_formatted,
+  by = c(
+    "county_name",
+    "inventory_year"
+  )
+) %>%
+  mutate(ctu_metric_tons = proportion_ag_land * metric_tons) %>%
+  filter(!is.na(ctu_metric_tons)) %>%
+  select(
+    ctu_id, ctu_name, ctu_class, county_name, state_name,
+    inventory_year, crop_type, ctu_metric_tons
+  )
 
 saveRDS(ctu_crop, "./_agriculture/data/ctu_usda_crop_data.rds")

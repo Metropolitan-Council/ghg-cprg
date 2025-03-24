@@ -347,26 +347,26 @@ saveRDS(manure_emissions_meta, "./_agriculture/data/manure_emissions_meta.rds")
 ### manure ch4
 
 ts_manure_ch4 <- left_join(township_livestock,
-                        vs,
-                        by = c(
-                          "inventory_year" = "year",
-                          "livestock_type" = "livestock_type",
-                          "state_name" = "state"
-                        )
+  vs,
+  by = c(
+    "inventory_year" = "year",
+    "livestock_type" = "livestock_type",
+    "state_name" = "state"
+  )
 ) %>%
   filter(inventory_year >= 2005) %>%
   left_join(., Bo) %>%
   left_join(., mcf,
-            by = c("inventory_year" = "year", "state_name" = "state", "livestock_type" = "livestock_type")
+    by = c("inventory_year" = "year", "state_name" = "state", "livestock_type" = "livestock_type")
   ) %>%
   mutate(
-    mt_ch4 = township_head_count  * mt_vs_head_yr * Bo * mcf_percent * ag_constants_vec["kg_m3"],
+    mt_ch4 = township_head_count * mt_vs_head_yr * Bo * mcf_percent * ag_constants_vec["kg_m3"],
     mt_co2e = mt_ch4 * gwp$ch4
   ) %>%
   group_by(inventory_year, ctu_id, ctu_name, ctu_class, county_name) %>%
   summarize(mt_ch4 = sum(mt_ch4), mt_co2e = sum(mt_co2e))
 
-#manure n2o
+# manure n2o
 
 ts_manure_n2o <- left_join(
   township_livestock %>%
@@ -374,8 +374,8 @@ ts_manure_n2o <- left_join(
   nex %>%
     filter(year >= 2005) %>%
     mutate(state = if_else(state == "MN",
-                           "Minnesota",
-                           "Wisconsin"
+      "Minnesota",
+      "Wisconsin"
     )),
   by = c(
     "state_name" = "state", "inventory_year" = "year",
@@ -417,8 +417,8 @@ ts_KN_excretion_runoff <- left_join(
   nex %>%
     filter(year >= 2005) %>%
     mutate(state = if_else(state == "MN",
-                           "Minnesota",
-                           "Wisconsin"
+      "Minnesota",
+      "Wisconsin"
     )),
   by = c(
     "state_name" = "state",
@@ -441,32 +441,32 @@ ts_nex_runoff_emissions <- ts_KN_excretion_runoff %>%
 ##### manure management system emissions
 
 ts_manure_soils <- left_join(ts_KN_excretion_runoff,
-                          manure_mgmt_perc %>% filter(management_type == "Managed") %>%
-                            dplyr::select(-management_type) %>%
-                            rename(percent_managed = percentage),
-                          by = c(
-                            "inventory_year" = "year",
-                            "livestock_type" = "livestock_type",
-                            "state_name" = "state"
-                          )
+  manure_mgmt_perc %>% filter(management_type == "Managed") %>%
+    dplyr::select(-management_type) %>%
+    rename(percent_managed = percentage),
+  by = c(
+    "inventory_year" = "year",
+    "livestock_type" = "livestock_type",
+    "state_name" = "state"
+  )
 ) %>%
   left_join(., manure_mgmt_perc %>% filter(management_type == "Daily_spread") %>%
-              dplyr::select(-management_type) %>%
-              rename(percent_daily_spread = percentage),
-            by = c(
-              "inventory_year" = "year",
-              "livestock_type" = "livestock_type",
-              "state_name" = "state"
-            )
+    dplyr::select(-management_type) %>%
+    rename(percent_daily_spread = percentage),
+  by = c(
+    "inventory_year" = "year",
+    "livestock_type" = "livestock_type",
+    "state_name" = "state"
+  )
   ) %>%
   left_join(., manure_mgmt_perc %>% filter(management_type == "Pasture_range") %>%
-              dplyr::select(-management_type) %>%
-              rename(percent_pasture = percentage),
-            by = c(
-              "inventory_year" = "year",
-              "livestock_type" = "livestock_type",
-              "state_name" = "state"
-            )
+    dplyr::select(-management_type) %>%
+    rename(percent_pasture = percentage),
+  by = c(
+    "inventory_year" = "year",
+    "livestock_type" = "livestock_type",
+    "state_name" = "state"
+  )
   ) %>%
   ### some livestock_type have manure management determined from other sources or within SIT workbook
   mutate(
@@ -565,20 +565,21 @@ ts_manure_emissions_out <- ts_manure_emissions %>%
     factor_source = "EPA SIT"
   ) %>%
   select(
-    ctu_id,, ctu_name, ctu_class, county_name, inventory_year, sector, category, source,
+    ctu_id, , ctu_name, ctu_class, county_name, inventory_year, sector, category, source,
     data_source, factor_source, value_emissions, units_emissions, mt_co2e
   )
 
 ## do CTU emissions match county?
 
-waldo::compare(manure_emissions_out %>% 
-                 filter(inventory_year == 2021) %>% 
-                 pull(mt_co2e) %>% 
-                 sum(),
-               ts_manure_emissions_out %>% 
-                 filter(inventory_year == 2021) %>% 
-                 pull(mt_co2e) %>% 
-                 sum()
+waldo::compare(
+  manure_emissions_out %>%
+    filter(inventory_year == 2021) %>%
+    pull(mt_co2e) %>%
+    sum(),
+  ts_manure_emissions_out %>%
+    filter(inventory_year == 2021) %>%
+    pull(mt_co2e) %>%
+    sum()
 ) # checks out
 
 saveRDS(ts_manure_emissions_out, "./_agriculture/data/ctu_manure_emissions.rds")

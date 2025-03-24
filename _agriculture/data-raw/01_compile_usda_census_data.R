@@ -201,8 +201,8 @@ saveRDS(livestock_census_meta, "./_agriculture/data/usda_census_data_meta.rds")
 
 ### assigning livestock to TOWNSHIPs only. Assuming livestock within city limits is rare
 township_ag_proportion <- ctu_ag_proportion %>%
-  filter(grepl("TOWN",ctu_class) |
-           (county_name == "Hennepin" & ctu_ag_area > 10)) %>% #no townships in Hennepin, making minimum ag area for now 
+  filter(grepl("TOWN", ctu_class) |
+    (county_name == "Hennepin" & ctu_ag_area > 10)) %>% # no townships in Hennepin, making minimum ag area for now
   group_by(county_name, inventory_year) %>%
   mutate(
     total_rural_ag_area = sum(ctu_ag_area, na.rm = TRUE),
@@ -212,13 +212,17 @@ township_ag_proportion <- ctu_ag_proportion %>%
   ungroup()
 
 livestock_township <- left_join(township_ag_proportion,
-                                livestock_interpolated,
-                                by = c("county_name",
-                                       "inventory_year" = "year")) %>% 
-  mutate(township_head_count = proportion_ag_land * head_count) %>% 
-  filter(!is.na(township_head_count)) %>% 
-  select(ctu_id, ctu_name, ctu_class, county_name, state_name,
-         inventory_year, livestock_type, township_head_count, data_type)
+  livestock_interpolated,
+  by = c("county_name",
+    "inventory_year" = "year"
+  )
+) %>%
+  mutate(township_head_count = proportion_ag_land * head_count) %>%
+  filter(!is.na(township_head_count)) %>%
+  select(
+    ctu_id, ctu_name, ctu_class, county_name, state_name,
+    inventory_year, livestock_type, township_head_count, data_type
+  )
 
 
 saveRDS(livestock_township, "./_agriculture/data/township_usda_census_data.rds")

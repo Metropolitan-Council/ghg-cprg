@@ -15,18 +15,19 @@ cprg_mn_ctu_dissolve <- readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>%
   ungroup() %>%
   st_make_valid() %>%
   left_join(readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>% st_drop_geometry() %>% select(ctu_name, ctu_class, state_name),
-            by = join_by(ctu_name, ctu_class),
-            multiple = "first") %>%
+    by = join_by(ctu_name, ctu_class),
+    multiple = "first"
+  ) %>%
   filter(state_name == "Minnesota")
 
 # Perform spatial join to match each CTU (city/township) with utilities
 ctu_utility_mapping <- st_join(
-  cprg_mn_ctu_dissolve,  
-  MN_elecUtils,          
-  join = st_intersects,  # Searches for utilities that overlap each CTU
-  left = FALSE           
+  cprg_mn_ctu_dissolve,
+  MN_elecUtils,
+  join = st_intersects, # Searches for utilities that overlap each CTU
+  left = FALSE
 ) %>%
-  select(ctu_name, ctu_class, utility_name = full_name) %>%  
+  select(ctu_name, ctu_class, utility_name = full_name) %>%
   distinct() %>%
   st_drop_geometry()
 
@@ -36,7 +37,7 @@ ctu_utility_count <- ctu_utility_mapping %>%
   summarize(
     numUtilities = n_distinct(utility_name),
     .groups = "keep"
-    ) %>%
+  ) %>%
   ungroup() %>%
   st_drop_geometry()
 

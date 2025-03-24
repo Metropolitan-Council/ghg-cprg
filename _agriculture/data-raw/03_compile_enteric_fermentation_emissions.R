@@ -86,7 +86,7 @@ saveRDS(animal_burps_meta, "./_agriculture/data/enteric_fermentation_emissions_m
 animal_burps_township <- left_join(
   township_livestock %>% filter(inventory_year >= 2005),
   enteric_ef,
-  by = c("inventory_year"="year", "livestock_type", "state_name" = "state")
+  by = c("inventory_year" = "year", "livestock_type", "state_name" = "state")
 ) %>%
   filter(!is.na(mt_ch4_head_yr)) %>% # poultry do not contribute to enteric fermentation
   mutate(
@@ -96,8 +96,10 @@ animal_burps_township <- left_join(
   ) %>%
   group_by(inventory_year, ctu_id, ctu_name, ctu_class, county_name, gas_type) %>%
   summarize(mt_gas = sum(mt_gas), mt_co2e = sum(mt_co2e)) %>%
-  select(inventory_year, ctu_name, ctu_class, county_name, units_emissions = gas_type, 
-         value_emissions = mt_gas, mt_co2e) %>%
+  select(inventory_year, ctu_name, ctu_class, county_name,
+    units_emissions = gas_type,
+    value_emissions = mt_gas, mt_co2e
+  ) %>%
   mutate(
     sector = "Agriculture",
     category = "Livestock",

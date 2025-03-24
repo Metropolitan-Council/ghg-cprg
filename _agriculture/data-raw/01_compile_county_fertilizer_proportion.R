@@ -97,12 +97,17 @@ saveRDS(fertilizer_proportion_meta, "./_agriculture/data/county_fertilizer_propo
 ### split fertilizer purchase out based on CTU cropland proportion
 
 ctu_fertilizer <- left_join(ctu_ag_proportion,
-                      fert_prop_interpolated,
-                      by = c("county_name",
-                             "inventory_year")) %>% 
-  mutate(ctu_fertilizer_proportion = proportion_ag_land * fertilizer_proportion) %>% 
-  filter(!is.na(ctu_fertilizer_proportion)) %>% 
-  select(ctu_id, ctu_name, ctu_class, county_name, state_name,
-         inventory_year, ctu_fertilizer_proportion, data_type)
+  fert_prop_interpolated,
+  by = c(
+    "county_name",
+    "inventory_year"
+  )
+) %>%
+  mutate(ctu_fertilizer_proportion = proportion_ag_land * fertilizer_proportion) %>%
+  filter(!is.na(ctu_fertilizer_proportion)) %>%
+  select(
+    ctu_id, ctu_name, ctu_class, county_name, state_name,
+    inventory_year, ctu_fertilizer_proportion, data_type
+  )
 
 saveRDS(ctu_fertilizer, "./_agriculture/data/ctu_fertilizer_proportion.rds")

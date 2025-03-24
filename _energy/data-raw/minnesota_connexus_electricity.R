@@ -3,14 +3,15 @@ source("R/_load_pkgs.R")
 
 # Read city data
 city_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connexus_County_City_Township_Consumption_2014_2024.xlsx"),
-                    sheet = "City") %>%
+  sheet = "City"
+) %>%
   mutate(
     ctu_name = str_to_title(City),
     ctu_class = "CITY",
     mwh_delivered = case_when(
-      Consumption == "REDACTED" ~ NA_real_, 
-      grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption),  # checks if only numeric values are present
-      TRUE ~ NA_real_  
+      Consumption == "REDACTED" ~ NA_real_,
+      grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption), # checks if only numeric values are present
+      TRUE ~ NA_real_
     ) * 1e-3
   ) %>%
   rename(
@@ -24,15 +25,16 @@ city_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connex
 
 # Read township data
 township_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connexus_County_City_Township_Consumption_2014_2024.xlsx"),
-                      sheet = "Township") %>%
+  sheet = "Township"
+) %>%
   mutate(
     ctu_name = str_to_title(Township),
     ctu_class = "TOWNSHIP",
     mwh_delivered = case_when(
-      Consumption == "REDACTED" ~ NA_real_, 
+      Consumption == "REDACTED" ~ NA_real_,
       grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption), # checks if only numeric values are present
-      TRUE ~ NA_real_ 
-    )* 1e-3
+      TRUE ~ NA_real_
+    ) * 1e-3
   ) %>%
   rename(
     sector = Class,
@@ -51,14 +53,15 @@ township_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Co
 
 # Read county data
 county_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connexus_County_City_Township_Consumption_2014_2024.xlsx"),
-                          sheet = "County") %>%
+  sheet = "County"
+) %>%
   mutate(
     county_name = str_to_title(County),
     geog_level = "COUNTY",
     mwh_delivered = case_when(
-      Consumption == "REDACTED" ~ NA_real_, 
+      Consumption == "REDACTED" ~ NA_real_,
       grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption), # checks if only numeric values are present
-      TRUE ~ NA_real_ 
+      TRUE ~ NA_real_
     ) * 1e-3
   ) %>%
   rename(
@@ -69,19 +72,20 @@ county_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Conn
   select(
     -County,
     -Consumption
-  ) %>% 
+  ) %>%
   mutate(
     source = "Electricity",
     utility = "Connexus Energy"
   )
 
 city_township_connexus <- rbind(city_raw, township_raw)
-  
+
 connexus_activityData_2014_2023 <- city_township_connexus %>%
   mutate(
     mwh_delivered = case_when(
       mwh_delivered == "REDACTED" ~ as.numeric(NA),
-      TRUE ~ mwh_delivered)
+      TRUE ~ mwh_delivered
+    )
   ) %>%
   filter(year != 2024)
 
@@ -109,8 +113,8 @@ city_total_population <- ctu_population %>%
 connexus_activityData_2014_2023 <- connexus_activityData_2014_2023 %>%
   # Join city_total_population back to main dataset
   full_join(city_total_population,
-            by = c("ctu_name", "ctu_class", "year"),
-            relationship = "many-to-many"
+    by = c("ctu_name", "ctu_class", "year"),
+    relationship = "many-to-many"
   ) %>%
   # Calculate proportions and disaggregated values
   group_by(ctu_name, ctu_class, year, county_name) %>%
@@ -119,8 +123,9 @@ connexus_activityData_2014_2023 <- connexus_activityData_2014_2023 %>%
     disagg_mwh_delivered = ifelse(
       multi_county,
       mwh_delivered * ctu_population_proportion,
-      NA)
-    ) %>%
+      NA
+    )
+  ) %>%
   ungroup() %>%
   # Filter to core metro counties while keeping `county_name` intact
   filter(county_name %in% c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington")) %>%
@@ -131,6 +136,6 @@ connexus_activityData_2014_2023 <- connexus_activityData_2014_2023 %>%
     utility = "Connexus Energy"
   ) %>%
   select(1:7, 13:14)
-  
+
 write_rds(connexus_activityData_2014_2023, here("_energy", "data", "connexus_activityData_2014_2023.RDS"))
 write_rds(county_raw, here("_energy", "data", "connexus_county_activityData_2014_2023.RDS"))

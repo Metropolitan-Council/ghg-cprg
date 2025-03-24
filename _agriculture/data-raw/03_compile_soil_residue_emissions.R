@@ -121,7 +121,7 @@ ctu_soil_residue_emissions <- ctu_crops %>%
     MT_N_to_soil = if_else(
       crop_type == "alfalfa",
       0, # no N to soil via residue for alfalfa
-      ctu_metric_tons  * value_rcmr * value_rdmf * value_fra * value_ncr
+      ctu_metric_tons * value_rcmr * value_rdmf * value_fra * value_ncr
     ),
     MT_N_fixation = if_else(
       crop_type %in% c("alfalfa", "soybeans", "dry beans"),

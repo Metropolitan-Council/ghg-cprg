@@ -229,20 +229,21 @@ Agricultural emissions are apportioned to cities and townships in two ways. Firs
 ctu_ag_emissions <- readRDS(file.path(here::here(), "./_agriculture/data/_ctu_agricultural_emissions.rds"))
 
 agricultural_emissions_2021 <- ctu_ag_emissions %>%
-  filter(inventory_year == 2021) %>% 
-  group_by(ctu_name, ctu_class) %>% 
+  filter(inventory_year == 2021) %>%
+  group_by(ctu_name, ctu_class) %>%
   summarize(mt_co2e = sum(mt_co2e, na.rm = TRUE))
 
 ### map CTU scale agricultural emissions
 
-cprg_ctu <-readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>%
+cprg_ctu <- readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>%
   mutate(geometry = st_make_valid(geometry))
 
 
 ctu_ag_map <- left_join(cprg_ctu,
   agricultural_emissions_2021,
-  by = c("ctu_name", "ctu_class")) %>%
-  select(ctu_name, geometry, mt_co2e ) %>% 
+  by = c("ctu_name", "ctu_class")
+) %>%
+  select(ctu_name, geometry, mt_co2e) %>%
   replace(is.na(.), 0)
 
 

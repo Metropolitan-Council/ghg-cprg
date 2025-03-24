@@ -1,31 +1,32 @@
-## determine relative proportion of CTU agricultural land per county to allocate 
+## determine relative proportion of CTU agricultural land per county to allocate
 ## livestock and crop activity data
 
 source("R/_load_pkgs.R")
-#source("R/cprg_colors.R")
+# source("R/cprg_colors.R")
 
 ### load in nlcd data from natural systems analysis
 
-ag_county <- read_rds("_nature/data/nlcd_county_landcover_allyrs.rds") %>% 
+ag_county <- read_rds("_nature/data/nlcd_county_landcover_allyrs.rds") %>%
   filter(land_cover_type == "Cropland")
-ag_ctu <- read_rds("_nature/data/nlcd_ctu_landcover_allyrs.rds")  %>% 
+ag_ctu <- read_rds("_nature/data/nlcd_ctu_landcover_allyrs.rds") %>%
   filter(land_cover_type == "Cropland")
 
 
-ctu_ag_proportion <- left_join(ag_ctu %>% 
-  select(ctu_id, ctu_name, ctu_class, county_name, state_name, inventory_year, ctu_ag_area = area), 
-                               ag_county %>%
-  select(county_name, county_ag_area = area, inventory_year),
-by = c("county_name","inventory_year")
+ctu_ag_proportion <- left_join(
+  ag_ctu %>%
+    select(ctu_id, ctu_name, ctu_class, county_name, state_name, inventory_year, ctu_ag_area = area),
+  ag_county %>%
+    select(county_name, county_ag_area = area, inventory_year),
+  by = c("county_name", "inventory_year")
 ) %>%
-  mutate(proportion_ag_land = ctu_ag_area / county_ag_area) %>% 
+  mutate(proportion_ag_land = ctu_ag_area / county_ag_area) %>%
   ungroup()
 
 # make sure proportions add to 100
-ctu_ag_proportion %>% 
-  group_by(inventory_year, county_name) %>% 
-  summarize(total_prop = sum(proportion_ag_land)) %>% 
-  ungroup() %>% 
+ctu_ag_proportion %>%
+  group_by(inventory_year, county_name) %>%
+  summarize(total_prop = sum(proportion_ag_land)) %>%
+  ungroup() %>%
   distinct(total_prop) # all 1, great
 
 

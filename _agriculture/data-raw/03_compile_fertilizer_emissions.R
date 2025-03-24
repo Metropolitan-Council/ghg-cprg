@@ -177,13 +177,15 @@ saveRDS(fertilizer_emissions_meta, "./_agriculture/data/fertilizer_emissions_met
 
 ### repeat the same for CTUs
 
-ctu_fertilizer_emissions <- left_join(ctu_fert_prop %>% 
-                                        mutate(state = if_else(state_name == "Minnesota",
-                                                               "MN",
-                                                               "WI")),
-            state_fertilizer,
-            by = c("state", "inventory_year" = "year")
-  ) %>%
+ctu_fertilizer_emissions <- left_join(
+  ctu_fert_prop %>%
+    mutate(state = if_else(state_name == "Minnesota",
+      "MN",
+      "WI"
+    )),
+  state_fertilizer,
+  by = c("state", "inventory_year" = "year")
+) %>%
   filter(inventory_year >= 2005) %>%
   mutate(
     mt_n_synthetic_cty = ctu_fertilizer_proportion * mt_n_synthetic,
@@ -194,14 +196,14 @@ ctu_fertilizer_emissions <- left_join(ctu_fert_prop %>%
   mutate(
     # unvolatilized N from synthetic fertilizer
     n2o_direct = (mt_n_synthetic_cty * (1 - ag_constants_vec["VolSyn"]) +
-                    # un-volatilized N from organic fertilizer
-                    mt_n_organic_cty * ag_constants_vec["NOrg"] * (1 - ag_constants_vec["VolOrg"])) *
+      # un-volatilized N from organic fertilizer
+      mt_n_organic_cty * ag_constants_vec["NOrg"] * (1 - ag_constants_vec["VolOrg"])) *
       ## multiplied by the EF of un-volatilized N and N2O N: N2O
       ag_constants_vec["EF_Dir"] * ag_constants_vec["N2O_N2"],
     # volatilized N from synthetic fertilizer
     n2o_indirect = (mt_n_synthetic_cty * ag_constants_vec["VolSyn"] +
-                      # volatized N from organic fertilizer
-                      mt_n_organic_cty * ag_constants_vec["NOrg"] * ag_constants_vec["VolOrg"]) *
+      # volatized N from organic fertilizer
+      mt_n_organic_cty * ag_constants_vec["NOrg"] * ag_constants_vec["VolOrg"]) *
       ## multiplied by the EF of volatized N and N2O N: N2O
       ag_constants_vec["Vol_EF"] * ag_constants_vec["N2O_N2"],
     mt_n2o = n2o_direct + n2o_indirect,

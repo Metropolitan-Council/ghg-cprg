@@ -13,15 +13,15 @@
 # source("_agriculture/data-raw/01_compile_usda_census_data.R")
 #
 # #02
-# source("_agriculture/data-raw/02_compile_county_crop_production.R") 
+# source("_agriculture/data-raw/02_compile_county_crop_production.R")
 # source("_agriculture/data-raw/02_compile_nitrogen_excretion.R")
 # source("_agriculture/data-raw/02_compile_volatile_solids.R")
 #
 # #03
-# source("_agriculture/data-raw/03_compile_enteric_fermentation_emissions.R")       
-# source("_agriculture/data-raw/03_compile_fertilizer_emissions.R")              
+# source("_agriculture/data-raw/03_compile_enteric_fermentation_emissions.R")
+# source("_agriculture/data-raw/03_compile_fertilizer_emissions.R")
 # source("_agriculture/data-raw/03_compile_manure_emissions.R")
-# source("_agriculture/data-raw/03_compile_soil_residue_emissions.R")                
+# source("_agriculture/data-raw/03_compile_soil_residue_emissions.R")
 
 
 ### compile all agricultural subsectors and output as one file
@@ -40,22 +40,24 @@ ctu_agricultural_emissions <- bind_rows(
   readRDS("./_agriculture/data/ctu_fertilizer_emissions.rds")
 )
 
-waldo::compare(agricultural_emissions %>% 
-                 filter(inventory_year == 2021) %>% 
-                 pull(mt_co2e) %>% 
-                 sum(),
-               ctu_agricultural_emissions %>% 
-                 filter(inventory_year == 2021) %>% 
-                 pull(mt_co2e) %>% 
-                 sum()
+waldo::compare(
+  agricultural_emissions %>%
+    filter(inventory_year == 2021) %>%
+    pull(mt_co2e) %>%
+    sum(),
+  ctu_agricultural_emissions %>%
+    filter(inventory_year == 2021) %>%
+    pull(mt_co2e) %>%
+    sum()
 ) # checks out
 
-waldo::compare(agricultural_emissions %>% 
-                 distinct(source,inventory_year) %>% 
-                 arrange(inventory_year),
-               ctu_agricultural_emissions %>% 
-                 distinct(source,inventory_year) %>% 
-                 arrange(inventory_year)
+waldo::compare(
+  agricultural_emissions %>%
+    distinct(source, inventory_year) %>%
+    arrange(inventory_year),
+  ctu_agricultural_emissions %>%
+    distinct(source, inventory_year) %>%
+    arrange(inventory_year)
 )
 # county has 2023 soil residue emissions but not ctu (expected)
 
