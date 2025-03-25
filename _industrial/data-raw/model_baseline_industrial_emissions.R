@@ -8,6 +8,7 @@ ctu_population <- readRDS("_meta/data/ctu_population.rds") %>%
 
 source("R/_load_pkgs.R")
 
+# load in mpca inventory work
 mpca_industrial_inv <- readRDS(file.path(here::here(), "_meta/data/mpca_ghg_inv_2005_2020.RDS")) %>%
   filter(Sector %in% c("Waste", "Industrial"))
 
@@ -33,7 +34,7 @@ ghgrp_emissions_combustion <- bind_rows(
       doublecount == "No"
     ) %>%
     select(
-      inventory_year, facility_name, city_name, county_name,
+      inventory_year, facility_name, city_name, county_name, doublecount,
       value_emissions, category, source
     ),
   subpart_c_emissions %>%
@@ -73,9 +74,9 @@ ghgrp_emissions %>%
   ungroup() %>%
   select(category, source, value_emissions)
 
-mpca_industrial_inv %>% filter(year == 2020, co2e > 0)
-
-
+mpca_industrial_inv %>%
+  filter(year == 2020, co2e > 0) %>%
+  print(n = 50)
 
 ### create six categories - ind process, ref process, nat gas, oil, coal, other fuel combustion
 ghgrp_simplified <- ghgrp_emissions_combustion %>%
@@ -103,15 +104,18 @@ ghgrp_simplified <- ghgrp_emissions_combustion %>%
   filter(mpca_subsector != "Municipal Solid Waste") %>%
   group_by(inventory_year, city_name, county_name, mpca_subsector) %>%
   summarize(value_emissions = sum(value_emissions)) %>%
-  mutate(data_source = "GHGRP")
+  mutate(data_source = "GHGRP") %>%
+  ungroup()
 
 ### Now add in MPCA data for cities without industrial emissions in GHGRP
 ### Later we need to look for industrial point sources in MPCA missed in GHGRP cities
 ### but this is easier said than done :/
+
 mpca_industrial_missing <- mpca_emissions %>%
   filter(
     sector == "Industrial",
-    !ctu_name %in% ghgrp_simplified$city_name
+    !ctu_name %in% ghgrp_simplified$city_name,
+    fuel_type != "Natural Gas"
   ) %>%
   mutate(mpca_subsector = case_when(
     fuel_category %in% c(
@@ -167,21 +171,23 @@ ghgrp_mpca_emissions <-
   )
 
 ### create grid of needed city-subsector-year combinations
-ghgrp_extrapolated <- left_join(
-  expand.grid(
-    inventory_year = seq(2005, 2020, by = 1),
-    city_name = unique(ghgrp_mpca_emissions$city_name),
-    county_name = unique(ghgrp_mpca_emissions$county_name),
-    mpca_subsector = unique(ghgrp_mpca_emissions$mpca_subsector)
-  ) %>%
-    semi_join(., ghgrp_mpca_emissions %>%
-      ungroup() %>%
-      distinct(city_name, county_name, mpca_subsector)),
-  ghgrp_mpca_emissions %>%
-    ungroup() %>%
-    select(inventory_year, city_name, county_name, mpca_subsector, value_emissions, emission_percent),
-  by = c("inventory_year", "city_name", "county_name", "mpca_subsector")
+ghgrp_extrapolated <- expand.grid(
+  inventory_year = seq(2005, 2020, by = 1),
+  city_name = unique(ghgrp_mpca_emissions$city_name),
+  county_name = unique(ghgrp_mpca_emissions$county_name),
+  mpca_subsector = unique(ghgrp_mpca_emissions$mpca_subsector)
 ) %>%
+  # filter to combinations found in inventory
+  semi_join(., ghgrp_mpca_emissions %>%
+    ungroup() %>%
+    distinct(city_name, county_name, mpca_subsector)) %>%
+  # bring in inventory data
+  left_join(
+    ghgrp_mpca_emissions %>%
+      ungroup() %>%
+      select(inventory_year, city_name, county_name, mpca_subsector, value_emissions, emission_percent),
+    by = c("inventory_year", "city_name", "county_name", "mpca_subsector")
+  ) %>%
   ### use na.kalman to extrapolate across time-series
   group_by(city_name, county_name, mpca_subsector) %>%
   arrange(inventory_year) %>%
@@ -217,7 +223,6 @@ ggplot(ghgrp_extrapolated_county, aes(x = inventory_year, y = value_emissions, c
 
 
 ### Now add in MPCA data for commercial sector
-
 
 mpca_commercial <- mpca_emissions %>%
   filter(sector == "Commercial") %>%

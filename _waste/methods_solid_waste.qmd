@@ -38,7 +38,7 @@ The methane commitment model calculates methane emissions from landfills for a g
 $$Emissions_{CH_4} = [(MSW \times L_0 )-rec] \times (1 – ox) $$
 
 $MSW$, or the amount of municipal solid waste processed in landfills, is reported on a county level by MPCA's SCORE report (@sec-mpca-score).
-<!-- make sure the above link refers to the most current information! -->
+
 It is then multiplied by a methane generation potential $L_0$. In some processes, the amount of methane recovered from landfills, either through methane flaring or landfill gas to energy programs, is subtracted here. Due to data concerns and best practices recommendations, we have chosen not to include methane recovery in our Minnesota emissions calculations. Learn more in @sec-epa-methane. 
 
 After subtracting methane recovered, emissions are multiplied by $1-ox$ to account for oxidation in the landfill. Our oxidation value is assigned the IPCC default of 0.1.

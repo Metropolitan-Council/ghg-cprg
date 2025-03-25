@@ -285,9 +285,9 @@ nhd_county <- NHDArea_byCounty %>%
   relocate(any_of(colnames(cprg_county)), waterway_type, area) %>%
   # use crossing() to create a simulated time series of area change between 2001 and 2021
   # in reality this just duplicates each row in the dataframe for every year in the sequence
-  crossing(year = seq(2001, 2021, by = 1)) %>%
-  dplyr::select(c("county_name", "state_name", "year", "waterway_type", "area")) %>%
-  arrange(year, county_name, waterway_type)
+  crossing(inventory_year = seq(2001, 2022, by = 1)) %>%
+  dplyr::select(c("county_name", "state_name", "inventory_year", "waterway_type", "area")) %>%
+  arrange(inventory_year, county_name, waterway_type)
 
 
 
@@ -372,7 +372,7 @@ nhd_county_meta <-
     ~"Column", ~"Class", ~"Description",
     "county_name", class(nhd_county$county_name), "County name",
     "state_name", class(nhd_county$state_name), "State name",
-    "year", class(nhd_county$year), "Year",
+    "inventory_year", class(nhd_county$inventory_year), "Year",
     "waterway_type", class(nhd_county$waterway_type), "Waterway type from National Hydrogaphy Dataset",
     "area", class(nhd_county$area), "Area of land cover in square kilometers"
   )
@@ -402,8 +402,8 @@ nhd_flowlines_msa_meta <-
 if (overwrite_RDS) {
   message("Exporting RDS files...")
 
-  saveRDS(nhd_county, paste0("./_nature/data/nhd_county_waterways_2001_2021.rds"))
-  saveRDS(nhd_county_meta, paste0("./_nature/data/nhd_county_waterways_2001_2021_meta.rds"))
+  saveRDS(nhd_county, paste0("./_nature/data/nhd_county_waterways_allyrs.rds"))
+  saveRDS(nhd_county_meta, paste0("./_nature/data/nhd_county_waterways_allyrs_meta.rds"))
 
   saveRDS(nhd_area_msa, "./_nature/data/nhd_area_msa.rds")
   saveRDS(nhd_area_msa_meta, "./_nature/data/nhd_area_msa_meta.rds")

@@ -19,8 +19,6 @@ source("_nature/data-raw/02_compile_nlcd_land_cover.R")
 
 # 02_compile_nhd_waterways.R
 # Use National Hydrography Dataset to compile waterways for the region
-# NOTE: Currently relies on FedData package, may want to change that
-# source("_nature/data-raw/02_compile_nhd_waterways.R")
 # Compile NHD waterways by County (this is slow)
 source("_nature/data-raw/02_compile_nhd_waterways_byCounty.R")
 # Compile NHD waterways by CTU (this is VERY slow)

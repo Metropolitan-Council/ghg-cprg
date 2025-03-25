@@ -4,8 +4,8 @@ source("R/global_warming_potential.R")
 
 overwrite_RDS <- TRUE
 
-nhd_county <- readRDS("./_nature/data/nhd_county_waterways_2001_2021.rds")
-nhd_ctu <- readRDS("./_nature/data/nhd_ctu_waterways_2001_2021.rds")
+nhd_county <- readRDS("./_nature/data/nhd_county_waterways_allyrs.rds")
+nhd_ctu <- readRDS("./_nature/data/nhd_ctu_waterways_allyrs.rds")
 waterways_c <- readRDS("./_nature/data/waterways_emissions_factors.rds")
 
 
@@ -16,18 +16,26 @@ cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 
 # turn your county and ctu layers into dataframes
 cprg_county_df <- cprg_county %>%
-  as.data.frame() %>%
-  select(geoid, county_name, state_name) %>%
+  as.data.frame() %>% as_tibble() %>%
+  select(county_id=geoid, county_name, state_name) %>%
   sf::st_drop_geometry()
 
 cprg_ctu_df <- cprg_ctu %>%
-  as.data.frame() %>%
+  as.data.frame() %>% as_tibble() %>%
   select(gnis, geoid_wis, ctu_name, ctu_class, county_name, state_name) %>%
   sf::st_drop_geometry() %>%
   mutate(
     geoid_wis = as.numeric(geoid_wis),
     gnis = as.numeric(gnis)
-  )
+  ) %>%
+  mutate(ctu_id = case_when(
+    is.na(gnis) & !is.na(geoid_wis)~geoid_wis,
+    !is.na(gnis) & is.na(geoid_wis)~gnis
+  )) %>%
+  left_join(cprg_county_df, by = join_by(county_name, state_name)) %>%
+  relocate(c(county_id, ctu_id), .before=everything()) %>%
+  dplyr::select(-c(gnis, geoid_wis))
+  
 
 
 
@@ -46,9 +54,8 @@ nhd_county_c <- nhd_county %>%
     category = "Waterways",
     data_source = "National Hydrography Dataset and MPCA Surface Water Emissions Factors"
   ) %>%
-  dplyr::select(geoid, county_name, state_name,
-    inventory_year = year,
-    sector, category, source = waterway_type, data_source,
+  dplyr::select(county_id, county_name, state_name,
+    inventory_year, sector, category, source = waterway_type, data_source,
     factor_source, area, value_emissions = mt_ch4, units_emissions, mt_co2e
   ) %>%
   arrange(inventory_year, county_name, source)
@@ -68,8 +75,9 @@ nhd_ctu_c <- nhd_ctu %>%
     category = "Waterways",
     data_source = "National Hydrography Dataset and MPCA Surface Water Emissions Factors"
   ) %>%
-  dplyr::select(gnis, geoid_wis, ctu_name, ctu_class, county_name, state_name,
-    inventory_year = year, sector, category, source = waterway_type, data_source,
+  
+  dplyr::select(ctu_id, ctu_name, ctu_class, county_name, state_name,
+    inventory_year, sector, category, source = waterway_type, data_source,
     factor_source, area, value_emissions = mt_ch4, units_emissions, mt_co2e
   ) %>%
   arrange(inventory_year, ctu_name, source)
@@ -88,7 +96,7 @@ nhd_ctu_c <- nhd_ctu %>%
 nhd_county_c_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "geoid", class(nhd_county_c$geoid), "County GEOID",
+    "county_id", class(nhd_county_c$county_id), "County ID (5 digit)",
     "county_name", class(nhd_county_c$county_name), "County name",
     "state_name", class(nhd_county_c$state_name), "State name",
     "inventory_year", class(nhd_county_c$inventory_year), "Year of survey",
@@ -108,8 +116,7 @@ nhd_county_c_meta <-
 nhd_ctu_c_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "gnis", class(nhd_ctu_c$gnis), "Minnesota geographic identifier",
-    "geoid_wis", class(nhd_ctu_c$geoid_wis), "Wisconsin geographic identifier",
+    "ctu_id", class(nhd_ctu_c$ctu_id), "CTU ID",
     "ctu_name", class(nhd_ctu_c$ctu_name), "City, township, unorganized territory, or village name",
     "ctu_class", class(nhd_ctu_c$ctu_class), "City class (City, township, unorganized territory, or village)",
     "county_name", class(nhd_ctu_c$county_name), "County name",
@@ -131,9 +138,9 @@ nhd_ctu_c_meta <-
 
 # User chooses whether to overwrite the rds files
 if (overwrite_RDS) {
-  saveRDS(nhd_county_c, paste0("./_nature/data/nhd_county_waterways_emissions_2001_2021.rds"))
-  saveRDS(nhd_county_c_meta, paste0("./_nature/data/nhd_county_waterways_emissions_2001_2021_meta.rds"))
+  saveRDS(nhd_county_c, paste0("./_nature/data/nhd_county_waterways_emissions_allyrs.rds"))
+  saveRDS(nhd_county_c_meta, paste0("./_nature/data/nhd_county_waterways_emissions_allyrs_meta.rds"))
 
-  saveRDS(nhd_ctu_c, paste0("./_nature/data/nhd_ctu_waterways_emissions_2001_2021.rds"))
-  saveRDS(nhd_ctu_c_meta, paste0("./_nature/data/nhd_ctu_waterways_emissions_2001_2021_meta.rds"))
+  saveRDS(nhd_ctu_c, paste0("./_nature/data/nhd_ctu_waterways_emissions_allyrs.rds"))
+  saveRDS(nhd_ctu_c_meta, paste0("./_nature/data/nhd_ctu_waterways_emissions_allyrs_meta.rds"))
 }
