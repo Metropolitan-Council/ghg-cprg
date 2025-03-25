@@ -44,7 +44,9 @@ usda_fert_prop <- usda_fertilizer_mn_wi %>%
   group_by(state_name, year) %>%
   mutate(state_total = sum(Value, na.rm = TRUE), fert_prop = Value / state_total) %>%
   filter(!(NAME == "Washington" & state_name == "WISCONSIN")) %>%
-  filter(county_name %in% counties) %>%
+  filter(county_name %in% counties) %>% 
+  # ungroup() so state_name does not carry forward
+  ungroup() %>%
   select(year, county_name, fert_prop)
 
 ### expand grid and interpolate
