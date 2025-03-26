@@ -35,7 +35,7 @@ incineration_emissions <- mpca_score %>%
     values_to = "value_emissions"
   ) %>%
   select(
-    -c(state_total, co2, n2o)
+    -c(co2, n2o)
   )
 
 # write meta

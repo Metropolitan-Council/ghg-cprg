@@ -49,6 +49,7 @@ solid_waste_mn <- solid_waste_mn_by_gas %>%
   ungroup() %>%
   select(
     geoid,
+    ctuid,
     inventory_year,
     sector,
     category,

@@ -21,9 +21,6 @@ organics_emissions <- mpca_score %>%
     c("Metric tons CH4", "Metric tons N2O"),
     names_to = "units_emissions",
     values_to = "value_emissions"
-  ) %>%
-  select(
-    -state_total
   )
 
 # write meta

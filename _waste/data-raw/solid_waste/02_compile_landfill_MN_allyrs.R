@@ -64,9 +64,6 @@ landfill_emissions <- mpca_score %>%
   mutate(
     value_emissions = (value_activity * l_0) * (1 - ox),
     units_emissions = "Metric tons CH4"
-  ) %>%
-  select(
-    -state_total
   )
 
 # write meta

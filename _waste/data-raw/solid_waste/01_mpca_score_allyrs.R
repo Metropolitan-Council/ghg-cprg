@@ -6,6 +6,8 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 score_summary <- read_csv(file.path(here::here(), "_waste/data-raw/solid_waste/score_summary.csv"))
 
+ctu_population <- readRDS(file.path(here::here(), "_meta/data/ctu_population.RDS"))
+
 # filter to only counties in 9-county MN region, for years between 2005 and 2021
 
 score_filtered <- score_summary %>%
@@ -19,7 +21,7 @@ score_filtered <- score_summary %>%
     Year %in% 2005:2021
   ) %>%
   mutate(
-    value_activity = Tons %>%
+    co_value_activity = Tons %>%
       units::as_units("ton") %>%
       units::set_units("metric_ton") %>%
       as.numeric(), # convert short tons to metric tons (for consistency with IPCC values)
@@ -31,11 +33,28 @@ score_filtered <- score_summary %>%
     geoid,
     source = Method,
     inventory_year = Year,
-    value_activity,
+    co_value_activity,
     units_activity,
     state_total
   ) %>%
-  ungroup()
+  ungroup() %>%  
+  right_join(
+    ctu_population %>% filter(inventory_year > 2004),
+    by = join_by(geoid, inventory_year),
+    relationship = "many-to-many"
+  ) %>%
+  mutate(
+    ctu_value_activity = co_value_activity * ctu_proportion_of_county_pop,
+  ) %>%
+  select(
+    geoid,
+    ctuid,
+    inventory_year,
+    source,
+    value_activity = ctu_value_activity,
+    co_value_activity,
+    units_activity
+  )
 
 # add score metadata
 # mpca_score_meta <- tribble(
