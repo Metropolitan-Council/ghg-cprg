@@ -96,6 +96,20 @@ county_fertilizer_emissions <- left_join(fert_prop, cprg_county %>%
     mt_n2o, mt_co2e
   )
 
+#save intermediate activity data RDS
+
+county_fertilizer_activity <- county_fertilizer_emissions %>% 
+  select(1:6) %>% 
+  pivot_longer(5:6,
+               names_to = "fertilizer_type",
+               values_to = "metric_tons_applied") %>% 
+  mutate(fertilizer_type = case_when(
+    grepl("synth", fertilizer_type) ~ "Synthetic fertilizer",
+    grepl("orga", fertilizer_type) ~ "Organic fertilizer"
+  ))
+
+saveRDS(county_fertilizer_activity, "./_agriculture/data/county_fertilizer_activity.rds")
+
 ### check
 ggplot(
   county_fertilizer_emissions %>%
@@ -214,6 +228,20 @@ ctu_fertilizer_emissions <- left_join(
     n2o_direct, n2o_indirect,
     mt_n2o, mt_co2e
   )
+
+#save intermediate activity data RDS
+
+ctu_fertilizer_activity <- ctu_fertilizer_emissions %>% 
+  select(1:8) %>% 
+  pivot_longer(7:8,
+               names_to = "fertilizer_type",
+               values_to = "metric_tons_applied") %>% 
+  mutate(fertilizer_type = case_when(
+    grepl("synth", fertilizer_type) ~ "Synthetic fertilizer",
+    grepl("orga", fertilizer_type) ~ "Organic fertilizer"
+  ))
+
+saveRDS(ctu_fertilizer_activity, "./_agriculture/data/ctu_fertilizer_activity.rds")
 
 
 ctu_fertilizer_runoff_emissions <- ctu_fertilizer_emissions %>%
