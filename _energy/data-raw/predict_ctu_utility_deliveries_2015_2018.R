@@ -3,6 +3,7 @@
 
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
+
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
   filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce")) 
 cprg_county <- read_rds("_meta/data/cprg_county.RDS") %>%
@@ -51,27 +52,7 @@ lm(total_mcf ~  cooling_degree_days + heating_degree_days,
 
 ### bring in CTU level data
 
-## load formatted SQL utility data
-electricity <- readRDS("_energy/data/ctu_electricity_emissions_2015_2018.rds") %>% 
-  mutate(ctu_class = if_else(grepl("Twp.", ctu_name), "TOWNSHIP", "CITY"),
-         ctu_name = str_replace_all(ctu_name, " Twp.", ""),
-         ctu_name = str_replace_all(ctu_name, "St. ", "Saint "),
-         ctu_class = if_else(ctu_name %in% c("Credit River", "Empire"),
-                             "CITY",
-                             ctu_class)) %>% 
-  left_join(cprg_ctu %>% st_drop_geometry() %>% distinct(ctu_name, ctu_class, ctu_id = gnis),
-            by = c("ctu_name", "ctu_class")) %>% 
-  filter(units_emissions == "Metric tons CO2",
-         !is.na(mwh_per_year)) %>%  # removes duplicates
-  left_join(ctu_county_unique,
-            by = c("ctu_name", "ctu_class")) %>% 
-  group_by(county_name, emissions_year) %>% 
-  mutate(county_sql_total_mwh = sum(mwh_per_year)) %>%  
-  ungroup() %>% 
-  left_join(county_mwh %>% select(year, county, total_mWh_delivered),
-            by = c("county_name" = "county", "emissions_year" = "year")) %>% 
-  mutate(county_sql_mwh_prop = mwh_per_year / county_sql_total_mwh,
-         county_util_mwh_prop = mwh_per_year  / total_mWh_delivered)
+
   
 ggplot(electricity %>% distinct(emissions_year, county_name, county_sql_total_mwh, total_mWh_delivered),
        aes(x = county_sql_total_mwh, y = total_mWh_delivered, col = county_name)) +
