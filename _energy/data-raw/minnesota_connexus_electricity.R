@@ -116,10 +116,10 @@ connexus_activityData_2014_2023 <- connexus_activityData_2014_2023 %>%
   group_by(ctu_name, ctu_class, year, county_name) %>%
   mutate(
     ctu_population_proportion = ctu_population / total_ctu_population,
-    disagg_mwh_delivered = ifelse(
+    mwh_delivered = ifelse(
       multi_county,
       mwh_delivered * ctu_population_proportion,
-      NA)
+      mwh_delivered)
     ) %>%
   ungroup() %>%
   # Filter to core metro counties while keeping `county_name` intact
@@ -130,7 +130,7 @@ connexus_activityData_2014_2023 <- connexus_activityData_2014_2023 %>%
     source = "Electricity",
     utility = "Connexus Energy"
   ) %>%
-  select(1:7, 13:14)
+  select(1:7, 12:13)
   
 write_rds(connexus_activityData_2014_2023, here("_energy", "data", "connexus_activityData_2014_2023.RDS"))
 write_rds(county_raw, here("_energy", "data", "connexus_county_activityData_2014_2023.RDS"))
