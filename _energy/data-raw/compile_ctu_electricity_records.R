@@ -178,6 +178,32 @@ rii_wide <- rii %>%
                               "Business")) %>% 
   select(-sector) %>% 
   pivot_wider(names_from = sector_use, values_from = mwh_delivered, 
-              names_glue = "{tolower(sector_use)}_mwh")
+              names_glue = "{tolower(sector_use)}_mwh") %>% 
+  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
 
-ctu_utility_year <- 
+# id cities with NO utility data
+
+empty_city_years <- ctu_utility_year %>%
+  group_by(ctu_name, ctu_class,inventory_year) %>%
+  summarise(all_na = all(is.na(business_mwh) & is.na(residential_mwh) & is.na(total_mwh)), .groups = "drop") %>%
+  filter(all_na) %>%
+  select(ctu_name,ctu_class, inventory_year)
+
+#pull out rii data matching above
+
+rii_fill <- empty_city_years %>%
+  left_join(rii_wide %>% rename(inventory_year = year), 
+            by = c("ctu_name", "ctu_class", "inventory_year")) %>%
+  select(ctu_name, ctu_class, inventory_year, utility, business_mwh, residential_mwh, total_mwh) %>%
+  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0)) %>% 
+  filter(!(is.na(business_mwh) | is.na(residential_mwh)))
+
+ctu_utility_year <- ctu_utility_year %>%
+  anti_join(rii_fill %>% select(ctu_name, ctu_class, inventory_year), 
+            by = c("ctu_name", "ctu_class", "inventory_year")) %>% 
+  bind_rows(.,rii_fill) 
+
+## save output file
+
+saveRDS(ctu_utility_year,
+        "_energy/data/ctu_utility_mwh.RDS")
