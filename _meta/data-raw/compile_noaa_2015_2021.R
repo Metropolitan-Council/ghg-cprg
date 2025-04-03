@@ -1,4 +1,5 @@
 #### bring in NOAA historical weather and compile
+#https://www.ncei.noaa.gov/cdo-web/datasets
 
 noaa <- read_csv("_meta/data-raw/climate/noaa_hennepin_2015-2021.csv")
 
