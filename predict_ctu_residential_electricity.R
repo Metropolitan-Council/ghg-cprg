@@ -275,3 +275,7 @@ county_res_predict <- cprg_ctu %>%
   group_by(county_name, inventory_year) %>% 
   summarize(residential_mwh_predicted = sum(mwh_predicted)) %>% 
   ungroup()
+
+#save intermediate rds
+saveRDS(ctu_res, "_energy/data-raw/predicted_ctu_residential_mwh.rds")
+saveRDS(county_res_predict, "_energy/data-raw/predicted_county_residential_mwh.rds")

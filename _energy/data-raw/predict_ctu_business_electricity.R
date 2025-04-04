@@ -17,7 +17,7 @@ ctu_population <- read_rds("_meta/data/ctu_population.RDS") %>%
 
 #bring in weather data
 #weather data
-noaa <- readRDS("_meta/data/noaa_weather_2015-2021.rds")
+noaa <- readRDS("_meta/data/noaa_weather_monthly.rds")
 
 noaa_year <- noaa %>% 
   group_by(inventory_year) %>% 
@@ -33,6 +33,9 @@ ctu_utility_year <- read_rds("_energy/data/ctu_utility_mwh.RDS") %>%
     business_mwh = sum(business_mwh, na.rm = TRUE),
     total_mwh = sum(total_mwh)) %>% 
   ungroup() 
+
+urbansim <- readRDS("_meta/data/urbansim_data.RDS")
+mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")
 
 #### BUSINESS ####
 
@@ -78,7 +81,7 @@ urbansim_busi <- urbansim %>%
          ctu_id = as.numeric(ctu_id)
   ) %>% 
   left_join(cprg_ctu %>% st_drop_geometry() %>% 
-              distinct(ctu_name, gnis),
+              distinct(ctu_name, thrive_designation, gnis),
             by = c("ctu_id" = "gnis")) %>% 
   left_join(cprg_county %>% st_drop_geometry() %>% 
               mutate(geoid = as.numeric(str_sub(geoid, -3, -1))) %>% 
@@ -142,208 +145,12 @@ electricity_busi <- left_join(coctu_busi_year,
             by = c("ctu_id" = "ctu_id")
   ) %>% 
   #weather data
-  left_join(noaa_year, by = "inventory_year") %>% 
-  ### filter to 2020 and earlier for now. See if we can predict back to 2021+ later
-  filter(inventory_year <= 2020)
+  left_join(noaa_year, by = "inventory_year")
 
-
-
-### linear model predictions
-
-busi_simple <- lm(business_mwh ~ total_job_spaces + total_emv_commercial + total_emv_industrial +
-                    total_emv_public_building +
-                   cooling_degree_days,
-                 data = electricity_busi)
-summary(busi_simple) # R2 = 0.9772
-
-### compare prediction to input data
-lm_pred_busi <- predict(busi_simple, electricity_busi)
-plot(lm_pred_busi, electricity_busi$business_mwh)
-abline(0, 1)
-
-### predict out to all CTUs 2021 and on
-
-elec_busi_2021 <- left_join(coctu_busi_year,
-                            urbansim_busi,
-                            by = c("ctu_name", "county_name", "inventory_year")
-) %>%
-  left_join(mn_parcel_busi %>% select(-ctu_name),
-            by = c("ctu_id" = "ctu_id")
-  ) %>% 
-  #weather data
-  left_join(noaa_year, by = "inventory_year") %>% 
-  ### filter to 2020 and earlier for now. See if we can predict back to 2021+ later
-  filter(inventory_year == 2021)
-
-lm_pred_busi_2021 <- predict(busi_simple, elec_busi_2021)
-plot(lm_pred_busi_2021, elec_busi_2021$business_mwh)
-abline(0, 1)
-
-
-
-#### deprecated ####
-
-ctu_res_predict <- cprg_ctu %>%
-  left_join(urbansim_res, by = c("gnis" = "ctu_id")) %>%
-  left_join(mn_parcel_res, by = c("gnis" = "ctu_id")) %>%
-  mutate(mwh_predicted = predict(rf_res_model, .)) %>%
-  filter(!is.na(mwh_predicted))
-
-county_res_predict <- ctu_res_predict %>%
-  filter(!is.na(mwh_predicted)) %>%
-  st_drop_geometry() %>%
-  group_by(county_name) %>%
-  summarize(mwh_predicted = sum(mwh_predicted)) %>%
-  mutate(
-    # apply emission factor and convert to metric tons
-    co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2_2021) %>%
-      units::as_units("lb") %>%
-      units::set_units("ton") %>%
-      as.numeric(),
-    ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4_2021) %>%
-      units::as_units("lb") %>%
-      units::set_units("ton") %>%
-      as.numeric(),
-    n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O_2021) %>%
-      units::as_units("lb") %>%
-      units::set_units("ton") %>%
-      as.numeric(),
-    co2e =
-      co2 +
-        (ch4 * gwp$n2o) +
-        (n2o * gwp$n2o)
-  )
-
-
-
-nrel_predict_res <- read_rds("_energy/data/electric_natgas_nrel_proportioned.RDS") %>%
-  filter(
-    source == "Electricity",
-    category == "Residential",
-    year == 2021
-  )
-
-prediction_comparison_res <- rbind(
-  county_res_predict %>%
-    select(county_name, co2e) %>%
-    mutate(source = "MC_model"),
-  nrel_predict_res %>%
-    select(county_name = county, co2e = emissions_metric_tons_co2e) %>%
-    filter(county_name %in% county_res_predict$county_name) %>%
-    mutate(source = "NREL")
-)
-
-ggplot(prediction_comparison_res, aes(x = county_name, y = co2e, fill = source)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  theme_bw()
-
-ggplot(ctu_res_predict, aes(x = total_pop, y = mwh_predicted, col = county_name)) +
-  geom_point() +
-  theme_bw()
-
-ggplot(electricity_res, aes(x = total_pop, y = mWh_delivered, col = total_households)) +
-  geom_point() +
-  geom_smooth(method = "lm") +
-  theme_bw()
-
-### does a linear fit perform better?
-
-
-
-
-# nonresidential processing ####
-
-nonresidential_2021 <- xcel_only %>%
-  filter(
-    year == 2021,
-    sector != "Residential"
-  ) %>%
-  group_by(ctu_name, gnis) %>%
-  summarize(mWh_delivered = sum(mWh_delivered))
-
-## load predictors
-
-
-
-# urbansim
-
-
-commercial <- c(
-  "total_job_spaces",
-  "max_office",
-  "max_commercial",
-  "max_institutional",
-  "max_school",
-  "js_type_1011",
-  "js_type_13",
-  "js_type_14",
-  "jobs_sector_4",
-  "jobs_sector_5",
-  "jobs_sector_6",
-  "jobs_sector_7",
-  "jobs_sector_8",
-  "jobs_sector_9",
-  "jobs_sector_10"
-)
-
-industrial <- c(
-  "total_job_spaces",
-  "max_industrial",
-  "js_type_12",
-  "jobs_sector_1",
-  "jobs_sector_2",
-  "jobs_sector_3"
-)
-
-
-# operating at ctu not coctu for now
-urbansim_nonres <- urbansim %>%
-  filter(Variable %in% nonresidential) %>%
-  group_by(Variable, ctu_id) %>%
-  summarize(value = sum(value)) %>%
-  ungroup() %>%
-  pivot_wider(
-    id_cols = ctu_id,
-    names_from = Variable,
-    values_from = value
-  )
-
-# merge into xcel
-electricity_nonres <- left_join(nonresidential_2021,
-  urbansim_nonres,
-  by = c("gnis" = "ctu_id")
-) %>%
-  left_join(mn_parcel_nonres %>% select(-ctu_name),
-    by = c("gnis" = "ctu_id")
-  ) %>%
-  filter(
-    !is.na(mWh_delivered), !is.na(gnis),
-    !ctu_name %in% c(
-      "Shakopee",
-      "Coon Rapids",
-      "Blaine",
-      "White Bear Lake"
-    )
-  ) # shared utility!
-
-### run model
-
-#### non residential RF ####
-
-set.seed(1029)
-ind <- sample(2, nrow(electricity_nonres), replace = TRUE, prob = c(0.7, 0.3))
-train_nonres <- electricity_nonres[ind == 1, ]
-test_nonres <- electricity_nonres[ind == 2, ]
-
-
-### full model
 rf_nonres_model <- randomForest(
-  mWh_delivered ~
+  business_mwh ~
+    thrive_designation +
     total_job_spaces +
-    max_office +
-    max_commercial +
-    max_institutional +
-    max_school +
     js_type_1011 +
     js_type_13 +
     js_type_14 +
@@ -359,125 +166,58 @@ rf_nonres_model <- randomForest(
     jobs_sector_10 +
     jobs_sector_1 +
     jobs_sector_2 +
-    jobs_sector_3,
-  importance = T, data = electricity_nonres
+    jobs_sector_3 +
+    cooling_degree_days,
+  importance = T, data = electricity_busi
 )
 
 rf_nonres_model
-p_full <- predict(rf_nonres_model, electricity_nonres)
-plot(p_full, electricity_nonres$mWh_delivered)
-abline(0, 1)
-# struggles with two big cities
-
-# look at top predictors
-varImpPlot(rf_nonres_model,
-  sort = T
-)
-
-
-### can subset predict test model?
-rf_nonres <- randomForest(
-  mWh_delivered ~
-    total_job_spaces +
-    max_office +
-    max_commercial +
-    max_institutional +
-    max_school +
-    js_type_1011 +
-    js_type_13 +
-    js_type_14 +
-    total_job_spaces +
-    max_industrial +
-    js_type_12 +
-    jobs_sector_4 +
-    jobs_sector_5 +
-    jobs_sector_6 +
-    jobs_sector_7 +
-    jobs_sector_8 +
-    jobs_sector_9 +
-    jobs_sector_10 +
-    jobs_sector_1 +
-    jobs_sector_2 +
-    jobs_sector_3,
-  data = train_nonres, importance = T
-)
-
-print(rf_nonres)
-
-p1 <- predict(rf_nonres, train_nonres)
-plot(p1, train_nonres$mWh_delivered)
+p_full <- predict(rf_nonres_model, electricity_busi)
+plot(p_full, electricity_busi$business_mwh)
 abline(0, 1)
 
-# train %>% cbind(p1) %>% filter(mWh_delivered < 10000 & p1 > 20000)
+### predict ALL cities and rollback up to counties for all years
 
-p2 <- predict(rf, test_nonres)
-plot(p2, test_nonres$mWh_delivered)
-abline(0, 1)
-
-importance(rf)
-
-
-### predict out to all CTUs
-
-# urbansim_coctu_prop <- readRDS( "_meta/data/urban_sim_2020.RDS" ) %>%
-#   filter(Variable ==  "total_pop" ) %>%
-#   group_by(ctu_id) %>%
-#   mutate(ctu_pop = sum(value),
-#          pop_prop = value/ctu_pop)
-
-ctu_nonres_predict <- cprg_ctu %>%
-  left_join(urbansim_nonres, by = c("gnis" = "ctu_id")) %>%
-  left_join(mn_parcel_nonres, by = c("gnis" = "ctu_id")) %>%
+ctu_busi_predict <- cprg_ctu %>%
+  left_join(urbansim_busi, by = c("gnis" = "ctu_id",
+                                 "ctu_name",
+                                 "county_name",
+                                 "thrive_designation")) %>%
+  left_join(noaa_year) %>% 
   mutate(mwh_predicted = predict(rf_nonres_model, .)) %>%
-  filter(!is.na(mwh_predicted))
+  filter(!is.na(mwh_predicted)) %>%  #removes 2025 data
+  st_drop_geometry() %>% 
+  group_by(ctu_name, ctu_class, inventory_year) %>% 
+  summarize(business_mwh_predicted = sum(mwh_predicted)) %>% 
+  ungroup()
 
-county_nonres_predict <- ctu_nonres_predict %>%
-  filter(!is.na(mwh_predicted)) %>%
-  st_drop_geometry() %>%
-  group_by(county_name) %>%
-  summarize(mwh_predicted = sum(mwh_predicted)) %>%
-  mutate(
-    # apply emission factor and convert to metric tons
-    co2 = (mwh_predicted * eGRID_MROW_emissionsFactor_CO2_2021) %>%
-      units::as_units("lb") %>%
-      units::set_units("ton") %>%
-      as.numeric(),
-    ch4 = (mwh_predicted * eGRID_MROW_emissionsFactor_CH4_2021) %>%
-      units::as_units("lb") %>%
-      units::set_units("ton") %>%
-      as.numeric(),
-    n2o = (mwh_predicted * eGRID_MROW_emissionsFactor_N2O_2021) %>%
-      units::as_units("lb") %>%
-      units::set_units("ton") %>%
-      as.numeric(),
-    co2e =
-      co2 +
-        (ch4 * gwp$n2o) +
-        (n2o * gwp$n2o)
-  )
 
-nrel_predict_nonres <- read_rds("_energy/data/electric_natgas_nrel_proportioned.RDS") %>%
-  filter(
-    source == "Electricity",
-    category %in% c("Commercial", "Industrial"),
-    year == 2021
-  ) %>%
-  group_by(county) %>%
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e))
 
-prediction_comparison_nonres <- rbind(
-  county_nonres_predict %>%
-    select(county_name, co2e) %>%
-    mutate(source = "MC_model"),
-  nrel_predict_nonres %>%
-    select(county_name = county, co2e = emissions_metric_tons_co2e) %>%
-    filter(county_name %in% county_nonres_predict$county_name) %>%
-    mutate(source = "NREL")
-)
+ctu_busi_predict %>% distinct(ctu_name, ctu_class)
 
-ggplot(prediction_comparison_nonres, aes(x = county_name, y = co2e, fill = source)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  theme_bw()
+ctu_busi <- left_join(ctu_busi_predict,
+                     ctu_utility_year %>% 
+                       select(1:3,5))
+
+### county
+
+county_busi_predict <- cprg_ctu %>%
+  left_join(urbansim_busi, by = c("gnis" = "ctu_id",
+                                  "ctu_name",
+                                  "county_name",
+                                  "thrive_designation")) %>%
+  left_join(noaa_year) %>% 
+  mutate(mwh_predicted = predict(rf_nonres_model, .)) %>%
+  filter(!is.na(mwh_predicted)) %>%  #removes 2025 data
+  st_drop_geometry() %>% 
+  group_by(county_name, inventory_year) %>% 
+  summarize(business_mwh_predicted = sum(mwh_predicted)) %>% 
+  ungroup()
+
+#save intermediate rds
+saveRDS(ctu_busi, "_energy/data-raw/predicted_ctu_business_mwh.rds")
+saveRDS(county_busi_predict, "_energy/data-raw/predicted_county_business_mwh.rds")
+
 
 ### look at total mwh
 
