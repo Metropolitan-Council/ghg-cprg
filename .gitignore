@@ -1240,3 +1240,9 @@ _meta/data-raw/imagine_2050_forecasts.xlsx
 
 
 _agriculture/data-raw/ag-module.xlsx
+
+_transportation/data-raw/mndot/city_route_system/
+
+_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/
+
+_transportation/data-raw/mndot/updated_VMT_County_City_Route_System.zip
