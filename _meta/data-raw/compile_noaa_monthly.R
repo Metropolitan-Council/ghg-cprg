@@ -1,13 +1,14 @@
 #### bring in NOAA historical weather and compile
-#https://www.ncei.noaa.gov/cdo-web/datasets
+# https://www.ncei.noaa.gov/cdo-web/datatools/lcd
 
-noaa <- read_csv("_meta/data-raw/climate/noaa_hennepin_2015-2021.csv")
-
-noaa_daily <- noaa %>% filter(!is.na(DailyHeatingDegreeDays)) %>% 
+msp <- bind_rows(read_csv("_meta/data-raw/climate/noaa_msp_2015-2024.csv"),
+                 read_csv("_meta/data-raw/climate/noaa_msp_2005-2014.csv"))
+                 
+msp_daily <- msp %>% filter(!is.na(DailyHeatingDegreeDays)) %>% 
   mutate(inventory_year = year(DATE),
          month = month(DATE))
 
-noaa_month <- noaa_daily %>% 
+msp_month <- msp_daily %>% 
   group_by(inventory_year,month) %>% 
   summarize(heating_degree_days = sum(DailyHeatingDegreeDays),
             cooling_degree_days = sum(DailyCoolingDegreeDays),
@@ -24,5 +25,5 @@ noaa_meta <-
   )
 
 
-saveRDS(noaa_month, "./_meta/data/noaa_weather_2015-2021.rds")
-saveRDS(noaa_meta, "./_meta/data/noaa_weather_2015-2021_meta.rds")
+saveRDS(msp_month, "./_meta/data/noaa_weather_monthly.rds")
+saveRDS(noaa_meta, "./_meta/data/noaa_weather_monthy_meta.rds")
