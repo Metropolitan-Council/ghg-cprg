@@ -66,10 +66,49 @@ epa_onroad_source_set %>%
 
 Note that to save space, some unzipped data irrelevant to our region (like EPA regions outside of MN and WI, Texas, and California datasets) have been deleted. 
 
+```{r, eval = FALSE}
+# create folder structure
+directories <- c(
+  "nei/2008NEI", 
+  "nei/2011NEI", 
+  "nei/2014NEI",
+  "nei/2017NEI", 
+  "nei/2020NEI", 
+  "nei/SmokeFlatFile_MN_WI",
+  
+  "air_emissions_modeling/2007",
+  "air_emissions_modeling/2008", 
+  "air_emissions_modeling/2011", 
+  "air_emissions_modeling/2014", 
+  "air_emissions_modeling/2015", 
+  "air_emissions_modeling/2016", 
+  "air_emissions_modeling/2017", 
+  "air_emissions_modeling/2018", 
+  "air_emissions_modeling/2019", 
+  "air_emissions_modeling/2020", 
+  "air_emissions_modeling/2021", 
+  "air_emissions_modeling/2022v1", 
+  "air_emissions_modeling/air_emissions_modeling_mn_wi",
+  
+  "air_emissions_modeling/EQUATES/CMAS_Data_Warehouse", 
+  "air_emissions_modeling/EQUATES/EQUATES_2002", 
+  "air_emissions_modeling/EQUATES/EQUATES_2005",
+  "air_emissions_modeling/EQUATES/EQUATES_2008", 
+  "air_emissions_modeling/EQUATES/EQUATES_2011",
+  "air_emissions_modeling/EQUATES/EQUATES_2014", 
+  "air_emissions_modeling/EQUATES/EQUATES_2017", 
+  "air_emissions_modeling/EQUATES/EQUATES_MN_WI"
+) %>% 
+  purrr::map(
+    fs::dir_create)
+
+```
+
+
 ```{r}
 fs::dir_tree(".",
-  type = "directory",
-  recurse = 0
+             type = "directory",
+             recurse = 0
 )
 ```
 
@@ -78,8 +117,6 @@ fs::dir_tree(".",
 The NEI is available from the EPA in multiple places at different aggregation levels
 
 NEI should only be compared directly for years 2011 onward. Between 2008 and 2011, there were significant changes in the underlying source classification codes (SCCs).
-
-Within the epa/ folder, create folders for each NEI release year: 2008, 2011, 2014, 2017, and 2020.
 
 
 ```{r}
@@ -136,7 +173,10 @@ County-level data are only available at the continental US (CONUS) level; these 
 
 The data available for each platform year varies. Data is much more consistently available and standardized from 2014 onward. 
 
-Create a folder for each year (2011, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022v1), plus EQUATES and air_emissions_modeling_mn_wi.
+When you unzip each downloaded file, move all contents of each inputs/ directory into a single group.
+For example, when you unzip 2022hc_onroad_SMOKE-MOVES_MOVES4_emissions_FF10_23dec2024.zip, it unzips into a new diretory, 2022hc_cb6_22m/. 
+Later, when you unzip 2022hc_nonroad_inventory_20dec2024.zip, it will also create a 2022hc_cb6_22m/ directory, and your machine will append the directory name with a number (i.e. "2022hc_cb6_22m 2").
+Once you have unzipped all the downloads, move all the contents of each 2022hc_cb6_22m (2,3,etc)/inputs/ into the first 2022hc_cb6_22m/inputs/ folder.
 
 Air emissions modeling data are compiled in two locations 
 
@@ -146,8 +186,8 @@ Air emissions modeling data are compiled in two locations
 
 ```{r}
 fs::dir_tree("./air_emissions_modeling/",
-  type = "directory",
-  recurse = 0
+             type = "directory",
+             recurse = 0
 )
 ```
 
@@ -172,20 +212,19 @@ epa_downloads %>%
 
 
 #### EQUATES
- 
+
 EQUATES data is located on the EPA FTP site *and* the CMAS Data Warehouse Google Drive. Direct links are provided for both locations. 
- 
+
 EQUATES only has on-road data from 2002 to 2019. 
 
-Within /air_emissions_modeling/EQUATES, create a folder for each EQUATES year (2002, 2005, 2008, 2011, 2014, 2017) with the prefix "EQUATES_", plus two additional folders named "EQUATES_MN_WI" and "CMAS_Data_Warehouse". 
 Download the data for each of the given links and save in the appropriate location. If the direct Google Drive links are not working for you, download each one from the [directory page](https://drive.google.com/drive/folders/1bOb-xVqNu5uAY-wKXqTuV70qwqKkfpNz). 
 
 All EQUATES data is processed in [epa_equates_read.R](./../epa_equates_read.R)
 
 ```{r}
 fs::dir_tree("./air_emissions_modeling/EQUATES/",
-  type = "directory",
-  recurse = 0
+             type = "directory",
+             recurse = 0
 )
 ```
 
