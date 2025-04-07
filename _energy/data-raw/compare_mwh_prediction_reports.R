@@ -13,6 +13,14 @@ county_predict <- left_join(county_res_predict,
 
 ### look at total mwh
 
+mwh_county_util <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RDS") 
+
+connexus <- mwh_county_util %>% filter(utility == "Connexus Energy")
+anoka_util <- mwh_county_util %>% filter(county == "Anoka", year == 2021)
+
+ctu_utility_year <- read_rds("_energy/data/ctu_utility_mwh.RDS")
+ctu_connexus <- filter(ctu_utility_year, utility == "Connexus Energy", inventory_year == 2021)
+
 mwh_county <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RDS") %>% 
   group_by(year, county) %>% 
   summarize(mwh_delivered = sum(mWh_delivered)) %>% 
@@ -27,7 +35,9 @@ ggplot(
           select(inventory_year,
                  county_name,
                  source,
-                 mwh_delivered = total_mwh_predicted)),
+                 mwh_delivered = total_mwh_predicted)
+          ) %>% 
+    filter(inventory_year == 2021),
   aes(x = county_name, y = mwh_delivered, fill = source)
 ) +
   geom_bar(stat = "identity", position = position_dodge(), width = 0.7)

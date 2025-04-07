@@ -103,6 +103,19 @@ process_municipal_elecByClass <- function(file_info) {
 file_list <- get_files(dir_mn_electricity_state)
 combined_MNelectUtil_activityData <- do.call(rbind, lapply(file_list, process_file))
 
+#### GRE and Connexus split up in 2022, but everything prior to then in Anoka County is a doublecount
+#### checking and then zeroing out GRE in Anoka
+combined_MNelectUtil_activityData %>% 
+  filter(county == "Anoka",
+          utility %in% c("Connexus Energy",
+                         "Great River Energy")) %>% 
+  distinct(utility, year, mWh_delivered ) %>% 
+  arrange(desc(year)) %>% 
+  print(n = 50)
+# GRE is variable in reporting year to year, Connexus is fairly consistent
+
+combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>% 
+  filter(!(utility == "Great River Energy" & county == "Anoka"))
 
 #identify subset of files attached to municipal utilities, then create a table with elec by class for each utility-year and export it 
 MN_elecMunis <- readRDS(here("_energy", "data", "distinct_electricity_util_type_MN.RDS")) %>% 
@@ -112,7 +125,6 @@ combined_MNelecMunis_elecByClass <- do.call(rbind, lapply(muni_files, process_mu
 
 # raw 7610 data for elec is processed and enriched with city level geo data in muniElectrics_7610_elecByClass_2013_2023.R
 write_rds(combined_MNelecMunis_elecByClass, here("_energy", "data", "combined_MNelecMunis_elecByClass_raw7610.RDS"))
-
 
 # manual data collection to fill in gaps for 2021 as needed -- need to check if 2022 is available
 
