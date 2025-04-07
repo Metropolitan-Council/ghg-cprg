@@ -11,7 +11,7 @@ land_cover_c <- readRDS("./_nature/data/land_cover_carbon.rds")
 # Compute C sequestration and stock potential for natural systems sectors by county
 nlcd_county_c <- nlcd_county %>%
   as_tibble() %>%
-  dplyr::select(-land_cover_main, -total_area) %>%
+  dplyr::select(-total_area) %>%
   left_join(., land_cover_c, by = join_by(land_cover_type)) %>%
   mutate(
     data_source = if_else(source == "extrapolated",
@@ -41,7 +41,7 @@ nlcd_county_c <- nlcd_county %>%
 # Compute C sequestration and stock potential for natural systems sectors by CTU
 nlcd_ctu_c <- nlcd_ctu %>%
   as_tibble() %>%
-  dplyr::select(-land_cover_main, -total_area) %>%
+  dplyr::select(-total_area) %>%
   left_join(., land_cover_c, by = join_by(land_cover_type)) %>%
   mutate(
     data_source = if_else(source == "extrapolated",
@@ -83,7 +83,6 @@ nlcd_county_c_meta <-
     "source", class(nlcd_county_c$source), "Source of sequestration from National Land Cover Database. 'Urban_' indicates a natural area within NLCD designated developed land cover",
     "data_source", class(nlcd_county_c$data_source), "Land cover data source",
     "area", class(nlcd_county_c$area), "Area of land cover in square kilometers",
-    "flag", class(nlcd_county_c$flag), "Indicates whether the area of 'Urban_Tree' or 'Urban_Grassland' is extrapolated or pulled directly from an NLCD layer",
     "sequestration_potential", class(nlcd_county_c$sequestration_potential), "Carbon sequestration potential of county land cover type in metric tons of CO2e per year",
     "stock_potential", class(nlcd_county_c$stock_potential), "Carbon stock potential of county land cover type in metric tons of CO2e"
   )
@@ -103,7 +102,6 @@ nlcd_ctu_c_meta <-
     "source", class(nlcd_ctu_c$source), "Source of sequestration from National Land Cover Database. 'Urban_' indicates a natural area within NLCD designated developed land cover",
     "data_source", class(nlcd_ctu_c$data_source), "Land cover data source",
     "area", class(nlcd_ctu_c$area), "Area of land cover in square kilometers",
-    "flag", class(nlcd_ctu_c$flag), "Indicates whether the area of 'Urban_Tree' or 'Urban_Grassland' is extrapolated or pulled directly from an NLCD layer",
     "sequestration_potential", class(nlcd_ctu_c$sequestration_potential), "Carbon sequestration potential of county land cover type in metric tons of CO2e per year",
     "stock_potential", class(nlcd_ctu_c$stock_potential), "Carbon stock potential of county land cover type in metric tons of CO2e"
   )

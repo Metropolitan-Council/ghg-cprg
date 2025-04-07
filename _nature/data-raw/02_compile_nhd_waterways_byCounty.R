@@ -411,3 +411,5 @@ if (overwrite_RDS) {
   saveRDS(nhd_flowlines_msa, "./_nature/data/nhd_flowlines_msa.rds")
   saveRDS(nhd_flowlines_msa_meta, "./_nature/data/nhd_flowlines_msa_meta.rds")
 }
+
+rm(list = ls())
