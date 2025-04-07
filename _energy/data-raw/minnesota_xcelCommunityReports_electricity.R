@@ -115,7 +115,7 @@ find_row_of_text <- function(file_path, sheet, pattern, search_range = "A1:H60")
 read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) {
   print(paste("Reading file:", file_path))
 
-  # Step 1: Read a broad range starting from the specified cell
+  # Read a broad range starting from the specified cell
   start_row <- as.numeric(gsub("[A-Z]", "", start_cell)) # Extract the row number from start_cell
   start_col <- gsub("[0-9]", "", start_cell) # Extract the column letter from start_cell
   broad_range <- paste0(start_col, start_row, ":", columns, start_row + 10) # Read 10 rows initially
@@ -125,7 +125,7 @@ read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) 
   data_broad <- read_excel(file_path, sheet = sheet, range = broad_range, col_names = FALSE)
   print(data_broad)
 
-  # Step 2: Locate the stopping value
+  # Locate the stopping value
   stop_row_offset <- which(data_broad[[1]] == stop_value)[1] # Check the first column for stop_value
   print(paste("Stop row offset:", stop_row_offset))
 
@@ -133,15 +133,40 @@ read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) 
     stop("Stopping value not found in the specified range.")
   }
 
-  # Step 3: Define the dynamic range
+  # Define the dynamic range
   stop_row <- start_row + stop_row_offset - 1 # Adjust for Excel indexing and remove the total row
   refined_range <- paste0(start_col, start_row, ":", columns, stop_row)
   print(refined_range)
 
-  # Step 4: Read the refined range
+  # Read the refined range
   data <- read_excel(file_path, sheet = sheet, range = refined_range, col_names = TRUE)
   print(data)
   return(data)
+}
+
+# Fetch a single section (Electricity or Natural Gas)
+fetch_section <- function(file_path, sheet, pattern, stop_value, columns = "H") {
+  start_row <- find_row_of_text(file_path, sheet, pattern)
+  
+  # If pattern not found, return NULL
+  if (is.na(start_row)) {
+    message("'", pattern, "' not found in this file. Skipping.")
+    return(NULL)
+  }
+  
+  # Build start_cell like "A39" if row is 39
+  start_cell <- paste0("A", start_row)
+  
+  # Use your existing read_until_value() to capture that block
+  df <- read_until_value(
+    file_path   = file_path,
+    sheet       = sheet,
+    start_cell  = start_cell,
+    stop_value  = stop_value,
+    columns     = columns
+  )
+  
+  return(df)
 }
 
 # function to process the file associated with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
