@@ -325,7 +325,8 @@ if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
         grepl("^Town of", city_name, ignore.case = TRUE) ~ sub("^Town of\\s+", "", city_name),
         city_name == "Village of Birchwood" ~ "Birchwood Village",
         TRUE ~ city_name
-      )
+      ),
+      mcf_delivered = therms_consumed * therms_to_mcf
     ) %>%
     # Remove records with no or unusable data
     filter(!is.na(sector_mapped)) %>%
@@ -347,6 +348,11 @@ if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
         multi_county,
         mwh_delivered * ctu_population_proportion,
         NA
+      ),
+      disagg_mcf_delivered = ifelse(
+        multi_county,
+        mcf_delivered * ctu_population_proportion,
+        NA
       )
     ) %>%
     ungroup() %>%
@@ -357,9 +363,10 @@ if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
     arrange(ctu_name, county_name, sector, year) %>%
     mutate(
       mwh_delivered = coalesce(disagg_mwh_delivered, mwh_delivered),
+      mcf_delivered = coalesce(disagg_mcf_delivered, mcf_delivered),
       util_reported_co2e = coalesce(disagg_util_reported_co2e, util_reported_co2e)
-    )
-  
+    ) %>%
+    select(1, 3:4, 6:8, 10:14) # exclude interstitial calculation columns
 }
 
 
