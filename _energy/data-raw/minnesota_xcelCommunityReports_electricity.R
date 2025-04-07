@@ -19,7 +19,7 @@ extract_city_name <- function(file_path) {
   data_char <- as.matrix(data)
 
   # Process row 2 (Excel row 3)
-  row2 <- data_char[2, ] # Index 2 since R indexes rows starting at 1
+  row2 <- data_char[2, ] 
 
   # Loop through each cell in row 2 to find 'Community'
   for (i in seq_along(row2)) {
@@ -86,6 +86,28 @@ get_files <- function(root_dir) {
   }
   return(file_info)
 }
+
+# Find the row of a given pattern in a limited Excel range
+find_row_of_text <- function(file_path, sheet, pattern, search_range = "A1:H60") {
+  # Read some portion of the sheet to find 'Electricity' or 'Natural Gas'
+  df <- read_excel(
+    file_path,
+    sheet = sheet,
+    range = search_range,
+    col_names = FALSE
+  )
+  mat <- as.matrix(df)
+  
+  match_idx <- which(grepl(pattern, mat, ignore.case = TRUE))
+  if (length(match_idx) == 0) {
+    return(NA)
+  } else {
+    # Convert matrix index to row index (1-based)
+    row_idx <- (match_idx - 1) %% nrow(mat) + 1
+    return(row_idx[1])  # If multiple matches, take the first
+  }
+}
+
 
 
 
