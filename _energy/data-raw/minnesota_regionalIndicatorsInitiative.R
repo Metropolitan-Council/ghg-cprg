@@ -3,7 +3,7 @@ source("R/_load_pkgs.R")
 # Read in Regional Indicators Initiative data
 
 # Load the dataset (Modify the file path as needed)
-# Dataset acquired by downloading Tableau Workbook at RII site and extracting regional_indicators_Migrated Data.csv from within 
+# Dataset acquired by downloading Tableau Workbook at RII site and extracting regional_indicators_Migrated Data.csv from within
 df <- read_csv(here("_energy", "data-raw", "rii", "regional_indicators_Migrated Data.csv"))
 
 
@@ -31,7 +31,7 @@ df_cleaned <- df %>%
     ctu_name = City,
     city_id = `City Id`,
     county_id = `County Id`,
-    state_abbr = State,  # Assuming "State" represents county
+    state_abbr = State, # Assuming "State" represents county
     year = Year,
     jobs = Jobs,
     households = Households,
@@ -41,14 +41,18 @@ df_cleaned <- df %>%
     `Com And Ind Nat Gas Mmbtu`,
     `Residential Nat Gas Mmbtu`
   ) %>%
-  mutate(year = as.integer(str_extract(year, "\\d{4}")),
-         ctu_class = "CITY")  
+  mutate(
+    year = as.integer(str_extract(year, "\\d{4}")),
+    ctu_class = "CITY"
+  )
 
 # Pivot longer to create sector, source, and units columns
 df_long <- df_cleaned %>%
   pivot_longer(
-    cols = c(`Com And Ind Electricity Mmbtu`, `Residential Electricity Mmbtu`,
-             `Com And Ind Nat Gas Mmbtu`, `Residential Nat Gas Mmbtu`),
+    cols = c(
+      `Com And Ind Electricity Mmbtu`, `Residential Electricity Mmbtu`,
+      `Com And Ind Nat Gas Mmbtu`, `Residential Nat Gas Mmbtu`
+    ),
     names_to = "metric",
     values_to = "value"
   ) %>%
@@ -59,25 +63,25 @@ df_long <- df_cleaned %>%
       str_detect(metric, "Residential") ~ "Residential",
       TRUE ~ NA_character_
     ),
-    
+
     # Map source (Electricity or Natural Gas)
     source = case_when(
       str_detect(metric, "Electricity") ~ "Electricity",
       str_detect(metric, "Nat Gas") ~ "Natural Gas",
       TRUE ~ NA_character_
     ),
-    
+
     # Assign units as MMBtu
     units = "MMBtu",
-    
+
     # Cite data source
     utility = "Regional Indicators Initiative"
   ) %>%
-  select(-metric)  # Remove original metric column
+  select(-metric) # Remove original metric column
 
 # Conversion factors to align with other data
 mmbtu_to_mwh <- 0.293071
-mmbtu_to_mcf <- 1 / 1.038  # 0.96339...
+mmbtu_to_mcf <- 1 / 1.038 # 0.96339...
 
 # Ensure all necessary fields are included and properly ordered
 df_final <- df_long %>%
@@ -92,8 +96,8 @@ df_final <- df_long %>%
   arrange(ctu_name, year, sector, source) %>%
   # Join city_total_population back to main dataset
   left_join(city_total_population,
-            by = c("ctu_name", "ctu_class", "year"),
-            relationship = "many-to-many"
+    by = c("ctu_name", "ctu_class", "year"),
+    relationship = "many-to-many"
   ) %>%
   # Calculate proportions and disaggregated values
   group_by(ctu_name, ctu_class, year, county_name) %>%
@@ -102,11 +106,13 @@ df_final <- df_long %>%
     disagg_mwh_delivered = ifelse(
       multi_county & !is.na(mwh_delivered),
       mwh_delivered * ctu_population_proportion,
-      NA),
+      NA
+    ),
     disagg_mcf_delivered = ifelse(
       multi_county & !is.na(mcf_delivered),
       mcf_delivered * ctu_population_proportion,
-      NA)
+      NA
+    )
   ) %>%
   ungroup() %>%
   # Filter to core metro counties while keeping `county_name` intact
@@ -121,21 +127,15 @@ minnesota_electricity_rii <- df_final %>%
   mutate(
     mwh_delivered = coalesce(disagg_mwh_delivered, mwh_delivered)
   ) %>%
-  select(1:7,9) # exclude NG and interstitial calculation columns
+  select(1:7, 9) # exclude NG and interstitial calculation columns
 
 minnesota_natGas_rii <- df_final %>%
   filter(source == "Natural Gas") %>%
   mutate(
     mcf_delivered = coalesce(disagg_mcf_delivered, mcf_delivered)
   ) %>%
-  select(1:6, 8:9) #exclude elec and interstitial calculation columns
+  select(1:6, 8:9) # exclude elec and interstitial calculation columns
 
 
 write_rds(minnesota_electricity_rii, here("_energy", "data", "rii_electricity_2007_2023.RDS"))
 write_rds(minnesota_natGas_rii, here("_energy", "data", "rii_natGas_2007_2023.RDS"))
-
-  
-
-
-
-

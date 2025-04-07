@@ -3,23 +3,32 @@
 
 msp_2015 <- read_csv("_meta/data-raw/climate/noaa_msp_2015-2024.csv")
 msp_2005 <- read_csv("_meta/data-raw/climate/noaa_msp_2005-2014.csv")
-                 
-msp_month <- bind_rows(msp_2005 %>% 
-                         filter(!is.na(DailyHeatingDegreeDays)) %>% 
-  mutate(inventory_year = year(DATE),
-         month = month(DATE)) %>% 
-  group_by(inventory_year,month) %>% 
-  summarize(heating_degree_days = sum(DailyHeatingDegreeDays),
-            cooling_degree_days = sum(DailyCoolingDegreeDays),
-            dry_bulb_temp = mean(DailyAverageDryBulbTemperature)),
-  msp_2015 %>% 
-    filter(!is.na(DailyHeatingDegreeDays)) %>% 
-    mutate(inventory_year = year(DATE),
-           month = month(DATE)) %>% 
-    group_by(inventory_year,month) %>% 
-    summarize(heating_degree_days = sum(DailyHeatingDegreeDays),
-              cooling_degree_days = sum(DailyCoolingDegreeDays),
-              dry_bulb_temp = mean(DailyAverageDryBulbTemperature))
+
+msp_month <- bind_rows(
+  msp_2005 %>%
+    filter(!is.na(DailyHeatingDegreeDays)) %>%
+    mutate(
+      inventory_year = year(DATE),
+      month = month(DATE)
+    ) %>%
+    group_by(inventory_year, month) %>%
+    summarize(
+      heating_degree_days = sum(DailyHeatingDegreeDays),
+      cooling_degree_days = sum(DailyCoolingDegreeDays),
+      dry_bulb_temp = mean(DailyAverageDryBulbTemperature)
+    ),
+  msp_2015 %>%
+    filter(!is.na(DailyHeatingDegreeDays)) %>%
+    mutate(
+      inventory_year = year(DATE),
+      month = month(DATE)
+    ) %>%
+    group_by(inventory_year, month) %>%
+    summarize(
+      heating_degree_days = sum(DailyHeatingDegreeDays),
+      cooling_degree_days = sum(DailyCoolingDegreeDays),
+      dry_bulb_temp = mean(DailyAverageDryBulbTemperature)
+    )
 ) %>% ungroup()
 
 noaa_meta <-

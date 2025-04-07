@@ -6,14 +6,18 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 county_busi_predict <- read_rds("_energy/data-raw/predicted_county_business_mwh.rds")
 county_res_predict <- read_rds("_energy/data-raw/predicted_county_residential_mwh.rds")
 
-county_predict <- left_join(county_res_predict,
-                            county_busi_predict) %>% 
-  mutate(total_mwh_predicted = residential_mwh_predicted + business_mwh_predicted,
-         source = "CTU prediction") 
+county_predict <- left_join(
+  county_res_predict,
+  county_busi_predict
+) %>%
+  mutate(
+    total_mwh_predicted = residential_mwh_predicted + business_mwh_predicted,
+    source = "CTU prediction"
+  )
 
 ### look at total mwh
 
-mwh_county_util <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RDS") 
+mwh_county_util <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RDS")
 
 connexus <- mwh_county_util %>% filter(utility == "Connexus Energy")
 anoka_util <- mwh_county_util %>% filter(county == "Anoka", year == 2021)
@@ -21,22 +25,26 @@ anoka_util <- mwh_county_util %>% filter(county == "Anoka", year == 2021)
 ctu_utility_year <- read_rds("_energy/data/ctu_utility_mwh.RDS")
 ctu_connexus <- filter(ctu_utility_year, utility == "Connexus Energy", inventory_year == 2021)
 
-mwh_county <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RDS") %>% 
-  group_by(year, county) %>% 
-  summarize(mwh_delivered = sum(mWh_delivered)) %>% 
-  mutate(source = "Utility reports") %>% 
-  rename(inventory_year = year,
-         county_name = county)
-  
+mwh_county <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RDS") %>%
+  group_by(year, county) %>%
+  summarize(mwh_delivered = sum(mWh_delivered)) %>%
+  mutate(source = "Utility reports") %>%
+  rename(
+    inventory_year = year,
+    county_name = county
+  )
+
 
 ggplot(
-  rbind(mwh_county,
-        county_predict %>% 
-          select(inventory_year,
-                 county_name,
-                 source,
-                 mwh_delivered = total_mwh_predicted)
-          ) %>% 
+  rbind(
+    mwh_county,
+    county_predict %>%
+      select(inventory_year,
+        county_name,
+        source,
+        mwh_delivered = total_mwh_predicted
+      )
+  ) %>%
     filter(inventory_year == 2021),
   aes(x = county_name, y = mwh_delivered, fill = source)
 ) +
@@ -57,11 +65,11 @@ nrel <- read_rds("_energy/data-raw/nrel_slope/nrel_slope_proportions.RDS")
 
 mn_mwh_sector <- rbind(
   left_join(mn_mwh, nrel %>%
-              filter(
-                year == 2021,
-                source == "Electricity"
-              ),
-            by = "county"
+    filter(
+      year == 2021,
+      source == "Electricity"
+    ),
+  by = "county"
   ) %>%
     mutate(
       mwh = mwh * residential,
@@ -69,11 +77,11 @@ mn_mwh_sector <- rbind(
     ) %>%
     select(county, mwh, sector, source = source.x),
   left_join(mn_mwh, nrel %>%
-              filter(
-                year == 2021,
-                source == "Electricity"
-              ),
-            by = "county"
+    filter(
+      year == 2021,
+      source == "Electricity"
+    ),
+  by = "county"
   ) %>%
     mutate(
       mwh = mwh * (commercial + industrial),
@@ -102,9 +110,9 @@ ctu_mwh_predict <- rbind(
 
 
 mwh <- rbind(mn_mwh_sector, ctu_mwh_predict %>%
-               group_by(county_name, sector, source) %>%
-               summarize(mwh = sum(mwh_predicted)) %>%
-               rename(county = county_name))
+  group_by(county_name, sector, source) %>%
+  summarize(mwh = sum(mwh_predicted)) %>%
+  rename(county = county_name))
 
 ggplot(mwh, aes(x = source, y = mwh, fill = sector)) +
   geom_bar(stat = "identity", position = position_stack(reverse = TRUE), width = 0.7) +
@@ -169,8 +177,8 @@ county_predict_linear <- ctu_predict_linear %>%
       as.numeric(),
     co2e =
       co2 +
-      (ch4 * gwp$n2o) +
-      (n2o * gwp$n2o)
+        (ch4 * gwp$n2o) +
+        (n2o * gwp$n2o)
   )
 
 prediction_comparison_linear <- rbind(
@@ -184,8 +192,8 @@ prediction_comparison_linear <- rbind(
 )
 
 mwh_add <- rbind(mwh, county_predict_linear %>%
-                   select(county = county_name, mwh = mwh_predicted, sector) %>%
-                   mutate(source = "MC model linear"))
+  select(county = county_name, mwh = mwh_predicted, sector) %>%
+  mutate(source = "MC model linear"))
 
 mwh_predict_total <- ggplot(mwh_add, aes(x = source, y = mwh, fill = sector)) +
   geom_bar(stat = "identity", position = position_stack(reverse = TRUE), width = 0.7) +

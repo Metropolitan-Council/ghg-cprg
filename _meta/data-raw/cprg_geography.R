@@ -128,28 +128,28 @@ wi_ctu <- sf::read_sf("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023
 
 thrive <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_metc/society_thrive_msp2040_com_des/gpkg_society_thrive_msp2040_com_des.zip") %>%
   st_drop_geometry() %>%
-  clean_names() %>% 
-  distinct(ctu_id, comdesname) %>% 
+  clean_names() %>%
+  distinct(ctu_id, comdesname) %>%
   rename(thrive_designation = comdesname)
-  
+
 thrive <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_metc/society_thrive_msp2040_com_des/gpkg_society_thrive_msp2040_com_des.zip") %>%
   st_drop_geometry() %>%
   separate(COCTU_DESC, sep = " [(]", into = c("ctu", "cty"), fill = "right") %>%
   mutate(
     COMDESNAME = factor(COMDESNAME,
-                        levels = c(
-                          "Urban Center",
-                          "Urban",
-                          "Suburban",
-                          "Suburban Edge",
-                          "Emerging Suburban Edge",
-                          "Rural Center",
-                          "Diversified Rural",
-                          "Rural Residential",
-                          "Agricultural",
-                          "Non-Council Area"
-                        ),
-                        ordered = T
+      levels = c(
+        "Urban Center",
+        "Urban",
+        "Suburban",
+        "Suburban Edge",
+        "Emerging Suburban Edge",
+        "Rural Center",
+        "Diversified Rural",
+        "Rural Residential",
+        "Agricultural",
+        "Non-Council Area"
+      ),
+      ordered = T
     ),
     URB_RURAL = stringr::str_sub(URB_RURAL, 1, 5),
     URB_SUB_RURAL = case_when(
@@ -170,9 +170,10 @@ thrive <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
   count() %>%
   group_by(CTU_ID) %>%
   filter(as.integer(COMDESNAME) == max(as.integer(COMDESNAME))) %>%
-  ungroup()  %>% 
-  select(ctu_id = CTU_ID,
-         thrive_designation = COMDESNAME
+  ungroup() %>%
+  select(
+    ctu_id = CTU_ID,
+    thrive_designation = COMDESNAME
   )
 
 
@@ -185,14 +186,15 @@ cprg_ctu <- bind_rows(mn_ctu, wi_ctu) %>%
     gnis = gnis_feature_id,
     cprg_area,
     geometry
-  ) %>% 
+  ) %>%
   left_join(thrive,
-            by = c("gnis" = "ctu_id")) %>% 
+    by = c("gnis" = "ctu_id")
+  ) %>%
   mutate(thrive_designation = if_else(
     is.na(thrive_designation),
     "Non-Council Area",
-    thrive_designation)
-         )
+    thrive_designation
+  ))
 
 
 cprg_ctu_meta <- tribble(

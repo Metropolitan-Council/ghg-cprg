@@ -84,17 +84,17 @@ process_municipal_elecByClass <- function(file_info) {
   file_path <- file_info$file_path
   utility_name <- file_info$utility_name
   year <- file_info$year
-  
+
   # Read specific ranges from each file
   data_A_C <- read_excel(file_path, sheet = "ElectricityByClass", range = "A10:C16")
-  
+
   # Rename columns
   colnames(data_A_C) <- c("sector", "customer_count", "mwh_delivered")
-  
+
   # Add utility name and year columns
   data_A_C$utility <- utility_name
   data_A_C$year <- as.numeric(year) # Ensure year is numeric if needed
-  
+
   return(data_A_C)
 }
 
@@ -105,20 +105,24 @@ combined_MNelectUtil_activityData <- do.call(rbind, lapply(file_list, process_fi
 
 #### GRE and Connexus split up in 2022, but everything prior to then in Anoka County is a doublecount
 #### checking and then zeroing out GRE in Anoka
-combined_MNelectUtil_activityData %>% 
-  filter(county == "Anoka",
-          utility %in% c("Connexus Energy",
-                         "Great River Energy")) %>% 
-  distinct(utility, year, mWh_delivered ) %>% 
-  arrange(desc(year)) %>% 
+combined_MNelectUtil_activityData %>%
+  filter(
+    county == "Anoka",
+    utility %in% c(
+      "Connexus Energy",
+      "Great River Energy"
+    )
+  ) %>%
+  distinct(utility, year, mWh_delivered) %>%
+  arrange(desc(year)) %>%
   print(n = 50)
 # GRE is variable in reporting year to year, Connexus is fairly consistent
 
-combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>% 
+combined_MNelectUtil_activityData <- combined_MNelectUtil_activityData %>%
   filter(!(utility == "Great River Energy" & county == "Anoka"))
 
-#identify subset of files attached to municipal utilities, then create a table with elec by class for each utility-year and export it 
-MN_elecMunis <- readRDS(here("_energy", "data", "distinct_electricity_util_type_MN.RDS")) %>% 
+# identify subset of files attached to municipal utilities, then create a table with elec by class for each utility-year and export it
+MN_elecMunis <- readRDS(here("_energy", "data", "distinct_electricity_util_type_MN.RDS")) %>%
   filter(utility_type == "Municipal")
 muni_files <- keep(file_list, ~ .x$utility_name %in% unique(MN_elecMunis$mpuc_name))
 combined_MNelecMunis_elecByClass <- do.call(rbind, lapply(muni_files, process_municipal_elecByClass))
@@ -236,7 +240,8 @@ MNcounty_level_electricity_emissions <- processed_mn_elecUtil_activityData %>%
 # parcel out municipal utility reporting to be leveraged as QA against the sector-level numbers pulled separately
 muni_activity_separated <- processed_mn_elecUtil_activityData %>%
   right_join(MN_elecMunis,
-             by = join_by(utility == mpuc_name)) %>%
+    by = join_by(utility == mpuc_name)
+  ) %>%
   # remove out of scope utilities
   filter(!utility %in% c("Delano Municipal Utilities,", "Elk River Municipal Utilities")) %>%
   select(1:3, 5) %>%

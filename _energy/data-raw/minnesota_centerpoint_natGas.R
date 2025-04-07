@@ -8,14 +8,15 @@ dir_centerpoint_reports <- here("_energy", "data-raw", "centerpoint_reports")
 
 
 # CenterPoint provies their data in therms
-mcf_per_therm <- 1/10.38
+mcf_per_therm <- 1 / 10.38
 
 
 # Read CSV, ignoring the first two rows (nested headers) and extraneous notes outside the main data structure
 df_raw <- read_xlsx(here("_energy", "data-raw", "centerpointDataRequest", "2015_2023MetCouncilCommunityNGData_PUBLIC.xlsx"),
-                    range = "A3:U288",
-                    col_names = FALSE) %>%
-  select(,-3) # drop county column
+  range = "A3:U288",
+  col_names = FALSE
+) %>%
+  select(, -3) # drop county column
 
 # Define column names manually to reflect nesting structure
 expected_columns <- c(
@@ -37,7 +38,7 @@ colnames(df_raw) <- expected_columns
 # Pivot to long format
 df_long <- df_raw %>%
   pivot_longer(
-    cols = starts_with("20"),  
+    cols = starts_with("20"),
     names_to = c("year", ".value"), # decompose nested column names into a year and value column for 1) Energy and 2) Customers
     names_sep = "_"
   ) %>%
@@ -46,7 +47,7 @@ df_long <- df_raw %>%
     ctu_name = str_to_title(ctu_name), # e.g., BLOOMINGTON --> Bloomington
     mcf_delivered = Energy * mcf_per_therm
   ) %>%
-  #fix issue with City of Nowthen
+  # fix issue with City of Nowthen
   mutate(
     ctu_name = case_when(
       str_trim(str_to_lower(ctu_name)) == "city of nowthen" ~ "Nowthen",
@@ -72,22 +73,26 @@ ctu_total_population <- ctu_population %>%
   group_by(ctu_name, ctu_class, year) %>%
   mutate(
     total_ctu_population = sum(ctu_population,
-                               na.rm = TRUE), # Sum populations across counties for each city-year
+      na.rm = TRUE
+    ), # Sum populations across counties for each city-year
     multi_county = n_distinct(county_name) > 1
   ) %>%
   ungroup() %>%
   group_by(ctu_name, year) %>%
-  mutate(total_population_across_all_units = sum(ctu_population,
-                                                 na.rm = TRUE),
-         same_named = n_distinct(ctu_class) > 1) %>%
+  mutate(
+    total_population_across_all_units = sum(ctu_population,
+      na.rm = TRUE
+    ),
+    same_named = n_distinct(ctu_class) > 1
+  ) %>%
   ungroup()
-  
+
 
 centerpoint_activityData_2015_2023 <- df_long %>%
   # Join city_total_population back to main dataset
   full_join(ctu_total_population,
-            by = c("ctu_name", "year"),
-            relationship = "many-to-many"
+    by = c("ctu_name", "year"),
+    relationship = "many-to-many"
   ) %>%
   # Calculate proportions and disaggregated values
   group_by(ctu_name, ctu_class, year, county_name) %>%
@@ -118,7 +123,7 @@ centerpoint_activityData_2015_2023 <- df_long %>%
     source = "Natural Gas",
     utility = "CenterPoint",
     mcf_delivered = coalesce(disagg_mcf_delivered, mcf_delivered)
-    ) %>%
-  select(1:3,5:7,16:17) # exclude interstitial calculation columns
-  
+  ) %>%
+  select(1:3, 5:7, 16:17) # exclude interstitial calculation columns
+
 write_rds(centerpoint_activityData_2015_2023, here("_energy", "data", "centerpoint_activityData_2015_2023.RDS"))

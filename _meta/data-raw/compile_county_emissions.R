@@ -12,7 +12,7 @@ cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
 # transportation -----
 transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS") %>%
   ungroup() %>%
-  filter(emissions_year >= 2005) %>% 
+  filter(emissions_year >= 2005) %>%
   mutate(
     sector = "Transportation",
     geog_level = "county",

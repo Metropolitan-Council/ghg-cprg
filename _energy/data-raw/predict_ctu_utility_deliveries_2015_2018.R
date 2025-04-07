@@ -1,27 +1,27 @@
 ### Develop model for predicting CTU residential electricity usage ###
-### 
+###
 
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
-  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce")) 
+  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
 cprg_county <- read_rds("_meta/data/cprg_county.RDS") %>%
-  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce")) 
-ctu_population <- read_rds("_meta/data/ctu_population.RDS") %>% 
+  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
+ctu_population <- read_rds("_meta/data/ctu_population.RDS") %>%
   left_join(cprg_county %>% st_drop_geometry() %>% select(geoid, county_name)) %>%
-  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce")) 
-  
+  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
+
 # assign CTUs to where the majority of their population is for those that cross counties
 ctu_county_unique <- ctu_population %>%
   group_by(ctu_name, ctu_class) %>%
   filter(ctu_population == max(ctu_population)) %>%
-  ungroup() %>% 
+  ungroup() %>%
   distinct(geoid, ctuid, ctu_name, ctu_class, county_name)
 
 ## first, develop understanding of how yearly weather variation impacts activity
 
-#weather data
+# weather data
 noaa <- readRDS("_meta/data/noaa_weather_2015-2021.rds")
 
 # county activity data
@@ -29,63 +29,81 @@ county_mwh <- readRDS("_energy/data/minnesota_county_elec_ActivityAndEmissions.r
 county_scf <- readRDS("_energy/data/minnesota_county_GasEmissions.rds")
 
 
-noaa_year <- noaa %>% 
-  group_by(inventory_year) %>% 
-  summarize(heating_degree_days = sum(heating_degree_days),
-            cooling_degree_days = sum(cooling_degree_days),
-            temperature = mean(dry_bulb_temp))
+noaa_year <- noaa %>%
+  group_by(inventory_year) %>%
+  summarize(
+    heating_degree_days = sum(heating_degree_days),
+    cooling_degree_days = sum(cooling_degree_days),
+    temperature = mean(dry_bulb_temp)
+  )
 
-lm(total_mwh ~ cooling_degree_days + heating_degree_days, data = county_mwh %>% 
-         group_by(year) %>% 
-         summarize(total_mwh = sum(total_mWh_delivered)) %>% 
-         left_join(noaa_year, by = c("year" = "inventory_year"))
-) %>% summary()
-#no relationship
+lm(total_mwh ~ cooling_degree_days + heating_degree_days, data = county_mwh %>%
+  group_by(year) %>%
+  summarize(total_mwh = sum(total_mWh_delivered)) %>%
+  left_join(noaa_year, by = c("year" = "inventory_year"))) %>% summary()
+# no relationship
 
-lm(total_mcf ~  cooling_degree_days + heating_degree_days,
-  data = county_scf %>% 
-         group_by(year) %>% 
-         summarize(total_mcf = sum(total_mcf)) %>% 
-         left_join(noaa_year, by = c("year" = "inventory_year"))
+lm(total_mcf ~ cooling_degree_days + heating_degree_days,
+  data = county_scf %>%
+    group_by(year) %>%
+    summarize(total_mcf = sum(total_mcf)) %>%
+    left_join(noaa_year, by = c("year" = "inventory_year"))
 ) %>% summary()
 # strong relationship with heating_degree_days (R2 = 0.897)
 
 ### bring in CTU level data
 
 
-  
-ggplot(electricity %>% distinct(emissions_year, county_name, county_sql_total_mwh, total_mWh_delivered),
-       aes(x = county_sql_total_mwh, y = total_mWh_delivered, col = county_name)) +
-         geom_point() + facet_wrap(~emissions_year, scales = "free") +
-  geom_abline(slope = 1) + xlab("Utility CTU mwh reports (aggregated)") +
+
+ggplot(
+  electricity %>% distinct(emissions_year, county_name, county_sql_total_mwh, total_mWh_delivered),
+  aes(x = county_sql_total_mwh, y = total_mWh_delivered, col = county_name)
+) +
+  geom_point() +
+  facet_wrap(~emissions_year, scales = "free") +
+  geom_abline(slope = 1) +
+  xlab("Utility CTU mwh reports (aggregated)") +
   ylab("Utility county mwh reports")
 
-nat_gas <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>% 
-  mutate(ctu_class = if_else(grepl("Twp.", ctu_name), "TOWNSHIP", "CITY"),
-         ctu_name = str_replace_all(ctu_name, " Twp.", ""),
-         ctu_name = str_replace_all(ctu_name, "St. ", "Saint "),
-         ctu_class = if_else(ctu_name %in% c("Credit River", "Empire"),
-                             "CITY",
-                             ctu_class),
-         mcf_per_year = therms_per_year * 0.1 * (1/epa_ghg_factor_hub$stationary_combustion$value[1]) / 1000) %>% 
+nat_gas <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
+  mutate(
+    ctu_class = if_else(grepl("Twp.", ctu_name), "TOWNSHIP", "CITY"),
+    ctu_name = str_replace_all(ctu_name, " Twp.", ""),
+    ctu_name = str_replace_all(ctu_name, "St. ", "Saint "),
+    ctu_class = if_else(ctu_name %in% c("Credit River", "Empire"),
+      "CITY",
+      ctu_class
+    ),
+    mcf_per_year = therms_per_year * 0.1 * (1 / epa_ghg_factor_hub$stationary_combustion$value[1]) / 1000
+  ) %>%
   left_join(cprg_ctu %>% st_drop_geometry() %>% distinct(ctu_name, ctu_class, ctu_id = gnis),
-            by = c("ctu_name", "ctu_class")) %>% 
-  filter(units_emissions == "Metric tons CO2")%>%  # removes duplicates
+    by = c("ctu_name", "ctu_class")
+  ) %>%
+  filter(units_emissions == "Metric tons CO2") %>% # removes duplicates
   left_join(ctu_county_unique,
-            by = c("ctu_name", "ctu_class")) %>% 
-  group_by(county_name, emissions_year) %>% 
-  mutate(county_sql_total_mcf = sum(mcf_per_year, na.rm = TRUE)) %>% 
-  ungroup() %>% 
+    by = c("ctu_name", "ctu_class")
+  ) %>%
+  group_by(county_name, emissions_year) %>%
+  mutate(county_sql_total_mcf = sum(mcf_per_year, na.rm = TRUE)) %>%
+  ungroup() %>%
   left_join(county_scf %>% select(year, county_name, total_mcf),
-            by = c("county_name", "emissions_year" = "year")) %>% 
-  mutate(county_sql_prop = mcf_per_year / county_sql_total_mcf,
-         county_util_prop = mcf_per_year / total_mcf)
+    by = c("county_name", "emissions_year" = "year")
+  ) %>%
+  mutate(
+    county_sql_prop = mcf_per_year / county_sql_total_mcf,
+    county_util_prop = mcf_per_year / total_mcf
+  )
 
-ggplot(nat_gas %>% distinct(emissions_year, county_name, county_sql_total_mcf, total_mcf),
-       aes(x = county_sql_total_mcf, y = total_mcf, col = county_name)) +
-  geom_point() + facet_wrap(~emissions_year, scales = "free") +
-  geom_abline(slope = 1) + xlab("Utility CTU scf reports (aggregated)") +
-  ylab("Utility county scf reports") + theme_bw()
+ggplot(
+  nat_gas %>% distinct(emissions_year, county_name, county_sql_total_mcf, total_mcf),
+  aes(x = county_sql_total_mcf, y = total_mcf, col = county_name)
+) +
+  geom_point() +
+  facet_wrap(~emissions_year, scales = "free") +
+  geom_abline(slope = 1) +
+  xlab("Utility CTU scf reports (aggregated)") +
+  ylab("Utility county scf reports") +
+  theme_bw()
 
 
 
@@ -99,9 +117,9 @@ urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
 residential_elec <- electricity %>%
   filter(
-    customer_class  == "Residential"
-  ) %>% 
-  group_by(ctu_name, ctu_id, emissions_year,ctu_class) %>% 
+    customer_class == "Residential"
+  ) %>%
+  group_by(ctu_name, ctu_id, emissions_year, ctu_class) %>%
   summarize(mwh = sum(mwh_per_year))
 
 # residential predictors
@@ -145,8 +163,10 @@ residential <- c(
 # operating at ctu not coctu for now
 
 urbansim_res <- urbansim %>%
-  filter(variable %in% residential,
-         inventory_year == 2020) %>%
+  filter(
+    variable %in% residential,
+    inventory_year == 2020
+  ) %>%
   group_by(variable, ctu_id) %>%
   summarize(value = sum(value)) %>%
   ungroup() %>%
@@ -159,7 +179,7 @@ urbansim_res <- urbansim %>%
 # merge into xcel
 electricity_res <- left_join(residential_elec,
   urbansim_res,
-  by ="ctu_id"
+  by = "ctu_id"
 ) %>%
   left_join(mn_parcel_res %>% select(-ctu_name),
     by = "ctu_id"
@@ -193,10 +213,11 @@ rf_res_model <- randomForest(
     single_fam_attached_rent +
     multi_fam_own +
     multi_fam_rent,
-  importance = T, 
+  importance = T,
   na.action = na.omit,
-  data = electricity_res %>% 
-    mutate(emissions_year == as.factor(emissions_year)))
+  data = electricity_res %>%
+    mutate(emissions_year == as.factor(emissions_year))
+)
 
 
 rf_res_model
@@ -227,7 +248,7 @@ rf_res_train <- randomForest(
     multi_fam_own +
     multi_fam_rent,
   na.action = na.omit,
-  data = train_res%>% 
+  data = train_res %>%
     mutate(emissions_year == as.factor(emissions_year)),
   importance = T
 )

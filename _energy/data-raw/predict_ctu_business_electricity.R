@@ -5,34 +5,37 @@ source("_energy/data-raw/_energy_emissions_factors.R")
 
 ## load in supporting data
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
-  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce")) 
+  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
 cprg_county <- read_rds("_meta/data/cprg_county.RDS") %>%
-  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce")) 
-ctu_population <- read_rds("_meta/data/ctu_population.RDS") %>% 
+  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
+ctu_population <- read_rds("_meta/data/ctu_population.RDS") %>%
   left_join(cprg_county %>% st_drop_geometry() %>% select(geoid, county_name)) %>%
-  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce")) 
+  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
 
 ## load in utility data, keeping only complete city-years and collapse to city-year
 ## i.e. if city-year is missing ANY utility data, delete
 
-#bring in weather data
-#weather data
+# bring in weather data
+# weather data
 noaa <- readRDS("_meta/data/noaa_weather_monthly.rds")
 
-noaa_year <- noaa %>% 
-  group_by(inventory_year) %>% 
-  summarize(heating_degree_days = sum(heating_degree_days),
-            cooling_degree_days = sum(cooling_degree_days),
-            temperature = mean(dry_bulb_temp))
+noaa_year <- noaa %>%
+  group_by(inventory_year) %>%
+  summarize(
+    heating_degree_days = sum(heating_degree_days),
+    cooling_degree_days = sum(cooling_degree_days),
+    temperature = mean(dry_bulb_temp)
+  )
 
-ctu_utility_year <- read_rds("_energy/data/ctu_utility_mwh.RDS") %>% 
+ctu_utility_year <- read_rds("_energy/data/ctu_utility_mwh.RDS") %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
   filter(!any(is.na(total_mwh))) %>%
   summarize(
     residential_mwh = sum(residential_mwh, na.rm = TRUE),
     business_mwh = sum(business_mwh, na.rm = TRUE),
-    total_mwh = sum(total_mwh)) %>% 
-  ungroup() 
+    total_mwh = sum(total_mwh)
+  ) %>%
+  ungroup()
 
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")
@@ -65,30 +68,35 @@ business <- c(
 ### create 2010-2025 urbansim residential dataset
 urbansim_busi <- urbansim %>%
   filter(variable %in% business) %>%
-  group_by(coctu_id, variable) %>% 
+  group_by(coctu_id, variable) %>%
   complete(inventory_year = full_seq(c(min(inventory_year), 2025), 1)) %>% # add interstitial years and expand to 2025
-  arrange(coctu_id, variable, inventory_year) %>% 
+  arrange(coctu_id, variable, inventory_year) %>%
   mutate(value = approx(inventory_year, value, inventory_year, method = "linear", rule = 2)$y) %>% # allow extrapolation
-  ungroup() %>% 
+  ungroup() %>%
   pivot_wider(
     id_cols = c(coctu_id, inventory_year),
     names_from = variable,
     values_from = value
   ) %>%
-  filter(!is.na(coctu_id)) %>% 
-  mutate(ctu_id = str_sub(coctu_id, -7, -1),
-         county_id = as.numeric(str_remove(coctu_id, paste0("0", ctu_id))),
-         ctu_id = as.numeric(ctu_id)
-  ) %>% 
-  left_join(cprg_ctu %>% st_drop_geometry() %>% 
-              distinct(ctu_name, thrive_designation, gnis),
-            by = c("ctu_id" = "gnis")) %>% 
-  left_join(cprg_county %>% st_drop_geometry() %>% 
-              mutate(geoid = as.numeric(str_sub(geoid, -3, -1))) %>% 
-              select(county_name, geoid),
-            by = c("county_id" = "geoid"))
+  filter(!is.na(coctu_id)) %>%
+  mutate(
+    ctu_id = str_sub(coctu_id, -7, -1),
+    county_id = as.numeric(str_remove(coctu_id, paste0("0", ctu_id))),
+    ctu_id = as.numeric(ctu_id)
+  ) %>%
+  left_join(
+    cprg_ctu %>% st_drop_geometry() %>%
+      distinct(ctu_name, thrive_designation, gnis),
+    by = c("ctu_id" = "gnis")
+  ) %>%
+  left_join(
+    cprg_county %>% st_drop_geometry() %>%
+      mutate(geoid = as.numeric(str_sub(geoid, -3, -1))) %>%
+      select(county_name, geoid),
+    by = c("county_id" = "geoid")
+  )
 
-#create jobs proportions for coctu
+# create jobs proportions for coctu
 coctu_jobs <- urbansim_busi %>%
   distinct(ctu_name, ctu_id, inventory_year, county_name, total_job_spaces) %>% # Ensure unique rows per city-county-year
   group_by(ctu_name, ctu_id, inventory_year) %>%
@@ -104,19 +112,20 @@ coctu_jobs <- urbansim_busi %>%
 coctu_busi_year <- ctu_utility_year %>%
   # Join city_total_population back to main dataset
   full_join(coctu_jobs,
-            by = c("ctu_name", "ctu_class", "inventory_year"),
-            relationship = "many-to-many"
+    by = c("ctu_name", "ctu_class", "inventory_year"),
+    relationship = "many-to-many"
   ) %>%
   # Calculate proportions and disaggregated values
   group_by(ctu_name, ctu_class, inventory_year, county_name) %>%
   mutate(
     business_mwh = ifelse(
       multi_county,
-      business_mwh  * coctu_jobs_prop,
-      business_mwh)
+      business_mwh * coctu_jobs_prop,
+      business_mwh
+    )
   ) %>%
-  ungroup() %>% 
-  filter(!is.na(business_mwh)) %>% 
+  ungroup() %>%
+  filter(!is.na(business_mwh)) %>%
   select(ctu_name, ctu_class, inventory_year, business_mwh, county_name)
 
 # grab mn parcel data for business
@@ -138,13 +147,13 @@ mn_parcel_busi <- mn_parcel %>%
 
 # merge into utility data
 electricity_busi <- left_join(coctu_busi_year,
-                             urbansim_busi,
-                             by = c("ctu_name", "county_name", "inventory_year")
+  urbansim_busi,
+  by = c("ctu_name", "county_name", "inventory_year")
 ) %>%
   left_join(mn_parcel_busi %>% select(-ctu_name),
-            by = c("ctu_id" = "ctu_id")
-  ) %>% 
-  #weather data
+    by = c("ctu_id" = "ctu_id")
+  ) %>%
+  # weather data
   left_join(noaa_year, by = "inventory_year")
 
 rf_nonres_model <- randomForest(
@@ -179,43 +188,47 @@ abline(0, 1)
 ### predict ALL cities and rollback up to counties for all years
 
 ctu_busi_predict <- cprg_ctu %>%
-  left_join(urbansim_busi, by = c("gnis" = "ctu_id",
-                                 "ctu_name",
-                                 "county_name",
-                                 "thrive_designation")) %>%
-  left_join(noaa_year) %>% 
+  left_join(urbansim_busi, by = c(
+    "gnis" = "ctu_id",
+    "ctu_name",
+    "county_name",
+    "thrive_designation"
+  )) %>%
+  left_join(noaa_year) %>%
   mutate(mwh_predicted = predict(rf_nonres_model, .)) %>%
-  filter(!is.na(mwh_predicted)) %>%  #removes 2025 data
-  st_drop_geometry() %>% 
-  group_by(ctu_name, ctu_class, inventory_year) %>% 
-  summarize(business_mwh_predicted = sum(mwh_predicted)) %>% 
+  filter(!is.na(mwh_predicted)) %>% # removes 2025 data
+  st_drop_geometry() %>%
+  group_by(ctu_name, ctu_class, inventory_year) %>%
+  summarize(business_mwh_predicted = sum(mwh_predicted)) %>%
   ungroup()
 
 
 
 ctu_busi_predict %>% distinct(ctu_name, ctu_class)
 
-ctu_busi <- left_join(ctu_busi_predict,
-                     ctu_utility_year %>% 
-                       select(1:3,5))
+ctu_busi <- left_join(
+  ctu_busi_predict,
+  ctu_utility_year %>%
+    select(1:3, 5)
+)
 
 ### county
 
 county_busi_predict <- cprg_ctu %>%
-  left_join(urbansim_busi, by = c("gnis" = "ctu_id",
-                                  "ctu_name",
-                                  "county_name",
-                                  "thrive_designation")) %>%
-  left_join(noaa_year) %>% 
+  left_join(urbansim_busi, by = c(
+    "gnis" = "ctu_id",
+    "ctu_name",
+    "county_name",
+    "thrive_designation"
+  )) %>%
+  left_join(noaa_year) %>%
   mutate(mwh_predicted = predict(rf_nonres_model, .)) %>%
-  filter(!is.na(mwh_predicted)) %>%  #removes 2025 data
-  st_drop_geometry() %>% 
-  group_by(county_name, inventory_year) %>% 
-  summarize(business_mwh_predicted = sum(mwh_predicted)) %>% 
+  filter(!is.na(mwh_predicted)) %>% # removes 2025 data
+  st_drop_geometry() %>%
+  group_by(county_name, inventory_year) %>%
+  summarize(business_mwh_predicted = sum(mwh_predicted)) %>%
   ungroup()
 
-#save intermediate rds
+# save intermediate rds
 saveRDS(ctu_busi, "_energy/data-raw/predicted_ctu_business_mwh.rds")
 saveRDS(county_busi_predict, "_energy/data-raw/predicted_county_business_mwh.rds")
-
-
