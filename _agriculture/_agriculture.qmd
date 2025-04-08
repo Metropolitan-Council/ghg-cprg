@@ -170,51 +170,10 @@ fig_ag_baseline
 
 ### Emissions by gas type
 
-The majority of agricultural emissions by weight are methane, but when accounting for the increased warming potential of nitrous oxide, CO<sub>2</sub>e are roughly equivalent. 
+The majority of agricultural emissions by weight are methane, but when accounting for the increased warming potential of nitrous oxide, CO<sub>2</sub>e the two are roughly equivalent. 
 CH<sub>4</sub>: `r 100 * round(methane_2021/ag_emissions_2021, digits = 3)`% 
 N<sub>2</sub>O: `r 100 * round(n2o_2021/ag_emissions_2021, digits = 3)`%
 
-
-
-```{r fig-ag-county-emissions-by-gas-type}
-#| fig-cap: "2021 county agricultural emissions by gas type"
-#| out-width: "95%"
-
-fig_ag_gas_type <- plot_ly(
-  type = "bar",
-  source = "fig-ag-county-emissions-by-gas-type",
-  data = ag_emissions %>%
-    left_join(., cprg_county) %>%
-    filter(inventory_year == 2021),
-  y = ~ reorder(county_name, value_emissions),
-  x = ~value_emissions,
-  color = ~units_emissions,
-  hovertemplate = ~ paste0(
-    county_name, "<br>",
-    source, "<br>",
-    round(value_emissions, digits = 2), "  metric tons of gas", "<br>",
-    "<extra></extra>"
-  )
-) %>%
-  plotly_layout(
-    main_title = "2021 county agricultural emissions by gas type",
-    x_title = "Metric tons of gas emitted",
-    subtitle = ""
-  ) %>%
-  layout(
-    barmode = "stack",
-    legend = list(
-      traceorder = "reversed"
-    ),
-    hoverlabel = list(
-      font = list(
-        color = "black" # Set hovertext color to black
-      )
-    )
-  )
-
-fig_ag_gas_type
-```
 
 ```{r fig-ag-county-emissions-by-gas-type-co2e}
 #| fig-cap: "2021 county agricultural emissions by gas type (CO2e)"
@@ -258,7 +217,7 @@ fig_ag_gas_co2e
 
 ## CTU Estimates
 
-City and township estimates represent county estimates apportioned to their in-boundary CTUs based on the ratio of CTU agricultural land to county agricultural land. As expected, cities and townships on the rural edge show highest agricultural emissions.
+Agricultural emissions are apportioned to cities and townships in two ways. First, county crop production and fertilizer application are apportioned to cities and townships by their percentage of the counties cropland acreage. Second, livestock are assumed to have minimal occurrences in city boundaries, so the headcounts are apportioned to only townships by their proportional cropland acreage (in Hennepin, where there are no townships, we instead include only cities with more than 10 square kilometers of cropland). Based on these activity data, we follow the same emission calculations as for counties.
 
 ```{r fig-ctu-ag-emissions}
 #| fig-cap: "2021 city level agricultural emissions"
@@ -267,66 +226,40 @@ City and township estimates represent county estimates apportioned to their in-b
 # load the county boundaries layer
 
 ### load emissions and downscaling var (proportion of county ag land)
-ctu_ag_proportion <- readRDS(file.path(here::here(), "./_agriculture/data/ctu_ag_proportion.rds"))
+ctu_ag_emissions <- readRDS(file.path(here::here(), "./_agriculture/data/_ctu_agricultural_emissions.rds"))
 
-agricultural_emissions_2019 <- left_join(ctu_ag_proportion,
-  cprg_county %>%
-    select(geoid, county_name) %>%
-    st_drop_geometry(),
-  by = "county_name"
-) %>%
-  left_join(., ag_emissions %>%
-    group_by(inventory_year, geoid) %>%
-    summarize(mt_co2e = sum(mt_co2e)),
-  by = c("year" = "inventory_year", "geoid")
-  ) %>%
-  filter(year == 2019) %>%
-  mutate(ctu_emissions = proportion_ag_land * mt_co2e)
+agricultural_emissions_2021 <- ctu_ag_emissions %>%
+  filter(inventory_year == 2021) %>%
+  group_by(ctu_name, ctu_class) %>%
+  summarize(mt_co2e = sum(mt_co2e, na.rm = TRUE))
 
 ### map CTU scale agricultural emissions
 
-cprg_ctu_9 <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/bdry_mn_city_township_unorg/gpkg_bdry_mn_city_township_unorg.zip") %>%
-  filter(COUNTY_NAME %in% c(cprg_county$county_name)) %>%
-  mutate(
-    STATEFP = "27",
-    STATE = "Minnesota",
-    STATE_ABB = "MN"
-  ) %>%
-  select(
-    CTU_NAME = FEATURE_NAME,
-    CTU_CLASS,
-    COUNTY_NAME,
-    STATEFP,
-    STATE,
-    STATE_ABB,
-    GNIS_FEATURE_ID,
-    geometry = SHAPE
-  ) %>%
-  arrange(CTU_NAME)
+cprg_ctu <- readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>%
+  mutate(geometry = st_make_valid(geometry))
 
 
-ctu_ag_map <- left_join(
-  cprg_ctu_9 %>%
-    rename(ctu = CTU_NAME),
-  agricultural_emissions_2019,
-  by = "ctu"
+ctu_ag_map <- left_join(cprg_ctu,
+  agricultural_emissions_2021,
+  by = c("ctu_name", "ctu_class")
 ) %>%
-  select(ctu, area, ctu_emissions)
+  select(ctu_name, geometry, mt_co2e) %>%
+  replace(is.na(.), 0)
 
 
 # Define color palette based on the plasma scale from viridis
-pal <- colorNumeric(palette = "plasma", domain = ctu_ag_map$ctu_emissions)
+pal <- colorNumeric(palette = "plasma", domain = ctu_ag_map$mt_co2e)
 
 # Create the leaflet map
 map_ctu_ag <- leaflet(ctu_ag_map) %>%
   addTiles() %>% # Add default OpenStreetMap tiles
   addPolygons(
-    fillColor = ~ pal(ctu_emissions),
+    fillColor = ~ pal(mt_co2e),
     color = "black", # Border color
     weight = 1,
     fillOpacity = 0.9, # Transparency of the fill color
-    popup = ~ paste(ctu, " agricultural emissions:", round(ctu_emissions, 2)), # Popup with details
-    label = ~ paste(ctu, " emissions:", round(ctu_emissions, 2)), # Hover text
+    popup = ~ paste(ctu_name, " agricultural emissions:", round(mt_co2e, 2)), # Popup with details
+    label = ~ paste(ctu_name, " emissions:", round(mt_co2e, 2)), # Hover text
     highlightOptions = highlightOptions(
       weight = 3,
       color = "blue",
@@ -335,7 +268,7 @@ map_ctu_ag <- leaflet(ctu_ag_map) %>%
   ) %>%
   addLegend(
     pal = pal,
-    values = ~ctu_emissions,
+    values = ~mt_co2e,
     title = "CTU Ag Emissions",
     opacity = 0.7
   )

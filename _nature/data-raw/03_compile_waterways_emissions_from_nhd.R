@@ -16,12 +16,14 @@ cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 
 # turn your county and ctu layers into dataframes
 cprg_county_df <- cprg_county %>%
-  as.data.frame() %>% as_tibble() %>%
-  select(county_id=geoid, county_name, state_name) %>%
+  as.data.frame() %>%
+  as_tibble() %>%
+  select(county_id = geoid, county_name, state_name) %>%
   sf::st_drop_geometry()
 
 cprg_ctu_df <- cprg_ctu %>%
-  as.data.frame() %>% as_tibble() %>%
+  as.data.frame() %>%
+  as_tibble() %>%
   select(gnis, geoid_wis, ctu_name, ctu_class, county_name, state_name) %>%
   sf::st_drop_geometry() %>%
   mutate(
@@ -29,13 +31,13 @@ cprg_ctu_df <- cprg_ctu %>%
     gnis = as.numeric(gnis)
   ) %>%
   mutate(ctu_id = case_when(
-    is.na(gnis) & !is.na(geoid_wis)~geoid_wis,
-    !is.na(gnis) & is.na(geoid_wis)~gnis
+    is.na(gnis) & !is.na(geoid_wis) ~ geoid_wis,
+    !is.na(gnis) & is.na(geoid_wis) ~ gnis
   )) %>%
   left_join(cprg_county_df, by = join_by(county_name, state_name)) %>%
-  relocate(c(county_id, ctu_id), .before=everything()) %>%
+  relocate(c(county_id, ctu_id), .before = everything()) %>%
   dplyr::select(-c(gnis, geoid_wis))
-  
+
 
 
 
@@ -55,7 +57,8 @@ nhd_county_c <- nhd_county %>%
     data_source = "National Hydrography Dataset and MPCA Surface Water Emissions Factors"
   ) %>%
   dplyr::select(county_id, county_name, state_name,
-    inventory_year, sector, category, source = waterway_type, data_source,
+    inventory_year, sector, category,
+    source = waterway_type, data_source,
     factor_source, area, value_emissions = mt_ch4, units_emissions, mt_co2e
   ) %>%
   arrange(inventory_year, county_name, source)
@@ -75,9 +78,9 @@ nhd_ctu_c <- nhd_ctu %>%
     category = "Waterways",
     data_source = "National Hydrography Dataset and MPCA Surface Water Emissions Factors"
   ) %>%
-  
   dplyr::select(ctu_id, ctu_name, ctu_class, county_name, state_name,
-    inventory_year, sector, category, source = waterway_type, data_source,
+    inventory_year, sector, category,
+    source = waterway_type, data_source,
     factor_source, area, value_emissions = mt_ch4, units_emissions, mt_co2e
   ) %>%
   arrange(inventory_year, ctu_name, source)
