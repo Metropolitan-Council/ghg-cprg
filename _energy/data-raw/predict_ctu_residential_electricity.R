@@ -118,7 +118,7 @@ residential <- c(
 urbansim_res <- urbansim %>%
   filter(variable %in% residential) %>%
   group_by(coctu_id, variable) %>%
-  complete(inventory_year = full_seq(c(min(inventory_year), 2025), 1)) %>% # add interstitial years and expand to 2025
+  complete(inventory_year = full_seq(c(2005, 2025), 1)) %>% # add interstitial years and expand to 2025
   arrange(coctu_id, variable, inventory_year) %>%
   mutate(value = approx(inventory_year, value, inventory_year, method = "linear", rule = 2)$y) %>% # allow extrapolation
   ungroup() %>%
