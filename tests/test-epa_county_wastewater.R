@@ -7,7 +7,7 @@ testthat::test_that("EPA wastewater", {
   ## test that are the expected number of years
   testthat::expect_equal(
     unique(county_wastewater_emissions$emissions_year),
-    2005:2021
+    2005:2022
   )
 
   # test that the largest population county has the largest ww emissions

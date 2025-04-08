@@ -5187,6 +5187,16 @@
 2021,"county","27141","Sherburne","Agriculture","Livestock","Enteric fermentation",17667.2118801568,"Metric tons CO2e","USDA livestock census","EPA SIT",96295,"ACS 5-Year Estimates, Table DP05",0.18
 2021,"county","55109","St. Croix","Agriculture","Livestock","Enteric fermentation",110090.878437783,"Metric tons CO2e","USDA livestock census","EPA SIT",92495,"ACS 5-Year Estimates, Table DP05",1.19
 2021,"county","27163","Washington","Agriculture","Livestock","Enteric fermentation",6454.56127366888,"Metric tons CO2e","USDA livestock census","EPA SIT",264818,"ACS 5-Year Estimates, Table DP05",0.02
+2022,"county","27003","Anoka","Agriculture","Livestock","Enteric fermentation",1218.09678036073,"Metric tons CO2e","USDA livestock census","EPA SIT",363985,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27019","Carver","Agriculture","Livestock","Enteric fermentation",45886.1686551805,"Metric tons CO2e","USDA livestock census","EPA SIT",107216,"ACS 5-Year Estimates, Table DP05",0.43
+2022,"county","27025","Chisago","Agriculture","Livestock","Enteric fermentation",13291.2892636766,"Metric tons CO2e","USDA livestock census","EPA SIT",56927,"ACS 5-Year Estimates, Table DP05",0.23
+2022,"county","27037","Dakota","Agriculture","Livestock","Enteric fermentation",61403.7977621721,"Metric tons CO2e","USDA livestock census","EPA SIT",439179,"ACS 5-Year Estimates, Table DP05",0.14
+2022,"county","27053","Hennepin","Agriculture","Livestock","Enteric fermentation",6641.26695712053,"Metric tons CO2e","USDA livestock census","EPA SIT",1270787,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","55093","Pierce","Agriculture","Livestock","Enteric fermentation",95803.0126037045,"Metric tons CO2e","USDA livestock census","EPA SIT",42187,"ACS 5-Year Estimates, Table DP05",2.27
+2022,"county","27139","Scott","Agriculture","Livestock","Enteric fermentation",23205.9706944277,"Metric tons CO2e","USDA livestock census","EPA SIT",151347,"ACS 5-Year Estimates, Table DP05",0.15
+2022,"county","27141","Sherburne","Agriculture","Livestock","Enteric fermentation",18103.8946067378,"Metric tons CO2e","USDA livestock census","EPA SIT",97820,"ACS 5-Year Estimates, Table DP05",0.19
+2022,"county","55109","St. Croix","Agriculture","Livestock","Enteric fermentation",103092.092385082,"Metric tons CO2e","USDA livestock census","EPA SIT",93752,"ACS 5-Year Estimates, Table DP05",1.1
+2022,"county","27163","Washington","Agriculture","Livestock","Enteric fermentation",4746.66501851114,"Metric tons CO2e","USDA livestock census","EPA SIT",268651,"ACS 5-Year Estimates, Table DP05",0.02
 2005,"county","27003","Anoka","Agriculture","Livestock","Manure management",921.608961029684,"Metric tons CO2e","USDA livestock census","EPA SIT",319830,"US Census County Intercensal Tables (CO-EST00INT-01)",0
 2005,"county","27019","Carver","Agriculture","Livestock","Manure management",26171.2585924586,"Metric tons CO2e","USDA livestock census","EPA SIT",83258,"US Census County Intercensal Tables (CO-EST00INT-01)",0.31
 2005,"county","27025","Chisago","Agriculture","Livestock","Manure management",4688.84542612223,"Metric tons CO2e","USDA livestock census","EPA SIT",50283,"US Census County Intercensal Tables (CO-EST00INT-01)",0.09
@@ -5374,6 +5384,17 @@
 2021,"county","27141","Sherburne","Agriculture","Livestock","Manure management",1168.11257313575,"Metric tons CO2e","USDA livestock census","EPA SIT",96295,"ACS 5-Year Estimates, Table DP05",0.01
 2021,"county","55109","St. Croix","Agriculture","Livestock","Manure management",50577.1264990053,"Metric tons CO2e","USDA livestock census","EPA SIT",92495,"ACS 5-Year Estimates, Table DP05",0.55
 2021,"county","27163","Washington","Agriculture","Livestock","Manure management",1624.91780559504,"Metric tons CO2e","USDA livestock census","EPA SIT",264818,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","27003","Anoka","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",363985,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27019","Carver","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",107216,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27025","Chisago","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",56927,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27037","Dakota","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",439179,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27053","Hennepin","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",1270787,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","55093","Pierce","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",42187,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27123","Ramsey","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",547202,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27139","Scott","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",151347,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27141","Sherburne","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",97820,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","55109","St. Croix","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",93752,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27163","Washington","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",268651,"ACS 5-Year Estimates, Table DP05",0
 2005,"county","27003","Anoka","Agriculture","Livestock","Manure management",300.188392413861,"Metric tons CO2e","USDA livestock census","EPA SIT",319830,"US Census County Intercensal Tables (CO-EST00INT-01)",0
 2005,"county","27019","Carver","Agriculture","Livestock","Manure management",8715.84862196644,"Metric tons CO2e","USDA livestock census","EPA SIT",83258,"US Census County Intercensal Tables (CO-EST00INT-01)",0.1
 2005,"county","27025","Chisago","Agriculture","Livestock","Manure management",1750.87504873145,"Metric tons CO2e","USDA livestock census","EPA SIT",50283,"US Census County Intercensal Tables (CO-EST00INT-01)",0.03
@@ -5561,6 +5582,17 @@
 2021,"county","27141","Sherburne","Agriculture","Livestock","Manure management",2372.64310166748,"Metric tons CO2e","USDA livestock census","EPA SIT",96295,"ACS 5-Year Estimates, Table DP05",0.02
 2021,"county","55109","St. Croix","Agriculture","Livestock","Manure management",13664.2745076354,"Metric tons CO2e","USDA livestock census","EPA SIT",92495,"ACS 5-Year Estimates, Table DP05",0.15
 2021,"county","27163","Washington","Agriculture","Livestock","Manure management",511.278826964973,"Metric tons CO2e","USDA livestock census","EPA SIT",264818,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27003","Anoka","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",363985,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27019","Carver","Agriculture","Livestock","Manure management",3927.88021539779,"Metric tons CO2e","USDA livestock census","EPA SIT",107216,"ACS 5-Year Estimates, Table DP05",0.04
+2022,"county","27025","Chisago","Agriculture","Livestock","Manure management",778.255815115599,"Metric tons CO2e","USDA livestock census","EPA SIT",56927,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","27037","Dakota","Agriculture","Livestock","Manure management",3302.45021216133,"Metric tons CO2e","USDA livestock census","EPA SIT",439179,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","27053","Hennepin","Agriculture","Livestock","Manure management",322.346880518177,"Metric tons CO2e","USDA livestock census","EPA SIT",1270787,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","55093","Pierce","Agriculture","Livestock","Manure management",7550.97237331969,"Metric tons CO2e","USDA livestock census","EPA SIT",42187,"ACS 5-Year Estimates, Table DP05",0.18
+2022,"county","27123","Ramsey","Agriculture","Livestock","Manure management",0,"Metric tons CO2e","USDA livestock census","EPA SIT",547202,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27139","Scott","Agriculture","Livestock","Manure management",1551.37462815123,"Metric tons CO2e","USDA livestock census","EPA SIT",151347,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","27141","Sherburne","Agriculture","Livestock","Manure management",92.4660374394771,"Metric tons CO2e","USDA livestock census","EPA SIT",97820,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","55109","St. Croix","Agriculture","Livestock","Manure management",10229.7903565066,"Metric tons CO2e","USDA livestock census","EPA SIT",93752,"ACS 5-Year Estimates, Table DP05",0.11
+2022,"county","27163","Washington","Agriculture","Livestock","Manure management",231.807218858689,"Metric tons CO2e","USDA livestock census","EPA SIT",268651,"ACS 5-Year Estimates, Table DP05",0
 2005,"county","27003","Anoka","Agriculture","Livestock","Direct manure soil emissions",741.996113403305,"Metric tons CO2e","USDA livestock census","EPA SIT",319830,"US Census County Intercensal Tables (CO-EST00INT-01)",0
 2005,"county","27019","Carver","Agriculture","Livestock","Direct manure soil emissions",13013.090602555,"Metric tons CO2e","USDA livestock census","EPA SIT",83258,"US Census County Intercensal Tables (CO-EST00INT-01)",0.16
 2005,"county","27025","Chisago","Agriculture","Livestock","Direct manure soil emissions",4298.4606686802,"Metric tons CO2e","USDA livestock census","EPA SIT",50283,"US Census County Intercensal Tables (CO-EST00INT-01)",0.09
@@ -5748,6 +5780,17 @@
 2021,"county","27141","Sherburne","Agriculture","Livestock","Direct manure soil emissions",2901.57018410567,"Metric tons CO2e","USDA livestock census","EPA SIT",96295,"ACS 5-Year Estimates, Table DP05",0.03
 2021,"county","55109","St. Croix","Agriculture","Livestock","Direct manure soil emissions",19253.6672749911,"Metric tons CO2e","USDA livestock census","EPA SIT",92495,"ACS 5-Year Estimates, Table DP05",0.21
 2021,"county","27163","Washington","Agriculture","Livestock","Direct manure soil emissions",1242.14202557536,"Metric tons CO2e","USDA livestock census","EPA SIT",264818,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27003","Anoka","Agriculture","Livestock","Direct manure soil emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",363985,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27019","Carver","Agriculture","Livestock","Direct manure soil emissions",5846.09037989877,"Metric tons CO2e","USDA livestock census","EPA SIT",107216,"ACS 5-Year Estimates, Table DP05",0.05
+2022,"county","27025","Chisago","Agriculture","Livestock","Direct manure soil emissions",1285.42176540764,"Metric tons CO2e","USDA livestock census","EPA SIT",56927,"ACS 5-Year Estimates, Table DP05",0.02
+2022,"county","27037","Dakota","Agriculture","Livestock","Direct manure soil emissions",6077.97317640919,"Metric tons CO2e","USDA livestock census","EPA SIT",439179,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","27053","Hennepin","Agriculture","Livestock","Direct manure soil emissions",582.724582016132,"Metric tons CO2e","USDA livestock census","EPA SIT",1270787,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","55093","Pierce","Agriculture","Livestock","Direct manure soil emissions",11469.6506976198,"Metric tons CO2e","USDA livestock census","EPA SIT",42187,"ACS 5-Year Estimates, Table DP05",0.27
+2022,"county","27123","Ramsey","Agriculture","Livestock","Direct manure soil emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",547202,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27139","Scott","Agriculture","Livestock","Direct manure soil emissions",2678.39797128452,"Metric tons CO2e","USDA livestock census","EPA SIT",151347,"ACS 5-Year Estimates, Table DP05",0.02
+2022,"county","27141","Sherburne","Agriculture","Livestock","Direct manure soil emissions",1132.88433161328,"Metric tons CO2e","USDA livestock census","EPA SIT",97820,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","55109","St. Croix","Agriculture","Livestock","Direct manure soil emissions",13792.2776009702,"Metric tons CO2e","USDA livestock census","EPA SIT",93752,"ACS 5-Year Estimates, Table DP05",0.15
+2022,"county","27163","Washington","Agriculture","Livestock","Direct manure soil emissions",403.516647909818,"Metric tons CO2e","USDA livestock census","EPA SIT",268651,"ACS 5-Year Estimates, Table DP05",0
 2005,"county","27003","Anoka","Agriculture","Livestock","Indirect manure runoff emissions",114.739084481977,"Metric tons CO2e","USDA livestock census","EPA SIT",319830,"US Census County Intercensal Tables (CO-EST00INT-01)",0
 2005,"county","27019","Carver","Agriculture","Livestock","Indirect manure runoff emissions",2383.41135721325,"Metric tons CO2e","USDA livestock census","EPA SIT",83258,"US Census County Intercensal Tables (CO-EST00INT-01)",0.03
 2005,"county","27025","Chisago","Agriculture","Livestock","Indirect manure runoff emissions",655.735786137705,"Metric tons CO2e","USDA livestock census","EPA SIT",50283,"US Census County Intercensal Tables (CO-EST00INT-01)",0.01
@@ -5935,6 +5978,17 @@
 2021,"county","27141","Sherburne","Agriculture","Livestock","Indirect manure runoff emissions",471.256838919599,"Metric tons CO2e","USDA livestock census","EPA SIT",96295,"ACS 5-Year Estimates, Table DP05",0
 2021,"county","55109","St. Croix","Agriculture","Livestock","Indirect manure runoff emissions",3513.84107974806,"Metric tons CO2e","USDA livestock census","EPA SIT",92495,"ACS 5-Year Estimates, Table DP05",0.04
 2021,"county","27163","Washington","Agriculture","Livestock","Indirect manure runoff emissions",185.228890513913,"Metric tons CO2e","USDA livestock census","EPA SIT",264818,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27003","Anoka","Agriculture","Livestock","Indirect manure runoff emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",363985,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27019","Carver","Agriculture","Livestock","Indirect manure runoff emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",107216,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27025","Chisago","Agriculture","Livestock","Indirect manure runoff emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",56927,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27037","Dakota","Agriculture","Livestock","Indirect manure runoff emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",439179,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27053","Hennepin","Agriculture","Livestock","Indirect manure runoff emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",1270787,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","55093","Pierce","Agriculture","Livestock","Indirect manure runoff emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",42187,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27123","Ramsey","Agriculture","Livestock","Indirect manure runoff emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",547202,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27139","Scott","Agriculture","Livestock","Indirect manure runoff emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",151347,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27141","Sherburne","Agriculture","Livestock","Indirect manure runoff emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",97820,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","55109","St. Croix","Agriculture","Livestock","Indirect manure runoff emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",93752,"ACS 5-Year Estimates, Table DP05",0
+2022,"county","27163","Washington","Agriculture","Livestock","Indirect manure runoff emissions",0,"Metric tons CO2e","USDA livestock census","EPA SIT",268651,"ACS 5-Year Estimates, Table DP05",0
 2005,"county","27003","Anoka","Agriculture","Cropland","Soil residue emissions",1481.31027835725,"Metric tons CO2e","USDA crop production survey","EPA SIT",319830,"US Census County Intercensal Tables (CO-EST00INT-01)",0
 2006,"county","27003","Anoka","Agriculture","Cropland","Soil residue emissions",1604.70587488035,"Metric tons CO2e","USDA crop production survey","EPA SIT",323590,"US Census County Intercensal Tables (CO-EST00INT-01)",0
 2007,"county","27003","Anoka","Agriculture","Cropland","Soil residue emissions",2054.36109891254,"Metric tons CO2e","USDA crop production survey","EPA SIT",325767,"US Census County Intercensal Tables (CO-EST00INT-01)",0.01
@@ -5951,6 +6005,8 @@
 2018,"county","27003","Anoka","Agriculture","Cropland","Soil residue emissions",3208.23431766639,"Metric tons CO2e","USDA crop production survey","EPA SIT",354004,"US Census County Intercensal Tables (CO-EST2020)",0.01
 2020,"county","27003","Anoka","Agriculture","Cropland","Soil residue emissions",2467.2699644557,"Metric tons CO2e","USDA crop production survey","EPA SIT",363887,"Decennial Census, Table P1",0.01
 2021,"county","27003","Anoka","Agriculture","Cropland","Soil residue emissions",1845.09496950521,"Metric tons CO2e","USDA crop production survey","EPA SIT",360773,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","27003","Anoka","Agriculture","Cropland","Soil residue emissions",2655.0778300169,"Metric tons CO2e","USDA crop production survey","EPA SIT",363985,"ACS 5-Year Estimates, Table DP05",0.01
+2023,"county","27003","Anoka","Agriculture","Cropland","Soil residue emissions",1455.53421239382,"Metric tons CO2e","USDA crop production survey","EPA SIT",NA,NA,NA
 2005,"county","27019","Carver","Agriculture","Cropland","Soil residue emissions",39313.1818732732,"Metric tons CO2e","USDA crop production survey","EPA SIT",83258,"US Census County Intercensal Tables (CO-EST00INT-01)",0.47
 2006,"county","27019","Carver","Agriculture","Cropland","Soil residue emissions",42181.0293035315,"Metric tons CO2e","USDA crop production survey","EPA SIT",85657,"US Census County Intercensal Tables (CO-EST00INT-01)",0.49
 2007,"county","27019","Carver","Agriculture","Cropland","Soil residue emissions",33735.916576942,"Metric tons CO2e","USDA crop production survey","EPA SIT",87270,"US Census County Intercensal Tables (CO-EST00INT-01)",0.39
@@ -5968,6 +6024,8 @@
 2019,"county","27019","Carver","Agriculture","Cropland","Soil residue emissions",31713.950985868,"Metric tons CO2e","USDA crop production survey","EPA SIT",105128,"US Census County Intercensal Tables (CO-EST2020)",0.3
 2020,"county","27019","Carver","Agriculture","Cropland","Soil residue emissions",40023.1204233685,"Metric tons CO2e","USDA crop production survey","EPA SIT",106922,"Decennial Census, Table P1",0.37
 2021,"county","27019","Carver","Agriculture","Cropland","Soil residue emissions",38621.1713594331,"Metric tons CO2e","USDA crop production survey","EPA SIT",105694,"ACS 5-Year Estimates, Table DP05",0.37
+2022,"county","27019","Carver","Agriculture","Cropland","Soil residue emissions",40847.9655249519,"Metric tons CO2e","USDA crop production survey","EPA SIT",107216,"ACS 5-Year Estimates, Table DP05",0.38
+2023,"county","27019","Carver","Agriculture","Cropland","Soil residue emissions",40199.4878943819,"Metric tons CO2e","USDA crop production survey","EPA SIT",NA,NA,NA
 2005,"county","27025","Chisago","Agriculture","Cropland","Soil residue emissions",16071.5657712214,"Metric tons CO2e","USDA crop production survey","EPA SIT",50283,"US Census County Intercensal Tables (CO-EST00INT-01)",0.32
 2006,"county","27025","Chisago","Agriculture","Cropland","Soil residue emissions",18303.555503124,"Metric tons CO2e","USDA crop production survey","EPA SIT",51444,"US Census County Intercensal Tables (CO-EST00INT-01)",0.36
 2007,"county","27025","Chisago","Agriculture","Cropland","Soil residue emissions",11225.8779503197,"Metric tons CO2e","USDA crop production survey","EPA SIT",52312,"US Census County Intercensal Tables (CO-EST00INT-01)",0.21
@@ -5985,6 +6043,8 @@
 2019,"county","27025","Chisago","Agriculture","Cropland","Soil residue emissions",10806.245324825,"Metric tons CO2e","USDA crop production survey","EPA SIT",56543,"US Census County Intercensal Tables (CO-EST2020)",0.19
 2020,"county","27025","Chisago","Agriculture","Cropland","Soil residue emissions",16886.3996261001,"Metric tons CO2e","USDA crop production survey","EPA SIT",56621,"Decennial Census, Table P1",0.3
 2021,"county","27025","Chisago","Agriculture","Cropland","Soil residue emissions",15031.2130104708,"Metric tons CO2e","USDA crop production survey","EPA SIT",56328,"ACS 5-Year Estimates, Table DP05",0.27
+2022,"county","27025","Chisago","Agriculture","Cropland","Soil residue emissions",15953.7250148736,"Metric tons CO2e","USDA crop production survey","EPA SIT",56927,"ACS 5-Year Estimates, Table DP05",0.28
+2023,"county","27025","Chisago","Agriculture","Cropland","Soil residue emissions",14268.3762115698,"Metric tons CO2e","USDA crop production survey","EPA SIT",NA,NA,NA
 2005,"county","27037","Dakota","Agriculture","Cropland","Soil residue emissions",52045.4191606037,"Metric tons CO2e","USDA crop production survey","EPA SIT",381829,"US Census County Intercensal Tables (CO-EST00INT-01)",0.14
 2006,"county","27037","Dakota","Agriculture","Cropland","Soil residue emissions",53009.266173457,"Metric tons CO2e","USDA crop production survey","EPA SIT",386228,"US Census County Intercensal Tables (CO-EST00INT-01)",0.14
 2007,"county","27037","Dakota","Agriculture","Cropland","Soil residue emissions",37107.7998694105,"Metric tons CO2e","USDA crop production survey","EPA SIT",390767,"US Census County Intercensal Tables (CO-EST00INT-01)",0.09
@@ -6002,6 +6062,8 @@
 2019,"county","27037","Dakota","Agriculture","Cropland","Soil residue emissions",8294.56191810488,"Metric tons CO2e","USDA crop production survey","EPA SIT",429453,"US Census County Intercensal Tables (CO-EST2020)",0.02
 2020,"county","27037","Dakota","Agriculture","Cropland","Soil residue emissions",40155.3379966401,"Metric tons CO2e","USDA crop production survey","EPA SIT",439882,"Decennial Census, Table P1",0.09
 2021,"county","27037","Dakota","Agriculture","Cropland","Soil residue emissions",42967.433451776,"Metric tons CO2e","USDA crop production survey","EPA SIT",435863,"ACS 5-Year Estimates, Table DP05",0.1
+2022,"county","27037","Dakota","Agriculture","Cropland","Soil residue emissions",43641.4070865515,"Metric tons CO2e","USDA crop production survey","EPA SIT",439179,"ACS 5-Year Estimates, Table DP05",0.1
+2023,"county","27037","Dakota","Agriculture","Cropland","Soil residue emissions",38682.217484496,"Metric tons CO2e","USDA crop production survey","EPA SIT",NA,NA,NA
 2005,"county","27053","Hennepin","Agriculture","Cropland","Soil residue emissions",11672.1763692233,"Metric tons CO2e","USDA crop production survey","EPA SIT",1117015,"US Census County Intercensal Tables (CO-EST00INT-01)",0.01
 2006,"county","27053","Hennepin","Agriculture","Cropland","Soil residue emissions",12713.3449943106,"Metric tons CO2e","USDA crop production survey","EPA SIT",1119507,"US Census County Intercensal Tables (CO-EST00INT-01)",0.01
 2007,"county","27053","Hennepin","Agriculture","Cropland","Soil residue emissions",9450.41535467932,"Metric tons CO2e","USDA crop production survey","EPA SIT",1126585,"US Census County Intercensal Tables (CO-EST00INT-01)",0.01
@@ -6019,6 +6081,8 @@
 2019,"county","27053","Hennepin","Agriculture","Cropland","Soil residue emissions",6792.7931824958,"Metric tons CO2e","USDA crop production survey","EPA SIT",1265159,"US Census County Intercensal Tables (CO-EST2020)",0.01
 2020,"county","27053","Hennepin","Agriculture","Cropland","Soil residue emissions",9315.77086295565,"Metric tons CO2e","USDA crop production survey","EPA SIT",1281565,"Decennial Census, Table P1",0.01
 2021,"county","27053","Hennepin","Agriculture","Cropland","Soil residue emissions",9687.50436476516,"Metric tons CO2e","USDA crop production survey","EPA SIT",1270283,"ACS 5-Year Estimates, Table DP05",0.01
+2022,"county","27053","Hennepin","Agriculture","Cropland","Soil residue emissions",8099.32374075338,"Metric tons CO2e","USDA crop production survey","EPA SIT",1270787,"ACS 5-Year Estimates, Table DP05",0.01
+2023,"county","27053","Hennepin","Agriculture","Cropland","Soil residue emissions",9426.31680407427,"Metric tons CO2e","USDA crop production survey","EPA SIT",NA,NA,NA
 2005,"county","27139","Scott","Agriculture","Cropland","Soil residue emissions",31511.7280863868,"Metric tons CO2e","USDA crop production survey","EPA SIT",117111,"US Census County Intercensal Tables (CO-EST00INT-01)",0.27
 2006,"county","27139","Scott","Agriculture","Cropland","Soil residue emissions",31146.9302462587,"Metric tons CO2e","USDA crop production survey","EPA SIT",121013,"US Census County Intercensal Tables (CO-EST00INT-01)",0.26
 2007,"county","27139","Scott","Agriculture","Cropland","Soil residue emissions",20724.716855601,"Metric tons CO2e","USDA crop production survey","EPA SIT",124050,"US Census County Intercensal Tables (CO-EST00INT-01)",0.17
@@ -6035,6 +6099,8 @@
 2018,"county","27139","Scott","Agriculture","Cropland","Soil residue emissions",13.2779575815628,"Metric tons CO2e","USDA crop production survey","EPA SIT",147339,"US Census County Intercensal Tables (CO-EST2020)",0
 2020,"county","27139","Scott","Agriculture","Cropland","Soil residue emissions",30285.5882986116,"Metric tons CO2e","USDA crop production survey","EPA SIT",150928,"Decennial Census, Table P1",0.2
 2021,"county","27139","Scott","Agriculture","Cropland","Soil residue emissions",31871.7421939211,"Metric tons CO2e","USDA crop production survey","EPA SIT",149568,"ACS 5-Year Estimates, Table DP05",0.21
+2022,"county","27139","Scott","Agriculture","Cropland","Soil residue emissions",28216.1715910054,"Metric tons CO2e","USDA crop production survey","EPA SIT",151347,"ACS 5-Year Estimates, Table DP05",0.19
+2023,"county","27139","Scott","Agriculture","Cropland","Soil residue emissions",26686.3516855709,"Metric tons CO2e","USDA crop production survey","EPA SIT",NA,NA,NA
 2005,"county","27141","Sherburne","Agriculture","Cropland","Soil residue emissions",14441.9582340605,"Metric tons CO2e","USDA crop production survey","EPA SIT",81179,"US Census County Intercensal Tables (CO-EST00INT-01)",0.18
 2006,"county","27141","Sherburne","Agriculture","Cropland","Soil residue emissions",12860.8065860615,"Metric tons CO2e","USDA crop production survey","EPA SIT",84079,"US Census County Intercensal Tables (CO-EST00INT-01)",0.15
 2007,"county","27141","Sherburne","Agriculture","Cropland","Soil residue emissions",9975.46222878301,"Metric tons CO2e","USDA crop production survey","EPA SIT",85968,"US Census County Intercensal Tables (CO-EST00INT-01)",0.12
@@ -6052,6 +6118,8 @@
 2019,"county","27141","Sherburne","Agriculture","Cropland","Soil residue emissions",2314.34013578675,"Metric tons CO2e","USDA crop production survey","EPA SIT",97424,"US Census County Intercensal Tables (CO-EST2020)",0.02
 2020,"county","27141","Sherburne","Agriculture","Cropland","Soil residue emissions",16651.8620023679,"Metric tons CO2e","USDA crop production survey","EPA SIT",97183,"Decennial Census, Table P1",0.17
 2021,"county","27141","Sherburne","Agriculture","Cropland","Soil residue emissions",9656.95352441404,"Metric tons CO2e","USDA crop production survey","EPA SIT",96295,"ACS 5-Year Estimates, Table DP05",0.1
+2022,"county","27141","Sherburne","Agriculture","Cropland","Soil residue emissions",12802.6756386341,"Metric tons CO2e","USDA crop production survey","EPA SIT",97820,"ACS 5-Year Estimates, Table DP05",0.13
+2023,"county","27141","Sherburne","Agriculture","Cropland","Soil residue emissions",11763.8986962576,"Metric tons CO2e","USDA crop production survey","EPA SIT",NA,NA,NA
 2005,"county","27163","Washington","Agriculture","Cropland","Soil residue emissions",14587.8737489264,"Metric tons CO2e","USDA crop production survey","EPA SIT",219972,"US Census County Intercensal Tables (CO-EST00INT-01)",0.07
 2006,"county","27163","Washington","Agriculture","Cropland","Soil residue emissions",12938.6993213187,"Metric tons CO2e","USDA crop production survey","EPA SIT",225091,"US Census County Intercensal Tables (CO-EST00INT-01)",0.06
 2007,"county","27163","Washington","Agriculture","Cropland","Soil residue emissions",7248.35685021801,"Metric tons CO2e","USDA crop production survey","EPA SIT",229756,"US Census County Intercensal Tables (CO-EST00INT-01)",0.03
@@ -6069,6 +6137,8 @@
 2019,"county","27163","Washington","Agriculture","Cropland","Soil residue emissions",10379.4266719155,"Metric tons CO2e","USDA crop production survey","EPA SIT",262541,"US Census County Intercensal Tables (CO-EST2020)",0.04
 2020,"county","27163","Washington","Agriculture","Cropland","Soil residue emissions",11223.0662962243,"Metric tons CO2e","USDA crop production survey","EPA SIT",267568,"Decennial Census, Table P1",0.04
 2021,"county","27163","Washington","Agriculture","Cropland","Soil residue emissions",10834.2286260556,"Metric tons CO2e","USDA crop production survey","EPA SIT",264818,"ACS 5-Year Estimates, Table DP05",0.04
+2022,"county","27163","Washington","Agriculture","Cropland","Soil residue emissions",9310.58416523381,"Metric tons CO2e","USDA crop production survey","EPA SIT",268651,"ACS 5-Year Estimates, Table DP05",0.03
+2023,"county","27163","Washington","Agriculture","Cropland","Soil residue emissions",10879.0246373054,"Metric tons CO2e","USDA crop production survey","EPA SIT",NA,NA,NA
 2005,"county","55093","Pierce","Agriculture","Cropland","Soil residue emissions",30830.3302178659,"Metric tons CO2e","USDA crop production survey","EPA SIT",39318,"US Census County Intercensal Tables (CO-EST00INT-01)",0.78
 2006,"county","55093","Pierce","Agriculture","Cropland","Soil residue emissions",30480.499734404,"Metric tons CO2e","USDA crop production survey","EPA SIT",39915,"US Census County Intercensal Tables (CO-EST00INT-01)",0.76
 2007,"county","55093","Pierce","Agriculture","Cropland","Soil residue emissions",24447.9136707078,"Metric tons CO2e","USDA crop production survey","EPA SIT",40238,"US Census County Intercensal Tables (CO-EST00INT-01)",0.61
@@ -6086,6 +6156,8 @@
 2019,"county","55093","Pierce","Agriculture","Cropland","Soil residue emissions",32371.7235914882,"Metric tons CO2e","USDA crop production survey","EPA SIT",42768,"US Census County Intercensal Tables (CO-EST2020)",0.76
 2020,"county","55093","Pierce","Agriculture","Cropland","Soil residue emissions",43334.3084312636,"Metric tons CO2e","USDA crop production survey","EPA SIT",42212,"Decennial Census, Table P1",1.03
 2021,"county","55093","Pierce","Agriculture","Cropland","Soil residue emissions",42434.0024266218,"Metric tons CO2e","USDA crop production survey","EPA SIT",42204,"ACS 5-Year Estimates, Table DP05",1.01
+2022,"county","55093","Pierce","Agriculture","Cropland","Soil residue emissions",43183.3232571478,"Metric tons CO2e","USDA crop production survey","EPA SIT",42187,"ACS 5-Year Estimates, Table DP05",1.02
+2023,"county","55093","Pierce","Agriculture","Cropland","Soil residue emissions",41675.6491954535,"Metric tons CO2e","USDA crop production survey","EPA SIT",NA,NA,NA
 2005,"county","55109","St. Croix","Agriculture","Cropland","Soil residue emissions",37929.4600832212,"Metric tons CO2e","USDA crop production survey","EPA SIT",77061,"US Census County Intercensal Tables (CO-EST00INT-01)",0.49
 2006,"county","55109","St. Croix","Agriculture","Cropland","Soil residue emissions",29928.1572347676,"Metric tons CO2e","USDA crop production survey","EPA SIT",79784,"US Census County Intercensal Tables (CO-EST00INT-01)",0.38
 2007,"county","55109","St. Croix","Agriculture","Cropland","Soil residue emissions",22249.0138649554,"Metric tons CO2e","USDA crop production survey","EPA SIT",81708,"US Census County Intercensal Tables (CO-EST00INT-01)",0.27
@@ -6103,6 +6175,8 @@
 2019,"county","55109","St. Croix","Agriculture","Cropland","Soil residue emissions",42792.6068994962,"Metric tons CO2e","USDA crop production survey","EPA SIT",90691,"US Census County Intercensal Tables (CO-EST2020)",0.47
 2020,"county","55109","St. Croix","Agriculture","Cropland","Soil residue emissions",49608.1510651794,"Metric tons CO2e","USDA crop production survey","EPA SIT",93536,"Decennial Census, Table P1",0.53
 2021,"county","55109","St. Croix","Agriculture","Cropland","Soil residue emissions",50227.8276487607,"Metric tons CO2e","USDA crop production survey","EPA SIT",92495,"ACS 5-Year Estimates, Table DP05",0.54
+2022,"county","55109","St. Croix","Agriculture","Cropland","Soil residue emissions",46604.6244648361,"Metric tons CO2e","USDA crop production survey","EPA SIT",93752,"ACS 5-Year Estimates, Table DP05",0.5
+2023,"county","55109","St. Croix","Agriculture","Cropland","Soil residue emissions",50395.2455211978,"Metric tons CO2e","USDA crop production survey","EPA SIT",NA,NA,NA
 2005,"county","27019","Carver","Agriculture","Cropland","Onsite fertilizer emissions",19060.7645004735,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",83258,"US Census County Intercensal Tables (CO-EST00INT-01)",0.23
 2005,"county","27139","Scott","Agriculture","Cropland","Onsite fertilizer emissions",11295.8134465103,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",117111,"US Census County Intercensal Tables (CO-EST00INT-01)",0.1
 2005,"county","27141","Sherburne","Agriculture","Cropland","Onsite fertilizer emissions",13548.5221593068,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",81179,"US Census County Intercensal Tables (CO-EST00INT-01)",0.17
@@ -6290,6 +6364,17 @@
 2021,"county","27037","Dakota","Agriculture","Cropland","Onsite fertilizer emissions",41536.2722643367,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",435863,"ACS 5-Year Estimates, Table DP05",0.1
 2021,"county","55093","Pierce","Agriculture","Cropland","Onsite fertilizer emissions",22861.9852486736,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",42204,"ACS 5-Year Estimates, Table DP05",0.54
 2021,"county","55109","St. Croix","Agriculture","Cropland","Onsite fertilizer emissions",28166.5889115338,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",92495,"ACS 5-Year Estimates, Table DP05",0.3
+2022,"county","27019","Carver","Agriculture","Cropland","Onsite fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",107216,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27139","Scott","Agriculture","Cropland","Onsite fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",151347,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27141","Sherburne","Agriculture","Cropland","Onsite fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",97820,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27003","Anoka","Agriculture","Cropland","Onsite fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",363985,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27025","Chisago","Agriculture","Cropland","Onsite fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",56927,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27053","Hennepin","Agriculture","Cropland","Onsite fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",1270787,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27123","Ramsey","Agriculture","Cropland","Onsite fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",547202,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27163","Washington","Agriculture","Cropland","Onsite fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",268651,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27037","Dakota","Agriculture","Cropland","Onsite fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",439179,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","55093","Pierce","Agriculture","Cropland","Onsite fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",42187,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","55109","St. Croix","Agriculture","Cropland","Onsite fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",93752,"ACS 5-Year Estimates, Table DP05",NA
 2005,"county","27019","Carver","Agriculture","Cropland","Runoff fertilizer emissions",3859.76428836797,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",83258,"US Census County Intercensal Tables (CO-EST00INT-01)",0.05
 2005,"county","27139","Scott","Agriculture","Cropland","Runoff fertilizer emissions",2287.37820814187,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",117111,"US Census County Intercensal Tables (CO-EST00INT-01)",0.02
 2005,"county","27141","Sherburne","Agriculture","Cropland","Runoff fertilizer emissions",2743.54693324895,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",81179,"US Census County Intercensal Tables (CO-EST00INT-01)",0.03
@@ -6477,6 +6562,17 @@
 2021,"county","27037","Dakota","Agriculture","Cropland","Runoff fertilizer emissions",8411.00032223105,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",435863,"ACS 5-Year Estimates, Table DP05",0.02
 2021,"county","55093","Pierce","Agriculture","Cropland","Runoff fertilizer emissions",4629.4998277575,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",42204,"ACS 5-Year Estimates, Table DP05",0.11
 2021,"county","55109","St. Croix","Agriculture","Cropland","Runoff fertilizer emissions",5703.66996112148,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",92495,"ACS 5-Year Estimates, Table DP05",0.06
+2022,"county","27019","Carver","Agriculture","Cropland","Runoff fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",107216,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27139","Scott","Agriculture","Cropland","Runoff fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",151347,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27141","Sherburne","Agriculture","Cropland","Runoff fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",97820,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27003","Anoka","Agriculture","Cropland","Runoff fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",363985,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27025","Chisago","Agriculture","Cropland","Runoff fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",56927,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27053","Hennepin","Agriculture","Cropland","Runoff fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",1270787,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27123","Ramsey","Agriculture","Cropland","Runoff fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",547202,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27163","Washington","Agriculture","Cropland","Runoff fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",268651,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","27037","Dakota","Agriculture","Cropland","Runoff fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",439179,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","55093","Pierce","Agriculture","Cropland","Runoff fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",42187,"ACS 5-Year Estimates, Table DP05",NA
+2022,"county","55109","St. Croix","Agriculture","Cropland","Runoff fertilizer emissions",NA,"Metric tons CO2e","USDA fertilizer purchase census and EPA SIT fertilizer application data","EPA SIT",93752,"ACS 5-Year Estimates, Table DP05",NA
 2005,"county","27003","Anoka","Natural Systems","Sequestration","Grassland",-72.4721811220065,"Metric tons CO2e","Extrapolated from NLCD","Various primary literature",319830,"US Census County Intercensal Tables (CO-EST00INT-01)",0
 2005,"county","27003","Anoka","Natural Systems","Sequestration","Tree",-83732.9362712419,"Metric tons CO2e","Extrapolated from NLCD","Various primary literature",319830,"US Census County Intercensal Tables (CO-EST00INT-01)",-0.26
 2005,"county","27003","Anoka","Natural Systems","Sequestration","Urban_Grassland",-27577.931783695,"Metric tons CO2e","Extrapolated from NLCD","Various primary literature",319830,"US Census County Intercensal Tables (CO-EST00INT-01)",-0.09

@@ -256,13 +256,17 @@ ctu_elec_map <- left_join(cprg_ctu,
   electricity_emissions_2021,
   by = c("ctu_name", "ctu_class")
 ) %>%
-   filter(!county_name %in% c("St. Croix",
-                            "Pierce",
-                            "Sherburne",
-                            "Chisago"),
-          !is.na(county_name)) %>% 
+  filter(
+    !county_name %in% c(
+      "St. Croix",
+      "Pierce",
+      "Sherburne",
+      "Chisago"
+    ),
+    !is.na(county_name)
+  ) %>%
   select(ctu_name, geometry, mt_co2e) %>%
-  replace(is.na(.), 0) 
+  replace(is.na(.), 0)
 
 
 # Define color palette based on the plasma scale from viridis

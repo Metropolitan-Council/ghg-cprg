@@ -20,8 +20,8 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 # nlcd_county_landcover_sequestration_2001_2021.rds
 # nlcd_ctu_landcover_sequestration_2001_2021.rds
 
-county_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_sequestration_2001_2021.rds"))
-ctu_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_ctu_landcover_sequestration_2001_2021.rds"))
+county_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_sequestration_allyrs.rds"))
+ctu_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_ctu_landcover_sequestration_allyrs.rds"))
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
 
@@ -221,11 +221,11 @@ Two important caveats to these results are that (1) carbon sequestration tends t
 fig_ns_county_stock <- plot_ly(
   type = "bar",
   source = "fig-ns-county-stock",
-  data = county_sequestration %>% filter(year == 2021) %>%
+  data = county_sequestration %>% filter(inventory_year == 2021) %>%
     mutate(land_cover_type = case_when(
-      land_cover_type == "Urban_Grassland" ~ "Urban grassland",
-      land_cover_type == "Urban_Tree" ~ "Urban tree",
-      .default = land_cover_type
+      source == "Urban_Grassland" ~ "Urban grassland",
+      source == "Urban_Tree" ~ "Urban tree",
+      .default = source
     )),
   y = ~ reorder(county_name, stock_potential),
   x = ~stock_potential,
@@ -264,11 +264,11 @@ fig_ns_county_stock
 fig_ns_county_sequestration <- plot_ly(
   type = "bar",
   source = "fig-ns-county-sequestration",
-  data = county_sequestration %>% filter(year == 2021) %>%
+  data = county_sequestration %>% filter(inventory_year == 2021) %>%
     mutate(land_cover_type = case_when(
-      land_cover_type == "Urban_Grassland" ~ "Urban grassland",
-      land_cover_type == "Urban_Tree" ~ "Urban tree",
-      .default = land_cover_type
+      source == "Urban_Grassland" ~ "Urban grassland",
+      source == "Urban_Tree" ~ "Urban tree",
+      .default = source
     )),
   y = ~ reorder(county_name, sequestration_potential),
   x = ~sequestration_potential,
@@ -296,36 +296,6 @@ fig_ns_county_sequestration <- plot_ly(
 fig_ns_county_sequestration
 
 
-
-# fig_ns_county_sequestration <- plot_ly(
-#   type = "bar",
-#   source = "fig-ns-county-sequestration",
-#   data = county_emissions %>%
-#     filter(category == "Sequestration"),
-#   y = ~ reorder(geog_name, value_emissions),
-#   x = ~value_emissions,
-#   color = ~source,
-#   colors = unlist(source_colors),
-#   hovertemplate = ~ paste0(
-#     geog_name, "<br>",
-#     source, "<br>",
-#     round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
-#     "<extra></extra>"
-#   )
-# ) %>%
-#   plotly_layout(
-#     main_title = "2021 county natural system sequestration",
-#     x_title = "Metric tons CO<sub>2</sub>e",
-#     subtitle = ""
-#   ) %>%
-#   layout(
-#     barmode = "stack",
-#     legend = list(
-#       traceorder = "reversed"
-#     )
-#   )
-#
-# fig_ns_county_sequestration
 ```
 
 
@@ -342,7 +312,7 @@ The expectation is that larger counties have higher carbon sequestration and sto
 
 sequestration_area <- left_join(
   county_sequestration %>%
-    filter(year == 2021) %>%
+    filter(inventory_year == 2021) %>%
     group_by(county_name) %>%
     summarize(
       sequestration_potential = sum(sequestration_potential, na.rm = T),
@@ -464,7 +434,7 @@ cprg_county <- project(vect(cprg_county), crs_use)
 cprg_7 <- cprg_county %>% filter(!county_name %in% c("Sherburne", "Chisago", "St. Croix", "Pierce"))
 county_sequestration_7 <- county_sequestration %>%
   filter(county_name %in% cprg_7$county_name) %>%
-  filter(year == 2021)
+  filter(inventory_year == 2021)
 
 
 
