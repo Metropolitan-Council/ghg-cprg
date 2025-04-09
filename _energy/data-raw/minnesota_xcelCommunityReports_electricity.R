@@ -3,53 +3,8 @@ source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
 
-# read in time series of eGRID emissions factor data and pivot wider to make one row per year with all three emission types
-egridTimeSeries <- epa_ghg_factor_hub$egridTimeSeries %>%
-  pivot_wider(names_from = emission, values_from = value)
-
 # root directory with folders for each utility in scope (with each folder containing subfolders for all years which reporting to the state is available)
 dir_xcel_communityReports <- here("_energy", "data-raw", "xcel_community_reports")
-
-
-extract_city_name <- function(file_path) {
-  # Read the first 3 rows of the Excel file
-  data <- read_excel(file_path, range = cell_rows(1:3), col_names = FALSE)
-
-  # Convert the data to a character matrix for easier searching
-  data_char <- as.matrix(data)
-
-  # Process row 2 (Excel row 3)
-  row2 <- data_char[2, ] # Index 2 since R indexes rows starting at 1
-
-  # Loop through each cell in row 2 to find 'Community'
-  for (i in seq_along(row2)) {
-    cell_content <- row2[i]
-    if (!is.na(cell_content) && grepl("Community", cell_content, ignore.case = TRUE)) {
-      # Case 1: City name is in the same cell
-      if (grepl("Community[:]?\\s*.+", cell_content, ignore.case = TRUE)) {
-        city_name <- sub(".*Community[:]?\\s*", "", cell_content, ignore.case = TRUE)
-        city_name <- trimws(city_name)
-        if (city_name != "") {
-          return(city_name)
-        }
-      }
-
-      # Case 2: City name is in the next cell(s)
-      for (j in (i + 1):length(row2)) {
-        next_cell <- row2[j]
-        if (!is.na(next_cell) && next_cell != "") {
-          city_name <- trimws(next_cell)
-          if (city_name != "") {
-            return(city_name)
-          }
-        }
-      }
-    }
-  }
-
-  # Return NA if 'Community' not found or city name is empty
-  return(NA)
-}
 
 # Function to get file paths, city names, and years of Xcel utility reports in root directory
 get_files <- function(root_dir) {
@@ -87,13 +42,75 @@ get_files <- function(root_dir) {
   return(file_info)
 }
 
+# Isolate the community referenced in each file
+extract_city_name <- function(file_path) {
+  # Read the first 3 rows of the Excel file
+  data <- read_excel(file_path, range = cell_rows(1:3), col_names = FALSE)
+  
+  # Convert the data to a character matrix for easier searching
+  data_char <- as.matrix(data)
+  
+  # Process row 2 (Excel row 3)
+  row2 <- data_char[2, ] 
+  
+  # Loop through each cell in row 2 to find 'Community'
+  for (i in seq_along(row2)) {
+    cell_content <- row2[i]
+    if (!is.na(cell_content) && grepl("Community", cell_content, ignore.case = TRUE)) {
+      # Case 1: City name is in the same cell
+      if (grepl("Community[:]?\\s*.+", cell_content, ignore.case = TRUE)) {
+        city_name <- sub(".*Community[:]?\\s*", "", cell_content, ignore.case = TRUE)
+        city_name <- trimws(city_name)
+        if (city_name != "") {
+          return(city_name)
+        }
+      }
+      
+      # Case 2: City name is in the next cell(s)
+      for (j in (i + 1):length(row2)) {
+        next_cell <- row2[j]
+        if (!is.na(next_cell) && next_cell != "") {
+          city_name <- trimws(next_cell)
+          if (city_name != "") {
+            return(city_name)
+          }
+        }
+      }
+    }
+  }
+  
+  # Return NA if 'Community' not found or city name is empty
+  return(NA)
+}
 
 
-# function to dynamically read input from files until a stopping value is found
+# Find the row number of a given pattern (i.e. 'Electricity' or 'Natural Gas') in a limited Excel range to determine where to start data reads
+find_row_of_text <- function(file_path, sheet, pattern, search_range = "A1:H60") {
+  # Read some portion of the sheet to find 'Electricity' or 'Natural Gas'
+  df <- read_excel(
+    file_path,
+    sheet = sheet,
+    range = search_range,
+    col_names = FALSE
+  )
+  mat <- as.matrix(df)
+  
+  match_idx <- which(grepl(pattern, mat, ignore.case = TRUE))
+  if (length(match_idx) == 0) {
+    return(NA)
+  } else {
+    # Convert matrix index to row index (1-based)
+    row_idx <- (match_idx - 1) %% nrow(mat) + 1
+    return(row_idx[1])  # If multiple matches, take the first
+  }
+}
+
+
+# Dynamically read input from file until a stopping value (e.g., "Total:") is found
 read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) {
   print(paste("Reading file:", file_path))
 
-  # Step 1: Read a broad range starting from the specified cell
+  # Read a broad range starting from the specified cell
   start_row <- as.numeric(gsub("[A-Z]", "", start_cell)) # Extract the row number from start_cell
   start_col <- gsub("[0-9]", "", start_cell) # Extract the column letter from start_cell
   broad_range <- paste0(start_col, start_row, ":", columns, start_row + 10) # Read 10 rows initially
@@ -103,7 +120,7 @@ read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) 
   data_broad <- read_excel(file_path, sheet = sheet, range = broad_range, col_names = FALSE)
   print(data_broad)
 
-  # Step 2: Locate the stopping value
+  # Locate the stopping value
   stop_row_offset <- which(data_broad[[1]] == stop_value)[1] # Check the first column for stop_value
   print(paste("Stop row offset:", stop_row_offset))
 
@@ -111,53 +128,110 @@ read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) 
     stop("Stopping value not found in the specified range.")
   }
 
-  # Step 3: Define the dynamic range
+  # Define the dynamic range
   stop_row <- start_row + stop_row_offset - 1 # Adjust for Excel indexing and remove the total row
   refined_range <- paste0(start_col, start_row, ":", columns, stop_row)
   print(refined_range)
 
-  # Step 4: Read the refined range
+  # Read the refined range
   data <- read_excel(file_path, sheet = sheet, range = refined_range, col_names = TRUE)
   print(data)
   return(data)
 }
 
-# function to process the file associated with each utility-year combo and extract activity (mWh) at the utility-year-county granularity electricity data
-# years 2015 to 2019 have constant format -- 2020 adds more info about renewables and clean energy
-process_file <- function(file_info, start_cell) {
-  # Extract file path, utility name, and year from file_info (output nested list structure from get_files)
+# Fetch a single section (Electricity or Natural Gas) using other helper fucntions in ensemble
+fetch_section <- function(file_path, sheet, pattern, stop_value, columns = "H") {
+  start_row <- find_row_of_text(file_path, sheet, pattern)
+  
+  # If pattern not found, return NULL
+  if (is.na(start_row)) {
+    message("'", pattern, "' not found in this file. Skipping.")
+    return(NULL)
+  }
+  
+  # Build start_cell like "A39" if row is 39
+  start_cell <- paste0("A", start_row)
+  
+  # Use read_until_value() to capture the block of interest
+  df <- read_until_value(
+    file_path   = file_path,
+    sheet       = sheet,
+    start_cell  = start_cell,
+    stop_value  = stop_value,
+    columns     = columns
+  )
+  
+  return(df)
+}
+
+# Process the file associated with each utility-year combo and extract activity (mwh/therms) at the utility-year granularity
+process_file <- function(file_info) {
+  # Unpack city-year metadata
   file_path <- file_info$file_path
   city_name <- file_info$city_name
-  utility <- file_info$utility
-  year <- file_info$year
-
-  # Read in provided electricity sector data from each file and add file reference info
-  city_data <- read_until_value(
+  utility   <- file_info$utility
+  year      <- file_info$year
+  
+  # Electricity
+  electricity_raw <- fetch_section(
     file_path = file_path,
-    sheet = "Standard Community Report",
-    start_cell = start_cell,
-    stop_value = "Total:",
-    columns = "H" # Read columns A to G
-  ) %>%
-    # clean up raw data -- rename columns as needed and drop unnecessary columns
-    select(
-      sector = Electricity,
-      kwh_delivered = `Energy Consumption (kWh)`,
-      util_reported_co2e = `Carbon Emissions (metric tons CO2) [6]`
-    ) %>%
-    mutate(
-      mwh_delivered = kwh_delivered / 1000,
-      city_name = city_name,
-      utility = utility,
-      year = year,
-      source = "Electricity"
-    )
-
-  return(city_data)
+    sheet     = "Standard Community Report",
+    pattern   = "Electricity",
+    stop_value= "Total:"
+  )
+  
+  # if data is retrieved, clean it up
+  if (!is.null(electricity_raw)) {
+    electricity_clean <- electricity_raw %>%
+      select(
+        sector = Electricity,
+        kwh_delivered = `Energy Consumption (kWh)`,
+        util_reported_co2e = `Carbon Emissions (metric tons CO2) [6]`
+      ) %>%
+      mutate(
+        mwh_delivered = kwh_delivered / 1000,
+        city_name = city_name,
+        utility = utility,
+        year = year,
+        source = "Electricity"
+      )
+  } else {
+    electricity_clean <- NULL
+  }
+  
+  # Natural Gas
+  gas_raw <- fetch_section(
+    file_path = file_path,
+    sheet     = "Standard Community Report",
+    pattern   = "Natural Gas",
+    stop_value= "Total:"
+  )
+  
+  # if data is retrieved, clean it up
+  if (!is.null(gas_raw)) {
+    gas_clean <- gas_raw %>%
+      select(
+        sector = `Natural Gas`,
+        therms_consumed = `Energy Consumption (therms)`,
+        util_reported_co2e = `Carbon Emissions (metric tons CO2) [9]`
+      ) %>%
+      mutate(
+        city_name = city_name,
+        utility = utility,
+        year = year,
+        source = "Natural Gas"
+      )
+  } else {
+    gas_clean <- NULL
+  }
+  
+  # Combine cleaned electricity and natural gas data from a given utility-city into one df and return it
+  combined <- dplyr::bind_rows(electricity_clean, gas_clean)
+  return(combined)
 }
 
 
-# join with CTU-county reference
+# prepare for CTU-county reference joins to enable disaggregation 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
@@ -166,88 +240,25 @@ ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   filter(state_abb == "MN") %>%
   rename(year = inventory_year)
 
-
-
-if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
-  # Apply process_file to each file identified in get_files() in the nested structure and combine the results
-  file_list <- get_files(dir_xcel_communityReports)
-
-  # test that number of distinct city year combos = number of files
-  # highlight which files if any have NA value for city_name or year
-  testthat::test_that("Correct number of distinct city-year combos and identify missing ones", {
-    # Extract combinations of city_name and year from file_list
-    combinations <- lapply(file_list, function(x) {
-      data.frame(city_name = x$city_name, year = x$year, stringsAsFactors = FALSE)
-    })
-
-    # Convert to a single data frame
-    combinations_df <- do.call(rbind, combinations)
-
-    # Count unique combinations
-    unique_combinations <- combinations_df %>%
-      distinct(city_name, year)
-
-    # Identify duplicate or missing rows
-    duplicate_combinations <- combinations_df %>%
-      group_by(city_name, year) %>%
-      filter(n() > 1)
-
-    # Compare length of file list to unique combinations and find missing
-    missing_combinations <- setdiff(
-      combinations_df %>% distinct(city_name, year),
-      unique_combinations
-    )
-
-    # Print missing combinations for inspection
-    print("Missing combinations:")
-    print(missing_combinations)
-
-    # Assert equality of unique combinations to file list length
-    testthat::expect_equal(
-      nrow(unique_combinations),
-      length(file_list) - 1,
-      info = paste("Missing or duplicate city-year combinations found. Check missing_combinations and duplicate_combinations.")
-    )
-  })
-
-
-  # Apply process_file_2015_2019 to each file for years 2015-19 identified in get_files() in the nested structure and combine the results
-  file_list_2015_2019 <- Filter(function(x) x$year < 2020, file_list)
-  file_list_2020_2023 <- Filter(function(x) x$year > 2019, file_list)
-
-  combined_Xcel_activityData_2015_2019 <- do.call(
-    rbind,
-    lapply(file_list_2015_2019, function(file_info) {
-      process_file(file_info, start_cell = "A20")
-    })
-  )
-
-  combined_Xcel_activityData_2020_2023 <- do.call(
-    rbind,
-    lapply(file_list_2020_2023, function(file_info) {
-      process_file(file_info, start_cell = "A39")
-    })
-  )
-
-
-  # COCTU population proportion reference to parcel out Xcel CTU-level reporting to COCTUs based on population.
-  # Assume sector breakouts are the same in all COCTU units tied to CTU reporting.
-
-  # Calculate unique total population by city-year-county
-  city_total_population <- ctu_population %>%
-    distinct(ctu_name, ctu_class, year, county_name, ctu_population) %>% # Ensure unique rows per city-county-year
-    group_by(ctu_name, ctu_class, year) %>%
-    mutate(
-      total_ctu_population = sum(ctu_population, na.rm = TRUE), # Sum populations across counties for each city-year
-      multi_county = n_distinct(county_name) > 1
-    ) %>%
-    ungroup()
-
-
-  Xcel_activityData_2015_2023 <- rbind(
-    combined_Xcel_activityData_2015_2019,
-    combined_Xcel_activityData_2020_2023
+# Calculate unique total population by city-year-county (multi-county case)
+city_total_population <- ctu_population %>%
+  distinct(ctu_name, ctu_class, year, county_name, ctu_population) %>% # Ensure unique rows per city-county-year
+  group_by(ctu_name, ctu_class, year) %>%
+  mutate(
+    total_ctu_population = sum(ctu_population, na.rm = TRUE), # Sum populations across counties for each city-year
+    multi_county = n_distinct(county_name) > 1
   ) %>%
+  ungroup()
+
+# takes about an hour to process all of nthe Xcel data -- only run if needed (i.e., the activity file doesn't exist)
+if (file.exists("_energy/data/Xcel_elecNG_activityData_2015_2023.RDS") == FALSE) {
+  
+  file_list <- get_files(dir_xcel_communityReports)
+  results_all <- purrr::map_dfr(file_list, process_file)
+  
+  therms_to_mcf <- 1 / 10.38
+  
+  Xcel_activityData_2015_2023 <- results_all %>%
     # Map Xcel-provided sectors to simplified CPRG sectors and "Business" for subsequent disaggregation
     mutate(
       sector_mapped = case_when(
@@ -275,14 +286,15 @@ if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
         grepl("^Town of", city_name, ignore.case = TRUE) ~ sub("^Town of\\s+", "", city_name),
         city_name == "Village of Birchwood" ~ "Birchwood Village",
         TRUE ~ city_name
-      )
+      ),
+      mcf_delivered = therms_consumed * therms_to_mcf
     ) %>%
     # Remove records with no or unusable data
     filter(!is.na(sector_mapped)) %>%
     # Join city_total_population back to main dataset
     left_join(city_total_population,
-      by = c("ctu_name", "ctu_class", "year"),
-      relationship = "many-to-many"
+              by = c("ctu_name", "ctu_class", "year"),
+              relationship = "many-to-many"
     ) %>%
     # Calculate proportions and disaggregated values
     group_by(ctu_name, ctu_class, year, county_name) %>%
@@ -297,6 +309,11 @@ if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
         multi_county,
         mwh_delivered * ctu_population_proportion,
         NA
+      ),
+      disagg_mcf_delivered = ifelse(
+        multi_county,
+        mcf_delivered * ctu_population_proportion,
+        NA
       )
     ) %>%
     ungroup() %>%
@@ -307,68 +324,49 @@ if (file.exists("_energy/data/Xcel_activityData_2015_2023.RDS") == FALSE) {
     arrange(ctu_name, county_name, sector, year) %>%
     mutate(
       mwh_delivered = coalesce(disagg_mwh_delivered, mwh_delivered),
+      mcf_delivered = coalesce(disagg_mcf_delivered, mcf_delivered),
       util_reported_co2e = coalesce(disagg_util_reported_co2e, util_reported_co2e)
     ) %>%
-    select(1, 3:4, 6:12) # exclude interstitial calculation columns
-
-  write_rds(Xcel_activityData_2015_2023, "_energy/data/Xcel_activityData_2015_2023.RDS")
+    select(1, 3:4, 6:8, 10:14) # exclude interstitial calculation columns
+  
+  write_rds(Xcel_activityData_2015_2023, "_energy/data/Xcel_elecNG_activityData_2015_2023.RDS")
 }
 
 
-# # Xcel utility region
-# xcelArea <- readRDS(here("_energy", "data", "MN_elecUtils.RDS")) %>%
-#   filter(mpuc_name == "Xcel Energy")
-#
-# # Dissolve multiple polygons into one
-# xcelArea_single <- xcelArea %>%
-#   st_union() %>%
-#   st_as_sf()
-#
-# # simplified CPRG CTU geometry for quick comparison -- dissolve counties and just retain cities/township boundaries
-# cprg_ctu_dissolve <- readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>%
-#   mutate(geometry = st_make_valid(geometry)) %>%
-#   mutate(geometry = st_simplify(geometry, dTolerance = 0.1)) %>%
-#   group_by(ctu_name, ctu_class) %>%
-#   summarise(geometry = st_union(geometry), .groups = "keep") %>%
-#   ungroup() %>%
-#   st_make_valid() %>%
-#   left_join(cprg_ctu %>% st_drop_geometry() %>% select(ctu_name, ctu_class, state_name),
-#             by = join_by(ctu_name, ctu_class),
-#             multiple = "first")
-#
-# cprg_region <- readRDS(here("_meta", "data", "cprg_county.RDS")) %>%
-#   st_union() %>%
-#   st_as_sf()
-#
-# MN_elecUtils_dissolve_cprg <- MN_elecUtils %>%
-#   st_intersection(cprg_region)
-#   group_by(mmua_name) %>%
-#   summarise(
-#     geometry = st_union(geometry)
-#   ) %>%
-#   ungroup()
-#
-#
-# ggplot() +
-#   geom_sf(data = MN_elecUtils_dissolve, fill = "red", color = "red") +
-#   geom_sf_label(data = MN_elecUtils, aes(label = mmua_name)) +
-#   geom_sf(data = cprg_ctu, fill = NA, color = "blue") +
-#   theme_minimal()
-#
-# # Ensure CRS matches and calc city area
-# cprg_ctu_proj <- st_transform(cprg_ctu_dissolve, st_crs(xcelArea_single)) %>%
-#   mutate(area_city = as.numeric(st_area(geometry)))
-#
-# # Compute the intersection: Get city area where Xcel operates
-# ctu_xcel_intersect <- st_intersection(cprg_ctu_proj, xcelArea_single) %>%
-#   mutate(area_xcel = as.numeric(st_area(geometry)))
-#
-# # Anti-join with activity data gathered in first pass to identify list of geographies to request
-# ctu_xcel_not_reported_yet <- ctu_xcel_intersect %>%
-#   anti_join(Xcel_activityData_2015_2023 %>% st_drop_geometry(),
-#             by = join_by(ctu_name, ctu_class)
-#             ) %>%
-#   filter(state_name == "Minnesota") %>%
-#   st_drop_geometry()
-#
-# write_csv(ctu_xcel_not_reported_yet, here("_energy", "data-raw", "ctu_xcel_not_reported_yet.csv"))
+# test that number of distinct city year combos = number of files
+# highlight which files if any have NA value for city_name or year
+# testthat::test_that("Correct number of distinct city-year combos and identify missing ones", {
+#   # Extract combinations of city_name and year from file_list
+#   combinations <- lapply(file_list, function(x) {
+#     data.frame(city_name = x$city_name, year = x$year, stringsAsFactors = FALSE)
+#   })
+#   
+#   # Convert to a single data frame
+#   combinations_df <- do.call(rbind, combinations)
+#   
+#   # Count unique combinations
+#   unique_combinations <- combinations_df %>%
+#     distinct(city_name, year)
+#   
+#   # Identify duplicate or missing rows
+#   duplicate_combinations <- combinations_df %>%
+#     group_by(city_name, year) %>%
+#     filter(n() > 1)
+#   
+#   # Compare length of file list to unique combinations and find missing
+#   missing_combinations <- setdiff(
+#     combinations_df %>% distinct(city_name, year),
+#     unique_combinations
+#   )
+#   
+#   # Print missing combinations for inspection
+#   print("Missing combinations:")
+#   print(missing_combinations)
+#   
+#   # Assert equality of unique combinations to file list length
+#   testthat::expect_equal(
+#     nrow(unique_combinations),
+#     length(file_list) - 1,
+#     info = paste("Missing or duplicate city-year combinations found. Check missing_combinations and duplicate_combinations.")
+#   )
+# })

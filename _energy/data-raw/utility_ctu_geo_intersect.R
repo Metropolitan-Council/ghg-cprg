@@ -1,7 +1,8 @@
-# Process Xcel Community Reports data
+# Identify utility-CTU overlaps
 source("R/_load_pkgs.R")
 
-# Xcel utility region
+# ELECTRICITY
+# MN electric utility region
 MN_elecUtils <- readRDS(here("_energy", "data", "MN_elecUtils.RDS")) %>%
   st_make_valid()
 
@@ -20,8 +21,8 @@ cprg_mn_ctu_dissolve <- readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>%
   ) %>%
   filter(state_name == "Minnesota")
 
-# Perform spatial join to match each CTU (city/township) with utilities
-ctu_utility_mapping <- st_join(
+# Perform spatial join to match each CTU (city/township) with electric utilities
+ctu_elec_utility_mapping <- st_join(
   cprg_mn_ctu_dissolve,
   MN_elecUtils,
   join = st_intersects, # Searches for utilities that overlap each CTU
@@ -32,7 +33,7 @@ ctu_utility_mapping <- st_join(
   st_drop_geometry()
 
 # Count of utilities per CTU
-ctu_utility_count <- ctu_utility_mapping %>%
+ctu_elec_utility_count <- ctu_elec_utility_mapping %>%
   group_by(ctu_name, ctu_class) %>%
   summarize(
     numUtilities = n_distinct(utility_name),
@@ -41,4 +42,35 @@ ctu_utility_count <- ctu_utility_mapping %>%
   ungroup() %>%
   st_drop_geometry()
 
-write_rds(ctu_utility_mapping, here("_energy", "data", "ctu_utility_intersect.RDS"))
+
+
+# NAT GAS
+# nationwide natural gas utility service areas 
+natGasUtils <- readRDS(here("_energy", "data", "MN_fed_natGasUtils.RDS")) %>%
+  st_transform(st_crs(cprg_mn_ctu_dissolve)) %>% # CRS transform to UTM 15N
+  st_make_valid()
+
+# Perform spatial join to match each CTU (city/township) with electric utilities
+ctu_ng_utility_mapping <- st_join(
+  cprg_mn_ctu_dissolve,
+  natGasUtils,
+  join = st_intersects, # Searches for utilities that overlap each CTU
+  left = FALSE
+) %>%
+  select(ctu_name, ctu_class, utility_name = NAME) %>%
+  distinct() %>%
+  st_drop_geometry()
+
+# Count of utilities per CTU
+ctu_ng_utility_count <- ctu_ng_utility_mapping %>%
+  group_by(ctu_name, ctu_class) %>%
+  summarize(
+    numUtilities = n_distinct(utility_name),
+    .groups = "keep"
+  ) %>%
+  ungroup() %>%
+  st_drop_geometry()
+
+
+write_rds(ctu_elec_utility_mapping, here("_energy", "data", "ctu_elec_utility_intersect.RDS"))
+write_rds(ctu_ng_utility_mapping, here("_energy", "data", "ctu_ng_utility_intersect.RDS"))
