@@ -185,6 +185,10 @@ p_full <- predict(rf_nonres_model, electricity_busi)
 plot(p_full, electricity_busi$business_mwh)
 abline(0, 1)
 
+### save rf_res_model output
+saveRDS(rf_nonres_model, "_energy/data/ctu_business_elec_random_forest.RDS")
+
+
 ### predict ALL cities and rollback up to counties for all years
 
 ctu_busi_predict <- cprg_ctu %>%

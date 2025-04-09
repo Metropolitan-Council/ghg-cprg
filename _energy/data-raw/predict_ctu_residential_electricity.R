@@ -191,7 +191,9 @@ rf_res_model
 p_full <- predict(rf_res_model, electricity_res)
 plot(p_full, electricity_res$residential_mwh)
 abline(0, 1)
-# struggles with two big cities
+
+### save rf_res_model output
+saveRDS(rf_res_model, "_energy/data/ctu_residential_elec_random_forest.RDS")
 
 # look at top predictors
 varImpPlot(rf_res_model,
