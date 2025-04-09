@@ -3,6 +3,8 @@ source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
 
+# root directory with folders for each utility in scope (with each folder containing subfolders for all years which reporting to the state is available)
+dir_xcel_communityReports <- here("_energy", "data-raw", "xcel_community_reports")
 
 # Function to get file paths, city names, and years of Xcel utility reports in root directory
 get_files <- function(root_dir) {
