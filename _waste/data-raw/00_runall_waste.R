@@ -20,7 +20,7 @@ source("_waste/data-raw/solid_waste/01_mpca_score_allyrs.R") # MPCA SCORE activi
 source("_waste/data-raw/solid_waste/01_mpca_waste_characterization.R") # MPCA waste composition data (2013)
 # RDS lives in data-raw
 # ignore warning
-source("_waste/data-raw/solid_waste/01_epa_mn_methane_recovery.R") # EPA methane recovery data (not used)
+# source("_waste/data-raw/solid_waste/01_epa_mn_methane_recovery.R") # EPA methane recovery data (not used)
 # RDS lives in data-raw
 
 ### emissions calculations ----
