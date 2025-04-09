@@ -178,10 +178,6 @@ rc_DevelopedArea_after_county <- actual_proportions_after_county %>% select(-TOT
   mutate(total_area = NA, tcc_available = FALSE, source = "extrapolated")
 
 
-
-
-
-
 # Bind your original data to your recomputed data -------------------------
 nlcd_county_before <- rbind(
   rc_DevelopedArea_before_county,
@@ -511,7 +507,7 @@ nlcd_ctu_rc %>%
   geom_point(data=. %>% filter(source=="extrapolated"), shape=21, fill="white",
              mapping=aes(x=inventory_year, y=area, color=land_cover_type), size=1.2) +
   geom_point(data=. %>% filter(source=="nlcd"), shape=21,
-             mapping=aes(x=inventory_year, y=area, color=land_cover_type, fill=land_cover_type), size=1) +
+             mapping=aes(x=inventory_year, y=area, color=land_cover_type, fill=land_cover_type), size=1)
   
   nlcd_ctu %>%
   filter(ctu_name %in% "Roseville") %>%

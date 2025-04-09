@@ -411,7 +411,6 @@ lapply(start_year:end_year, function(year) {
         )
     )
     
-    beepr::beep(2)
     system(paste0("say 'Finished ",year,"'"))
     pctBar(100, "Done! Moving to next year...")
   } else {
@@ -520,7 +519,6 @@ lapply(start_year:end_year, function(year) {
         )
     )
     
-    beepr::beep(2)
     system(paste0("say 'Finished ",year,"'"))
     pctBar(100, "Done! Moving to next year...")
   }
