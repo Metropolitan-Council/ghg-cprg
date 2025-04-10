@@ -232,7 +232,7 @@ fig_electricity_baseline
 ```
 
 ```{r fig-ctu-ag-emissions}
-#| fig-cap: "2021 city level agricultural emissions"
+#| fig-cap: "2021 city level electricity emissions"
 #| out-width: "95%"
 #| out-height: "500px"
 
@@ -246,7 +246,7 @@ electricity_emissions_2021 <- ctu_elec_emissions %>%
   group_by(ctu_name, ctu_class) %>%
   summarize(mt_co2e = sum(value_emissions, na.rm = TRUE))
 
-### map CTU scale agricultural emissions
+### map CTU scale electricity emissions
 
 cprg_ctu <- readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>%
   mutate(geometry = st_make_valid(geometry))
