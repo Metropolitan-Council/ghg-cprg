@@ -98,7 +98,7 @@ solid_waste_gas <- readRDS(file.path(here::here(), "_waste/data/solid_waste_MN_b
     -c(value_activity, units_activity)
   )
 
-wastewater_gas <- readRDS(file.path(here::here(), "_waste/data/_county_wastewater_emissions.RDS"))
+wastewater_gas <- readRDS(file.path(here::here(), "_waste/data/final_wastewater_allyrs.RDS"))
 
 solid_waste_gas_wi <- readRDS(file.path(here::here(), "_waste/data/solid_waste_gas_WI_allyrs.RDS")) %>%
   left_join(cprg_county %>% st_drop_geometry() %>%
@@ -188,7 +188,8 @@ Regional waste emissions have increased by `r round(100 * ((waste_emissions_2021
 fig_waste_baseline <- plot_ly(
   source = "fig-waste-baseline-emissions",
   data = county_emissions %>%
-    filter(sector == "Waste") %>%
+    filter(sector == "Waste",
+           emissions_year <= 2021) %>%
     group_by(emissions_year, category) %>%
     summarise(value_emissions = sum(value_emissions)),
   x = ~emissions_year,

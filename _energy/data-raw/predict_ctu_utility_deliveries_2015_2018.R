@@ -1,66 +1,126 @@
-### Develop Random Forests model for predicting CTU residential electricity usage ###
+### Develop model for predicting CTU residential electricity usage ###
+###
 
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
+
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
   filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
+cprg_county <- read_rds("_meta/data/cprg_county.RDS") %>%
+  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
+ctu_population <- read_rds("_meta/data/ctu_population.RDS") %>%
+  left_join(cprg_county %>% st_drop_geometry() %>% select(geoid, county_name)) %>%
+  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
+
+# assign CTUs to where the majority of their population is for those that cross counties
+ctu_county_unique <- ctu_population %>%
+  group_by(ctu_name, ctu_class) %>%
+  filter(ctu_population == max(ctu_population)) %>%
+  ungroup() %>%
+  distinct(geoid, ctuid, ctu_name, ctu_class, county_name)
+
+## first, develop understanding of how yearly weather variation impacts activity
+
+# weather data
+noaa <- readRDS("_meta/data/noaa_weather_2015-2021.rds")
+
+# county activity data
+county_mwh <- readRDS("_energy/data/minnesota_county_elec_ActivityAndEmissions.rds")
+county_scf <- readRDS("_energy/data/minnesota_county_GasEmissions.rds")
 
 
-## load Xcel community reports - response to train on
-xcel <- read_csv("_energy/data-raw/Xcel_activityData_2015_2023.csv")
-utility_id <- read_csv("_energy/data-raw/sql_utility_id.csv")
-ctu_utility_id <- read_csv("_energy/data-raw/sql_utility_id_ctu_id.csv")
+noaa_year <- noaa %>%
+  group_by(inventory_year) %>%
+  summarize(
+    heating_degree_days = sum(heating_degree_days),
+    cooling_degree_days = sum(cooling_degree_days),
+    temperature = mean(dry_bulb_temp)
+  )
+
+lm(total_mwh ~ cooling_degree_days + heating_degree_days, data = county_mwh %>%
+  group_by(year) %>%
+  summarize(total_mwh = sum(total_mWh_delivered)) %>%
+  left_join(noaa_year, by = c("year" = "inventory_year"))) %>% summary()
+# no relationship
+
+lm(total_mcf ~ cooling_degree_days + heating_degree_days,
+  data = county_scf %>%
+    group_by(year) %>%
+    summarize(total_mcf = sum(total_mcf)) %>%
+    left_join(noaa_year, by = c("year" = "inventory_year"))
+) %>% summary()
+# strong relationship with heating_degree_days (R2 = 0.897)
+
+### bring in CTU level data
+
+
+
+ggplot(
+  electricity %>% distinct(emissions_year, county_name, county_sql_total_mwh, total_mWh_delivered),
+  aes(x = county_sql_total_mwh, y = total_mWh_delivered, col = county_name)
+) +
+  geom_point() +
+  facet_wrap(~emissions_year, scales = "free") +
+  geom_abline(slope = 1) +
+  xlab("Utility CTU mwh reports (aggregated)") +
+  ylab("Utility county mwh reports")
+
+nat_gas <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
+  mutate(
+    ctu_class = if_else(grepl("Twp.", ctu_name), "TOWNSHIP", "CITY"),
+    ctu_name = str_replace_all(ctu_name, " Twp.", ""),
+    ctu_name = str_replace_all(ctu_name, "St. ", "Saint "),
+    ctu_class = if_else(ctu_name %in% c("Credit River", "Empire"),
+      "CITY",
+      ctu_class
+    ),
+    mcf_per_year = therms_per_year * 0.1 * (1 / epa_ghg_factor_hub$stationary_combustion$value[1]) / 1000
+  ) %>%
+  left_join(cprg_ctu %>% st_drop_geometry() %>% distinct(ctu_name, ctu_class, ctu_id = gnis),
+    by = c("ctu_name", "ctu_class")
+  ) %>%
+  filter(units_emissions == "Metric tons CO2") %>% # removes duplicates
+  left_join(ctu_county_unique,
+    by = c("ctu_name", "ctu_class")
+  ) %>%
+  group_by(county_name, emissions_year) %>%
+  mutate(county_sql_total_mcf = sum(mcf_per_year, na.rm = TRUE)) %>%
+  ungroup() %>%
+  left_join(county_scf %>% select(year, county_name, total_mcf),
+    by = c("county_name", "emissions_year" = "year")
+  ) %>%
+  mutate(
+    county_sql_prop = mcf_per_year / county_sql_total_mcf,
+    county_util_prop = mcf_per_year / total_mcf
+  )
+
+ggplot(
+  nat_gas %>% distinct(emissions_year, county_name, county_sql_total_mcf, total_mcf),
+  aes(x = county_sql_total_mcf, y = total_mcf, col = county_name)
+) +
+  geom_point() +
+  facet_wrap(~emissions_year, scales = "free") +
+  geom_abline(slope = 1) +
+  xlab("Utility CTU scf reports (aggregated)") +
+  ylab("Utility county scf reports") +
+  theme_bw()
+
+
+
 
 # predictor data
 mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")
-urbansim <- readRDS("_meta/data/urban_sim_2020.RDS")
-
-ctu_utility <- ctu_utility_id %>%
-  left_join(utility_id, by = c("utility_id" = "mn_doc_utility_id")) %>%
-  distinct(utility_id, utility_name, ctu_id)
-
-### reduce xcel list down to cities that don't have second utility service
-ctu_multiple <- ctu_utility %>%
-  mutate(duplicate = duplicated(ctu_id)) %>%
-  filter(duplicate == TRUE) %>%
-  distinct(ctu_id)
-
-xcel_only <- xcel %>%
-  left_join(
-    cprg_ctu %>% select(ctu_name, ctu_class, gnis) %>%
-      st_drop_geometry() %>%
-      distinct(ctu_name, ctu_class, gnis),
-    by = c(
-      "ctu_name",
-      "ctu_class"
-    )
-  ) %>%
-  filter(!gnis %in% c(ctu_multiple$ctu_id))
-
-xcel_map <- xcel_only %>%
-  group_by(ctu_name, ctu_class) %>%
-  summarize(mwh = sum(mWh_delivered, na.rm = TRUE)) %>%
-  left_join(cprg_ctu %>% select(ctu_name, ctu_class, geometry),
-    by = c(
-      "ctu_name",
-      "ctu_class"
-    )
-  ) %>%
-  st_as_sf()
-
-ggplot(xcel_map) +
-  geom_sf(aes(fill = mwh), color = "black", size = 0.2) +
-  scale_fill_viridis_c(option = "plasma", name = "mWh_delivered (Xcel)") +
-  theme_minimal()
+urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
 # for this first approach we are only looking at residential electricity delivery
 # in 2021
 
-residential_2021 <- xcel_only %>%
+residential_elec <- electricity %>%
   filter(
-    year == 2021,
-    sector == "Residential"
-  )
+    customer_class == "Residential"
+  ) %>%
+  group_by(ctu_name, ctu_id, emissions_year, ctu_class) %>%
+  summarize(mwh = sum(mwh_per_year))
 
 # residential predictors
 mn_parcel_res <- mn_parcel %>%
@@ -103,33 +163,27 @@ residential <- c(
 # operating at ctu not coctu for now
 
 urbansim_res <- urbansim %>%
-  filter(Variable %in% residential) %>%
-  group_by(Variable, ctu_id) %>%
+  filter(
+    variable %in% residential,
+    inventory_year == 2020
+  ) %>%
+  group_by(variable, ctu_id) %>%
   summarize(value = sum(value)) %>%
   ungroup() %>%
   pivot_wider(
     id_cols = ctu_id,
-    names_from = Variable,
+    names_from = variable,
     values_from = value
   )
 
 # merge into xcel
-electricity_res <- left_join(residential_2021,
+electricity_res <- left_join(residential_elec,
   urbansim_res,
-  by = c("gnis" = "ctu_id")
+  by = "ctu_id"
 ) %>%
   left_join(mn_parcel_res %>% select(-ctu_name),
-    by = c("gnis" = "ctu_id")
-  ) %>%
-  filter(
-    !is.na(mWh_delivered), !is.na(gnis),
-    !ctu_name %in% c(
-      "Shakopee",
-      "Coon Rapids",
-      "Blaine",
-      "White Bear Lake"
-    )
-  ) # shared utility!
+    by = "ctu_id"
+  )
 
 ### run residential model
 #### residential RF ####
@@ -146,8 +200,9 @@ test_res <- electricity_res[ind == 2, ]
 
 ### full model
 rf_res_model <- randomForest(
-  mWh_delivered ~
+  mwh ~
     ctu_class + # get community designation here
+    emissions_year +
     total_pop + total_households + total_residential_units + mean_year_apartment +
     mean_year_multifamily_home + mean_year_single_family_home +
     total_emv_apartment + total_emv_single_family_home + total_emv_multifamily_home +
@@ -158,12 +213,16 @@ rf_res_model <- randomForest(
     single_fam_attached_rent +
     multi_fam_own +
     multi_fam_rent,
-  importance = T, data = electricity_res
+  importance = T,
+  na.action = na.omit,
+  data = electricity_res %>%
+    mutate(emissions_year == as.factor(emissions_year))
 )
+
 
 rf_res_model
 p_full <- predict(rf_res_model, electricity_res)
-plot(p_full, electricity_res$mWh_delivered)
+plot(p_full, electricity_res$mwh)
 abline(0, 1)
 # struggles with two big cities
 
@@ -175,8 +234,9 @@ varImpPlot(rf_res_model,
 
 ### can subset predict test model?
 rf_res_train <- randomForest(
-  mWh_delivered ~
+  mwh ~
     ctu_class + # get community designation here
+    emissions_year +
     total_pop + total_households + total_residential_units + mean_year_apartment +
     mean_year_multifamily_home + mean_year_single_family_home +
     total_emv_apartment + total_emv_single_family_home + total_emv_multifamily_home +
@@ -187,22 +247,20 @@ rf_res_train <- randomForest(
     single_fam_attached_rent +
     multi_fam_own +
     multi_fam_rent,
-  data = train_res,
+  na.action = na.omit,
+  data = train_res %>%
+    mutate(emissions_year == as.factor(emissions_year)),
   importance = T
 )
 
 print(rf_res_train)
 
 p1 <- predict(rf_res_train, train_res)
-plot(p1, train_res$mWh_delivered)
+plot(p1, train_res$mwh)
 abline(0, 1)
 
-train_res %>%
-  cbind(p1) %>%
-  filter(mWh_delivered < 10000 & p1 > 20000)
-
 p2 <- predict(rf_res_train, test_res)
-plot(p2, test_res$mWh_delivered)
+plot(p2, test_res$mwh)
 abline(0, 1)
 
 importance(rf_res_train)

@@ -90,7 +90,7 @@ electric_interpolated <- left_join(
     unit_emissions
   )
 
-ggplot(electric_interpolated, aes(x = year, y = mwh_modeled, col = county)) +
+ggplot(electric_interpolated, aes(x = year, y = activity, col = county_name)) +
   geom_line()
 
 natgas_raw <- readRDS(file.path(here::here("_energy", "data", "minnesota_county_GasEmissions.RDS"))) %>%

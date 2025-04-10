@@ -21,7 +21,7 @@ hookaddcap()
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/_agricultural_emissions.RDS"))
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
-landcover <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_2001_2021.RDS"))
+landcover <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_allyrs.RDS"))
 
 county_area <- cprg_county %>%
   mutate(county_area_sqkm = as.numeric(st_area(.) / 10^6)) %>%
@@ -29,11 +29,12 @@ county_area <- cprg_county %>%
   st_drop_geometry()
 
 county_agriculture <- landcover %>%
-  filter(!is.na(area), land_cover_type == "Cropland") %>%
+  filter(!is.na(area), land_cover_type == "Cropland",
+         inventory_year == 2021) %>%
   left_join(., county_area,
     by = c("county_name")
   ) %>%
-  group_by(year, county_name) %>%
+  group_by(inventory_year, county_name) %>%
   mutate(percent_area = area / county_area_sqkm)
 ```
 
@@ -143,7 +144,7 @@ We would expect that counties with higher amounts of agricultural land would hav
 
 
 cropland_2021 <- county_agriculture %>%
-  filter(year == 2021) %>%
+  filter(inventory_year  == 2021) %>%
   left_join(., county_emissions %>%
     filter(
       sector == "Agriculture",

@@ -69,21 +69,21 @@ cprg_county_meta <- tribble(
 
 # fetch cities from MN Geospatial Commons
 mn_ctu <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/bdry_mn_city_township_unorg/gpkg_bdry_mn_city_township_unorg.zip") %>%
-  filter(COUNTY_NAM %in% c(cprg_county$county_name)) %>%
+  filter(COUNTY_NAME %in% c(cprg_county$county_name)) %>%
   mutate(
     STATEFP = "27",
     STATE = "Minnesota",
     STATE_ABB = "MN"
   ) %>%
   select(
-    CTU_NAME = FEATURE_NA,
+    CTU_NAME = FEATURE_NAME,
     CTU_CLASS,
-    COUNTY_NAM,
+    COUNTY_NAME,
     STATEFP,
     STATE,
     STATE_ABB,
-    GNIS_FEATU,
-    geometry = geom
+    GNIS_FEATURE_ID,
+    geometry = SHAPE
   ) %>%
   arrange(CTU_NAME) %>%
   clean_names()
@@ -124,16 +124,77 @@ wi_ctu <- sf::read_sf("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023
   ) %>%
   clean_names()
 
+### fetch thrive community designations
+
+thrive <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_metc/society_thrive_msp2040_com_des/gpkg_society_thrive_msp2040_com_des.zip") %>%
+  st_drop_geometry() %>%
+  clean_names() %>%
+  distinct(ctu_id, comdesname) %>%
+  rename(thrive_designation = comdesname)
+
+thrive <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_metc/society_thrive_msp2040_com_des/gpkg_society_thrive_msp2040_com_des.zip") %>%
+  st_drop_geometry() %>%
+  separate(COCTU_DESC, sep = " [(]", into = c("ctu", "cty"), fill = "right") %>%
+  mutate(
+    COMDESNAME = factor(COMDESNAME,
+      levels = c(
+        "Urban Center",
+        "Urban",
+        "Suburban",
+        "Suburban Edge",
+        "Emerging Suburban Edge",
+        "Rural Center",
+        "Diversified Rural",
+        "Rural Residential",
+        "Agricultural",
+        "Non-Council Area"
+      ),
+      ordered = T
+    ),
+    URB_RURAL = stringr::str_sub(URB_RURAL, 1, 5),
+    URB_SUB_RURAL = case_when(
+      COMDESNAME %in% c(
+        "Suburban",
+        "Suburban Edge",
+        "Emerging Suburban Edge"
+      ) ~ "Suburban",
+      TRUE ~ URB_RURAL
+    ) %>%
+      factor(levels = c(
+        "Urban",
+        "Suburban",
+        "Rural"
+      ), ordered = T)
+  ) %>%
+  group_by(CTU_ID, COMDESNAME) %>%
+  count() %>%
+  group_by(CTU_ID) %>%
+  filter(as.integer(COMDESNAME) == max(as.integer(COMDESNAME))) %>%
+  ungroup() %>%
+  select(
+    ctu_id = CTU_ID,
+    thrive_designation = COMDESNAME
+  )
+
+
 cprg_ctu <- bind_rows(mn_ctu, wi_ctu) %>%
   mutate(cprg_area = TRUE) %>%
   select(ctu_name, ctu_class,
-    county_name = county_nam,
+    county_name,
     state_name = state, statefp, state_abb,
     geoid_wis = geoid,
-    gnis = gnis_featu,
+    gnis = gnis_feature_id,
     cprg_area,
     geometry
-  )
+  ) %>%
+  left_join(thrive,
+    by = c("gnis" = "ctu_id")
+  ) %>%
+  mutate(thrive_designation = if_else(
+    is.na(thrive_designation),
+    "Non-Council Area",
+    thrive_designation
+  ))
 
 
 cprg_ctu_meta <- tribble(
@@ -143,6 +204,7 @@ cprg_ctu_meta <- tribble(
   "gnis", class(cprg_ctu$gnis), "Minnesota geographic identifier",
   "geoid_wis", class(cprg_ctu$geoid_wis), "Wisconsin geographic identifier",
   "geometry", class(cprg_ctu$geometry)[1], "Simple feature geometry",
+  "thrive_designation", class(cprg_ctu$thrive_designation), "Community designation in thrive 2040",
 ) %>%
   bind_rows(cprg_county_meta) %>%
   filter(Column %in% names(cprg_ctu))
