@@ -12,6 +12,7 @@ cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
 # transportation -----
 transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS") %>%
   ungroup() %>%
+  filter(emissions_year >= 2005) %>%
   mutate(
     sector = "Transportation",
     geog_level = "county",
@@ -172,15 +173,13 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
 
 # natural systems ----
 
-natural_systems_sequestration <- readRDS("_nature/data/nlcd_county_landcover_sequestration_2001_2021.RDS") %>%
-  filter(year >= 2005) %>%
+natural_systems_sequestration <- readRDS("_nature/data/nlcd_county_landcover_sequestration_allyrs.RDS") %>%
+  filter(inventory_year >= 2005) %>%
   mutate(
-    emissions_year = year,
+    emissions_year = inventory_year,
     sector = "Natural Systems",
     geog_level = "county",
     category = "Sequestration",
-    source = stringr::str_to_sentence(str_replace_all(land_cover_type, "_", " ")),
-    data_source = "USGS National Landcover Database",
     factor_source = "Various primary literature",
     value_emissions = sequestration_potential,
     unit_emissions = "Metric tons CO2e"
@@ -188,7 +187,7 @@ natural_systems_sequestration <- readRDS("_nature/data/nlcd_county_landcover_seq
   ungroup() %>%
   select(names(transportation_emissions))
 
-freshwater_emissions <- readRDS("_nature/data/nhd_county_waterways_emissions_2001_2021.RDS") %>%
+freshwater_emissions <- readRDS("_nature/data/nhd_ctu_waterways_emissions_allyrs.RDS") %>%
   filter(inventory_year >= 2005) %>%
   mutate(
     emissions_year = inventory_year,
@@ -290,15 +289,13 @@ write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FAL
 
 ### carbon stock
 
-natural_systems_stock <- readRDS("_nature/data/nlcd_county_landcover_sequestration_2001_2021.RDS") %>%
-  filter(year >= 2005) %>%
+natural_systems_stock <- readRDS("_nature/data/nlcd_county_landcover_sequestration_allyrs.RDS") %>%
+  filter(inventory_year >= 2005) %>%
   mutate(
-    emissions_year = year,
+    emissions_year = inventory_year,
     sector = "Natural Systems",
     geog_level = "county",
     category = "Sequestration",
-    source = stringr::str_to_sentence(str_replace_all(land_cover_type, "_", " ")),
-    data_source = "USGS National Landcover Database",
     factor_source = "Various primary literature",
     value_emissions = stock_potential,
     unit_emissions = "Metric tons CO2e"

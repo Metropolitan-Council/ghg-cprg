@@ -29,7 +29,7 @@ all_county_pop_yrs <- unique(cprg_census_county_population$population_year) %>% 
 
 # Create a sequence starting in 2005 and going to the maximum year where data was available for this dataset
 all_years <- seq(
-  ifelse(all_county_pop_yrs[1]>=2005, all_county_pop_yrs[1], 2005),
+  ifelse(all_county_pop_yrs[1] >= 2005, all_county_pop_yrs[1], 2005),
   rev(all_county_pop_yrs)[1]
 )
 # NOTE: To calculate effluent N2O emissions, this routine queries the epa_protein_consumption.rds
@@ -95,7 +95,8 @@ county_wastewater_emissions <- county_wastewater_emissions %>%
     sector, category, source, data_source,
     population, value_emissions,
     units_emissions, mt_co2e
-  ) %>% dplyr::select(-population) %>% 
+  ) %>%
+  dplyr::select(-population) %>%
   ungroup()
 
 
@@ -131,18 +132,19 @@ saveRDS(county_wastewater_emissions_meta, "./_waste/data/final_wastewater_allyrs
 
 # CTU-level emissions (7-county only) -------------------------------------
 # Load CTU census data
-ctu_population <- readRDS("_meta/data/ctu_population.rds") 
+ctu_population <- readRDS("_meta/data/ctu_population.rds")
 
 all_ctus <- ctu_population %>%
   group_by(geoid, ctuid, ctu_name, ctu_class) %>%
-  summarize(tmp=head(1), .groups = "keep") %>% select(-tmp)
+  summarize(tmp = head(1), .groups = "keep") %>%
+  select(-tmp)
 
 # Identify all available years for county population
 all_ctu_pop_yrs <- unique(ctu_population$inventory_year) %>% sort()
 
 # Create a sequence starting in 2005 and going to the maximum year where data was available for this dataset
 all_years <- seq(
-  ifelse(all_ctu_pop_yrs[1]>=2005, all_ctu_pop_yrs[1], 2005),
+  ifelse(all_ctu_pop_yrs[1] >= 2005, all_ctu_pop_yrs[1], 2005),
   rev(all_ctu_pop_yrs)[1]
 )
 
@@ -154,7 +156,7 @@ ctu_wastewater_emissions <- all_ctus %>%
     inventory_year = all_years,
     source = c("Municipal_CH4", "Municipal_N20_direct", "Municipal_N20_effluent"),
     data_source = "EPA State Inventory Tool - Wastewater Module"
-    ) %>%
+  ) %>%
   arrange(ctu_name, inventory_year, source) %>%
   left_join(
     ctu_population %>%
@@ -196,19 +198,21 @@ ctu_wastewater_emissions <- ctu_wastewater_emissions %>%
     sector, category, source, data_source,
     population, value_emissions,
     units_emissions, mt_co2e
-  ) %>% dplyr::select(-population)
+  ) %>%
+  dplyr::select(-population)
 
 ### county and ctu emissions should add up to be identical
 
-waldo::compare(county_wastewater_emissions %>% 
-                 filter(!county_name %in% c("St. Croix", "Pierce", "Sherburne", "Chisago")) %>% 
-                 group_by(inventory_year) %>% 
-                 summarize(mt_co2e = sum(mt_co2e)),
-               ctu_wastewater_emissions %>% 
-                 group_by(inventory_year) %>% 
-                 summarize(mt_co2e = sum(mt_co2e, na.rm = TRUE)),
-               max_diffs = 20
-               )
+waldo::compare(
+  county_wastewater_emissions %>%
+    filter(!county_name %in% c("St. Croix", "Pierce", "Sherburne", "Chisago")) %>%
+    group_by(inventory_year) %>%
+    summarize(mt_co2e = sum(mt_co2e)),
+  ctu_wastewater_emissions %>%
+    group_by(inventory_year) %>%
+    summarize(mt_co2e = sum(mt_co2e, na.rm = TRUE)),
+  max_diffs = 20
+)
 ### values are very close except for 2010, which appears to have an error for county
 
 ctu_wastewater_emissions_meta <-
@@ -230,6 +234,3 @@ ctu_wastewater_emissions_meta <-
 
 saveRDS(ctu_wastewater_emissions, "./_waste/data/final_wastewater_ctu_allyrs.rds")
 saveRDS(ctu_wastewater_emissions_meta, "./_waste/data/final_wastewater_ctu_allyrs_meta.rds")
-
-
-

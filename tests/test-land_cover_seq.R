@@ -16,13 +16,14 @@ testthat::test_that("land cover", {
 
 
 testthat::test_that("sequestration totals", {
-  wc_county_c <- readRDS(file.path(here::here(), "_nature/data/county_landcover_sequestration_2021.rds"))
+  wc_county_c <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_sequestration_allyrs.rds")) %>% 
+    filter(inventory_year == 2021)
 
 
   county_seq_total <- summarize(wc_county_c, seq_total = sum(sequestration_potential))
   county_stock_total <- summarize(wc_county_c, stock_total = sum(stock_potential))
 
-  testthat::expect_equal(sum(county_stock_total$stock_total), -257462245)
+  testthat::expect_equal(sum(county_stock_total$stock_total), -268873117)
 
   sum(county_seq_total$seq_total) #-2180841
   sum(county_stock_total$stock_total) #-257,462,245

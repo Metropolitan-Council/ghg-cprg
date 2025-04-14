@@ -1238,5 +1238,16 @@ _nature/data_nlcd_cover_files/
 _nature/_natural_systems_inventory_files/
 _meta/data-raw/imagine_2050_forecasts.xlsx
 
+_meta/data-raw/climate/7-county_metro_area_2025-2-27_14h14m.csv
+_meta/data-raw/climate/noaa_hennepin_2015-2021.csv
+
+
+
+
+
+_meta/data-raw/climate/noaa_msp-2005-2014.csv
+_meta/data-raw/climate/noaa_msp_2015-2024.csv
+_meta/data-raw/climate/noaa_msp_2005-2014.csv
 
 _agriculture/data-raw/ag-module.xlsx
+
