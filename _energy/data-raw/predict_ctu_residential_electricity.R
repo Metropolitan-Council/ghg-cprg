@@ -233,8 +233,25 @@ abline(0, 1)
 
 importance(rf_res_train)
 
+### GAM Approach #####
+# uses variables ID'ed in the rf_res_model as most important
 
-### linear model predictions
+library(mgcv)
+gam_model <- gam(residential_mwh ~ s(total_pop) + s(total_households) + s(total_residential_units) + s(single_fam_det_ll_own) +
+                   s(single_fam_attached_rent) + thrive_designation,
+                 data = electricity_res, method = "REML", select = TRUE)
+summary(gam_model) ## adj r2 = 0.995
+plot(gam_model, pages = 1, rug = TRUE, residuals = TRUE)
+gam.check(gam_model)
+
+electricity_res$pred <- predict(gam_model)
+
+ggplot(electricity_res, aes(x = residential_mwh, y = pred)) +
+  geom_point(alpha = 0.5) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+  labs(x = "Actual MWh", y = "Predicted MWh", title = "GAM: Actual vs Predicted")
+
+### linear model predictions ####
 
 importance(rf_res_model)
 
