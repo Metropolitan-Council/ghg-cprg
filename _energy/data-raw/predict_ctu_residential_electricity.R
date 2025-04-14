@@ -113,14 +113,15 @@ residential <- c(
   "multi_fam_rent"
 )
 
-
-### create 2010-2025 urbansim residential dataset
+### create 2005-2050 urbansim residential dataset
 urbansim_res <- urbansim %>%
   filter(variable %in% residential) %>%
   group_by(coctu_id, variable) %>%
-  complete(inventory_year = full_seq(c(2005, 2025), 1)) %>% # add interstitial years and expand to 2025
+  complete(inventory_year = full_seq(c(2005, 2050), 1)) %>%
   arrange(coctu_id, variable, inventory_year) %>%
-  mutate(value = approx(inventory_year, value, inventory_year, method = "linear", rule = 2)$y) %>% # allow extrapolation
+  mutate(
+    value = na_interpolation(value, option = "linear")
+  ) %>%
   ungroup() %>%
   pivot_wider(
     id_cols = c(coctu_id, inventory_year),
@@ -155,7 +156,9 @@ electricity_res <- left_join(coctu_res_year,
     by = c("ctu_id" = "ctu_id")
   ) %>%
   # weather data
-  left_join(noaa_year, by = "inventory_year")
+  left_join(noaa_year, by = "inventory_year") %>% 
+  filter(!is.na(coctu_id))
+  
 ### run residential model
 #### residential RF ####
 
@@ -181,8 +184,7 @@ rf_res_model <- randomForest(
     single_fam_attached_own +
     single_fam_attached_rent +
     multi_fam_own +
-    multi_fam_rent +
-    cooling_degree_days,
+    multi_fam_rent,
   importance = T, data = electricity_res,
   na.action = na.omit
 )
@@ -193,7 +195,7 @@ plot(p_full, electricity_res$residential_mwh)
 abline(0, 1)
 
 ### save rf_res_model output
-saveRDS(rf_res_model, "_energy/data/ctu_residential_elec_random_forest.RDS")
+#saveRDS(rf_res_model, "_energy/data/ctu_residential_elec_random_forest.RDS")
 
 # look at top predictors
 varImpPlot(rf_res_model,
@@ -231,7 +233,7 @@ p2 <- predict(rf_res_train, test_res)
 plot(p2, test_res$residential_mwh)
 abline(0, 1)
 
-importance(rf_res_train)
+importance(rf_res_train, 1)
 
 ### GAM Approach #####
 # uses variables ID'ed in the rf_res_model as most important
@@ -270,22 +272,42 @@ abline(0, 1)
 
 ### predict ALL cities and rollback up to counties for all years
 
-ctu_res_predict <- cprg_ctu %>%
+#### Random Forest
+ctu_res_predict_rf <- cprg_ctu %>%
   left_join(urbansim_res, by = c(
     "gnis" = "ctu_id",
     "ctu_name",
     "county_name",
     "thrive_designation"
   )) %>%
-  left_join(noaa_year) %>%
   mutate(mwh_predicted = predict(rf_res_model, .)) %>%
-  filter(!is.na(mwh_predicted)) %>% # removes 2025 data
+  filter(!is.na(mwh_predicted)) %>% 
   st_drop_geometry() %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
-  summarize(residential_mwh_predicted = sum(mwh_predicted)) %>%
+  summarize(residential_mwh_predicted_rf = sum(mwh_predicted)) %>%
   ungroup()
 
 
+ctu_res_predict_gam <- cprg_ctu %>%
+  left_join(urbansim_res, by = c(
+    "gnis" = "ctu_id",
+    "ctu_name",
+    "county_name",
+    "thrive_designation"
+  )) %>%
+  mutate(mwh_predicted = predict(gam_model, .)) %>%
+  filter(!is.na(mwh_predicted)) %>%
+  st_drop_geometry() %>%
+  group_by(ctu_name, ctu_class, inventory_year) %>%
+  summarize(residential_mwh_predicted_gam = sum(mwh_predicted)) %>%
+  ungroup()
+
+plot(residential_mwh_predicted_rf ~ residential_mwh_predicted_gam,
+  data = left_join(ctu_res_predict_rf,
+               ctu_res_predict_gam))
+
+plot(residential_mwh_predicted_gam ~inventory_year,
+     data = ctu_res_predict_gam %>% filter(ctu_name == "Minneapolis"))
 
 ctu_res_predict %>% distinct(ctu_name, ctu_class)
 
