@@ -157,7 +157,8 @@ electricity_res <- left_join(coctu_res_year,
   ) %>%
   # weather data
   left_join(noaa_year, by = "inventory_year") %>% 
-  filter(!is.na(coctu_id))
+  filter(!is.na(coctu_id)) %>% 
+  mutate(thrive_designation = as.factor(thrive_designation))
   
 ### run residential model
 #### residential RF ####
@@ -240,7 +241,7 @@ importance(rf_res_train, 1)
 
 library(mgcv)
 gam_model <- gam(residential_mwh ~ s(total_pop) + s(total_households) + s(total_residential_units) + s(single_fam_det_ll_own) +
-                   s(single_fam_attached_rent) + thrive_designation,
+                   s(single_fam_attached_rent) + thrive_designation + inventory_year,
                  data = electricity_res, method = "REML", select = TRUE)
 summary(gam_model) ## adj r2 = 0.995
 plot(gam_model, pages = 1, rug = TRUE, residuals = TRUE)
@@ -253,13 +254,32 @@ ggplot(electricity_res, aes(x = residential_mwh, y = pred)) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
   labs(x = "Actual MWh", y = "Predicted MWh", title = "GAM: Actual vs Predicted")
 
+# gam_model_interaction <- gam(residential_mwh ~ s(total_pop, by = thrive_designation) + 
+#                                s(total_households, by = thrive_designation) + 
+#                                s(total_residential_units, by = thrive_designation) + 
+#                                s(inventory_year, by = thrive_designation),
+#                                          data = electricity_res, method = "REML", select = TRUE)
+# summary(gam_model_interaction) ## adj r2 = 0.995
+# plot(gam_model_interaction, pages = 1, rug = TRUE, residuals = TRUE)
+# gam.check(gam_model_interaction)
+# 
+# electricity_res$pred_gam_int <- predict(gam_model_interaction)
+# 
+# ggplot(electricity_res, aes(x = residential_mwh, y = pred_gam_int)) +
+#   geom_point(alpha = 0.5) +
+#   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+#   labs(x = "Actual MWh", y = "Predicted MWh", title = "GAM: Actual vs Predicted")
+
+
 ### linear model predictions ####
 
 importance(rf_res_model)
 
 res_simple <- lm(
-  residential_mwh ~ thrive_designation + total_pop + single_fam_det_ll_own + total_households +
-    total_residential_units * mean_year_single_family_home,
+  residential_mwh ~ thrive_designation * total_pop + 
+    thrive_designation * single_fam_det_ll_own + 
+    thrive_designation * total_households +
+    thrive_designation * total_residential_units,
   data = electricity_res
 )
 summary(res_simple) # R2 = 0.9928
@@ -302,20 +322,62 @@ ctu_res_predict_gam <- cprg_ctu %>%
   summarize(residential_mwh_predicted_gam = sum(mwh_predicted)) %>%
   ungroup()
 
+ctu_res_predict_lm <- cprg_ctu %>%
+  left_join(urbansim_res, by = c(
+    "gnis" = "ctu_id",
+    "ctu_name",
+    "county_name",
+    "thrive_designation"
+  )) %>%
+  mutate(mwh_predicted = predict(res_simple, .)) %>%
+  filter(!is.na(mwh_predicted)) %>%
+  st_drop_geometry() %>%
+  group_by(ctu_name, ctu_class, inventory_year) %>%
+  summarize(residential_mwh_predicted_gam = sum(mwh_predicted)) %>%
+  ungroup()
+
 plot(residential_mwh_predicted_rf ~ residential_mwh_predicted_gam,
   data = left_join(ctu_res_predict_rf,
                ctu_res_predict_gam))
 
 plot(residential_mwh_predicted_gam ~inventory_year,
-     data = ctu_res_predict_gam %>% filter(ctu_name == "Minneapolis"))
+     data = ctu_res_predict_gam %>% filter(ctu_name == "Edina"))
 
 ctu_res_predict %>% distinct(ctu_name, ctu_class)
 
-ctu_res <- left_join(
-  ctu_res_predict,
+ctu_res_gam <- left_join(
+  ctu_res_predict_gam,
   ctu_utility_year %>%
     select(1:4)
 )
+
+#plot random grab of some cities
+sample_ctus <- ctu_res_gam %>%
+  filter(!is.na(residential_mwh)) %>% 
+  distinct(ctu_name, ctu_class) %>%
+  slice_sample(n = 10) %>%
+  pull(ctu_name)
+
+plot_data <- ctu_res_gam %>%
+  filter(ctu_name %in% sample_ctus,
+         ctu_class == "CITY")
+
+ggplot(plot_data, aes(x = inventory_year)) +
+  geom_line(aes(y = residential_mwh_predicted_gam, color = ctu_name), linewidth = 0.8) +
+  geom_point(
+    data = filter(plot_data, !is.na(residential_mwh)),
+    aes(y = residential_mwh, color = ctu_name),
+    shape = 1, size = 2, stroke = 1
+  ) +
+  facet_wrap(~ ctu_name, scales = "free_y") +
+  labs(
+    x = "Year",
+    y = "Residential MWh",
+    title = "Predicted and Observed Residential Electricity Use",
+    subtitle = "GAM predictions (lines) and observed values (circles)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
 
 ## add predicted mwh
 
