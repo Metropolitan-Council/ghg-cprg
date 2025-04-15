@@ -7,12 +7,12 @@ landfill <- readRDS(file.path(here::here(), "_waste/data/landfill_MN_allyrs.RDS"
 incineration <- readRDS(file.path(here::here(), "_waste/data/incineration_MN_allyrs.RDS"))
 organics <- readRDS(file.path(here::here(), "_waste/data/organics_MN_allyrs.RDS"))
 
-solid_waste_mn_by_gas <- landfill %>%
+solid_waste_mn_by_gas_ctu <- landfill %>%
   bind_rows(incineration, organics)
 
 # meta
 
-solid_waste_mn_by_gas_meta <-
+solid_waste_mn_by_gas_ctu_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
     "geoid", class(solid_waste_mn_by_gas$geoid), "5-digit FIPS code",
@@ -24,11 +24,11 @@ solid_waste_mn_by_gas_meta <-
     "units_emissions", class(solid_waste_mn_by_gas$units_emissions), "Emissions units",
   )
 # save RDS
-saveRDS(solid_waste_mn_by_gas, "_waste/data/solid_waste_MN_by_gas.RDS")
-saveRDS(solid_waste_mn_by_gas_meta, "_waste/data/solid_waste_MN_by_gas_meta.RDS")
+saveRDS(solid_waste_mn_by_gas_ctu, "_waste/data/solid_waste_MN_by_gas_ctu.RDS")
+saveRDS(solid_waste_mn_by_gas_ctu_meta, "_waste/data/solid_waste_MN_by_gas_ctu_meta.RDS")
 
 # multiply by gwp factors and sum to find total co2e emissions
-solid_waste_mn <- solid_waste_mn_by_gas %>%
+solid_waste_mn_ctu <- solid_waste_mn_by_gas_ctu %>%
   pivot_wider(
     names_from = units_emissions,
     values_from = value_emissions
@@ -63,7 +63,7 @@ solid_waste_mn <- solid_waste_mn_by_gas %>%
   )
 
 # write meta
-solid_waste_mn_meta <-
+solid_waste_mn_ctu_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
     "geoid", class(solid_waste_mn$geoid), "5-digit FIPS code",
@@ -80,5 +80,41 @@ solid_waste_mn_meta <-
   )
 
 # save RDS
-saveRDS(solid_waste_mn, "_waste/data/solid_waste_MN_allyrs.RDS")
-saveRDS(solid_waste_mn_meta, "_waste/data/solid_waste_MN_allyrs_meta.RDS")
+saveRDS(solid_waste_mn_ctu, "_waste/data/solid_waste_ctu_MN_allyrs.RDS")
+saveRDS(solid_waste_mn_ctu_meta, "_waste/data/solid_waste_ctu_MN_allyrs_meta.RDS")
+
+# aggregate to county
+# note: check later if this should be renamed to final_solid_waste_ctu_allyrs
+
+solid_waste_mn_by_gas <- solid_waste_mn_by_gas_ctu %>% 
+  group_by(
+    geoid, 
+    inventory_year, 
+    source, 
+    units_activity, 
+    units_emissions
+    ) %>% 
+  summarize(
+    value_activity = sum(value_activity),
+    value_emissions = sum(value_emissions)
+  )
+
+solid_waste_mn <- solid_waste_mn_ctu %>% 
+  group_by(
+    geoid,
+    inventory_year,
+    sector,
+    category,
+    source,
+    data_source,
+    factor_source,
+    units_activity,
+    units_emissions
+  ) %>% 
+  summarize(
+    value_activity = sum(value_activity),
+    value_emissions = sum(value_emissions)
+  )
+
+
+
