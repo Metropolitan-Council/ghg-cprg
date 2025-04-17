@@ -307,6 +307,7 @@ ctu_res_predict_rf <- cprg_ctu %>%
   left_join(urbansim_res, by = c(
     "gnis" = "ctu_id",
     "ctu_name",
+    "ctu_class",
     "county_name",
     "thrive_designation"
   )) %>%
@@ -322,6 +323,7 @@ ctu_res_predict_gam <- cprg_ctu %>%
   left_join(urbansim_res, by = c(
     "gnis" = "ctu_id",
     "ctu_name",
+    "ctu_class",
     "county_name",
     "thrive_designation"
   )) %>%
@@ -336,6 +338,7 @@ ctu_res_predict_lm <- cprg_ctu %>%
   left_join(urbansim_res, by = c(
     "gnis" = "ctu_id",
     "ctu_name",
+    "ctu_class",
     "county_name",
     "thrive_designation"
   )) %>%
@@ -354,7 +357,7 @@ plot(residential_mwh_predicted_lm ~ residential_mwh_predicted_gam,
                       ctu_res_predict_gam))
 
 plot(residential_mwh_predicted_lm ~inventory_year,
-     data = ctu_res_predict_lm %>% filter(ctu_name == "Afton"))
+     data = ctu_res_predict_lm %>% filter(ctu_name == "Minneapolis"))
 
 ctu_res_predict %>% distinct(ctu_name, ctu_class)
 
@@ -376,6 +379,12 @@ sample_ctus <- ctu_res_gam %>%
   distinct(ctu_name, ctu_class) %>%
   slice_sample(n = 10) %>%
   pull(ctu_name)
+
+mpls_ctu_id <- ctu_res_gam %>% 
+  filter(ctu_name == "Minneapolis") %>% 
+  pull(ctu_id)
+
+sample_ctus <- unique(c(sample_ctus, mpls_ctu_id[[1]]))
 
 plot_data_gam <- ctu_res_gam %>%
   filter(ctu_name %in% sample_ctus,
@@ -540,6 +549,12 @@ ggplot(plot_data_delta, aes(x = inventory_year)) +
   ) +
   theme_minimal() +
   theme(legend.position = "none")
+
+delta_units %>% filter(ctu_name == "Rosemount", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
+delta_units %>% filter(ctu_name == "Minneapolis", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
+delta_units %>% filter(ctu_name == "New Trier", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
+
+
 
 ## add predicted mwh
 
