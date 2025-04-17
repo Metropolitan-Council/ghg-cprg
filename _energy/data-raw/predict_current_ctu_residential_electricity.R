@@ -553,7 +553,9 @@ ggplot(plot_data_delta, aes(x = inventory_year)) +
 delta_units %>% filter(ctu_name == "Rosemount", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
 delta_units %>% filter(ctu_name == "Minneapolis", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
 delta_units %>% filter(ctu_name == "New Trier", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
-
+delta_units %>% filter(ctu_name == "Roseville", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
+delta_units %>% filter(ctu_name == "Mound", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
+delta_units %>% filter(ctu_name == "Falcon Heights", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
 
 
 ## add predicted mwh
