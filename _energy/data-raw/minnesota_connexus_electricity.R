@@ -9,7 +9,7 @@ city_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connex
     ctu_name = str_to_title(City),
     ctu_class = "CITY",
     mwh_delivered = case_when(
-      Consumption == "REDACTED" ~ NA_real_,
+      Consumption == "REDACTED" ~ 0,
       grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption), # checks if only numeric values are present
       TRUE ~ NA_real_
     ) * 1e-3
@@ -31,7 +31,7 @@ township_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Co
     ctu_name = str_to_title(Township),
     ctu_class = "TOWNSHIP",
     mwh_delivered = case_when(
-      Consumption == "REDACTED" ~ NA_real_,
+      Consumption == "REDACTED" ~ 0,
       grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption), # checks if only numeric values are present
       TRUE ~ NA_real_
     ) * 1e-3
@@ -83,7 +83,7 @@ city_township_connexus <- rbind(city_raw, township_raw)
 connexus_activityData_2014_2023 <- city_township_connexus %>%
   mutate(
     mwh_delivered = case_when(
-      mwh_delivered == "REDACTED" ~ as.numeric(NA),
+      mwh_delivered == "REDACTED" ~ as.numeric(0),
       TRUE ~ mwh_delivered
     )
   ) %>%

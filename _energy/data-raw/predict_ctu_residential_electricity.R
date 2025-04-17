@@ -198,8 +198,7 @@ rf_res_model <- randomForest(
 
 rf_res_model
 p_full <- predict(rf_res_model, electricity_res)
-plot(p_full, electricity_res$residential_mwh,
-     xlim=c(0,100000), ylim=c(0,100000))
+plot(p_full, electricity_res$residential_mwh)
 abline(0, 1)
 
 electricity_res %>% mutate(p_full = p_full) %>% 
