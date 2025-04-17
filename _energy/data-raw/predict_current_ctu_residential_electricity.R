@@ -37,6 +37,13 @@ ctu_utility_mwh <- read_rds("_energy/data/ctu_utility_mwh.RDS")
 
 # reduce to ctu-years with complete utility reporting
 ctu_utility_year <- ctu_utility_mwh %>%
+  #remove known errant ctu-utility assignments
+  filter(!(ctu_name == "Andover" &
+             utility == "Anoka Municipal Utility"),
+         !(ctu_name == "Cottage Grove" &
+             utility == "Dakota Electric Association"),
+         !(ctu_name == "Anoka" &
+             utility == "Xcel Energy")) %>% 
   group_by(ctu_name, ctu_class, inventory_year) %>%
   filter(!any(is.na(total_mwh))) %>%
   summarize(
@@ -184,14 +191,15 @@ rf_res_model <- randomForest(
   residential_mwh ~
     thrive_designation +
     total_pop + total_households + total_residential_units +
-    # mean_year_apartment + mean_year_multifamily_home + mean_year_single_family_home +
-    # total_emv_apartment + total_emv_single_family_home + total_emv_multifamily_home +
+    mean_year_apartment + mean_year_multifamily_home + mean_year_single_family_home +
+    total_emv_apartment + total_emv_single_family_home + total_emv_multifamily_home +
     single_fam_det_sl_own + single_fam_det_ll_own +
     single_fam_det_rent +
     single_fam_attached_own +
     single_fam_attached_rent +
     multi_fam_own +
-    multi_fam_rent,
+    multi_fam_rent + 
+    cooling_degree_days,
   importance = T, data = electricity_res,
   na.action = na.omit
 )
@@ -201,9 +209,11 @@ p_full <- predict(rf_res_model, electricity_res)
 plot(p_full, electricity_res$residential_mwh)
 abline(0, 1)
 
-electricity_res %>% mutate(p_full = p_full) %>% 
-  filter(residential_mwh > 60000 & p_full < 60000) %>% 
-  select(ctu_name, ctu_class, inventory_year, residential_mwh, p_full)
+### zoom in on smaller cities
+plot(p_full, electricity_res$residential_mwh,
+     xlim = c(0,50000),
+     ylim = c(0,50000))
+abline(0, 1)
 
 ### save rf_res_model output
 #saveRDS(rf_res_model, "_energy/data/ctu_residential_elec_random_forest.RDS")
@@ -244,66 +254,19 @@ p2 <- predict(rf_res_train, test_res)
 plot(p2, test_res$residential_mwh)
 abline(0, 1)
 
-importance(rf_res_train, 1)
-
-### GAM Approach #####
-# uses variables ID'ed in the rf_res_model as most important
-
-library(mgcv)
-gam_model <- gam(residential_mwh ~ s(total_pop) + s(total_households) + s(total_residential_units) + s(single_fam_det_ll_own) +
-                   s(single_fam_attached_rent) + thrive_designation + inventory_year,
-                 data = electricity_res, method = "REML", select = TRUE)
-summary(gam_model) ## adj r2 = 0.995
-plot(gam_model, pages = 1, rug = TRUE, residuals = TRUE)
-gam.check(gam_model)
-
-electricity_res$pred <- predict(gam_model)
-
-ggplot(electricity_res, aes(x = residential_mwh, y = pred)) +
-  geom_point(alpha = 0.5) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-  labs(x = "Actual MWh", y = "Predicted MWh", title = "GAM: Actual vs Predicted")
-
-# gam_model_interaction <- gam(residential_mwh ~ s(total_pop, by = thrive_designation) + 
-#                                s(total_households, by = thrive_designation) + 
-#                                s(total_residential_units, by = thrive_designation) + 
-#                                s(inventory_year, by = thrive_designation),
-#                                          data = electricity_res, method = "REML", select = TRUE)
-# summary(gam_model_interaction) ## adj r2 = 0.995
-# plot(gam_model_interaction, pages = 1, rug = TRUE, residuals = TRUE)
-# gam.check(gam_model_interaction)
-# 
-# electricity_res$pred_gam_int <- predict(gam_model_interaction)
-# 
-# ggplot(electricity_res, aes(x = residential_mwh, y = pred_gam_int)) +
-#   geom_point(alpha = 0.5) +
-#   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
-#   labs(x = "Actual MWh", y = "Predicted MWh", title = "GAM: Actual vs Predicted")
-
-
-### linear model predictions ####
-
-importance(rf_res_model)
-
-res_simple <- lm(
-  residential_mwh ~ thrive_designation * total_pop + 
-    thrive_designation * single_fam_det_ll_own + 
-    thrive_designation * total_households +
-    thrive_designation * total_residential_units,
-  data = electricity_res
-)
-summary(res_simple) # R2 = 0.9942
-
-### compare prediction to input data
-lm_pred <- predict(res_simple, electricity_res)
-plot(lm_pred, electricity_res$residential_mwh)
+### zoom in on smaller cities
+plot(p2, test_res$residential_mwh,
+     xlim = c(0,50000),
+     ylim = c(0,50000))
 abline(0, 1)
 
+importance(rf_res_train, 1)
 
-### test predictions ####
 
-#### Random Forest
-ctu_res_predict_rf <- cprg_ctu %>%
+### predict 2020, 2021, 2022 data for unknown cities
+
+
+coctu_res_predict_rf <- cprg_ctu %>%
   left_join(urbansim_res, by = c(
     "gnis" = "ctu_id",
     "ctu_name",
@@ -311,270 +274,55 @@ ctu_res_predict_rf <- cprg_ctu %>%
     "county_name",
     "thrive_designation"
   )) %>%
+  filter(!coctu_id %in% electricity_res$coctu_id,
+         inventory_year %in% c(2020:2022))%>%
+  left_join(mn_parcel_res %>% select(-ctu_name),
+            by = c("gnis" = "ctu_id")
+  ) %>%
+  # weather data
+  left_join(noaa_year, by = "inventory_year") %>% 
   mutate(mwh_predicted = predict(rf_res_model, .)) %>%
   filter(!is.na(mwh_predicted)) %>% 
-  st_drop_geometry() %>%
+  st_drop_geometry() 
+
+ctu_res_predict_rf <- coctu_res_predict_rf %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
   summarize(residential_mwh_predicted_rf = sum(mwh_predicted)) %>%
-  ungroup()
+  ungroup() %>% 
+  mutate(data_source = "Model prediction")
 
+ctu_res_out <- bind_rows(ctu_utility_year %>% 
+                           select(ctu_name,
+                                  ctu_class,
+                                  inventory_year,
+                                  residential_mwh) %>% 
+                           mutate(data_source = "Utility report"),
+                         ctu_res_predict_rf %>% 
+                           rename(residential_mwh = residential_mwh_predicted_rf)
+                         )
 
-ctu_res_predict_gam <- cprg_ctu %>%
-  left_join(urbansim_res, by = c(
-    "gnis" = "ctu_id",
-    "ctu_name",
-    "ctu_class",
-    "county_name",
-    "thrive_designation"
-  )) %>%
-  mutate(mwh_predicted = predict(gam_model, .)) %>%
-  filter(!is.na(mwh_predicted)) %>%
-  st_drop_geometry() %>%
-  group_by(ctu_name, ctu_class, inventory_year) %>%
-  summarize(residential_mwh_predicted_gam = sum(mwh_predicted)) %>%
-  ungroup()
+## county
 
-ctu_res_predict_lm <- cprg_ctu %>%
-  left_join(urbansim_res, by = c(
-    "gnis" = "ctu_id",
-    "ctu_name",
-    "ctu_class",
-    "county_name",
-    "thrive_designation"
-  )) %>%
-  mutate(mwh_predicted = predict(res_simple, .)) %>%
-  filter(!is.na(mwh_predicted)) %>%
-  st_drop_geometry() %>%
-  group_by(ctu_name, ctu_class, inventory_year) %>%
-  summarize(residential_mwh_predicted_lm = sum(mwh_predicted)) %>%
-  ungroup()
-
-plot(residential_mwh_predicted_rf ~ residential_mwh_predicted_gam,
-  data = left_join(ctu_res_predict_rf,
-               ctu_res_predict_gam))
-plot(residential_mwh_predicted_lm ~ residential_mwh_predicted_gam,
-     data = left_join(ctu_res_predict_lm,
-                      ctu_res_predict_gam))
-
-plot(residential_mwh_predicted_lm ~inventory_year,
-     data = ctu_res_predict_lm %>% filter(ctu_name == "Minneapolis"))
-
-ctu_res_predict %>% distinct(ctu_name, ctu_class)
-
-ctu_res_gam <- left_join(
-  ctu_res_predict_gam,
-  ctu_utility_year %>%
-    select(1:4)
-)
-
-ctu_res_lm <- left_join(
-  ctu_res_predict_lm,
-  ctu_utility_year %>%
-    select(1:4)
-)
-
-#plot random grab of some cities
-sample_ctus <- ctu_res_gam %>%
-  filter(!is.na(residential_mwh)) %>% 
-  distinct(ctu_name, ctu_class) %>%
-  slice_sample(n = 10) %>%
-  pull(ctu_name)
-
-mpls_ctu_id <- ctu_res_gam %>% 
-  filter(ctu_name == "Minneapolis") %>% 
-  pull(ctu_id)
-
-sample_ctus <- unique(c(sample_ctus, mpls_ctu_id[[1]]))
-
-plot_data_gam <- ctu_res_gam %>%
-  filter(ctu_name %in% sample_ctus,
-         ctu_class == "CITY")
-plot_data_lm <- ctu_res_lm %>%
-  filter(ctu_name %in% sample_ctus,
-         ctu_class == "CITY")
-
-ggplot(plot_data_gam, aes(x = inventory_year)) +
-  geom_line(aes(y = residential_mwh_predicted_gam, color = ctu_name), linewidth = 0.8) +
-  geom_point(
-    data = filter(plot_data_gam, !is.na(residential_mwh)),
-    aes(y = residential_mwh, color = ctu_name),
-    shape = 1, size = 2, stroke = 1
-  ) +
-  facet_wrap(~ ctu_name, scales = "free_y") +
-  labs(
-    x = "Year",
-    y = "Residential MWh",
-    title = "Predicted and Observed Residential Electricity Use",
-    subtitle = "GAM predictions (lines) and observed values (circles)"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-ggplot(plot_data_lm, aes(x = inventory_year)) +
-  geom_line(aes(y = residential_mwh_predicted_lm, color = ctu_name), linewidth = 0.8) +
-  geom_point(
-    data = filter(plot_data_lm, !is.na(residential_mwh)),
-    aes(y = residential_mwh, color = ctu_name),
-    shape = 1, size = 2, stroke = 1
-  ) +
-  facet_wrap(~ ctu_name, scales = "free_y") +
-  labs(
-    x = "Year",
-    y = "Residential MWh",
-    title = "Predicted and Observed Residential Electricity Use",
-    subtitle = "LM predictions (lines) and observed values (circles)"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-
-#### basic linear model and anchor ####
-### basic approach to determine average coefficients of several housing types,
-### anchor cities to their latest mwh annual delivery,
-### and back/forecast based on coefficients and estimated changes in housing stock
-
-# fit basic model to known cities
-
-electricity_res <- electricity_res %>% 
-  mutate(mfh = multi_fam_own + multi_fam_rent,
-         sfh_ll = single_fam_det_ll_own,
-         sfh_sl = single_fam_det_rent + single_fam_det_sl_own + manufactured_homes,
-         sf_att = single_fam_attached_own + single_fam_attached_rent)
-
-unit_model <- lm(
-  residential_mwh ~ mfh +
-    sfh_ll +
-    sfh_sl +
-    sf_att,
-  data = electricity_res
-)
-summary(unit_model)
-
-# extract coefficients
-unit_coefs <- data.frame(term = names(unit_model$coefficients),
-                         estimate = unit_model$coefficients) %>%
-  select(term, estimate) %>%
-  filter(term != "(Intercept)") 
-
-# use latest year of data for each city (that has data) as 'intercept'
-
-latest_data <- electricity_res %>%
-  group_by(coctu_id) %>% 
-  filter(inventory_year == max(inventory_year, na.rm = TRUE))
-
-base_mwh <- latest_data %>%
-  select(coctu_id, inventory_year, base_year_mwh = residential_mwh)
-
-# get base values per coctu_id
-base_urbansim <- latest_data %>%
-  select(coctu_id, base_year = inventory_year, base_mwh = residential_mwh) %>%
-  inner_join(urbansim_res %>% 
-               mutate(mfh = multi_fam_own + multi_fam_rent,
-                      sfh_ll = single_fam_det_ll_own,
-                      sfh_sl = single_fam_det_rent + single_fam_det_sl_own + manufactured_homes,
-                      sf_att = single_fam_attached_own + single_fam_attached_rent), 
-             by = "coctu_id") %>%
-  filter(inventory_year == base_year)
-
-# calculate urbansim deltas from base year to each other year
-delta_units <- urbansim_res %>% 
-  mutate(mfh = multi_fam_own + multi_fam_rent,
-         sfh_ll = single_fam_det_ll_own,
-         sfh_sl = single_fam_det_rent + single_fam_det_sl_own + manufactured_homes,
-         sf_att = single_fam_attached_own + single_fam_attached_rent) %>%
-  select(ctu_name, ctu_id, county_name,coctu_id, inventory_year,
-         mfh, sfh_ll, sfh_sl, sf_att) %>%
-  pivot_longer(cols = -c(ctu_name, ctu_id, county_name,coctu_id, inventory_year), names_to = "unit_type", values_to = "unit_count") %>%
-  inner_join(
-    base_urbansim %>%
-      pivot_longer(cols = mfh:sf_att,
-                   names_to = "unit_type", values_to = "base_unit_count") %>%
-      select(coctu_id, unit_type, base_unit_count),
-    by = c("coctu_id", "unit_type")
-  ) %>%
-  mutate(unit_delta = unit_count - base_unit_count)
-
-
-  # apply coefficients to delta and sum
-delta_mwh <- delta_units %>% 
-  left_join(unit_coefs, by = c("unit_type" = "term")) %>%
-  mutate(delta_mwh = unit_delta * estimate) %>%
-  group_by(ctu_name, county_name, coctu_id, inventory_year) %>%
-  summarise(delta_total_mwh = sum(delta_mwh, na.rm = TRUE), .groups = "drop") %>%
-  # add delta to base year MWh
-  left_join(base_urbansim %>% select(coctu_id, ctu_id, base_mwh), by = "coctu_id") %>%
-  mutate(projected_mwh = base_mwh + delta_total_mwh)
-
-## graph as check
-
-ctu_res_delta <- left_join(
-  left_join(cprg_ctu %>% 
-              st_drop_geometry() %>% 
-              select(ctu_id = gnis, ctu_class),
-            delta_mwh,
-            by = "ctu_id"),
-  ctu_utility_year %>%
-    select(1:4)
-)
-
-#plot random grab of some cities
-sample_ctus <- ctu_res_delta %>%
-  filter(!is.na(projected_mwh)) %>% 
-  distinct(ctu_name, ctu_id) %>%
-  slice_sample(n = 10) %>%
-  pull(ctu_id)
-
-mpls_ctu_id <- ctu_res_delta %>% 
-  filter(ctu_name == "Minneapolis") %>% 
-  pull(ctu_id)
-
-sample_ctus <- unique(c(sample_ctus, mpls_ctu_id[[1]]))
-
-plot_data_delta <- ctu_res_delta %>%
-  filter(ctu_id %in% sample_ctus)
-
-ggplot(plot_data_delta, aes(x = inventory_year)) +
-  geom_line(aes(y = projected_mwh, color = ctu_name), linewidth = 0.8) +
-  geom_point(
-    data = filter(plot_data_delta, !is.na(residential_mwh)),
-    aes(y = residential_mwh, color = ctu_name),
-    shape = 1, size = 2, stroke = 1
-  ) +
-  facet_wrap(~ ctu_name, scales = "free_y") +
-  labs(
-    x = "Year",
-    y = "Residential MWh",
-    title = "Predicted and Observed Residential Electricity Use",
-    subtitle = "Housing coefficient predictions (lines) and observed values (circles)"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "none")
-
-delta_units %>% filter(ctu_name == "Rosemount", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
-delta_units %>% filter(ctu_name == "Minneapolis", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
-delta_units %>% filter(ctu_name == "New Trier", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
-delta_units %>% filter(ctu_name == "Roseville", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
-delta_units %>% filter(ctu_name == "Mound", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
-delta_units %>% filter(ctu_name == "Falcon Heights", inventory_year %in% c(2010, 2020, 2030, 2040, 2050))
-
-
-## add predicted mwh
-
-county_res_predict <- cprg_ctu %>%
-  left_join(urbansim_res, by = c(
-    "gnis" = "ctu_id",
-    "ctu_name",
-    "county_name",
-    "thrive_designation"
-  )) %>%
-  left_join(noaa_year) %>%
-  mutate(mwh_predicted = predict(rf_res_model, .)) %>%
-  filter(!is.na(mwh_predicted)) %>% # removes 2025 data
-  st_drop_geometry() %>%
+coctu_res_year
+county_res_predict <-  coctu_res_predict_rf %>%
   group_by(county_name, inventory_year) %>%
-  summarize(residential_mwh_predicted = sum(mwh_predicted)) %>%
+  summarize(residential_mwh_predicted_rf = sum(mwh_predicted)) %>%
+  ungroup() %>% 
+  mutate(data_source = "Model prediction")
+
+county_res_out <- bind_rows(coctu_res_year %>% 
+                           select(county_name,
+                                  inventory_year,
+                                  residential_mwh) %>% 
+                           mutate(data_source = "Utility report"),
+                           county_res_predict %>% 
+                           rename(residential_mwh = residential_mwh_predicted_rf)
+) %>% 
+  filter(inventory_year %in% c(2020:2022)) %>% 
+  group_by(county_name, inventory_year, data_source) %>%
+  summarize(residential_mwh = sum(residential_mwh)) %>%
   ungroup()
 
 # save intermediate rds
-saveRDS(ctu_res, "_energy/data-raw/predicted_ctu_residential_mwh.rds")
-saveRDS(county_res_predict, "_energy/data-raw/predicted_county_residential_mwh.rds")
+saveRDS(ctu_res_out, "_energy/data-raw/predicted_ctu_residential_mwh.rds")
+saveRDS(county_res_out, "_energy/data-raw/predicted_county_residential_mwh.rds")
