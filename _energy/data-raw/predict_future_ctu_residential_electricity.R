@@ -1,4 +1,6 @@
-### Develop model for predicting CTU residential electricity usage ###
+### Develop model for predicting future CTU residential electricity usage ###
+# This script should be rerun after all updates to predicted_ctu_residential_mwh.rds 
+# from script _energy/data-raw/predict_current_ctu_residential_electricity.R
 
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
@@ -14,72 +16,9 @@ cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
   )))
 cprg_county <- read_rds("_meta/data/cprg_county.RDS") %>%
   filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
-ctu_population <- read_rds("_meta/data/ctu_population.RDS") %>%
-  left_join(cprg_county %>% st_drop_geometry() %>% select(geoid, county_name)) %>%
-  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
 
-## load in utility data, keeping only complete city-years and collapse to city-year
-## i.e. if city-year is missing ANY utility data, delete
 
-# bring in weather data
-# weather data
-noaa <- readRDS("_meta/data/noaa_weather_monthly.rds")
-
-noaa_year <- noaa %>%
-  group_by(inventory_year) %>%
-  summarize(
-    heating_degree_days = sum(heating_degree_days),
-    cooling_degree_days = sum(cooling_degree_days),
-    temperature = mean(dry_bulb_temp)
-  )
-
-ctu_utility_mwh <- read_rds("_energy/data/ctu_utility_mwh.RDS")
-
-# reduce to ctu-years with complete utility reporting
-ctu_utility_year <- ctu_utility_mwh %>%
-  group_by(ctu_name, ctu_class, inventory_year) %>%
-  filter(!any(is.na(total_mwh))) %>%
-  summarize(
-    residential_mwh = sum(residential_mwh, na.rm = TRUE),
-    business_mwh = sum(business_mwh, na.rm = TRUE),
-    total_mwh = sum(total_mwh)
-  ) %>%
-  ungroup()
-
-# split CTU to COCTU based on population for multi-county CTUs
-# necessary step for county proportional based analysis
-coctu_population <- ctu_population %>%
-  distinct(ctu_name, ctu_class, inventory_year, county_name, ctu_population) %>% # Ensure unique rows per city-county-year
-  group_by(ctu_name, ctu_class, inventory_year) %>%
-  mutate(
-    total_ctu_population = sum(ctu_population, na.rm = TRUE), # Sum populations across counties for each city-year
-    coctu_population_prop = ctu_population / total_ctu_population,
-    multi_county = n_distinct(county_name) > 1
-  ) %>%
-  ungroup()
-
-#### RESIDENTIAL ####
-
-### split residential mwh based on population splits
-
-coctu_res_year <- ctu_utility_year %>%
-  # Join city_total_population back to main dataset
-  full_join(coctu_population,
-            by = c("ctu_name", "ctu_class", "inventory_year"),
-            relationship = "many-to-many"
-  ) %>%
-  # Calculate proportions and disaggregated values
-  group_by(ctu_name, ctu_class, inventory_year, county_name) %>%
-  mutate(
-    residential_mwh = ifelse(
-      multi_county,
-      residential_mwh * coctu_population_prop,
-      residential_mwh
-    )
-  ) %>%
-  ungroup() %>%
-  filter(!is.na(residential_mwh)) %>%
-  select(ctu_name, ctu_class, inventory_year, residential_mwh, county_name, ctu_population)
+ctu_res <- read_rds("_energy/data-raw/predicted_ctu_residential_mwh.rds")
 
 # predictor data
 mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")

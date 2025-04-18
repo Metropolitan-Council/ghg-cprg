@@ -265,7 +265,7 @@ abline(0, 1)
 importance(rf_res_train, 1)
 
 
-### predict 2020, 2021, 2022 data for unknown cities
+### predict 2020, 2021, 2022 data for unknown coctu
 
 
 coctu_res_predict_rf <- cprg_ctu %>%
@@ -283,48 +283,38 @@ coctu_res_predict_rf <- cprg_ctu %>%
   ) %>%
   # weather data
   left_join(noaa_year, by = "inventory_year") %>% 
-  mutate(mwh_predicted = predict(rf_res_model, .)) %>%
+  mutate(mwh_predicted = predict(rf_res_model, .),
+         data_source = "Model prediction") %>%
   filter(!is.na(mwh_predicted)) %>% 
-  st_drop_geometry() 
+  st_drop_geometry() %>% 
+  select(coctu_id, 
+         ctu_name, 
+         ctu_class, 
+         county_name, 
+         inventory_year,
+         mwh_predicted, 
+         data_source)
+  
 
-ctu_res_predict_rf <- coctu_res_predict_rf %>%
-  group_by(ctu_name, ctu_class, inventory_year) %>%
-  summarize(residential_mwh_predicted_rf = sum(mwh_predicted)) %>%
-  ungroup() %>% 
-  mutate(data_source = "Model prediction")
-
-ctu_res_out <- bind_rows(ctu_utility_year %>% 
-                           select(ctu_name,
-                                  ctu_class,
-                                  inventory_year,
+coctu_res_out <- bind_rows(coctu_res_year %>%
+                             left_join(electricity_res %>% 
+                                         distinct(ctu_name,
+                                                  ctu_class,
+                                                  county_name,
+                                                  coctu_id)) %>% 
+                             filter(!is.na(coctu_id)) %>% 
+                             select(coctu_id, 
+                                    ctu_name, 
+                                    ctu_class, 
+                                    county_name, 
+                                    inventory_year,
                                   residential_mwh) %>% 
                            mutate(data_source = "Utility report"),
-                         ctu_res_predict_rf %>% 
-                           rename(residential_mwh = residential_mwh_predicted_rf)
+                           coctu_res_predict_rf %>% 
+                           rename(residential_mwh = mwh_predicted)
                          )
 
-## county
 
-coctu_res_year
-county_res_predict <-  coctu_res_predict_rf %>%
-  group_by(county_name, inventory_year) %>%
-  summarize(residential_mwh_predicted_rf = sum(mwh_predicted)) %>%
-  ungroup() %>% 
-  mutate(data_source = "Model prediction")
-
-county_res_out <- bind_rows(coctu_res_year %>% 
-                           select(county_name,
-                                  inventory_year,
-                                  residential_mwh) %>% 
-                           mutate(data_source = "Utility report"),
-                           county_res_predict %>% 
-                           rename(residential_mwh = residential_mwh_predicted_rf)
-) %>% 
-  filter(inventory_year %in% c(2020:2022)) %>% 
-  group_by(county_name, inventory_year, data_source) %>%
-  summarize(residential_mwh = sum(residential_mwh)) %>%
-  ungroup()
 
 # save intermediate rds
-saveRDS(ctu_res_out, "_energy/data-raw/predicted_ctu_residential_mwh.rds")
-saveRDS(county_res_out, "_energy/data-raw/predicted_county_residential_mwh.rds")
+saveRDS(coctu_res_out, "_energy/data-raw/predicted_coctu_residential_mwh.rds")
