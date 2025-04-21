@@ -9,9 +9,10 @@ MN_elecUtils <- readRDS(here("_energy", "data", "MN_elecUtils.RDS")) %>%
 # simplified CPRG CTU geometry for quick comparison -- dissolve counties and just retain cities/township boundaries
 cprg_mn_ctu_dissolve <- readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>%
   mutate(geometry = st_make_valid(geometry)) %>%
+  mutate(ctu_area_m2 = st_area(geometry)) %>%
   mutate(geometry = st_simplify(geometry, dTolerance = 0.1)) %>%
   st_transform(st_crs(MN_elecUtils)) %>%
-  group_by(ctu_name, ctu_class) %>%
+  group_by(ctu_name, ctu_class, ctu_area_m2) %>%
   summarise(geometry = st_union(geometry), .groups = "keep") %>%
   ungroup() %>%
   st_make_valid() %>%
@@ -21,16 +22,18 @@ cprg_mn_ctu_dissolve <- readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>%
   ) %>%
   filter(state_name == "Minnesota")
 
-# Perform spatial join to match each CTU (city/township) with electric utilities
-ctu_elec_utility_mapping <- st_join(
-  cprg_mn_ctu_dissolve,
-  MN_elecUtils,
-  join = st_intersects, # Searches for utilities that overlap each CTU
-  left = FALSE
+# Perform spatial intersect to match each CTU (city/township) with electric utilities
+ctu_elecUtil_overlap <- st_intersection(
+  cprg_mn_ctu_dissolve %>% select(ctu_name, ctu_class, ctu_area_m2),
+  MN_elecUtils %>% select(utility_name = full_name)
 ) %>%
-  select(ctu_name, ctu_class, utility_name = full_name) %>%
-  distinct() %>%
-  st_drop_geometry()
+  mutate(overlap_m2 = st_area(geometry)) %>%
+  group_by(ctu_name, ctu_class, utility_name, ctu_area_m2) %>%
+  summarise(overlap_m2 = sum(overlap_m2), .groups = "drop") %>%
+  mutate(pct_of_city = as.numeric(overlap_m2 / ctu_area_m2)) %>%
+  filter(pct_of_city >= 0.01) %>%                 
+  arrange(ctu_name, desc(pct_of_city))
+
 
 # Count of utilities per CTU
 ctu_elec_utility_count <- ctu_elec_utility_mapping %>%
