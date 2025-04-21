@@ -150,24 +150,39 @@ unit_model_time <- lm(
     as.numeric(inventory_year),
   data = electricity_busi
 )
-summary(unit_model)
+summary(unit_model_time)
 
 
-# add year as random effect
-unit_model_lme <- lme(
+unit_model_latest <- lm(
   business_mwh ~
     job_spaces +
     comm_jobs +
     ind_jobs,
-  random = ~1|inventory_year,
-  data = electricity_busi,
-  na.action = na.omit
+  data = electricity_busi %>% 
+    group_by(coctu_id) %>% 
+    mutate(latest_year = max(inventory_year)) %>% 
+    filter(inventory_year == latest_year) %>% 
+    ungroup
 )
-summary(unit_model_lme)
+summary(unit_model_latest)
 
-# extract coefficients
-unit_coefs <- data.frame(term = names(unit_model$coefficients),
-                         estimate = unit_model$coefficients) %>%
+
+# add year as random effect
+# library(nlme)
+# unit_model_lme <- lme(
+#   business_mwh ~
+#     job_spaces +
+#     comm_jobs +
+#     ind_jobs,
+#   random = ~1|inventory_year,
+#   data = electricity_busi,
+#   na.action = na.omit
+# )
+# summary(unit_model_lme)
+
+# extract coefficients from model of interest
+unit_coefs <- data.frame(term = names(unit_model_latest$coefficients),
+                         estimate = unit_model_latest$coefficients) %>%
   select(term, estimate) %>%
   filter(term != "(Intercept)") 
 
@@ -245,28 +260,26 @@ delta_mwh <- delta_units %>%
 ctu_busi_delta <- left_join(
   delta_mwh,
   coctu_busi %>%
-    group_by(ctu_name, ctu_class, inventory_year) %>% 
+    group_by(ctu_name, ctu_class, coctu_id, inventory_year) %>% 
     summarize(business_mwh = sum(business_mwh))
 )
 
 #plot random grab of some cities
 sample_ctus <- ctu_busi_delta %>%
   filter(!is.na(projected_mwh)) %>% 
-  distinct(coctu_id) %>%
-  slice_sample(n = 40) %>%
-  pull(coctu_id)
+  distinct(ctu_name, ctu_class, coctu_id)%>%
+  slice_sample(n = 20)
+# 
+# mpls_ctu_id <- ctu_busi_delta %>% 
+#   filter(ctu_name == "Minneapolis") %>% 
+#   pull(coctu_id)
+# 
+# sample_ctus <- unique(c(sample_ctus, mpls_ctu_id[[1]]))
 
-mpls_ctu_id <- ctu_busi_delta %>% 
-  filter(ctu_name == "Minneapolis") %>% 
-  pull(coctu_id)
-
-sample_ctus <- unique(c(sample_ctus, mpls_ctu_id[[1]]))
-
-plot_data_delta <- ctu_busi_delta %>%
-  filter(coctu_id %in% sample_ctus)
+plot_data_delta <- left_join(sample_ctus,ctu_busi_delta)
 
 ggplot(plot_data_delta, aes(x = inventory_year)) +
-  geom_line(aes(y = projected_mwh, color = ctu_name), linewidth = 0.8) +
+  geom_line(aes(y = projected_mwh, color = ctu_name, group = ctu_class), linewidth = 0.8) +
   geom_point(
     data = filter(plot_data_delta, !is.na(business_mwh)),
     aes(y = business_mwh, color = ctu_name),
@@ -323,7 +336,7 @@ county_busi <- bind_rows(coctu_busi,
   filter(inventory_year >= 2020)
 
 ggplot(county_busi,
-       aes(x = inventory_year, y = residential_mwh)) +
+       aes(x = inventory_year, y = business_mwh)) +
   geom_line() +
   facet_wrap(.~county_name, scales = "free")
 
