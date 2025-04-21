@@ -20,48 +20,35 @@ cprg_county <- read_rds("_meta/data/cprg_county.RDS") %>%
 
 coctu_busi <- read_rds("_energy/data-raw/predicted_coctu_business_mwh.rds")
 
-# predictor data
+#### Business predictors ####
+
 mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
-
-# residential predictors
-mn_parcel_res <- mn_parcel %>%
-  filter(mc_classification %in% c(
-    "single_family_home",
-    "multifamily_home",
-    "apartment"
-  )) %>%
-  group_by(ctu_name, ctu_id, mc_classification) %>%
-  summarize(total_emv = sum(total_emv), mean_year = mean(mean_year)) %>%
-  pivot_wider(
-    id_cols = c(ctu_name, ctu_id),
-    names_from = mc_classification,
-    values_from = c(total_emv, mean_year)
-  ) %>%
-  na_replace() %>%
-  ungroup()
-
-
-# urbansim
-
-residential <- c(
-  "total_pop",
-  "total_households",
-  "total_residential_units",
-  "manufactured_homes",
-  "single_fam_det_sl_own",
-  "single_fam_det_ll_own",
-  "single_fam_det_rent",
-  "single_fam_attached_own",
-  "single_fam_attached_rent",
-  "multi_fam_own",
-  "multi_fam_rent"
+business <- c(
+  "total_job_spaces",
+  "js_type_1011",
+  "js_type_13",
+  "js_type_14",
+  "zones_total_jobs_20_minutes_tt",
+  "zones_total_jobs_45_minutes_tt",
+  "max_industrial",
+  "js_type_12",
+  "jobs_sector_4",
+  "jobs_sector_5",
+  "jobs_sector_6",
+  "jobs_sector_7",
+  "jobs_sector_8",
+  "jobs_sector_9",
+  "jobs_sector_10",
+  "jobs_sector_1",
+  "jobs_sector_2",
+  "jobs_sector_3"
 )
 
-### create 2005-2050 urbansim residential dataset
-urbansim_res <- urbansim %>%
-  filter(variable %in% residential) %>%
+### create 2010-2050 urbansim residential dataset
+urbansim_busi <- urbansim %>%
+  filter(variable %in% business) %>%
   group_by(coctu_id, variable) %>%
   complete(inventory_year = full_seq(c(2005, 2050), 1)) %>%
   arrange(coctu_id, variable, inventory_year) %>%
@@ -82,7 +69,7 @@ urbansim_res <- urbansim %>%
   ) %>%
   left_join(
     cprg_ctu %>% st_drop_geometry() %>%
-      distinct(ctu_name, ctu_class, gnis, thrive_designation),
+      distinct(ctu_name, ctu_class, thrive_designation, gnis),
     by = c("ctu_id" = "gnis")
   ) %>%
   left_join(
@@ -92,49 +79,89 @@ urbansim_res <- urbansim %>%
     by = c("county_id" = "geoid")
   )
 
+mn_parcel_busi <- mn_parcel %>%
+  filter(mc_classification %in% c(
+    "commercial",
+    "industrial",
+    "public_building"
+  )) %>%
+  group_by(ctu_name, ctu_id, mc_classification) %>%
+  summarize(total_emv = sum(total_emv), mean_year = mean(mean_year)) %>%
+  pivot_wider(
+    id_cols = c(ctu_name, ctu_id),
+    names_from = mc_classification,
+    values_from = c(total_emv, mean_year)
+  ) %>%
+  na_replace() %>%
+  ungroup()
+
 
 # merge into utility data
-electricity_res <- left_join(coctu_res,
-                             urbansim_res,
+electricity_busi <- left_join(coctu_busi,
+                             urbansim_busi,
                              by = c("coctu_id","ctu_name", "ctu_class", "county_name", "inventory_year")
 ) %>%
-  left_join(mn_parcel_res %>% select(-ctu_name),
+  left_join(mn_parcel_busi %>% select(-ctu_name),
             by = c("ctu_id" = "ctu_id")
   )
 
 
 #### basic linear model and anchor ####
-### basic approach to determine average coefficients of several housing types,
+### basic approach to determine average coefficients of several job types,
 ### anchor cities to their latest mwh annual delivery,
-### and back/forecast based on coefficients and estimated changes in housing stock
+### and back/forecast based on coefficients and estimated changes in jobs
 
 # fit basic model to known cities
 
-electricity_res <- electricity_res %>% 
-  mutate(mfh = multi_fam_own + multi_fam_rent,
-         sfh_ll = single_fam_det_ll_own,
-         sfh_sl = single_fam_det_rent + single_fam_det_sl_own + manufactured_homes,
-         sf_att = single_fam_attached_own + single_fam_attached_rent) %>% 
+electricity_busi <- electricity_busi %>% 
+  mutate(job_spaces = js_type_1011 +
+         js_type_13 +
+         js_type_14 +
+         js_type_12,
+         comm_jobs = jobs_sector_4+
+         jobs_sector_5+
+         jobs_sector_6+
+         jobs_sector_7+
+         jobs_sector_8+
+         jobs_sector_9+
+         jobs_sector_10,
+         ind_jobs = jobs_sector_1+
+           jobs_sector_2 +
+           jobs_sector_3
+         ) %>% 
   # don't predict zeros (coctu issues)
-  filter(residential_mwh > 0)
+  filter(business_mwh > 0)
 
 unit_model <- lm(
-  residential_mwh ~ mfh +
-    sfh_ll +
-    sfh_sl +
-    sf_att,
-  data = electricity_res
+  business_mwh ~
+    job_spaces +
+    comm_jobs +
+    ind_jobs,
+  data = electricity_busi
 )
 summary(unit_model)
 
-# add ctu_name as random effect
+#observed some temporal downward trends (efficiency?), add year in
+unit_model_time <- lm(
+  business_mwh ~
+    job_spaces +
+    comm_jobs +
+    ind_jobs +
+    as.numeric(inventory_year),
+  data = electricity_busi
+)
+summary(unit_model)
+
+
+# add year as random effect
 unit_model_lme <- lme(
-  residential_mwh ~ mfh +
-    sfh_ll +
-    sfh_sl +
-    sf_att,
-  random = ~1|ctu_name,
-  data = electricity_res
+  business_mwh ~
+    job_spaces +
+    comm_jobs +
+    ind_jobs,
+  random = ~1|inventory_year,
+  data = electricity_busi,
+  na.action = na.omit
 )
 summary(unit_model_lme)
 
@@ -146,36 +173,56 @@ unit_coefs <- data.frame(term = names(unit_model$coefficients),
 
 # use latest year of data for each city (that has data) as 'intercept'
 
-latest_data <- electricity_res %>%
+latest_data <- electricity_busi %>%
   group_by(coctu_id) %>% 
   filter(inventory_year == max(inventory_year, na.rm = TRUE))
 
 base_mwh <- latest_data %>%
-  select(coctu_id, inventory_year, base_year_mwh = residential_mwh)
+  select(coctu_id, inventory_year, base_year_mwh = business_mwh)
 
 # get base values per coctu_id
 base_urbansim <- latest_data %>%
-  select(coctu_id, base_year = inventory_year, base_mwh = residential_mwh) %>%
-  inner_join(urbansim_res %>% 
-               mutate(mfh = multi_fam_own + multi_fam_rent,
-                      sfh_ll = single_fam_det_ll_own,
-                      sfh_sl = single_fam_det_rent + single_fam_det_sl_own + manufactured_homes,
-                      sf_att = single_fam_attached_own + single_fam_attached_rent), 
+  select(coctu_id, base_year = inventory_year, base_mwh = business_mwh) %>%
+  inner_join(urbansim_busi %>% 
+               mutate(job_spaces = js_type_1011 +
+                        js_type_13 +
+                        js_type_14 +
+                        js_type_12,
+                      comm_jobs = jobs_sector_4+
+                        jobs_sector_5+
+                        jobs_sector_6+
+                        jobs_sector_7+
+                        jobs_sector_8+
+                        jobs_sector_9+
+                        jobs_sector_10,
+                      ind_jobs = jobs_sector_1+
+                        jobs_sector_2 +
+                        jobs_sector_3), 
              by = "coctu_id") %>%
   filter(inventory_year == base_year)
 
 # calculate urbansim deltas from base year to each other year
-delta_units <- urbansim_res %>% 
-  mutate(mfh = multi_fam_own + multi_fam_rent,
-         sfh_ll = single_fam_det_ll_own,
-         sfh_sl = single_fam_det_rent + single_fam_det_sl_own + manufactured_homes,
-         sf_att = single_fam_attached_own + single_fam_attached_rent) %>%
+delta_units <- urbansim_busi %>% 
+  mutate(job_spaces = js_type_1011 +
+           js_type_13 +
+           js_type_14 +
+           js_type_12,
+         comm_jobs = jobs_sector_4+
+           jobs_sector_5+
+           jobs_sector_6+
+           jobs_sector_7+
+           jobs_sector_8+
+           jobs_sector_9+
+           jobs_sector_10,
+         ind_jobs = jobs_sector_1+
+           jobs_sector_2 +
+           jobs_sector_3) %>%
   select(ctu_name, ctu_class, ctu_id, county_name,coctu_id, inventory_year,
-         mfh, sfh_ll, sfh_sl, sf_att) %>%
+         job_spaces, comm_jobs, ind_jobs) %>%
   pivot_longer(cols = -c(ctu_name, ctu_id, ctu_class, county_name,coctu_id, inventory_year), names_to = "unit_type", values_to = "unit_count") %>%
   inner_join(
     base_urbansim %>%
-      pivot_longer(cols = mfh:sf_att,
+      pivot_longer(cols = job_spaces:ind_jobs,
                    names_to = "unit_type", values_to = "base_unit_count") %>%
       select(coctu_id, unit_type, base_unit_count),
     by = c("coctu_id", "unit_type")
@@ -195,56 +242,56 @@ delta_mwh <- delta_units %>%
 
 ## graph as check
 
-ctu_res_delta <- left_join(
+ctu_busi_delta <- left_join(
   delta_mwh,
-  coctu_res %>%
+  coctu_busi %>%
     group_by(ctu_name, ctu_class, inventory_year) %>% 
-    summarize(residential_mwh = sum(residential_mwh))
+    summarize(business_mwh = sum(business_mwh))
 )
 
 #plot random grab of some cities
-sample_ctus <- ctu_res_delta %>%
+sample_ctus <- ctu_busi_delta %>%
   filter(!is.na(projected_mwh)) %>% 
   distinct(coctu_id) %>%
-  slice_sample(n = 10) %>%
+  slice_sample(n = 40) %>%
   pull(coctu_id)
 
-mpls_ctu_id <- ctu_res_delta %>% 
+mpls_ctu_id <- ctu_busi_delta %>% 
   filter(ctu_name == "Minneapolis") %>% 
   pull(coctu_id)
 
 sample_ctus <- unique(c(sample_ctus, mpls_ctu_id[[1]]))
 
-plot_data_delta <- ctu_res_delta %>%
+plot_data_delta <- ctu_busi_delta %>%
   filter(coctu_id %in% sample_ctus)
 
 ggplot(plot_data_delta, aes(x = inventory_year)) +
   geom_line(aes(y = projected_mwh, color = ctu_name), linewidth = 0.8) +
   geom_point(
-    data = filter(plot_data_delta, !is.na(residential_mwh)),
-    aes(y = residential_mwh, color = ctu_name),
+    data = filter(plot_data_delta, !is.na(business_mwh)),
+    aes(y = business_mwh, color = ctu_name),
     shape = 1, size = 2, stroke = 1
   ) +
   facet_wrap(~ ctu_name, scales = "free_y") +
   labs(
     x = "Year",
-    y = "Residential MWh",
-    title = "Predicted and Observed Residential Electricity Use",
-    subtitle = "Housing coefficient predictions (lines) and observed values (circles)"
+    y = "Business MWh",
+    title = "Predicted and Observed Business Electricity Use",
+    subtitle = "Job growth coefficient predictions (lines) and observed values (circles)"
   ) +
   theme_minimal() +
   theme(legend.position = "none")
 
 # output data from most recent data year onward (utility or RF model where necessary)
 
-coctu_res <- mutate(coctu_res, data_source = if_else(
+coctu_busi <- mutate(coctu_busi, data_source = if_else(
   data_source == "Model prediction",
   "Model prediction - inventory",
   data_source
 ))
 
 # grab max inventory year per coctu_id
-max_years <- coctu_res %>%
+max_years <- coctu_busi %>%
   group_by(coctu_id) %>%
   summarize(max_year = max(inventory_year), .groups = "drop")
 
@@ -257,29 +304,29 @@ delta_new <- delta_mwh %>%
          ctu_class,
          county_name,
          inventory_year,
-         residential_mwh = projected_mwh) %>% 
+         business_mwh = projected_mwh) %>% 
   mutate(data_source = "Model prediction - forecast")
 
-ctu_res <- bind_rows(coctu_res,
+ctu_busi <- bind_rows(coctu_busi,
                      delta_new) %>% 
   group_by(ctu_name, ctu_class, inventory_year, data_source) %>% 
-  summarize(residential_mwh = sum(residential_mwh))
+  summarize(business_mwh = sum(business_mwh))
 
 ## county
 
-county_res <- bind_rows(coctu_res,
+county_busi <- bind_rows(coctu_busi,
                         delta_new) %>% 
   group_by(county_name, inventory_year) %>% 
-  summarize(residential_mwh = sum(residential_mwh)) %>% 
+  summarize(business_mwh = sum(business_mwh)) %>% 
   # data before 2019 is variable in how many ctus contribute, so keeping 2020 onward until
   # full inventory available
   filter(inventory_year >= 2020)
 
-ggplot(county_res,
+ggplot(county_busi,
        aes(x = inventory_year, y = residential_mwh)) +
   geom_line() +
   facet_wrap(.~county_name, scales = "free")
 
 # save intermediate rds
-saveRDS(ctu_res, "_energy/data-raw/forecast_ctu_residential_mwh.rds")
-saveRDS(county_res, "_energy/data-raw/forecast_county_residential_mwh.rds")
+saveRDS(ctu_busi, "_energy/data-raw/forecast_ctu_business_mwh.rds")
+saveRDS(county_busi, "_energy/data-raw/forecast_county_business_mwh.rds")

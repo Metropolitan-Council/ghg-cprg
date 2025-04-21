@@ -155,6 +155,8 @@ mn_parcel_busi <- mn_parcel %>%
   na_replace() %>%
   ungroup()
 
+
+### consider adding MPCA fuel combustion data here as electricity predictor
 # merge into utility data
 electricity_busi <- left_join(coctu_busi_year,
   urbansim_busi,

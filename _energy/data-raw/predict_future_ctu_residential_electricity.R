@@ -3,6 +3,7 @@
 # from script _energy/data-raw/predict_current_ctu_residential_electricity.R
 
 source("R/_load_pkgs.R")
+library(nlme)
 source("_energy/data-raw/_energy_emissions_factors.R")
 
 ## load in supporting data
@@ -198,31 +199,29 @@ delta_mwh <- delta_units %>%
 ctu_res_delta <- left_join(
             delta_mwh,
   coctu_res %>%
-    group_by(ctu_name, ctu_class, inventory_year) %>% 
+    group_by(ctu_name, ctu_class, coctu_id, inventory_year) %>% 
     summarize(residential_mwh = sum(residential_mwh))
 )
 
 #plot random grab of some cities
 sample_ctus <- ctu_res_delta %>%
   filter(!is.na(projected_mwh)) %>% 
-  distinct(coctu_id) %>%
-  slice_sample(n = 10) %>%
-  pull(coctu_id)
+  distinct(ctu_name, ctu_class, coctu_id) %>%
+  slice_sample(n = 50)
 
-mpls_ctu_id <- ctu_res_delta %>% 
-  filter(ctu_name == "Minneapolis") %>% 
-  pull(coctu_id)
+# mpls_ctu_id <- ctu_res_delta %>% 
+#   filter(ctu_name == "Minneapolis") %>% 
+#   pull(coctu_id)
+# 
+# sample_ctus <- unique(c(sample_ctus, mpls_ctu_id[[1]]))
 
-sample_ctus <- unique(c(sample_ctus, mpls_ctu_id[[1]]))
-
-plot_data_delta <- ctu_res_delta %>%
-  filter(coctu_id %in% sample_ctus)
+plot_data_delta <- left_join(sample_ctus,ctu_res_delta)
 
 ggplot(plot_data_delta, aes(x = inventory_year)) +
-  geom_line(aes(y = projected_mwh, color = ctu_name), linewidth = 0.8) +
+  geom_line(aes(y = projected_mwh, color = ctu_name, group = ctu_class), linewidth = 0.8) +
   geom_point(
     data = filter(plot_data_delta, !is.na(residential_mwh)),
-    aes(y = residential_mwh, color = ctu_name),
+    aes(y = residential_mwh, color = ctu_name, group = ctu_class),
     shape = 1, size = 2, stroke = 1
   ) +
   facet_wrap(~ ctu_name, scales = "free_y") +
