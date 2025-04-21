@@ -9,14 +9,14 @@ MN_elecUtils <- readRDS(here("_energy", "data", "MN_elecUtils.RDS")) %>%
 # simplified CPRG CTU geometry for quick comparison -- dissolve counties and just retain cities/township boundaries
 cprg_mn_ctu_dissolve <- readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>%
   mutate(geometry = st_make_valid(geometry)) %>%
-  mutate(ctu_area_m2 = st_area(geometry)) %>%
-  mutate(geometry = st_simplify(geometry, dTolerance = 0.1)) %>%
   st_transform(st_crs(MN_elecUtils)) %>%
-  group_by(ctu_name, ctu_class, ctu_area_m2) %>%
+  group_by(ctu_name, ctu_class) %>%
   summarise(geometry = st_union(geometry), .groups = "keep") %>%
   ungroup() %>%
   st_make_valid() %>%
-  left_join(readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>% st_drop_geometry() %>% select(ctu_name, ctu_class, state_name),
+  mutate(ctu_area_m2 = st_area(geometry)) %>%
+  # Inner self join to just keep one geographic record for each distinct CTU (i.e., drop extra county records)
+  inner_join(readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>% st_drop_geometry() %>% select(ctu_name, ctu_class, state_name),
     by = join_by(ctu_name, ctu_class),
     multiple = "first"
   ) %>%
@@ -36,7 +36,7 @@ ctu_elecUtil_overlap <- st_intersection(
 
 
 # Count of utilities per CTU
-ctu_elec_utility_count <- ctu_elec_utility_mapping %>%
+ctu_elec_utility_count <- ctu_elecUtil_overlap %>%
   group_by(ctu_name, ctu_class) %>%
   summarize(
     numUtilities = n_distinct(utility_name),
@@ -63,6 +63,18 @@ ctu_ng_utility_mapping <- st_join(
   select(ctu_name, ctu_class, utility_name = NAME) %>%
   distinct() %>%
   st_drop_geometry()
+
+# Perform spatial intersect to match each CTU (city/township) with electric utilities
+ctu_ngUtil_overlap <- st_intersection(
+  cprg_mn_ctu_dissolve %>% select(ctu_name, ctu_class, ctu_area_m2),
+  natGasUtils %>% select(utility_name = NAME)
+) %>%
+  mutate(overlap_m2 = st_area(geometry)) %>%
+  group_by(ctu_name, ctu_class, utility_name, ctu_area_m2) %>%
+  summarise(overlap_m2 = sum(overlap_m2), .groups = "drop") %>%
+  mutate(pct_of_city = as.numeric(overlap_m2 / ctu_area_m2)) %>%
+  filter(pct_of_city >= 0.01) %>%                 
+  arrange(ctu_name, desc(pct_of_city))
 
 # Count of utilities per CTU
 ctu_ng_utility_count <- ctu_ng_utility_mapping %>%
