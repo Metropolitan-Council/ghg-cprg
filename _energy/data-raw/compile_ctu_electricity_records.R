@@ -22,7 +22,7 @@ ctu_county_unique <- ctu_population %>%
 county_mwh <- readRDS("_energy/data/minnesota_county_elec_ActivityAndEmissions.rds")
 
 ## create storage frame of unique city and utility combos with all years
-ctu_utility_year <- readRDS("_energy/data/ctu_utility_intersect.rds") %>%
+ctu_utility_year <- readRDS("_energy/data/ctu_elec_utility_intersect.RDS") %>%
   cross_join(data.frame(inventory_year = c(2007:2023))) %>%
   mutate(
     residential_mwh = NA,

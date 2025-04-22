@@ -31,7 +31,8 @@ ctu_elecUtil_overlap <- st_intersection(
   group_by(ctu_name, ctu_class, utility_name, ctu_area_m2) %>%
   summarise(overlap_m2 = sum(overlap_m2), .groups = "drop") %>%
   mutate(pct_of_city = as.numeric(overlap_m2 / ctu_area_m2)) %>%
-  filter(pct_of_city >= 0.01) %>%                 
+  filter(pct_of_city >= 0.01) %>%
+  st_drop_geometry() %>%
   arrange(ctu_name, ctu_class) %>%
   select(ctu_name, ctu_class, utility_name)
 
@@ -74,7 +75,8 @@ ctu_ngUtil_overlap <- st_intersection(
   group_by(ctu_name, ctu_class, utility_name, ctu_area_m2) %>%
   summarise(overlap_m2 = sum(overlap_m2), .groups = "drop") %>%
   mutate(pct_of_city = as.numeric(overlap_m2 / ctu_area_m2)) %>%
-  filter(pct_of_city >= 0.01) %>%                 
+  filter(pct_of_city >= 0.01) %>%   
+  st_drop_geometry() %>%
   arrange(ctu_name, ctu_class) %>%
   select(ctu_name, ctu_class, utility_name)
 
