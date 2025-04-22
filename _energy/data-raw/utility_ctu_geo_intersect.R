@@ -77,7 +77,7 @@ ctu_ngUtil_overlap <- st_intersection(
   arrange(ctu_name, desc(pct_of_city))
 
 # Count of utilities per CTU
-ctu_ng_utility_count <- ctu_ng_utility_mapping %>%
+ctu_ng_utility_count <- ctu_ngUtil_overlap %>%
   group_by(ctu_name, ctu_class) %>%
   summarize(
     numUtilities = n_distinct(utility_name),
@@ -87,5 +87,5 @@ ctu_ng_utility_count <- ctu_ng_utility_mapping %>%
   st_drop_geometry()
 
 
-write_rds(ctu_elec_utility_mapping, here("_energy", "data", "ctu_elec_utility_intersect.RDS"))
-write_rds(ctu_ng_utility_mapping, here("_energy", "data", "ctu_ng_utility_intersect.RDS"))
+write_rds(ctu_elecUtil_overlap, here("_energy", "data", "ctu_elec_utility_intersect.RDS"))
+write_rds(ctu_ngUtil_overlap, here("_energy", "data", "ctu_ng_utility_intersect.RDS"))
