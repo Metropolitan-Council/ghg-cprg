@@ -278,6 +278,7 @@ if (file.exists("_energy/data/Xcel_elecNG_activityData_2015_2023.RDS") == FALSE)
       ctu_class = case_when(
         grepl("^City of", city_name, ignore.case = TRUE) ~ "CITY",
         grepl("^Town of", city_name, ignore.case = TRUE) ~ "TOWNSHIP",
+        grepl("(Twp)", city_name, ignore.case = TRUE) ~ "TOWNSHIP",
         city_name == "Village of Birchwood" ~ "CITY",
         TRUE ~ NA_character_
       ),
