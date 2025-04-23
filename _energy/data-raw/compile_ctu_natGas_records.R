@@ -59,40 +59,23 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
   ) %>%
   mutate(total_therms = replace_na(business_therms, 0) + replace_na(residential_therms, 0))
 
-## load and format connexus data
-connexus <- readRDS("_energy/data/connexus_activityData_2014_2023.rds") %>%
-  filter(!is.na(mwh_delivered)) %>%
-  rename(emissions_year = year) %>%
-  # mutate(mwh_delivered = mwh_delivered * 10e-4) %>%  # kwh listed instead of mwh
-  mutate(sector = case_when(
-    sector == "Residential" ~ "Residential",
-    sector == "Residential/Commercial/Industrial" ~ "Total",
-    TRUE ~ "Business"
-  )) %>%
-  group_by(ctu_name, emissions_year, utility, sector) %>%
-  summarise(mwh_per_year = sum(mwh_delivered, na.rm = TRUE), .groups = "drop") %>%
-  pivot_wider(
-    names_from = sector, values_from = mwh_per_year,
-    names_glue = "{tolower(sector)}_mwh"
-  ) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
 
-
-### load and format xcel data
-xcel <- readRDS("_energy/data/Xcel_activityData_2015_2023.rds") %>%
-  filter(!is.na(mwh_delivered)) %>%
+### load and format xcel ng data
+xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
+  filter(!is.na(mcf_delivered),
+         source == "Natural Gas") %>%
   rename(emissions_year = year) %>%
   mutate(sector = case_when(
     sector_mapped == "residential" ~ "Residential",
     TRUE ~ "Business"
   )) %>%
   group_by(ctu_name, emissions_year, utility, sector) %>%
-  summarise(mwh_per_year = sum(mwh_delivered, na.rm = TRUE), .groups = "drop") %>%
+  summarise(mcf_per_year = sum(mcf_delivered, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
-    names_from = sector, values_from = mwh_per_year,
-    names_glue = "{tolower(sector)}_mwh"
+    names_from = sector, values_from = mcf_per_year,
+    names_glue = "{tolower(sector)}_mcf"
   ) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
+  mutate(total_mcf = replace_na(business_mcf, 0) + replace_na(residential_mcf, 0))
 
 
 
