@@ -1,4 +1,4 @@
-### compile all ctu electricity emissions
+### compile all ctu natural gas emissions
 
 source("R/_load_pkgs.R")
 
@@ -18,8 +18,8 @@ ctu_county_unique <- ctu_population %>%
   ungroup() %>%
   distinct(geoid, ctuid, ctu_name, ctu_class, county_name)
 
-# county activity data
-county_mwh <- readRDS("_energy/data/minnesota_county_elec_ActivityAndEmissions.rds")
+# county activity and emissions data
+county_mcf <- readRDS(here("_energy", "data", "minnesota_county_GasEmissions.RDS"))
 
 ## create storage frame of unique city and utility combos with all years
 ctu_utility_year <- readRDS("_energy/data/ctu_elec_utility_intersect.RDS") %>%
