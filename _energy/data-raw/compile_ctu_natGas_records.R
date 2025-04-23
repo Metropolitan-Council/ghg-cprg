@@ -32,7 +32,7 @@ ctu_utility_year <- readRDS("_energy/data/ctu_elec_utility_intersect.RDS") %>%
   rename(utility = utility_name)
 
 ## load formatted SQL utility data
-sql_elec <- readRDS("_energy/data/ctu_electricity_emissions_2015_2018.rds") %>%
+sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
   mutate(
     ctu_class = if_else(grepl("Twp.", ctu_name), "TOWNSHIP", "CITY"),
     ctu_name = str_replace_all(ctu_name, " Twp.", ""),
@@ -45,19 +45,19 @@ sql_elec <- readRDS("_energy/data/ctu_electricity_emissions_2015_2018.rds") %>%
   ) %>%
   filter(
     units_emissions == "Metric tons CO2",
-    !is.na(mwh_per_year)
+    !is.na(therms_per_year)
   ) %>% # removes duplicates
   mutate(sector = if_else(customer_class == "Residential",
                           "Residential",
                           "Business"
   )) %>%
   group_by(ctu_name, emissions_year, utility, sector) %>%
-  summarise(mwh_per_year = sum(mwh_per_year, na.rm = TRUE), .groups = "drop") %>%
+  summarise(therms_per_year = sum(therms_per_year, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
-    names_from = sector, values_from = mwh_per_year,
-    names_glue = "{tolower(sector)}_mwh"
+    names_from = sector, values_from = therms_per_year,
+    names_glue = "{tolower(sector)}_therms"
   ) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
+  mutate(total_therms = replace_na(business_therms, 0) + replace_na(residential_therms, 0))
 
 ## load and format connexus data
 connexus <- readRDS("_energy/data/connexus_activityData_2014_2023.rds") %>%
