@@ -14,7 +14,7 @@ ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
 # get critical metadata
 ctu_population_meta <- readRDS("_meta/data/ctu_population_meta.RDS")
 ctu_metadata <- ctu_population %>%
-  select(geoid, ctuid, ctu_name, ctu_class, county_name, ctu_name_full_county) %>%
+  select(geoid, coctu_id_fips, coctu_id_gnis, ctuid, ctu_name, gnis, ctu_class, county_name, ctu_name_full_county) %>%
   unique()
 dot_vmt_meta <- readRDS("_transportation/data/dot_vmt_meta.RDS")
 
@@ -1014,7 +1014,7 @@ vmt_ctu <- vmt_interp %>%
   # join with metadata
   left_join(ctu_metadata, by = c("ctu_name", "ctu_class", "county_name")) %>%
   # select only needed columns
-  select(geoid, ctuid, ctu_name, ctu_class,
+  select(geoid, ctuid, ctu_name, ctu_class, coctu_id_fips, coctu_id_gnis, gnis,
          vmt_year = year, daily_vmt, annual_vmt,
          centerline_miles
   ) %>%
