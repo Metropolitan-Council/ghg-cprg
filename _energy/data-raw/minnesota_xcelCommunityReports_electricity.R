@@ -17,8 +17,8 @@ get_files <- function(root_dir) {
   for (year_folder in year_folders) {
     year <- basename(year_folder)
 
-    # Get list of .xls files in the year folder
-    files <- list.files(path = year_folder, pattern = "\\.xls$", full.names = TRUE)
+    # Get list of .xls and .xlsx files in the year folder
+    files <- list.files(path = year_folder, pattern = "\\.xls[x]?$", full.names = TRUE)
 
     # Loop through each file in the year folder
     for (file in files) {
