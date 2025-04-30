@@ -1,6 +1,7 @@
 # Counties -----
 source("R/_load_pkgs.R")
 
+ctu_population <- readRDS("_meta/data/ctu_population.RDS")
 # our study area includes the 7-county metro
 # plus Sherburne and Chisago in MN
 # and St. Croix and Pierce in WI
@@ -73,7 +74,10 @@ mn_ctu <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
   mutate(
     STATEFP = "27",
     STATE = "Minnesota",
-    STATE_ABB = "MN"
+    STATE_ABB = "MN",
+    GNIS_FEATURE_ID = stringr::str_pad(as.character(GNIS_FEATURE_ID), 
+                                       width = 8, side = "left",
+                                       pad = "0")
   ) %>%
   select(
     CTU_NAME = FEATURE_NAME,
@@ -86,7 +90,17 @@ mn_ctu <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
     geometry = SHAPE
   ) %>%
   arrange(CTU_NAME) %>%
-  clean_names()
+  clean_names() %>% 
+  left_join(cprg_county %>% sf::st_drop_geometry(),
+            by = join_by(county_name, statefp, state_abb)) %>% 
+  mutate(coctu_id_gnis = paste0(
+    stringr::str_sub(geoid, -3, -1), 
+    gnis_feature_id
+  )) %>% 
+  left_join(ctu_population %>% 
+              select(geoid, coctu_id_fips, coctu_id_gnis, ctuid) %>% 
+              unique(),
+            join_by(geoid, coctu_id_gnis))
 
 
 if (file.exists("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_July_2023.shp") == FALSE) {
@@ -100,42 +114,49 @@ if (file.exists("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_
 # downloaded from https://gis-ltsb.hub.arcgis.com/pages/download-data
 wi_ctu <- sf::read_sf("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_July_2023.shp") %>%
   filter(CNTY_NAME %in% c("Pierce", "St. Croix")) %>%
-  select(CNTY_NAME, CNTY_FIPS, GEOID, MCD_NAME, MCD_FIPS, CTV) %>%
+  select(CNTY_NAME, COUSUBFP, CNTY_FIPS, GEOID, MCD_NAME, MCD_FIPS, CTV) %>%
   mutate(
     CTU_CLASS = case_when(
       CTV == "T" ~ "TOWN",
       CTV == "C" ~ "CITY",
       CTV == "V" ~ "VILLAGE"
     ),
+    COUNTY_NAME = CNTY_NAME,
     COUNTY_NAM = CNTY_NAME,
     CTU_NAME = MCD_NAME,
     STATE = "Wisconsin",
     STATEFP = "55",
-    STATE_ABB = "WI"
+    STATE_ABB = "WI",
+    geoid = stringr::str_sub(GEOID, 1, 5)
   ) %>%
   select(
     CTU_NAME,
     CTU_CLASS,
     COUNTY_NAM,
+    COUNTY_NAME,
     STATEFP,
     STATE,
     STATE_ABB,
-    GEOID
+    geoid,
+    ctu_id_fips = COUSUBFP
   ) %>%
   clean_names()
 
 ### fetch thrive community designations
 
-thrive <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_metc/society_thrive_msp2040_com_des/gpkg_society_thrive_msp2040_com_des.zip") %>%
-  st_drop_geometry() %>%
-  clean_names() %>%
-  distinct(ctu_id, comdesname) %>%
-  rename(thrive_designation = comdesname)
+# thrive <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_metc/society_thrive_msp2040_com_des/gpkg_society_thrive_msp2040_com_des.zip") %>%
+#   st_drop_geometry() %>%
+#   clean_names() %>%
+#   distinct(ctu_id, comdesname) %>%
+#   rename(thrive_designation = comdesname)
 
 thrive <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_metc/society_thrive_msp2040_com_des/gpkg_society_thrive_msp2040_com_des.zip") %>%
   st_drop_geometry() %>%
   separate(COCTU_DESC, sep = " [(]", into = c("ctu", "cty"), fill = "right") %>%
   mutate(
+    GNIS_FEATURE_ID = stringr::str_pad(as.character(CTU_ID), 
+                                       width = 8, side = "left",
+                                       pad = "0"),
     COMDESNAME = factor(COMDESNAME,
       levels = c(
         "Urban Center",
@@ -166,13 +187,14 @@ thrive <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
         "Rural"
       ), ordered = T)
   ) %>%
-  group_by(CTU_ID, COMDESNAME) %>%
+  group_by(CTU_ID, COMDESNAME, GNIS_FEATURE_ID) %>%
   count() %>%
-  group_by(CTU_ID) %>%
+  group_by(CTU_ID, GNIS_FEATURE_ID) %>%
   filter(as.integer(COMDESNAME) == max(as.integer(COMDESNAME))) %>%
   ungroup() %>%
   select(
     ctu_id = CTU_ID,
+    GNIS_FEATURE_ID,
     thrive_designation = COMDESNAME
   )
 
@@ -181,14 +203,16 @@ cprg_ctu <- bind_rows(mn_ctu, wi_ctu) %>%
   mutate(cprg_area = TRUE) %>%
   select(ctu_name, ctu_class,
     county_name,
-    state_name = state, statefp, state_abb,
-    geoid_wis = geoid,
+    
+    state_name = state, statefp, 
+    state_abb,
+    geoid_wis = ctu_id_fips,
     gnis = gnis_feature_id,
     cprg_area,
     geometry
   ) %>%
   left_join(thrive,
-    by = c("gnis" = "ctu_id")
+    by = c("gnis" = "GNIS_FEATURE_ID")
   ) %>%
   mutate(thrive_designation = if_else(
     is.na(thrive_designation),
@@ -270,3 +294,4 @@ saveRDS(cprg_ctu_meta, "_meta/data/cprg_ctu_meta.RDS")
 
 saveRDS(ctu_co_crosswalk, "_meta/data/geog_crosswalk.RDS")
 saveRDS(geogs_list, "_meta/data/geogs_list.RDS")
+
