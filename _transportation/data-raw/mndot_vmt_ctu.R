@@ -13,7 +13,8 @@ ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
 # get critical metadata
 ctu_population_meta <- readRDS("_meta/data/ctu_population_meta.RDS")
 ctu_metadata <- ctu_population %>%
-  select(geoid, coctu_id_fips, coctu_id_gnis, ctuid, ctu_name, gnis, ctu_class, county_name, ctu_name_full_county) %>%
+  select(geoid, coctu_id_fips, coctu_id_gnis, ctuid, ctu_name, 
+         gnis, ctu_class, county_name, ctu_name_full_county) %>%
   unique()
 dot_vmt_meta <- readRDS("_transportation/data/dot_vmt_meta.RDS")
 
@@ -694,7 +695,7 @@ reliable_ctu <-
   filter(ctu_name_full_county %in% ctu_n_years$ctu_name_full_county) %>%
   # ensure we have CTUs with sampled local routes
   filter(
-    # ctu_name %in% ctu_sampled$ctu_name_full_county,
+    ctu_name_full_county %in% ctu_sampled$ctu_name_full_county,
     ctu_name != "Nonmunicipal"
   )
 
@@ -1035,3 +1036,15 @@ vmt_ctu_meta <- bind_rows(
 
 saveRDS(vmt_ctu, "_transportation/data/mndot_vmt_ctu.RDS")
 saveRDS(vmt_ctu_meta, "_transportation/data/mndot_vmt_ctu_meta.RDS")
+
+
+
+
+orig_vmt_ctu <- readr::read_rds("https://github.com/Metropolitan-Council/ghg-cprg/raw/refs/heads/main/_transportation/data/mndot_vmt_ctu.RDS") 
+
+
+unique(orig_vmt_ctu$ctuid) %>% length
+unique(vmt_ctu$ctuid) %>% length
+setdiff(      unique(vmt_ctu$ctu_name),
+              unique(orig_vmt_ctu$ctu_name)
+)
