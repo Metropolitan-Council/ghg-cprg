@@ -31,6 +31,8 @@ ctu_utility_year <- readRDS("_energy/data/ctu_elec_utility_intersect.RDS") %>%
   ) %>%
   rename(utility = utility_name)
 
+therms_to_mcf <- 1 / 10.38
+
 ## load formatted SQL utility data
 sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
   mutate(
