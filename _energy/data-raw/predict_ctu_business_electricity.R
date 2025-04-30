@@ -38,7 +38,8 @@ ctu_utility_year <- read_rds("_energy/data/ctu_utility_mwh.RDS") %>%
   ungroup()
 
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
-mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")
+mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS") %>% 
+  mutate(ctu_id = stringr::str_pad(ctu_id, width = 8, pad = "0", side = "left"))
 
 #### BUSINESS ####
 
