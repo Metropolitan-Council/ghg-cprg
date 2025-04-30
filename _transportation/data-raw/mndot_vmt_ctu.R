@@ -4,8 +4,7 @@ source("_meta/data-raw/ctu_saint_names.R")
 source("R/_quarto_helpers.R")
 source("R/_leaflet_helpers.R")
 
-cprg_county <- readRDS("_meta/data/cprg_county.RDS") %>%
-  sf::st_drop_geometry()
+cprg_county <- readRDS("_meta/data/cprg_county.RDS") %>% sf::st_drop_geometry()
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   left_join(cprg_county) %>%
   mutate(ctu_name_full = paste0(ctu_name, ", ", ctu_class),

@@ -28,13 +28,7 @@ urbansim_2010 <- read_csv(
   ) %>%
   mutate(
     coctu_id = stringr::str_pad(coctu_id, side = "left", width = 11, pad = "0"),
-    ctu_id = 
-      stringr::str_sub(coctu_id, -8, -1),
-    #   as.numeric(substr(
-    #   as.character(coctu_id),
-    #   nchar(as.character(coctu_id)) - 6,
-    #   nchar(as.character(coctu_id))
-    # )),
+    ctu_id = stringr::str_sub(coctu_id, -8, -1),
     inventory_year = 2010
   )
 
@@ -54,11 +48,6 @@ urbansim_2020 <- read_csv(
   mutate(
     coctu_id = stringr::str_pad(coctu_id, side = "left", width = 11, pad = "0"),
     ctu_id = stringr::str_sub(coctu_id, -8, -1),
-    # ctu_id = as.numeric(substr(
-    #   as.character(coctu_id),
-    #   nchar(as.character(coctu_id)) - 6,
-    #   nchar(as.character(coctu_id))
-    # )),
     inventory_year = 2020
   )
 
