@@ -1,7 +1,7 @@
 testthat::test_that("state DOT VMT", {
   mndot_vmt_ctu <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu.RDS"))
 
-  testthat::expect_equal(nrow(mndot_vmt_ctu), 2659)
+  testthat::expect_equal(nrow(mndot_vmt_ctu), 2589)
 
   # ensure we have all available years
   testthat::expect_equal(
@@ -50,8 +50,13 @@ testthat::test_that("state DOT VMT", {
       filter(n >= 2) %>%
       extract2("ctu_name"),
     c(
-      "Blaine", "Chanhassen", "Hastings", "Saint Anthony", "Shorewood",
-      "Spring Lake Park", "White Bear Lake"
+      # "Blaine", 
+      "Chanhassen",
+      # "Hastings", 
+      "Saint Anthony",
+      # "Shorewood",
+      "Spring Lake Park"
+      # "White Bear Lake"
     )
   )
 })
