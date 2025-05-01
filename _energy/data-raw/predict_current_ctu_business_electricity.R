@@ -105,10 +105,9 @@ urbansim_busi <- urbansim %>%
 
 # create jobs proportions for coctu
 coctu_jobs <- urbansim_busi %>%
-  distinct(ctu_name, ctu_id, inventory_year, county_name, total_job_spaces) %>% # Ensure unique rows per city-county-year
-  group_by(ctu_name, ctu_id, inventory_year) %>%
+  distinct(ctu_name, ctu_class, ctu_id, inventory_year, county_name, total_job_spaces) %>% # Ensure unique rows per city-county-year
+  group_by(ctu_name,  ctu_class, ctu_id, inventory_year) %>%
   mutate(
-    ctu_class = if_else(nchar(ctu_id) == 7, "CITY", "TOWNSHIP"),
     total_ctu_jobs = sum(total_job_spaces, na.rm = TRUE), # Sum populations across counties for each city-year
     coctu_jobs_prop = total_job_spaces / total_ctu_jobs,
     multi_county = n_distinct(county_name) > 1
@@ -209,7 +208,7 @@ coctu_busi_predict_rf <- cprg_ctu %>%
     "county_name",
     "thrive_designation"
   )) %>%
-  filter(!coctu_id %in% electricity_busi$coctu_id,
+  filter(!coctu_id_gnis %in% electricity_busi$coctu_id_gnis,
          inventory_year %in% c(2020:2022))%>%
   left_join(mn_parcel_busi %>% select(-ctu_name),
             by = c("gnis" = "ctu_id")
@@ -220,7 +219,7 @@ coctu_busi_predict_rf <- cprg_ctu %>%
          data_source = "Model prediction") %>%
   filter(!is.na(mwh_predicted)) %>% 
   st_drop_geometry() %>% 
-  select(coctu_id, 
+  select(coctu_id_gnis, 
          ctu_name, 
          ctu_class, 
          county_name, 
@@ -234,9 +233,9 @@ coctu_busi_out <- bind_rows(coctu_busi_year %>%
                                          distinct(ctu_name,
                                                   ctu_class,
                                                   county_name,
-                                                  coctu_id)) %>% 
-                             filter(!is.na(coctu_id)) %>% 
-                             select(coctu_id, 
+                                                  coctu_id_gnis)) %>% 
+                             filter(!is.na(coctu_id_gnis)) %>% 
+                             select(coctu_id_gnis, 
                                     ctu_name, 
                                     ctu_class, 
                                     county_name, 

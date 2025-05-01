@@ -22,7 +22,8 @@ coctu_busi <- read_rds("_energy/data-raw/predicted_coctu_business_mwh.rds")
 
 #### Business predictors ####
 
-mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")
+mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")%>% 
+  mutate(ctu_id = stringr::str_pad(ctu_id, width = 8, pad = "0", side = "left"))
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
 business <- c(
@@ -49,23 +50,19 @@ business <- c(
 ### create 2010-2050 urbansim residential dataset
 urbansim_busi <- urbansim %>%
   filter(variable %in% business) %>%
-  group_by(coctu_id, variable) %>%
-  complete(inventory_year = full_seq(c(2005, 2050), 1)) %>%
-  arrange(coctu_id, variable, inventory_year) %>%
-  mutate(
-    value = na_interpolation(value, option = "linear")
-  ) %>%
+  group_by(coctu_id_gnis, ctu_id, variable) %>%
+  complete(inventory_year = full_seq(c(2005, 2025), 1)) %>% # add interstitial years and expand to 2025
+  arrange(coctu_id_gnis, ctu_id, variable, inventory_year) %>%
+  mutate(value = approx(inventory_year, value, inventory_year, method = "linear", rule = 2)$y) %>% # allow extrapolation
   ungroup() %>%
   pivot_wider(
-    id_cols = c(coctu_id, inventory_year),
+    id_cols = c(coctu_id_gnis, ctu_id, inventory_year),
     names_from = variable,
     values_from = value
   ) %>%
-  filter(!is.na(coctu_id)) %>%
+  filter(!is.na(coctu_id_gnis)) %>%
   mutate(
-    ctu_id = str_sub(coctu_id, -7, -1),
-    county_id = as.numeric(str_remove(coctu_id, paste0("0", ctu_id))),
-    ctu_id = as.numeric(ctu_id)
+    county_id = stringr::str_sub(coctu_id_gnis, start = 1, end = 3),
   ) %>%
   left_join(
     cprg_ctu %>% st_drop_geometry() %>%
@@ -74,10 +71,11 @@ urbansim_busi <- urbansim %>%
   ) %>%
   left_join(
     cprg_county %>% st_drop_geometry() %>%
-      mutate(geoid = as.numeric(str_sub(geoid, -3, -1))) %>%
+      mutate(geoid = str_sub(geoid, -3, -1)) %>%
       select(county_name, geoid),
     by = c("county_id" = "geoid")
   )
+
 
 mn_parcel_busi <- mn_parcel %>%
   filter(mc_classification %in% c(
@@ -99,7 +97,7 @@ mn_parcel_busi <- mn_parcel %>%
 # merge into utility data
 electricity_busi <- left_join(coctu_busi,
                              urbansim_busi,
-                             by = c("coctu_id","ctu_name", "ctu_class", "county_name", "inventory_year")
+                             by = c("coctu_id_gnis","ctu_name", "ctu_class", "county_name", "inventory_year")
 ) %>%
   left_join(mn_parcel_busi %>% select(-ctu_name),
             by = c("ctu_id" = "ctu_id")
@@ -134,7 +132,6 @@ electricity_busi <- electricity_busi %>%
 
 unit_model <- lm(
   business_mwh ~
-    job_spaces +
     comm_jobs +
     ind_jobs,
   data = electricity_busi
@@ -155,11 +152,10 @@ summary(unit_model_time)
 
 unit_model_latest <- lm(
   business_mwh ~
-    job_spaces +
     comm_jobs +
     ind_jobs,
   data = electricity_busi %>% 
-    group_by(coctu_id) %>% 
+    group_by(coctu_id_gnis) %>% 
     mutate(latest_year = max(inventory_year)) %>% 
     filter(inventory_year == latest_year) %>% 
     ungroup
@@ -189,15 +185,15 @@ unit_coefs <- data.frame(term = names(unit_model_latest$coefficients),
 # use latest year of data for each city (that has data) as 'intercept'
 
 latest_data <- electricity_busi %>%
-  group_by(coctu_id) %>% 
+  group_by(coctu_id_gnis) %>% 
   filter(inventory_year == max(inventory_year, na.rm = TRUE))
 
 base_mwh <- latest_data %>%
-  select(coctu_id, inventory_year, base_year_mwh = business_mwh)
+  select(coctu_id_gnis, inventory_year, base_year_mwh = business_mwh)
 
 # get base values per coctu_id
 base_urbansim <- latest_data %>%
-  select(coctu_id, base_year = inventory_year, base_mwh = business_mwh) %>%
+  select(coctu_id_gnis, base_year = inventory_year, base_mwh = business_mwh) %>%
   inner_join(urbansim_busi %>% 
                mutate(job_spaces = js_type_1011 +
                         js_type_13 +
@@ -213,7 +209,7 @@ base_urbansim <- latest_data %>%
                       ind_jobs = jobs_sector_1+
                         jobs_sector_2 +
                         jobs_sector_3), 
-             by = "coctu_id") %>%
+             by = "coctu_id_gnis") %>%
   filter(inventory_year == base_year)
 
 # calculate urbansim deltas from base year to each other year
@@ -232,15 +228,15 @@ delta_units <- urbansim_busi %>%
          ind_jobs = jobs_sector_1+
            jobs_sector_2 +
            jobs_sector_3) %>%
-  select(ctu_name, ctu_class, ctu_id, county_name,coctu_id, inventory_year,
+  select(ctu_name, ctu_class, ctu_id, county_name,coctu_id_gnis, inventory_year,
          job_spaces, comm_jobs, ind_jobs) %>%
-  pivot_longer(cols = -c(ctu_name, ctu_id, ctu_class, county_name,coctu_id, inventory_year), names_to = "unit_type", values_to = "unit_count") %>%
+  pivot_longer(cols = -c(ctu_name, ctu_id, ctu_class, county_name,coctu_id_gnis, inventory_year), names_to = "unit_type", values_to = "unit_count") %>%
   inner_join(
     base_urbansim %>%
       pivot_longer(cols = job_spaces:ind_jobs,
                    names_to = "unit_type", values_to = "base_unit_count") %>%
-      select(coctu_id, unit_type, base_unit_count),
-    by = c("coctu_id", "unit_type")
+      select(coctu_id_gnis, unit_type, base_unit_count),
+    by = c("coctu_id_gnis", "unit_type")
   ) %>%
   mutate(unit_delta = unit_count - base_unit_count)
 
@@ -249,10 +245,10 @@ delta_units <- urbansim_busi %>%
 delta_mwh <- delta_units %>% 
   left_join(unit_coefs, by = c("unit_type" = "term")) %>%
   mutate(delta_mwh = unit_delta * estimate) %>%
-  group_by(ctu_name, ctu_class, county_name, coctu_id, inventory_year) %>%
+  group_by(ctu_name, ctu_class, county_name, coctu_id_gnis, inventory_year) %>%
   summarise(delta_total_mwh = sum(delta_mwh, na.rm = TRUE), .groups = "drop") %>%
   # add delta to base year MWh
-  left_join(base_urbansim %>% select(coctu_id, ctu_id, base_mwh), by = "coctu_id") %>%
+  left_join(base_urbansim %>% select(coctu_id_gnis, ctu_id, base_mwh), by = "coctu_id_gnis") %>%
   mutate(projected_mwh = base_mwh + delta_total_mwh)
 
 ## graph as check
@@ -260,14 +256,14 @@ delta_mwh <- delta_units %>%
 ctu_busi_delta <- left_join(
   delta_mwh,
   coctu_busi %>%
-    group_by(ctu_name, ctu_class, coctu_id, inventory_year) %>% 
+    group_by(ctu_name, ctu_class, coctu_id_gnis, inventory_year) %>% 
     summarize(business_mwh = sum(business_mwh))
 )
 
 #plot random grab of some cities
 sample_ctus <- ctu_busi_delta %>%
   filter(!is.na(projected_mwh)) %>% 
-  distinct(ctu_name, ctu_class, coctu_id)%>%
+  distinct(ctu_name, ctu_class, coctu_id_gnis)%>%
   slice_sample(n = 20)
 # 
 # mpls_ctu_id <- ctu_busi_delta %>% 
@@ -305,14 +301,14 @@ coctu_busi <- mutate(coctu_busi, data_source = if_else(
 
 # grab max inventory year per coctu_id
 max_years <- coctu_busi %>%
-  group_by(coctu_id) %>%
+  group_by(coctu_id_gnis) %>%
   summarize(max_year = max(inventory_year), .groups = "drop")
 
 # start delta_mwh at max_year +1
 delta_new <- delta_mwh %>%
-  inner_join(max_years, by = "coctu_id") %>%
+  inner_join(max_years, by = "coctu_id_gnis") %>%
   filter(inventory_year > max_year)%>% 
-  select(coctu_id,
+  select(coctu_id_gnis,
          ctu_name,
          ctu_class,
          county_name,
