@@ -2,7 +2,7 @@
 
 source("R/_load_pkgs.R")
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS")
-
+ctu_population_meta <- read_rds("_meta/data/ctu_population_meta.RDS")
 
 us_meta <- readxl::read_xlsx(
   "_meta/data-raw/urbansim/datadictionary.xlsx"
@@ -27,7 +27,7 @@ us_format <- function(year_folder) {
     ) %>%
     left_join(us_meta, by = "variable") %>%
     mutate(
-      coctu_id = stringr::str_pad(coctu_id, side = "left", width = 11, pad = "0"),
+      coctu_id_gnis = stringr::str_pad(coctu_id, side = "left", width = 11, pad = "0"),
       ctu_id = stringr::str_sub(coctu_id, -8, -1),
       inventory_year = as.numeric(year_folder)
     )
@@ -42,8 +42,6 @@ urbansim <- lapply(us_list, us_format) %>% bind_rows()%>%
 
 urbansim_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
-  "inventory_year", class(urbansim$inventory_year), "Inventory year",
-  "coctu_id", class(urbansim$coctu_id), "Unique county-city identifier",
   "ctu_id", class(urbansim$ctu_id), "City-township-unorganized identifier",
   "variable", class(urbansim$variable), "Short variable name",
   "value", class(urbansim$value), "County-city value of variable",
@@ -51,7 +49,9 @@ urbansim_meta <- tibble::tribble(
   "broad_category", class(urbansim$broad_category), "Sector grouping of variable",
   "status", class(urbansim$status), "Internal assessment of variable readiness; interpret cautiously where advised",
   "notes", class(urbansim$notes), "Research department notes"
-)
+) %>% 
+  bind_rows(ctu_population_meta) %>% 
+  filter(Column %in% names(urbansim))
 
 
 saveRDS(
