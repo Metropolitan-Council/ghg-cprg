@@ -27,11 +27,8 @@ us_format <- function(year_folder) {
     ) %>%
     left_join(us_meta, by = "variable") %>%
     mutate(
-      ctu_id = as.numeric(substr(
-        as.character(coctu_id),
-        nchar(as.character(coctu_id)) - 6,
-        nchar(as.character(coctu_id)))
-      ),
+      coctu_id = stringr::str_pad(coctu_id, side = "left", width = 11, pad = "0"),
+      ctu_id = stringr::str_sub(coctu_id, -8, -1),
       inventory_year = as.numeric(year_folder)
     )
 }
