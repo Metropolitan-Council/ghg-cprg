@@ -29,7 +29,12 @@ ctu_utility_year <- readRDS("_energy/data/ctu_ng_utility_intersect.RDS") %>%
     business_mwh = NA,
     total_mwh = NA
   ) %>%
-  rename(utility = utility_name)
+  rename(utility = utility_name) %>%
+  mutate(utility = case_when(
+    utility == "CENTERPOINT ENERGY" ~ "CenterPoint",
+    utility == "NORTHERN STATES POWER CO" ~ "Xcel Energy",
+    TRUE ~ utility
+  ))
 
 therms_to_mcf <- 1 / 10.38
 
@@ -81,26 +86,45 @@ xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
   mutate(total_mcf = replace_na(business_mcf, 0) + replace_na(residential_mcf, 0))
 
 
-
-
-# load in municipal utility data
-munis <- readRDS("_energy/data/MNelecMunis_activityData_2014_2023.rds") %>%
-  filter(!is.na(mwh_delivered)) %>%
+### load and format Centerpoint ng data -- ensure that 'All' is kept for city-years without specific sector breakouts
+centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>%
+  filter(!is.na(mcf_delivered),
+         source == "Natural Gas") %>%
   rename(emissions_year = year) %>%
   mutate(sector = case_when(
-    sector_mapped == "residential" ~ "Residential",
-    TRUE ~ "Business"
+    sector == "Commercial/Industrial" ~ "Business",
+    TRUE ~ sector # keeps Residential as Residential and All as All
   )) %>%
   group_by(ctu_name, emissions_year, utility, sector) %>%
-  summarise(mwh_per_year = sum(mwh_delivered, na.rm = TRUE), .groups = "drop") %>%
+  summarise(mcf_per_year = sum(mcf_delivered, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
-    names_from = sector, values_from = mwh_per_year,
-    names_glue = "{tolower(sector)}_mwh"
+    names_from = sector,
+    values_from = mcf_per_year,
+    names_glue = "{tolower(sector)}_mcf"
   ) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
+  mutate(
+    total_mcf = case_when(
+      !is.na(business_mcf) & !is.na(residential_mcf) ~ business_mcf + residential_mcf,
+      TRUE ~ all_mcf  # fall back to All_mcf if detailed sectors are missing
+    )
+  ) %>%
+  select(-all_mcf)
+  
+
+# check where we only have total numbers from Centerpoint and not sector specific
+# centerpoint_city_year_with_only_totals <- centerpoint %>%
+# group_by(ctu_name, emissions_year) %>%
+#   summarize(
+#     has_all = any(sector == "All"),
+#     has_other = any(sector != "All"),
+#     .groups = "drop"
+#   ) %>%
+#   filter(has_all, !has_other)
+
+# no muni data load necessary -- the only NG muni in core metro operates in Circle Pines per overlap analysis, alongside Centerpoint, so effort to bring in nor warranted
 
 # function: sequentially load data while keeping NAs
-merge_electricity_data <- function(base_df, new_data) {
+merge_ng_data <- function(base_df, new_data) {
   base_df %>%
     left_join(new_data %>% rename(inventory_year = emissions_year),
               by = c("ctu_name", "inventory_year", "utility")
