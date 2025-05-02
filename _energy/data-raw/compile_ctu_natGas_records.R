@@ -31,8 +31,10 @@ ctu_utility_year <- readRDS("_energy/data/ctu_ng_utility_intersect.RDS") %>%
   ) %>%
   rename(utility = utility_name) %>%
   mutate(utility = case_when(
-    utility == "CENTERPOINT ENERGY" ~ "CenterPoint",
+    utility == "CENTERPOINT ENERGY" ~ "CenterPoint Energy",
     utility == "NORTHERN STATES POWER CO" ~ "Xcel Energy",
+    utility == "CIRCLE PINES UTILITY CO. (CENTENNIAL)" ~ "Centennial Utilities",
+    utility == "MINNESOTA ENERGY RESOURCES" ~ "Minnesota Energy Resources",
     TRUE ~ utility
   ))
 
@@ -91,7 +93,8 @@ centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>
   filter(!is.na(mcf_delivered),
          source == "Natural Gas") %>%
   rename(emissions_year = year) %>%
-  mutate(sector = case_when(
+  mutate(utility = "CenterPoint Energy",
+         sector = case_when(
     sector == "Commercial/Industrial" ~ "Business",
     TRUE ~ sector # keeps Residential as Residential and All as All
   )) %>%
@@ -140,11 +143,11 @@ merge_ng_data <- function(base_df, new_data) {
 ## load each dataset sequentially (deliberately override previous sql data with our data requests)
 
 # make sure names conform
-anti_join(sql_elec, ctu_utility_year, by = "utility") %>%
+anti_join(sql_ng, ctu_utility_year, by = "utility") %>%
   distinct(utility) %>%
   arrange(utility)
 sort(unique(ctu_utility_year$utility))
-sql_elec <- sql_elec %>%
+sql_ng <- sql_ng %>%
   mutate(utility = case_when(
     utility == "City of Chaska" ~ "City of Chaska Electric Department",
     utility == "Wright-Hennepin Coop Electric Assn" ~ "Wright Hennepin Electric Cooperative",
