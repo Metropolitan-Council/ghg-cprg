@@ -22,7 +22,7 @@ ctu_county_unique <- ctu_population %>%
 county_mcf <- readRDS(here("_energy", "data", "minnesota_county_GasEmissions.RDS"))
 
 ## create storage frame of unique city and utility combos with all years
-ctu_utility_year <- readRDS("_energy/data/ctu_elec_utility_intersect.RDS") %>%
+ctu_utility_year <- readRDS("_energy/data/ctu_ng_utility_intersect.RDS") %>%
   cross_join(data.frame(inventory_year = c(2007:2023))) %>%
   mutate(
     residential_mwh = NA,
@@ -54,12 +54,13 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
                           "Business"
   )) %>%
   group_by(ctu_name, emissions_year, utility, sector) %>%
-  summarise(therms_per_year = sum(therms_per_year, na.rm = TRUE), .groups = "drop") %>%
+  summarise(mcf_per_year =  sum(therms_per_year * therms_to_mcf, na.rm = TRUE),
+            .groups = "drop") %>%
   pivot_wider(
-    names_from = sector, values_from = therms_per_year,
-    names_glue = "{tolower(sector)}_therms"
+    names_from = sector, values_from = mcf_per_year,
+    names_glue = "{tolower(sector)}_mcf"
   ) %>%
-  mutate(total_therms = replace_na(business_therms, 0) + replace_na(residential_therms, 0))
+  mutate(total_mcf = replace_na(business_mcf, 0) + replace_na(residential_mcf, 0))
 
 
 ### load and format xcel ng data
