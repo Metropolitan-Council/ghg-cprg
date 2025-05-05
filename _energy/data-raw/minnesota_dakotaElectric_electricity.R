@@ -72,7 +72,7 @@ dakotaElectric_activityData_2019_2024 <- city_raw %>%
   filter(!ctu_name %in% c("Northfield", "Hanover", "New Prague", "Cannon Falls", "Rockford")) %>%
   mutate(
     source = "Electricity",
-    utility = "Dakota Electric"
+    utility = "Dakota Electric Association"
   ) %>%
   select(1:7, 12:13)
 

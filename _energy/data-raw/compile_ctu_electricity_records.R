@@ -95,8 +95,9 @@ dakota <- readRDS("_energy/data/dakotaElectric_activityData_2019_2024.rds") %>%
   mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
 
 ### load and format xcel data
-xcel <- readRDS("_energy/data/Xcel_activityData_2015_2023.rds") %>%
-  filter(!is.na(mwh_delivered)) %>%
+xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
+  filter(!is.na(mwh_delivered),
+         source == "Electricity") %>%
   rename(emissions_year = year) %>%
   mutate(sector = case_when(
     sector_mapped == "residential" ~ "Residential",
@@ -109,8 +110,6 @@ xcel <- readRDS("_energy/data/Xcel_activityData_2015_2023.rds") %>%
     names_glue = "{tolower(sector)}_mwh"
   ) %>%
   mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
-
-
 
 
 # load in municipal utility data
@@ -159,6 +158,7 @@ sql_elec <- sql_elec %>%
 
 ctu_utility_year <- merge_electricity_data(ctu_utility_year, sql_elec)
 ctu_utility_year <- merge_electricity_data(ctu_utility_year, connexus)
+ctu_utility_year <- merge_electricity_data(ctu_utility_year, dakota)
 ctu_utility_year <- merge_electricity_data(ctu_utility_year, xcel)
 
 anti_join(munis, ctu_utility_year, by = "utility") %>%
