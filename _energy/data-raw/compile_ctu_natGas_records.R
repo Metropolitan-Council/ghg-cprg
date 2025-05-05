@@ -133,9 +133,9 @@ merge_ng_data <- function(base_df, new_data) {
               by = c("ctu_name", "inventory_year", "utility")
     ) %>%
     mutate(
-      residential_mwh = if_else(!is.na(residential_mwh.y), residential_mwh.y, residential_mwh.x),
-      business_mwh = if_else(!is.na(business_mwh.y), business_mwh.y, business_mwh.x),
-      total_mwh = if_else(!is.na(total_mwh.y), total_mwh.y, total_mwh.x)
+      residential_mcf = if_else(!is.na(residential_mcf.y), residential_mcf.y, residential_mcf.x),
+      business_mcf = if_else(!is.na(business_mcf.y), business_mcf.y, business_mcf.x),
+      total_mcf = if_else(!is.na(total_mcf.y), total_mcf.y, total_mcf.x)
     ) %>%
     select(-ends_with(".x"), -ends_with(".y")) # Remove duplicate columns
 }
@@ -147,13 +147,9 @@ anti_join(sql_ng, ctu_utility_year, by = "utility") %>%
   distinct(utility) %>%
   arrange(utility)
 sort(unique(ctu_utility_year$utility))
-sql_ng <- sql_ng %>%
-  mutate(utility = case_when(
-    utility == "City of Chaska" ~ "City of Chaska Electric Department",
-    utility == "Wright-Hennepin Coop Electric Assn" ~ "Wright Hennepin Electric Cooperative",
-    TRUE ~ utility
-  ))
 
+
+# perform the merges -- sql first to make susre any updated data from utilities is reflected
 ctu_utility_year <- merge_ng_data(ctu_utility_year, sql_ng)
 ctu_utility_year <- merge_ng_data(ctu_utility_year, centerpoint)
 ctu_utility_year <- merge_ng_data(ctu_utility_year, xcel)
@@ -166,10 +162,10 @@ ctu_utility_year <- merge_ng_data(ctu_utility_year, xcel)
 
 ctu_year_complete <- ctu_utility_year %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
-  filter(!any(is.na(total_mwh))) %>%
-  summarize(total_mwh = sum(total_mwh)) %>%
+  filter(!any(is.na(total_mcf))) %>%
+  summarize(total_mcf = sum(total_mcf)) %>%
   ungroup()
-# 115/210 ctus
+# 
 
 
 rii <- read_rds("_energy/data/rii_electricity_2007_2023.rds")
@@ -178,21 +174,21 @@ rii <- read_rds("_energy/data/rii_electricity_2007_2023.rds")
 rii_ctu_comp <- inner_join(ctu_year_complete,
                            rii %>%
                              group_by(ctu_name, ctu_class, year) %>%
-                             summarize(rii_mwh = sum(mwh_delivered)) %>%
+                             summarize(rii_mcf = sum(mcf_delivered)) %>%
                              ungroup(),
                            by = c("ctu_name", "ctu_class",
                                   "inventory_year" = "year"
                            )
 )
 
-ggplot(data = rii_ctu_comp, aes(x = total_mwh, y = rii_mwh)) +
+ggplot(data = rii_ctu_comp, aes(x = total_mcf, y = rii_mcf)) +
   geom_point() +
   geom_abline(slope = 1) +
   theme_bw()
 ## fairly tight, a few notable departure
 
 rii_ctu_comp %>% filter(
-  abs(total_mwh - rii_mwh) > 10000
+  abs(total_mcf - rii_mcf) > 10000
 )
 
 
@@ -205,16 +201,16 @@ rii_wide <- rii %>%
   )) %>%
   select(-sector) %>%
   pivot_wider(
-    names_from = sector_use, values_from = mwh_delivered,
-    names_glue = "{tolower(sector_use)}_mwh"
+    names_from = sector_use, values_from = mcf_delivered,
+    names_glue = "{tolower(sector_use)}_mcf"
   ) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
+  mutate(total_mcf = replace_na(business_mcf, 0) + replace_na(residential_mcf, 0))
 
 # id cities with NO utility data
 
 empty_city_years <- ctu_utility_year %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
-  summarise(all_na = all(is.na(business_mwh) & is.na(residential_mwh) & is.na(total_mwh)), .groups = "drop") %>%
+  summarise(all_na = all(is.na(business_mcf) & is.na(residential_mcf) & is.na(total_mcf)), .groups = "drop") %>%
   filter(all_na) %>%
   select(ctu_name, ctu_class, inventory_year)
 
@@ -224,9 +220,9 @@ rii_fill <- empty_city_years %>%
   left_join(rii_wide %>% rename(inventory_year = year),
             by = c("ctu_name", "ctu_class", "inventory_year")
   ) %>%
-  select(ctu_name, ctu_class, inventory_year, utility, business_mwh, residential_mwh, total_mwh) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0)) %>%
-  filter(!(is.na(business_mwh) | is.na(residential_mwh)))
+  select(ctu_name, ctu_class, inventory_year, utility, business_mcf, residential_mcf, total_mcf) %>%
+  mutate(total_mcf = replace_na(business_mcf, 0) + replace_na(residential_mcf, 0)) %>%
+  filter(!(is.na(business_mcf) | is.na(residential_mcf)))
 
 ctu_utility_year <- ctu_utility_year %>%
   anti_join(rii_fill %>% select(ctu_name, ctu_class, inventory_year),
@@ -238,5 +234,5 @@ ctu_utility_year <- ctu_utility_year %>%
 
 saveRDS(
   ctu_utility_year,
-  "_energy/data/ctu_utility_mwh.RDS"
+  "_energy/data/ctu_utility_mcf.RDS"
 )
