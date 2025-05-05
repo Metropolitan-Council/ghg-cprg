@@ -186,7 +186,7 @@ ctu_year_complete <- ctu_utility_year %>%
   filter(!any(is.na(total_mwh))) %>%
   summarize(total_mwh = sum(total_mwh)) %>%
   ungroup()
-# 115/210 ctus
+# 136/210 ctus have at least one complete year, 72 for 2021
 
 
 rii <- read_rds("_energy/data/rii_electricity_2007_2023.rds")
