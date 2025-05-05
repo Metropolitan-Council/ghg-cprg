@@ -25,9 +25,9 @@ county_mcf <- readRDS(here("_energy", "data", "minnesota_county_GasEmissions.RDS
 ctu_utility_year <- readRDS("_energy/data/ctu_ng_utility_intersect.RDS") %>%
   cross_join(data.frame(inventory_year = c(2007:2023))) %>%
   mutate(
-    residential_mwh = NA,
-    business_mwh = NA,
-    total_mwh = NA
+    residential_mcf = NA,
+    business_mcf = NA,
+    total_mcf = NA
   ) %>%
   rename(utility = utility_name) %>%
   mutate(utility = case_when(
@@ -154,9 +154,9 @@ sql_ng <- sql_ng %>%
     TRUE ~ utility
   ))
 
-ctu_utility_year <- merge_electricity_data(ctu_utility_year, sql_elec)
-ctu_utility_year <- merge_electricity_data(ctu_utility_year, connexus)
-ctu_utility_year <- merge_electricity_data(ctu_utility_year, xcel)
+ctu_utility_year <- merge_ng_data(ctu_utility_year, sql_ng)
+ctu_utility_year <- merge_ng_data(ctu_utility_year, centerpoint)
+ctu_utility_year <- merge_ng_data(ctu_utility_year, xcel)
 
 anti_join(munis, ctu_utility_year, by = "utility") %>%
   distinct(utility) %>%
