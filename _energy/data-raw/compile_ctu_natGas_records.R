@@ -158,20 +158,6 @@ ctu_utility_year <- merge_ng_data(ctu_utility_year, sql_ng)
 ctu_utility_year <- merge_ng_data(ctu_utility_year, centerpoint)
 ctu_utility_year <- merge_ng_data(ctu_utility_year, xcel)
 
-anti_join(munis, ctu_utility_year, by = "utility") %>%
-  distinct(utility) %>%
-  arrange(utility)
-sort(unique(ctu_utility_year$utility))
-
-munis <- munis %>%
-  mutate(utility = case_when(
-    utility == "City of Chaska" ~ "City of Chaska Electric Department",
-    utility == "City of Anoka" ~ "Anoka Municipal Utility",
-    utility == "City of North St Paul" ~ "City of North Saint Paul Electric Utilities",
-    TRUE ~ utility
-  ))
-
-ctu_utility_year <- merge_electricity_data(ctu_utility_year, munis)
 
 
 ### compare to rii totals and supplement where possible
