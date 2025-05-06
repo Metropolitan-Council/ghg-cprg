@@ -176,7 +176,8 @@ rf_res_model <- randomForest(
     single_fam_attached_own +
     single_fam_attached_rent +
     multi_fam_own +
-    multi_fam_rent,
+    multi_fam_rent +
+    heating_degree_days,
   importance = T, data = ng_res,
   na.action = na.omit
 )
