@@ -88,7 +88,7 @@ xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
   mutate(total_mcf = replace_na(business_mcf, 0) + replace_na(residential_mcf, 0))
 
 
-### load and format Centerpoint ng data -- ensure that 'All' is kept for city-years without specific sector breakouts
+### load and format CenterPoint ng data -- ensure that 'All' is kept for city-years without specific sector breakouts
 centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>%
   filter(!is.na(mcf_delivered),
          source == "Natural Gas") %>%
@@ -108,7 +108,7 @@ centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>
   mutate(
     total_mcf = case_when(
       !is.na(business_mcf) & !is.na(residential_mcf) ~ business_mcf + residential_mcf,
-      TRUE ~ all_mcf  # fall back to All_mcf if detailed sectors are missing
+      TRUE ~ all_mcf  # fall back to all_mcf if detailed sectors are missing
     )
   ) %>%
   select(-all_mcf)
@@ -156,8 +156,20 @@ ctu_utility_year <- merge_ng_data(ctu_utility_year, xcel)
 
 
 
-### compare to rii totals and supplement where possible
+# address same-named city/township -- ascribe all observed data to city and null out the township.
+ctu_utility_year <- ctu_utility_year %>%
+  mutate(
+    residential_mcf = if_else(ctu_name == "Belle Plaine" & ctu_class == "TOWNSHIP", NA_real_, residential_mcf),
+    business_mcf = if_else(ctu_name == "Belle Plaine" & ctu_class == "TOWNSHIP", NA_real_, business_mcf),
+    total_mcf = if_else(ctu_name == "Belle Plaine" & ctu_class == "TOWNSHIP", NA_real_, total_mcf),
+  ) %>%
+  # Address clearly incongruent and poor-data data
+  mutate(
+    residential_mcf = if_else(ctu_name == "Dayton" & inventory_year == 2020, NA_real_, residential_mcf)
+  )
 
+
+### compare to rii totals and supplement where possible
 # get a list of city-year combos we think are complete
 
 ctu_year_complete <- ctu_utility_year %>%
@@ -168,7 +180,7 @@ ctu_year_complete <- ctu_utility_year %>%
 # 
 
 
-rii <- read_rds("_energy/data/rii_electricity_2007_2023.rds")
+rii <- read_rds("_energy/data/rii_natGas_2007_2023.rds")
 
 # merge with ctu_year_complete
 rii_ctu_comp <- inner_join(ctu_year_complete,
