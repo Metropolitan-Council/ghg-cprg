@@ -163,7 +163,6 @@ set.seed(1029)
 ind <- sample(2, nrow(ng_res), replace = TRUE, prob = c(0.7, 0.3))
 train_res <- ng_res[ind == 1, ]
 test_res <- ng_res[ind == 2, ]
-                      log_total_households = log(total_households))
 
 ### full model
 rf_res_model <- randomForest(
