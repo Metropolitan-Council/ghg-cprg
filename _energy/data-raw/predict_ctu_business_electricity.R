@@ -1,4 +1,4 @@
-### Develop model for predicting CTU business electricity usage ###
+### Develop model for predicting CTU business natural gas usage ###
 
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
@@ -146,7 +146,7 @@ mn_parcel_busi <- mn_parcel %>%
   ungroup()
 
 # merge into utility data
-electricity_busi <- left_join(coctu_busi_year,
+ng_busi <- left_join(coctu_busi_year,
   urbansim_busi,
   by = c("ctu_name", "county_name", "inventory_year")
 ) %>%
@@ -177,16 +177,16 @@ rf_nonres_model <- randomForest(
     jobs_sector_2 +
     jobs_sector_3 +
     cooling_degree_days,
-  importance = T, data = electricity_busi
+  importance = T, data = ng_busi
 )
 
 rf_nonres_model
-p_full <- predict(rf_nonres_model, electricity_busi)
-plot(p_full, electricity_busi$business_mcf)
+p_full <- predict(rf_nonres_model, ng_busi)
+plot(p_full, ng_busi$business_mcf)
 abline(0, 1)
 
 ### save rf_res_model output
-saveRDS(rf_nonres_model, "_energy/data/ctu_business_elec_random_forest.RDS")
+saveRDS(rf_nonres_model, "_energy/data/ctu_business_ng_random_forest.RDS")
 
 
 ### predict ALL cities and rollback up to counties for all years
