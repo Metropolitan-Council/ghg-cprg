@@ -27,15 +27,15 @@ noaa_year <- noaa %>%
     temperature = mean(dry_bulb_temp)
   )
 
-ctu_utility_mwh <- read_rds("_energy/data/ctu_utility_mwh.RDS")
+ctu_utility_mcf <- read_rds("_energy/data/ctu_utility_mcf.RDS")
 
-ctu_utility_year <- ctu_utility_mwh %>%
+ctu_utility_year <- ctu_utility_mcf %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
-  filter(!any(is.na(total_mwh))) %>%
+  filter(!any(is.na(total_mcf))) %>%
   summarize(
-    residential_mwh = sum(residential_mwh, na.rm = TRUE),
-    business_mwh = sum(business_mwh, na.rm = TRUE),
-    total_mwh = sum(total_mwh)
+    residential_mcf = sum(residential_mcf, na.rm = TRUE),
+    business_mcf = sum(business_mcf, na.rm = TRUE),
+    total_mcf = sum(total_mcf)
   ) %>%
   ungroup()
 
@@ -53,7 +53,7 @@ coctu_population <- ctu_population %>%
 
 #### RESIDENTIAL ####
 
-### split residential mwh based on population splits
+### split residential mcf based on population splits
 
 coctu_res_year <- ctu_utility_year %>%
   # Join city_total_population back to main dataset
@@ -64,15 +64,15 @@ coctu_res_year <- ctu_utility_year %>%
   # Calculate proportions and disaggregated values
   group_by(ctu_name, ctu_class, inventory_year, county_name) %>%
   mutate(
-    residential_mwh = ifelse(
+    residential_mcf = ifelse(
       multi_county,
-      residential_mwh * coctu_population_prop,
-      residential_mwh
+      residential_mcf * coctu_population_prop,
+      residential_mcf
     )
   ) %>%
   ungroup() %>%
-  filter(!is.na(residential_mwh)) %>%
-  select(ctu_name, ctu_class, inventory_year, residential_mwh, county_name, ctu_population)
+  filter(!is.na(residential_mcf)) %>%
+  select(ctu_name, ctu_class, inventory_year, residential_mcf, county_name, ctu_population)
 
 # predictor data
 mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")
@@ -171,7 +171,7 @@ test_res <- electricity_res[ind == 2, ]
 
 ### full model
 rf_res_model <- randomForest(
-  residential_mwh ~
+  residential_mcf ~
     thrive_designation +
     total_pop + total_households + total_residential_units +
     # mean_year_apartment + mean_year_multifamily_home + mean_year_single_family_home +
@@ -189,7 +189,7 @@ rf_res_model <- randomForest(
 
 rf_res_model
 p_full <- predict(rf_res_model, electricity_res)
-plot(p_full, electricity_res$residential_mwh)
+plot(p_full, electricity_res$residential_mcf)
 abline(0, 1)
 
 ### save rf_res_model output
@@ -203,7 +203,7 @@ varImpPlot(rf_res_model,
 
 ### can subset predict test model?
 rf_res_train <- randomForest(
-  residential_mwh ~
+  residential_mcf ~
     thrive_designation +
     total_pop + total_households + total_residential_units + mean_year_apartment +
     mean_year_multifamily_home + mean_year_single_family_home +
@@ -223,12 +223,12 @@ rf_res_train <- randomForest(
 print(rf_res_train)
 
 p1 <- predict(rf_res_train, train_res)
-plot(p1, train_res$residential_mwh)
+plot(p1, train_res$residential_mcf)
 abline(0, 1)
 
 
 p2 <- predict(rf_res_train, test_res)
-plot(p2, test_res$residential_mwh)
+plot(p2, test_res$residential_mcf)
 abline(0, 1)
 
 importance(rf_res_train)
@@ -239,7 +239,7 @@ importance(rf_res_train)
 importance(rf_res_model)
 
 res_simple <- lm(
-  residential_mwh ~ thrive_designation + total_pop + single_fam_det_ll_own + total_households +
+  residential_mcf ~ thrive_designation + total_pop + single_fam_det_ll_own + total_households +
     total_residential_units * mean_year_single_family_home,
   data = electricity_res
 )
@@ -247,7 +247,7 @@ summary(res_simple) # R2 = 0.9928
 
 ### compare prediction to input data
 lm_pred <- predict(res_simple, electricity_res)
-plot(lm_pred, electricity_res$residential_mwh)
+plot(lm_pred, electricity_res$residential_mcf)
 abline(0, 1)
 
 
@@ -261,11 +261,11 @@ ctu_res_predict <- cprg_ctu %>%
     "thrive_designation"
   )) %>%
   left_join(noaa_year) %>%
-  mutate(mwh_predicted = predict(rf_res_model, .)) %>%
-  filter(!is.na(mwh_predicted)) %>% # removes 2025 data
+  mutate(mcf_predicted = predict(rf_res_model, .)) %>%
+  filter(!is.na(mcf_predicted)) %>% # removes 2025 data
   st_drop_geometry() %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
-  summarize(residential_mwh_predicted = sum(mwh_predicted)) %>%
+  summarize(residential_mcf_predicted = sum(mcf_predicted)) %>%
   ungroup()
 
 
@@ -278,7 +278,7 @@ ctu_res <- left_join(
     select(1:4)
 )
 
-## add predicted mwh
+## add predicted mcf
 
 county_res_predict <- cprg_ctu %>%
   left_join(urbansim_res, by = c(
@@ -288,13 +288,13 @@ county_res_predict <- cprg_ctu %>%
     "thrive_designation"
   )) %>%
   left_join(noaa_year) %>%
-  mutate(mwh_predicted = predict(rf_res_model, .)) %>%
-  filter(!is.na(mwh_predicted)) %>% # removes 2025 data
+  mutate(mcf_predicted = predict(rf_res_model, .)) %>%
+  filter(!is.na(mcf_predicted)) %>% # removes 2025 data
   st_drop_geometry() %>%
   group_by(county_name, inventory_year) %>%
-  summarize(residential_mwh_predicted = sum(mwh_predicted)) %>%
+  summarize(residential_mcf_predicted = sum(mcf_predicted)) %>%
   ungroup()
 
 # save intermediate rds
-saveRDS(ctu_res, "_energy/data-raw/predicted_ctu_residential_mwh.rds")
-saveRDS(county_res_predict, "_energy/data-raw/predicted_county_residential_mwh.rds")
+saveRDS(ctu_res, "_energy/data-raw/predicted_ctu_residential_mcf.rds")
+saveRDS(county_res_predict, "_energy/data-raw/predicted_county_residential_mcf.rds")
