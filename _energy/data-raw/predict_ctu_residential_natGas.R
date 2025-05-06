@@ -177,8 +177,7 @@ rf_res_model <- randomForest(
     single_fam_attached_own +
     single_fam_attached_rent +
     multi_fam_own +
-    multi_fam_rent +
-    cooling_degree_days,
+    multi_fam_rent,
   importance = T, data = ng_res,
   na.action = na.omit
 )
@@ -209,8 +208,7 @@ rf_res_train <- randomForest(
     single_fam_attached_own +
     single_fam_attached_rent +
     multi_fam_own +
-    multi_fam_rent +
-    cooling_degree_days,
+    multi_fam_rent,
   data = train_res,
   importance = T,
   na.action = na.omit
