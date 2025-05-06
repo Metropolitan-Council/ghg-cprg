@@ -1,4 +1,4 @@
-### Develop model for predicting CTU residential electricity usage ###
+### Develop model for predicting CTU residential natural gas usage ###
 
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
@@ -147,7 +147,7 @@ urbansim_res <- urbansim %>%
 
 
 # merge into utility data
-electricity_res <- left_join(coctu_res_year,
+ng_res <- left_join(coctu_res_year,
   urbansim_res,
   by = c("ctu_name", "county_name", "inventory_year")
 ) %>%
@@ -160,14 +160,10 @@ electricity_res <- left_join(coctu_res_year,
 #### residential RF ####
 
 set.seed(1029)
-ind <- sample(2, nrow(electricity_res), replace = TRUE, prob = c(0.7, 0.3))
-train_res <- electricity_res[ind == 1, ]
-test_res <- electricity_res[ind == 2, ]
-#
-# ### log transform most common variables
-# electricity <- mutate(electricity,
-#                       log_total_pop = log(total_pop),
-#                       log_total_households = log(total_households))
+ind <- sample(2, nrow(ng_res), replace = TRUE, prob = c(0.7, 0.3))
+train_res <- ng_res[ind == 1, ]
+test_res <- ng_res[ind == 2, ]
+                      log_total_households = log(total_households))
 
 ### full model
 rf_res_model <- randomForest(
@@ -183,17 +179,17 @@ rf_res_model <- randomForest(
     multi_fam_own +
     multi_fam_rent +
     cooling_degree_days,
-  importance = T, data = electricity_res,
+  importance = T, data = ng_res,
   na.action = na.omit
 )
 
 rf_res_model
-p_full <- predict(rf_res_model, electricity_res)
-plot(p_full, electricity_res$residential_mcf)
+p_full <- predict(rf_res_model, ng_res)
+plot(p_full, ng_res$residential_mcf)
 abline(0, 1)
 
 ### save rf_res_model output
-saveRDS(rf_res_model, "_energy/data/ctu_residential_elec_random_forest.RDS")
+saveRDS(rf_res_model, "_energy/data/ctu_residential_ng_random_forest.RDS")
 
 # look at top predictors
 varImpPlot(rf_res_model,
@@ -241,13 +237,13 @@ importance(rf_res_model)
 res_simple <- lm(
   residential_mcf ~ thrive_designation + total_pop + single_fam_det_ll_own + total_households +
     total_residential_units * mean_year_single_family_home,
-  data = electricity_res
+  data = ng_res
 )
 summary(res_simple) # R2 = 0.9928
 
 ### compare prediction to input data
-lm_pred <- predict(res_simple, electricity_res)
-plot(lm_pred, electricity_res$residential_mcf)
+lm_pred <- predict(res_simple, ng_res)
+plot(lm_pred, ng_res$residential_mcf)
 abline(0, 1)
 
 
