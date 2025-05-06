@@ -38,7 +38,8 @@ ctu_utility_year <- read_rds("_energy/data/ctu_utility_mwh.RDS") %>%
   ungroup()
 
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
-mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS")
+mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS") %>% 
+  mutate(ctu_id = stringr::str_pad(ctu_id, width = 8, pad = "0", side = "left"))
 
 #### BUSINESS ####
 
@@ -68,21 +69,19 @@ business <- c(
 ### create 2010-2025 urbansim residential dataset
 urbansim_busi <- urbansim %>%
   filter(variable %in% business) %>%
-  group_by(coctu_id, variable) %>%
+  group_by(coctu_id_gnis, ctu_id, variable) %>%
   complete(inventory_year = full_seq(c(2005, 2025), 1)) %>% # add interstitial years and expand to 2025
-  arrange(coctu_id, variable, inventory_year) %>%
+  arrange(coctu_id_gnis, ctu_id, variable, inventory_year) %>%
   mutate(value = approx(inventory_year, value, inventory_year, method = "linear", rule = 2)$y) %>% # allow extrapolation
   ungroup() %>%
   pivot_wider(
-    id_cols = c(coctu_id, inventory_year),
+    id_cols = c(coctu_id_gnis, ctu_id, inventory_year),
     names_from = variable,
     values_from = value
   ) %>%
-  filter(!is.na(coctu_id)) %>%
+  filter(!is.na(coctu_id_gnis)) %>%
   mutate(
-    ctu_id = str_sub(coctu_id, -7, -1),
-    county_id = as.numeric(str_remove(coctu_id, paste0("0", ctu_id))),
-    ctu_id = as.numeric(ctu_id)
+    county_id = stringr::str_sub(coctu_id_gnis, start = 1, end = 3),
   ) %>%
   left_join(
     cprg_ctu %>% st_drop_geometry() %>%
@@ -91,7 +90,7 @@ urbansim_busi <- urbansim %>%
   ) %>%
   left_join(
     cprg_county %>% st_drop_geometry() %>%
-      mutate(geoid = as.numeric(str_sub(geoid, -3, -1))) %>%
+      mutate(geoid = str_sub(geoid, -3, -1)) %>%
       select(county_name, geoid),
     by = c("county_id" = "geoid")
   )
