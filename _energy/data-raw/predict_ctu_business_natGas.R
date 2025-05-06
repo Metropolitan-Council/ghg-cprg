@@ -176,7 +176,7 @@ rf_nonres_model <- randomForest(
     jobs_sector_1 +
     jobs_sector_2 +
     jobs_sector_3 +
-    cooling_degree_days,
+    heating_degree_days,
   importance = T, data = ng_busi
 )
 
