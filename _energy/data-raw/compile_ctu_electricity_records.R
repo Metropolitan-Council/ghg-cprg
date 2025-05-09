@@ -98,7 +98,7 @@ dakota <- readRDS("_energy/data/dakotaElectric_activityData_2019_2024.rds") %>%
 xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
   filter(!is.na(mwh_delivered),
          source == "Electricity") %>%
-  rename(emissions_year = year) %>%
+  rename(emissions_year = inventory_year) %>%
   mutate(sector = case_when(
     sector_mapped == "residential" ~ "Residential",
     TRUE ~ "Business"

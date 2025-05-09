@@ -18,13 +18,13 @@ city_raw <- read_xlsx(here("_energy", "data-raw", "dakotaElectricDataRequest", "
   select(
     ctu_name,
     ctu_class = MunicipalityClass,
-    year = ReportingYear,
+    inventory_year = ReportingYear,
     sector,
     customer_count = `Count Services`,
     mwh_delivered
   ) %>%
   # Dakota's 2018 data is faulty -- starts in March
-  filter(!year == 2018)
+  filter(!inventory_year == 2018)
 
 
 # code should be added to meta at some point -- COCTU disaggregation is happening in a lot of places
@@ -34,15 +34,14 @@ cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   filter(inventory_year > 2013 & inventory_year != 2024) %>%
   left_join(cprg_county %>% select(geoid, county_name, state_abb), by = "geoid") %>%
-  filter(state_abb == "MN") %>%
-  rename(year = inventory_year)
+  filter(state_abb == "MN")
 
-# Calculate unique total population by city-year-county
+# Calculate unique total population by city-inventory_year-county
 city_total_population <- ctu_population %>%
-  distinct(ctu_name, ctu_class, year, county_name, ctu_population) %>% # Ensure unique rows per city-county-year
-  group_by(ctu_name, ctu_class, year) %>%
+  distinct(ctu_name, ctu_class, inventory_year, county_name, ctu_population) %>% # Ensure unique rows per city-county-inventory_year
+  group_by(ctu_name, ctu_class, inventory_year) %>%
   mutate(
-    total_ctu_population = sum(ctu_population, na.rm = TRUE), # Sum populations across counties for each city-year
+    total_ctu_population = sum(ctu_population, na.rm = TRUE), # Sum populations across counties for each city-inventory_year
     multi_county = n_distinct(county_name) > 1
   ) %>%
   ungroup()
@@ -52,11 +51,11 @@ city_total_population <- ctu_population %>%
 dakotaElectric_activityData_2019_2024 <- city_raw %>%
   # Join city_total_population back to main dataset
   left_join(city_total_population,
-            by = c("ctu_name", "ctu_class", "year"),
+            by = c("ctu_name", "ctu_class", "inventory_year"),
             relationship = "many-to-many"
   ) %>%
   # Calculate proportions and disaggregated values
-  group_by(ctu_name, ctu_class, year, county_name) %>%
+  group_by(ctu_name, ctu_class, inventory_year, county_name) %>%
   mutate(
     ctu_population_proportion = ctu_population / total_ctu_population,
     mwh_delivered = ifelse(
