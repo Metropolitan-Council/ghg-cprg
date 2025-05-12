@@ -46,13 +46,13 @@ get_files <- function(root_dir) {
 extract_city_name <- function(file_path) {
   # Read the first 3 rows of the Excel file
   data <- read_excel(file_path, range = cell_rows(1:3), col_names = FALSE)
-  
+
   # Convert the data to a character matrix for easier searching
   data_char <- as.matrix(data)
-  
+
   # Process row 2 (Excel row 3)
-  row2 <- data_char[2, ] 
-  
+  row2 <- data_char[2, ]
+
   # Loop through each cell in row 2 to find 'Community'
   for (i in seq_along(row2)) {
     cell_content <- row2[i]
@@ -65,7 +65,7 @@ extract_city_name <- function(file_path) {
           return(city_name)
         }
       }
-      
+
       # Case 2: City name is in the next cell(s)
       for (j in (i + 1):length(row2)) {
         next_cell <- row2[j]
@@ -78,7 +78,7 @@ extract_city_name <- function(file_path) {
       }
     }
   }
-  
+
   # Return NA if 'Community' not found or city name is empty
   return(NA)
 }
@@ -94,14 +94,14 @@ find_row_of_text <- function(file_path, sheet, pattern, search_range = "A1:H60")
     col_names = FALSE
   )
   mat <- as.matrix(df)
-  
+
   match_idx <- which(grepl(pattern, mat, ignore.case = TRUE))
   if (length(match_idx) == 0) {
     return(NA)
   } else {
     # Convert matrix index to row index (1-based)
     row_idx <- (match_idx - 1) %% nrow(mat) + 1
-    return(row_idx[1])  # If multiple matches, take the first
+    return(row_idx[1]) # If multiple matches, take the first
   }
 }
 
@@ -142,16 +142,16 @@ read_until_value <- function(file_path, sheet, start_cell, stop_value, columns) 
 # Fetch a single section (Electricity or Natural Gas) using other helper fucntions in ensemble
 fetch_section <- function(file_path, sheet, pattern, stop_value, columns = "H") {
   start_row <- find_row_of_text(file_path, sheet, pattern)
-  
+
   # If pattern not found, return NULL
   if (is.na(start_row)) {
     message("'", pattern, "' not found in this file. Skipping.")
     return(NULL)
   }
-  
+
   # Build start_cell like "A39" if row is 39
   start_cell <- paste0("A", start_row)
-  
+
   # Use read_until_value() to capture the block of interest
   df <- read_until_value(
     file_path   = file_path,
@@ -160,7 +160,7 @@ fetch_section <- function(file_path, sheet, pattern, stop_value, columns = "H") 
     stop_value  = stop_value,
     columns     = columns
   )
-  
+
   return(df)
 }
 
@@ -169,17 +169,17 @@ process_file <- function(file_info) {
   # Unpack city-year metadata
   file_path <- file_info$file_path
   city_name <- file_info$city_name
-  utility   <- file_info$utility
-  year      <- file_info$year
-  
+  utility <- file_info$utility
+  year <- file_info$year
+
   # Electricity
   electricity_raw <- fetch_section(
     file_path = file_path,
-    sheet     = "Standard Community Report",
-    pattern   = "Electricity",
-    stop_value= "Total:"
+    sheet = "Standard Community Report",
+    pattern = "Electricity",
+    stop_value = "Total:"
   )
-  
+
   # if data is retrieved, clean it up
   if (!is.null(electricity_raw)) {
     electricity_clean <- electricity_raw %>%
@@ -198,15 +198,15 @@ process_file <- function(file_info) {
   } else {
     electricity_clean <- NULL
   }
-  
+
   # Natural Gas
   gas_raw <- fetch_section(
     file_path = file_path,
-    sheet     = "Standard Community Report",
-    pattern   = "Natural Gas",
-    stop_value= "Total:"
+    sheet = "Standard Community Report",
+    pattern = "Natural Gas",
+    stop_value = "Total:"
   )
-  
+
   # if data is retrieved, clean it up
   if (!is.null(gas_raw)) {
     gas_clean <- gas_raw %>%
@@ -224,14 +224,14 @@ process_file <- function(file_info) {
   } else {
     gas_clean <- NULL
   }
-  
+
   # Combine cleaned electricity and natural gas data from a given utility-city into one df and return it
   combined <- dplyr::bind_rows(electricity_clean, gas_clean)
   return(combined)
 }
 
 
-# prepare for CTU-county reference joins to enable disaggregation 
+# prepare for CTU-county reference joins to enable disaggregation
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
@@ -252,12 +252,11 @@ city_total_population <- ctu_population %>%
 
 # takes about an hour to process all of nthe Xcel data -- only run if needed (i.e., the activity file doesn't exist)
 if (file.exists("_energy/data/Xcel_elecNG_activityData_2015_2023.RDS") == FALSE) {
-  
   file_list <- get_files(dir_xcel_communityReports)
   results_all <- purrr::map_dfr(file_list, process_file)
-  
+
   therms_to_mcf <- 1 / 10.38
-  
+
   Xcel_activityData_2015_2023 <- results_all %>%
     # Fix St and St.
     mutate(
@@ -315,8 +314,8 @@ if (file.exists("_energy/data/Xcel_elecNG_activityData_2015_2023.RDS") == FALSE)
     filter(!is.na(sector_mapped)) %>%
     # Join city_total_population back to main dataset
     left_join(city_total_population,
-              by = c("ctu_name", "ctu_class", "year"),
-              relationship = "many-to-many"
+      by = c("ctu_name", "ctu_class", "year"),
+      relationship = "many-to-many"
     ) %>%
     # Calculate proportions and disaggregated values
     group_by(ctu_name, ctu_class, year, county_name) %>%
@@ -350,7 +349,7 @@ if (file.exists("_energy/data/Xcel_elecNG_activityData_2015_2023.RDS") == FALSE)
       util_reported_co2e = coalesce(disagg_util_reported_co2e, util_reported_co2e)
     ) %>%
     select(1, 3:4, 6:8, 10:14) # exclude interstitial calculation columns
-  
+
   write_rds(Xcel_activityData_2015_2023, "_energy/data/Xcel_elecNG_activityData_2015_2023.RDS")
 }
 
@@ -362,29 +361,29 @@ if (file.exists("_energy/data/Xcel_elecNG_activityData_2015_2023.RDS") == FALSE)
 #   combinations <- lapply(file_list, function(x) {
 #     data.frame(city_name = x$city_name, year = x$year, stringsAsFactors = FALSE)
 #   })
-#   
+#
 #   # Convert to a single data frame
 #   combinations_df <- do.call(rbind, combinations)
-#   
+#
 #   # Count unique combinations
 #   unique_combinations <- combinations_df %>%
 #     distinct(city_name, year)
-#   
+#
 #   # Identify duplicate or missing rows
 #   duplicate_combinations <- combinations_df %>%
 #     group_by(city_name, year) %>%
 #     filter(n() > 1)
-#   
+#
 #   # Compare length of file list to unique combinations and find missing
 #   missing_combinations <- setdiff(
 #     combinations_df %>% distinct(city_name, year),
 #     unique_combinations
 #   )
-#   
+#
 #   # Print missing combinations for inspection
 #   print("Missing combinations:")
 #   print(missing_combinations)
-#   
+#
 #   # Assert equality of unique combinations to file list length
 #   testthat::expect_equal(
 #     nrow(unique_combinations),

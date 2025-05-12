@@ -1,5 +1,5 @@
 ### Develop model for predicting CTU business electricity usage ###
-# This script should be rerun after all updates to ctu_utility_mwh.RDS 
+# This script should be rerun after all updates to ctu_utility_mwh.RDS
 # from script _energy/data-raw/compile_ctu_electricity_records.R
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
@@ -39,7 +39,7 @@ ctu_utility_year <- read_rds("_energy/data/ctu_utility_mwh.RDS") %>%
   ungroup()
 
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
-mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS") %>% 
+mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS") %>%
   mutate(ctu_id = stringr::str_pad(ctu_id, width = 8, pad = "0", side = "left"))
 
 #### BUSINESS ####
@@ -99,7 +99,7 @@ urbansim_busi <- urbansim %>%
 # create jobs proportions for coctu
 coctu_jobs <- urbansim_busi %>%
   distinct(ctu_name, ctu_class, ctu_id, inventory_year, county_name, total_job_spaces) %>% # Ensure unique rows per city-county-year
-  group_by(ctu_name,  ctu_class, ctu_id, inventory_year) %>%
+  group_by(ctu_name, ctu_class, ctu_id, inventory_year) %>%
   mutate(
     total_ctu_jobs = sum(total_job_spaces, na.rm = TRUE), # Sum populations across counties for each city-year
     coctu_jobs_prop = total_job_spaces / total_ctu_jobs,
@@ -187,7 +187,7 @@ plot(p_full, electricity_busi$business_mwh)
 abline(0, 1)
 
 ### save rf_res_model output
-#saveRDS(rf_nonres_model, "_energy/data/ctu_business_elec_random_forest.RDS")
+# saveRDS(rf_nonres_model, "_energy/data/ctu_business_elec_random_forest.RDS")
 
 
 ### predict 2020, 2021, 2022 data for unknown coctu
@@ -201,46 +201,56 @@ coctu_busi_predict_rf <- cprg_ctu %>%
     "county_name",
     "thrive_designation"
   )) %>%
-  filter(!coctu_id_gnis %in% electricity_busi$coctu_id_gnis,
-         inventory_year %in% c(2020:2022))%>%
+  filter(
+    !coctu_id_gnis %in% electricity_busi$coctu_id_gnis,
+    inventory_year %in% c(2020:2022)
+  ) %>%
   left_join(mn_parcel_busi %>% select(-ctu_name),
-            by = c("gnis" = "ctu_id")
+    by = c("gnis" = "ctu_id")
   ) %>%
   # weather data
-  left_join(noaa_year, by = "inventory_year") %>% 
-  mutate(mwh_predicted = predict(rf_nonres_model, .),
-         data_source = "Model prediction") %>%
-  filter(!is.na(mwh_predicted)) %>% 
-  st_drop_geometry() %>% 
-  select(coctu_id_gnis, 
-         ctu_name, 
-         ctu_class, 
-         county_name, 
-         inventory_year,
-         mwh_predicted, 
-         data_source)
+  left_join(noaa_year, by = "inventory_year") %>%
+  mutate(
+    mwh_predicted = predict(rf_nonres_model, .),
+    data_source = "Model prediction"
+  ) %>%
+  filter(!is.na(mwh_predicted)) %>%
+  st_drop_geometry() %>%
+  select(
+    coctu_id_gnis,
+    ctu_name,
+    ctu_class,
+    county_name,
+    inventory_year,
+    mwh_predicted,
+    data_source
+  )
 
 
-coctu_busi_out <- bind_rows(coctu_busi_year %>%
-                             left_join(electricity_busi %>% 
-                                         distinct(ctu_name,
-                                                  ctu_class,
-                                                  county_name,
-                                                  coctu_id_gnis)) %>% 
-                             filter(!is.na(coctu_id_gnis)) %>% 
-                             select(coctu_id_gnis, 
-                                    ctu_name, 
-                                    ctu_class, 
-                                    county_name, 
-                                    inventory_year,
-                                    business_mwh ) %>% 
-                             mutate(data_source = "Utility report"),
-                           coctu_busi_predict_rf %>% 
-                             rename(business_mwh  = mwh_predicted)
+coctu_busi_out <- bind_rows(
+  coctu_busi_year %>%
+    left_join(electricity_busi %>%
+      distinct(
+        ctu_name,
+        ctu_class,
+        county_name,
+        coctu_id_gnis
+      )) %>%
+    filter(!is.na(coctu_id_gnis)) %>%
+    select(
+      coctu_id_gnis,
+      ctu_name,
+      ctu_class,
+      county_name,
+      inventory_year,
+      business_mwh
+    ) %>%
+    mutate(data_source = "Utility report"),
+  coctu_busi_predict_rf %>%
+    rename(business_mwh = mwh_predicted)
 )
 
 
 
 # save intermediate rds
 saveRDS(coctu_busi_out, "_energy/data-raw/predicted_coctu_business_mwh.rds")
-

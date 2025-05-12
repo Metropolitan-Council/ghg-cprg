@@ -84,7 +84,7 @@ dakota <- readRDS("_energy/data/dakotaElectric_activityData_2019_2024.rds") %>%
   rename(emissions_year = inventory_year) %>%
   mutate(sector = case_when(
     sector == "Residential" ~ "Residential",
-    TRUE ~ "Business" # includes "Commercial/Industrial", "Commercial", "Dakota Electric Operations", and "Irrigation Services" 
+    TRUE ~ "Business" # includes "Commercial/Industrial", "Commercial", "Dakota Electric Operations", and "Irrigation Services"
   )) %>%
   group_by(ctu_name, emissions_year, utility, sector) %>%
   summarise(mwh_per_year = sum(mwh_delivered, na.rm = TRUE), .groups = "drop") %>%
@@ -96,8 +96,10 @@ dakota <- readRDS("_energy/data/dakotaElectric_activityData_2019_2024.rds") %>%
 
 ### load and format xcel data
 xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
-  filter(!is.na(mwh_delivered),
-         source == "Electricity") %>%
+  filter(
+    !is.na(mwh_delivered),
+    source == "Electricity"
+  ) %>%
   rename(emissions_year = year) %>%
   mutate(sector = case_when(
     sector_mapped == "residential" ~ "Residential",

@@ -47,8 +47,8 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
     ctu_name = str_replace_all(ctu_name, " Twp.", ""),
     ctu_name = str_replace_all(ctu_name, "St. ", "Saint "),
     ctu_class = if_else(ctu_name %in% c("Credit River", "Empire"),
-                        "CITY",
-                        ctu_class
+      "CITY",
+      ctu_class
     ),
     utility = data_source
   ) %>%
@@ -57,12 +57,14 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
     !is.na(therms_per_year)
   ) %>% # removes duplicates
   mutate(sector = if_else(customer_class == "Residential",
-                          "Residential",
-                          "Business"
+    "Residential",
+    "Business"
   )) %>%
   group_by(ctu_name, emissions_year, utility, sector) %>%
-  summarise(mcf_per_year =  sum(therms_per_year * therms_to_mcf, na.rm = TRUE),
-            .groups = "drop") %>%
+  summarise(
+    mcf_per_year = sum(therms_per_year * therms_to_mcf, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
   pivot_wider(
     names_from = sector, values_from = mcf_per_year,
     names_glue = "{tolower(sector)}_mcf"
@@ -72,8 +74,10 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
 
 ### load and format xcel ng data
 xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
-  filter(!is.na(mcf_delivered),
-         source == "Natural Gas") %>%
+  filter(
+    !is.na(mcf_delivered),
+    source == "Natural Gas"
+  ) %>%
   rename(emissions_year = year) %>%
   mutate(sector = case_when(
     sector_mapped == "residential" ~ "Residential",
@@ -90,14 +94,18 @@ xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
 
 ### load and format CenterPoint ng data -- ensure that 'All' is kept for city-years without specific sector breakouts
 centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>%
-  filter(!is.na(mcf_delivered),
-         source == "Natural Gas") %>%
+  filter(
+    !is.na(mcf_delivered),
+    source == "Natural Gas"
+  ) %>%
   rename(emissions_year = year) %>%
-  mutate(utility = "CenterPoint Energy",
-         sector = case_when(
-    sector == "Commercial/Industrial" ~ "Business",
-    TRUE ~ sector # keeps Residential as Residential and All as All
-  )) %>%
+  mutate(
+    utility = "CenterPoint Energy",
+    sector = case_when(
+      sector == "Commercial/Industrial" ~ "Business",
+      TRUE ~ sector # keeps Residential as Residential and All as All
+    )
+  ) %>%
   group_by(ctu_name, emissions_year, utility, sector) %>%
   summarise(mcf_per_year = sum(mcf_delivered, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
@@ -108,11 +116,11 @@ centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>
   mutate(
     total_mcf = case_when(
       !is.na(business_mcf) & !is.na(residential_mcf) ~ business_mcf + residential_mcf,
-      TRUE ~ all_mcf  # fall back to all_mcf if detailed sectors are missing
+      TRUE ~ all_mcf # fall back to all_mcf if detailed sectors are missing
     )
   ) %>%
   select(-all_mcf)
-  
+
 
 # check where we only have total numbers from Centerpoint and not sector specific
 # centerpoint_city_year_with_only_totals <- centerpoint %>%
@@ -130,7 +138,7 @@ centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>
 merge_ng_data <- function(base_df, new_data) {
   base_df %>%
     left_join(new_data %>% rename(inventory_year = emissions_year),
-              by = c("ctu_name", "inventory_year", "utility")
+      by = c("ctu_name", "inventory_year", "utility")
     ) %>%
     mutate(
       residential_mcf = if_else(!is.na(residential_mcf.y), residential_mcf.y, residential_mcf.x),
@@ -177,20 +185,20 @@ ctu_year_complete <- ctu_utility_year %>%
   filter(!any(is.na(total_mcf))) %>%
   summarize(total_mcf = sum(total_mcf)) %>%
   ungroup()
-# 
+#
 
 
 rii <- read_rds("_energy/data/rii_natGas_2007_2023.rds")
 
 # merge with ctu_year_complete
 rii_ctu_comp <- inner_join(ctu_year_complete,
-                           rii %>%
-                             group_by(ctu_name, ctu_class, year) %>%
-                             summarize(rii_mcf = sum(mcf_delivered)) %>%
-                             ungroup(),
-                           by = c("ctu_name", "ctu_class",
-                                  "inventory_year" = "year"
-                           )
+  rii %>%
+    group_by(ctu_name, ctu_class, year) %>%
+    summarize(rii_mcf = sum(mcf_delivered)) %>%
+    ungroup(),
+  by = c("ctu_name", "ctu_class",
+    "inventory_year" = "year"
+  )
 )
 
 ggplot(data = rii_ctu_comp, aes(x = total_mcf, y = rii_mcf)) +
@@ -208,8 +216,8 @@ rii_ctu_comp %>% filter(
 
 rii_wide <- rii %>%
   mutate(sector_use = if_else(sector == "Residential",
-                              "Residential",
-                              "Business"
+    "Residential",
+    "Business"
   )) %>%
   select(-sector) %>%
   pivot_wider(
@@ -230,7 +238,7 @@ empty_city_years <- ctu_utility_year %>%
 
 rii_fill <- empty_city_years %>%
   left_join(rii_wide %>% rename(inventory_year = year),
-            by = c("ctu_name", "ctu_class", "inventory_year")
+    by = c("ctu_name", "ctu_class", "inventory_year")
   ) %>%
   select(ctu_name, ctu_class, inventory_year, utility, business_mcf, residential_mcf, total_mcf) %>%
   mutate(total_mcf = replace_na(business_mcf, 0) + replace_na(residential_mcf, 0)) %>%
@@ -238,7 +246,7 @@ rii_fill <- empty_city_years %>%
 
 ctu_utility_year <- ctu_utility_year %>%
   anti_join(rii_fill %>% select(ctu_name, ctu_class, inventory_year),
-            by = c("ctu_name", "ctu_class", "inventory_year")
+    by = c("ctu_name", "ctu_class", "inventory_year")
   ) %>%
   bind_rows(., rii_fill)
 

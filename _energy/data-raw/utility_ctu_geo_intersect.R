@@ -50,7 +50,7 @@ ctu_elec_utility_count <- ctu_elecUtil_overlap %>%
 
 
 # NAT GAS
-# nationwide natural gas utility service areas 
+# nationwide natural gas utility service areas
 natGasUtils <- readRDS(here("_energy", "data", "MN_fed_natGasUtils.RDS")) %>%
   st_transform(st_crs(cprg_mn_ctu_dissolve)) %>% # CRS transform to UTM 15N
   st_make_valid()
@@ -75,7 +75,7 @@ ctu_ngUtil_overlap <- st_intersection(
   group_by(ctu_name, ctu_class, utility_name, ctu_area_m2) %>%
   summarise(overlap_m2 = sum(overlap_m2), .groups = "drop") %>%
   mutate(pct_of_city = as.numeric(overlap_m2 / ctu_area_m2)) %>%
-  filter(pct_of_city >= 0.01) %>%   
+  filter(pct_of_city >= 0.01) %>%
   st_drop_geometry() %>%
   arrange(ctu_name, ctu_class) %>%
   select(ctu_name, ctu_class, utility_name)

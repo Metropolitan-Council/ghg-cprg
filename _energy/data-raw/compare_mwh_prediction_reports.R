@@ -19,11 +19,11 @@ county_predict <- left_join(
   )
 
 ctu_predict <- bind_rows(
-  ctu_res_predict %>% 
-    mutate(sector_use = "residential") %>% 
+  ctu_res_predict %>%
+    mutate(sector_use = "residential") %>%
     rename(mwh_predict = residential_mwh),
-  ctu_busi_predict %>% 
-    mutate(sector_use = "business") %>% 
+  ctu_busi_predict %>%
+    mutate(sector_use = "business") %>%
     rename(mwh_predict = business_mwh)
 )
 
@@ -33,7 +33,7 @@ mwh_county_util <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissio
 
 # connexus <- mwh_county_util %>% filter(utility == "Connexus Energy")
 # anoka_util <- mwh_county_util %>% filter(county == "Anoka", year == 2021)
-# 
+#
 # ctu_utility_year <- read_rds("_energy/data/ctu_utility_mwh.RDS")
 # ctu_connexus <- filter(ctu_utility_year, utility == "Connexus Energy", inventory_year == 2021)
 
@@ -44,8 +44,8 @@ mwh_county <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RD
   rename(
     inventory_year = year,
     county_name = county
-  ) %>% 
-  filter(!county_name %in% c("Chisago","Sherburne"))
+  ) %>%
+  filter(!county_name %in% c("Chisago", "Sherburne"))
 
 
 ggplot(
@@ -74,35 +74,41 @@ nrelSlope_cityForecasts <- read.csv(here(
   "energy_consumption_expenditure_business_as_usual_city.csv"
 )) %>%
   filter(State.Name %in% c("Minnesota", "Wisconsin") &
-           Year > 2024)
+    Year > 2024)
 
-compare_prediction <- nrelSlope_cityForecasts %>% 
-  clean_names() %>% 
-  filter(source == "elec") %>% 
-  mutate(ctu_name = str_replace_all(city_name, "St\\. ", "Saint "),
-         mwh_nrel = consumption_mm_btu * 0.293071,
-         sector_use = if_else(sector == "residential",
-                              "residential",
-                              "business")) %>% 
+compare_prediction <- nrelSlope_cityForecasts %>%
+  clean_names() %>%
+  filter(source == "elec") %>%
+  mutate(
+    ctu_name = str_replace_all(city_name, "St\\. ", "Saint "),
+    mwh_nrel = consumption_mm_btu * 0.293071,
+    sector_use = if_else(sector == "residential",
+      "residential",
+      "business"
+    )
+  ) %>%
   as_tibble() %>%
-  select(inventory_year = year, ctu_name, mwh_nrel, sector_use) %>% 
-  group_by(ctu_name ,inventory_year, sector_use) %>% 
-  summarize(mwh_nrel = sum(mwh_nrel)) %>% 
-  inner_join(ctu_predict %>% 
-               filter(ctu_class == "CITY") %>% 
-               ungroup() %>% 
-               select(ctu_name, inventory_year, sector_use, mwh_predict))
+  select(inventory_year = year, ctu_name, mwh_nrel, sector_use) %>%
+  group_by(ctu_name, inventory_year, sector_use) %>%
+  summarize(mwh_nrel = sum(mwh_nrel)) %>%
+  inner_join(ctu_predict %>%
+    filter(ctu_class == "CITY") %>%
+    ungroup() %>%
+    select(ctu_name, inventory_year, sector_use, mwh_predict))
 
 ### compare totals first
 
 ggplot(
   compare_prediction %>%
-    group_by(ctu_name,inventory_year) %>% 
-    summarize(mwh_nrel = sum(mwh_nrel),
-              mwh_predict = sum(mwh_predict)),
+    group_by(ctu_name, inventory_year) %>%
+    summarize(
+      mwh_nrel = sum(mwh_nrel),
+      mwh_predict = sum(mwh_predict)
+    ),
   aes(x = mwh_nrel, y = mwh_predict, col = inventory_year)
 ) +
-  geom_point() + theme_minimal() +
+  geom_point() +
+  theme_minimal() +
   geom_abline(intercept = 0, slope = 1, size = 1.3)
 
 # residential
@@ -112,21 +118,23 @@ ggplot(
     filter(sector_use == "residential"),
   aes(x = mwh_nrel, y = mwh_predict, col = inventory_year)
 ) +
-  geom_point() + theme_minimal() +
+  geom_point() +
+  theme_minimal() +
   geom_abline(intercept = 0, slope = 1, size = 1.3)
 
 # business
 
 ggplot(
   compare_prediction %>%
-    filter(sector_use == "business") ,
+    filter(sector_use == "business"),
   aes(x = mwh_nrel, y = mwh_predict, col = inventory_year)
 ) +
-  geom_point() + theme_minimal() +
+  geom_point() +
+  theme_minimal() +
   geom_abline(intercept = 0, slope = 1, size = 1.3)
 
 
-# 
+#
 # mn_mwh <- read_rds("_energy/data/minnesota_elecUtils_ActivityAndEmissions.RDS") %>%
 #   group_by(county) %>%
 #   summarize(mwh = sum(mWh_delivered, na.rm = TRUE)) %>%
@@ -135,11 +143,11 @@ ggplot(
 #     source = "Utility Report"
 #   ) %>%
 #   filter(!county %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
-# 
-# 
+#
+#
 # ### bring in NREL splits
 # nrel <- read_rds("_energy/data-raw/nrel_slope/nrel_slope_proportions.RDS")
-# 
+#
 # mn_mwh_sector <- rbind(
 #   left_join(mn_mwh, nrel %>%
 #     filter(
@@ -166,7 +174,7 @@ ggplot(
 #     ) %>%
 #     select(county, mwh, sector, source = source.x)
 # )
-# 
+#
 # ctu_mwh_predict <- rbind(
 #   ctu_res_predict %>% st_drop_geometry() %>%
 #     select(
@@ -184,13 +192,13 @@ ggplot(
 #     mutate(sector = "Commercial/Industrial")
 # ) %>%
 #   mutate(source = "MC Model - RF")
-# 
-# 
+#
+#
 # mwh <- rbind(mn_mwh_sector, ctu_mwh_predict %>%
 #   group_by(county_name, sector, source) %>%
 #   summarize(mwh = sum(mwh_predicted)) %>%
 #   rename(county = county_name))
-# 
+#
 # ggplot(mwh, aes(x = source, y = mwh, fill = sector)) +
 #   geom_bar(stat = "identity", position = position_stack(reverse = TRUE), width = 0.7) +
 #   facet_wrap(~county, scales = "free_y") + # Side-by-side sources
@@ -206,17 +214,17 @@ ggplot(
 #     axis.text.x = element_text(angle = 45, hjust = 1),
 #     panel.grid.major.x = element_blank()
 #   )
-# 
-# 
-# 
+#
+#
+#
 # varImpPlot(rf_nonres_model)
-# 
+#
 # nonres_simple <- lm(mWh_delivered ~ total_job_spaces, data = electricity_nonres)
 # summary(nonres_simple) # R2 = 0.9704
-# 
+#
 # plot(mWh_delivered ~ total_job_spaces, data = electricity_nonres)
 # abline(nonres_simple)
-# 
+#
 # ctu_predict_linear <- rbind(
 #   cprg_ctu %>%
 #     left_join(urbansim_res, by = c("gnis" = "ctu_id")) %>%
@@ -231,8 +239,8 @@ ggplot(
 #     mutate(sector = "Commercial/Industrial") %>%
 #     select(ctu_name, county_name, mwh_predicted, sector)
 # )
-# 
-# 
+#
+#
 # county_predict_linear <- ctu_predict_linear %>%
 #   filter(!is.na(mwh_predicted)) %>%
 #   st_drop_geometry() %>%
@@ -257,7 +265,7 @@ ggplot(
 #         (ch4 * gwp$n2o) +
 #         (n2o * gwp$n2o)
 #   )
-# 
+#
 # prediction_comparison_linear <- rbind(
 #   county_predict_linear %>%
 #     select(county_name, mwh = mwh_predicted, sector) %>%
@@ -267,11 +275,11 @@ ggplot(
 #     filter(county_name %in% county_res_predict$county_name) %>%
 #     mutate(source = "NREL")
 # )
-# 
+#
 # mwh_add <- rbind(mwh, county_predict_linear %>%
 #   select(county = county_name, mwh = mwh_predicted, sector) %>%
 #   mutate(source = "MC model linear"))
-# 
+#
 # mwh_predict_total <- ggplot(mwh_add, aes(x = source, y = mwh, fill = sector)) +
 #   geom_bar(stat = "identity", position = position_stack(reverse = TRUE), width = 0.7) +
 #   facet_wrap(~county, scales = "free_y") + # Side-by-side sources
@@ -290,9 +298,9 @@ ggplot(
 #     axis.text.x = element_text(angle = 45, hjust = 1),
 #     panel.grid.major.x = element_blank()
 #   )
-# 
+#
 # mwh_predict_total
-# 
+#
 # mwh_predict_res <- ggplot(
 #   mwh_add %>% filter(sector == "Residential"),
 #   aes(x = source, y = mwh)
@@ -310,9 +318,9 @@ ggplot(
 #     axis.text.x = element_text(angle = 45, hjust = 1),
 #     panel.grid.major.x = element_blank()
 #   )
-# 
+#
 # mwh_predict_res
-# 
+#
 # mwh_predict_nonres <- ggplot(
 #   mwh_add %>% filter(sector != "Residential"),
 #   aes(x = source, y = mwh)
@@ -330,5 +338,5 @@ ggplot(
 #     axis.text.x = element_text(angle = 45, hjust = 1),
 #     panel.grid.major.x = element_blank()
 #   )
-# 
+#
 # mwh_predict_nonres
