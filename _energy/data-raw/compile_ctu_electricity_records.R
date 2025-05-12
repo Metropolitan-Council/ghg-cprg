@@ -81,7 +81,7 @@ connexus <- readRDS("_energy/data/connexus_activityData_2014_2023.rds") %>%
 ### load and format Dakota electric data
 dakota <- readRDS("_energy/data/dakotaElectric_activityData_2019_2024.rds") %>%
   filter(!is.na(mwh_delivered)) %>%
-  rename(emissions_year = year) %>%
+  rename(emissions_year = inventory_year) %>%
   mutate(sector = case_when(
     sector == "Residential" ~ "Residential",
     TRUE ~ "Business" # includes "Commercial/Industrial", "Commercial", "Dakota Electric Operations", and "Irrigation Services" 
@@ -98,7 +98,7 @@ dakota <- readRDS("_energy/data/dakotaElectric_activityData_2019_2024.rds") %>%
 xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
   filter(!is.na(mwh_delivered),
          source == "Electricity") %>%
-  rename(emissions_year = inventory_year) %>%
+  rename(emissions_year = year) %>%
   mutate(sector = case_when(
     sector_mapped == "residential" ~ "Residential",
     TRUE ~ "Business"
