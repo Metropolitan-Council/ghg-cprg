@@ -17,8 +17,8 @@ get_files <- function(root_dir) {
   for (year_folder in year_folders) {
     year <- basename(year_folder)
 
-    # Get list of .xls files in the year folder
-    files <- list.files(path = year_folder, pattern = "\\.xls$", full.names = TRUE)
+    # Get list of .xls and .xlsx files in the year folder
+    files <- list.files(path = year_folder, pattern = "\\.xls[x]?$", full.names = TRUE)
 
     # Loop through each file in the year folder
     for (file in files) {
@@ -259,6 +259,15 @@ if (file.exists("_energy/data/Xcel_elecNG_activityData_2015_2023.RDS") == FALSE)
   therms_to_mcf <- 1 / 10.38
   
   Xcel_activityData_2015_2023 <- results_all %>%
+    # Fix St and St.
+    mutate(
+      city_name = str_replace_all(city_name, "(?<!\\w)St[.]?(?=\\s|$)", "Saint")
+    ) %>%
+    # Title casing, but keep Of/On/And/The lowercase (addresses Marine On Saint Croix)
+    mutate(
+      city_name = str_to_title(city_name) %>%
+        str_replace_all("\\b(Of|On|And|The)\\b", tolower)
+    ) %>%
     # Map Xcel-provided sectors to simplified CPRG sectors and "Business" for subsequent disaggregation
     mutate(
       sector_mapped = case_when(
@@ -276,15 +285,28 @@ if (file.exists("_energy/data/Xcel_elecNG_activityData_2015_2023.RDS") == FALSE)
       ),
       # Align ctu_name and ctu_class to CPRG format based on Xcel inputs
       ctu_class = case_when(
+        city_name %in% c("City of White Bear Township", "City of White Bear Lake (Twp)") ~ "TOWNSHIP",
+        city_name == "City of Fort Snelling Ut-Hennepin" ~ "UNORGANIZED TERRITORY",
+        city_name == "Village of Birchwood" ~ "CITY",
+        city_name == "Town of Empire" ~ "CITY", # incorporated as city in 2023 -- backcast for simplicity
+        grepl("\\(Twp\\)", city_name, ignore.case = TRUE) ~ "TOWNSHIP",
         grepl("^City of", city_name, ignore.case = TRUE) ~ "CITY",
         grepl("^Town of", city_name, ignore.case = TRUE) ~ "TOWNSHIP",
-        city_name == "Village of Birchwood" ~ "CITY",
         TRUE ~ NA_character_
       ),
       ctu_name = case_when(
+        # Handle edge case names
+        city_name == "City of White Bear Township" ~ "White Bear",
+        city_name == "City of Fort Snelling Ut-Hennepin" ~ "Fort Snelling",
+        city_name == "Village of Birchwood" ~ "Birchwood Village",
+        # Handle anything with (Twp): remove "City of" or "Town of", and strip "(Twp)"
+        grepl("\\(Twp\\)", city_name, ignore.case = TRUE) ~ city_name %>%
+          sub("^City of\\s+", "", .) %>%
+          sub("^Town of\\s+", "", .) %>%
+          sub("\\s*\\(Twp\\)", "", .) %>%
+          trimws(),
         grepl("^City of", city_name, ignore.case = TRUE) ~ sub("^City of\\s+", "", city_name),
         grepl("^Town of", city_name, ignore.case = TRUE) ~ sub("^Town of\\s+", "", city_name),
-        city_name == "Village of Birchwood" ~ "Birchwood Village",
         TRUE ~ city_name
       ),
       mcf_delivered = therms_consumed * therms_to_mcf
