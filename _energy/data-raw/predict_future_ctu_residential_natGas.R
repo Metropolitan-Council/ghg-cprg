@@ -130,12 +130,11 @@ natgas_res <- natgas_res %>%
   filter(residential_mcf > 0)
 
 unit_model <- lm(
-  residential_mcf ~ 0 +
-    mfh * mean_year_multifamily_home +
-    mean_year_single_family_home * (sfh_ll +
+  residential_mcf ~ 
+    mfh +
+    sfh_ll +
     sfh_sl +
-    sf_att)
-    ,
+    sf_att,
   data = natgas_res
 )
 summary(unit_model)
@@ -160,26 +159,6 @@ unit_coefs <- data.frame(term = names(unit_model$coefficients),
                          estimate = unit_model$coefficients) %>%
   select(term, estimate) %>%
   filter(term != "(Intercept)") 
-
-# use latest year of data for each city (that has data) as 'intercept'
-
-latest_data <- natgas_res %>%
-  group_by(coctu_id_gnis) %>% 
-  filter(inventory_year == max(inventory_year, na.rm = TRUE))
-
-base_mcf <- latest_data %>%
-  select(coctu_id_gnis, inventory_year, base_year_mcf = residential_mcf)
-
-# get base values per coctu_id_gnis
-base_urbansim <- latest_data %>%
-  select(coctu_id_gnis, base_year = inventory_year, base_mcf = residential_mcf) %>%
-  inner_join(urbansim_res %>% 
-               mutate(mfh = multi_fam_own + multi_fam_rent,
-                      sfh_ll = single_fam_det_ll_own,
-                      sfh_sl = single_fam_det_rent + single_fam_det_sl_own + manufactured_homes,
-                      sf_att = single_fam_attached_own + single_fam_attached_rent), 
-             by = "coctu_id_gnis") %>%
-  filter(inventory_year == base_year)
 
 # calculate urbansim deltas from base year to each other year
 delta_units <- urbansim_res %>% 
@@ -225,11 +204,12 @@ sample_ctus <- ctu_res_delta %>%
   distinct(ctu_name, ctu_class, coctu_id_gnis) %>%
   slice_sample(n = 50)
 
-# mpls_ctu_id <- ctu_res_delta %>% 
-#   filter(ctu_name == "Minneapolis") %>% 
-#   pull(coctu_id_gnis)
-# 
-# sample_ctus <- unique(c(sample_ctus, mpls_ctu_id[[1]]))
+mpls_ctu_id <- ctu_res_delta %>%
+  filter(ctu_name == "Minneapolis") %>%
+  distinct(ctu_name, ctu_class, coctu_id_gnis)
+
+sample_ctus <- bind_rows(sample_ctus,mpls_ctu_id) %>%
+  distinct(ctu_name, ctu_class, coctu_id_gnis)
 
 plot_data_delta <- left_join(sample_ctus,ctu_res_delta)
 
