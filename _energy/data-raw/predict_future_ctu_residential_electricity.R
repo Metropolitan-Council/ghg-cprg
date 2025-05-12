@@ -131,7 +131,7 @@ unit_model_lme <- lme(
     sfh_ll +
     sfh_sl +
     sf_att,
-  random = ~1|ctu_name,
+  random = ~1|thrive_designation,
   data = electricity_res
 )
 summary(unit_model_lme)

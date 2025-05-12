@@ -141,7 +141,6 @@ summary(unit_model)
 #observed some temporal downward trends (efficiency?), add year in
 unit_model_time <- lm(
   business_mwh ~
-    job_spaces +
     comm_jobs +
     ind_jobs +
     as.numeric(inventory_year),
