@@ -3,77 +3,45 @@
 source("R/_load_pkgs.R")
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS")
 ctu_population_meta <- read_rds("_meta/data/ctu_population_meta.RDS")
-shared_location <- ifelse(grepl("mac", osVersion), "/Volumes/shared/", "N:/")
 
-# read in urbansim metadata
-us_meta <- read_xlsx(
-  file.path(shared_location, "CommDev/Research/Research/Forecasts/2050 Forecasts/Draft Preliminary Local Forecasts/Outputs/run_212/datadictionary.xlsx")
+us_meta <- readxl::read_xlsx(
+  "_meta/data-raw/urbansim/datadictionary.xlsx"
 ) %>%
-  clean_names()
+  janitor::clean_names()
 
+### trunk path
+us_path <- here::here( "_meta","data-raw", "urbansim")
+### list year files
+us_list <- list.files(us_path)[1:5]
 
-# read in urbansim data
-urbansim_2010 <- read_csv(
-  file.path(shared_location, "/CommDev/Research/Research/Forecasts/2050 Forecasts/Draft Preliminary Local Forecasts/Outputs/run_212/evolvingCOCTU/inflationDeflation/2010/results_metcouncil_run_212_inflationPostProcess_COCTU_2010.csv"),
-  col_types = c("c", "_")
-) %>%
-  # group_by(coctu_id) %>%
-  # summarise(across(everything(), sum, na.rm = TRUE), .groups = "drop") %>%  # Sum all columns, excluding the grouping variable
-  pivot_longer(
-    cols = 2:112,
-    names_to = "variable"
-  ) %>%
-  left_join(us_meta,
-    by = "variable"
-  ) %>%
-  mutate(
-    coctu_id = stringr::str_pad(coctu_id, side = "left", width = 11, pad = "0"),
-    ctu_id = stringr::str_sub(coctu_id, -8, -1),
-    inventory_year = 2010
-  )
+# function to read and process files
+us_format <- function(year_folder) {
+  file_full_path <- file.path(us_path, year_folder)  # Construct folder path
+  files_in_folder <- list.files(file_full_path, full.names = TRUE)  # List files in folder
+  
+  # Read all files in the folder and bind them
+  urbansim_data <- read.csv(files_in_folder) %>%
+    pivot_longer(
+      cols = 2:112,  # Adjust column selection as needed
+      names_to = "variable"
+    ) %>%
+    left_join(us_meta, by = "variable") %>%
+    mutate(
+      coctu_id_gnis = stringr::str_pad(coctu_id, side = "left", width = 11, pad = "0"),
+      ctu_id = stringr::str_sub(coctu_id, -8, -1),
+      inventory_year = as.numeric(year_folder)
+    )
+}
 
-urbansim_2020 <- read_csv(
-  file.path(shared_location, "/CommDev/Research/Research/Forecasts/2050 Forecasts/Draft Preliminary Local Forecasts/Outputs/run_212/evolvingCOCTU/inflationDeflation/2020/results_metcouncil_run_212_inflationPostProcess_COCTU_2020.csv"),
-  col_types = c("c", "_")
-) %>%
-  # group_by(coctu_id) %>%
-  # summarise(across(everything(), sum, na.rm = TRUE), .groups = "drop") %>%  # Sum all columns, excluding the grouping variable
-  pivot_longer(
-    cols = 2:112,
-    names_to = "variable"
-  ) %>%
-  left_join(us_meta,
-    by = "variable"
-  ) %>%
-  mutate(
-    coctu_id = stringr::str_pad(coctu_id, side = "left", width = 11, pad = "0"),
-    ctu_id = stringr::str_sub(coctu_id, -8, -1),
-    inventory_year = 2020
-  )
+# Read and combine all files, assigning inventory year
+urbansim <- lapply(us_list, us_format) %>% bind_rows()%>%
+  filter(!is.na(status)) %>%
+  #only retain variables marked as ready for public display
+  filter(status != "needs clarification")
 
-# left_join(cprg_ctu, by = c("ctu_id" = "gnis")) %>%
-# filter(!is.na(ctu_name))%>% #Shakopee Mdewakanton Community - revisit if we have utility data
-# st_drop_geometry() %>% select(-geometry) %>%
-# mutate(inventory_year = 2020)
-
-urbansim <- bind_rows(urbansim_2010, urbansim_2020) %>%
-  filter(!is.na(status)) %>% 
-  mutate(gnis = ctu_id) %>% 
-  select(inventory_year, 
-         coctu_id_gnis = coctu_id,
-         gnis,
-         ctu_id,
-         variable,
-         value,
-         definition,
-         broad_category,
-         status,
-         notes)
 
 urbansim_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
-  # "inventory_year", class(urbansim$inventory_year), "Inventory year",
-  # "coctu_id", class(urbansim$coctu_id), "Unique county-city identifier",
   "ctu_id", class(urbansim$ctu_id), "City-township-unorganized identifier",
   "variable", class(urbansim$variable), "Short variable name",
   "value", class(urbansim$value), "County-city value of variable",

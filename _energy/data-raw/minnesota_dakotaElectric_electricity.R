@@ -6,14 +6,14 @@ city_raw <- read_xlsx(here("_energy", "data-raw", "dakotaElectricDataRequest", "
   mutate(
     ctu_name = str_to_title(Municipality),
     sector = case_when(
-      CUSTGROUP == 'C&I' ~ 'Commercial/Industrial',
-      CUSTGROUP == 'COM' ~ 'Commercial',
-      CUSTGROUP == 'DEA' ~ 'Dakota Electric Operations',
-      CUSTGROUP == 'IRR' ~ 'Irrigation Services',
-      CUSTGROUP == 'RES' ~ 'Residential',
+      CUSTGROUP == "C&I" ~ "Commercial/Industrial",
+      CUSTGROUP == "COM" ~ "Commercial",
+      CUSTGROUP == "DEA" ~ "Dakota Electric Operations",
+      CUSTGROUP == "IRR" ~ "Irrigation Services",
+      CUSTGROUP == "RES" ~ "Residential",
     ),
-    mwh_delivered = `Usage (kWh)`/ 1000,
-    utility = 'Dakota Electric'
+    mwh_delivered = `Usage (kWh)` / 1000,
+    utility = "Dakota Electric"
   ) %>%
   select(
     ctu_name,
@@ -51,8 +51,8 @@ city_total_population <- ctu_population %>%
 dakotaElectric_activityData_2019_2024 <- city_raw %>%
   # Join city_total_population back to main dataset
   left_join(city_total_population,
-            by = c("ctu_name", "ctu_class", "inventory_year"),
-            relationship = "many-to-many"
+    by = c("ctu_name", "ctu_class", "inventory_year"),
+    relationship = "many-to-many"
   ) %>%
   # Calculate proportions and disaggregated values
   group_by(ctu_name, ctu_class, inventory_year, county_name) %>%

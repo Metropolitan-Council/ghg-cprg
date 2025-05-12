@@ -1,11 +1,21 @@
 ### Develop model for predicting CTU residential electricity usage ###
+# This script should be rerun after all updates to ctu_utility_mwh.RDS
+# from script _energy/data-raw/compile_ctu_electricity_records.R
 
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
 ## load in supporting data
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
-  filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
+  filter(
+    !county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"),
+    !thrive_designation == "Non-Council Area"
+  ) %>%
+  mutate(thrive_designation = as.factor(if_else(
+    thrive_designation == "Rural Center",
+    "Rural Residential", # renaming rural center as not enough cities have utility data for modeling
+    thrive_designation
+  )))
 cprg_county <- read_rds("_meta/data/cprg_county.RDS") %>%
   filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
 ctu_population <- read_rds("_meta/data/ctu_population.RDS") %>%
@@ -29,6 +39,7 @@ noaa_year <- noaa %>%
 
 ctu_utility_mwh <- read_rds("_energy/data/ctu_utility_mwh.RDS")
 
+# reduce to ctu-years with complete utility reporting
 ctu_utility_year <- ctu_utility_mwh %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
   filter(!any(is.na(total_mwh))) %>%
@@ -75,7 +86,7 @@ coctu_res_year <- ctu_utility_year %>%
   select(ctu_name, ctu_class, inventory_year, residential_mwh, county_name, ctu_population)
 
 # predictor data
-mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS") %>% 
+mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS") %>%
   mutate(ctu_id = stringr::str_pad(ctu_id, width = 8, pad = "0", side = "left"))
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
@@ -114,8 +125,7 @@ residential <- c(
   "multi_fam_rent"
 )
 
-
-### create 2010-2025 urbansim residential dataset
+### create 2005-2050 urbansim residential dataset
 urbansim_res <- urbansim %>%
   filter(variable %in% residential) %>%
   group_by(coctu_id_gnis, ctu_id, variable) %>%
@@ -134,7 +144,7 @@ urbansim_res <- urbansim %>%
   ) %>%
   left_join(
     cprg_ctu %>% st_drop_geometry() %>%
-      distinct(ctu_name, gnis, thrive_designation),
+      distinct(ctu_name, ctu_class, gnis, thrive_designation),
     by = c("ctu_id" = "gnis")
   ) %>%
   left_join(
@@ -148,13 +158,15 @@ urbansim_res <- urbansim %>%
 # merge into utility data
 electricity_res <- left_join(coctu_res_year,
   urbansim_res,
-  by = c("ctu_name", "county_name", "inventory_year")
+  by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
 ) %>%
   left_join(mn_parcel_res %>% select(-ctu_name),
     by = c("ctu_id" = "ctu_id")
   ) %>%
   # weather data
-  left_join(noaa_year, by = "inventory_year")
+  left_join(noaa_year, by = "inventory_year") %>%
+  filter(!is.na(coctu_id_gnis))
+
 ### run residential model
 #### residential RF ####
 
@@ -173,8 +185,8 @@ rf_res_model <- randomForest(
   residential_mwh ~
     thrive_designation +
     total_pop + total_households + total_residential_units +
-    # mean_year_apartment + mean_year_multifamily_home + mean_year_single_family_home +
-    # total_emv_apartment + total_emv_single_family_home + total_emv_multifamily_home +
+    mean_year_apartment + mean_year_multifamily_home + mean_year_single_family_home +
+    total_emv_apartment + total_emv_single_family_home + total_emv_multifamily_home +
     single_fam_det_sl_own + single_fam_det_ll_own +
     single_fam_det_rent +
     single_fam_attached_own +
@@ -191,8 +203,15 @@ p_full <- predict(rf_res_model, electricity_res)
 plot(p_full, electricity_res$residential_mwh)
 abline(0, 1)
 
+### zoom in on smaller cities
+plot(p_full, electricity_res$residential_mwh,
+  xlim = c(0, 50000),
+  ylim = c(0, 50000)
+)
+abline(0, 1)
+
 ### save rf_res_model output
-saveRDS(rf_res_model, "_energy/data/ctu_residential_elec_random_forest.RDS")
+# saveRDS(rf_res_model, "_energy/data/ctu_residential_elec_random_forest.RDS")
 
 # look at top predictors
 varImpPlot(rf_res_model,
@@ -230,70 +249,77 @@ p2 <- predict(rf_res_train, test_res)
 plot(p2, test_res$residential_mwh)
 abline(0, 1)
 
-importance(rf_res_train)
-
-
-### linear model predictions
-
-importance(rf_res_model)
-
-res_simple <- lm(
-  residential_mwh ~ thrive_designation + total_pop + single_fam_det_ll_own + total_households +
-    total_residential_units * mean_year_single_family_home,
-  data = electricity_res
+### zoom in on smaller cities
+plot(p2, test_res$residential_mwh,
+  xlim = c(0, 50000),
+  ylim = c(0, 50000)
 )
-summary(res_simple) # R2 = 0.9928
-
-### compare prediction to input data
-lm_pred <- predict(res_simple, electricity_res)
-plot(lm_pred, electricity_res$residential_mwh)
 abline(0, 1)
 
+importance(rf_res_train, 1)
 
-### predict ALL cities and rollback up to counties for all years
 
-ctu_res_predict <- cprg_ctu %>%
+### predict 2020, 2021, 2022 data for unknown coctu
+
+
+coctu_res_predict_rf <- cprg_ctu %>%
   left_join(urbansim_res, by = c(
     "gnis" = "ctu_id",
     "ctu_name",
+    "ctu_class",
     "county_name",
     "thrive_designation"
   )) %>%
-  left_join(noaa_year) %>%
-  mutate(mwh_predicted = predict(rf_res_model, .)) %>%
-  filter(!is.na(mwh_predicted)) %>% # removes 2025 data
+  filter(
+    !coctu_id_gnis %in% electricity_res$coctu_id_gnis,
+    inventory_year %in% c(2020:2022)
+  ) %>%
+  left_join(mn_parcel_res %>% select(-ctu_name),
+    by = c("gnis" = "ctu_id")
+  ) %>%
+  # weather data
+  left_join(noaa_year, by = "inventory_year") %>%
+  mutate(
+    mwh_predicted = predict(rf_res_model, .),
+    data_source = "Model prediction"
+  ) %>%
+  filter(!is.na(mwh_predicted)) %>%
   st_drop_geometry() %>%
-  group_by(ctu_name, ctu_class, inventory_year) %>%
-  summarize(residential_mwh_predicted = sum(mwh_predicted)) %>%
-  ungroup()
+  select(
+    coctu_id_gnis,
+    ctu_name,
+    ctu_class,
+    county_name,
+    inventory_year,
+    mwh_predicted,
+    data_source
+  )
 
 
-
-ctu_res_predict %>% distinct(ctu_name, ctu_class)
-
-ctu_res <- left_join(
-  ctu_res_predict,
-  ctu_utility_year %>%
-    select(1:4)
+coctu_res_out <- bind_rows(
+  coctu_res_year %>%
+    left_join(electricity_res %>%
+      distinct(
+        ctu_name,
+        ctu_class,
+        county_name,
+        coctu_id_gnis
+      )) %>%
+    filter(!is.na(coctu_id_gnis)) %>%
+    select(
+      coctu_id_gnis,
+      ctu_name,
+      ctu_class,
+      county_name,
+      inventory_year,
+      residential_mwh
+    ) %>%
+    mutate(data_source = "Utility report"),
+  coctu_res_predict_rf %>%
+    rename(residential_mwh = mwh_predicted)
 )
 
-## add predicted mwh
 
-county_res_predict <- cprg_ctu %>%
-  left_join(urbansim_res, by = c(
-    "gnis" = "ctu_id",
-    "ctu_name",
-    "county_name",
-    "thrive_designation"
-  )) %>%
-  left_join(noaa_year) %>%
-  mutate(mwh_predicted = predict(rf_res_model, .)) %>%
-  filter(!is.na(mwh_predicted)) %>% # removes 2025 data
-  st_drop_geometry() %>%
-  group_by(county_name, inventory_year) %>%
-  summarize(residential_mwh_predicted = sum(mwh_predicted)) %>%
-  ungroup()
 
 # save intermediate rds
-saveRDS(ctu_res, "_energy/data-raw/predicted_ctu_residential_mwh.rds")
-saveRDS(county_res_predict, "_energy/data-raw/predicted_county_residential_mwh.rds")
+saveRDS(coctu_res_out, "_energy/data-raw/predicted_coctu_residential_mwh.rds")

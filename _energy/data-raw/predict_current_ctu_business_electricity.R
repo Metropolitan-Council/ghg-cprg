@@ -1,5 +1,6 @@
 ### Develop model for predicting CTU business electricity usage ###
-
+# This script should be rerun after all updates to ctu_utility_mwh.RDS
+# from script _energy/data-raw/compile_ctu_electricity_records.R
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
@@ -38,7 +39,7 @@ ctu_utility_year <- read_rds("_energy/data/ctu_utility_mwh.RDS") %>%
   ungroup()
 
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
-mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS") %>% 
+mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS") %>%
   mutate(ctu_id = stringr::str_pad(ctu_id, width = 8, pad = "0", side = "left"))
 
 #### BUSINESS ####
@@ -85,7 +86,7 @@ urbansim_busi <- urbansim %>%
   ) %>%
   left_join(
     cprg_ctu %>% st_drop_geometry() %>%
-      distinct(ctu_name, thrive_designation, gnis),
+      distinct(ctu_name, ctu_class, thrive_designation, gnis),
     by = c("ctu_id" = "gnis")
   ) %>%
   left_join(
@@ -97,10 +98,9 @@ urbansim_busi <- urbansim %>%
 
 # create jobs proportions for coctu
 coctu_jobs <- urbansim_busi %>%
-  distinct(ctu_name, ctu_id, inventory_year, county_name, total_job_spaces) %>% # Ensure unique rows per city-county-year
-  group_by(ctu_name, ctu_id, inventory_year) %>%
+  distinct(ctu_name, ctu_class, ctu_id, inventory_year, county_name, total_job_spaces) %>% # Ensure unique rows per city-county-year
+  group_by(ctu_name, ctu_class, ctu_id, inventory_year) %>%
   mutate(
-    ctu_class = if_else(nchar(ctu_id) == 7, "CITY", "TOWNSHIP"),
     total_ctu_jobs = sum(total_job_spaces, na.rm = TRUE), # Sum populations across counties for each city-year
     coctu_jobs_prop = total_job_spaces / total_ctu_jobs,
     multi_county = n_distinct(county_name) > 1
@@ -144,10 +144,12 @@ mn_parcel_busi <- mn_parcel %>%
   na_replace() %>%
   ungroup()
 
+
+### consider adding MPCA fuel combustion data here as electricity predictor
 # merge into utility data
 electricity_busi <- left_join(coctu_busi_year,
   urbansim_busi,
-  by = c("ctu_name", "county_name", "inventory_year")
+  by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
 ) %>%
   left_join(mn_parcel_busi %>% select(-ctu_name),
     by = c("ctu_id" = "ctu_id")
@@ -185,53 +187,70 @@ plot(p_full, electricity_busi$business_mwh)
 abline(0, 1)
 
 ### save rf_res_model output
-saveRDS(rf_nonres_model, "_energy/data/ctu_business_elec_random_forest.RDS")
+# saveRDS(rf_nonres_model, "_energy/data/ctu_business_elec_random_forest.RDS")
 
 
-### predict ALL cities and rollback up to counties for all years
+### predict 2020, 2021, 2022 data for unknown coctu
 
-ctu_busi_predict <- cprg_ctu %>%
+
+coctu_busi_predict_rf <- cprg_ctu %>%
   left_join(urbansim_busi, by = c(
     "gnis" = "ctu_id",
     "ctu_name",
+    "ctu_class",
     "county_name",
     "thrive_designation"
   )) %>%
-  left_join(noaa_year) %>%
-  mutate(mwh_predicted = predict(rf_nonres_model, .)) %>%
-  filter(!is.na(mwh_predicted)) %>% # removes 2025 data
+  filter(
+    !coctu_id_gnis %in% electricity_busi$coctu_id_gnis,
+    inventory_year %in% c(2020:2022)
+  ) %>%
+  left_join(mn_parcel_busi %>% select(-ctu_name),
+    by = c("gnis" = "ctu_id")
+  ) %>%
+  # weather data
+  left_join(noaa_year, by = "inventory_year") %>%
+  mutate(
+    mwh_predicted = predict(rf_nonres_model, .),
+    data_source = "Model prediction"
+  ) %>%
+  filter(!is.na(mwh_predicted)) %>%
   st_drop_geometry() %>%
-  group_by(ctu_name, ctu_class, inventory_year) %>%
-  summarize(business_mwh_predicted = sum(mwh_predicted)) %>%
-  ungroup()
+  select(
+    coctu_id_gnis,
+    ctu_name,
+    ctu_class,
+    county_name,
+    inventory_year,
+    mwh_predicted,
+    data_source
+  )
 
 
-
-ctu_busi_predict %>% distinct(ctu_name, ctu_class)
-
-ctu_busi <- left_join(
-  ctu_busi_predict,
-  ctu_utility_year %>%
-    select(1:3, 5)
+coctu_busi_out <- bind_rows(
+  coctu_busi_year %>%
+    left_join(electricity_busi %>%
+      distinct(
+        ctu_name,
+        ctu_class,
+        county_name,
+        coctu_id_gnis
+      )) %>%
+    filter(!is.na(coctu_id_gnis)) %>%
+    select(
+      coctu_id_gnis,
+      ctu_name,
+      ctu_class,
+      county_name,
+      inventory_year,
+      business_mwh
+    ) %>%
+    mutate(data_source = "Utility report"),
+  coctu_busi_predict_rf %>%
+    rename(business_mwh = mwh_predicted)
 )
 
-### county
 
-county_busi_predict <- cprg_ctu %>%
-  left_join(urbansim_busi, by = c(
-    "gnis" = "ctu_id",
-    "ctu_name",
-    "county_name",
-    "thrive_designation"
-  )) %>%
-  left_join(noaa_year) %>%
-  mutate(mwh_predicted = predict(rf_nonres_model, .)) %>%
-  filter(!is.na(mwh_predicted)) %>% # removes 2025 data
-  st_drop_geometry() %>%
-  group_by(county_name, inventory_year) %>%
-  summarize(business_mwh_predicted = sum(mwh_predicted)) %>%
-  ungroup()
 
 # save intermediate rds
-saveRDS(ctu_busi, "_energy/data-raw/predicted_ctu_business_mwh.rds")
-saveRDS(county_busi_predict, "_energy/data-raw/predicted_county_business_mwh.rds")
+saveRDS(coctu_busi_out, "_energy/data-raw/predicted_coctu_business_mwh.rds")
