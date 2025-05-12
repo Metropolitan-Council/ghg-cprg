@@ -39,13 +39,6 @@ ctu_utility_mwh <- read_rds("_energy/data/ctu_utility_mwh.RDS")
 
 # reduce to ctu-years with complete utility reporting
 ctu_utility_year <- ctu_utility_mwh %>%
-  #remove known errant ctu-utility assignments
-  filter(!(ctu_name == "Andover" &
-             utility == "Anoka Municipal Utility"),
-         !(ctu_name == "Cottage Grove" &
-             utility == "Dakota Electric Association"),
-         !(ctu_name == "Anoka" &
-             utility == "Xcel Energy")) %>% 
   group_by(ctu_name, ctu_class, inventory_year) %>%
   filter(!any(is.na(total_mwh))) %>%
   summarize(
