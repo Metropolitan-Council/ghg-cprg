@@ -74,26 +74,10 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
 
 # waste -----
 ## wastewater ----
-ww_emissions <- readRDS("_waste/data/epa_county_wastewater_2005_2021.RDS") %>%
+ww_emissions <- readRDS("_waste/data/final_wastewater_ctu_allyrs.RDS") %>%
   mutate(
-    sector = "Waste",
-    category = "Wastewater",
-    source = "Wastewater",
-    data_source = "EPA State GHG Inventory and Projection Tool",
     factor_source = data_source,
-    emissions_metric_tons_co2e = co2e,
-    emissions_year = as.numeric(year)
-  ) %>%
-  group_by(emissions_year, county_name, sector, category) %>%
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
-  left_join(ctu_population,
-    by = c("county_name",
-      "emissions_year" = "inventory_year"
-    )
-  ) %>%
-  mutate(
-    emissions_metric_tons_co2e = emissions_metric_tons_co2e * ctu_proportion_of_county_pop,
-    geog_level = "ctu"
+    value_emissions = mt_co2e
   ) %>%
   select(names(transportation_emissions))
 
@@ -149,7 +133,7 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
 
 ## industrial ----
 
-industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_emissions.RDS") %>%
+industrial_emissions <- readRDS("_industrial/data/city_industrial_emissions.RDS") %>%
   ungroup() %>%
   mutate(
     geog_level = "ctu",
@@ -170,35 +154,15 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
 
 ## agriculture ----
 
-ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/_agricultural_emissions.RDS"))
-ctu_ag_proportion <- readRDS(file.path(here::here(), "./_agriculture/data/ctu_ag_proportion.rds"))
 
-agriculture_emissions <- left_join(ctu_ag_proportion,
-  cprg_county %>%
-    select(geoid, county_name) %>%
-    st_drop_geometry(),
-  by = "county_name"
-) %>%
-  left_join(., ag_emissions %>%
-    group_by(inventory_year, category, geoid) %>%
-    summarize(mt_co2e = sum(mt_co2e)),
-  by = c("year" = "inventory_year", "geoid")
-  ) %>%
-  filter(
-    year %in% c(2004, 2019),
-    !is.na(mt_co2e)
-  ) %>%
+agriculture_emissions <- 
+  readRDS(file.path(here::here(), "_agriculture/data/_ctu_agricultural_emissions.RDS")) %>%
   mutate(
-    emissions_metric_tons_co2e = proportion_ag_land * mt_co2e,
-    geog_level = "ctu",
+    emissions_year = inventory_year,
     sector = "Agriculture",
-    emissions_year = case_when(
-      year == 2004 ~ 2005,
-      year == 2019 ~ 2021,
-      TRUE ~ year
-    )
+    geog_level = "ctu"
   ) %>%
-  rename(ctu_name = ctu) %>%
+  ungroup() %>%
   select(names(transportation_emissions))
 
 
