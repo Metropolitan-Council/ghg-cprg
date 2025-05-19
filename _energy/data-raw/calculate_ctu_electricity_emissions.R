@@ -29,7 +29,28 @@ egrid_temporal <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
   rename(inventory_year = Year)
 
 
-### read in activity data (forecast includes utility reports)
+### read in coctu data. Will use county proportions to cast backwards
+
+coctu_busi <- read_rds("_energy/data-raw/predicted_coctu_business_mwh.rds")
+coctu_res <- read_rds("_energy/data-raw/predicted_coctu_residential_mwh.rds")
+
+cty_busi <- read_rds("_energy/data-raw/predicted_county_business_mwh.rds")
+cty_res <- read_rds("_energy/data-raw/predicted_county_residential_mwh.rds")
+
+#find mean county proportion for
+coctu_busi_prop <- coctu_busi %>% 
+  left_join(cty_busi) %>% 
+  mutate(business_mwh_prop = business_mwh/business_mwh_predicted) %>% 
+  group_by(ctu_name, ctu_class, county_name) %>% 
+  summarize(mean_business_mwh_prop = mean(business_mwh_prop))
+
+coctu_busi_pred <- cty_busi %>% 
+  left_join(coctu_busi_prop) %>% 
+  mutate(coctu_busi_mwh_pred = business_mwh_predicted * mean_business_mwh_prop) %>% 
+  anti_join(coctu_busi,
+            by = c("ctu_name", "ctu_class", "county_name", "inventory_year"))
+
+ctu_busi_full <- bind_rows(coctu_busi_pred)
 
 ctu_busi_predict <- read_rds("_energy/data-raw/forecast_ctu_business_mwh.rds") %>%
   filter(inventory_year <= 2023) %>%
