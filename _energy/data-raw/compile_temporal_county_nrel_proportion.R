@@ -134,6 +134,11 @@ natgas_interpolated <- left_join(
 ggplot(natgas_interpolated, aes(x = year, y = value_emissions, col = county_name)) +
   geom_line()
 
+## write intermediary activity data files
+
+saveRDS(natgas_interpolated, "_energy/data/county_natgas_activity.RDS")
+saveRDS(electric_interpolated, "_energy/data/county_elec_activity.RDS")
+
 # calculate year proportions and then add mean proportion values in earlier years
 
 nrel_proportions <- nrel_emissions %>%
