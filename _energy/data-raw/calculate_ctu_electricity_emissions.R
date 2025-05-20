@@ -87,8 +87,4 @@ ctu_emissions <- ctu_full %>%
     factor_source = Source
   )
 
-ggplot(ctu_emissions %>% 
-         filter(ctu_name == "East Bethel"), aes(x = inventory_year, y = value_emissions, col = sector)) +
-  geom_line()
-
 saveRDS(ctu_emissions, "_energy/data/_ctu_electricity_emissions.RDS")
