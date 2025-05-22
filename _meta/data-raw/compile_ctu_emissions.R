@@ -58,8 +58,7 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
   group_by(emissions_year,geog_level, sector, category, source, ctu_name, ctu_class, ctuid, gnis) %>% 
   summarize(value_emissions = sum(value_emissions)) %>% 
   ungroup() %>% 
-  mutate(sector_alt = sector,
-             category_alt = category) %>% 
+  mutate(sector_alt = sector) %>% # electricity and nat gas need this
   select(
     emissions_year,
     geog_level,
@@ -68,7 +67,6 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
     sector,
     category,
     sector_alt,
-    category_alt,
     source,
     value_emissions
   )
@@ -82,7 +80,6 @@ ww_emissions <- readRDS("_waste/data/final_wastewater_ctu_allyrs.RDS") %>%
     factor_source = data_source,
     value_emissions = mt_co2e,
     sector_alt = sector,
-    category_alt = category,
     geog_level = "ctu"
   ) %>%
   rename(emissions_year = inventory_year) %>% 
@@ -98,8 +95,7 @@ solid_waste <- readRDS("_waste/data/final_solid_waste_ctu_allyrs.RDS") %>%
     geog_level = "ctu",
     emissions_year = as.numeric(inventory_year),
     emissions_metric_tons_co2e = value_emissions,
-    sector_alt = sector,
-    category_alt = category
+    sector_alt = sector
   ) %>%
   filter(!is.na(emissions_metric_tons_co2e)) %>%
   select(names(transportation_emissions))
@@ -111,8 +107,8 @@ electric_emissions <- readRDS("_energy/data/_ctu_electricity_emissions.RDS") %>%
   mutate(
     geog_level = "ctu",
     source = "Building energy",
+    category = str_to_sentence(paste(sector, category)),
     sector_alt = "Electricity",
-    category_alt = sector,
     emissions_year = inventory_year
   ) %>%
   select(names(transportation_emissions))
@@ -123,10 +119,9 @@ electric_emissions <- readRDS("_energy/data/_ctu_electricity_emissions.RDS") %>%
 natural_gas_emissions <- readRDS("_energy/data/_ctu_natgas_emissions.RDS") %>%
   mutate(
     geog_level = "ctu",
-    source = "Building energy",
-    category = "Natural gas",
-    sector_alt = "Natural gas",
-    category_alt = sector,
+    source = "Natural gas",
+    category = str_to_sentence(paste(sector, "building fuel")),
+    sector_alt = "Building fuel",
     emissions_year = inventory_year
   ) %>%
   select(names(transportation_emissions))
@@ -141,7 +136,6 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
     ctu_class = "CITY",
     emissions_year = as.numeric(inventory_year),
     sector_alt = sector,
-    category_alt = category,
     source = str_to_sentence(source)
     ) %>%
   # left_join(ctu_population %>% select(ctu_name, county_name, inventory_year),
@@ -161,7 +155,6 @@ agriculture_emissions <-
     sector = "Agriculture",
     geog_level = "ctu",
     sector_alt = sector,
-    category_alt = category,
     unit_emissions = "Metric tons CO2 equivalency"
   ) %>%
   ungroup() %>%
@@ -180,7 +173,6 @@ natural_systems_sequestration <- readRDS("_nature/data/nlcd_ctu_landcover_seques
     emissions_year = inventory_year,
     factor_source = "Various primary literature",
     sector_alt = sector,
-    category_alt = category,
     unit_emissions = "Metric tons CO2 equivalency"
   ) %>%
   select(names(transportation_emissions))
@@ -195,7 +187,6 @@ freshwater_emissions <- readRDS("_nature/data/nhd_ctu_waterways_emissions_allyrs
     geog_level = "ctu",
     category = "Freshwater",
     sector_alt = sector,
-    category_alt = category,
     source = stringr::str_to_sentence(str_replace_all(source, "_", " ")),
     unit_emissions = "Metric tons CO2e"
   ) %>%
@@ -289,7 +280,6 @@ emissions_all_meta <- tibble::tribble(
     paste0(unique(emissions_all$sector_alt), collapse = ", ")
   ),
   "category", class(emissions_all$category), "Category of emissions within given sector",
-  "category_alt", class(emissions_all$category_alt), "Alternative category grouping for alternative sectors",
   "source", class(emissions_all$source), "Source of emissions. Most detailed sub-category in this table",
   "value_emissions", class(emissions_all$value_emissions), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given geography for given year",
   # "data_source", class(emissions_all$data_source), "Activity data source",
