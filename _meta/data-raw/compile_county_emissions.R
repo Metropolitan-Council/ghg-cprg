@@ -237,30 +237,30 @@ emissions_all <- bind_rows(
       select(county_name, geoid),
     by = "county_name"
   ) %>%
-  mutate(
-    category = factor(
-      category,
-      c(
-        "Electricity",
-        "Building Fuel",
-        "On-road",
-        "Off-road",
-        "Wastewater",
-        "Solid waste",
-        "Livestock",
-        "Cropland",
-        "Commercial fuel combustion",
-        "Commercial natural gas",
-        "Industrial fuel combustion",
-        "Industrial natural gas",
-        "Industrial processes",
-        "Refinery processes",
-        "Sequestration",
-        "Freshwater"
-      ),
-      ordered = TRUE
-    )
-  ) %>%
+  # mutate(
+  #   category = factor(
+  #     category,
+  #     c(
+  #       "Electricity",
+  #       "Building Fuel",
+  #       "On-road",
+  #       "Off-road",
+  #       "Wastewater",
+  #       "Solid waste",
+  #       "Livestock",
+  #       "Cropland",
+  #       "Commercial fuel combustion",
+  #       "Commercial natural gas",
+  #       "Industrial fuel combustion",
+  #       "Industrial natural gas",
+  #       "Industrial processes",
+  #       "Refinery processes",
+  #       "Sequestration",
+  #       "Freshwater"
+  #     ),
+  #     ordered = TRUE
+  #   )
+  # ) %>%
   #  join county population and calculate per capita emissions
   left_join(
     cprg_county_pop %>%
