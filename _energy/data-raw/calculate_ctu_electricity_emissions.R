@@ -29,23 +29,21 @@ egrid_temporal <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
   rename(inventory_year = Year)
 
 
-### read in activity data
-ctu_mwh_res <- read_rds("_energy/data-raw/predicted_ctu_residential_mwh.RDS")
-ctu_mwh_busi <- read_rds("_energy/data-raw/predicted_ctu_business_mwh.RDS")
+### read in activity data (forecast includes utility reports)
+
+ctu_busi_predict <- read_rds("_energy/data-raw/forecast_ctu_business_mwh.rds") %>%
+  filter(inventory_year <= 2023) %>%
+  mutate(sector = "Business") %>%
+  rename(mwh = business_mwh)
+ctu_res_predict <- read_rds("_energy/data-raw/forecast_ctu_residential_mwh.rds") %>%
+  filter(inventory_year <= 2023) %>%
+  mutate(sector = "Residential") %>%
+  rename(mwh = residential_mwh)
+
 
 ctu_mwh <- bind_rows(
-  ctu_mwh_res %>%
-    rename(
-      mwh_predicted = residential_mwh_predicted,
-      mwh_reported = residential_mwh
-    ) %>%
-    mutate(sector = "Residential"),
-  ctu_mwh_busi %>%
-    rename(
-      mwh_predicted = business_mwh_predicted,
-      mwh_reported = business_mwh
-    ) %>%
-    mutate(sector = "Nonresidential")
+  ctu_res_predict,
+  ctu_busi_predict
 )
 
 ctu_emissions <- ctu_mwh %>%
@@ -53,18 +51,10 @@ ctu_emissions <- ctu_mwh %>%
     by = "inventory_year"
   ) %>%
   mutate(
-    value_emissions = if_else(is.na(mwh_reported),
-      mwh_predicted * mt_co2e_mwh,
-      mwh_reported * mt_co2e_mwh
-    ),
+    value_emissions = mwh * mt_co2e_mwh,
     units_emissions = "Metric tons CO2e",
-    factor_source = Source,
-    data_source = if_else(is.na(mwh_reported),
-      "Model prediction",
-      "Utility report"
-    )
-  ) %>%
-  select(-c(mwh_predicted, mwh_reported, Source, mt_co2e_mwh))
+    factor_source = Source
+  )
 
 
 saveRDS(ctu_emissions, "_energy/data/_ctu_electricity_emissions.RDS")

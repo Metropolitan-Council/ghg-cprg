@@ -1251,4 +1251,19 @@ _meta/data-raw/climate/noaa_msp_2005-2014.csv
 
 _agriculture/data-raw/ag-module.xlsx
 
+
+
+_meta/data-raw/urbansim/2010/results_metcouncil_run_212_inflationPostProcess_COCTU_2010.csv
+_meta/data-raw/urbansim/2020/results_metcouncil_run_212_inflationPostProcess_COCTU_2020.csv
+_meta/data-raw/urbansim/2030/results_metcouncil_run_212_inflationPostProcess_COCTU_2030.csv
+_meta/data-raw/urbansim/2040/results_metcouncil_run_212_inflationPostProcess_COCTU_2040.csv
+_meta/data-raw/urbansim/2050/results_metcouncil_run_212_inflationPostProcess_COCTU_2050.csv
+_meta/data-raw/urbansim/datadictionary.xlsx
+
+_transportation/data-raw/mndot/city_route_system/
+
+_transportation/data-raw/mndot/updated_VMT_County_City_Route_System/
+
+
 /_energy/data-raw/dakotaElectricDataRequest
+

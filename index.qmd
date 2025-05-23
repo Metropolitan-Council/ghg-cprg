@@ -208,6 +208,11 @@ emissions_through_time <- p %>%
       "Sequestration: ", round(value_emissions, 2), " MtCO2e"
     ),
     name = "Natural Systems"
+  ) %>%
+  plotly_layout("11-county regional greenhouse gas emissions: 2005-2021",
+    subtitle = "",
+    x_title = "Year",
+    y_title = "Metric tons CO<sub>2</sub>e"
   )
 
 
