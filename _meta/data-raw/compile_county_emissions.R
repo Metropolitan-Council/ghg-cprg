@@ -163,6 +163,7 @@ agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds"
 # industrial ----
 
 industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_emissions.RDS") %>%
+  filter(!is.na(value_emissions)) %>% #problem in south saint paul, extra NA lines below actual value
   ungroup() %>%
   mutate(
     value_emissions,
