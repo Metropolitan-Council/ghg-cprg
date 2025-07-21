@@ -9,7 +9,7 @@ ctu_population <- readRDS(file.path(here::here(), "_meta/data/ctu_population.RDS
 
 solid_waste_ctu <- solid_waste %>%
   right_join(
-    ctu_population %>% filter(inventory_year > 2004),
+    ctu_population %>% filter(inventory_year > 2004 & inventory_year < 2023),
     by = join_by(geoid, inventory_year),
     relationship = "many-to-many"
   ) %>%
