@@ -66,7 +66,6 @@ sector_source <- expand.grid(sector = sectors, source = sources)
 
 
 
-
 nrel_slope_cprg_city <- cprg_ctu %>%
   # add 204 rows representing 34 years (2017-2050 inclusive) of NREL data, 3 sectors, and 2 sources (33*3*2=204)
   expand_grid(sector_source_year) %>%
@@ -95,7 +94,86 @@ nrel_slope_cprg_city <- cprg_ctu %>%
     -geography_id
   )
 
+nrel_slope_cprg_city_deduped_for_export <- nrel_slope_cprg_city %>%
+  group_by(ctu_name, ctu_class, year, sector, source) %>%
+  slice(1) %>%  # Keep only the first match per group
+  ungroup()
+  
+  
+nrel_slope_cprg_city_activityAndEmissions <- bind_rows(
+  # electricity emissions
+  nrel_slope_cprg_city_deduped_for_export %>%
+    filter(source == "Electricity") %>%
+    left_join(egridTimeSeries,
+              by = join_by(year == Year)
+    ) %>%
+    rowwise() %>%
+    mutate(
+      # convert mmbtu to Mwh
+      city_consumption_mwh = consumption_mm_btu * mmbtu_to_mwh,
 
+      # apply emission factor and convert to metric tons
+      co2_city = (city_consumption_mwh * `lb CO2`) %>%
+        units::as_units("lb") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+      ch4_city = (city_consumption_mwh * `lb CH4`) %>%
+        units::as_units("lb") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+      n2o_city = (city_consumption_mwh * `lb N2O`) %>%
+        units::as_units("lb") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+      co2e_city =
+        co2_city +
+        (ch4_city * gwp$n2o) +
+        (n2o_city * gwp$n2o)
+    ),
+  # natural gas emissions
+  nrel_slope_cprg_city_deduped_for_export %>%
+    filter(source == "Natural gas") %>%
+    rowwise() %>%
+    mutate(
+      # convert mmbtu to mcf
+      city_consumption_mcf = consumption_mm_btu * mmbtu_to_mcf,
+
+      # apply emission factor and convert to metric tons
+      co2_city = (city_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF) %>%
+        units::as_units("lb") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+      ch4_city = (city_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF) %>%
+        units::as_units("lb") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+      n2o_city = (city_consumption_mcf * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF) %>%
+        units::as_units("lb") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+      co2e_city =
+        co2_city +
+        (ch4_city * gwp$n2o) +
+        (n2o_city * gwp$n2o)
+    )
+) %>%
+  mutate(
+    category = ifelse(sector == "residential", "Residential", "Non-residential"),
+    sector_raw = sector,
+    sector = "Energy"
+  ) %>%
+  # remove electricity specific emissions factor columns
+  select(
+    -eGrid_Subregion,
+    -factor_type,
+    -per_unit,
+    -Source,
+    -`lb CO2`,
+    -`lb CH4`,
+    -`lb N2O`
+  )
+
+saveRDS(nrel_slope_cprg_city_activityAndEmissions %>% ungroup(), "_energy/data-raw/nrel_slope/nrel_slope_cprg_city_activityAndEmissions.RDS")
 
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   filter(inventory_year > 2004) %>%
