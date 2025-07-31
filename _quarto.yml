@@ -6,7 +6,7 @@ project:
   post-render: 
     - R/fix_style.R
 
-quarto-required: 1.5.57
+# quarto-required: 1.5.57
 
 book:
   version: 2.0.1
@@ -68,8 +68,8 @@ book:
     - part: "Natural Systems"
       chapters:
        - _nature/_natural_systems_inventory.qmd
-       - _nature/data_nlcd_cover.qmd
-       - _nature/data_nhd_waterways.qmd
+       # - _nature/data_nlcd_cover.qmd
+       # - _nature/data_nhd_waterways.qmd
        # - _nature/data_land_area_sequestration.qmd
        
   appendices:
@@ -79,7 +79,7 @@ book:
     - _meta/additional_resources.qmd
     - _energy/utility_service_area_maps.qmd
     # - _transportation/inventory_methods_comparison.qmd
-    - _meta/lidac_maps.qmd
+    # - _meta/lidac_maps.qmd
     - figures.qmd
     - tables.qmd
     - changelog.qmd
@@ -92,13 +92,13 @@ citeproc: true
 
 link-external-newwindow: true
 link-external-icon: true 
-template: style/council-template.html
-resources: 
-      - style/standalone_footer.html
-      - style/standalone_header.html
-      - style/footer-logo.png
-      - style/main-logo.png
-      - style/standalone_header_footer.css
+# template: style/council-template.html
+# resources: 
+#       - style/standalone_footer.html
+#       - style/standalone_header.html
+#       - style/footer-logo.png
+#       - style/main-logo.png
+#       - style/standalone_header_footer.css
 
 crossref: 
   ref-hyperlink: true
@@ -110,28 +110,53 @@ execute:
  code-overflow: wrap
 
 format: 
-  html:
-    theme: [cosmo, style/council.scss, style/font.scss] 
-    toc: true
-    self-contained: false
-    grid: 
-      content-mode: full
-      margin-width: 100px
-    toc-depth: 3
-    number-sections: true
-    number-depth: 3
-    copyright: "Metropolitan Council"
-    fig-responsive: true
-    link-external-filter: "metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io"
-    fig-cap-location: top
-    knitr: 
-      opts_chunk: 
-          echo: false
-          message: false
-          warning: false
-          out-width: "95%"
-          out-height: "60%"
-
+  # html:
+  #   theme: [cosmo, style/council.scss, style/font.scss] 
+  #   toc: true
+  #   self-contained: false
+  #   grid: 
+  #     content-mode: full
+  #     margin-width: 100px
+  #   toc-depth: 3
+  #   number-sections: true
+  #   number-depth: 3
+  #   copyright: "Metropolitan Council"
+  #   fig-responsive: true
+  #   link-external-filter: "metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io"
+  #   fig-cap-location: top
+  #   knitr: 
+  #     opts_chunk: 
+  #         echo: false
+  #         message: false
+  #         warning: false
+  #         out-width: "95%"
+  #         out-height: "60%"
+  docx:
+   output-file: GHG-CPRG-Technical-Documentation.docx
+   output-ext: docx
+   toc: true
+   toc-depth: 2
+   # reference-doc: assets/Report-Template.docx
+   number-sections: true
+   citeproc: true
+   bibliography:  metcouncil-cprg-ghg.bib
+   csl: assets/chicago-author-date.csl
+   allow-html: true
+   prefer-html: true
+   knitr: 
+     opts_knit: 
+       always_allow_html: yes
+     opts_chunk: 
+         echo: false
+         message: false
+         warning: false
+         fig.pos: "H"
+         fig.height: 5
+         fig.width: 7
+         dpi: 300
+         out.width: "100%"
+         screenshot.force: true
+         cache: true 
 filters:
   - assets/include-files.lua
   - quarto

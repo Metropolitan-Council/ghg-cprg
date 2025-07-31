@@ -8,3 +8,9 @@ testthat::test_dir("tests")
 
 rstudioapi::terminalExecute("quarto render --cache-refresh --to html")
 rstudioapi::terminalExecute("quarto preview")
+
+
+# to MS Word
+# rstudioapi::terminalExecute("quarto render --cache-refresh --to docx")
+# rstudioapi::terminalExecute("quarto preview")
+
