@@ -207,7 +207,7 @@ city_ccr[["2007"]] <- readxl::read_excel(
 
 
 city_ccr[["2008"]] <- readxl::read_excel(
-"_transportation/data-raw/mndot/city_route_system/2008_VMT_County_City_Route_System-38670408-v1.XLS",
+  "_transportation/data-raw/mndot/city_route_system/2008_VMT_County_City_Route_System-38670408-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -596,6 +596,28 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
   # create full, long name with ctu name, ctu class, and county name
   mutate(ctu_name_full_county = paste0(ctu_name_full, ", ", correct_county_name ))
 
+
+# summarize by county name alternative to see how much of a difference 
+# it makes when we correct the county name/reassign cities to the correct county
+net_county_corrections <- vmt_city_raw %>% 
+  group_by(correct_county_name, year) %>%
+  summarize(daily_vmt = sum(daily_vmt),
+            annual_vmt = sum(annual_vmt),
+            centerline_miles = sum(centerline_miles)) %>% 
+  filter(correct_county_name %in% cprg_county$county_name) %>% 
+  left_join(
+    vmt_city_raw %>% 
+      group_by(county_name, year) %>%
+      summarize(daily_vmt = sum(daily_vmt),
+                annual_vmt = sum(annual_vmt),
+                centerline_miles = sum(centerline_miles)) %>% 
+      filter(county_name %in% cprg_county$county_name),
+    by = c("year", "correct_county_name" = "county_name"),
+    suffix = c(".correct", ".orig")) %>% 
+  mutate(annual_diff = annual_vmt.orig - annual_vmt.correct,
+         daily_diff = daily_vmt.orig - daily_vmt.correct,
+         centerline_miles_diff = centerline_miles.orig - centerline_miles.correct)
+
 # There is another Saint Anthony in Stearns County, unrelated to 
 # our Saint Anthony (GNIS 2396471)
 
@@ -614,10 +636,10 @@ ctu_n_years <- vmt_city_raw %>%
   group_by(ctu_name_full_county) %>%
   count(name = "n_years") %>%
   arrange(n_years) %>%
-  ungroup() %>%
+  ungroup() %>% 
   # filter such that we have a full time series for
-  # year 2014 onward
-  filter(n_years >= (as.numeric(max(vmt_city_raw$year)) - 2014))
+  # the past 9 years
+  filter(n_years >= 9)
 
 # we only have % sampled for years 2017 onward
 # A percent sampled of 0 indicates that there has  never been a submitted count for the  given route system in the CTU.
@@ -752,7 +774,7 @@ vmt_city_raw_summary <-
   vmt_city_raw %>%
   # filter to only reliable CTUs
   filter(
-    cprg_area == TRUE,
+    # cprg_area == TRUE,
     ctu_name_full_county %in% reliable_ctu$ctu_name_full_county
   ) %>%
   group_by(year, county_name, ctu_name, ctu_name_full, ctu_name_full_county, cprg_area) %>%
@@ -762,8 +784,8 @@ vmt_city_raw_summary <-
     centerline_miles = sum(centerline_miles, na.rm = TRUE),
     .groups = "keep"
   ) %>%
-  ungroup() %>%
-  filter(county_name %in% cprg_county$county_name)
+  ungroup()
+# filter(county_name %in% cprg_county$county_name)
 
 # get city only summary
 vmt_city_alone <- vmt_city_raw %>%
@@ -792,16 +814,16 @@ vmt_county_alone <- vmt_city_raw %>%
   )
 
 # join with county level data and check for differences
-vmt_county_alone %>%
-  left_join(mndot_vmt_county,
-            by = c("year", "county_name" = "county"),
-            suffix = c(".city", ".county")
-  ) %>%
-  mutate(
-    daily_diff = round(daily_vmt.city - daily_vmt.county),
-    annual_diff = round(annual_vmt.city - annual_vmt.county),
-    centerline_diff = round(centerline_miles.city - centerline_miles.county)
-  )
+# vmt_county_alone %>%
+#   left_join(mndot_vmt_county,
+#             by = c( "year" = "vmt_year", "county_name" = "county_name"),
+#             suffix = c(".city", ".county")
+#   ) %>%
+#   mutate(
+#     daily_diff = round(daily_vmt.city - daily_vmt.county),
+#     annual_diff = round(annual_vmt.city - annual_vmt.county),
+#     centerline_diff = round(centerline_miles.city - centerline_miles.county)
+#   ) 
 
 
 # merge with ctu population
@@ -963,8 +985,8 @@ short_ctu <- vmt_ctu_county %>%
   ungroup() %>%
   select(ctu_name, ctu_name_full, ctu_name_full_county, ctu_class, county_name) %>%
   group_by(ctu_name, ctu_name_full, ctu_name_full_county, ctu_class, county_name) %>%
-  count(name = "n_years") %>%
-  filter(n_years < 9)
+  count(name = "n_years") %>% 
+  filter(n_years < as.numeric(max(vmt_ctu_county$year)) - 2014)
 
 vmt_interp <- vmt_ctu_county %>%
   # first create an NA 2015 dataset
@@ -978,9 +1000,10 @@ vmt_interp <- vmt_ctu_county %>%
   ) %>%
   # bind with original
   bind_rows(vmt_ctu_county) %>%
-  arrange(year) %>%
-  group_by(ctu_name, ctu_name_full, ctu_class, county_name) %>%
-  anti_join(short_ctu) %>%
+  arrange(ctu_name_full_county, year) %>%
+  group_by(ctu_name, ctu_name_full_county, ctu_class, county_name) %>%
+  anti_join(short_ctu,
+            join_by(ctu_name, ctu_name_full, ctu_name_full_county, ctu_class, county_name)) %>%
   # count()
   # interpolate using midpoint method
   # for missing values
@@ -994,7 +1017,7 @@ vmt_interp <- vmt_ctu_county %>%
     # for our CTUs without 2014 data to go off of
     # we will assign 2016 VMT to 2015
     vmt_ctu_county %>%
-      inner_join(short_ctu) %>%
+      inner_join(short_ctu, by = join_by(ctu_name, ctu_name_full, ctu_class, ctu_name_full_county, county_name)) %>%
       # get 2016 data
       filter(year == 2016) %>%
       # reassign year to 2015
@@ -1052,6 +1075,6 @@ saveRDS(vmt_spatial, "_transportation/data-raw/mndot/mndot_vmt_ctu_spatial.RDS")
 orig_vmt_ctu <- readr::read_rds("https://github.com/Metropolitan-Council/ghg-cprg/raw/refs/heads/main/_transportation/data/mndot_vmt_ctu.RDS") 
 unique(orig_vmt_ctu$ctuid) %>% length
 unique(vmt_ctu$ctuid) %>% length
-setdiff(      unique(vmt_ctu$ctu_name),
-              unique(orig_vmt_ctu$ctu_name)
+setdiff(unique(vmt_ctu$ctu_name),
+        unique(orig_vmt_ctu$ctu_name)
 )
