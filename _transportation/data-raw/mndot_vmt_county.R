@@ -2,7 +2,7 @@ source("R/_load_pkgs.R")
 # Adapted from https://github.com/Metropolitan-Council/tspe-quarto/blob/main/R/d_vmt_county.R
 
 # check for needed files
-if (file.exists("_transportation/data-raw/mndot/county_route_system/18_crs.xlsx") == FALSE) {
+if (file.exists("_transportation/data-raw/mndot/county_route_system/2024_VMT_County_Route_System-38921397-v1.XLSX") == FALSE) {
   cli::cli_abort(c(
     "Required datasets unavailable",
     "*" = "Download VMT by county and route system Excel tables from MnDOT",
@@ -16,7 +16,7 @@ if (file.exists("_transportation/data-raw/mndot/county_route_system/18_crs.xlsx"
 county_crs <- list()
 
 county_crs[["2001"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/01_crs.xls",
+  "_transportation/data-raw/mndot/county_route_system/2001_VMT_County_Route_System-38670207-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -39,7 +39,7 @@ county_crs[["2001"]] <- readxl::read_excel(
 
 
 county_crs[["2002"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/02_crs.xls",
+  "_transportation/data-raw/mndot/county_route_system/2002_VMT_County_Route_System-38670208-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -62,7 +62,7 @@ county_crs[["2002"]] <- readxl::read_excel(
 
 
 county_crs[["2003"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/03_crs.xls",
+  "_transportation/data-raw/mndot/county_route_system/2003_VMT_County_Route_System-38670197-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -85,7 +85,7 @@ county_crs[["2003"]] <- readxl::read_excel(
 
 
 county_crs[["2004"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/04_crs.xls",
+  "_transportation/data-raw/mndot/county_route_system/2004_VMT_County_Route_System-38670198-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -108,7 +108,7 @@ county_crs[["2004"]] <- readxl::read_excel(
 
 
 county_crs[["2005"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/05_crs.xls",
+  "_transportation/data-raw/mndot/county_route_system/2005_VMT_County_Route_System-38670200-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -131,7 +131,7 @@ county_crs[["2005"]] <- readxl::read_excel(
 
 
 county_crs[["2006"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/06_crs.xls",
+  "_transportation/data-raw/mndot/county_route_system/2006_VMT_County_Route_System-38670201-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -154,7 +154,7 @@ county_crs[["2006"]] <- readxl::read_excel(
 
 
 county_crs[["2007"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/07_crs.xls",
+  "_transportation/data-raw/mndot/county_route_system/2007_VMT_County_Route_System-38670202-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -177,7 +177,7 @@ county_crs[["2007"]] <- readxl::read_excel(
 
 
 county_crs[["2008"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/08_crs.xls",
+  "_transportation/data-raw/mndot/county_route_system/2008_VMT_County_Route_System-38670203-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -199,7 +199,7 @@ county_crs[["2008"]] <- readxl::read_excel(
   )
 
 county_crs[["2009"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/09_crs.xls",
+  "_transportation/data-raw/mndot/county_route_system/2009_VMT_County_Route_System-38670193-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -221,7 +221,7 @@ county_crs[["2009"]] <- readxl::read_excel(
   )
 
 county_crs[["2010"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/10_crs.xls",
+  "_transportation/data-raw/mndot/county_route_system/2010_VMT_County_Route_System-38670194-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -243,7 +243,7 @@ county_crs[["2010"]] <- readxl::read_excel(
   )
 
 county_crs[["2011"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/11_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/2011_VMT_County_Route_System-38670213-v1.XLSX",
   sheet = 2,
   col_types = c(
     "skip",
@@ -265,7 +265,7 @@ county_crs[["2011"]] <- readxl::read_excel(
   )
 
 county_crs[["2012"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/12_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/2012_VMT_County_Route_System-38670214-v1.XLSX",
   sheet = 1,
   col_types = c(
     "skip",
@@ -292,7 +292,7 @@ county_crs[["2012"]] <- readxl::read_excel(
   )
 
 county_crs[["2013"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/13_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/2013_VMT_County_Route_System-38670215-v1.XLSX",
   sheet = 2,
   col_types = c(
     "skip",
@@ -321,7 +321,7 @@ county_crs[["2013"]] <- readxl::read_excel(
 
 
 county_crs[["2014"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/14_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/2014_VMT_County_Route_System-38670216-v1.XLSX",
   sheet = 2,
   col_types = c(
     "skip",
@@ -350,7 +350,7 @@ county_crs[["2014"]] <- readxl::read_excel(
 
 
 county_crs[["2016"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/16_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/2016_VMT_County_Route_System-38670218-v1.XLSX",
   sheet = 2,
   col_types = c(
     "text",
@@ -403,7 +403,7 @@ county_crs[["2017"]] <- readxl::read_excel(
 
 
 county_crs[["2018"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/18_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/2018_VMT_County_Route_System-38670220-v1.XLSX",
   sheet = 2,
   col_types = c(
     "text",
@@ -429,7 +429,7 @@ county_crs[["2018"]] <- readxl::read_excel(
   )
 
 county_crs[["2019"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/19_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/2019_VMT_County_Route_System-38670222-v1.XLSX",
   sheet = 1,
   skip = 2
 ) %>%
@@ -443,7 +443,7 @@ county_crs[["2019"]] <- readxl::read_excel(
 
 
 county_crs[["2020"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/20_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/2020_VMT_County_Route_System-38670223-v1.XLSX",
   sheet = 1,
   skip = 1
 ) %>%
@@ -451,7 +451,7 @@ county_crs[["2020"]] <- readxl::read_excel(
 
 
 county_crs[["2021"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/21_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/2021_VMT_County_Route_System-38670224-v1.XLSX",
   sheet = 2,
   skip = 2
 ) %>%
@@ -459,27 +459,28 @@ county_crs[["2021"]] <- readxl::read_excel(
 
 
 county_crs[["2022"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/22_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/2022_VMT_County_Route_System-38670211-v1.XLSX",
   sheet = 2,
   skip = 2
 ) %>%
   janitor::clean_names()
 
 county_crs[["2023"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/county_route_system/23_crs.xlsx",
+  "_transportation/data-raw/mndot/county_route_system/2023_VMT_County_Route_System-38670212-v1.XLSX",
   sheet = 2,
   skip = 2
 ) %>%
   janitor::clean_names()
 
+# !IMPORTANT note that 2024 download had a misaligned row, which
+# threw off the first column (county name)
+# this was fixed manually
 county_crs[["2024"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/2024_VMT_County_Route_System-38921397-v1.XLSX",
   sheet = 2,
   skip = 1
 ) %>%
-  janitor::clean_names() %>% 
-  select(county = 1,
-         2:5)
+  janitor::clean_names()
 
 # compile ------
 
