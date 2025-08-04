@@ -26,7 +26,7 @@ cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS") %>%
 
 
 # check for needed files
-if (file.exists("_transportation/data-raw/mndot/city_route_system/23_ccr.xlsx") == FALSE) {
+if (file.exists("_transportation/data-raw/mndot/city_route_system/2024_VMT_County_City_Route_System-38921432-v1.XLSX") == FALSE) {
   cli::cli_abort(c(
     "Required datasets unavailable",
     "*" = "Download VMT by city and route system Excel tables from MnDOT",
@@ -39,7 +39,7 @@ if (file.exists("_transportation/data-raw/mndot/city_route_system/23_ccr.xlsx") 
 city_ccr <- list()
 
 city_ccr[["2001"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/01_ccr.xls",
+  "_transportation/data-raw/mndot/city_route_system/2001_VMT_County_City_Route_System-38670399-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -63,7 +63,7 @@ city_ccr[["2001"]] <- readxl::read_excel(
 
 
 city_ccr[["2002"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/02_ccr.xls",
+  "_transportation/data-raw/mndot/city_route_system/2002_VMT_County_City_Route_System-38670400-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -87,7 +87,7 @@ city_ccr[["2002"]] <- readxl::read_excel(
 
 
 city_ccr[["2003"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/03_ccr.xls",
+  "_transportation/data-raw/mndot/city_route_system/2003_VMT_County_City_Route_System-38670401-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -111,7 +111,7 @@ city_ccr[["2003"]] <- readxl::read_excel(
 
 
 city_ccr[["2004"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/04_ccr.xls",
+  "_transportation/data-raw/mndot/city_route_system/2004_VMT_County_City_Route_System-38670402-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -135,7 +135,7 @@ city_ccr[["2004"]] <- readxl::read_excel(
 
 
 city_ccr[["2005"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/05_ccr.xls",
+  "_transportation/data-raw/mndot/city_route_system/2005_VMT_County_City_Route_System-38670403-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -159,7 +159,7 @@ city_ccr[["2005"]] <- readxl::read_excel(
 
 
 city_ccr[["2006"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/06_ccr.xls",
+  "_transportation/data-raw/mndot/city_route_system/2006_VMT_County_City_Route_System-38670405-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -183,7 +183,7 @@ city_ccr[["2006"]] <- readxl::read_excel(
 
 
 city_ccr[["2007"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/07_ccr.xls",
+  "_transportation/data-raw/mndot/city_route_system/2007_VMT_County_City_Route_System-38670407-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -207,7 +207,7 @@ city_ccr[["2007"]] <- readxl::read_excel(
 
 
 city_ccr[["2008"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/08_ccr.xls",
+"_transportation/data-raw/mndot/city_route_system/2008_VMT_County_City_Route_System-38670408-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -230,7 +230,7 @@ city_ccr[["2008"]] <- readxl::read_excel(
   )
 
 city_ccr[["2009"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/09_ccr.xls",
+  "_transportation/data-raw/mndot/city_route_system/2009_VMT_County_City_Route_System-38670409-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -252,7 +252,7 @@ city_ccr[["2009"]] <- readxl::read_excel(
   )
 
 city_ccr[["2010"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/10_ccr.xls",
+  "_transportation/data-raw/mndot/city_route_system/2010_VMT_County_City_Route_System-38670410-v1.XLS",
   sheet = 2,
   col_types = c(
     "skip",
@@ -275,7 +275,7 @@ city_ccr[["2010"]] <- readxl::read_excel(
   )
 
 city_ccr[["2011"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/11_ccr.xlsx",
+  "_transportation/data-raw/mndot/city_route_system/2011_VMT_County_City_Route_System-38670395-v1.XLSX",
   sheet = 2,
   col_types = c(
     "skip",
@@ -302,7 +302,7 @@ city_ccr[["2011"]] <- readxl::read_excel(
   )
 
 city_ccr[["2012"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/12_ccr.xlsx",
+  "_transportation/data-raw/mndot/city_route_system/2012_VMT_County_City_Route_System-38670396-v1.XLSX",
   sheet = 2,
   col_types = c(
     "skip",
@@ -325,7 +325,7 @@ city_ccr[["2012"]] <- readxl::read_excel(
   )
 
 city_ccr[["2013"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/13_ccr.xlsx",
+  "_transportation/data-raw/mndot/city_route_system/2013_VMT_County_City_Route_System-38670397-v1.XLSX",
   sheet = 2,
   col_types = c(
     "skip",
@@ -351,7 +351,7 @@ city_ccr[["2013"]] <- readxl::read_excel(
 
 
 city_ccr[["2014"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/14_ccr.xlsx",
+  "_transportation/data-raw/mndot/city_route_system/2014_VMT_County_City_Route_System-38670398-v1.XLSX",
   sheet = 2,
   col_types = c(
     "skip",
@@ -377,7 +377,7 @@ city_ccr[["2014"]] <- readxl::read_excel(
 
 
 city_ccr[["2016"]] <- readxl::read_excel(
-  "_transportation/data-raw/mndot/city_route_system/16_ccr.xlsx",
+  "_transportation/data-raw/mndot/city_route_system/2016_VMT_County_City_Route_System-38670414-v1.XLSX",
   sheet = 2,
   col_types = c(
     "text",
@@ -452,6 +452,13 @@ city_ccr[["2023"]] <- readxl::read_excel(
 ) %>%
   janitor::clean_names()
 
+
+city_ccr[["2024"]] <- readxl::read_excel(
+  "_transportation/data-raw/mndot/city_route_system/2024_VMT_County_City_Route_System-38921432-v1.XLSX",
+  sheet = 2,
+  skip = 2
+) %>%
+  janitor::clean_names()
 # compile ------
 
 # bind all datasets together
@@ -737,6 +744,7 @@ council_leaflet() %>%
     pal = leafp,
     values = vmt_spatial$reliable
   )
+
 
 # summarize ------
 # remove the route system distinction to get County/CTU level summary
@@ -1037,12 +1045,11 @@ vmt_ctu_meta <- bind_rows(
 saveRDS(vmt_ctu, "_transportation/data/mndot_vmt_ctu.RDS")
 saveRDS(vmt_ctu_meta, "_transportation/data/mndot_vmt_ctu_meta.RDS")
 
+saveRDS(vmt_spatial, "_transportation/data-raw/mndot/mndot_vmt_ctu_spatial.RDS")
 
 
 
 orig_vmt_ctu <- readr::read_rds("https://github.com/Metropolitan-Council/ghg-cprg/raw/refs/heads/main/_transportation/data/mndot_vmt_ctu.RDS") 
-
-
 unique(orig_vmt_ctu$ctuid) %>% length
 unique(vmt_ctu$ctuid) %>% length
 setdiff(      unique(vmt_ctu$ctu_name),
