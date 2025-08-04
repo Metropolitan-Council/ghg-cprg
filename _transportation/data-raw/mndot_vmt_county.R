@@ -475,9 +475,11 @@ county_crs[["2023"]] <- readxl::read_excel(
 county_crs[["2024"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/2024_VMT_County_Route_System-38921397-v1.XLSX",
   sheet = 2,
-  skip = 2
+  skip = 1
 ) %>%
-  janitor::clean_names()
+  janitor::clean_names() %>% 
+  select(county = 1,
+         2:5)
 
 # compile ------
 
