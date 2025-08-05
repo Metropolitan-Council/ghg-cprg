@@ -8,8 +8,12 @@ mndot_vmt_spatial <- readRDS("_transportation/data-raw/mndot/mndot_vmt_ctu_spati
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 source("_transportation/data-raw/mndot_vmt_ctu.R")
 
+ctu_segments <- readRDS("_transportation/data-raw/mndot/aadt_ctu_segments.RDS")
+
 ctu_unreliable <- mndot_vmt_spatial %>% 
-  filter(reliable == FALSE)
+  filter(reliable == FALSE) %>% 
+  select(ctu_name, geoid, coctu_id_fips, coctu_id_gnis) %>% 
+  sf::st_drop_geometry()
 
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   left_join(cprg_county %>% sf::st_drop_geometry()) %>%
@@ -91,12 +95,58 @@ vmt_gap_true <- vmt_gaps %>%
   # true gap is the difference in the corrected and non-corrected CTU/county assignments
   mutate(gap_true_daily = gap_daily - daily_diff,
          gap_true_annual = gap_annual - annual_diff,
-         gap_true_centerline_miles  =  gap_centerline_miles - centerline_miles_diff) %>%
+         gap_true_centerline_miles  =  gap_centerline_miles - centerline_miles_diff,
+         vmt_year = as.numeric(vmt_year)) %>%
   # fix NA values from 2015
   mutate(gap_true_annual = ifelse(is.na(gap_true_annual), gap_annual, gap_true_annual),
          gap_true_daily = ifelse(is.na(gap_true_daily), gap_daily, gap_true_daily),
          gap_true_centerline_miles = ifelse(is.na(gap_true_centerline_miles), gap_centerline_miles, gap_true_centerline_miles)) %>% 
+  # select final columns
   select(geoid, vmt_year, county_name, gap_true_daily, gap_true_annual, gap_true_centerline_miles, n_ctus)
 
 
-  
+county_pop_minus_reliable <- ctu_population %>% 
+  filter(!coctu_id_fips %in% ctu_unreliable$coctu_id_fips) %>% 
+  group_by(geoid, county_name, inventory_year) %>% 
+  summarise(reliable_pop = sum(ctu_population)) %>% 
+  left_join(
+    ctu_population %>% 
+      select(geoid,inventory_year,  county_name, county_population) %>% 
+      unique()
+  ) %>% 
+  mutate(county_pop_remainder = county_population - reliable_pop) %>% 
+  select(geoid, county_name, inventory_year, county_pop_remainder)
+
+gap_group_pop <- ctu_population %>% 
+  filter(coctu_id_fips %in% ctu_unreliable$coctu_id_fips) %>% 
+  left_join(county_pop_minus_reliable) %>% 
+  mutate(ctu_prop_of_remainder = ctu_population / county_pop_remainder)
+
+# gap by population won't work for areas with 0 population (Blaine, Ramsey County)
+
+gap_by_pop <- vmt_gap_true %>% 
+  left_join(gap_group_pop, by =  c("geoid", "county_name",
+                                    "vmt_year" = "inventory_year")) %>% 
+  filter(vmt_year == 2023) %>% 
+  mutate(daily_pop_gap = gap_true_daily * ctu_prop_of_remainder ) %>% 
+  left_join(mndot_vmt_ctu %>% 
+              mutate(vmt_year = as.numeric(vmt_year)))
+
+
+gap_by_pop %>% 
+plot_ly(
+  type = "scatter",
+  mode = "markers",
+  x = ~daily_vmt,
+  y = ~daily_pop_gap) 
+
+# centerline mile proportions
+
+ctu_segment_summary %>% 
+  ungroup() %>% 
+  summarize(total_segment_length = sum(total_segment_length))
+
+mndot_vmt_county %>% 
+  group_by(vmt_year) %>% 
+  filter(vmt_year == 2024) %>% 
+  summarize(centerline_miles = sum(centerline_miles))

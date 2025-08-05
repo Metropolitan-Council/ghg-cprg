@@ -42,7 +42,8 @@ aadt_all <- sf::read_sf("_transportation/data-raw/mndot/trans_annual average dai
 
 ctu_segments <- aadt_all %>% 
   st_intersection(cprg_ctu %>% 
-                    filter(state_abb == "MN")) %>% 
+                    filter(state_abb == "MN",
+                           !is.na(ctu_id))) %>% 
   mutate(SEGMENT_LENGTH_CTU = st_length(SHAPE) %>% 
            # units::as_units("meter") %>% 
            units::set_units("mile") %>% 
@@ -67,6 +68,11 @@ ctu_segment_summary <- ctu_segments %>%
     current_years = paste0(sort(unique(CURRENT_YEAR)), collapse = ", "),
     total_volume = sum(CURRENT_VOLUME, na.rm = T),
     .groups = "keep"
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    region_total_segment_length = sum(total_segment_length),
+    ctu_prop_length = total_segment_length/region_total_segment_length
   )
 
 saveRDS(ctu_segments, "_transportation/data-raw/mndot/aadt_ctu_segments.RDS")
