@@ -775,7 +775,7 @@ vmt_city_raw_summary <-
   # filter to only reliable CTUs
   filter(
     # cprg_area == TRUE,
-    ctu_name_full_county %in% reliable_ctu$ctu_name_full_county
+    # ctu_name_full_county %in% reliable_ctu$ctu_name_full_county
   ) %>%
   group_by(year, county_name, ctu_name, ctu_name_full, ctu_name_full_county, cprg_area) %>%
   summarize(
@@ -792,7 +792,7 @@ vmt_city_alone <- vmt_city_raw %>%
   # filter to only reliable CTUs
   filter(
     cprg_area == TRUE,
-    ctu_name_full_county %in% reliable_ctu$ctu_name_full_county
+    # ctu_name_full_county %in% reliable_ctu$ctu_name_full_county
   ) %>%
   group_by(year, ctu_name, ctu_name_full, ctu_class) %>%
   summarize(
@@ -962,7 +962,7 @@ vmt_city_raw %>%
 
 vmt_ctu_county <- vmt_city_raw %>%
   filter(
-    ctu_name_full_county %in% reliable_ctu$ctu_name_full_county,
+    # ctu_name_full_county %in% reliable_ctu$ctu_name_full_county,
     cprg_area == TRUE,
     ctu_name %in% ctu_population$ctu_name
   ) %>%
@@ -1027,7 +1027,20 @@ vmt_interp <- vmt_ctu_county %>%
         daily_approx = daily_vmt,
         centerline_approx = centerline_miles
       )
-  )
+  ) %>% 
+  bind_rows(
+    # for our CTUs without 2014 data to go off of
+    # we will assign 2016 VMT to 2015
+    vmt_ctu_county %>%
+      inner_join(short_ctu, by = join_by(ctu_name, ctu_name_full, ctu_class, ctu_name_full_county, county_name)) %>%
+      mutate(
+        annual_approx = annual_vmt,
+        daily_approx = daily_vmt,
+        centerline_approx = centerline_miles
+      )
+  ) %>% 
+  unique()
+
 
 
 
