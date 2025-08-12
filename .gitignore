@@ -1279,3 +1279,6 @@ _transportation/data-raw/mndot/trans_annual average daily traffic segments.gpkg
 _transportation/data-raw/mndot/trans_Historic Annual Average Daily Traffic.gpkg
 
 _transportation/data-raw/mndot/updated_VMT_County_City_Route_System.zip
+
+_transportation/data-raw/mndot/mileage_city_route_system/
+_transportation/data-raw/mndot/mileage_city_route_system/2024_Mileage_City_Route_System-38747964-v1.XLSX
