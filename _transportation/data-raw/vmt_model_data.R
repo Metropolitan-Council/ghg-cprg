@@ -1,4 +1,4 @@
-# create a compiled table of COCTU level data to use in our modeling -----
+# create a compiled table of COCTU level data to use in our modeling script -----
 
 source("R/_load_pkgs.R")
 
@@ -23,22 +23,26 @@ cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS") %>%
             by = c("gnis", "geoid")) %>% 
   filter(state_abb == "MN")
 
+# create index with all contextual information for each coctu_id_gnis
+# independent of year
 ctu_coctu_index <- ctu_population %>%
   mutate(ctu_name_full = paste0(ctu_name, ", ", ctu_class),
          ctu_name_full_county = paste0(ctu_name_full, ", ", county_name )) %>% 
+  # remove credit river township!
+  filter(coctu_id_gnis != "13900663886",
+         coctu_id_gnis != "03700664099") %>% 
   select(geoid, gnis, coctu_id_gnis, ctu_name, ctu_name_full, ctu_name_full_county, county_name) %>% 
   unique() %>% 
   left_join(cprg_ctu %>% 
               select(ctu_name, gnis, imagine_designation) %>% sf::st_drop_geometry() %>% unique(),
             by = join_by(gnis, ctu_name)) %>% 
-  mutate(imagine_designation = case_when(coctu_id_gnis == "03700664099" ~ "Agricultural",
-                                         coctu_id_gnis == "13900663886" ~ "Rural Residential",
+  mutate(imagine_designation = case_when(coctu_id_gnis == "03700664099" ~ "Agricultural", # Empire Township
+                                         coctu_id_gnis == "13900663886" ~ "Rural Residential", # Credit River township
                                          TRUE ~ imagine_designation))
 
 
 # create year and county series, all years
 ctu_year_series <- ctu_coctu_index %>% 
-  # filter(!is.na(coctu_id_gnis)) %>% 
   select(coctu_id_gnis) %>% 
   unique() %>% 
   expand_grid(inventory_year = 2010:2050)
@@ -52,6 +56,7 @@ co_year_series <- ctu_coctu_index %>%
   expand_grid(inventory_year = 2010:2050)
 
 
+# create full time series for UrbanSim population, households, jobs -----
 ctu_pop_full <- ctu_urbansim %>% 
   filter(variable == "total_pop") %>% 
   mutate(total_pop = value) %>% 
@@ -87,42 +92,24 @@ ctu_jobs_full <- ctu_urbansim %>%
   arrange(coctu_id_gnis, inventory_year) %>% 
   mutate(total_jobs = round(zoo::na.approx(total_jobs)))
 
-## VMT data -----
+# VMT data -----
 
-### CTU -----
+## CTU -----
 mndot_vmt_ctu <- readRDS("_transportation/data/mndot_vmt_ctu.RDS") %>% 
   # left_join(cprg_county %>% sf::st_drop_geometry(), by = "geoid") %>% 
   mutate(vmt_year = as.numeric(vmt_year)) %>% 
   unique() %>% 
-  # mutate(daily_per_mile = daily_vmt / centerline_miles,
-  #        annual_per_mile = annual_vmt / centerline_miles) %>% 
-  # left_join(ctu_population %>% 
-  #             mutate(vmt_year = inventory_year)
-  #           # join_by(geoid, ctuid, ctu_name, ctu_class, coctu_id_fips,
-  #           #         coctu_id_gnis, gnis, county_name, county_name_full,
-  #           #         state_name, statefp, state_abb, cprg_area,
-  #           #         vmt_year == inventory_year)
-  #           
-  # ) %>% 
-  # mutate(annual_per_pop = annual_vmt / ctu_population,
-  #        daily_per_pop = daily_vmt / ctu_population) %>% 
-  # left_join(cprg_ctu %>% sf::st_drop_geometry()) %>% 
-  # select(-imagine_designation, -ctu_id) %>% 
-  # left_join(ctu_coctu_index) %>% 
   select(vmt_year, geoid, coctu_id_gnis, daily_vmt, centerline_miles) %>% 
   filter(vmt_year <= 2022,
          vmt_year >= 2010)
 
 ctu_vmt_forecast <- readRDS("_transportation/data-raw/metc_travel_model/ctu_vmt_forecast.RDS") %>% 
-  # change 2025 to 2023
+  # change 2025 to 2023, which better represents what the model is using
   mutate(vmt_year = ifelse(vmt_year == 2025, 2023, as.numeric(vmt_year))) %>% 
   select(vmt_year, coctu_id_gnis, network_vmt,network_passenger_vmt, network_truck_vmt) %>% 
-  # full_join(ctu_year_series %>% filter(inventory_year >= 2023),
-  #           by = c("vmt_year" ="inventory_year",
-  #                  "coctu_id_gnis" = "coctu_id_gnis")) %>% 
-  # filter(
-  #   # !is.na(network_vmt),
-  #   !is.na(coctu_id_gnis)) %>% 
+  full_join(ctu_year_series %>% filter(inventory_year >= 2023),
+            by = c("vmt_year" ="inventory_year",
+                   "coctu_id_gnis" = "coctu_id_gnis")) %>%
   mutate(network_passenger_vmt = case_when(vmt_year == 2050 & is.na(network_passenger_vmt) ~ 0,
                                            TRUE ~ network_passenger_vmt),
          network_truck_vmt = case_when(vmt_year == 2050 & is.na(network_truck_vmt) ~ 0,
@@ -135,7 +122,7 @@ ctu_vmt_forecast <- readRDS("_transportation/data-raw/metc_travel_model/ctu_vmt_
   mutate(
     # network_passenger_vmt = round(zoo::na.approx(network_passenger_vmt)),
     # network_truck_vmt = round(zoo::na.approx(network_truck_vmt)),
-    # network_vmt = round(zoo::na.approx(network_vmt)),
+    network_vmt = round(zoo::na.approx(network_vmt)),
     daily_vmt = network_vmt) %>% 
   left_join(ctu_coctu_index %>% 
               select(coctu_id_gnis, geoid) %>% unique(),
@@ -146,7 +133,6 @@ ctu_vmt_forecast <- readRDS("_transportation/data-raw/metc_travel_model/ctu_vmt_
 
 ctu_mndot_forecast_vmt <- mndot_vmt_ctu %>% 
   mutate(vmt_source = "MnDOT") %>% 
-  # select(names(ctu_forecast)) %>% 
   bind_rows(ctu_vmt_forecast %>% 
               mutate(vmt_source = "Model")) %>% 
   arrange(coctu_id_gnis, vmt_year) %>% 
@@ -155,9 +141,7 @@ ctu_mndot_forecast_vmt <- mndot_vmt_ctu %>%
   arrange(coctu_id_gnis, vmt_year)
 
 
-### County -----
-
-
+## County -----
 mndot_vmt_county <- readRDS("_transportation/data-raw/mndot/mndot_vmt_county.RDS") %>% 
   mutate(vmt_year = as.numeric(year),
          county_daily_vmt = daily_vmt,
@@ -174,16 +158,15 @@ mndot_vmt_county <- readRDS("_transportation/data-raw/mndot/mndot_vmt_county.RDS
 county_vmt_forecast <- readRDS("_transportation/data-raw/metc_travel_model/county_vmt_forecast.RDS") %>% 
   mutate(vmt_year = ifelse(vmt_year == 2025, 2023, as.numeric(vmt_year))) %>% 
   select(vmt_year, geoid, network_vmt,network_passenger_vmt, network_truck_vmt) %>% 
-  # full_join(co_year_series %>% filter(inventory_year >= 2023),
-  #           by  =c("vmt_year" ="inventory_year",
-  #                  "geoid" = "geoid")) %>%
-  # filter(!is.na(county_name)) %>% 
+  full_join(co_year_series %>% filter(inventory_year >= 2023),
+            by  =c("vmt_year" ="inventory_year",
+                   "geoid" = "geoid")) %>%
   group_by(geoid) %>% 
   arrange(geoid, vmt_year) %>% 
   mutate(
     # network_passenger_vmt = round(zoo::na.approx(network_passenger_vmt)),
     # network_truck_vmt = round(zoo::na.approx(network_truck_vmt)),
-    # network_vmt = round(zoo::na.approx(network_vmt)),
+    network_vmt = round(zoo::na.approx(network_vmt)),
     county_daily_vmt = network_vmt) %>% 
   select(geoid, vmt_year, county_daily_vmt) %>% 
   ungroup()
@@ -192,8 +175,6 @@ county_vmt_forecast <- readRDS("_transportation/data-raw/metc_travel_model/count
 
 county_mndot_vmt_forecast <- county_vmt_forecast %>% 
   mutate(vmt_source_county = "Model") %>% 
-  # mutate(daily_vmt = network_vmt,
-  #        vmt_year = as.numeric(vmt_year)) %>% 
   bind_rows(mndot_vmt_county %>% 
               select(vmt_year, geoid, county_daily_vmt, county_centerline_miles = centerline_miles) %>% 
               mutate(vmt_source_county = "MnDOT")) %>% 
@@ -203,7 +184,7 @@ county_mndot_vmt_forecast <- county_vmt_forecast %>%
   filter(!is.na(geoid)) %>% 
   arrange(geoid, vmt_year)
 
-## combine -----
+# combine all tables -----
 ctu_pop_jobs_vmt <- ctu_jobs_full %>% 
   left_join(ctu_pop_full, join_by(coctu_id_gnis, inventory_year)) %>% 
   left_join(ctu_households_full, join_by(coctu_id_gnis, inventory_year)) %>% 
@@ -231,7 +212,8 @@ ctu_pop_jobs_vmt <- ctu_jobs_full %>%
   left_join(ctu_coctu_index,
             join_by(coctu_id_gnis, geoid, county_name)) %>%
   # filter(!is.na(gnis)) %>% 
-  unique()
+  unique() %>% 
+  select(-vmt_year)
 
 
 testthat::expect_equal(
@@ -240,6 +222,7 @@ testthat::expect_equal(
 
 testthat::expect_equal(
   unique(ctu_pop_jobs_vmt$coctu_id_gnis) %>% length(),
-  195)
+  193)
 
+# remove intermediary tables
 rm(ctu_jobs_full, ctu_households_full, ctu_pop_full)
