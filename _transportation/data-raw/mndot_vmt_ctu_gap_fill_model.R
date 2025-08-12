@@ -6,6 +6,13 @@ library(lme4)        # for mixed-effects model
 library(Metrics)
 
 source("_transportation/data-raw/vmt_model_data.R")
+set.seed(24601)
+
+total_ctu_per_county <- ctu_coctu_index %>% 
+  select(geoid, county_name, coctu_id_gnis, ctu_name_full_county) %>% 
+  unique() %>% 
+  group_by(geoid, county_name) %>% 
+  count()
 
 # which CTUs need help?
 ctu_missing <- ctu_pop_jobs_vmt %>% 
@@ -13,6 +20,18 @@ ctu_missing <- ctu_pop_jobs_vmt %>%
   select(coctu_id_gnis, ctu_name_full, ctu_name_full_county,
          geoid, county_name) %>% 
   unique()
+
+
+ctu_complete <- ctu_pop_jobs_vmt %>% 
+  filter(!is.na(daily_vmt)) %>% 
+  group_by(coctu_id_gnis, ctu_name_full, ctu_name_full_county,
+           geoid, county_name) %>% 
+  count() %>% 
+  filter(n >= 41) %>% 
+  unique()
+
+testthat::expect_equal(length(unique(ctu_pop_jobs_vmt$coctu_id_gnis)), nrow(ctu_complete) + nrow(ctu_missing)  )
+
 
 # ctu_pop_jobs_vmt %>% 
 #   filter(coctu_id_gnis %in% ctu_missing$coctu_id_gnis) %>% 
@@ -44,11 +63,15 @@ df <- ctu_pop_jobs_vmt %>%
 # find the marginal VMT that is unaccounted for when we 
 # sum up from the COCTU to CO level
 county_missing_vmt <- df %>% 
+  filter(coctu_id_gnis %in% ctu_complete$coctu_id_gnis) %>% 
   group_by(county_name, geoid, inventory_year) %>% 
   summarize(
     sum_daily_vmt = sum(daily_vmt, na.rm = T),
     county_daily_vmt = first(county_daily_vmt),
-    missing_vmt = county_daily_vmt - sum_daily_vmt
+    missing_vmt = county_daily_vmt - sum_daily_vmt,
+    n = n(),
+    .groups = "keep"
+    
   )
 
 # create training dataset
@@ -81,7 +104,7 @@ while(n_designations != length(df$imagine_designation %>% unique()) |
 
 # Create model -----
 m <- lmer(log_vmt ~ log_pop + log_hh + log_emp + I(inventory_year - min(inventory_year)) + imagine_designation +  (1 | county_name), 
-          data = train, REML = FALSE)
+          data = train, REML = TRUE)
 
 summary(m, correlation = T)
 # broom::tidy(m)
@@ -142,6 +165,54 @@ plot_ly(
 
 
 plot_ly(
+  data= pred_df,
+  x = ~pred_log_vmt,
+  y = ~resid_log,
+  color = ~imagine_designation,
+  type = "scatter",
+  mode = "markers",
+  opacity = 0.7,
+  size = 4,
+  hovertext = ~paste0(
+    ctu_name_full_county, "<br>",
+    inventory_year ,"<br>",
+    "pred_log_vmt = ", round(pred_log_vmt, digits = 4), "<br>",
+    "resid_log_vmt = ", round(resid_log, digits = 4)
+  )
+) %>% 
+  plotly_layout(
+    main_title = "Residuals vs. Fitted, all data",
+    x_title = "Predicted log(daily_vmt)",
+    y_title = "Residuals (log scale)",
+    legend_title = "Imagine designation"
+  )
+
+
+
+plot_ly(
+  data= pred_df,
+  x = ~pred_vmt,
+  y = ~resid_vmt,
+  color = ~imagine_designation,
+  type = "scatter",
+  mode = "markers",
+  opacity = 0.7,
+  size = 4,
+  hovertext = ~paste0(
+    ctu_name_full_county, "<br>",
+    inventory_year ,"<br>",
+    "pred_vmt = ", round(pred_vmt, digits = 4), "<br>",
+    "resid_vmt = ", round(resid_vmt, digits = 4)
+  )
+) %>% 
+  plotly_layout(
+    main_title = "Residuals vs. Fitted, all data",
+    x_title = "Predicted daily_vmt",
+    y_title = "Residuals log scale",
+    legend_title = "Imagine designation"
+  )
+
+plot_ly(
   data = train_post,
   name= "CTU-Year",
   x = ~log_vmt,
@@ -190,7 +261,7 @@ train_post %>%
     size = 4,
     hovertext = ~paste0(
       ctu_name_full_county, "<br>",
-      vmt_year,"<br>",
+      inventory_year,"<br>",
       "Daily VMT: ", scales::comma(daily_vmt), "<br>",
       "Pred Daily VMT: ", scales::comma(pred_vmt)
     )
@@ -201,7 +272,7 @@ train_post %>%
     y = c(1,max(train_post$pred_vmt, train_post$daily_vmt)),
     inherit = FALSE,
     type = "scatter",
-    mode = "line",
+    mode = "lines",
     line = list(color = "gray")
   ) %>% 
   plotly_layout(main_title = "Training dataset",
@@ -221,7 +292,7 @@ pred_df %>%
     size = 4,
     hovertext = ~paste0(
       ctu_name_full_county, "<br>",
-      vmt_year,"<br>",
+      inventory_year,"<br>",
       "Daily VMT: ", scales::comma(daily_vmt), "<br>",
       "Pred Daily VMT: ", scales::comma(pred_vmt)
     )
@@ -232,7 +303,7 @@ pred_df %>%
     y = c(1,max(pred_df$pred_vmt, pred_df$daily_vmt, na.rm = T)),
     inherit = FALSE,
     type = "scatter",
-    mode = "line",
+    mode = "lines",
     line = list(color = "gray")
   ) %>% 
   plotly_layout(main_title = "Full dataset",
@@ -260,19 +331,22 @@ plot_ly(
 
 # Scale predictions to county level ----------------------------
 ## find benchmark from TOTAL county VMT
+
 bench <- pred_df %>%
+  # filter(coctu_id_gnis %in% ctu_complete$coctu_id_gnis) %>% 
   group_by(county_name, geoid, inventory_year) %>%
   summarise(
-    county_vmt = first(county_daily_vmt), # from county_df
+    county_daily_vmt = first(county_daily_vmt), # from county_df
     sum_pred_vmt = sum(pred_vmt, na.rm = TRUE),
-    n_cities = n()
+    n_cities = n(),
+    .groups = "keep"
   ) %>%
   ungroup() %>%
   mutate(
     scale = case_when(
-      is.na(county_vmt) ~ NA_real_, # can't scale if no county control
+      is.na(county_daily_vmt) ~ NA_real_, # can't scale if no county control
       sum_pred_vmt <= 0 ~ NA_real_, # handle degenerate
-      TRUE ~ county_vmt / sum_pred_vmt
+      TRUE ~ county_daily_vmt / sum_pred_vmt
     )
   )
 
@@ -284,20 +358,40 @@ pred_df_bench <- pred_df %>%
       !is.na(scale) ~ pred_vmt * scale,
       TRUE ~ pred_vmt  # if no county control, keep model prediction
     ),
-    final_city_vmt = if_else(!is.na(daily_vmt), daily_vmt, pred_vmt_bench)
+    final_city_vmt = if_else(!is.na(daily_vmt), daily_vmt, pred_vmt_bench),
+    vmt_source = ifelse(!is.na(daily_vmt), "MnDOT", "MetC Modeled")
   )
-pred_df_bench %>%
+
+pred_df_bench_diff <- pred_df_bench %>%
   group_by(county_name, inventory_year) %>%
   summarize(
+    # n_ctus = count(),
     county_daily_vmt = first(county_daily_vmt),
-    sum_pred_vmt_bench = sum(pred_vmt_bench),
+    sum_vmt_bench = sum(pred_vmt_bench),
     sum_final_vmt = sum(final_city_vmt),
-    observed_pred_diff = county_daily_vmt - sum_final_vmt
+    observed_pred_diff = county_daily_vmt - sum_final_vmt,
+    observed_pred_bench_diff = county_daily_vmt - sum_vmt_bench,
+    n_cities = n(),
+    .groups = "keep"
+  ) %>% 
+  ungroup()
+
+pred_df_bench_diff %>% 
+  plot_ly(
+    type = "scatter",
+    mode = "lines+markers",
+    x = ~inventory_year,
+    y = ~observed_pred_diff,
+    color = ~county_name
   )
 
 ## find benchmark based on missing/gap VMT from counties -----
+## this could make the overall trend appear to decrease over time
+## as more CTUs come online, more of the county's VMT is accounted for.
+## 
 pred_from_na_bench <- pred_df %>% 
-  filter(is.na(daily_vmt)) %>% 
+  # filter(is.na(daily_vmt)) %>%
+  filter(!coctu_id_gnis %in% ctu_complete$coctu_id_gnis) %>%
   left_join(county_missing_vmt,
             join_by(inventory_year, geoid, county_name, county_daily_vmt)) %>% 
   group_by(county_name, geoid, inventory_year) %>%
@@ -318,39 +412,45 @@ pred_from_na_bench <- pred_df %>%
     )
   )
 
+pred_from_na_bench %>% 
+  select(county_name, geoid, n_cities) %>% 
+  unique() %>% 
+  left_join(total_ctu_per_county)
 
 pred_df_na_bench <- pred_df %>% 
   left_join(pred_from_na_bench %>% select(county_name, inventory_year, geoid, scale, sum_pred_vmt),
             by = c("county_name", "inventory_year", "geoid")) %>%
   mutate(
     pred_vmt_bench = case_when(
-      # if there is no daily_vmt, then use scaling
-      is.na(daily_vmt) ~ pred_vmt * scale,
-      # otherwise use daily_vmt
-      !is.na(daily_vmt) ~ daily_vmt,
-      TRUE ~ pred_vmt  # if no county control, keep model prediction
+      # is.na(daily_vmt) ~ pred_vmt * scale,
+      # !is.na(daily_vmt) ~ daily_vmt,
+      TRUE ~ pred_vmt * scale  # if no county control, keep model prediction
     ),
     final_city_vmt = if_else(!is.na(daily_vmt), daily_vmt, pred_vmt_bench),
-    vmt_source = ifelse(!is.na(daily_vmt), "MnDOT", "MetC Modeled")
+    vmt_source = ifelse(final_city_vmt == daily_vmt, "MnDOT", "MetC Modeled")
   )
 
 
+# credit river city and blaine are our two problem
+
 # these totals should match exactly
 pred_df_na_bench %>% 
-  group_by(county_name, inventory_year) %>% 
+  group_by(county_name, geoid, inventory_year) %>% 
   summarize(
     county_daily_vmt = first(county_daily_vmt),
     sum_pred_vmt_bench = sum(pred_vmt_bench),
     sum_final_vmt = sum(final_city_vmt),
     observed_pred_diff = county_daily_vmt - sum_final_vmt,
+    n_cities = n(),
     .groups = "keep"
   ) %>% 
   filter(observed_pred_diff != 0) 
 
 
 pred_df_na_bench %>% 
-  filter(coctu_id_gnis %in% ctu_missing$coctu_id_gnis) %>% 
+  filter(coctu_id_gnis %in% ctu_missing$coctu_id_gnis) %>%
   plot_ly(
+    type = "scatter",
     mode = "lines+markers",
     x = ~inventory_year,
     y = ~final_city_vmt,
@@ -364,8 +464,24 @@ pred_df_na_bench %>%
   ) 
 
 
-pred_df_bench %>% 
-  select(coctu_id_gnis, inventory_year, final_city_vmt)
+pred_df_na_bench %>% 
+  select(geoid, coctu_id_gnis, ctu_name_full_county, inventory_year, final_city_vmt, vmt_source) %>% 
+  bind_rows(ctu_pop_jobs_vmt %>% 
+              select(inventory_year, coctu_id_gnis, ctu_name_full_county, geoid, final_city_vmt = daily_vmt, vmt_source) %>% 
+              filter(inventory_year>= 2023)) %>% 
+  plot_ly(
+    type = "scatter",
+    mode = "lines+markers",
+    x = ~inventory_year,
+    y = ~final_city_vmt,
+    color = ~ctu_name_full_county,
+    symbol = ~vmt_source,
+    # symbols = c(
+    # "circle-open",
+    # "circle"),
+    marker = list(size = 9),
+    opacity = 0.7
+  ) 
 
 
 # TODO 
