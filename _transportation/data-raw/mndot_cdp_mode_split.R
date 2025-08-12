@@ -20,7 +20,8 @@ traffic_ratios <- tibble::tribble(
 ) %>%
   clean_names() %>%
   mutate(vehicle_type_cdp = case_when(
-    vehicle_type == "2AX-6TIRE SU" ~ "Medium Goods Vehicles",
+    vehicle_type %in% c("2AX-6TIRE SU",
+                        "3AX+ SU") ~ "Medium Goods Vehicles",
     TRUE ~ "Heavy Goods Vehicles"
   )) %>%
   group_by(vehicle_type_cdp) %>%
