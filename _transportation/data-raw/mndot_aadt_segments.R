@@ -63,6 +63,7 @@ ctu_segment_summary <- ctu_segments %>%
   group_by(gnis, ctu_name, county_name, ctu_id, coctu_id_gnis, coctu_id_fips) %>% 
   summarize(
     total_segment_length = sum(SEGMENT_LENGTH_CTU, na.rm = T),
+    total_all_segment_length = sum(SEGMENT_LENGTH, na.rm = T),
     axle_factors = paste0(unique(AXLE_FACTOR_GROUP), collapse = ", "),
     sequence_numbers = paste0(unique(SEQUENCE_N), collapse = ", "),
     current_years = paste0(sort(unique(CURRENT_YEAR)), collapse = ", "),
@@ -79,7 +80,7 @@ saveRDS(ctu_segments, "_transportation/data-raw/mndot/aadt_ctu_segments.RDS")
 
 
 ctu_segment_summary %>% 
-  filter(gnis %in% ctu_unreliable$gnis)
+  filter(coctu_id_gnis %in% ctu_unavailable$coctu_id_gnis)
 
 # Historic AADT -----
 
