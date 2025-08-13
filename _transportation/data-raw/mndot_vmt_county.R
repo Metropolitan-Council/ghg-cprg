@@ -1,6 +1,7 @@
 source("R/_load_pkgs.R")
 # Adapted from https://github.com/Metropolitan-Council/tspe-quarto/blob/main/R/d_vmt_county.R
 
+mndot_route_system <- read_rds("_transportation/data-raw/mndot/mndot_route_system.RDS")
 # check for needed files
 if (file.exists("_transportation/data-raw/mndot/county_route_system/2024_VMT_County_Route_System-38921397-v1.XLSX") == FALSE) {
   cli::cli_abort(c(
@@ -596,3 +597,6 @@ vmt_county <- vmt_county_raw_interp %>%
 
 
 saveRDS(vmt_county, "_transportation/data-raw/mndot/mndot_vmt_county.RDS")
+
+write.csv(vmt_county, "_transportation/data-raw/mndot/vmt_county.CSV",
+          row.names = FALSE)
