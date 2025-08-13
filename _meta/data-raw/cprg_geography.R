@@ -2,6 +2,8 @@
 source("R/_load_pkgs.R")
 
 ctu_population <- readRDS("_meta/data/ctu_population.RDS")
+ctu_population_meta <- read_rds("_meta/data/ctu_population_meta.RDS")
+
 # our study area includes the 7-county metro
 # plus Sherburne and Chisago in MN
 # and St. Croix and Pierce in WI
@@ -54,17 +56,20 @@ cprg_county <- bind_rows(mn_counties, wi_counties) %>%
 
 
 
-cprg_county_meta <- tribble(
-  ~Column, ~Class, ~Description,
-  "geoid", class(cprg_county$geoid), "Five digit county GEOID",
-  "county_name", class(cprg_county$county_name), "County name",
-  "county_name_full", class(cprg_county$county_name_full), "Full county name",
-  "state_name", class(cprg_county$state_name), "Full state name",
-  "statefp", class(cprg_county$statefp), "State FIPS code",
-  "state_abb", class(cprg_county$state_abb), "Abbreviated state name",
-  "cprg_area", class(cprg_county$cprg_area), "Whether county is included in the CPRG area",
-  "geometry", class(cprg_county$geometry)[1], "Simple feature geometry"
-)
+cprg_county_meta <- 
+  ctu_population_meta %>% 
+  filter(Column %in% names(cprg_county)) %>% 
+  bind_rows(
+    tribble(
+      ~Column, ~Class, ~Description,
+      "county_name", class(cprg_county$county_name), "County name",
+      "county_name_full", class(cprg_county$county_name_full), "Full county name",
+      "state_name", class(cprg_county$state_name), "Full state name",
+      "statefp", class(cprg_county$statefp), "State FIPS code",
+      "state_abb", class(cprg_county$state_abb), "Abbreviated state name",
+      "cprg_area", class(cprg_county$cprg_area), "Whether county is included in the CPRG area",
+      "geometry", class(cprg_county$geometry)[1], "Simple feature geometry"
+    ))
 
 # Cities ------
 
@@ -206,15 +211,15 @@ imagine <- import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/
     COCTU_ID_GNIS = COCTU_ID,
     GNIS_FEATURE_ID = stringr::str_sub(COCTU_ID_GNIS, -8, -1),
     COMDESNAME = factor(COMDESNAME,
-                        levels =  c( "Urban", 
-                                     "Urban Edge", 
-                                     "Suburban", 
-                                     "Suburban Edge", 
-                                     "Rural Center",
-                                     "Diversified Rural",
-                                     "Rural Residential",
-                                     "Agricultural", 
-                                     "Non-Council Community"),
+                        levels =  c("Urban", 
+                                    "Urban Edge", 
+                                    "Suburban", 
+                                    "Suburban Edge", 
+                                    "Rural Center",
+                                    "Diversified Rural",
+                                    "Rural Residential",
+                                    "Agricultural", 
+                                    "Non-Council Community"),
                         ordered = T
     ),
     URB_SUB_RURAL = case_when(
@@ -277,18 +282,20 @@ cprg_ctu <- bind_rows(mn_ctu, wi_ctu) %>%
   ))
 
 
-cprg_ctu_meta <- tribble(
-  ~Column, ~Class, ~Description,
-  "ctu_name", class(cprg_ctu$ctu_name), "City, township, unorganized territory, or village name",
-  "ctu_class", class(cprg_ctu$ctu_class), "City class (City, township, unorganized territory, or village)",
-  "gnis", class(cprg_ctu$gnis), "Minnesota geographic identifier",
-  "geoid_wis", class(cprg_ctu$geoid_wis), "Wisconsin geographic identifier",
-  "geometry", class(cprg_ctu$geometry)[1], "Simple feature geometry",
-  "thrive_designation", class(cprg_ctu$thrive_designation), "Community designation in Thrive 2040",
-  "imagine_designation", class(cprg_ctu$thrive_designation), "Community designation in Imagine 2050",
-) %>%
+cprg_ctu_meta <- 
+  ctu_population_meta %>% 
+  filter(Column %in% names(cprg_ctu)) %>% 
+  bind_rows(
+    tribble(
+      ~Column, ~Class, ~Description,
+      "geoid_wis", class(cprg_ctu$geoid_wis), "Wisconsin geographic identifier",
+      "geometry", class(cprg_ctu$geometry)[1], "Simple feature geometry",
+      "thrive_designation", class(cprg_ctu$thrive_designation), "Community designation in Thrive 2040",
+      "imagine_designation", class(cprg_ctu$thrive_designation), "Community designation in Imagine 2050",
+    ) )%>%
   bind_rows(cprg_county_meta) %>%
-  filter(Column %in% names(cprg_ctu))
+  filter(Column %in% names(cprg_ctu)) %>% 
+  unique()
 
 # create coherent geogs list
 geogs_list_ctu <- cprg_ctu %>%
@@ -341,6 +348,10 @@ geogs_list <- bind_rows(
   )
 )
 # there are different CRS for geometries between CTU/CO; removed geometries above, geogs_list is a simple table
+
+
+# waldo::compare(cprg_ctu, readRDS("_meta/data/cprg_ctu.RDS"))
+
 
 # compile RDS
 saveRDS(cprg_county, "_meta/data/cprg_county.RDS")
