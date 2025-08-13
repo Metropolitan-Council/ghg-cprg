@@ -41,7 +41,9 @@ ctu_forecast_meta <- ctu_population_meta %>%
       "network_passenger_annual", class(ctu_vmt_forecast$network_passenger_annual), "Passenger vehicle-miles traveled, annual",
       "network_truck_annual", class(ctu_vmt_forecast$network_truck_annual), "Truck vehicle-miles traveled, annual",
     )
-  )
+  ) %>% 
+  arrange(match(Column, names(ctu_vmt_forecast)))
+
 
 county_vmt_forecast_meta <- cprg_county_meta %>% 
   filter(Column %in% names(county_vmt_forecast)) %>% 
@@ -54,7 +56,9 @@ county_vmt_forecast_meta <- cprg_county_meta %>%
       ~Column, ~Class, ~Description,
       "county_id", class(county_vmt_forecast$county_id), "Three digit county identifier",
     )
-  )
+  ) %>% 
+  arrange(match(Column, names(county_vmt_forecast)))
+
 
 
 saveRDS(ctu_vmt_forecast, "_transportation/data/rtdm_forecast_ctu.RDS")
