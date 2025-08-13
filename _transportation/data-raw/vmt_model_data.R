@@ -57,40 +57,35 @@ co_year_series <- ctu_coctu_index %>%
 
 
 # create full time series for UrbanSim population, households, jobs -----
-ctu_pop_full <- ctu_urbansim %>% 
-  filter(variable == "total_pop") %>% 
-  mutate(total_pop = value) %>% 
-  select(coctu_id_gnis, inventory_year, total_pop) %>%
-  full_join(ctu_year_series, by = join_by(coctu_id_gnis, inventory_year)) %>% 
-  mutate(total_pop = case_when(inventory_year == 2050 & is.na(total_pop) ~ 0,
-                               TRUE ~ total_pop)) %>% 
-  group_by(coctu_id_gnis) %>% 
-  arrange(coctu_id_gnis, inventory_year) %>% 
-  mutate(total_pop = round(zoo::na.approx(total_pop)))
+process_ctu_var <- function(df, var_name, new_col) {
+  df %>%
+    # get variable name
+    filter(variable == var_name) %>%
+    # rename with new column name
+    mutate(!!new_col := value) %>%
+    select(coctu_id_gnis, inventory_year, !!sym(new_col)) %>%
+    # join wth ctu year series to get all interstitial years
+    full_join(ctu_year_series, by = join_by(coctu_id_gnis, inventory_year)) %>%
+    mutate(
+      !!new_col := case_when(
+        inventory_year == 2050 & is.na(!!sym(new_col)) ~ 0,
+        TRUE ~ !!sym(new_col)
+      )
+    ) %>%
+    # group by coctu_id_gnis and arrange
+    group_by(coctu_id_gnis) %>%
+    arrange(coctu_id_gnis, inventory_year) %>%
+    # interpolate  interstitial years using na.approx 
+    mutate(!!new_col := round(zoo::na.approx(!!sym(new_col)))) %>%
+    ungroup()
+}
 
-
-ctu_households_full <- ctu_urbansim %>% 
-  filter(variable == "total_households") %>% 
-  mutate(total_households = value) %>% 
-  select(coctu_id_gnis, inventory_year, total_households) %>%
-  full_join(ctu_year_series, by = join_by(coctu_id_gnis, inventory_year)) %>% 
-  mutate(total_households = case_when(inventory_year == 2050 & is.na(total_households) ~ 0,
-                                      TRUE ~ total_households)) %>% 
-  group_by(coctu_id_gnis) %>% 
-  arrange(coctu_id_gnis, inventory_year) %>% 
-  mutate(total_households = round(zoo::na.approx(total_households)))
-
-
-ctu_jobs_full <- ctu_urbansim %>% 
-  filter(variable == "total_jobs") %>% 
-  mutate(total_jobs = value) %>% 
-  select(coctu_id_gnis, inventory_year, total_jobs) %>%
-  full_join(ctu_year_series, by = join_by(coctu_id_gnis, inventory_year)) %>% 
-  mutate(total_jobs = case_when(inventory_year == 2050 & is.na(total_jobs) ~ 0,
-                                TRUE ~ total_jobs)) %>% 
-  group_by(coctu_id_gnis) %>% 
-  arrange(coctu_id_gnis, inventory_year) %>% 
-  mutate(total_jobs = round(zoo::na.approx(total_jobs)))
+ctu_urbansim_combined <- list(
+  process_ctu_var(ctu_urbansim, "total_pop", "total_pop"),
+  process_ctu_var(ctu_urbansim, "total_households", "total_households"),
+  process_ctu_var(ctu_urbansim, "total_jobs", "total_jobs")
+) %>%
+  reduce(full_join, by = c("coctu_id_gnis", "inventory_year"))
 
 # VMT data -----
 
@@ -103,9 +98,8 @@ mndot_vmt_ctu <- readRDS("_transportation/data/mndot_vmt_ctu.RDS") %>%
   filter(vmt_year <= 2022,
          vmt_year >= 2010)
 
-ctu_vmt_forecast <- readRDS("_transportation/data-raw/metc_travel_model/ctu_vmt_forecast.RDS") %>% 
+ctu_vmt_forecast <- readRDS("_transportation/data/rtdm_forecast_ctu.RDS") %>% 
   # change 2025 to 2023, which better represents what the model is using
-  mutate(vmt_year = ifelse(vmt_year == 2025, 2023, as.numeric(vmt_year))) %>% 
   select(vmt_year, coctu_id_gnis, network_vmt,network_passenger_vmt, network_truck_vmt) %>% 
   full_join(ctu_year_series %>% filter(inventory_year >= 2023),
             by = c("vmt_year" ="inventory_year",
@@ -155,8 +149,7 @@ mndot_vmt_county <- readRDS("_transportation/data-raw/mndot/mndot_vmt_county.RDS
   # remove wright and sherburne
   filter(!is.na(geoid))
 
-county_vmt_forecast <- readRDS("_transportation/data-raw/metc_travel_model/county_vmt_forecast.RDS") %>% 
-  mutate(vmt_year = ifelse(vmt_year == 2025, 2023, as.numeric(vmt_year))) %>% 
+county_vmt_forecast <- readRDS("_transportation/data/rtdm_forecast_county.RDS") %>% 
   select(vmt_year, geoid, network_vmt,network_passenger_vmt, network_truck_vmt) %>% 
   full_join(co_year_series %>% filter(inventory_year >= 2023),
             by  =c("vmt_year" ="inventory_year",
@@ -185,9 +178,7 @@ county_mndot_vmt_forecast <- county_vmt_forecast %>%
   arrange(geoid, vmt_year)
 
 # combine all tables -----
-ctu_pop_jobs_vmt <- ctu_jobs_full %>% 
-  left_join(ctu_pop_full, join_by(coctu_id_gnis, inventory_year)) %>% 
-  left_join(ctu_households_full, join_by(coctu_id_gnis, inventory_year)) %>% 
+ctu_pop_jobs_vmt <- ctu_urbansim_combined  %>% 
   mutate(geoid = paste0( "27", stringr::str_sub(coctu_id_gnis, 1,3))) %>% 
   left_join(ctu_coctu_index %>% 
               select(geoid, county_name) %>% 
@@ -197,7 +188,7 @@ ctu_pop_jobs_vmt <- ctu_jobs_full %>%
   group_by(geoid, inventory_year) %>% 
   mutate(county_total_jobs = sum(total_jobs),
          county_total_pop = sum(total_pop),
-         county_total_hh = sum(total_households)) %>% 
+         county_total_households = sum(total_households)) %>% 
   ungroup() %>% 
   left_join(
     county_mndot_vmt_forecast %>% 
@@ -217,12 +208,58 @@ ctu_pop_jobs_vmt <- ctu_jobs_full %>%
 
 
 testthat::expect_equal(
-  ctu_pop_jobs_vmt %>% filter(is.na(geoid) | is.na(coctu_id_gnis) | is.na(ctu_name)) %>% select(coctu_id_gnis, geoid, county_name) %>% unique() %>% nrow(),
+  ctu_pop_jobs_vmt %>% filter(is.na(geoid) | is.na(coctu_id_gnis) | is.na(ctu_name)) %>%
+    select(coctu_id_gnis, geoid, county_name) %>% unique() %>% nrow(),
   0)
 
 testthat::expect_equal(
   unique(ctu_pop_jobs_vmt$coctu_id_gnis) %>% length(),
   193)
 
-# remove intermediary tables
-rm(ctu_jobs_full, ctu_households_full, ctu_pop_full)
+saveRDS(ctu_pop_jobs_vmt, "_transportation/data/vmt_model_data.RDS")
+
+# create metadata
+
+
+ctu_population_meta <- read_rds("_meta/data/ctu_population_meta.RDS")
+dot_vmt_meta <- readRDS("_transportation/data/dot_vmt_meta.RDS")
+cprg_ctu_meta <- readRDS("_meta/data/cprg_ctu_meta.RDS")
+rtdm_forecast_ctu_meta <- readRDS("_transportation/data/rtdm_forecast_ctu_meta.RDS")
+
+urbansim_meta <- ctu_urbansim %>% 
+  filter(variable %in% names(ctu_pop_jobs_vmt)) %>% 
+  select(variable, definition) %>% 
+  unique() %>% 
+  mutate(
+    Column = variable,
+    Class = c(class(ctu_pop_jobs_vmt$total_households), class(ctu_pop_jobs_vmt$total_jobs), class(ctu_pop_jobs_vmt$total_pop)),
+    Description = paste0(stringr::str_to_sentence(definition), ". UrbanSim output")) %>% 
+  select(names(ctu_population_meta))
+
+
+ctu_pop_jobs_vmt_meta <- ctu_population_meta %>% 
+  filter(Column %in% names(ctu_pop_jobs_vmt)) %>% 
+  bind_rows(urbansim_meta) %>% 
+  bind_rows(cprg_ctu_meta %>% filter(Column %in% names(ctu_pop_jobs_vmt))) %>% 
+  bind_rows(rtdm_forecast_ctu_meta %>% filter(Column %in% names(ctu_pop_jobs_vmt))) %>% 
+  bind_rows(
+    
+    tibble::tribble(
+      ~Column,      ~Class,                                            ~Description,
+      "daily_vmt",   class(ctu_pop_jobs_vmt$daily_vmt), "CTU vehicle miles traveled (VMT) on an average day",
+      "county_daily_vmt",   class(ctu_pop_jobs_vmt$county_daily_vmt), "CTU vehicle miles traveled (VMT) on an average day",
+      "centerline_miles", class(ctu_pop_jobs_vmt$centerline_miles), "CTU centerline miles",
+      "vmt_source", class(ctu_pop_jobs_vmt$vmt_source), "CTU VMT data source",
+      "vmt_source_county", class(ctu_pop_jobs_vmt$vmt_source), "County VMT data source",
+      "county_total_households", class(ctu_pop_jobs_vmt$county_total_households), "Total county number of households. UrbanSim output",
+      "county_total_jobs",class(ctu_pop_jobs_vmt$county_total_jobs),   "Total county payroll employment. UrbanSim output",
+      "county_total_pop",    class(ctu_pop_jobs_vmt$county_total_pop),  "Total county population. UrbanSim output",
+      "ctu_name_full_county",    class(ctu_pop_jobs_vmt$ctu_name_full_county),  "CTU name, class, and county name"
+      
+    )
+  ) %>% 
+    unique() %>% 
+    arrange(match(Column, names(ctu_pop_jobs_vmt)))
+  
+saveRDS(ctu_pop_jobs_vmt_meta, "_transportation/data/vmt_model_data_meta.RDS")
+
