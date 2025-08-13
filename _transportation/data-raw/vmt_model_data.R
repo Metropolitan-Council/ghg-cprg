@@ -134,7 +134,7 @@ ctu_vmt_forecast <- readRDS("_transportation/data-raw/metc_travel_model/ctu_vmt_
 ctu_mndot_forecast_vmt <- mndot_vmt_ctu %>% 
   mutate(vmt_source = "MnDOT") %>% 
   bind_rows(ctu_vmt_forecast %>% 
-              mutate(vmt_source = "Model")) %>% 
+              mutate(vmt_source = "Regional Travel Demand Model")) %>% 
   arrange(coctu_id_gnis, vmt_year) %>% 
   select(coctu_id_gnis, geoid, vmt_source, vmt_year, daily_vmt, centerline_miles) %>% 
   filter(!is.na(geoid)) %>% 
@@ -174,7 +174,7 @@ county_vmt_forecast <- readRDS("_transportation/data-raw/metc_travel_model/count
 
 
 county_mndot_vmt_forecast <- county_vmt_forecast %>% 
-  mutate(vmt_source_county = "Model") %>% 
+  mutate(vmt_source_county = "Regional Travel Demand Model") %>% 
   bind_rows(mndot_vmt_county %>% 
               select(vmt_year, geoid, county_daily_vmt, county_centerline_miles = centerline_miles) %>% 
               mutate(vmt_source_county = "MnDOT")) %>% 
