@@ -34,6 +34,7 @@ mndot_stations.R,Deprecated,mndot,data processing,Create calibration points and 
 mndot_vmt_county_functional_class.R,Active,mndot,data processing,Pulls and processes MnDOT county VMT at the functional class level,None,
 mndot_vmt_county.R,Active,mndot,data processing,Pulls and processes MnDOT county VMT from county route system level data,mndot_vmt_county.RDS,
 mndot_route_system.R,Active,mndot,data processing,Creates index of route system IDs and labels,mndot_route_system.RDS,
+mndot_vmt_ctu_gap_fill_model.R,Active,mndot,data processing,"Creates gap-filled CTU VMT time series using data from UrbanSim, MnDOT, and the RTDM using a model. ","mndot_vmt_ctu_gap_filled_meta.RDS, mndot_vmt_ctu_gap_filled.RDS, vmt_gap_fill_model.RDS",
 mndot_vmt_ctu.R,Active,mndot,data processing,Pulls and processes MnDOT CTU VMT from CTU route system level data,mndot_vmt_ctu.RDS,
 mpca_mac_aviation_emissions.R,Active,mpca_mac,data processing,Calculates aviation GHG emissions using MPCA and MAC airport emissions data,"aviation_emissions.rds, aviation_emissions_meta.rds, aviation_emissions_data_source_compare.RDS",https://github.com/Metropolitan-Council/ghg-cprg/issues/123
 rii_bundle_emissions.R,Active,rii,compilation,Bundles compiled EPA datasets for sharing with colleagues at the Regional Indicators Initiative (RII),Timestamped zipped folder within directory,
