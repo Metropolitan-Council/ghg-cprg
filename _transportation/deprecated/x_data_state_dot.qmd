@@ -5,10 +5,24 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
-library(equatiomatic)
-
+wi_osm_meta <- readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wi_osm_meta.RDS"))
 
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+commercial_lines <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_lines.RDS")) %>%
+  mutate(hover_info = paste0(
+    "Name: ", name, "<br>"
+  ))
+
+commercial_points <- readRDS(file.path(here::here(), "_transportation/data/commercial_calibration_points.RDS")) %>%
+  mutate(hover_info = paste0(
+    "<b>", "Name ", "</b>", name, "<br>",
+    "<b>", "AADT ", "</b>", scales::comma(current_volume), "<br>",
+    "<b>", "Year ", "</b>", year, "<br>",
+    "<b>", "Passenger traffic ", "</b>", scales::percent(personal_traffic_ratio, accuracy = 1), "<br>",
+    "<b>", "Medium-duty traffic ", "</b>", scales::percent(medium_commercial_ratio, accuracy = 1), "<br>",
+    "<b>", "Heavy-duty traffic ", "</b>", scales::percent(heavy_commercial_ratio, accuracy = 1), "<br>"
+  ))
+
 
 # read in VMT data
 dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
@@ -39,12 +53,6 @@ multi_county_ctu <- mndot_vmt_ctu %>%
   group_by(ctu_name) %>%
   count() %>%
   filter(n >= 2)
-
-vmt_model_data <- readRDS(file.path(here::here(), "_transportation/data/vmt_model_data.RDS"))
-
-mndot_vmt_ctu_gap_filled <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu_gap_filled.RDS"))
-vmt_gap_fill_model <- readRDS(file.path(here::here(), "_transportation/data/vmt_gap_fill_model.RDS"))
-
 
 hookaddcap()
 ```
@@ -119,12 +127,11 @@ These data were compiled from MnDOT city and route system reports available on t
 
 Due to limitations in data availability and consistency, not all CTUs in the 7-county metro region are included. 
 
-<!-- - CTUs without reported data prior to 2014 are excluded. -->
-<!-- - CTUs without sampled data on local route systems (including Municipal State Aid Streets) during any year from 2017-2023 are excluded. See more about route system designations in [mndot_route_system.R](data-raw/mndot_route_system.R). -->
+- CTUs without reported data prior to 2014 are excluded.
+- CTUs without sampled data on local route systems (including Municipal State Aid Streets) during any year from 2017-2023 are excluded. See more about route system designations in [mndot_route_system.R](data-raw/mndot_route_system.R).
+- 2015 data were interpolated in the same manner as the county VMT data. 
 - Shoreview, Blaine, and West Saint Paul are split among more than one county. For some CTU/county/year combinations, only data from 2016 onward were available. For consistency in the time series, we assigned 2016 VMT data to year 2015 for these CTU/county combinations.
 - Due to geographic data source differences, MnDOT reports a small amount of VMT invalid CTU/county combinations (i.e., Minneapolis, a Hennepin County CTU, centerline miles and VMT reported in Anoka County). We discussed these anomalies with MnDOT staff and determined this to be a non-issue. The county designations for each CTU were corrected such that summing to the CTU by the CTU name determines the total VMT for each CTU No changes to county designation were made to CTUs known to be split across multiple counties (`r listify(multi_county_ctu$ctu_name)`). 
-- 2015 data were interpolated in the same manner as the county VMT data. 
-
 
 ```{r fig-dot-vmt-ctu}
 #| fig-cap: "City annual vehicle miles traveled"
@@ -176,17 +183,136 @@ mndot_ctu_summary %>%
   suppressWarnings()
 ```
 
-Cities without a complete time series from 2010 to 2023 were modeled. 
+<!-- ### Vehicle distribution by weight {#sec-vehicle-weight-dist} -->
 
-##### Gap-filled city vehicle miles traveled
+<!-- To calibrate the generalized StreetLight Index to get commercial vehicle counts, we created a set of spatial lines (roads) to calibrate StreetLight's metrics. For each calibration road, we found the proportion of passenger, medium-, and heavy-duty vehicles in the most recently available year, up to 2021.  -->
 
-Modeling took place in [mndot_vmt_ctu_gap_fill_model.R](data-raw/mndot_vmt_ctu_gap_fill_model.R).
+<!-- State DOTs operate vehicle classification stations, which provide both the volume of traffic on a given road segment and, for some locations, the breakdown of volume by vehicle type. We obtained this breakdown using data from MnDOT [@mndotYearlyVolumeTrends2021] and WisDOT [@wisdotWisconsinVehicleClassification2020] reporting websites.  -->
+
+<!-- MnDOT provides AADT road segments, which align with station identification numbers. Wisconsin does not readily supply AADT road segment data, so as suggested by the Wisconsin cartographers office [@statecartographersofficeWisconsinRoadData2021] we pulled OpenStreetMaps road data (OSM version `r wi_osm_meta$OSM_version`).  -->
+
+<!-- Then, we selected only the stations within the study area with observations in the last five years (2017-2021). Finally, we joined this data with AADT [@mndotVMTRouteSystem2021, @wisdotWisconsinVehicleMiles2021] road segments by station ID. The road segments sampled include multiple road functional classes and segments in all counties. All traffic sensor stations pulled were permanent, continuous monitoring sites. Data were cross-validated by verifying AADT and weight distribution fields on [MnDOT](https://mndot.maps.arcgis.com/apps/webappviewer/index.html?id=7b3be07daed84e7fa170a91059ce63bb) and [WisDOT](https://wisdot.maps.arcgis.com/apps/webappviewer/index.html?id=2e12a4f051de4ea9bc865ec6393731f8) traffic mapping applications.  -->
+
+<!-- Data were processed in R scripts: [wisdot_stations.R](data-raw/wisdot_stations.R), [mndot_extract_yearly_volume_trends.R](data-raw/mndot_extract_yearly_volume_trends.R),  [mndot_stations.R](data-raw/mndot_stations.R), [stl_calibration_lines_points.R](data-raw/stl_calibration_lines_points.R).   -->
+
+<!-- ```{r fig-map-calibration-set} -->
+<!-- #| fig-cap: "StreetLight calibration locations and values" -->
+<!-- #| out-width: "95%" -->
+<!-- #| out-height: "500px" -->
 
 
-```{r vmt-gap-fill-model-latex}
-#| output: asis
-equatiomatic::extract_eq(model = vmt_gap_fill_model)
-```
+<!-- bound_box <- st_bbox(commercial_lines) %>% -->
+<!--   unlist() -->
+
+<!-- fig_map_calibration_set <- -->
+<!--   council_leaflet() %>% -->
+<!--   addPolygons( -->
+<!--     data = cprg_county %>% -->
+<!--       sf::st_transform(4326), -->
+<!--     fill = FALSE, -->
+<!--     color = "gray", -->
+<!--     popup = cprg_county$NAMELSAD, -->
+<!--     group = "County outlines" -->
+<!--   ) %>% -->
+<!--   addPolylines( -->
+<!--     data = commercial_lines, -->
+<!--     weight = 6, -->
+<!--     color = "black", -->
+<!--     popup = commercial_lines$hover_info, -->
+<!--     group = "Road segments" -->
+<!--   ) %>% -->
+<!--   addCircleMarkers( -->
+<!--     data = commercial_points, -->
+<!--     popup = commercial_points$hover_info, -->
+<!--     fillColor = colors$councilBlue, -->
+<!--     radius = 10, -->
+<!--     group = "Stations" -->
+<!--   ) %>% -->
+<!--   leaflet::addLayersControl( -->
+<!--     overlayGroups = c( -->
+<!--       "County outlines", -->
+<!--       "Stations", -->
+<!--       "Road segments" -->
+<!--     ) -->
+<!--   ) %>% -->
+<!--   fitBounds( -->
+<!--     lng1 = bound_box[[1]], -->
+<!--     lng2 = bound_box[[3]], -->
+<!--     lat1 = bound_box[[2]], -->
+<!--     lat2 = bound_box[[4]] -->
+<!--   ) -->
+
+<!-- fig_map_calibration_set -->
+<!-- ``` -->
+
+<!-- Only `r nrow(commercial_points)` calibration roads were used for this inventory due to data availability constraints.  -->
+
+<!-- ```{r fig-vehicle-weight-distribution} -->
+<!-- #| fig-cap: "Vehicle weight distribution at calibration points" -->
+<!-- #| out-width: "95%" -->
+<!-- calibration_long <- commercial_points %>% -->
+<!--   arrange(-heavy_commercial_ratio) %>% -->
+<!--   select( -->
+<!--     name, -->
+<!--     year, -->
+<!--     personal_traffic_ratio, -->
+<!--     medium_commercial_ratio, -->
+<!--     heavy_commercial_ratio -->
+<!--   ) %>% -->
+<!--   sf::st_drop_geometry() %>% -->
+<!--   tidyr::pivot_longer( -->
+<!--     cols = c( -->
+<!--       personal_traffic_ratio, -->
+<!--       medium_commercial_ratio, -->
+<!--       heavy_commercial_ratio -->
+<!--     ), -->
+<!--     names_to = "vehicle_weight" -->
+<!--   ) %>% -->
+<!--   mutate( -->
+<!--     vehicle_weight = -->
+<!--       case_when( -->
+<!--         vehicle_weight == "personal_traffic_ratio" ~ "Passenger", -->
+<!--         vehicle_weight == "medium_commercial_ratio" ~ "Medium-duty", -->
+<!--         vehicle_weight == "heavy_commercial_ratio" ~ "Heavy-duty", -->
+<!--       ) -->
+<!--   ) -->
+
+<!-- fig_vehicle_weight_distribution <- plot_ly( -->
+<!--   data = calibration_long, -->
+<!--   source = "fig-vehicle-weight-distribution", -->
+<!--   type = "bar", -->
+<!--   x = ~name, -->
+<!--   y = ~value, -->
+<!--   color = ~vehicle_weight, -->
+<!--   colors = unlist(vehicle_weight_colors), -->
+<!--   hoverinfo = "text", -->
+<!--   hovertemplate = ~ paste0( -->
+<!--     "Name: ", name, "<br>", -->
+<!--     "Year: ", year, "<br>", -->
+<!--     scales::percent(value, accuracy = 1), " ", vehicle_weight, "<br>", -->
+<!--     "<extra></extra>" -->
+<!--   ) -->
+<!-- ) %>% -->
+<!--   plotly_layout( -->
+<!--     main_title = "Vehicle weight distribution", -->
+<!--     subtitle = "Select locations used for calibration", -->
+<!--     y_title = "Proportion of all traffic", -->
+<!--     x_title = "Calibration zone", -->
+<!--     legend_title = "Vehicle weight" -->
+<!--   ) %>% -->
+<!--   layout( -->
+<!--     barmode = "stack", -->
+<!--     xaxis = list( -->
+<!--       rangemode = "normal", -->
+<!--       ticktext = "" -->
+<!--     ), -->
+<!--     yaxis = list( -->
+<!--       tickformat = "1%" -->
+<!--     ) -->
+<!--   ) -->
+
+<!-- fig_vehicle_weight_distribution -->
+<!-- ``` -->
 
 
 #### Limitations
