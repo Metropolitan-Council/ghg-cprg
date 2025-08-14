@@ -29,7 +29,7 @@ epa_verify_emis_type.R,Active,epa,validation,"Review differences in emis_type co
 epa_verify_emis_type_change.R,Active,epa,validation,Verify increase in emisssions when when all process types are included,None,https://github.com/Metropolitan-Council/ghg-cprg/issues/129
 epa_verify_nei_envirofacts_smoke.R,Active,epa,validation,Verify emissions compiled from SMOKE FF10 match summary tables,None,
 mndot_cdp_mode_split.R,Active,mndot,data processing,"Calculate passenger, medium, and heavy-duty mode proportions of on-road traffic for CDP",None,
-mndot_extract_yearly_volume_trends.R,Active,mndot,data processing,Import and clean MnDOT vehicle classification data,most_recent_yearly_volume_percentage_by_class.RDS,
+mndot_extract_yearly_volume_trends.R,Deprecated,mndot,data processing,Import and clean MnDOT vehicle classification data,most_recent_yearly_volume_percentage_by_class.RDS,
 mndot_stations.R,Deprecated,mndot,data processing,Create calibration points and lines from MnDOT vehicle classification data,"mn_stations_ratios.RDS, mn_stations_ratios_points.RDS",
 mndot_vmt_county_functional_class.R,Active,mndot,data processing,Pulls and processes MnDOT county VMT at the functional class level,None,
 mndot_vmt_county.R,Active,mndot,data processing,Pulls and processes MnDOT county VMT from county route system level data,mndot_vmt_county.RDS,
