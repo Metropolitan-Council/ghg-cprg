@@ -1,0 +1,107 @@
+### Regional Travel Demand Model
+
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+wi_osm_meta <- readRDS(file.path(here::here(), "_transportation/data-raw/wisdot/wi_osm_meta.RDS"))
+
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+
+rtdm_forecast_ctu <- readRDS(file.path(here::here(), "_transportation/data/rtdm_forecast_ctu.RDS"))
+rtdm_forecast_county <- readRDS(file.path(here::here(), "_transportation/data/rtdm_forecast_county.RDS"))
+
+# read in VMT data
+dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
+  filter(
+    # vmt_year < 2022,
+    vmt_year >= 2018,
+    cprg_area == TRUE
+  ) %>%
+  group_by(county_name)
+
+mndot_vmt_ctu <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu.RDS"))
+
+# summarize by CTU name
+mndot_ctu_summary <- mndot_vmt_ctu %>%
+  group_by(vmt_year, ctu_name) %>%
+  summarize(annual_vmt = sum(annual_vmt))
+
+ctu_population <- readRDS(file.path(here::here(), "_meta/data/ctu_population.RDS"))
+
+top_ten_ctu <- ctu_population %>%
+  filter(inventory_year == max(inventory_year)) %>%
+  arrange(-ctu_population) %>%
+  slice(1:10)
+
+multi_county_ctu <- mndot_vmt_ctu %>%
+  select(geoid, ctuid, ctu_name) %>%
+  unique() %>%
+  group_by(ctu_name) %>%
+  count() %>%
+  filter(n >= 2)
+
+hookaddcap()
+```
+
+VMT forecasts for counties and cities are generated from our [regional travel demand model](https://metrocouncil.org/Transportation/Performance/Travel-Forecasting.aspx). 
+
+The current regional travel demand forecast model (TourCast) is an activity-based model, which means that it simulates transportation decisions made by individuals ranging from long-term (e.g. regular work/school location, whether to own an automobile), day-level (e.g, what activities to engage in, with whom, where, and when), and trip-level (what transportation mode to use, what route to take) in order to evaluate policy and investment choices  at a high level of detail.
+
+Model inputs include
+
+- 2010 Travel Behavior Inventory results
+- Observed/existing vehicle volumes
+- 2022 population, employment, and other demographic characteristics
+- Demographics from Council [long-range forecasts](https://metrocouncil.org/Data-and-Maps/Research-and-Data/Thrive-2040-Forecasts.aspx) 
+- Road networks based on all [projects programmed through year 2025](https://metrocouncil.org/Planning/Imagine-2050/Policy-Plan-Index/Imagine-2050-Accessible-PDFs/Transportation-Policy-Plan/Long-Range-Capital-Project-Lists.aspx.). The projects generally include
+  - any project that has a change in capacity (number of lanes) or major interchanges
+  - any regionally significant project
+  - long-range capital projects 
+
+The base-year model outputs best represent year 2023 and forecast out to year 2050. 
+
+## Calculating VMT from the model network
+
+The regional travel demand model network is made up of nodes and segments. We use the network segment-level information to calculate VMT. 
+
+The network based approach is based on attributing all the vehicle traffic that occurs within a given city or county to that city or county, regardless of where the trip starts or ends. VMT is calculated by multiplying segment vehicle volume (vehicles) by segment length (miles traveled). Network segments are attributed to cities by a spatial join. When a segment crosses more than one city boundary, the segment is split at the boundary. The segment total volume is attributed to both sub-segments, and the segment length is re-calculated for each sub-segment. Thus, no volume is lost. All time periods are road types are aggregated to represent average daily vehicle miles traveled. Daily VMT are expanded to annual VMT using an annualization factor of 340 (@castigliegoCarbonFreeBoston2019).   
+
+Code for processing RTDM outputs relies on internal file system access and is not available publicly. Please contact us for more information and reproducible examples. 
+
+<!-- Potentially add forecasting vmt quarto doc as appendix here -->
+
+#### Limitations
+
+- The regional travel demand model, by definition, is built to function at a regional level. Scaling down to smaller geographies is stretching the limits of what it can do.
+- The model outputs a base year estimate (2023) and future year estimate (2050). All intermediary years (2024-2049) are interpolated between the two points. 
+
+<!-- - We may want to consider using non-permanent counters and/or counters from just outside the study region to increase the total number of calibration roads.  -->
+
+
+<!-- ### Data dictionaries -->
+
+<!-- ```{r tbl-dot-vmt-meta} -->
+<!-- #| tbl-cap: "County vehicle miles traveled metadata" -->
+<!-- #| out-width: "95%" -->
+<!-- dot_vmt_meta <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt_meta.RDS")) -->
+
+<!-- dot_vmt_meta %>% -->
+<!--   gt() %>% -->
+<!--   gt::opt_row_striping() %>% -->
+<!--   tab_style( -->
+<!--     style = cell_text(weight = "bold"), -->
+<!--     locations = cells_column_labels() -->
+<!--   ) %>% -->
+<!--   gt::as_raw_html() -->
+<!-- ``` -->
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}
