@@ -202,7 +202,7 @@ any(is.na(c(ctu_pop_estimates$geoid,
 ## save ----
 ctu_pop_meta <- tribble(
   ~Column, ~Class, ~Description,
-  "geoid", class(ctu_pop_estimates$geoid), "Five digit county GEOID",
+  "geoid", class(ctu_pop_estimates$geoid), "County GEOID. 5 digit.",
   "ctuid", class(ctu_pop_estimates$ctuid), "CTU FIPS tag. 5 digit.",
   "gnis", class(ctu_pop_estimates$gnis), "Geographic names information system (GNIS) identifier. 8 digit.",
   "coctu_id_fips", class(ctu_pop_estimates$coctu_id_fips), "County-CTU FIPS identifier. 8 digit.",
