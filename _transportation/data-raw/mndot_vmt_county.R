@@ -599,4 +599,5 @@ vmt_county <- vmt_county_raw_interp %>%
 saveRDS(vmt_county, "_transportation/data-raw/mndot/mndot_vmt_county.RDS")
 
 write.csv(vmt_county, "_transportation/data-raw/mndot/vmt_county.CSV",
-          row.names = FALSE)
+  row.names = FALSE
+)

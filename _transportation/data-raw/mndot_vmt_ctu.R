@@ -7,14 +7,18 @@ source("R/_leaflet_helpers.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS") %>% sf::st_drop_geometry()
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   left_join(cprg_county) %>%
-  mutate(ctu_name_full = paste0(ctu_name, ", ", ctu_class),
-         ctu_name_full_county = paste0(ctu_name_full, ", ", county_name ))
+  mutate(
+    ctu_name_full = paste0(ctu_name, ", ", ctu_class),
+    ctu_name_full_county = paste0(ctu_name_full, ", ", county_name)
+  )
 
 # get critical metadata
 ctu_population_meta <- readRDS("_meta/data/ctu_population_meta.RDS")
 ctu_metadata <- ctu_population %>%
-  select(geoid, coctu_id_fips, coctu_id_gnis, ctuid, ctu_name, 
-         gnis, ctu_class, county_name, ctu_name_full_county) %>%
+  select(
+    geoid, coctu_id_fips, coctu_id_gnis, ctuid, ctu_name,
+    gnis, ctu_class, county_name, ctu_name_full_county
+  ) %>%
   unique()
 dot_vmt_meta <- readRDS("_transportation/data/dot_vmt_meta.RDS")
 
@@ -463,8 +467,8 @@ city_ccr[["2024"]] <- readxl::read_excel(
 
 # bind all datasets together
 vmt_city_raw <- data.table::rbindlist(city_ccr,
-                                      fill = TRUE,
-                                      idcol = "year"
+  fill = TRUE,
+  idcol = "year"
 ) %>%
   # remove extra columns
   select(-x100_percent_due_to_rounding) %>%
@@ -520,7 +524,7 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
     ctu_name_full = paste0(ctu_name, ", ", ctu_class)
   ) %>%
   left_join(mndot_route_system,
-            by = "route_system"
+    by = "route_system"
   ) %>%
   # create correct county names for each CTU
   mutate(
@@ -582,43 +586,50 @@ vmt_city_raw <- data.table::rbindlist(city_ccr,
         ctu_name == "Saint Anthony" & county_name == "Anoka" ~ "Hennepin",
         # expected splits
         ctu_name %in% c(
-          "Blaine",           # Anoka and Ramsey
-          "Chanhassen",       # Hennepin and Carver
-          "Hastings",         # Dakota and Washington
-          "Saint Anthony",    # Hennepin and Ramsey
-          "Shorewood",        # Hennepin and Carver
+          "Blaine", # Anoka and Ramsey
+          "Chanhassen", # Hennepin and Carver
+          "Hastings", # Dakota and Washington
+          "Saint Anthony", # Hennepin and Ramsey
+          "Shorewood", # Hennepin and Carver
           "Spring Lake Park", # Anoka and Ramsey
-          "White Bear Lake"   # Ramsey and Washington
+          "White Bear Lake" # Ramsey and Washington
         ) ~ county_name,
         TRUE ~ county_name
       )
-  ) %>% 
+  ) %>%
   # create full, long name with ctu name, ctu class, and county name
-  mutate(ctu_name_full_county = paste0(ctu_name_full, ", ", correct_county_name ))
+  mutate(ctu_name_full_county = paste0(ctu_name_full, ", ", correct_county_name))
 
 
-# summarize by county name alternative to see how much of a difference 
+# summarize by county name alternative to see how much of a difference
 # it makes when we correct the county name/reassign cities to the correct county
-net_county_corrections <- vmt_city_raw %>% 
+net_county_corrections <- vmt_city_raw %>%
   group_by(correct_county_name, year) %>%
-  summarize(daily_vmt = sum(daily_vmt),
-            annual_vmt = sum(annual_vmt),
-            centerline_miles = sum(centerline_miles)) %>% 
-  filter(correct_county_name %in% cprg_county$county_name) %>% 
+  summarize(
+    daily_vmt = sum(daily_vmt),
+    annual_vmt = sum(annual_vmt),
+    centerline_miles = sum(centerline_miles)
+  ) %>%
+  filter(correct_county_name %in% cprg_county$county_name) %>%
   left_join(
-    vmt_city_raw %>% 
+    vmt_city_raw %>%
       group_by(county_name, year) %>%
-      summarize(daily_vmt = sum(daily_vmt),
-                annual_vmt = sum(annual_vmt),
-                centerline_miles = sum(centerline_miles)) %>% 
+      summarize(
+        daily_vmt = sum(daily_vmt),
+        annual_vmt = sum(annual_vmt),
+        centerline_miles = sum(centerline_miles)
+      ) %>%
       filter(county_name %in% cprg_county$county_name),
     by = c("year", "correct_county_name" = "county_name"),
-    suffix = c(".correct", ".orig")) %>% 
-  mutate(annual_diff = annual_vmt.orig - annual_vmt.correct,
-         daily_diff = daily_vmt.orig - daily_vmt.correct,
-         centerline_miles_diff = centerline_miles.orig - centerline_miles.correct)
+    suffix = c(".correct", ".orig")
+  ) %>%
+  mutate(
+    annual_diff = annual_vmt.orig - annual_vmt.correct,
+    daily_diff = daily_vmt.orig - daily_vmt.correct,
+    centerline_miles_diff = centerline_miles.orig - centerline_miles.correct
+  )
 
-# There is another Saint Anthony in Stearns County, unrelated to 
+# There is another Saint Anthony in Stearns County, unrelated to
 # our Saint Anthony (GNIS 2396471)
 
 
@@ -636,7 +647,7 @@ ctu_n_years <- vmt_city_raw %>%
   group_by(ctu_name_full_county) %>%
   count(name = "n_years") %>%
   arrange(n_years) %>%
-  ungroup() %>% 
+  ungroup() %>%
   # filter such that we have a full time series for
   # the past 9 years
   filter(n_years >= 9)
@@ -736,7 +747,7 @@ vmt_spatial <- vmt_city_raw %>%
   select(ctu_name, county_name, ctu_name_full_county, ctu_class, ctu_name_full, cprg_area) %>%
   unique() %>%
   right_join(ctu_population %>%
-               filter(inventory_year == max(inventory_year))) %>%
+    filter(inventory_year == max(inventory_year))) %>%
   left_join(cprg_ctu) %>%
   mutate(reliable = ifelse(ctu_name_full_county %in% reliable_ctu$ctu_name_full_county, TRUE, FALSE)) %>%
   sf::st_as_sf()
@@ -823,7 +834,7 @@ vmt_county_alone <- vmt_city_raw %>%
 #     daily_diff = round(daily_vmt.city - daily_vmt.county),
 #     annual_diff = round(annual_vmt.city - annual_vmt.county),
 #     centerline_diff = round(centerline_miles.city - centerline_miles.county)
-#   ) 
+#   )
 
 
 # merge with ctu population
@@ -854,9 +865,9 @@ vmt_ctu_pop <- ctu_population %>%
       ) %>%
       unique(),
     by = c("ctu_name",
-           "ctu_name_full",
-           "ctu_class",
-           "inventory_year" = "year"
+      "ctu_name_full",
+      "ctu_class",
+      "inventory_year" = "year"
     )
   )
 
@@ -888,10 +899,10 @@ vmt_ctu_pop %>%
     !is.na(ctu_population)
   ) %>%
   filter(ctu_name %in% c(vmt_ctu_pop %>%
-                           filter(ctu_population >= 65000) %>%
-                           select(ctu_name) %>%
-                           unique() %>%
-                           extract2("ctu_name"))) %>% 
+    filter(ctu_population >= 65000) %>%
+    select(ctu_name) %>%
+    unique() %>%
+    extract2("ctu_name"))) %>%
   plot_ly(
     type = "scatter",
     mode = "lines+markers",
@@ -916,10 +927,10 @@ vmt_ctu_pop %>%
     !is.na(ctu_population)
   ) %>%
   filter(ctu_name %in% c(vmt_ctu_pop %>%
-                           filter(ctu_population >= 65000) %>%
-                           select(ctu_name) %>%
-                           unique() %>%
-                           extract2("ctu_name"))) %>%
+    filter(ctu_population >= 65000) %>%
+    select(ctu_name) %>%
+    unique() %>%
+    extract2("ctu_name"))) %>%
   plot_ly(
     type = "scatter",
     mode = "lines+markers",
@@ -967,7 +978,7 @@ vmt_ctu_county <- vmt_city_raw %>%
     ctu_name %in% ctu_population$ctu_name
   ) %>%
   group_by(
-    year, correct_county_name, ctu_name, ctu_name_full, 
+    year, correct_county_name, ctu_name, ctu_name_full,
     ctu_class, cprg_area, ctu_name_full_county
   ) %>%
   summarize(
@@ -985,7 +996,7 @@ short_ctu <- vmt_ctu_county %>%
   ungroup() %>%
   select(ctu_name, ctu_name_full, ctu_name_full_county, ctu_class, county_name) %>%
   group_by(ctu_name, ctu_name_full, ctu_name_full_county, ctu_class, county_name) %>%
-  count(name = "n_years") %>% 
+  count(name = "n_years") %>%
   filter(n_years < as.numeric(max(vmt_ctu_county$year)) - 2014)
 
 vmt_interp <- vmt_ctu_county %>%
@@ -1002,8 +1013,10 @@ vmt_interp <- vmt_ctu_county %>%
   bind_rows(vmt_ctu_county) %>%
   arrange(ctu_name_full_county, year) %>%
   group_by(ctu_name, ctu_name_full_county, ctu_class, county_name) %>%
-  anti_join(short_ctu,
-            join_by(ctu_name, ctu_name_full, ctu_name_full_county, ctu_class, county_name)) %>%
+  anti_join(
+    short_ctu,
+    join_by(ctu_name, ctu_name_full, ctu_name_full_county, ctu_class, county_name)
+  ) %>%
   # count()
   # interpolate using midpoint method
   # for missing values
@@ -1027,7 +1040,7 @@ vmt_interp <- vmt_ctu_county %>%
         daily_approx = daily_vmt,
         centerline_approx = centerline_miles
       )
-  ) %>% 
+  ) %>%
   bind_rows(
     # for our CTUs without 2014 data to go off of
     # we will assign 2016 VMT to 2015
@@ -1038,7 +1051,7 @@ vmt_interp <- vmt_ctu_county %>%
         daily_approx = daily_vmt,
         centerline_approx = centerline_miles
       )
-  ) %>% 
+  ) %>%
   unique()
 
 
@@ -1059,8 +1072,8 @@ vmt_ctu <- vmt_interp %>%
   left_join(ctu_metadata, by = c("ctu_name", "ctu_class", "county_name")) %>%
   # select only needed columns
   select(geoid, ctuid, ctu_name, ctu_class, coctu_id_fips, coctu_id_gnis, gnis,
-         vmt_year = year, daily_vmt, annual_vmt,
-         centerline_miles
+    vmt_year = year, daily_vmt, annual_vmt,
+    centerline_miles
   ) %>%
   # remove CTUs outside the 7-county metro area
   filter(!is.na(ctuid)) %>%
@@ -1085,9 +1098,10 @@ saveRDS(vmt_spatial, "_transportation/data-raw/mndot/mndot_vmt_ctu_spatial.RDS")
 
 
 
-orig_vmt_ctu <- readr::read_rds("https://github.com/Metropolitan-Council/ghg-cprg/raw/refs/heads/main/_transportation/data/mndot_vmt_ctu.RDS") 
-unique(orig_vmt_ctu$ctuid) %>% length
-unique(vmt_ctu$ctuid) %>% length
-setdiff(unique(vmt_ctu$ctu_name),
-        unique(orig_vmt_ctu$ctu_name)
+orig_vmt_ctu <- readr::read_rds("https://github.com/Metropolitan-Council/ghg-cprg/raw/refs/heads/main/_transportation/data/mndot_vmt_ctu.RDS")
+unique(orig_vmt_ctu$ctuid) %>% length()
+unique(vmt_ctu$ctuid) %>% length()
+setdiff(
+  unique(vmt_ctu$ctu_name),
+  unique(orig_vmt_ctu$ctu_name)
 )
