@@ -44,9 +44,11 @@ vmt_model_data <- readRDS(file.path(here::here(), "_transportation/data/vmt_mode
 
 mndot_vmt_ctu_gap_filled <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu_gap_filled.RDS"))
 vmt_gap_fill_model <- readRDS(file.path(here::here(), "_transportation/data/vmt_gap_fill_model.RDS"))
+mndot_vmt_county_marginals <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_county_marginals.RDS")) %>% 
+  mutate(county_pct = sum_ctu_vmt/county_daily_vmt) %>% 
+  left_join(cprg_county %>% select(geoid, county_name) %>% sf::st_drop_geometry() %>% unique())
 
-
-hookaddcap()
+# hookaddcap()
 ```
 
 As required by federal law, Minnesota and Wisconsin state departments of transportation (MnDOT and WisDOT) report various traffic measures for planning, forecasting, and various analysis endeavors.
@@ -180,7 +182,29 @@ Cities without a complete time series from 2010 to 2023 were modeled.
 
 ##### Gap-filled city vehicle miles traveled
 
+
+
 Modeling took place in [mndot_vmt_ctu_gap_fill_model.R](data-raw/mndot_vmt_ctu_gap_fill_model.R).
+
+Most counties have 
+
+```{r}
+plot_ly(
+  data = mndot_vmt_county_marginals %>% 
+    filter(inventory_year == 2022),
+  x = ~county_name,
+  y = ~county_pct,
+  hoverinfo = "text",
+  hovertemplate = ~paste0(   
+      county_name, "<br>",
+      inventory_year, "<br>",
+      scales::percent(county_pct), " of VMT accounted for in CTU estimates", "<br>",
+      "<extra></extra>"
+  )
+) %>% 
+  plotly_layout() %>% 
+  layout(yaxis = list(tickformat = "1%"))
+```
 
 
 ```{r vmt-gap-fill-model-latex}
@@ -215,9 +239,9 @@ equatiomatic::extract_eq(model = vmt_gap_fill_model)
 
 
 ```{r echo=FALSE}
-caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
-caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
-saveCap(paste0("cap-", caption_index))
-saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+# caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+# caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+# saveCap(paste0("cap-", caption_index))
+# saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
 {{< pagebreak >}}
