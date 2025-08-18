@@ -124,25 +124,25 @@ county_gas_type <- bind_rows(
     units_emissions == "Metric tons CO2" ~ value_emissions * gwp$co2
   ))
 
-co2_2021 <- county_gas_type %>%
+co2_2022 <- county_gas_type %>%
   filter(
-    inventory_year == 2021,
+    inventory_year == 2022,
     units_emissions == "Metric tons CO2"
   ) %>%
   pull(co2e) %>%
   sum()
 
-methane_2021 <- county_gas_type %>%
+methane_2022 <- county_gas_type %>%
   filter(
-    inventory_year == 2021,
+    inventory_year == 2022,
     units_emissions == "Metric tons CH4"
   ) %>%
   pull(co2e) %>%
   sum()
 
-n2o_2021 <- county_gas_type %>%
+n2o_2022 <- county_gas_type %>%
   filter(
-    inventory_year == 2021,
+    inventory_year == 2022,
     units_emissions == "Metric tons N2O"
   ) %>%
   pull(co2e) %>%
@@ -154,12 +154,12 @@ hookaddcap()
 ## Introduction
 
 ```{r calc-emissions-totals}
-emissions_2021 <- county_emissions %>%
-  filter(emissions_year == 2021) %>%
+emissions_2022 <- county_emissions %>%
+  filter(emissions_year == 2022) %>%
   pull(value_emissions) %>%
   sum()
-waste_emissions_2021 <- county_emissions %>%
-  filter(emissions_year == 2021, sector == "Waste") %>%
+waste_emissions_2022 <- county_emissions %>%
+  filter(emissions_year == 2022, sector == "Waste") %>%
   pull(value_emissions) %>%
   sum()
 waste_emissions_2005 <- county_emissions %>%
@@ -169,7 +169,7 @@ waste_emissions_2005 <- county_emissions %>%
 ```
 
 
-In 2021, waste activities over the entire United States generated emissions of 169.2 MMTCO~2~e, or 2.7 percent of total U.S. greenhouse gas emissions [@usepaInventoryGreenhouseGas2023]. In the 11-county Twin Cities MSA region, municipal waste produced `r round(waste_emissions_2021)/1000000` MMTCO~2~e, or `r 100*round(waste_emissions_2021/emissions_2021, digits = 3)`% of the regional total. 
+In 2022, waste activities over the entire United States generated emissions of 169.2 MMTCO~2~e, or 2.7 percent of total U.S. greenhouse gas emissions [@usepaInventoryGreenhouseGas2023]. In the 11-county Twin Cities MSA region, municipal waste produced `r round(waste_emissions_2022)/1000000` MMTCO~2~e, or `r 100*round(waste_emissions_2022/emissions_2022, digits = 3)`% of the regional total. 
 
 Municipal waste can broadly be divided into biogenic wastewater emissions and solid waste emissions. Our inventory accounts for industrial waste emission point sources in the industrial sector and wastewater processing emissions such as electricity and transportation in their respective sectors. Note that the Metropolitan Council Climate Action Work Plan accounts for holistic operational inventory emissions from wastewater processing.
 
@@ -177,7 +177,7 @@ Municipal waste can broadly be divided into biogenic wastewater emissions and so
 
 ### Baseline emissions
 
-Regional waste emissions have increased by `r round(100 * ((waste_emissions_2021/waste_emissions_2005) - 1), digits = 2)`% since 2005, likely tied to population growth despite successful measures to reduce emissions per capita.
+Regional waste emissions have increased by `r round(100 * ((waste_emissions_2022/waste_emissions_2005) - 1), digits = 2)`% since 2005, likely tied to population growth despite successful measures to reduce emissions per capita.
 
 ```{r fig-waste-baseline-emissions}
 #| fig-cap: "Baseline agricultural emissions"
@@ -189,7 +189,7 @@ fig_waste_baseline <- plot_ly(
   source = "fig-waste-baseline-emissions",
   data = county_emissions %>%
     filter(sector == "Waste",
-           emissions_year <= 2021) %>%
+           emissions_year <= 2022) %>%
     group_by(emissions_year, category) %>%
     summarise(value_emissions = sum(value_emissions)),
   x = ~emissions_year,
@@ -229,21 +229,21 @@ fig_waste_baseline
 ### Emissions by gas type
 
 The majority of waste emissions by weight are CO<sub>2</sub>, but when accounting for the increased warming potential of methane, CO<sub>2</sub>e, methane contributes the most to global warming. 
-CO<sub>2</sub>: `r 100 * round(co2_2021/waste_emissions_2021, digits = 3)`% 
-CH<sub>4</sub>: `r 100 * round(methane_2021/waste_emissions_2021, digits = 3)`% 
-N<sub>2</sub>O: `r 100 * round(n2o_2021/waste_emissions_2021, digits = 3)`%
+CO<sub>2</sub>: `r 100 * round(co2_2022/waste_emissions_2022, digits = 3)`% 
+CH<sub>4</sub>: `r 100 * round(methane_2022/waste_emissions_2022, digits = 3)`% 
+N<sub>2</sub>O: `r 100 * round(n2o_2022/waste_emissions_2022, digits = 3)`%
 
 
 
 ```{r fig-waste-county-emissions-by-gas-type}
-#| fig-cap: "2021 county waste emissions by gas type"
+#| fig-cap: "2022 county waste emissions by gas type"
 #| out-width: "95%"
 
 fig_waste_gas_type <- plot_ly(
   type = "bar",
   source = "fig-waste-county-emissions-by-gas-type",
   data = county_gas_type %>%
-    filter(inventory_year == 2021),
+    filter(inventory_year == 2022),
   y = ~ reorder(county_name, value_emissions),
   x = ~value_emissions,
   color = ~units_emissions,
@@ -255,7 +255,7 @@ fig_waste_gas_type <- plot_ly(
   )
 ) %>%
   plotly_layout(
-    main_title = "2021 county waste emissions by gas type",
+    main_title = "2022 county waste emissions by gas type",
     x_title = "Metric tons of gas emitted",
     subtitle = ""
   ) %>%
@@ -274,14 +274,14 @@ fig_waste_gas_type <- plot_ly(
 fig_waste_gas_type
 ```
 ```{r fig-waste-county-emissions-by-gas-type-co2e}
-#| fig-cap: "2021 county waste emissions by gas type - CO2e"
+#| fig-cap: "2022 county waste emissions by gas type - CO2e"
 #| out-width: "95%"
 
 fig_waste_gas_type_co2e <- plot_ly(
   type = "bar",
   source = "fig-waste-county-emissions-by-gas-type-co2e",
   data = county_gas_type %>%
-    filter(inventory_year == 2021),
+    filter(inventory_year == 2022),
   y = ~ reorder(county_name, co2e),
   x = ~co2e,
   color = ~units_emissions,
@@ -293,7 +293,7 @@ fig_waste_gas_type_co2e <- plot_ly(
   )
 ) %>%
   plotly_layout(
-    main_title = "2021 county waste emissions by gas type in CO2e",
+    main_title = "2022 county waste emissions by gas type in CO2e",
     x_title = "Metric tons of CO2e",
     subtitle = ""
   ) %>%
@@ -314,11 +314,11 @@ fig_waste_gas_type_co2e
 
 ### Solid waste
 
-#### 2021 emissions
+#### 2022 emissions
 
 ```{r solid-waste-percentages, include=FALSE}
 solid_waste_percentages <- solid_waste_emissions %>%
-  filter(inventory_year == 2021) %>%
+  filter(inventory_year == 2022) %>%
   group_by(category, source) %>%
   summarize(value_emissions = sum(value_emissions)) %>%
   arrange(-value_emissions) %>%
@@ -328,15 +328,15 @@ solid_waste_percentages <- solid_waste_emissions %>%
 total_solid_waste <-
   solid_waste_emissions %>%
   ungroup() %>%
-  filter(inventory_year == 2021) %>%
+  filter(inventory_year == 2022) %>%
   summarise(value_emissions = sum(value_emissions)) %>%
   extract2("value_emissions")
 ```
 
-Solid waste generated `r round(total_solid_waste/1000000, digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2021. Of that total, `r scales::percent(solid_waste_percentages$value_emissions[1], accuracy = 0.1)` of emissions came from `r str_to_lower(solid_waste_percentages$source[1])`, `r scales::percent(solid_waste_percentages$value_emissions[2], accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[2])` facilities, and the remaining `r scales::percent(sum(solid_waste_percentages$value_emissions[3:4]), accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[3])` and `r str_to_lower(solid_waste_percentages$source[4])`.  
+Solid waste generated `r round(total_solid_waste/1000000, digits = 2)` MMtCO~2~e of emissions in the Twin Cities MSA in 2022. Of that total, `r scales::percent(solid_waste_percentages$value_emissions[1], accuracy = 0.1)` of emissions came from `r str_to_lower(solid_waste_percentages$source[1])`, `r scales::percent(solid_waste_percentages$value_emissions[2], accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[2])` facilities, and the remaining `r scales::percent(sum(solid_waste_percentages$value_emissions[3:4]), accuracy = 0.1)` from `r str_to_lower(solid_waste_percentages$source[3])` and `r str_to_lower(solid_waste_percentages$source[4])`.  
 
 ```{r fig-solid-waste-emissions}
-#| fig-cap: "2021 solid waste emissions"
+#| fig-cap: "2022 solid waste emissions"
 #| out-width: "95%"
 fig_solid_waste_emissions <-
   plot_ly(
@@ -345,7 +345,7 @@ fig_solid_waste_emissions <-
     data = solid_waste_named %>%
       filter(
         category == "Solid waste",
-        inventory_year == 2021
+        inventory_year == 2022
       ),
     y = ~ reorder(county_name, value_emissions),
     x = ~value_emissions,
@@ -364,7 +364,7 @@ fig_solid_waste_emissions <-
     )
   ) %>%
   plotly_layout(
-    main_title = "2021 solid waste emissions",
+    main_title = "2022 solid waste emissions",
     subtitle = "",
     y_title = "County",
     x_title = "Metric tons CO<sub>2</sub>e",
@@ -383,7 +383,7 @@ fig_solid_waste_emissions
 Greenhouse gas emissions from solid waste are dominated by the landfill sector. In Hennepin, Ramsey, and Washington counties, municipal centers where a significant portion of waste is incinerated, waste-to-energy or incineration makes up a large fraction of emissions as well. 
 
 ```{r fig-solid-waste-sector-emissions-by-category}
-#| fig-cap: "2021 solid waste emissions by category"
+#| fig-cap: "2022 solid waste emissions by category"
 #| out-width: "95%"
 
 fig_solid_waste_sector_emissions_by_category <-
@@ -393,7 +393,7 @@ fig_solid_waste_sector_emissions_by_category <-
     data = solid_waste_named %>%
       filter(
         category == "Solid waste",
-        inventory_year == 2021,
+        inventory_year == 2022,
         source != "Onsite"
       ),
     y = ~ reorder(county_name, value_emissions),
@@ -408,7 +408,7 @@ fig_solid_waste_sector_emissions_by_category <-
     )
   ) %>%
   plotly_layout(
-    main_title = "2021 solid waste emissions by category",
+    main_title = "2022 solid waste emissions by category",
     subtitle = "",
     y_title = "County",
     x_title = "Metric tons CO<sub>2</sub>e",
@@ -432,7 +432,7 @@ fig_solid_waste_sector_emissions_by_category
 The variation of solid waste emissions over the past 16 years is mainly due to variations in amount of waste collected. It does not take into account changes in methane capture and removal technology or adoption.
 
 ```{r fig-solid-waste-times-series-county}
-#| fig-cap: "Solid waste emissions by county, 2005-2021"
+#| fig-cap: "Solid waste emissions by county, 2005-2022"
 #| out-width: "95%"
 
 fig_solid_waste_time_series_county <- sw_county_summary %>%
@@ -464,7 +464,7 @@ fig_solid_waste_time_series_county
 ```
 
 ```{r fig-solid-waste-time-series-source}
-#| fig-cap: "Solid waste emissions by source, 2005-2021"
+#| fig-cap: "Solid waste emissions by source, 2005-2022"
 #| out-width: "95%"
 #|
 sw_source_summary <- solid_waste_named %>%

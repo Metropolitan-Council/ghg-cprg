@@ -15,7 +15,7 @@ if (!exists("mpca_score")) {
 # cleaning xcel data to preserve full values
 # Flaring
 flaring_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_waste/solid_waste_flaring.xlsx"),
-  range = "A2:AG54"
+  range = "A2:AH54"
 ) %>%
   rename(State = 1) %>%
   filter(State == "MN") %>%
@@ -32,7 +32,7 @@ flaring_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid
 # LFGTE
 
 lfgte_data <- readxl::read_xlsx(file.path(here::here(), "_waste/data-raw/solid_waste/solid_waste_lfgte.xlsx"),
-  range = "A2:AG54"
+  range = "A2:AH54"
 ) %>%
   rename(State = 1) %>%
   filter(State == "MN") %>%
