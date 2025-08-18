@@ -6,55 +6,34 @@ source("R/_load_pkgs.R")
 cprg_colors <- source("R/cprg_colors.R")
 
 # create baseline and subsector sectors
-county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") %>% 
-  filter(!source == "Aviation") # need to estimate 2022 aviation emissions
-# %>%
-#   ## keep 7 counties only for CTU estimates
-#   # filter(!county_name %in% c("St. Croix", "Pierce", "Chisago", "Sherburne")) %>%
-#   mutate(baseline_sector = case_when(
-#     category == "Electricity" ~ "Electricity",
-#     category == "Building Fuel" ~ "Building Fuel",
-#     grepl("Commercial", category) ~ "Building Fuel",
-#     grepl("Industrial", category) ~ "Industrial",
-#     category == "Refinery processes" ~ "Industrial",
-#     TRUE ~ sector
-#   ))
-# mutate(year = case_when(
-#   sector == "Industrial" & year == 2011 ~ 2005,
-#   sector == "Industrial" & category == "Other" & year == 2020 ~ 2021,
-#   TRUE ~ year)) %>%
-# filter(year %in% c(2005, 2021))
+county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") 
 
-### break out desired years and data sources for RDG 90%
+# summarize to sector and reorder sectors
 baseline_emissions_sector <- county_emissions %>%
-  group_by(emissions_year, sector) %>%
-  summarize(MT_CO2e = sum(value_emissions, na.rm = TRUE)) %>%
-  mutate(baseline_sector = factor(sector,
-                                  levels = c( "Transportation", "Commercial", "Industrial","Residential", "Waste", "Agriculture", "Natural Systems")
+  group_by(emissions_year, sector)  %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>%
+  mutate(sector = factor(sector,
+                         levels = c("Transportation", 
+                                    "Commercial", 
+                                    "Industrial",
+                                    "Residential", 
+                                    "Waste", 
+                                    "Agriculture", 
+                                    "Natural Systems")
   ))
 
-# Define custom colors for sectors and tones for years
-baseline_colors <- c(
-  "Residential" = "#DE3163",
-  "Transportation" = "#6994c1",
-  "Commercial" = "#9467bd",
-  "Industrial" = "slategray",
-  "Waste" = "#8B4513",
-  "Agriculture" = "#8fb910",
-  "Natural Systems" = "#006f3c"
-)
 
 # Plot by year
 baseline_comparison <- ggplot(
   baseline_emissions_sector %>%
     filter(emissions_year >= 2005 & emissions_year <= 2022),
-  aes(x = emissions_year, y = MT_CO2e / 1000000, col = baseline_sector)
+  aes(x = emissions_year, y = value_emissions / 1000000, col = sector)
 ) +
   geom_line(size = 1.6) +
   geom_hline(yintercept = 0, size = 2, col = "black", linetype = "dashed") +
-  labs(fill = "baseline_sector") +
+  labs(fill = "sector") +
   ggtitle("Eleven-County Regional Emissions Inventory") +
-  scale_color_manual(values = baseline_colors, name = "Sector") +
+  scale_color_manual(values = unlist(sector_colors), name = "Sector") +
   theme_bw() +
   xlab("") +
   ylab(expression(paste("Million metric tons of ", CO[2], "e"))) +
@@ -70,28 +49,31 @@ baseline_comparison_facet <- ggplot(
   baseline_emissions_sector %>%
     filter(emissions_year >= 2005 & emissions_year <= 2022),
   aes(
-    x = emissions_year, y = MT_CO2e / 1000000,
-    fill = baseline_sector,
-    col = baseline_sector
+    x = emissions_year, y = value_emissions / 1000000,
+    fill = sector,
+    col = sector
   )
 ) +
   geom_area(alpha = 0.4) +
   geom_line(size = 1.2) +
   geom_hline(yintercept = 0, size = 1.2, col = "black", linetype = "dashed") +
-  labs(fill = "baseline_sector") +
-  ggtitle("Eleven-County Regional Emissions Inventory") +
-  scale_fill_manual(values = baseline_colors, guide = "none") +
-  scale_color_manual(values = baseline_colors, guide = "none") +
+  labs(fill = "sector") +
+  # ggtitle() +
+  # ggsubtitle(expression(paste("Million metric tons of ", CO[2], "e"))) +
+  scale_fill_manual(values = unlist(sector_colors), guide = "none") +
+  scale_color_manual(values = unlist(sector_colors), guide = "none") +
   theme_bw() +
+  labs(title = "Eleven-County Regional Emissions Inventory",
+       subtitle = expression(paste("(Million metric tons of ", CO[2], "e)"))) +
   xlab("") +
-  ylab(expression(paste("Million metric tons of ", CO[2], "e"))) +
+  ylab("") +
   theme(
     panel.grid.major.x = element_blank(),
     panel.grid.minor = element_blank(),
     axis.text.x = element_text(size = 15, angle = -90, vjust = .25),
     text = element_text(size = 20, family = "sans")
   ) +
-  facet_grid(. ~ baseline_sector)
+  facet_grid(. ~ sector)
 
 baseline_comparison_facet
 
