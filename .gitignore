@@ -1268,3 +1268,8 @@ _transportation/data-raw/mndot/updated_VMT_County_City_Route_System/
 /_energy/data-raw/dakotaElectricDataRequest
 
 _meta/data-raw/mpca_inventory_2022.csv
+_meta/data-raw/bau_projections/bau_ctu_ww_sw_ns.csv
+_meta/data-raw/bau_projections/bau_region_ww_sw_ns.csv
+_meta/data-raw/bau_projections/comm_nonres_bau_2005_2050.csv
+_meta/data-raw/bau_projections/residential_bau.csv
+_meta/data-raw/bau_projections/transportation_county_emissions_time_series.CSV
