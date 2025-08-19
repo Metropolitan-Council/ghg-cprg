@@ -53,3 +53,4 @@ x_vmt_emissions.R,Deprecated,vmt,compilation,StreetLight Data - calculate passen
 wisdot_stations.R,Active,wisdot,data processing,Fetch and compile WisDOT station passenger/medium/heavy duty traffic ratios and assign to segments,"wi_stations_ratios_lines.RDS, wi_stations_ratios_points.RDS, wi_osm_meta.RDS",
 wisdot_vmt_county.R,Active,wisdot,data processing,Comile WisDOT VMT county reports into time series data table,wisdot_vmt_county.RDS,
 x_epa_scrap.R,Deprecated,x,scrap,Scrap code from various EPA sources. May be useful in the future,,
+_compile_county_inventory_forecast.R,Active,_,compilation,Compile county emissions inventory and forecasts from onroad EPA data and RTDM forecasst.,"county_inventory_forecast_emissions.RDS, county_inventory_forecast_emissions_meta.RDS",
