@@ -384,7 +384,7 @@ pred_df_bench <- pred_df %>%
     ),
     # if there is MnDOT VMT, use it, otherwise use the benched predictions
     final_city_vmt = if_else(!is.na(daily_vmt), daily_vmt, pred_vmt_bench),
-    vmt_source = ifelse(!is.na(daily_vmt), "MnDOT", "MetC Modeled")
+    vmt_source = ifelse(!is.na(daily_vmt), "MnDOT VMT Reports", "MetC Modeled")
   )
 
 # summarize differences in total county VMT
@@ -456,12 +456,12 @@ pred_df_na_bench <- pred_df %>%
     pred_vmt_bench = pred_vmt * scale,
     # if there is MnDOT VMT, use it, otherwise use the benched predictions
     final_city_vmt = if_else(!is.na(daily_vmt), daily_vmt, pred_vmt_bench),
-    final_vmt_source = ifelse(!is.na(daily_vmt), "MnDOT", "MetC Modeled"),
+    final_vmt_source = ifelse(!is.na(daily_vmt), "MnDOT VMT Reports", "MetC Modeled"),
     
     # determine the scaling factor value for each observation
     # if MnDOT, there is no scaling at all
     # if predicted, then it uses the established scale
-    county_ctu_scaling_factor = ifelse(final_vmt_source == "MnDOT", 1, scale)
+    county_ctu_scaling_factor = ifelse(final_vmt_source == "MnDOT VMT Reports", 1, scale)
   )
 
 
@@ -628,7 +628,7 @@ mndot_vmt_county_marginals_meta <- mndot_vmt_ctu_gap_filled_meta %>%
     tibble::tribble(
       ~Column, ~Class, ~Description,
       "sum_ctu_vmt", class(mndot_vmt_county_marginals$sum_ctu_vmt), "Total daily VMT in all CTUs in the given county",
-      "county_daily_vmt", class(mndot_vmt_county_marginals$county_daily_vmt), "Total county daily VMT, MnDOT reported ",
+      "county_daily_vmt", class(mndot_vmt_county_marginals$county_daily_vmt), "Total county daily VMT, MnDOT reported",
       "marginal_vmt", class(mndot_vmt_county_marginals$marginal_vmt), "Difference in MnDOT reported county VMT and CTU VMT total "
     )
   )
