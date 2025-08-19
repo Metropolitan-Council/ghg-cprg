@@ -20,7 +20,7 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
     category = "On-road",
     data_source = data_source,
     factor_source = moves_edition,
-    value_emissions = emissions_metric_tons_co2e,
+    value_emissions = round(emissions_metric_tons_co2e, digits = 2),
     unit_emissions = "Metric tons CO2e"
   ) %>%
   select(
@@ -45,7 +45,7 @@ aviation_emissions <- readRDS("_transportation/data/aviation_emissions.RDS") %>%
     source = "Aviation",
     data_source = data_source,
     factor_source = data_source,
-    value_emissions,
+    value_emissions = round(value_emissions, digits = 2),
     unit_emissions = "Metric tons CO2e",
     emissions_year = inventory_year
   ) %>%
