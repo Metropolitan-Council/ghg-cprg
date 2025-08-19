@@ -112,7 +112,8 @@ county_emissions_forecast_meta <-  readRDS("_transportation/data/onroad_emission
     ctu_population_meta %>% 
       filter(Column %in% names(county_emissions_forecast))
   ) %>% 
-  arrange(match(Column, names(county_emissions_forecast)))
+  arrange(match(Column, names(county_emissions_forecast))) %>% 
+  unique()
 
 
 saveRDS(county_emissions_forecast, "_transportation/data/rtdm_county_emissions_forecast.RDS")
