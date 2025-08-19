@@ -20,7 +20,7 @@ county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") %>%
     grepl("Industrial", category) ~ "Industrial",
     category == "Refinery processes" ~ "Industrial",
     TRUE ~ sector
-  )) 
+  ))
 # mutate(year = case_when(
 #   sector == "Industrial" & year == 2011 ~ 2005,
 #   sector == "Industrial" & category == "Other" & year == 2020 ~ 2021,
@@ -32,7 +32,7 @@ baseline_emissions_sector <- county_emissions %>%
   group_by(emissions_year, baseline_sector) %>%
   summarize(MT_CO2e = sum(value_emissions, na.rm = TRUE)) %>%
   mutate(baseline_sector = factor(baseline_sector,
-    levels = c( "Transportation","Electricity", "Building Fuel", "Industrial", "Waste", "Agriculture", "Natural Systems")
+    levels = c("Transportation", "Electricity", "Building Fuel", "Industrial", "Waste", "Agriculture", "Natural Systems")
   ))
 
 # Define custom colors for sectors and tones for years
@@ -230,7 +230,7 @@ sector_comparison
 # Plot by subsector
 
 category_order <- c(
-  "On-road","Off-road", # Transportation
+  "On-road", "Off-road", # Transportation
   "Residential electricity", "Residential natural gas", # Residential
   "Commercial electricity", "Commercial natural gas", "Commercial fuel combustion", # Commercial
   "Industrial electricity", "Industrial natural gas", "Industrial fuel combustion",
@@ -241,13 +241,13 @@ category_order <- c(
 )
 
 emissions_subsector <- county_emissions %>%
-  filter(!county_name %in% c("St. Croix", "Pierce", "Sherburne", "Chisago")) %>% 
+  filter(!county_name %in% c("St. Croix", "Pierce", "Sherburne", "Chisago")) %>%
   mutate(category = case_when(
     category == "Electricity" ~ paste(sector, "electricity"),
     category == "Building Fuel" ~ paste(sector, "natural gas"),
     TRUE ~ category
   )) %>%
-  group_by(emissions_year , sector, category) %>%
+  group_by(emissions_year, sector, category) %>%
   summarize(MT_CO2e = sum(value_emissions)) %>%
   mutate(sector = factor(sector, levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")))
 
@@ -258,7 +258,7 @@ subsector_comparison <- ggplot(
     mutate(
       category = factor(category, levels = category_order)
     ) %>%
-    filter(emissions_year  == 2021),
+    filter(emissions_year == 2021),
   aes(x = sector, y = MT_CO2e / 1000000, fill = category)
 ) +
   geom_bar(stat = "identity", position = "stack", col = "black") +

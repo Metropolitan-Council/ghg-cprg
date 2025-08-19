@@ -94,22 +94,22 @@ n_counties <- 0
 # make sure training dataset has all seven counties
 # and all 9 Imagine 2050 designation
 while (n_designations != length(df$imagine_designation %>% unique()) |
-       n_counties < 5) {
+  n_counties < 5) {
   full_ctus <- df %>%
     filter(!coctu_id_gnis %in% ctu_missing$coctu_id_gnis) %>%
     filter(!is.na(daily_vmt) & log_vmt > 1, ) %>%
     sample_frac(size = 0.6)
-  
+
   train <- df %>%
     filter(coctu_id_gnis %in% full_ctus$coctu_id_gnis)
-  
+
   n_designations <- length(train$imagine_designation %>% unique())
   n_counties <- length(train$county_name %>% unique())
 }
 
 # Create model -----
 m <- lmer(log_vmt ~ log_pop + log_hh + log_emp + I(inventory_year - min(inventory_year)) + imagine_designation + (1 | county_name),
-          data = train, REML = TRUE
+  data = train, REML = TRUE
 )
 
 summary(m, correlation = T)
@@ -375,7 +375,7 @@ bench <- pred_df %>%
 # apply scaling factor
 pred_df_bench <- pred_df %>%
   left_join(bench %>% select(county_name, inventory_year, geoid, scale, sum_pred_vmt),
-            by = c("county_name", "inventory_year", "geoid")
+    by = c("county_name", "inventory_year", "geoid")
   ) %>%
   mutate(
     pred_vmt_bench = case_when(
@@ -457,7 +457,7 @@ pred_df_na_bench <- pred_df %>%
     # if there is MnDOT VMT, use it, otherwise use the benched predictions
     final_city_vmt = if_else(!is.na(daily_vmt), daily_vmt, pred_vmt_bench),
     final_vmt_source = ifelse(!is.na(daily_vmt), "MnDOT VMT Reports", "MetC Modeled"),
-    
+
     # determine the scaling factor value for each observation
     # if MnDOT, there is no scaling at all
     # if predicted, then it uses the established scale
@@ -506,11 +506,11 @@ pred_df_na_bench %>%
     inventory_year, final_city_vmt, final_vmt_source, vmt_source
   ) %>%
   bind_rows(ctu_pop_jobs_vmt %>%
-              select(inventory_year, coctu_id_gnis,
-                     ctu_name_full_county, geoid,
-                     final_city_vmt = daily_vmt, vmt_source
-              ) %>%
-              filter(inventory_year >= 2023)) %>%
+    select(inventory_year, coctu_id_gnis,
+      ctu_name_full_county, geoid,
+      final_city_vmt = daily_vmt, vmt_source
+    ) %>%
+    filter(inventory_year >= 2023)) %>%
   group_by(ctu_name_full_county) %>%
   plot_ly(
     type = "scatter",
@@ -581,11 +581,11 @@ mndot_vmt_ctu_gap_filled <- pred_df_na_bench %>%
     -scale
   ) %>%
   bind_rows(ctu_pop_jobs_vmt %>%
-              mutate(
-                final_city_vmt = daily_vmt,
-                final_vmt_source = vmt_source
-              ) %>%
-              filter(inventory_year >= 2023)) %>%
+    mutate(
+      final_city_vmt = daily_vmt,
+      final_vmt_source = vmt_source
+    ) %>%
+    filter(inventory_year >= 2023)) %>%
   select(inventory_year, coctu_id_gnis, geoid, gnis, county_ctu_scaling_factor, final_city_vmt, final_vmt_source) %>%
   arrange(coctu_id_gnis, inventory_year)
 
@@ -612,18 +612,19 @@ mndot_vmt_ctu_gap_filled_meta <- ctu_pop_jobs_vmt_meta %>%
 saveRDS(mndot_vmt_ctu_gap_filled_meta, "_transportation/data/mndot_vmt_ctu_gap_filled_meta.RDS")
 
 
-mndot_vmt_county_marginals <- county_marginal_vmt %>% 
-  ungroup() %>% 
-  select(-county_name, -n) %>% 
+mndot_vmt_county_marginals <- county_marginal_vmt %>%
+  ungroup() %>%
+  select(-county_name, -n) %>%
   select(geoid, inventory_year,
-         sum_ctu_vmt = sum_daily_vmt, 
-         county_daily_vmt,
-         marginal_vmt)
+    sum_ctu_vmt = sum_daily_vmt,
+    county_daily_vmt,
+    marginal_vmt
+  )
 
 saveRDS(mndot_vmt_county_marginals, "_transportation/data/mndot_vmt_county_marginals.RDS")
 
-mndot_vmt_county_marginals_meta <- mndot_vmt_ctu_gap_filled_meta %>% 
-  filter(Column %in% names(county_marginal_vmt)) %>% 
+mndot_vmt_county_marginals_meta <- mndot_vmt_ctu_gap_filled_meta %>%
+  filter(Column %in% names(county_marginal_vmt)) %>%
   bind_rows(
     tibble::tribble(
       ~Column, ~Class, ~Description,
@@ -632,6 +633,6 @@ mndot_vmt_county_marginals_meta <- mndot_vmt_ctu_gap_filled_meta %>%
       "marginal_vmt", class(mndot_vmt_county_marginals$marginal_vmt), "Difference in MnDOT reported county VMT and CTU VMT total "
     )
   )
-  
+
 
 saveRDS(mndot_vmt_county_marginals_meta, "_transportation/data/mndot_vmt_county_marginals_meta.RDS")

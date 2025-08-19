@@ -76,46 +76,49 @@ saveRDS(county_vmt_forecast, "_transportation/data/rtdm_forecast_county.RDS")
 saveRDS(county_vmt_forecast_meta, "_transportation/data/rtdm_forecast_county_meta.RDS")
 
 # county-level emissions from model outputs, fed into MOVES, and then output from MOVES
-co_emis_for  <- readRDS("_transportation/data-raw/metc_travel_model/moves_emissions_forecast.RDS") %>% 
-  filter(!is.na(geoid),
-         !county_name %in% c("Wright", "Sherburne"),
-         !is.na(county_name)) %>% 
-  mutate(inventory_year = ifelse(inventory_year == 2025, 2023, as.numeric(inventory_year))) %>% 
-  filter(scenario != "No_Build_2050") %>% 
+co_emis_for <- readRDS("_transportation/data-raw/metc_travel_model/moves_emissions_forecast.RDS") %>%
+  filter(
+    !is.na(geoid),
+    !county_name %in% c("Wright", "Sherburne"),
+    !is.na(county_name)
+  ) %>%
+  mutate(inventory_year = ifelse(inventory_year == 2025, 2023, as.numeric(inventory_year))) %>%
+  filter(scenario != "No_Build_2050") %>%
   select(-state_abb, -cprg_area, -statefp, -state_name)
 
 
-county_emissions_forecast <- co_emis_for %>% 
+county_emissions_forecast <- co_emis_for %>%
   # only use our GHGs
-  filter(pollutantID %in% c(90, 5, 6)) %>% 
+  filter(pollutantID %in% c(90, 5, 6)) %>%
   # multiply to go from daily to annual
-  mutate(EMISSIONS = EMISSIONS * annualization_factor) %>% 
-  select(-pollutantID, -pollutantName, -globalWarmingPotential, -pollutantDisplayGroupID, -county_id) %>% 
-  pivot_wider(names_from = NEIPollutantCode,
-              values_from = EMISSIONS) %>% 
-  rowwise() %>% 
-  clean_names() %>% 
+  mutate(EMISSIONS = EMISSIONS * annualization_factor) %>%
+  select(-pollutantID, -pollutantName, -globalWarmingPotential, -pollutantDisplayGroupID, -county_id) %>%
+  pivot_wider(
+    names_from = NEIPollutantCode,
+    values_from = EMISSIONS
+  ) %>%
+  rowwise() %>%
+  clean_names() %>%
   mutate(
     co2_co2_equivalent =
       sum(co2, (ch4 * gwp$ch4), (n2o * gwp$n2o), na.rm = TRUE),
     emissions_metric_tons_co2e = co2_co2_equivalent / 1000000,
     emissions_metric_tons_co2e_exclude_n2o =
       sum(co2, (ch4 * gwp$ch4), na.rm = TRUE) / 1000000
-  ) %>% 
-  select(county_id, county_name, geoid, inventory_year, emissions_metric_tons_co2e) %>% 
+  ) %>%
+  select(county_id, county_name, geoid, inventory_year, emissions_metric_tons_co2e) %>%
   ungroup()
 
 
-county_emissions_forecast_meta <-  readRDS("_transportation/data/onroad_emissions_meta.RDS") %>% 
-  filter(Column %in% names(county_emissions_forecast)) %>% 
+county_emissions_forecast_meta <- readRDS("_transportation/data/onroad_emissions_meta.RDS") %>%
+  filter(Column %in% names(county_emissions_forecast)) %>%
   bind_rows(
-    ctu_population_meta %>% 
+    ctu_population_meta %>%
       filter(Column %in% names(county_emissions_forecast))
-  ) %>% 
-  arrange(match(Column, names(county_emissions_forecast))) %>% 
+  ) %>%
+  arrange(match(Column, names(county_emissions_forecast))) %>%
   unique()
 
 
 saveRDS(county_emissions_forecast, "_transportation/data/rtdm_county_emissions_forecast.RDS")
 saveRDS(county_emissions_forecast_meta, "_transportation/data/rtdm_county_emissions_forecast_meta.RDS")
-

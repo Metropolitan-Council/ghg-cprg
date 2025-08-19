@@ -5,7 +5,6 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
-library(equatiomatic)
 
 
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
@@ -44,8 +43,8 @@ vmt_model_data <- readRDS(file.path(here::here(), "_transportation/data/vmt_mode
 
 mndot_vmt_ctu_gap_filled <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu_gap_filled.RDS"))
 vmt_gap_fill_model <- readRDS(file.path(here::here(), "_transportation/data/vmt_gap_fill_model.RDS"))
-mndot_vmt_county_marginals <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_county_marginals.RDS")) %>% 
-  mutate(county_pct = sum_ctu_vmt/county_daily_vmt) %>% 
+mndot_vmt_county_marginals <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_county_marginals.RDS")) %>%
+  mutate(county_pct = sum_ctu_vmt / county_daily_vmt) %>%
   left_join(cprg_county %>% select(geoid, county_name) %>% sf::st_drop_geometry() %>% unique())
 
 # hookaddcap()
@@ -182,35 +181,42 @@ Cities without a complete time series from 2010 to 2023 were modeled.
 
 ##### Gap-filled city vehicle miles traveled
 
-
-
 Modeling took place in [mndot_vmt_ctu_gap_fill_model.R](data-raw/mndot_vmt_ctu_gap_fill_model.R).
 
-Most counties have 
+All counties have the majority of their VMT accounted for when totaling up reported city level VMT. 
 
-```{r}
-plot_ly(
-  data = mndot_vmt_county_marginals %>% 
+```{r fig-vmt-county-ctu-gap}
+#| fig-cap: "Proportion of county VMT accounted for by city VMT"
+#| out-width: "95%"
+
+fig_vmt_county_ctu_gap <- plot_ly(
+  source = "fig-vmt-county-ctu-gap",
+  type = "bar",
+  data = mndot_vmt_county_marginals %>%
     filter(inventory_year == 2022),
   x = ~county_name,
   y = ~county_pct,
   hoverinfo = "text",
-  hovertemplate = ~paste0(   
-      county_name, "<br>",
-      inventory_year, "<br>",
-      scales::percent(county_pct), " of VMT accounted for in CTU estimates", "<br>",
-      "<extra></extra>"
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    inventory_year, "<br>",
+    scales::percent(county_pct), " of VMT accounted for in city estimates", "<br>",
+    "<extra></extra>"
   )
-) %>% 
-  plotly_layout() %>% 
-  layout(yaxis = list(tickformat = "1%"))
+) %>%
+  plotly_layout(x_title = "County",
+                y_title = "% of county VMT accounted for",
+                main_title = "Most county VMT is accounted for in city estimates") %>%
+  layout(yaxis = list(tickformat = "1%"),
+         xaxis = list(categoryorder = "total descending"))
 ```
 
+For cites without reported annual MnDOT VMT, we estimated VMT from 2010 to 2022 using a model trained on population, households, employment, county, and Imagine 2050 designation. 
 
-```{r vmt-gap-fill-model-latex}
-#| output: asis
-equatiomatic::extract_eq(model = vmt_gap_fill_model)
-```
+<!-- ```{r vmt-gap-fill-model-latex} -->
+<!-- #| output: asis -->
+<!-- equatiomatic::extract_eq(model = vmt_gap_fill_model) -->
+<!-- ``` -->
 
 
 #### Limitations

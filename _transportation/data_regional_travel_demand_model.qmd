@@ -62,7 +62,7 @@ Model inputs include
 
 The base-year model outputs best represent year 2023 and forecast out to year 2050. 
 
-## Calculating VMT from the model network
+#### Calculating VMT from the model network
 
 The regional travel demand model network is made up of nodes and segments. We use the network segment-level information to calculate VMT. 
 
@@ -75,7 +75,7 @@ Code for processing RTDM outputs relies on internal file system access and is no
 #### Limitations
 
 - The regional travel demand model, by definition, is built to function at a regional level. Scaling down to smaller geographies is stretching the limits of what it can do.
-- The model outputs a base year estimate (2023) and future year estimate (2050). All intermediary years (2024-2049) are interpolated between the two points. 
+- The model outputs a base year estimate (2023) and future year estimate (2050). All intermediary years (2024-2049) are interpolated linearly between the two points. 
 
 <!-- - We may want to consider using non-permanent counters and/or counters from just outside the study region to increase the total number of calibration roads.  -->
 
