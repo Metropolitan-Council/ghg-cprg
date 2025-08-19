@@ -1,7 +1,7 @@
 testthat::test_that("state DOT VMT", {
   mndot_vmt_ctu <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu.RDS"))
 
-  testthat::expect_equal(nrow(mndot_vmt_ctu), 2589)
+  testthat::expect_equal(nrow(mndot_vmt_ctu), 3575)
 
   # ensure we have all available years
   testthat::expect_equal(
@@ -9,7 +9,7 @@ testthat::test_that("state DOT VMT", {
     c(
       "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008",
       "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016",
-      "2017", "2018", "2019", "2020", "2021", "2022", "2023"
+      "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"
     )
   )
 
@@ -20,25 +20,41 @@ testthat::test_that("state DOT VMT", {
     unique() %>%
     testthat::expect_equal("Minneapolis")
 
-  # expect that these CTUs are not included
-  testthat::expect_false(
-    unique(unique(mndot_vmt_ctu$ctu_name) %in%
-      c(
-        "Baytown", "Benton", "Bethel", "Birchwood Village", "Blakeley",
-        "Camden", "Castle Rock", "Cedar Lake", "Cologne", "Credit River",
-        "Dahlgren", "Denmark", "Douglas", "Elko New Market", "Empire",
-        "Eureka", "Fort Snelling", "Greenfield", "Greenvale", "Grey Cloud Island",
-        "Hampton", "Hancock", "Hanover", "Helena", "Hilltop", "Hollywood",
-        "Independence", "Jackson", "Lake Saint Croix Beach", "Lakeland Shores",
-        "Laketown", "Landfall", "Lexington", "Lilydale", "Linwood", "Loretto",
-        "Louisville", "Maple Plain", "Marshan", "May", "Mayer", "Miesville",
-        "Minnetonka Beach", "New Germany", "New Market", "New Trier",
-        "Nininger", "North Oaks", "Norwood Young America", "Nowthen",
-        "Pine Springs", "Randolph", "Ravenna", "Saint Lawrence", "Saint Marys Point",
-        "San Francisco", "Sand Creek", "Sciota", "Spring Lake", "Spring Park",
-        "Sunfish Lake", "Tonka Bay", "Vermillion", "Waterford", "Watertown",
-        "West Lakeland", "White Bear", "Woodland", "Young America"
-      ))
+  # expect that these CTUs are included
+  testthat::expect_true(
+    unique(
+      unique(mndot_vmt_ctu$ctu_name) %in%
+      unique(c("Afton", "Andover", "Anoka", "Apple Valley", "Arden Hills", 
+        "Bayport", "Belle Plaine", "Bethel", "Birchwood Village", "Blaine", 
+        "Bloomington", "Brooklyn Center", "Brooklyn Park", "Burnsville", 
+        "Carver", "Centerville", "Champlin", "Chanhassen", "Chaska", 
+        "Circle Pines", "Coates", "Cologne", "Columbia Heights", "Columbus", 
+        "Coon Rapids", "Corcoran", "Cottage Grove", "Crystal", "Dayton", 
+        "Deephaven", "Dellwood", "Eagan", "East Bethel", "Eden Prairie", 
+        "Edina", "Elko New Market", "Excelsior", "Falcon Heights", "Farmington", 
+        "Forest Lake", "Fridley", "Gem Lake", "Golden Valley", "Grant", 
+        "Greenfield", "Greenwood", "Ham Lake", "Hamburg", "Hampton", 
+        "Hanover", "Hastings", "Hilltop", "Hopkins", "Hugo", "Independence", 
+        "Inver Grove Heights", "Jordan", "Lake Elmo", "Lake Saint Croix Beach", 
+        "Lakeland Shores", "Lakeland", "Lakeville", "Landfall", "Lauderdale", 
+        "Lexington", "Lilydale", "Lino Lakes", "Little Canada", "Long Lake", 
+        "Loretto", "Mahtomedi", "Maple Grove", "Maple Plain", "Maplewood", 
+        "Marine on Saint Croix", "Mayer", "Medicine Lake", "Medina", 
+        "Mendota Heights", "Mendota", "Miesville", "Minneapolis", "Minnetonka Beach", 
+        "Minnetonka", "Minnetrista", "Mound", "Mounds View", "New Brighton", 
+        "New Germany", "New Hope", "New Prague", "New Trier", "Newport", 
+        "North Oaks", "North Saint Paul", "Northfield", "Norwood Young America", 
+        "Nowthen", "Oak Grove", "Oak Park Heights", "Oakdale", "Orono", 
+        "Osseo", "Pine Springs", "Plymouth", "Prior Lake", "Ramsey", 
+        "Randolph", "Richfield", "Robbinsdale", "Rockford", "Rogers", 
+        "Rosemount", "Roseville", "Saint Anthony", "Saint Bonifacius", 
+        "Saint Francis", "Saint Louis Park", "Saint Marys Point", "Saint Paul Park", 
+        "Saint Paul", "Savage", "Scandia", "Shakopee", "Shoreview", "Shorewood", 
+        "South Saint Paul", "Spring Lake Park", "Spring Park", "Stillwater", 
+        "Sunfish Lake", "Tonka Bay", "Vadnais Heights", "Vermillion", 
+        "Victoria", "Waconia", "Watertown", "Wayzata", "West Saint Paul", 
+        "White Bear Lake", "Willernie", "Woodbury", "Woodland", "Credit River", 
+        "Empire")))
   )
 
   testthat::expect_equal(
@@ -50,13 +66,13 @@ testthat::test_that("state DOT VMT", {
       filter(n >= 2) %>%
       extract2("ctu_name"),
     c(
-      # "Blaine", 
+      "Blaine",
       "Chanhassen",
-      # "Hastings", 
+      "Hastings",
       "Saint Anthony",
-      # "Shorewood",
-      "Spring Lake Park"
-      # "White Bear Lake"
+      "Shorewood",
+      "Spring Lake Park",
+      "White Bear Lake"
     )
   )
 })
