@@ -225,9 +225,11 @@ bau_projection_plot <- ggplot() +
   # Clean theme
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 20, face = "bold"),
-    plot.subtitle = element_text(size = 16),
+    plot.title = element_text(size = 22, face = "bold"),
+    plot.subtitle = element_text(size =18),
     legend.position = "right",
+    legend.text = element_text(size = 16),
+    legend.title = element_text(size = 18),
     panel.grid.minor = element_blank(),
     axis.text = element_text(size = 14),
     axis.title = element_text(size = 16)
@@ -238,10 +240,10 @@ bau_projection_plot <- ggplot() +
 bau_projection_plot
 
 ggsave(plot = bau_projection_plot,
-       filename = "INPUT FILE PATH/seven_county_bau_projections.png",  # Add your file path here
-       width = 12,          # Wide format
-       height = 6,          # Standard height for wide plots
-       units = "in",        # Inches
-       dpi = 300,          # High resolution (300 DPI for print quality)
-       bg = "white") 
+       filename = paste0(wd,"seven_county_bau_projections.png"),  # add your file path here
+       width = 12,          
+       height = 6,          
+       units = "in",
+       dpi = 300, 
+       bg = "white")
 

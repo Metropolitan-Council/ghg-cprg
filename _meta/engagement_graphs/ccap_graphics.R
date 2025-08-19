@@ -77,146 +77,50 @@ baseline_comparison_facet <- ggplot(
 
 baseline_comparison_facet
 
-# add Spanish version
+# 2022 plot by subsector
 
-baseline_emissions_sector <- mutate(baseline_emissions_sector,
-                                    sector_spanish = case_when(
-                                      baseline_sector == "Electricity" ~ "Electricidad",
-                                      baseline_sector == "Transportation" ~ "Transporte",
-                                      baseline_sector == "Building Fuel" ~ "Combustible\npara edificios",
-                                      baseline_sector == "Industrial" ~ "Industria",
-                                      baseline_sector == "Waste" ~ "Residuos",
-                                      baseline_sector == "Agriculture" ~ "Agricultura",
-                                      baseline_sector == "Natural Systems" ~ "Sistemas\nnaturales"
-                                    )
-)
-
-baseline_comparison_facet_spanish <- ggplot(
-  baseline_emissions_sector %>%
-    filter(emissions_year >= 2005 & emissions_year <= 2021),
-  aes(
-    x = emissions_year, y = MT_CO2e / 1000000,
-    fill = baseline_sector,
-    col = baseline_sector
-  )
-) +
-  geom_area(alpha = 0.4) +
-  geom_line(size = 1.2) +
-  geom_hline(yintercept = 0, size = 1.2, col = "black", linetype = "dashed") +
-  labs(fill = "sector_spanish") +
-  ggtitle("Inventario de emisiones de 11 condados ") +
-  scale_fill_manual(values = baseline_colors, guide = "none") +
-  scale_color_manual(values = baseline_colors, guide = "none") +
-  theme_bw() +
-  xlab("") +
-  ylab(expression(paste("Millones de toneladas métricas de ", CO[2], "e"))) +
-  theme(
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.text.x = element_text(size = 15, angle = -90, vjust = .25),
-    text = element_text(size = 20, family = "sans")
-  ) +
-  facet_grid(. ~ baseline_sector, labeller = as_labeller(setNames(
-    baseline_emissions_sector$sector_spanish,
-    baseline_emissions_sector$baseline_sector
-  )))
-
-
-baseline_comparison_facet_spanish
-
-ggsave(paste0(wd, "ghg_sector_2021_spanish.png"),
-       baseline_comparison_facet_spanish,
-       width = 12,
-       height = 8,
-       units = "in"
-)
-
-emissions_sector <- county_emissions %>%
-  mutate(category = case_when(
-    category == "Electricity" ~ paste(sector, "electricity"),
-    category == "Natural Gas" ~ paste(sector, "natural gas"),
-    TRUE ~ category
-  )) %>%
-  group_by(year, sector) %>%
-  summarize(MT_CO2e = sum(value_emissions)) %>%
-  mutate(sector = factor(sector, levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")))
-
-
-# Plot by sector
-sector_comparison <- ggplot(
-  emissions_sector %>% filter(year == 2021),
-  aes(x = sector, y = MT_CO2e / 1000000, fill = sector)
-) +
-  geom_bar(stat = "identity", position = position_dodge(), col = "black") +
-  labs(fill = "sector") +
-  ggtitle("2021 Regional Emissions Inventory") +
-  scale_fill_manual(values = sector_colors, guide = "none") +
-  theme_minimal() +
-  xlab("") +
-  ylab(expression(paste("Million metric tons of ", CO[2], "e"))) +
-  theme(
-    panel.grid.major.x = element_blank(),
-    axis.text.x = element_text(size = 16),
-    text = element_text(size = 20, family = "sans")
-  )
-
-
-sector_comparison
-
-# ggsave(paste0(wd,"ghg_sector_2021.png"),
-#        sector_comparison,
-#        width = 12,
-#        height = 8,
-#        units = "in")
-
-
-
-# ggsave(paste0(wd,"ghg_sector_temporal.png"),
-#        baseline_comparison,
-#        width = 14,
-#        height = 8,
-#        units = "in",
-#        dpi = 400)
-
-# Plot by subsector
+county_emissions %>% distinct(sector, category) %>% print(n = 50)
 
 category_order <- c(
   "Aviation", "Passenger vehicles", "Buses", "Trucks", # Transportation
-  "Residential electricity", "Residential natural gas", # Residential
   "Commercial electricity", "Commercial natural gas", "Commercial fuel combustion", # Commercial
-  "Industrial electricity", "Industrial natural gas", "Industrial fuel combustion",
-  "Industrial processes", "Refinery processes", # Industrial
+  "Industrial electricity", "Industrial natural gas", "Industrial fuel combustion", "Industrial processes", "Refinery processes", # Industrial
+  "Residential electricity", "Residential natural gas", # Residential
   "Solid waste", "Wastewater", # Waste
   "Livestock", "Cropland", # Agriculture
-  "Natural systems", "Urban greenery" # Natural Systems
+  "Freshwater", "Sequestration" # Natural Systems
 )
 
 emissions_subsector <- county_emissions %>%
   mutate(category = case_when(
-    category == "On-road" ~ source,
+    category == "Electricity" ~ str_to_sentence(paste(sector, category)),
+    category == "Building Fuel" ~ str_to_sentence(paste(sector, "natural gas")),
     TRUE ~ category
-  )) %>%
+  )) %>% 
   group_by(emissions_year, sector, category) %>%
-  summarize(MT_CO2e = sum(value_emissions)) %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>%
   mutate(sector = factor(sector, levels = c("Transportation", "Commercial", "Industrial", "Residential", "Waste", "Agriculture", "Natural Systems")))
 
 category_colors_vector <- unlist(category_colors, use.names = TRUE)
 
 subsector_comparison <- ggplot(
   emissions_subsector %>%
+    filter(emissions_year == 2022) %>%
     mutate(
       category = factor(category, levels = category_order)
-    ) %>%
-    filter(emissions_year == 2022),
-  aes(x = sector, y = MT_CO2e / 1000000, fill = category)
+    ),
+  aes(x = sector, y = value_emissions / 1000000, fill = category)
 ) +
   geom_bar(stat = "identity", position = "stack", col = "black") +
   labs(fill = "Subsector") +
   scale_fill_manual(values = category_colors_vector) +
   theme_minimal() +
-  xlab("") +
-  ggtitle("2021 Regional Emissions Profile") +
-  ylab(expression(paste("Million metric tons of ", CO[2], "e"))) +
+  labs(
+    title = "2022 Regional Emissions Profile",
+    subtitle = expression(paste("(Million metric tons of ", CO[2], "e)")),
+    x = "Sector",
+    y = ""
+  ) +
   theme(
     panel.grid.major.x = element_blank(),
     axis.text.x = element_text(size = 20, angle = -25),
@@ -228,12 +132,13 @@ subsector_comparison
 
 
 
-# ggsave(paste0(wd,"ghg_subsector.png"),
-#        subsector_comparison,
-#        width = 14,
-#        height = 8,
-#        units = "in",
-#        dpi = 400)
+ggsave(plot = subsector_comparison,
+       filename = paste0(wd,"/seven_county_ghg_inv_2022.png"),  # add your file path here
+       width = 10,          
+       height = 6,          
+       units = "in",
+       dpi = 300, 
+       bg = "white")
 
 ### subsector by county population
 
