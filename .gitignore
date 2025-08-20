@@ -1283,3 +1283,5 @@ _transportation/data-raw/mndot/vmt_county.CSV
 _transportation/data-raw/mndot/metadata/
 
 _transportation/data-raw/mndot/mileage_city_route_system/
+
+_transportation/data-raw/epa/air_emissions_modeling/2022v2/
