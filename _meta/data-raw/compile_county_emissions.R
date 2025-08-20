@@ -72,7 +72,7 @@ ww_emissions <- readRDS("_waste/data/final_wastewater_allyrs.RDS") %>%
 
 ## solid waste -----
 solid_waste <- readRDS("_waste/data/final_solid_waste_allyrs.RDS") %>%
-  left_join(cprg_county %>% select(county_name, geoid)) %>%
+  left_join(cprg_county %>% select(county_name, geoid), join_by(geoid)) %>%
   ungroup() %>%
   mutate(
     geog_level = "county",
@@ -306,6 +306,9 @@ saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
 write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)
 
+waldo::compare(emissions_all, readRDS("_meta/data/cprg_county_emissions.RDS"))
+# waldo::compare(electric_natgas_nrel_proportioned, readRDS("_energy/data/electric_natgas_nrel_proportioned_expanded.RDS"))
+
 ### carbon stock
 
 natural_systems_stock <- readRDS("_nature/data/nlcd_county_landcover_sequestration_allyrs.RDS") %>%
@@ -313,6 +316,7 @@ natural_systems_stock <- readRDS("_nature/data/nlcd_county_landcover_sequestrati
   mutate(
     emissions_year = inventory_year,
     sector = "Natural Systems",
+    sector_alt = sector,
     geog_level = "county",
     category = "Sequestration",
     factor_source = "Various primary literature",
@@ -324,6 +328,8 @@ natural_systems_stock <- readRDS("_nature/data/nlcd_county_landcover_sequestrati
 
 saveRDS(natural_systems_stock, "_meta/data/cprg_county_carbon_stock.RDS")
 # saveRDS(emissions_all_meta, "_meta/data/cprg_county_carbon_stock_meta.RDS")
+
+waldo::compare(natural_systems_stock, readRDS("_meta/data/cprg_county_carbon_stock.RDS"))
 
 # save emissions to shared drive location
 # source("R/fetch_path.R")

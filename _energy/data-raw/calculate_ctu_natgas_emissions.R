@@ -26,7 +26,7 @@ natgas_ef_scf <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
   ) %>%
   # get rid of unnecessary columns from eGRID factor tables
   group_by(fuel_category, Source) %>%
-  summarize(mt_co2e_mcf = sum(mt_co2e_mcf)) %>%
+  summarize(mt_co2e_mcf = sum(mt_co2e_mcf), .groups = "keep") %>%
   ungroup()
 
 
@@ -49,19 +49,20 @@ coctu_prop <- coctu_mcf %>%
   left_join(county_mcf %>% 
               select(inventory_year = year,
                      county_name,
-                     mcf_county = activity)) %>% 
+                     mcf_county = activity),
+            by = join_by(county_name, inventory_year)) %>% 
   mutate(mcf_prop = mcf/mcf_county) %>% 
   group_by(ctu_name, ctu_class, county_name, sector) %>% 
-  summarize(mean_mcf_prop = mean(mcf_prop))
+  summarize(mean_mcf_prop = mean(mcf_prop), .groups = "keep")
 
 #apply average county proportion to yearly county data for unknown ctu years
 coctu_pred <- county_mcf %>% 
   select(inventory_year = year,
          county_name,
          mcf_county = activity)%>% 
-  left_join(coctu_prop) %>% 
+  left_join(coctu_prop, by = "county_name", relationship = "many-to-many") %>% 
   mutate(mcf = mcf_county * mean_mcf_prop) %>% 
-  anti_join(coctu_res, #remove known years (will report utility data where possible)
+  anti_join(coctu_res, # remove known years (will report utility data where possible)
             by = c("ctu_name", "ctu_class", "county_name", "inventory_year")) %>% 
   mutate(data_source = "Modeled county proportion") %>% 
   select(-c(mcf_county, mean_mcf_prop))
@@ -72,7 +73,7 @@ ctu_full <- bind_rows(coctu_pred,
                         select(-coctu_id_gnis)
 ) %>% 
   group_by(ctu_name, ctu_class, sector, inventory_year, data_source) %>% 
-  summarize(mcf = sum(mcf)) %>% 
+  summarize(mcf = sum(mcf),.groups = "keep") %>% 
   mutate(
     category = "Building Energy",
     source = "Natural Gas") %>% 
@@ -83,7 +84,7 @@ ctu_emissions <- ctu_full %>%
                select(factor_source = Source,
                       mt_co2e_mcf)) %>%
   mutate(
-    value_emissions = mcf * mt_co2e_mcf,
+    value_emissions = round(mcf * mt_co2e_mcf, digits = 2),
     units_emissions = "Metric tons CO2e"
   )
 
