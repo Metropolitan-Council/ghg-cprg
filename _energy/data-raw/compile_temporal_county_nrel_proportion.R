@@ -1,5 +1,6 @@
 # use nrel proportions to breakout county energy deliveries
 # backcast where possible but be clear about interpolation/data weaknesses
+source("R/_load_pkgs.R")
 source("R/global_warming_potential.R")
 
 
@@ -24,7 +25,7 @@ egrid_temporal <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
   ) %>%
   # get rid of unnecessary columns from eGRID factor tables
   group_by(Year, Source) %>%
-  summarize(mt_co2e_mwh = sum(mt_co2e_mwh)) %>%
+  summarize(mt_co2e_mwh = sum(mt_co2e_mwh), .groups = "keep") %>%
   ungroup()
 
 natgas_ef_scf <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
@@ -49,7 +50,7 @@ natgas_ef_scf <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
   ) %>%
   # get rid of unnecessary columns from eGRID factor tables
   group_by(fuel_category, Source) %>%
-  summarize(mt_co2e_mcf = sum(mt_co2e_mcf)) %>%
+  summarize(mt_co2e_mcf = sum(mt_co2e_mcf), .groups = "keep") %>%
   ungroup()
 
 electric_raw <- readRDS(file.path(here::here("_energy", "data", "minnesota_county_elec_ActivityAndEmissions.RDS"))) %>%
@@ -92,7 +93,8 @@ electric_interpolated <- left_join(
     county = unique(electric_raw$county),
     sector = "Electricity"
   ),
-  electric_raw
+  electric_raw,
+  by = join_by(year, county, sector)
 ) %>%
   bind_rows(wi_electric) %>% 
   mutate(
@@ -137,7 +139,8 @@ natgas_interpolated <- left_join(
     county_name = unique(natgas_raw$county_name),
     sector = "Natural gas"
   ),
-  natgas_raw
+  natgas_raw,
+  by = join_by(year, county_name, sector)
 ) %>%
   mutate(
     mcf_modeled = na_kalman(total_mcf),
@@ -163,6 +166,15 @@ natgas_interpolated <- left_join(
 ggplot(natgas_interpolated, aes(x = year, y = value_emissions, col = county_name)) +
   geom_line()
 
+## write intermediary activity data files
+
+saveRDS(natgas_interpolated, "_energy/data/county_natgas_activity.RDS")
+saveRDS(electric_interpolated, "_energy/data/county_elec_activity.RDS")
+
+# waldo::compare(natgas_interpolated, readRDS("_energy/data/county_natgas_activity.RDS"))
+# waldo::compare(electric_interpolated, readRDS("_energy/data/county_elec_activity.RDS"))
+
+
 # calculate year proportions and then add mean proportion values in earlier years
 
 nrel_proportions <- nrel_emissions %>%
@@ -175,13 +187,13 @@ nrel_proportions <- nrel_emissions %>%
 
 average_proportions <- nrel_proportions %>%
   group_by(county_name, source, sector_raw) %>%
-  summarize(mean_prop = mean(sector_proportion)) %>%
+  summarize(mean_prop = mean(sector_proportion), .groups = "keep") %>%
   ungroup()
 
 nrel_proportions_expanded <- nrel_proportions %>%
   bind_rows(average_proportions %>%
     expand(county_name, source, sector_raw, year = 2005:2016) %>%
-    left_join(average_proportions) %>%
+    left_join(average_proportions, by = join_by(county_name, source, sector_raw)) %>%
     rename(sector_proportion = mean_prop))
 
 electric_natgas_nrel_proportioned <- electric_interpolated %>%
@@ -192,10 +204,12 @@ electric_natgas_nrel_proportioned <- electric_interpolated %>%
     by = c("county_name", "source" = "source", "year")
   ) %>%
   mutate(
-    value_emissions = sector_proportion * value_emissions
+    value_emissions = round(sector_proportion * value_emissions, digits = 2)
   ) %>%
   rename(sector = sector_raw) %>%
   mutate(category = if_else(source == "Electricity", "Electricity", "Building Fuel"))
 
-waldo::compare(electric_natgas_nrel_proportioned, readRDS("_energy/data/electric_natgas_nrel_proportioned.RDS"))
+# waldo::compare(electric_natgas_nrel_proportioned, readRDS("_energy/data/electric_natgas_nrel_proportioned.RDS"))
+# waldo::compare(electric_natgas_nrel_proportioned, readRDS("_energy/data/electric_natgas_nrel_proportioned_expanded.RDS"))
+
 saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_proportioned_expanded.RDS")
