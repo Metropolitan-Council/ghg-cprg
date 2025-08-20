@@ -14,24 +14,36 @@ county_emissions <- read_rds("_meta/data/cprg_county_emissions.RDS")
 
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   left_join(cprg_county %>% select(geoid, county_name),
-    by = join_by(geoid)
+            by = join_by(geoid)
   )
 
-mndot_vmt_ctu <- readRDS("_transportation/data/mndot_vmt_ctu.RDS")
+mndot_vmt_ctu_gap_filled <- readRDS("_transportation/data/mndot_vmt_ctu_gap_filled.RDS") %>% 
+  filter(inventory_year < 2023)
 
+mndot_vmt_county <- readRDS("_transportation/data/mndot_vmt_county_marginals.RDS") %>% 
+  select(geoid, inventory_year, county_daily_vmt)
 
-ctu_vmt_percent <- left_join(mndot_vmt_ctu, cprg_county %>%
-  select(geoid, county_name),
-by = "geoid"
+ctu_vmt_percent <- left_join(mndot_vmt_ctu_gap_filled, 
+                             cprg_county %>%
+                               select(geoid, county_name) %>% 
+                               sf::st_drop_geometry(),
+                             by = "geoid"
 ) %>%
-  group_by(county_name, vmt_year) %>%
-  mutate(county_annual_vmt = sum(annual_vmt)) %>%
+  # group_by(county_name, inventory_year) %>%
+  left_join(mndot_vmt_county) %>% 
+  # mutate(county_annual_vmt = sum(annual_vmt)) %>%
   ungroup() %>%
   mutate(
-    ctu_vmt_percent = annual_vmt / county_annual_vmt,
-    vmt_year = as.numeric(vmt_year)
-  )
+    ctu_vmt_percent = final_city_vmt / county_daily_vmt,
+    vmt_year = as.numeric(inventory_year)
+  ) %>% 
+  left_join(ctu_population %>% 
+              select(geoid, ctu_class, ctu_name, coctu_id_gnis) %>% 
+              unique())
 
+ctu_vmt_pct_2010 <- ctu_vmt_percent %>% 
+  filter(inventory_year == 2010) %>% 
+  mutate(ctu_vmt_percent)
 
 # transportation -----
 transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS") %>%
@@ -48,16 +60,16 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
   group_by(emissions_year, county_name, sector, category, source) %>%
   summarize(value_emissions = sum(emissions_metric_tons_co2e), .groups = "keep") %>%
   left_join(ctu_vmt_percent,
-    by = c("county_name",
-      "emissions_year" = "vmt_year"
-    ),
-    relationship = "many-to-many"
-  ) %>%
+            by = c("county_name",
+                   "emissions_year" = "vmt_year"
+            ),
+            relationship = "many-to-many"
+  ) %>% 
   ungroup() %>%
   mutate(
     value_emissions = value_emissions * ctu_vmt_percent,
     geog_level = "ctu"
-  ) %>%
+  )
   group_by(emissions_year, geog_level, sector, category, source, ctu_name, ctu_class, ctuid, gnis) %>%
   summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup() %>%
