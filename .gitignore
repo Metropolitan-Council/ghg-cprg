@@ -1325,3 +1325,7 @@ changelog.html
 _meta/lidac_maps.html
 
 _energy/_energy_natural_gas_emissions.html
+
+_transportation/data-raw/epa/air_emissions_modeling/
+
+_transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2025-0820-150847.csv
