@@ -91,9 +91,9 @@ epa_nei_onroad_summary <- epa_nei_onroad %>%
     .groups = "keep"
   ) %>%
   mutate(ann_value_grams = emissions_short_tons %>%
-           units::as_units("short_ton") %>%
-           units::set_units("gram") %>%
-           as.numeric()) %>%
+    units::as_units("short_ton") %>%
+    units::set_units("gram") %>%
+    as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -122,9 +122,9 @@ epa_emismod_summary <- epa_emismod %>%
     .groups = "keep"
   ) %>%
   mutate(ann_value_grams = emissions_short_tons %>%
-           units::as_units("short_ton") %>%
-           units::set_units("gram") %>%
-           as.numeric()) %>%
+    units::as_units("short_ton") %>%
+    units::set_units("gram") %>%
+    as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -157,9 +157,9 @@ epa_equates_summary <- epa_equates %>%
   ) %>%
   # convert to grams
   mutate(ann_value_grams = emissions_short_tons %>%
-           units::as_units("short_ton") %>%
-           units::set_units("gram") %>%
-           as.numeric()) %>%
+    units::as_units("short_ton") %>%
+    units::set_units("gram") %>%
+    as.numeric()) %>%
   select(-emissions_short_tons) %>%
   pivot_wider(
     names_from = poll,
@@ -433,12 +433,13 @@ epa_onroad_emissions_compile <- epa_emissions_combine %>%
 
 # expect no missing SCC codes
 testthat::expect_equal(
-  epa_onroad_emissions_compile %>% 
-    filter(is.na(vehicle_type)) %>% 
-    select(emissions_year, scc6, scc6_desc) %>% 
-    unique() %>% 
+  epa_onroad_emissions_compile %>%
+    filter(is.na(vehicle_type)) %>%
+    select(emissions_year, scc6, scc6_desc) %>%
+    unique() %>%
     nrow(),
-  0)
+  0
+)
 
 
 
@@ -457,7 +458,7 @@ epa_onroad_emissions_compile_meta <- tibble::tribble(
   filter(Column %in% names(epa_onroad_emissions_compile))
 
 saveRDS(epa_onroad_emissions_compile, "_transportation/data/epa_onroad_emissions_compile.RDS",
-        compress = "xz"
+  compress = "xz"
 )
 saveRDS(epa_onroad_emissions_compile_meta, "_transportation/data/epa_onroad_emissions_compile_meta.RDS")
 
@@ -512,9 +513,9 @@ epa_onroad_source_set <-
   ) %>%
   unique() %>%
   select(data_source, dataset, moves_edition,
-         emissions_year = calc_year,
-         process_source,
-         file_location
+    emissions_year = calc_year,
+    process_source,
+    file_location
   )
 
 saveRDS(epa_onroad_source_set, "_transportation/data/epa_onroad_source_set.RDS")
