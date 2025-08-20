@@ -6,100 +6,111 @@ source("R/_load_pkgs.R")
 cprg_colors <- source("R/cprg_colors.R")
 
 # create baseline and subsector sectors
-county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") 
+county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") %>% 
+  mutate(sector_alt = case_when(
+    category == "Electricity" ~ category,
+    category == "Building Fuel" ~ category,
+    category == "Commercial fuel combustion" ~ "Building Fuel",
+    category == "Commercial natural gas" ~ "Building Fuel",
+    sector == "Industrial" ~ "Industrial Processes",
+    TRUE ~ sector),
+    category_alt = case_when(
+      category == "Electricity" ~ str_to_sentence(paste(sector, category)),
+      category == "Building Fuel" ~ str_to_sentence(paste(sector, category)),
+      category == "Commercial fuel combustion" ~ "Commercial building fuel",
+      category == "Commercial natural gas" ~ "Commercial building fuel",
+      TRUE ~ category
+    )
+  ) %>% 
+  filter(emissions_year >= 2005)
 
 # summarize to sector and reorder sectors
 baseline_emissions_sector <- county_emissions %>%
-  group_by(emissions_year, sector)  %>%
+  group_by(emissions_year, sector_alt)  %>%
   summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>%
-  mutate(sector = factor(sector,
+  mutate(sector_alt = factor(sector_alt,
                          levels = c("Transportation", 
-                                    "Commercial", 
-                                    "Industrial",
-                                    "Residential", 
+                                    "Electricity", 
+                                    "Building Fuel", 
+                                    "Industrial Processes",
                                     "Waste", 
                                     "Agriculture", 
                                     "Natural Systems")
-  ))
+  )) %>% 
+  filter(!is.na(sector_alt))
 
+line_break_labeller <- function(x) {
+  str_replace_all(x, " ", "\n")
+}
 
-# Plot by year
-baseline_comparison <- ggplot(
-  baseline_emissions_sector %>%
-    filter(emissions_year >= 2005 & emissions_year <= 2022),
-  aes(x = emissions_year, y = value_emissions / 1000000, col = sector)
-) +
-  geom_line(size = 1.6) +
-  geom_hline(yintercept = 0, size = 2, col = "black", linetype = "dashed") +
-  labs(fill = "sector") +
-  ggtitle("Eleven-County Regional Emissions Inventory") +
-  scale_color_manual(values = unlist(sector_colors), name = "Sector") +
-  theme_bw() +
-  xlab("") +
-  ylab(expression(paste("Million metric tons of ", CO[2], "e"))) +
-  theme(
-    panel.grid.major.x = element_blank(),
-    axis.text.x = element_text(size = 20),
-    text = element_text(size = 20, family = "sans")
-  )
-
-baseline_comparison
-
+### facet plot 2005-2022 ####
 baseline_comparison_facet <- ggplot(
   baseline_emissions_sector %>%
     filter(emissions_year >= 2005 & emissions_year <= 2022),
   aes(
     x = emissions_year, y = value_emissions / 1000000,
-    fill = sector,
-    col = sector
+    fill = sector_alt,
+    col = sector_alt
   )
 ) +
   geom_area(alpha = 0.4) +
   geom_line(size = 1.2) +
   geom_hline(yintercept = 0, size = 1.2, col = "black", linetype = "dashed") +
-  labs(fill = "sector") +
+  labs(fill = "sector_alt") +
   # ggtitle() +
   # ggsubtitle(expression(paste("Million metric tons of ", CO[2], "e"))) +
-  scale_fill_manual(values = unlist(sector_colors), guide = "none") +
-  scale_color_manual(values = unlist(sector_colors), guide = "none") +
+  scale_fill_manual(values = unlist(sector_colors_alt), guide = "none") +
+  scale_color_manual(values = unlist(sector_colors_alt), guide = "none") +
   theme_bw() +
   labs(title = "Eleven-County Regional Emissions Inventory",
        subtitle = expression(paste("(Million metric tons of ", CO[2], "e)"))) +
-  xlab("") +
+  xlab("Inventory: 2005 - 2022") +
   ylab("") +
   theme(
     panel.grid.major.x = element_blank(),
     panel.grid.minor = element_blank(),
-    axis.text.x = element_text(size = 15, angle = -90, vjust = .25),
+    axis.text.x = element_blank(),
     text = element_text(size = 20, family = "sans")
   ) +
-  facet_grid(. ~ sector)
+  facet_grid(. ~ sector_alt, labeller = labeller(sector_alt = line_break_labeller))
 
 baseline_comparison_facet
 
+ggsave(plot = baseline_comparison_facet,
+       filename = paste0(wd,"/eleven_county_ghg_inv_2005_2022.png"),  # add your file path here
+       width = 12,          
+       height = 6,          
+       units = "in",
+       dpi = 300, 
+       bg = "white")
+
 # 2022 plot by subsector
 
-county_emissions %>% distinct(sector, category) %>% print(n = 50)
+
+emissions_subsector <- county_emissions %>%
+  group_by(emissions_year, sector_alt, category_alt) %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>%
+  mutate(sector_alt = factor(sector_alt, levels = c("Transportation", 
+                                                    "Electricity", 
+                                                    "Building Fuel",
+                                                    "Industrial Processes",  
+                                                    "Waste", 
+                                                    "Agriculture", 
+                                                    "Natural Systems"))) %>% 
+  ungroup()
+
+
+emissions_subsector %>% distinct(sector_alt, category_alt) %>% print(n = 50)
 
 category_order <- c(
   "Aviation", "Passenger vehicles", "Buses", "Trucks", # Transportation
-  "Commercial electricity", "Commercial natural gas", "Commercial fuel combustion", # Commercial
-  "Industrial electricity", "Industrial natural gas", "Industrial fuel combustion", "Industrial processes", "Refinery processes", # Industrial
-  "Residential electricity", "Residential natural gas", # Residential
+  "Residential electricity", "Commercial electricity","Industrial electricity", #Electricity
+  "Residential building fuel","Commercial building fuel", "Industrial building fuel", # Building Fuel
+  "Industrial natural gas", "Industrial fuel combustion", "Industrial processes", "Refinery processes", # Industrial
   "Solid waste", "Wastewater", # Waste
   "Livestock", "Cropland", # Agriculture
   "Freshwater", "Sequestration" # Natural Systems
 )
-
-emissions_subsector <- county_emissions %>%
-  mutate(category = case_when(
-    category == "Electricity" ~ str_to_sentence(paste(sector, category)),
-    category == "Building Fuel" ~ str_to_sentence(paste(sector, "natural gas")),
-    TRUE ~ category
-  )) %>% 
-  group_by(emissions_year, sector, category) %>%
-  summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>%
-  mutate(sector = factor(sector, levels = c("Transportation", "Commercial", "Industrial", "Residential", "Waste", "Agriculture", "Natural Systems")))
 
 category_colors_vector <- unlist(category_colors, use.names = TRUE)
 
@@ -107,34 +118,33 @@ subsector_comparison <- ggplot(
   emissions_subsector %>%
     filter(emissions_year == 2022) %>%
     mutate(
-      category = factor(category, levels = category_order)
+      category_alt = factor(category_alt, levels = category_order)
     ),
-  aes(x = sector, y = value_emissions / 1000000, fill = category)
+  aes(x = sector_alt, y = value_emissions, fill = category_alt)
 ) +
   geom_bar(stat = "identity", position = "stack", col = "black") +
   labs(fill = "Subsector") +
+  scale_x_discrete(labels = line_break_labeller) +
   scale_fill_manual(values = category_colors_vector) +
   theme_minimal() +
   labs(
     title = "2022 Regional Emissions Profile",
     subtitle = expression(paste("(Million metric tons of ", CO[2], "e)")),
-    x = "Sector",
+    x = "",
     y = ""
   ) +
   theme(
     panel.grid.major.x = element_blank(),
-    axis.text.x = element_text(size = 20, angle = -25),
+    axis.text.x = element_text(size = 17, vjust = 1),
     text = element_text(size = 20, family = "sans")
-  )
-
+  ) +
+  scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
 
 subsector_comparison
 
-
-
 ggsave(plot = subsector_comparison,
-       filename = paste0(wd,"/seven_county_ghg_inv_2022.png"),  # add your file path here
-       width = 10,          
+       filename = paste0(wd,"/eleven_county_ghg_inv_2022.png"),  # add your file path here
+       width = 14,          
        height = 6,          
        units = "in",
        dpi = 300, 
@@ -142,18 +152,22 @@ ggsave(plot = subsector_comparison,
 
 ### subsector by county population
 
-emissions_sector_per_capita <- county_emissions %>%
+county_emissions_no_msp <- county_emissions %>% 
+  filter(county_name != "MSP Airport")
+
+emissions_sector_per_capita <- county_emissions_no_msp %>%
   mutate(emissions_per_capita = value_emissions / county_total_population) %>%
   group_by(emissions_year, county_name, sector) %>%
   summarize(emissions_per_capita = sum(emissions_per_capita, na.rm = TRUE))
 
-emissions_sector_per_county <- county_emissions %>%
+emissions_sector_per_county <- county_emissions_no_msp %>%
   group_by(emissions_year, county_name, sector) %>%
   summarize(emissions_total = sum(value_emissions, na.rm = TRUE))
 
 sector_colors_vector <- unlist(sector_colors, use.names = TRUE)
 
-county_order <- county_emissions %>%
+
+county_order <- county_emissions_no_msp %>%
   filter(emissions_year == 2022) %>%
   group_by(county_name) %>%
   summarize(total_emissions = sum(value_emissions, na.rm = TRUE)) %>%
@@ -193,7 +207,40 @@ sector_total_comparison <- emissions_sector_per_county %>%
   labs(
     fill = "Sector",
     x = NULL,
-    y = expression(paste("Metric tons of ", CO[2], "e"))
+    y = expression(paste("Million metric tons of ", CO[2], "e"))
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    axis.text.y = element_text(size = 14),
+    axis.text.x = element_text(size = 14),
+    text = element_text(size = 16, family = "sans")
+  ) +
+  scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
+
+sector_total_comparison
+
+### remove less sensible per capita emissions
+
+emissions_people_sector_per_capita <- county_emissions_no_msp %>%
+  filter(sector != "Industrial",
+    category %in% c("Passenger vehicles", "Buses", "Building Fuel",
+                         "Electricity", "Commercial fuel combustion", "Wastewater","Solid waste")) %>% 
+  mutate(emissions_per_capita = value_emissions / county_total_population) %>%
+  group_by(emissions_year, county_name, sector) %>%
+  summarize(emissions_per_capita = sum(emissions_per_capita, na.rm = TRUE))
+
+sector_per_capita_comparison_people <- emissions_people_sector_per_capita %>%
+  filter(emissions_year == 2022) %>%
+  mutate(county_name = factor(county_name, levels = county_order)) %>%
+  ggplot(aes(x = county_name, y = emissions_per_capita, fill = sector)) +
+  geom_bar(stat = "identity", position = "stack") +
+  scale_fill_manual(values = sector_colors_vector) +
+  coord_flip() +
+  labs(
+    fill = "Sector",
+    x = NULL,
+    y = expression(paste("Metric tons of ", CO[2], "e per capita"))
   ) +
   theme_minimal() +
   theme(
@@ -203,4 +250,4 @@ sector_total_comparison <- emissions_sector_per_county %>%
     text = element_text(size = 16, family = "sans")
   )
 
-sector_total_comparison
+sector_per_capita_comparison_people
