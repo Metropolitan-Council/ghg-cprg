@@ -302,11 +302,13 @@ emissions_all_meta <- tibble::tribble(
   "emissions_per_capita", class(emissions_all$emissions_per_capita), "Metric tons CO~2~e per person living in given county for given sector and category"
 )
 
+# waldo::compare(emissions_all, readRDS("_meta/data/cprg_county_emissions.RDS"))
+
+
 saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")
 write.csv(emissions_all, "_meta/data/cprg_county_emissions.CSV", row.names = FALSE)
 
-waldo::compare(emissions_all, readRDS("_meta/data/cprg_county_emissions.RDS"))
 # waldo::compare(electric_natgas_nrel_proportioned, readRDS("_energy/data/electric_natgas_nrel_proportioned_expanded.RDS"))
 
 ### carbon stock
