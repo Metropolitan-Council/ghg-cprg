@@ -501,7 +501,7 @@ ggsave(plot = gg_county_ns,
 
 county_emissions %>% filter(sector_alt == "Transportation", 
                             emissions_year %in% c(2005, 2022)) %>% 
-  group_by(emissions_year) %>% 
+  group_by(emissions_year, category_alt) %>% 
   summarize(value_emissions = sum(value_emissions))
 
 county_emissions %>% filter(sector_alt == "Electricity", 
@@ -558,11 +558,23 @@ county_emissions %>% filter(sector_alt != "Electricity",
 ) %>% 
   mutate(emissions_per_capita = value_emissions / total_pop)
 
-county_emissions %>% filter(sector_alt != "Natural Systems",
+county_emissions %>% filter(
+                            category_alt != "Sequestration",
                             emissions_year %in% c(2022)) %>% 
   group_by(sector_alt) %>% 
   summarize(value_emissions = sum(value_emissions)) %>%
   mutate(proportion = value_emissions / sum(value_emissions))
+
+county_emissions %>% 
+  filter( emissions_year %in% c(2005, 2022)) %>% 
+  group_by(sector_alt, emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions), .groups = "drop") %>%
+  group_by(sector_alt) %>%
+  summarize(
+    emissions_2005 = value_emissions[emissions_year == 2005],
+    emissions_2022 = value_emissions[emissions_year == 2022],
+    pct_of_2005 = (emissions_2022 / emissions_2005) * 100
+  )
 
 # sector_total_comparison <- emissions_sector_per_county %>%
 #   filter(emissions_year == 2022) %>%
