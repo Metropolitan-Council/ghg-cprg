@@ -116,3 +116,11 @@ scc6_new,scc_level_one,scc_level_two,scc_level_three,fuel_type_detect,scc6_desc,
 228500,Mobile Sources,Railroad Equipment,LPG,Liquefied petroleum gas (LPG),NA,Railroad equipment,Railroad equipment,Liquefied petroleum gas (LPG); Railroad equipment,Liquefied petroleum gas (LPG); Railroad equipment
 220200,Mobile Sources,Highway Vehicles - Gasoline,Refueling,Diesel,NA,Gas stations,Gas stations,Diesel; Gas stations,Diesel; Gas stations
 220500,Mobile Sources,Highway Vehicles - Ethanol (E-85),Refueling,Ethanol (E-85),NA,Gas stations,Gas stations,Ethanol (E-85); Gas stations,Ethanol (E-85); Gas stations
+220362,Mobile Sources,Highway Vehicles - Compressed Natural Gas (CNG),Combination Long-haul Truck,Compressed natural gas (CNG),Compressed natural gas (CNG); Combination long-haul trucks,Combination long-haul trucks,Trucks,Compressed natural gas (CNG); Combination long-haul trucks,Compressed natural gas (CNG); Trucks
+220941,Mobile Sources,Highway Vehicles - Electricity,Other Buses,Electric,Electric; Intercity buses,Other buses,Buses,Electric; Transit buses,Electric; Buses
+220942,Mobile Sources,Highway Vehicles - Electricity,Transit Bus,Electric,Electric; Transit buses,Transit buses,Buses,Electric; Other buses,Electric; Buses
+220943,Mobile Sources,Highway Vehicles - Electricity,School Bus,Electric,Electric; School buses,School buses,Buses,Electric; School buses,Electric; Buses
+220952,Mobile Sources,Highway Vehicles - Electricity,Single Unit Short-haul Truck,Electric,Electric; Single unit short-haul trucks,Single unit short-haul trucks,Trucks,Electric; Single unit short-haul trucks,Electric; Trucks
+220953,Mobile Sources,Highway Vehicles - Electricity,Single Unit Long-haul Truck,Electric,Electric; Single unit long-haul trucks,Single unit long-haul trucks,Trucks,Electric; Single unit long-haul trucks,Electric; Trucks
+220961,Mobile Sources,Highway Vehicles - Electricity,Combination Short-haul Truck,Electric,Electric; Combination short-haul trucks,Combination short-haul trucks,Trucks,Electric; Combination short-haul trucks,Electric; Trucks
+220962,Mobile Sources,Highway Vehicles - Electricity,Combination Long-haul Truck,Electric,Electric; Combination long-haul trucks,Combination long-haul trucks,Trucks,Electric; Combination long-haul trucks,Electric; Trucks
