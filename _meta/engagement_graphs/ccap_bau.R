@@ -161,7 +161,7 @@ bau <- bind_rows(wd_ns_bau %>%
                  res_bau %>% 
                    select(emissions_year = inventory_year, 
                           value_emissions = natgas_emissions) %>% 
-                   mutate(sector = "Residential"),
+                   mutate(sector = "Building Fuel"),
                  comm_bau_out %>% 
                    select(emissions_year = inventory_year, 
                           value_emissions = electricity_emissions) %>% 
@@ -169,12 +169,12 @@ bau <- bind_rows(wd_ns_bau %>%
                  comm_bau_out %>% 
                    select(emissions_year = inventory_year, 
                           value_emissions = natgas_emissions) %>% 
-                   mutate(sector = "Commercial"),
+                   mutate(sector = "Building Fuel"),
                  ind_bau_interpolated %>% 
-                   filter(category != "Industrial natural gas") %>% 
                    group_by(sector, emissions_year) %>% 
                    summarize(value_emissions = sum(value_emissions)) %>% 
-                   ungroup(),
+                   ungroup()%>% 
+                   mutate(sector = "Industrial Processes"),
                  ag_bau %>% group_by(sector, emissions_year) %>% 
                    summarize(value_emissions = sum(value_emissions)) %>% 
                    ungroup()
@@ -186,17 +186,27 @@ bau <- bind_rows(wd_ns_bau %>%
 
 bau
 
-sector_colors <- unlist(sector_colors)
+bau %>%
+  filter(emissions_year %in% c(2005,2022, 2030, 2050)) %>%
+  group_by(emissions_year) %>%
+  summarize(total_emissions = sum(value_emissions)) %>%
+  mutate(proportion_of_2005 = total_emissions / total_emissions[emissions_year == 2005])
+
+bau %>%
+  filter(emissions_year %in% c(2005, 2022, 2030, 2050)) %>%
+  group_by(emissions_year, sector)%>%
+  summarize(total_emissions = sum(value_emissions)) %>% 
+  print(n = 100)
+
+sector_colors <- unlist(sector_colors_alt)
 
 bau_positive <- bau %>%
   filter(value_emissions >= 0) %>% 
   mutate(sector = factor(sector,
-                         levels = c(
-                                    "Electricity",
+                         levels = c("Electricity",
                                     "Transportation",
-                                    "Residential",
-                                    "Commercial",
-                                    "Industrial",
+                                    "Building Fuel",
+                                    "Industrial Processes",
                                     "Waste",
                                     "Agriculture")))
 
@@ -240,7 +250,7 @@ bau_projection_plot <- ggplot() +
 bau_projection_plot
 
 ggsave(plot = bau_projection_plot,
-       filename = paste0(wd,"seven_county_bau_projections.png"),  # add your file path here
+       filename = paste0(wd,"/seven_county_bau_projections.png"),  # add your file path here
        width = 12,          
        height = 6,          
        units = "in",
