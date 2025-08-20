@@ -61,6 +61,31 @@ electric_raw <- readRDS(file.path(here::here("_energy", "data", "minnesota_count
     filter(year == 2005) %>%
     select(year, county, mwh = total_mWh, sector))
 
+### patch in WI estimates for now with a per capita mwh estimate from 2021
+
+county_pop <- readRDS(file.path(here::here("_meta", "data", "census_county_population.RDS")))
+
+wi_electric <- readRDS(file.path(here::here("_energy", "data", "wisconsin_elecUtils_ActivityAndEmissions.RDS"))) %>% 
+  group_by(county_name) %>% 
+  summarize(mwh = sum(coalesced_utilityCounty_mWh)) %>% 
+  ungroup() %>% 
+  left_join(county_pop %>% 
+              filter(population_year == 2021),
+            by = "county_name") %>% 
+  mutate(mwh_per_capita = mwh / population) %>% 
+  select(county_name, mwh_per_capita) %>% 
+  left_join(county_pop%>% 
+              filter(population_year >= 2005),
+            by = "county_name") %>% 
+  mutate(mwh = mwh_per_capita * population,
+         sector = "Electricity",
+         year = as.numeric(population_year)) %>% 
+  select(year,
+         county = county_name,
+         mwh,
+         sector)
+
+
 electric_interpolated <- left_join(
   expand.grid(
     year = 2005:2023,
@@ -69,9 +94,13 @@ electric_interpolated <- left_join(
   ),
   electric_raw
 ) %>%
+  bind_rows(wi_electric) %>% 
   mutate(
     mwh_modeled = na_kalman(mwh),
-    data_source = if_else(is.na(mwh), "Interpolated", "Utility report")
+    data_source = case_when(
+      is.na(mwh) ~ "Interpolated", 
+      county %in% c("St. Croix", "Pierce") & year != 2021 ~ "Population based estimate",
+      TRUE ~ "Utility report")
   ) %>%
   left_join(egrid_temporal, by = c("year" = "Year")) %>%
   mutate(
