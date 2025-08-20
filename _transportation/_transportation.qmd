@@ -53,7 +53,7 @@ county_emissions_summary <- county_emissions %>%
 #   extract2("emissions_year") %>%
 #   unique()
 
-transportation_max_year <- 2021
+transportation_max_year <- 2022
 
 transportation_min_year <- onroad_emissions %>%
   filter(emissions_year == min(emissions_year)) %>%
@@ -70,8 +70,8 @@ transportation_2005 <- onroad_emissions %>%
   pull(value_emissions) %>%
   sum()
 
-transportation_2021 <- onroad_emissions %>%
-  filter(emissions_year == 2021) %>%
+transportation_2022 <- onroad_emissions %>%
+  filter(emissions_year == 2022) %>%
   pull(value_emissions) %>%
   sum()
 
@@ -80,8 +80,8 @@ transportation_2020 <- onroad_emissions %>%
   pull(value_emissions) %>%
   sum()
 
-county_emissions_summary_2021 <- county_emissions %>%
-  filter(emissions_year == 2021) %>%
+county_emissions_summary_2022 <- county_emissions %>%
+  filter(emissions_year == 2022) %>%
   group_by(sector, category, source, data_source, factor_source) %>%
   summarize(
     value_emissions = sum(value_emissions),
@@ -89,7 +89,7 @@ county_emissions_summary_2021 <- county_emissions %>%
     .groups = "keep"
   )
 
-sector_percentages <- county_emissions_summary_2021 %>%
+sector_percentages <- county_emissions_summary_2022 %>%
   filter(
     !category == "Sequestration"
   ) %>% # not contributing to emissions
@@ -114,10 +114,10 @@ Note that this does not include freight rail, light rail, and other transportati
 
 <!-- TODO add section with emissions by gas type (CO2, CH4, etc) -->
 
-Transportation emissions totaled `r round(transportation_2021/1000000, digits = 2)` MMtCO~2~e, accounting for `r scales::percent(sector_percentages %>% filter(sector == "Transportation") %>% extract2("value_emissions"))` of regional emissions in `r transportation_max_year`. 
+Transportation emissions totaled `r round(transportation_2022/1000000, digits = 2)` MMtCO~2~e, accounting for `r scales::percent(sector_percentages %>% filter(sector == "Transportation") %>% extract2("value_emissions"))` of regional emissions in `r transportation_max_year`. 
 
 ```{r fig-transportation-county-emissions}
-#| fig-cap: "2021 transportation emissions by county"
+#| fig-cap: "2022 transportation emissions by county"
 #| out-width: "95%"
 
 fig_transportation_county_emissions <- plot_county_sector_emissions(
@@ -174,7 +174,7 @@ fig_transportation_county_emissions_by_weight
 We can also view this data broken out by fuel type.
 
 ```{r fig-transportation-county-emissions-by-fuel-type}
-#| fig-cap: "2021 annual emissions transportation by fuel type"
+#| fig-cap: "2022 annual emissions transportation by fuel type"
 #| out-width: "95%"
 
 fig_transportation_county_emissions_by_fuel <- plot_ly(
@@ -213,10 +213,10 @@ fig_transportation_county_emissions_by_fuel
 
 ## Historical emissions
 
-Despite a `r scales::percent((transportation_2005 - transportation_2020) / transportation_2005, accuracy = 0.1)` reduction in the transportation sector due to the Covid pandemic, emissions in this sector rebounded to in 2021.
+Despite a `r scales::percent((transportation_2005 - transportation_2020) / transportation_2005, accuracy = 0.1)` reduction in the transportation sector due to the Covid pandemic, emissions in this sector rebounded to in 2022.
 
 ```{r fig-transportation-time-series-county}
-#| fig-cap: "Transportation emissions, 2002-2021"
+#| fig-cap: "Transportation emissions, 2002-2022"
 #| out-width: "95%"
 
 
