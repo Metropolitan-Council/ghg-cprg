@@ -143,7 +143,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
 # agriculture ----
 
 agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds") %>%
-  left_join(cprg_county %>% select(county_name, geoid)) %>%
+  left_join(cprg_county %>% select(county_name, geoid), by = join_by(geoid)) %>%
   mutate(
     emissions_year = inventory_year,
     sector = "Agriculture",
@@ -179,7 +179,7 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
     )
   ) %>%
   group_by(emissions_year, unit_emissions, county_name, geog_level, county_id, sector, sector_alt, category, source, data_source, factor_source) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup() %>%
   select(names(transportation_emissions))
 
