@@ -7,7 +7,7 @@ source("R/_load_pkgs.R")
 
 ## 2011-2019 ----
 ctu_estimates_2011 <- readxl::read_xlsx("_meta/data-raw/population/IntercensalEstimates.xlsx") %>%
-  rowwise() %>% 
+  rowwise() %>%
   mutate(
     geoid = paste0("27", COUNTY_CODE),
     population_data_source = "Met Council Intercensal Estimates 2024",
@@ -38,8 +38,8 @@ ctu_estimates_2011 <- readxl::read_xlsx("_meta/data-raw/population/IntercensalEs
 if (!file.exists("_meta/data-raw/population/sub-est00int.csv")) {
   # download directly from census.gov
   download.file("https://www2.census.gov/programs-surveys/popest/datasets/2000-2010/intercensal/cities/sub-est00int.csv",
-                destfile = "_meta/data-raw/population/sub-est00int.csv",
-                mode = "wb"
+    destfile = "_meta/data-raw/population/sub-est00int.csv",
+    mode = "wb"
   )
 }
 
@@ -105,7 +105,7 @@ ctu_estimates_2021 <- readxl::read_xlsx("_meta/data-raw/population/EstimateSerie
   ) %>%
   select(
     geoid,
-    ctuid = CTU_ID_FIPS, 
+    ctuid = CTU_ID_FIPS,
     coctu_id_fips = COCTU_ID_FIPS,
     coctu_id_gnis = COCTU_ID_GNIS,
     gnis = CTU_ID_GNIS,
@@ -119,14 +119,14 @@ ctu_estimates_2021 <- readxl::read_xlsx("_meta/data-raw/population/EstimateSerie
 
 # create index -----
 
-ctu_index <- ctu_estimates_2011 %>% 
-  select(geoid, ctuid, coctu_id_fips, gnis, coctu_id_gnis) %>% 
+ctu_index <- ctu_estimates_2011 %>%
+  select(geoid, ctuid, coctu_id_fips, gnis, coctu_id_gnis) %>%
   unique()
 
 # join ----
 
 ctu_pop_estimates <- ctu_estimates_2000 %>%
-  left_join(ctu_index, by = c("geoid", "ctuid")) %>% 
+  left_join(ctu_index, by = c("geoid", "ctuid")) %>%
   select(
     geoid,
     ctuid,
@@ -137,7 +137,7 @@ ctu_pop_estimates <- ctu_estimates_2000 %>%
     inventory_year,
     ctu_population,
     population_data_source
-  ) %>% 
+  ) %>%
   rbind(
     ctu_estimates_2011,
     # ctu_2020,
@@ -164,7 +164,7 @@ ctu_pop_estimates <- ctu_estimates_2000 %>%
   ungroup() %>%
   mutate(
     ctu_proportion_of_county_pop = ctu_population / county_population
-  ) %>% 
+  ) %>%
   select(
     geoid,
     ctuid,
@@ -181,11 +181,13 @@ ctu_pop_estimates <- ctu_estimates_2000 %>%
   ) # added this for ordering columns
 
 
-any(is.na(c(ctu_pop_estimates$geoid,
-            ctu_pop_estimates$ctuid,
-            ctu_pop_estimates$gnis,
-            ctu_pop_estimates$coctu_id_fips,
-            ctu_pop_estimates$coctu_id_gnis)))
+any(is.na(c(
+  ctu_pop_estimates$geoid,
+  ctu_pop_estimates$ctuid,
+  ctu_pop_estimates$gnis,
+  ctu_pop_estimates$coctu_id_fips,
+  ctu_pop_estimates$coctu_id_gnis
+)))
 ## test ----
 # pop_summary <- ctu_pop_estimates %>%
 #   group_by(inventory_year, geoid) %>%

@@ -158,7 +158,7 @@ nrel_proportions <- nrel_emissions %>%
 
 average_proportions <- nrel_proportions %>%
   group_by(county_name, source, sector_raw) %>%
-  summarize(mean_prop = mean(sector_proportion),.groups = "keep") %>%
+  summarize(mean_prop = mean(sector_proportion), .groups = "keep") %>%
   ungroup()
 
 nrel_proportions_expanded <- nrel_proportions %>%
@@ -175,7 +175,7 @@ electric_natgas_nrel_proportioned <- electric_interpolated %>%
     by = c("county_name", "source" = "source", "year")
   ) %>%
   mutate(
-    value_emissions = round(sector_proportion * value_emissions, digits =2)
+    value_emissions = round(sector_proportion * value_emissions, digits = 2)
   ) %>%
   rename(sector = sector_raw) %>%
   mutate(category = if_else(source == "Electricity", "Electricity", "Building Fuel"))

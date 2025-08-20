@@ -14,14 +14,15 @@ county_emissions <- read_rds("_meta/data/cprg_county_emissions.RDS")
 
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   left_join(cprg_county %>% select(geoid, county_name),
-            by = join_by(geoid))
+    by = join_by(geoid)
+  )
 
 mndot_vmt_ctu <- readRDS("_transportation/data/mndot_vmt_ctu.RDS")
 
 
 ctu_vmt_percent <- left_join(mndot_vmt_ctu, cprg_county %>%
-                               select(geoid, county_name),
-                             by = "geoid"
+  select(geoid, county_name),
+by = "geoid"
 ) %>%
   group_by(county_name, vmt_year) %>%
   mutate(county_annual_vmt = sum(annual_vmt)) %>%
@@ -47,19 +48,19 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
   group_by(emissions_year, county_name, sector, category, source) %>%
   summarize(value_emissions = sum(emissions_metric_tons_co2e), .groups = "keep") %>%
   left_join(ctu_vmt_percent,
-            by = c("county_name",
-                   "emissions_year" = "vmt_year"
-            ),
-            relationship = "many-to-many"
+    by = c("county_name",
+      "emissions_year" = "vmt_year"
+    ),
+    relationship = "many-to-many"
   ) %>%
-  ungroup() %>% 
+  ungroup() %>%
   mutate(
     value_emissions = value_emissions * ctu_vmt_percent,
     geog_level = "ctu"
   ) %>%
-  group_by(emissions_year,geog_level, sector, category, source, ctu_name, ctu_class, ctuid, gnis) %>% 
-  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>% 
-  ungroup() %>% 
+  group_by(emissions_year, geog_level, sector, category, source, ctu_name, ctu_class, ctuid, gnis) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
+  ungroup() %>%
   mutate(sector_alt = sector) %>% # electricity and nat gas need this
   select(
     emissions_year,
@@ -77,14 +78,14 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
 # waste -----
 ## wastewater ----
 ww_emissions <- readRDS("_waste/data/final_wastewater_ctu_allyrs.RDS") %>%
-  ungroup() %>% 
+  ungroup() %>%
   mutate(
     factor_source = data_source,
     value_emissions = mt_co2e,
     sector_alt = sector,
     geog_level = "ctu"
   ) %>%
-  rename(emissions_year = inventory_year) %>% 
+  rename(emissions_year = inventory_year) %>%
   select(names(transportation_emissions))
 
 
@@ -148,10 +149,10 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
 ## agriculture ----
 
 
-agriculture_emissions <- 
+agriculture_emissions <-
   readRDS(file.path(here::here(), "_agriculture/data/_ctu_agricultural_emissions.RDS")) %>%
-  group_by(ctu_id, ctu_name, ctu_class, inventory_year, sector, category, source, data_source, factor_source) %>% 
-  summarize(value_emissions =sum(mt_co2e), .groups = "keep") %>% 
+  group_by(ctu_id, ctu_name, ctu_class, inventory_year, sector, category, source, data_source, factor_source) %>%
+  summarize(value_emissions = sum(mt_co2e), .groups = "keep") %>%
   mutate(
     emissions_year = inventory_year,
     sector = "Agriculture",
@@ -167,8 +168,8 @@ agriculture_emissions <-
 
 natural_systems_sequestration <- readRDS("_nature/data/nlcd_ctu_landcover_sequestration_allyrs.rds") %>%
   filter(inventory_year >= 2005) %>%
-  group_by(ctu_id, ctu_name, ctu_class, inventory_year, sector, category, source, data_source) %>% 
-  summarize(value_emissions =sum(sequestration_potential), .groups = "keep") %>% 
+  group_by(ctu_id, ctu_name, ctu_class, inventory_year, sector, category, source, data_source) %>%
+  summarize(value_emissions = sum(sequestration_potential), .groups = "keep") %>%
   ungroup() %>%
   mutate(
     geog_level = "ctu",
@@ -181,8 +182,8 @@ natural_systems_sequestration <- readRDS("_nature/data/nlcd_ctu_landcover_seques
 
 freshwater_emissions <- readRDS("_nature/data/nhd_ctu_waterways_emissions_allyrs.RDS") %>%
   filter(inventory_year >= 2005) %>%
-  group_by(ctu_id, ctu_name, ctu_class, inventory_year, sector, category, source, data_source) %>% 
-  summarize(value_emissions =sum(value_emissions), .groups = "keep") %>% 
+  group_by(ctu_id, ctu_name, ctu_class, inventory_year, sector, category, source, data_source) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   mutate(
     emissions_year = inventory_year,
     sector = "Natural Systems",
@@ -231,17 +232,21 @@ emissions_all <- bind_rows(
   #   )
   # ) %>%
   ## keep 7 counties only for CTU estimates and add population
-  right_join(ctu_population %>% 
-               filter(inventory_year >= 2005) %>% 
-               group_by(ctu_name, ctu_class, ctuid, gnis, inventory_year) %>% 
-               summarize(ctu_population = sum(ctu_population), .groups = "keep") %>% 
-               ungroup() %>% 
-               rename(emissions_year = inventory_year,
-                      ctu_id_fips = ctuid,
-                      ctu_id_gnis = gnis),
-             by = join_by(emissions_year, ctu_name, ctu_class)) %>% 
-  rename(geog_name = ctu_name) %>% 
-  mutate(emissions_per_capita = value_emissions/ctu_population)
+  right_join(
+    ctu_population %>%
+      filter(inventory_year >= 2005) %>%
+      group_by(ctu_name, ctu_class, ctuid, gnis, inventory_year) %>%
+      summarize(ctu_population = sum(ctu_population), .groups = "keep") %>%
+      ungroup() %>%
+      rename(
+        emissions_year = inventory_year,
+        ctu_id_fips = ctuid,
+        ctu_id_gnis = gnis
+      ),
+    by = join_by(emissions_year, ctu_name, ctu_class)
+  ) %>%
+  rename(geog_name = ctu_name) %>%
+  mutate(emissions_per_capita = value_emissions / ctu_population)
 
 
 # join county population and calculate per capita emissions
@@ -261,8 +266,8 @@ emissions_all <- bind_rows(
 
 
 emissions_all %>%
-  filter(emissions_year == 2021, !is.na(emissions_metric_tons_co2e)) %>%
-  pull(emissions_metric_tons_co2e) %>%
+  filter(emissions_year == 2021, !is.na(value_emissions)) %>%
+  pull(value_emissions) %>%
   sum() /
   sum(cprg_county_pop[cprg_county_pop$population_year == 2021, ]$population)
 
@@ -291,6 +296,8 @@ emissions_all_meta <- tibble::tribble(
   # "population_data_source", class(emissions_all$population_data_source), "Population data source",
   "emissions_per_capita", class(emissions_all$emissions_per_capita), "Metric tons CO~2~e per person living in given county for given sector and category"
 )
+
+waldo::compare(emissions_all, readRDS("_meta/data/ctu_emissions.RDS"))
 
 saveRDS(emissions_all, "_meta/data/ctu_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/ctu_emissions_meta.RDS")

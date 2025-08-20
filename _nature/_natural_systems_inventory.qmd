@@ -294,8 +294,6 @@ fig_ns_county_sequestration <- plot_ly(
   )
 
 fig_ns_county_sequestration
-
-
 ```
 
 

@@ -188,8 +188,10 @@ Regional waste emissions have increased by `r round(100 * ((waste_emissions_2021
 fig_waste_baseline <- plot_ly(
   source = "fig-waste-baseline-emissions",
   data = county_emissions %>%
-    filter(sector == "Waste",
-           emissions_year <= 2021) %>%
+    filter(
+      sector == "Waste",
+      emissions_year <= 2021
+    ) %>%
     group_by(emissions_year, category) %>%
     summarise(value_emissions = sum(value_emissions)),
   x = ~emissions_year,
