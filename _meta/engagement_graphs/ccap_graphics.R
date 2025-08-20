@@ -22,21 +22,22 @@ county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") %>%
       TRUE ~ category
     )
   ) %>% 
-  filter(emissions_year >= 2005)
+  mutate(sector_alt = factor(sector_alt,
+                             levels = c("Transportation", 
+                                        "Electricity", 
+                                        "Building Fuel", 
+                                        "Industrial Processes",
+                                        "Waste", 
+                                        "Agriculture", 
+                                        "Natural Systems")
+  )) %>% 
+  filter(emissions_year >= 2005,
+         !is.na(value_emissions))
 
 # summarize to sector and reorder sectors
 baseline_emissions_sector <- county_emissions %>%
   group_by(emissions_year, sector_alt)  %>%
   summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>%
-  mutate(sector_alt = factor(sector_alt,
-                         levels = c("Transportation", 
-                                    "Electricity", 
-                                    "Building Fuel", 
-                                    "Industrial Processes",
-                                    "Waste", 
-                                    "Agriculture", 
-                                    "Natural Systems")
-  )) %>% 
   filter(!is.na(sector_alt))
 
 line_break_labeller <- function(x) {
@@ -84,8 +85,7 @@ ggsave(plot = baseline_comparison_facet,
        dpi = 300, 
        bg = "white")
 
-# 2022 plot by subsector
-
+# 2022 plot by subsector ####
 
 emissions_subsector <- county_emissions %>%
   group_by(emissions_year, sector_alt, category_alt) %>%
@@ -150,42 +150,50 @@ ggsave(plot = subsector_comparison,
        dpi = 300, 
        bg = "white")
 
-### subsector by county population
+### subsector per capita #####
 
 county_emissions_no_msp <- county_emissions %>% 
   filter(county_name != "MSP Airport")
 
 emissions_sector_per_capita <- county_emissions_no_msp %>%
   mutate(emissions_per_capita = value_emissions / county_total_population) %>%
-  group_by(emissions_year, county_name, sector) %>%
-  summarize(emissions_per_capita = sum(emissions_per_capita, na.rm = TRUE))
+  group_by(emissions_year, county_name, sector_alt) %>%
+  summarize(emissions_per_capita = sum(emissions_per_capita, na.rm = TRUE)) %>% 
+  mutate(sector_alt = factor(sector_alt,
+                             levels = c("Industrial Processes",
+                                        "Agriculture",
+                                        "Waste", 
+                                        "Building Fuel",
+                                        "Electricity",
+                                        "Transportation", 
+                                        "Natural Systems")))
 
 emissions_sector_per_county <- county_emissions_no_msp %>%
-  group_by(emissions_year, county_name, sector) %>%
+  group_by(emissions_year, county_name, sector_alt) %>%
   summarize(emissions_total = sum(value_emissions, na.rm = TRUE))
 
-sector_colors_vector <- unlist(sector_colors, use.names = TRUE)
+sector_colors_vector <- unlist(sector_colors_alt, use.names = TRUE)
 
 
 county_order <- county_emissions_no_msp %>%
   filter(emissions_year == 2022) %>%
   group_by(county_name) %>%
-  summarize(total_emissions = sum(value_emissions, na.rm = TRUE)) %>%
-  arrange(desc(total_emissions)) %>%
+  summarize(total_population = max(county_total_population, na.rm = TRUE)) %>%
+  arrange(desc(total_population)) %>%
   pull(county_name)
 
 # Plot
 sector_per_capita_comparison <- emissions_sector_per_capita %>%
   filter(emissions_year == 2022) %>%
   mutate(county_name = factor(county_name, levels = county_order)) %>%
-  ggplot(aes(x = county_name, y = emissions_per_capita, fill = sector)) +
-  geom_bar(stat = "identity", position = "stack") +
+  ggplot(aes(x = county_name, y = emissions_per_capita, fill = sector_alt)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") +
   scale_fill_manual(values = sector_colors_vector) +
-  coord_flip() +
   labs(
     fill = "Sector",
     x = NULL,
-    y = expression(paste("Metric tons of ", CO[2], "e per capita"))
+    y = "",
+    title = expression(paste("Metric tons of ", CO[2], "e per capita"))
   ) +
   theme_minimal() +
   theme(
@@ -197,17 +205,37 @@ sector_per_capita_comparison <- emissions_sector_per_capita %>%
 
 sector_per_capita_comparison
 
-sector_total_comparison <- emissions_sector_per_county %>%
-  filter(emissions_year == 2022) %>%
-  mutate(county_name = factor(county_name, levels = county_order)) %>%
-  ggplot(aes(x = county_name, y = emissions_total, fill = sector)) +
-  geom_bar(stat = "identity", position = "stack") +
-  scale_fill_manual(values = sector_colors_vector, guide = "none") +
-  coord_flip() +
+ggsave(plot = sector_per_capita_comparison,
+       filename = paste0(wd,"/eleven_county_per_capita_2022.png"),  # add your file path here
+       width = 14,          
+       height = 6,          
+       units = "in",
+       dpi = 300, 
+       bg = "white")
+
+# county sector bar charts ####
+
+#~ Transportation ####
+
+
+county_transport <- county_emissions %>% 
+  filter(sector_alt == "Transportation",
+         emissions_year == 2022) %>% 
+  group_by(sector_alt, category_alt, county_name) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+gg_county_transportation <- 
+  ggplot(county_transport %>% 
+           mutate(county_name = factor(county_name, levels = c(county_order, "MSP Airport"))),
+         aes(x = county_name, y = value_emissions, fill = category_alt)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") +
+  scale_fill_manual(values = unlist(category_colors)) +
   labs(
-    fill = "Sector",
+    fill = "Subsector",
     x = NULL,
-    y = expression(paste("Million metric tons of ", CO[2], "e"))
+    y = "",
+    title = "Transportation",
+    subtitle = expression(paste("Million metric tons of ", CO[2], "e"))
   ) +
   theme_minimal() +
   theme(
@@ -218,29 +246,36 @@ sector_total_comparison <- emissions_sector_per_county %>%
   ) +
   scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
 
-sector_total_comparison
+gg_county_transportation
 
-### remove less sensible per capita emissions
+ggsave(plot = gg_county_transportation,
+       filename = paste0(wd,"/eleven_county_transportation_2022.png"),  # add your file path here
+       width = 14,          
+       height = 6,          
+       units = "in",
+       dpi = 300, 
+       bg = "white")
 
-emissions_people_sector_per_capita <- county_emissions_no_msp %>%
-  filter(sector != "Industrial",
-    category %in% c("Passenger vehicles", "Buses", "Building Fuel",
-                         "Electricity", "Commercial fuel combustion", "Wastewater","Solid waste")) %>% 
-  mutate(emissions_per_capita = value_emissions / county_total_population) %>%
-  group_by(emissions_year, county_name, sector) %>%
-  summarize(emissions_per_capita = sum(emissions_per_capita, na.rm = TRUE))
+#~ Electricity ####
 
-sector_per_capita_comparison_people <- emissions_people_sector_per_capita %>%
-  filter(emissions_year == 2022) %>%
-  mutate(county_name = factor(county_name, levels = county_order)) %>%
-  ggplot(aes(x = county_name, y = emissions_per_capita, fill = sector)) +
-  geom_bar(stat = "identity", position = "stack") +
-  scale_fill_manual(values = sector_colors_vector) +
-  coord_flip() +
+county_electricity <- county_emissions %>% 
+  filter(sector_alt == "Electricity",
+         emissions_year == 2022) %>% 
+  group_by(sector_alt, category_alt, county_name) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+gg_county_electricity <- 
+  ggplot(county_electricity %>% 
+           mutate(county_name = factor(county_name, levels = county_order)),
+         aes(x = county_name, y = value_emissions, fill = category_alt)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") +
+  scale_fill_manual(values = unlist(category_colors)) +
   labs(
-    fill = "Sector",
+    fill = "Subsector",
     x = NULL,
-    y = expression(paste("Metric tons of ", CO[2], "e per capita"))
+    y = "",
+    title = "Electricity Demand",
+    subtitle = expression(paste("Million metric tons of ", CO[2], "e"))
   ) +
   theme_minimal() +
   theme(
@@ -248,6 +283,308 @@ sector_per_capita_comparison_people <- emissions_people_sector_per_capita %>%
     axis.text.y = element_text(size = 14),
     axis.text.x = element_text(size = 14),
     text = element_text(size = 16, family = "sans")
-  )
+  ) +
+  scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
 
-sector_per_capita_comparison_people
+gg_county_electricity
+
+ggsave(plot = gg_county_electricity,
+       filename = paste0(wd,"/eleven_county_electricity_2022.png"),  # add your file path here
+       width = 14,          
+       height = 6,          
+       units = "in",
+       dpi = 300, 
+       bg = "white")
+
+#~ Building Fuel ####
+
+county_bf <- county_emissions %>% 
+  filter(sector_alt == "Building Fuel",
+         emissions_year == 2022) %>% 
+  group_by(sector_alt, category_alt, county_name) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+gg_county_bf <- 
+  ggplot(county_bf %>% 
+           mutate(county_name = factor(county_name, levels = county_order)),
+         aes(x = county_name, y = value_emissions, fill = category_alt)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") +
+  scale_fill_manual(values = unlist(category_colors)) +
+  labs(
+    fill = "Subsector",
+    x = NULL,
+    y = "",
+    title = "Building Fuel",
+    subtitle = expression(paste("Million metric tons of ", CO[2], "e"))  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    axis.text.y = element_text(size = 14),
+    axis.text.x = element_text(size = 14),
+    text = element_text(size = 16, family = "sans")
+  ) +
+  scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
+
+gg_county_bf
+
+ggsave(plot = gg_county_bf,
+       filename = paste0(wd,"/eleven_county_building_fuel_2022.png"),  # add your file path here
+       width = 14,          
+       height = 6,          
+       units = "in",
+       dpi = 300, 
+       bg = "white")
+
+#~ Industrial Processes ####
+
+county_ip <- county_emissions %>% 
+  filter(sector_alt == "Industrial Processes",
+         emissions_year == 2022) %>% 
+  group_by(sector_alt, category_alt, county_name) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>% 
+  #add Wisconsin counties with zero emissions for graph consistency
+  bind_rows(data.frame(sector_alt = "Industrial Processes",
+                       category_alt = "Industrial processes",
+                       county_name = c("St. Croix", "Pierce"),
+                       value_emissions = 0))
+
+gg_county_ip <- 
+  ggplot(county_ip %>% 
+           mutate(county_name = factor(county_name, levels = county_order)),
+         aes(x = county_name, y = value_emissions, fill = category_alt)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") +
+  scale_fill_manual(values = unlist(category_colors)) +
+  labs(
+    fill = "Subsector",
+    x = NULL,
+    y = "",
+    title = "Industrial Processes",
+    subtitle = expression(paste("Million metric tons of ", CO[2], "e"))  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    axis.text.y = element_text(size = 14),
+    axis.text.x = element_text(size = 14),
+    text = element_text(size = 16, family = "sans")
+  ) +
+  scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
+
+gg_county_ip
+
+ggsave(plot = gg_county_ip,
+       filename = paste0(wd,"/eleven_county_industrial_processes_2022.png"),  # add your file path here
+       width = 14,          
+       height = 6,          
+       units = "in",
+       dpi = 300, 
+       bg = "white")
+
+#~ Waste ####
+
+county_waste <- county_emissions %>% 
+  filter(sector_alt == "Waste",
+         emissions_year == 2022) %>% 
+  group_by(sector_alt, category_alt, county_name) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+gg_county_waste <- 
+  ggplot(county_waste %>% 
+           mutate(county_name = factor(county_name, levels = county_order)),
+         aes(x = county_name, y = value_emissions, fill = category_alt)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") +
+  scale_fill_manual(values = unlist(category_colors)) +
+  labs(
+    fill = "Subsector",
+    x = NULL,
+    y = "",
+    title = "Waste",
+    subtitle = expression(paste("Million metric tons of ", CO[2], "e"))  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    axis.text.y = element_text(size = 14),
+    axis.text.x = element_text(size = 14),
+    text = element_text(size = 16, family = "sans")
+  ) +
+  scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
+
+gg_county_waste
+
+ggsave(plot = gg_county_waste,
+       filename = paste0(wd,"/eleven_county_waste_2022.png"),  # add your file path here
+       width = 14,          
+       height = 6,          
+       units = "in",
+       dpi = 300, 
+       bg = "white")
+
+#~ Agriculture ####
+
+county_ag <- county_emissions %>% 
+  filter(sector_alt == "Agriculture",
+         emissions_year == 2021) %>% 
+  group_by(sector_alt, category_alt, county_name) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+gg_county_ag <- 
+  ggplot(county_ag %>% 
+           mutate(county_name = factor(county_name, levels = county_order)),
+         aes(x = county_name, y = value_emissions, fill = category_alt)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") +
+  scale_fill_manual(values = unlist(category_colors)) +
+  labs(
+    fill = "Subsector",
+    x = NULL,
+    y = "",
+    title = "Agriculture",
+    subtitle = expression(paste("Million metric tons of ", CO[2], "e"))  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    axis.text.y = element_text(size = 14),
+    axis.text.x = element_text(size = 14),
+    text = element_text(size = 16, family = "sans")
+  ) +
+  scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
+
+gg_county_ag
+
+ggsave(plot = gg_county_ag,
+       filename = paste0(wd,"/eleven_county_agriculture_2022.png"),  # add your file path here
+       width = 14,          
+       height = 6,          
+       units = "in",
+       dpi = 300, 
+       bg = "white")
+
+#~ Natural Systems ####
+
+county_ns <- county_emissions %>% 
+  filter(sector_alt == "Natural Systems",
+         emissions_year == 2022) %>% 
+  group_by(sector_alt, category_alt, county_name) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+gg_county_ns <- 
+  ggplot(county_ns %>% 
+           mutate(county_name = factor(county_name, levels = county_order)),
+         aes(x = county_name, y = value_emissions, fill = category_alt)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") +
+  scale_fill_manual(values = unlist(category_colors)) +
+  labs(
+    fill = "Subsector",
+    x = NULL,
+    y = "",
+    title = "Natural Systems",
+    subtitle = expression(paste("Million metric tons of ", CO[2], "e"))  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    axis.text.y = element_text(size = 14),
+    axis.text.x = element_text(size = 14),
+    text = element_text(size = 16, family = "sans")
+  ) +
+  scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
+
+gg_county_ns
+
+ggsave(plot = gg_county_ns,
+       filename = paste0(wd,"/eleven_county_natural_systems_2022.png"),  # add your file path here
+       width = 14,          
+       height = 6,          
+       units = "in",
+       dpi = 300, 
+       bg = "white")
+
+
+#### summary stats #####
+
+county_emissions %>% filter(sector_alt == "Transportation", 
+                            emissions_year %in% c(2005, 2022)) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+county_emissions %>% filter(sector_alt == "Electricity", 
+                            emissions_year %in% c(2005, 2022)) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+county_emissions %>% filter(sector_alt == "Building Fuel", 
+                            emissions_year %in% c(2005, 2022)) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+county_emissions %>% filter(sector_alt == "Industrial Processes", 
+                            emissions_year %in% c(2005, 2022)) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+county_emissions %>% filter(sector_alt == "Waste", 
+                            emissions_year %in% c(2005, 2022)) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+county_emissions %>% filter(sector_alt == "Agriculture", 
+                            emissions_year %in% c(2005, 2021)) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+county_emissions %>% filter(sector_alt == "Natural Systems", 
+                            emissions_year %in% c(2005, 2022)) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+county_emissions %>% filter(sector_alt != "Natural Systems", 
+                            emissions_year %in% c(2005, 2022)) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+county_emissions %>% filter(emissions_year %in% c(2005, 2022)) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+county_emissions %>% filter(emissions_year %in% c(2005, 2022)) %>% 
+  group_by(emissions_year, county_name) %>% 
+  filter(county_name != "MSP Airport") %>% 
+  summarize(county_pop = max(county_total_population)) %>% 
+  ungroup() %>% 
+  group_by(emissions_year) %>% 
+  summarize(total_pop = sum(county_pop)) %>% 
+left_join(
+county_emissions %>% filter(sector_alt != "Electricity",
+                            emissions_year %in% c(2005,2022)) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions))
+) %>% 
+  mutate(emissions_per_capita = value_emissions / total_pop)
+
+county_emissions %>% filter(sector_alt != "Natural Systems",
+                            emissions_year %in% c(2022)) %>% 
+  group_by(sector_alt) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>%
+  mutate(proportion = value_emissions / sum(value_emissions))
+
+# sector_total_comparison <- emissions_sector_per_county %>%
+#   filter(emissions_year == 2022) %>%
+#   mutate(county_name = factor(county_name, levels = county_order)) %>%
+#   ggplot(aes(x = county_name, y = emissions_total, fill = sector_alt)) +
+#   geom_bar(stat = "identity", position = "stack") +
+#   scale_fill_manual(values = sector_colors_vector, guide = "none") +
+#   coord_flip() +
+#   labs(
+#     fill = "Sector",
+#     x = NULL,
+#     y = expression(paste("Million metric tons of ", CO[2], "e"))
+#   ) +
+#   theme_minimal() +
+#   theme(
+#     panel.grid.major.y = element_blank(),
+#     axis.text.y = element_text(size = 14),
+#     axis.text.x = element_text(size = 14),
+#     text = element_text(size = 16, family = "sans")
+#   ) +
+#   scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
+# 
+# sector_total_comparison
+
+### remove less sensible per capita emissions
