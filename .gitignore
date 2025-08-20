@@ -1267,3 +1267,21 @@ _transportation/data-raw/mndot/updated_VMT_County_City_Route_System/
 
 /_energy/data-raw/dakotaElectricDataRequest
 
+
+_waste/_data_methods_waste.html
+
+_transportation/data-raw/mndot/gpkg_trans_aadt_traffic_segments.zip
+
+_transportation/data-raw/mndot/gpkg_trans_historic_aadt.zip
+
+_transportation/data-raw/mndot/trans_annual average daily traffic segments.gpkg
+
+_transportation/data-raw/mndot/trans_Historic Annual Average Daily Traffic.gpkg
+
+_transportation/data-raw/mndot/updated_VMT_County_City_Route_System.zip
+
+_transportation/data-raw/mndot/metadata/
+
+_transportation/data-raw/mndot/mileage_city_route_system/
+
+_transportation/data-raw/mndot/vmt_county.CSV

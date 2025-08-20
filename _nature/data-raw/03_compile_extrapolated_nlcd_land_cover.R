@@ -39,10 +39,14 @@ nlcd_ctu <- readRDS("_nature/data-raw/nlcd_ctu_landcover_allyrs_tmp.RDS") %>% un
 # Calculate reference proportions during tree canopy years ----------------
 
 tree_start_year <- nlcd_county %>%
-  filter(tcc_available) %>% head(1) %>% pull(inventory_year)
+  filter(tcc_available) %>%
+  head(1) %>%
+  pull(inventory_year)
 
 tree_end_year <- nlcd_county %>%
-  filter(tcc_available) %>% tail(1) %>% pull(inventory_year)
+  filter(tcc_available) %>%
+  tail(1) %>%
+  pull(inventory_year)
 
 
 # Reference proportions from the first year with tree canopy data (2011)
@@ -61,8 +65,10 @@ reference_proportions_start_county <- nlcd_county %>%
     propLow_ref = sum(area[land_cover_type == "Developed_Low"]) / totalDevelopedArea_ref,
     propMed_ref = sum(area[land_cover_type == "Developed_Med"]) / totalDevelopedArea_ref,
     propHigh_ref = sum(area[land_cover_type == "Developed_High"]) / totalDevelopedArea_ref,
-  .groups="keep") %>% 
-  mutate(TOT = sum(propUrbanTree_ref,propUrbanGrass_ref,propLow_ref,propMed_ref,propHigh_ref)) %>% ungroup()
+    .groups = "keep"
+  ) %>%
+  mutate(TOT = sum(propUrbanTree_ref, propUrbanGrass_ref, propLow_ref, propMed_ref, propHigh_ref)) %>%
+  ungroup()
 
 
 
@@ -82,8 +88,10 @@ reference_proportions_end_county <- nlcd_county %>%
     propLow_ref = sum(area[land_cover_type == "Developed_Low"]) / totalDevelopedArea_ref,
     propMed_ref = sum(area[land_cover_type == "Developed_Med"]) / totalDevelopedArea_ref,
     propHigh_ref = sum(area[land_cover_type == "Developed_High"]) / totalDevelopedArea_ref,
-    .groups="keep") %>% 
-  mutate(TOT = sum(propUrbanTree_ref,propUrbanGrass_ref,propLow_ref,propMed_ref,propHigh_ref)) %>% ungroup()
+    .groups = "keep"
+  ) %>%
+  mutate(TOT = sum(propUrbanTree_ref, propUrbanGrass_ref, propLow_ref, propMed_ref, propHigh_ref)) %>%
+  ungroup()
 
 
 
@@ -101,80 +109,102 @@ reference_proportions_end_county <- nlcd_county %>%
 # The proportions of Developed_[Low,Med,High] will be retained in the years where we don't have tree canopy data.
 # Now, let's compute the proportions of Developed_[Low,Med,High] for the years where we don't have tree canopy data
 
-actual_proportions_before_county <- nlcd_county %>% dplyr::select(-total_area) %>%
+actual_proportions_before_county <- nlcd_county %>%
+  dplyr::select(-total_area) %>%
   filter(inventory_year < tree_start_year) %>%
   filter(grepl("Developed", land_cover_type)) %>%
   group_by(county_id, county_name, state_name, inventory_year) %>%
-  summarise(totalDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Open", "Developed_Low", "Developed_Med", "Developed_High")]),
-            lmhDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Low", "Developed_Med", "Developed_High")]),
-            propLow_orig = sum(area[land_cover_type == "Developed_Low"]) / lmhDevelopedArea_orig,
-            propMed_orig = sum(area[land_cover_type == "Developed_Med"]) / lmhDevelopedArea_orig,
-            propHigh_orig = sum(area[land_cover_type == "Developed_High"]) / lmhDevelopedArea_orig,
-            .groups="keep") %>% 
-  mutate(TOT = sum(propLow_orig,propMed_orig,propHigh_orig)) %>% ungroup()
+  summarise(
+    totalDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Open", "Developed_Low", "Developed_Med", "Developed_High")]),
+    lmhDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Low", "Developed_Med", "Developed_High")]),
+    propLow_orig = sum(area[land_cover_type == "Developed_Low"]) / lmhDevelopedArea_orig,
+    propMed_orig = sum(area[land_cover_type == "Developed_Med"]) / lmhDevelopedArea_orig,
+    propHigh_orig = sum(area[land_cover_type == "Developed_High"]) / lmhDevelopedArea_orig,
+    .groups = "keep"
+  ) %>%
+  mutate(TOT = sum(propLow_orig, propMed_orig, propHigh_orig)) %>%
+  ungroup()
 
 
-actual_proportions_after_county <- nlcd_county %>% dplyr::select(-total_area) %>%
+actual_proportions_after_county <- nlcd_county %>%
+  dplyr::select(-total_area) %>%
   filter(inventory_year > tree_end_year) %>%
   filter(grepl("Developed", land_cover_type)) %>%
   group_by(county_id, county_name, state_name, inventory_year) %>%
-  summarise(totalDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Open", "Developed_Low", "Developed_Med", "Developed_High")]),
-            lmhDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Low", "Developed_Med", "Developed_High")]),
-            propLow_orig = sum(area[land_cover_type == "Developed_Low"]) / lmhDevelopedArea_orig,
-            propMed_orig = sum(area[land_cover_type == "Developed_Med"]) / lmhDevelopedArea_orig,
-            propHigh_orig = sum(area[land_cover_type == "Developed_High"]) / lmhDevelopedArea_orig,
-            .groups="keep") %>% 
-  mutate(TOT = sum(propLow_orig,propMed_orig,propHigh_orig)) %>% ungroup()
+  summarise(
+    totalDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Open", "Developed_Low", "Developed_Med", "Developed_High")]),
+    lmhDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Low", "Developed_Med", "Developed_High")]),
+    propLow_orig = sum(area[land_cover_type == "Developed_Low"]) / lmhDevelopedArea_orig,
+    propMed_orig = sum(area[land_cover_type == "Developed_Med"]) / lmhDevelopedArea_orig,
+    propHigh_orig = sum(area[land_cover_type == "Developed_High"]) / lmhDevelopedArea_orig,
+    .groups = "keep"
+  ) %>%
+  mutate(TOT = sum(propLow_orig, propMed_orig, propHigh_orig)) %>%
+  ungroup()
 
 
 
 
 # Recompute developed area during non-tree years --------------------------
-rc_DevelopedArea_before_county <- actual_proportions_before_county %>% select(-TOT) %>%
-  left_join(reference_proportions_start_county %>% select(-c(TOT,inventory_year)),
-            by = join_by(county_id, county_name, state_name)) %>%
+rc_DevelopedArea_before_county <- actual_proportions_before_county %>%
+  select(-TOT) %>%
+  left_join(reference_proportions_start_county %>% select(-c(TOT, inventory_year)),
+    by = join_by(county_id, county_name, state_name)
+  ) %>%
   mutate(
-    # Using the ratio of LMH to total in 2011, recompute the total LMH area for 
+    # Using the ratio of LMH to total in 2011, recompute the total LMH area for
     # years before 2011 by applying this ratio to the total of LMH + Open
-    Developed_LMH = lmhRatio_ref*totalDevelopedArea_orig, 
+    Developed_LMH = lmhRatio_ref * totalDevelopedArea_orig,
     # Take the proportion of Low,Med,High during the non-tree years and apply them to the new Developed_LMH area
-    Developed_Low = propLow_ref*totalDevelopedArea_orig,
-    Developed_Med = propMed_ref*totalDevelopedArea_orig,
-    Developed_High = propHigh_ref*totalDevelopedArea_orig,
+    Developed_Low = propLow_ref * totalDevelopedArea_orig,
+    Developed_Med = propMed_ref * totalDevelopedArea_orig,
+    Developed_High = propHigh_ref * totalDevelopedArea_orig,
     # check1 = Developed_Low + Developed_Med + Developed_High,
-    Urban_Grassland = propUrbanGrass_ref*(totalDevelopedArea_orig),
-    Urban_Tree = propUrbanTree_ref*(totalDevelopedArea_orig),
+    Urban_Grassland = propUrbanGrass_ref * (totalDevelopedArea_orig),
+    Urban_Tree = propUrbanTree_ref * (totalDevelopedArea_orig),
     # check2 = Developed_Low + Developed_Med + Developed_High + Urban_Grassland + Urban_Tree,
-         .before=totalDevelopedArea_orig) %>%
-  dplyr::select(county_id, county_name, state_name, inventory_year, 
-                Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree) %>%
-  pivot_longer(cols = c(Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree),
-               names_to = "land_cover_type",
-               values_to = "area") %>%
+    .before = totalDevelopedArea_orig
+  ) %>%
+  dplyr::select(
+    county_id, county_name, state_name, inventory_year,
+    Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree
+  ) %>%
+  pivot_longer(
+    cols = c(Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree),
+    names_to = "land_cover_type",
+    values_to = "area"
+  ) %>%
   mutate(total_area = NA, tcc_available = FALSE, source = "extrapolated")
 
 
-rc_DevelopedArea_after_county <- actual_proportions_after_county %>% select(-TOT) %>%
-  left_join(reference_proportions_end_county %>% select(-c(TOT,inventory_year)),
-            by = join_by(county_id, county_name, state_name)) %>%
+rc_DevelopedArea_after_county <- actual_proportions_after_county %>%
+  select(-TOT) %>%
+  left_join(reference_proportions_end_county %>% select(-c(TOT, inventory_year)),
+    by = join_by(county_id, county_name, state_name)
+  ) %>%
   mutate(
-    # Using the ratio of LMH to total in 2011, recompute the total LMH area for 
+    # Using the ratio of LMH to total in 2011, recompute the total LMH area for
     # years before 2011 by applying this ratio to the total of LMH + Open
-    Developed_LMH = lmhRatio_ref*totalDevelopedArea_orig, 
+    Developed_LMH = lmhRatio_ref * totalDevelopedArea_orig,
     # Take the proportion of Low,Med,High during the non-tree years and apply them to the new Developed_LMH area
-    Developed_Low = propLow_ref*totalDevelopedArea_orig,
-    Developed_Med = propMed_ref*totalDevelopedArea_orig,
-    Developed_High = propHigh_ref*totalDevelopedArea_orig,
+    Developed_Low = propLow_ref * totalDevelopedArea_orig,
+    Developed_Med = propMed_ref * totalDevelopedArea_orig,
+    Developed_High = propHigh_ref * totalDevelopedArea_orig,
     # check1 = Developed_Low + Developed_Med + Developed_High,
-    Urban_Grassland = propUrbanGrass_ref*(totalDevelopedArea_orig),
-    Urban_Tree = propUrbanTree_ref*(totalDevelopedArea_orig),
+    Urban_Grassland = propUrbanGrass_ref * (totalDevelopedArea_orig),
+    Urban_Tree = propUrbanTree_ref * (totalDevelopedArea_orig),
     # check2 = Developed_Low + Developed_Med + Developed_High + Urban_Grassland + Urban_Tree,
-    .before=totalDevelopedArea_orig) %>%
-  dplyr::select(county_id, county_name, state_name, inventory_year, 
-                Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree) %>%
-  pivot_longer(cols = c(Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree),
-               names_to = "land_cover_type",
-               values_to = "area") %>%
+    .before = totalDevelopedArea_orig
+  ) %>%
+  dplyr::select(
+    county_id, county_name, state_name, inventory_year,
+    Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree
+  ) %>%
+  pivot_longer(
+    cols = c(Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree),
+    names_to = "land_cover_type",
+    values_to = "area"
+  ) %>%
   mutate(total_area = NA, tcc_available = FALSE, source = "extrapolated")
 
 
@@ -205,9 +235,9 @@ nlcd_county_after <- rbind(
 
 nlcd_county_rc <- rbind(
   nlcd_county_before,
-  nlcd_county %>% 
-    filter(inventory_year >= tree_start_year & inventory_year <= tree_end_year) %>% 
-    mutate(source="nlcd"),
+  nlcd_county %>%
+    filter(inventory_year >= tree_start_year & inventory_year <= tree_end_year) %>%
+    mutate(source = "nlcd"),
   nlcd_county_after
 ) %>%
   arrange(county_name, inventory_year, land_cover_type)
@@ -231,34 +261,46 @@ nlcd_county_rc <- rbind(
 #   ggplot() +
 #   geom_point(aes(x=areaDeveloped_orig, y=areaDeveloped_rc))
 
-  
+
 nlcd_county_rc %>%
-  ggplot() + theme_minimal() +
-  geom_path(aes(x=inventory_year, y=area, color=land_cover_type)) +
-  geom_point(data=. %>% filter(source=="extrapolated"), shape=21, fill="white",
-             mapping=aes(x=inventory_year, y=area, color=land_cover_type), size=1.2) +
-  geom_point(data=. %>% filter(source=="nlcd"), shape=21,
-             mapping=aes(x=inventory_year, y=area, color=land_cover_type, fill=land_cover_type), size=1) +
+  ggplot() +
+  theme_minimal() +
+  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+  geom_point(
+    data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
+    mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
+  ) +
+  geom_point(
+    data = . %>% filter(source == "nlcd"), shape = 21,
+    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
+  ) +
   facet_wrap(~county_name)
 
-  
+
 nlcd_county_rc %>%
   filter(county_name %in% "Ramsey") %>%
-  ggplot() + theme_minimal() +
-  geom_path(aes(x=inventory_year, y=area, color=land_cover_type)) +
-  geom_point(data=. %>% filter(source=="extrapolated"), shape=21, fill="white",
-             mapping=aes(x=inventory_year, y=area, color=land_cover_type), size=1.2) +
-  geom_point(data=. %>% filter(source=="nlcd"), shape=21,
-             mapping=aes(x=inventory_year, y=area, color=land_cover_type, fill=land_cover_type), size=1) +
-  
+  ggplot() +
+  theme_minimal() +
+  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+  geom_point(
+    data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
+    mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
+  ) +
+  geom_point(
+    data = . %>% filter(source == "nlcd"), shape = 21,
+    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
+  ) +
   nlcd_county %>%
   filter(county_name %in% "Ramsey") %>%
-  ggplot() + theme_minimal() +
-  geom_path(aes(x=inventory_year, y=area, color=land_cover_type)) +
-  geom_point(shape=21, 
-             mapping=aes(x=inventory_year, y=area, color=land_cover_type, fill=land_cover_type), size=1.2)
+  ggplot() +
+  theme_minimal() +
+  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+  geom_point(
+    shape = 21,
+    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1.2
+  )
 
-  
+
 
 # Export final data -------------------------------------------------------
 # create metadata
@@ -281,10 +323,9 @@ nlcd_county_meta <-
 # User chooses whether to overwrite the rds files
 if (overwrite_RDS) {
   message("Exporting RDS files...")
-  
+
   saveRDS(nlcd_county_rc, paste0("./_nature/data/nlcd_county_landcover_allyrs.rds"))
   saveRDS(nlcd_county_meta, paste0("./_nature/data/nlcd_county_landcover_allyrs_meta.rds"))
-  
 }
 
 
@@ -318,8 +359,10 @@ reference_proportions_start_ctu <- nlcd_ctu %>%
     propLow_ref = sum(area[land_cover_type == "Developed_Low"]) / totalDevelopedArea_ref,
     propMed_ref = sum(area[land_cover_type == "Developed_Med"]) / totalDevelopedArea_ref,
     propHigh_ref = sum(area[land_cover_type == "Developed_High"]) / totalDevelopedArea_ref,
-    .groups="keep") %>% 
-  mutate(TOT = sum(propUrbanTree_ref,propUrbanGrass_ref,propLow_ref,propMed_ref,propHigh_ref)) %>% ungroup()
+    .groups = "keep"
+  ) %>%
+  mutate(TOT = sum(propUrbanTree_ref, propUrbanGrass_ref, propLow_ref, propMed_ref, propHigh_ref)) %>%
+  ungroup()
 
 
 
@@ -339,8 +382,10 @@ reference_proportions_end_ctu <- nlcd_ctu %>%
     propLow_ref = sum(area[land_cover_type == "Developed_Low"]) / totalDevelopedArea_ref,
     propMed_ref = sum(area[land_cover_type == "Developed_Med"]) / totalDevelopedArea_ref,
     propHigh_ref = sum(area[land_cover_type == "Developed_High"]) / totalDevelopedArea_ref,
-    .groups="keep") %>% 
-  mutate(TOT = sum(propUrbanTree_ref,propUrbanGrass_ref,propLow_ref,propMed_ref,propHigh_ref)) %>% ungroup()
+    .groups = "keep"
+  ) %>%
+  mutate(TOT = sum(propUrbanTree_ref, propUrbanGrass_ref, propLow_ref, propMed_ref, propHigh_ref)) %>%
+  ungroup()
 
 
 
@@ -358,79 +403,101 @@ reference_proportions_end_ctu <- nlcd_ctu %>%
 # The proportions of Developed_[Low,Med,High] will be retained in the years where we don't have tree canopy data.
 # Now, let's compute the proportions of Developed_[Low,Med,High] for the years where we don't have tree canopy data
 
-actual_proportions_before_ctu <- nlcd_ctu %>% dplyr::select(-total_area) %>%
+actual_proportions_before_ctu <- nlcd_ctu %>%
+  dplyr::select(-total_area) %>%
   filter(inventory_year < tree_start_year) %>%
   filter(grepl("Developed", land_cover_type)) %>%
   group_by(county_id, ctu_id, ctu_name, ctu_class, county_name, state_name, inventory_year) %>%
-  summarise(totalDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Open", "Developed_Low", "Developed_Med", "Developed_High")]),
-            lmhDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Low", "Developed_Med", "Developed_High")]),
-            propLow_orig = sum(area[land_cover_type == "Developed_Low"]) / lmhDevelopedArea_orig,
-            propMed_orig = sum(area[land_cover_type == "Developed_Med"]) / lmhDevelopedArea_orig,
-            propHigh_orig = sum(area[land_cover_type == "Developed_High"]) / lmhDevelopedArea_orig,
-            .groups="keep") %>% 
-  mutate(TOT = sum(propLow_orig,propMed_orig,propHigh_orig)) %>% ungroup()
+  summarise(
+    totalDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Open", "Developed_Low", "Developed_Med", "Developed_High")]),
+    lmhDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Low", "Developed_Med", "Developed_High")]),
+    propLow_orig = sum(area[land_cover_type == "Developed_Low"]) / lmhDevelopedArea_orig,
+    propMed_orig = sum(area[land_cover_type == "Developed_Med"]) / lmhDevelopedArea_orig,
+    propHigh_orig = sum(area[land_cover_type == "Developed_High"]) / lmhDevelopedArea_orig,
+    .groups = "keep"
+  ) %>%
+  mutate(TOT = sum(propLow_orig, propMed_orig, propHigh_orig)) %>%
+  ungroup()
 
 
-actual_proportions_after_ctu <- nlcd_ctu %>% dplyr::select(-total_area) %>%
+actual_proportions_after_ctu <- nlcd_ctu %>%
+  dplyr::select(-total_area) %>%
   filter(inventory_year > tree_end_year) %>%
   filter(grepl("Developed", land_cover_type)) %>%
   group_by(county_id, ctu_id, ctu_name, ctu_class, county_name, state_name, inventory_year) %>%
-  summarise(totalDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Open", "Developed_Low", "Developed_Med", "Developed_High")]),
-            lmhDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Low", "Developed_Med", "Developed_High")]),
-            propLow_orig = sum(area[land_cover_type == "Developed_Low"]) / lmhDevelopedArea_orig,
-            propMed_orig = sum(area[land_cover_type == "Developed_Med"]) / lmhDevelopedArea_orig,
-            propHigh_orig = sum(area[land_cover_type == "Developed_High"]) / lmhDevelopedArea_orig,
-            .groups="keep") %>% 
-  mutate(TOT = sum(propLow_orig,propMed_orig,propHigh_orig)) %>% ungroup()
+  summarise(
+    totalDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Open", "Developed_Low", "Developed_Med", "Developed_High")]),
+    lmhDevelopedArea_orig = sum(area[land_cover_type %in% c("Developed_Low", "Developed_Med", "Developed_High")]),
+    propLow_orig = sum(area[land_cover_type == "Developed_Low"]) / lmhDevelopedArea_orig,
+    propMed_orig = sum(area[land_cover_type == "Developed_Med"]) / lmhDevelopedArea_orig,
+    propHigh_orig = sum(area[land_cover_type == "Developed_High"]) / lmhDevelopedArea_orig,
+    .groups = "keep"
+  ) %>%
+  mutate(TOT = sum(propLow_orig, propMed_orig, propHigh_orig)) %>%
+  ungroup()
 
 
 
 # Recompute developed area during non-tree years --------------------------
-rc_DevelopedArea_before_ctu <- actual_proportions_before_ctu %>% select(-TOT) %>%
-  left_join(reference_proportions_start_ctu %>% select(-c(TOT,inventory_year)),
-            by = join_by(county_id, ctu_id, ctu_name, ctu_class, county_name, state_name)) %>%
+rc_DevelopedArea_before_ctu <- actual_proportions_before_ctu %>%
+  select(-TOT) %>%
+  left_join(reference_proportions_start_ctu %>% select(-c(TOT, inventory_year)),
+    by = join_by(county_id, ctu_id, ctu_name, ctu_class, county_name, state_name)
+  ) %>%
   mutate(
-    # Using the ratio of LMH to total in 2011, recompute the total LMH area for 
+    # Using the ratio of LMH to total in 2011, recompute the total LMH area for
     # years before 2011 by applying this ratio to the total of LMH + Open
-    Developed_LMH = lmhRatio_ref*totalDevelopedArea_orig, 
+    Developed_LMH = lmhRatio_ref * totalDevelopedArea_orig,
     # Take the proportion of Low,Med,High during the non-tree years and apply them to the new Developed_LMH area
-    Developed_Low = propLow_ref*totalDevelopedArea_orig,
-    Developed_Med = propMed_ref*totalDevelopedArea_orig,
-    Developed_High = propHigh_ref*totalDevelopedArea_orig,
+    Developed_Low = propLow_ref * totalDevelopedArea_orig,
+    Developed_Med = propMed_ref * totalDevelopedArea_orig,
+    Developed_High = propHigh_ref * totalDevelopedArea_orig,
     # check1 = Developed_Low + Developed_Med + Developed_High,
-    Urban_Grassland = propUrbanGrass_ref*(totalDevelopedArea_orig),
-    Urban_Tree = propUrbanTree_ref*(totalDevelopedArea_orig),
+    Urban_Grassland = propUrbanGrass_ref * (totalDevelopedArea_orig),
+    Urban_Tree = propUrbanTree_ref * (totalDevelopedArea_orig),
     # check2 = Developed_Low + Developed_Med + Developed_High + Urban_Grassland + Urban_Tree,
-    .before=totalDevelopedArea_orig) %>%
-  dplyr::select(county_id, ctu_id, ctu_name, ctu_class, county_name, state_name, inventory_year, 
-                Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree) %>%
-  pivot_longer(cols = c(Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree),
-               names_to = "land_cover_type",
-               values_to = "area") %>%
+    .before = totalDevelopedArea_orig
+  ) %>%
+  dplyr::select(
+    county_id, ctu_id, ctu_name, ctu_class, county_name, state_name, inventory_year,
+    Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree
+  ) %>%
+  pivot_longer(
+    cols = c(Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree),
+    names_to = "land_cover_type",
+    values_to = "area"
+  ) %>%
   mutate(total_area = NA, tcc_available = FALSE, source = "extrapolated")
 
 
-rc_DevelopedArea_after_ctu <- actual_proportions_after_ctu %>% select(-TOT) %>%
-  left_join(reference_proportions_end_ctu %>% select(-c(TOT,inventory_year)),
-            by = join_by(county_id, ctu_id, ctu_name, ctu_class, county_name, state_name)) %>%
+rc_DevelopedArea_after_ctu <- actual_proportions_after_ctu %>%
+  select(-TOT) %>%
+  left_join(reference_proportions_end_ctu %>% select(-c(TOT, inventory_year)),
+    by = join_by(county_id, ctu_id, ctu_name, ctu_class, county_name, state_name)
+  ) %>%
   mutate(
-    # Using the ratio of LMH to total in 2011, recompute the total LMH area for 
+    # Using the ratio of LMH to total in 2011, recompute the total LMH area for
     # years before 2011 by applying this ratio to the total of LMH + Open
-    Developed_LMH = lmhRatio_ref*totalDevelopedArea_orig, 
+    Developed_LMH = lmhRatio_ref * totalDevelopedArea_orig,
     # Take the proportion of Low,Med,High during the non-tree years and apply them to the new Developed_LMH area
-    Developed_Low = propLow_ref*totalDevelopedArea_orig,
-    Developed_Med = propMed_ref*totalDevelopedArea_orig,
-    Developed_High = propHigh_ref*totalDevelopedArea_orig,
+    Developed_Low = propLow_ref * totalDevelopedArea_orig,
+    Developed_Med = propMed_ref * totalDevelopedArea_orig,
+    Developed_High = propHigh_ref * totalDevelopedArea_orig,
     # check1 = Developed_Low + Developed_Med + Developed_High,
-    Urban_Grassland = propUrbanGrass_ref*(totalDevelopedArea_orig),
-    Urban_Tree = propUrbanTree_ref*(totalDevelopedArea_orig),
+    Urban_Grassland = propUrbanGrass_ref * (totalDevelopedArea_orig),
+    Urban_Tree = propUrbanTree_ref * (totalDevelopedArea_orig),
     # check2 = Developed_Low + Developed_Med + Developed_High + Urban_Grassland + Urban_Tree,
-    .before=totalDevelopedArea_orig) %>%
-  dplyr::select(county_id, ctu_id, ctu_name, ctu_class, county_name, state_name, inventory_year, 
-                Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree) %>%
-  pivot_longer(cols = c(Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree),
-               names_to = "land_cover_type",
-               values_to = "area") %>%
+    .before = totalDevelopedArea_orig
+  ) %>%
+  dplyr::select(
+    county_id, ctu_id, ctu_name, ctu_class, county_name, state_name, inventory_year,
+    Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree
+  ) %>%
+  pivot_longer(
+    cols = c(Developed_Low, Developed_Med, Developed_High, Urban_Grassland, Urban_Tree),
+    names_to = "land_cover_type",
+    values_to = "area"
+  ) %>%
   mutate(total_area = NA, tcc_available = FALSE, source = "extrapolated")
 
 
@@ -465,9 +532,9 @@ nlcd_ctu_after <- rbind(
 
 nlcd_ctu_rc <- rbind(
   nlcd_ctu_before,
-  nlcd_ctu %>% 
-    filter(inventory_year >= tree_start_year & inventory_year <= tree_end_year) %>% 
-    mutate(source="nlcd"),
+  nlcd_ctu %>%
+    filter(inventory_year >= tree_start_year & inventory_year <= tree_end_year) %>%
+    mutate(source = "nlcd"),
   nlcd_ctu_after
 ) %>%
   arrange(ctu_name, ctu_class, inventory_year, land_cover_type)
@@ -491,37 +558,51 @@ nlcd_ctu_rc <- rbind(
 
 
 nlcd_ctu_rc %>%
-  ggplot() + theme_minimal() +
-  geom_path(aes(x=inventory_year, y=area, color=land_cover_type)) +
-  geom_point(data=. %>% filter(source=="extrapolated"), shape=21, fill="white",
-             mapping=aes(x=inventory_year, y=area, color=land_cover_type), size=1.2) +
-  geom_point(data=. %>% filter(source=="nlcd"), shape=21,
-             mapping=aes(x=inventory_year, y=area, color=land_cover_type, fill=land_cover_type), size=1) +
+  ggplot() +
+  theme_minimal() +
+  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+  geom_point(
+    data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
+    mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
+  ) +
+  geom_point(
+    data = . %>% filter(source == "nlcd"), shape = 21,
+    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
+  ) +
   facet_wrap(~ctu_name)
 
 
 nlcd_ctu_rc %>%
   filter(ctu_name %in% "Roseville") %>%
-  ggplot() + theme_minimal() +
-  geom_path(aes(x=inventory_year, y=area, color=land_cover_type)) +
-  geom_point(data=. %>% filter(source=="extrapolated"), shape=21, fill="white",
-             mapping=aes(x=inventory_year, y=area, color=land_cover_type), size=1.2) +
-  geom_point(data=. %>% filter(source=="nlcd"), shape=21,
-             mapping=aes(x=inventory_year, y=area, color=land_cover_type, fill=land_cover_type), size=1)
-  
-  nlcd_ctu %>%
+  ggplot() +
+  theme_minimal() +
+  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+  geom_point(
+    data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
+    mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
+  ) +
+  geom_point(
+    data = . %>% filter(source == "nlcd"), shape = 21,
+    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
+  )
+
+nlcd_ctu %>%
   filter(ctu_name %in% "Roseville") %>%
-  ggplot() + theme_minimal() +
-  geom_path(aes(x=inventory_year, y=area, color=land_cover_type)) +
-  geom_point(shape=21, 
-             mapping=aes(x=inventory_year, y=area, color=land_cover_type, fill=land_cover_type), size=1.2)
+  ggplot() +
+  theme_minimal() +
+  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+  geom_point(
+    shape = 21,
+    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1.2
+  )
 
 
 
-nlcd_ctu_rc %>% 
+nlcd_ctu_rc %>%
   filter(county_name == "Dakota") %>%
   group_by(inventory_year) %>%
-  summarize(total_area = sum(area)) %>% print(n=22)
+  summarize(total_area = sum(area)) %>%
+  print(n = 22)
 
 
 # Export final data -------------------------------------------------------
@@ -548,16 +629,9 @@ nlcd_ctu_meta <-
 # User chooses whether to overwrite the rds files
 if (overwrite_RDS) {
   message("Exporting RDS files...")
-  
+
   saveRDS(nlcd_ctu_rc, paste0("./_nature/data/nlcd_ctu_landcover_allyrs.rds"))
   saveRDS(nlcd_ctu_meta, paste0("./_nature/data/nlcd_ctu_landcover_allyrs_meta.rds"))
-  
 }
 
 rm(list = ls())
-
-
-
-
-
-
