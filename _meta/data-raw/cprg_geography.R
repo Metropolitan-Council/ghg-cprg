@@ -75,9 +75,10 @@ mn_ctu <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
     STATEFP = "27",
     STATE = "Minnesota",
     STATE_ABB = "MN",
-    GNIS_FEATURE_ID = stringr::str_pad(as.character(GNIS_FEATURE_ID), 
-                                       width = 8, side = "left",
-                                       pad = "0")
+    GNIS_FEATURE_ID = stringr::str_pad(as.character(GNIS_FEATURE_ID),
+      width = 8, side = "left",
+      pad = "0"
+    )
   ) %>%
   select(
     CTU_NAME = FEATURE_NAME,
@@ -90,17 +91,20 @@ mn_ctu <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
     geometry = SHAPE
   ) %>%
   arrange(CTU_NAME) %>%
-  clean_names() %>% 
+  clean_names() %>%
   left_join(cprg_county %>% sf::st_drop_geometry(),
-            by = join_by(county_name, statefp, state_abb)) %>% 
+    by = join_by(county_name, statefp, state_abb)
+  ) %>%
   mutate(coctu_id_gnis = paste0(
-    stringr::str_sub(geoid, -3, -1), 
+    stringr::str_sub(geoid, -3, -1),
     gnis_feature_id
-  )) %>% 
-  left_join(ctu_population %>% 
-              select(geoid, coctu_id_fips, coctu_id_gnis, ctuid) %>% 
-              unique(),
-            join_by(geoid, coctu_id_gnis))
+  )) %>%
+  left_join(
+    ctu_population %>%
+      select(geoid, coctu_id_fips, coctu_id_gnis, ctuid) %>%
+      unique(),
+    join_by(geoid, coctu_id_gnis)
+  )
 
 
 if (file.exists("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023)/CTV_July_2023.shp") == FALSE) {
@@ -151,27 +155,28 @@ wi_ctu <- sf::read_sf("_meta/data-raw/WI_Cities%2C_Towns_and_Villages_(July_2023
 #   rename(thrive_designation = comdesname)
 
 thrive <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_metc/society_thrive_msp2040_com_des/gpkg_society_thrive_msp2040_com_des.zip") %>%
-  st_drop_geometry() %>% 
+  st_drop_geometry() %>%
   separate(COCTU_DESC, sep = " [(]", into = c("ctu", "cty"), fill = "right") %>%
   mutate(
-    GNIS_FEATURE_ID = stringr::str_pad(as.character(CTU_ID), 
-                                       width = 8, side = "left",
-                                       pad = "0"),
+    GNIS_FEATURE_ID = stringr::str_pad(as.character(CTU_ID),
+      width = 8, side = "left",
+      pad = "0"
+    ),
     COMDESNAME = factor(COMDESNAME,
-                        levels = c(
-                          "Urban Center",
-                          "Urban",
-                          "Suburban",
-                          "Suburban Edge",
-                          "Emerging Suburban Edge",
-                          "Rural Center",
-                          "Diversified Rural",
-                          "Rural Residential",
-                          "Agricultural",
-                          "Non-Council Area",
-                          "Non-Council Community"
-                        ),
-                        ordered = T
+      levels = c(
+        "Urban Center",
+        "Urban",
+        "Suburban",
+        "Suburban Edge",
+        "Emerging Suburban Edge",
+        "Rural Center",
+        "Diversified Rural",
+        "Rural Residential",
+        "Agricultural",
+        "Non-Council Area",
+        "Non-Council Community"
+      ),
+      ordered = T
     ),
     URB_RURAL = stringr::str_sub(URB_RURAL, 1, 5),
     URB_SUB_RURAL = case_when(
@@ -200,36 +205,41 @@ thrive <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/
   )
 
 
-imagine <- import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_metc/plan_imagine2050_comdes/gpkg_plan_imagine2050_comdes.zip") %>% 
-  st_drop_geometry() %>% 
+imagine <- import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_metc/plan_imagine2050_comdes/gpkg_plan_imagine2050_comdes.zip") %>%
+  st_drop_geometry() %>%
   mutate(
     COCTU_ID_GNIS = COCTU_ID,
     GNIS_FEATURE_ID = stringr::str_sub(COCTU_ID_GNIS, -8, -1),
     COMDESNAME = factor(COMDESNAME,
-                        levels =  c( "Urban", 
-                                     "Urban Edge", 
-                                     "Suburban", 
-                                     "Suburban Edge", 
-                                     "Rural Center",
-                                     "Diversified Rural",
-                                     "Rural Residential",
-                                     "Agricultural", 
-                                     "Non-Council Community"),
-                        ordered = T
+      levels = c(
+        "Urban",
+        "Urban Edge",
+        "Suburban",
+        "Suburban Edge",
+        "Rural Center",
+        "Diversified Rural",
+        "Rural Residential",
+        "Agricultural",
+        "Non-Council Community"
+      ),
+      ordered = T
     ),
     URB_SUB_RURAL = case_when(
-      COMDESNAME %in% c("Urban Center",
-                        "Urban Edge",
-                        "Urban") ~ "Urban",
+      COMDESNAME %in% c(
+        "Urban Center",
+        "Urban Edge",
+        "Urban"
+      ) ~ "Urban",
       COMDESNAME %in% c(
         "Suburban",
         "Suburban Edge",
         "Emerging Suburban Edge"
       ) ~ "Suburban",
-      COMDESNAME %in% c( "Diversified Rural",
-                         "Rural Residential",
-                         "Rural Center",
-                         "Agricultural"
+      COMDESNAME %in% c(
+        "Diversified Rural",
+        "Rural Residential",
+        "Rural Center",
+        "Agricultural"
       ) ~ "Rural"
     ) %>%
       factor(levels = c(
@@ -239,7 +249,7 @@ imagine <- import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/
       ), ordered = T)
   ) %>%
   group_by(COMDESNAME, GNIS_FEATURE_ID) %>%
-  count() %>% 
+  count() %>%
   group_by(GNIS_FEATURE_ID) %>%
   filter(as.integer(COMDESNAME) == max(as.integer(COMDESNAME))) %>%
   ungroup() %>%
@@ -251,30 +261,32 @@ imagine <- import_from_gpkg("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/
 cprg_ctu <- bind_rows(mn_ctu, wi_ctu) %>%
   mutate(cprg_area = TRUE) %>%
   select(ctu_name, ctu_class,
-         county_name,
-         state_name = state, statefp, 
-         state_abb,
-         geoid_wis = ctu_id_fips,
-         gnis = gnis_feature_id,
-         cprg_area,
-         geometry
+    county_name,
+    state_name = state, statefp,
+    state_abb,
+    geoid_wis = ctu_id_fips,
+    gnis = gnis_feature_id,
+    cprg_area,
+    geometry
   ) %>%
   left_join(thrive,
-            by = c("gnis" = "GNIS_FEATURE_ID")
+    by = c("gnis" = "GNIS_FEATURE_ID")
   ) %>%
   left_join(imagine,
-            by = c("gnis" = "GNIS_FEATURE_ID")
-  ) %>% 
-  mutate(thrive_designation = if_else(
-    is.na(thrive_designation),
-    "Non-Council Area",
-    thrive_designation
-  ),
-  imagine_designation = if_else(
-    is.na(imagine_designation),
-    "Non-Council Area",
-    imagine_designation
-  ))
+    by = c("gnis" = "GNIS_FEATURE_ID")
+  ) %>%
+  mutate(
+    thrive_designation = if_else(
+      is.na(thrive_designation),
+      "Non-Council Area",
+      thrive_designation
+    ),
+    imagine_designation = if_else(
+      is.na(imagine_designation),
+      "Non-Council Area",
+      imagine_designation
+    )
+  )
 
 
 cprg_ctu_meta <- tribble(
@@ -310,11 +322,11 @@ geogs_list_co <- cprg_county %>%
   sf::st_drop_geometry()
 
 ctu_co_crosswalk <- left_join(geogs_list_ctu, geogs_list_co,
-                              by = c(
-                                "county_name",
-                                "statefp"
-                              ),
-                              suffix = c(".child", ".parent")
+  by = c(
+    "county_name",
+    "statefp"
+  ),
+  suffix = c(".child", ".parent")
 ) %>%
   select(
     geog_level_id.parent,
@@ -351,4 +363,3 @@ saveRDS(cprg_ctu_meta, "_meta/data/cprg_ctu_meta.RDS")
 
 saveRDS(ctu_co_crosswalk, "_meta/data/geog_crosswalk.RDS")
 saveRDS(geogs_list, "_meta/data/geogs_list.RDS")
-
