@@ -33,4 +33,11 @@ testthat::test_that("CTU data is as expected", {
 
   testthat::expect_equal(cprg_ctu$state_name %>% unique(), c("Minnesota", "Wisconsin"))
   testthat::expect_equal(nrow(filter(ctu_co_crosswalk, is.na(geog_unit_id.parent))), 0)
+
+  # expect Oakdale to be Suburban, NOT Rural Residential
+  testthat::expect_equal(
+    cprg_ctu %>%
+      filter(ctu_name == "Oakdale") %>%
+      pluck("imagine_designation"), "Suburban"
+  )
 })

@@ -43,7 +43,7 @@ plot_county_sector_emissions <- function(county_emissions,
     source = .plotly_source,
     x = ~value_emissions,
     y = ~ reorder(county_name, value_emissions),
-    color = ~source,
+    color = ~category,
     colors = unlist(source_colors),
     # marker_line=dict(width=2, color='black'),
     marker = list(

@@ -5,6 +5,10 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 ```
 
+## v2.1.0 (September 2025) {.unnumbered}
+
+CCAP Release - coming soon
+
 ## v2.0.0 (February 2025) {.unnumbered}
 
 This release incorporates major changes to all sectors, including temporal data back to 2005 and fundamental changes in methodology. We also now account for industrial and agricultural emissions.  
