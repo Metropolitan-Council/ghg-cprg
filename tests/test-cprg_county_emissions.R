@@ -13,7 +13,7 @@ testthat::test_that("County emissions data is as expected", {
     names(cprg_county_emissions),
     c(
       "emissions_year", "geog_level", "geoid", "county_name", "sector", "category",
-      "source", "value_emissions", "unit_emissions", "data_source", "factor_source",
+      "source", "sector_alt", "value_emissions", "unit_emissions", "data_source", "factor_source",
       "county_total_population", "population_data_source", "emissions_per_capita"
     )
   )

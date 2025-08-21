@@ -24,47 +24,77 @@ egrid_temporal <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
   ) %>%
   # get rid of unnecessary columns from eGRID factor tables
   group_by(Year, Source) %>%
-  summarize(mt_co2e_mwh = sum(mt_co2e_mwh)) %>%
+  summarize(mt_co2e_mwh = sum(mt_co2e_mwh), .groups = "keep") %>%
   ungroup() %>%
   rename(inventory_year = Year)
 
 
-### read in activity data
-ctu_mwh_res <- read_rds("_energy/data-raw/predicted_ctu_residential_mwh.RDS")
-ctu_mwh_busi <- read_rds("_energy/data-raw/predicted_ctu_business_mwh.RDS")
+### read in coctu data. Will use county proportions to cast backwards
 
-ctu_mwh <- bind_rows(
-  ctu_mwh_res %>%
-    rename(
-      mwh_predicted = residential_mwh_predicted,
-      mwh_reported = residential_mwh
-    ) %>%
-    mutate(sector = "Residential"),
-  ctu_mwh_busi %>%
-    rename(
-      mwh_predicted = business_mwh_predicted,
-      mwh_reported = business_mwh
-    ) %>%
-    mutate(sector = "Nonresidential")
-)
+coctu_busi <- read_rds("_energy/data-raw/predicted_coctu_business_mwh.rds") %>%
+  mutate(sector = "Business") %>%
+  rename(mwh = business_mwh)
+coctu_res <- read_rds("_energy/data-raw/predicted_coctu_residential_mwh.rds") %>%
+  mutate(sector = "Residential") %>%
+  rename(mwh = residential_mwh)
 
-ctu_emissions <- ctu_mwh %>%
+coctu_mwh <- bind_rows(coctu_busi, coctu_res)
+
+county_mwh <- readRDS(file.path(here::here("_energy", "data", "county_elec_activity.RDS")))
+
+
+# find mean county proportion for known years
+coctu_prop <- coctu_mwh %>%
+  left_join(
+    county_mwh %>%
+      select(
+        inventory_year = year,
+        county_name,
+        mwh_county = activity
+      ),
+    by = join_by(county_name, inventory_year)
+  ) %>%
+  mutate(mwh_prop = mwh / mwh_county) %>%
+  group_by(ctu_name, ctu_class, county_name, sector) %>%
+  summarize(mean_mwh_prop = mean(mwh_prop), .groups = "keep")
+
+# apply average county proportion to yearly county data for unknown ctu years
+coctu_pred <- county_mwh %>%
+  select(
+    inventory_year = year,
+    county_name,
+    mwh_county = activity
+  ) %>%
+  left_join(coctu_prop, by = "county_name", relationship = "many-to-many") %>%
+  mutate(mwh = mwh_county * mean_mwh_prop) %>%
+  anti_join(coctu_res, # remove known years (will report utility data where possible)
+    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
+  ) %>%
+  mutate(data_source = "Modeled county proportion") %>%
+  select(-c(mwh_county, mean_mwh_prop))
+
+# combine county props and ctu utility data
+ctu_full <- bind_rows(
+  coctu_pred,
+  coctu_mwh %>%
+    select(-coctu_id_gnis)
+) %>%
+  group_by(ctu_name, ctu_class, sector, inventory_year, data_source) %>%
+  summarize(mwh = sum(mwh), .groups = "keep") %>%
+  mutate(
+    category = "Electricity",
+    source = "Electricity"
+  ) %>%
+  ungroup()
+
+ctu_emissions <- ctu_full %>%
   left_join(egrid_temporal,
     by = "inventory_year"
   ) %>%
   mutate(
-    value_emissions = if_else(is.na(mwh_reported),
-      mwh_predicted * mt_co2e_mwh,
-      mwh_reported * mt_co2e_mwh
-    ),
+    value_emissions = round(mwh * mt_co2e_mwh, digits = 2),
     units_emissions = "Metric tons CO2e",
-    factor_source = Source,
-    data_source = if_else(is.na(mwh_reported),
-      "Model prediction",
-      "Utility report"
-    )
-  ) %>%
-  select(-c(mwh_predicted, mwh_reported, Source, mt_co2e_mwh))
-
+    factor_source = Source
+  )
 
 saveRDS(ctu_emissions, "_energy/data/_ctu_electricity_emissions.RDS")

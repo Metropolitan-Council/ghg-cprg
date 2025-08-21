@@ -22,7 +22,7 @@ ctu_county_unique <- ctu_population %>%
 county_mwh <- readRDS("_energy/data/minnesota_county_elec_ActivityAndEmissions.rds")
 
 ## create storage frame of unique city and utility combos with all years
-ctu_utility_year <- readRDS("_energy/data/ctu_utility_intersect.rds") %>%
+ctu_utility_year <- readRDS("_energy/data/ctu_elec_utility_intersect.RDS") %>%
   cross_join(data.frame(inventory_year = c(2007:2023))) %>%
   mutate(
     residential_mwh = NA,
@@ -51,7 +51,7 @@ sql_elec <- readRDS("_energy/data/ctu_electricity_emissions_2015_2018.rds") %>%
     "Residential",
     "Business"
   )) %>%
-  group_by(ctu_name, emissions_year, utility, sector) %>%
+  group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
   summarise(mwh_per_year = sum(mwh_per_year, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
     names_from = sector, values_from = mwh_per_year,
@@ -69,7 +69,7 @@ connexus <- readRDS("_energy/data/connexus_activityData_2014_2023.rds") %>%
     sector == "Residential/Commercial/Industrial" ~ "Total",
     TRUE ~ "Business"
   )) %>%
-  group_by(ctu_name, emissions_year, utility, sector) %>%
+  group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
   summarise(mwh_per_year = sum(mwh_delivered, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
     names_from = sector, values_from = mwh_per_year,
@@ -78,13 +78,13 @@ connexus <- readRDS("_energy/data/connexus_activityData_2014_2023.rds") %>%
   mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
 
 
-### load and format xcel data
-xcel <- readRDS("_energy/data/Xcel_activityData_2015_2023.rds") %>%
+### load and format Dakota electric data
+dakota <- readRDS("_energy/data/dakotaElectric_activityData_2019_2024.rds") %>%
   filter(!is.na(mwh_delivered)) %>%
-  rename(emissions_year = year) %>%
+  rename(emissions_year = inventory_year) %>%
   mutate(sector = case_when(
-    sector_mapped == "residential" ~ "Residential",
-    TRUE ~ "Business"
+    sector == "Residential" ~ "Residential",
+    TRUE ~ "Business" # includes "Commercial/Industrial", "Commercial", "Dakota Electric Operations", and "Irrigation Services"
   )) %>%
   group_by(ctu_name, emissions_year, utility, sector) %>%
   summarise(mwh_per_year = sum(mwh_delivered, na.rm = TRUE), .groups = "drop") %>%
@@ -94,7 +94,24 @@ xcel <- readRDS("_energy/data/Xcel_activityData_2015_2023.rds") %>%
   ) %>%
   mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
 
-
+### load and format xcel data
+xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
+  filter(
+    !is.na(mwh_delivered),
+    source == "Electricity"
+  ) %>%
+  rename(emissions_year = year) %>%
+  mutate(sector = case_when(
+    sector_mapped == "residential" ~ "Residential",
+    TRUE ~ "Business"
+  )) %>%
+  group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
+  summarise(mwh_per_year = sum(mwh_delivered, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(
+    names_from = sector, values_from = mwh_per_year,
+    names_glue = "{tolower(sector)}_mwh"
+  ) %>%
+  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
 
 
 # load in municipal utility data
@@ -105,7 +122,7 @@ munis <- readRDS("_energy/data/MNelecMunis_activityData_2014_2023.rds") %>%
     sector_mapped == "residential" ~ "Residential",
     TRUE ~ "Business"
   )) %>%
-  group_by(ctu_name, emissions_year, utility, sector) %>%
+  group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
   summarise(mwh_per_year = sum(mwh_delivered, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
     names_from = sector, values_from = mwh_per_year,
@@ -117,7 +134,7 @@ munis <- readRDS("_energy/data/MNelecMunis_activityData_2014_2023.rds") %>%
 merge_electricity_data <- function(base_df, new_data) {
   base_df %>%
     left_join(new_data %>% rename(inventory_year = emissions_year),
-      by = c("ctu_name", "inventory_year", "utility")
+      by = c("ctu_name", "ctu_class", "inventory_year", "utility")
     ) %>%
     mutate(
       residential_mwh = if_else(!is.na(residential_mwh.y), residential_mwh.y, residential_mwh.x),
@@ -143,6 +160,7 @@ sql_elec <- sql_elec %>%
 
 ctu_utility_year <- merge_electricity_data(ctu_utility_year, sql_elec)
 ctu_utility_year <- merge_electricity_data(ctu_utility_year, connexus)
+ctu_utility_year <- merge_electricity_data(ctu_utility_year, dakota)
 ctu_utility_year <- merge_electricity_data(ctu_utility_year, xcel)
 
 anti_join(munis, ctu_utility_year, by = "utility") %>%
@@ -170,8 +188,8 @@ ctu_year_complete <- ctu_utility_year %>%
   filter(!any(is.na(total_mwh))) %>%
   summarize(total_mwh = sum(total_mwh)) %>%
   ungroup()
-# 115/210 ctus
 
+# 136/210 ctus have at least one complete year, 72 for 2021
 
 rii <- read_rds("_energy/data/rii_electricity_2007_2023.rds")
 

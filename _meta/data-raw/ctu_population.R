@@ -7,9 +7,11 @@ source("R/_load_pkgs.R")
 
 ## 2011-2019 ----
 ctu_estimates_2011 <- readxl::read_xlsx("_meta/data-raw/population/IntercensalEstimates.xlsx") %>%
+  rowwise() %>%
   mutate(
     geoid = paste0("27", COUNTY_CODE),
-    population_data_source = "Met Council Intercensal Estimates 2024"
+    population_data_source = "Met Council Intercensal Estimates 2024",
+    gnis = stringr::str_sub(COCTU_ID, -8, -1)
   ) %>%
   separate_wider_delim(
     GEONAME,
@@ -19,6 +21,9 @@ ctu_estimates_2011 <- readxl::read_xlsx("_meta/data-raw/population/IntercensalEs
     geoid,
     ctuid = CTU_CODE,
     ctu_name,
+    coctu_id_fips = COCTU_CODE,
+    coctu_id_gnis = COCTU_ID,
+    gnis,
     inventory_year = EST_YEAR,
     ctu_population = POPTOTAL_EST,
     population_data_source
@@ -100,7 +105,10 @@ ctu_estimates_2021 <- readxl::read_xlsx("_meta/data-raw/population/EstimateSerie
   ) %>%
   select(
     geoid,
-    ctuid = CTU_ID_FIPS, ,
+    ctuid = CTU_ID_FIPS,
+    coctu_id_fips = COCTU_ID_FIPS,
+    coctu_id_gnis = COCTU_ID_GNIS,
+    gnis = CTU_ID_GNIS,
     ctu_name,
     inventory_year = EST_YEAR,
     ctu_population = POPTOTAL_EST,
@@ -108,9 +116,28 @@ ctu_estimates_2021 <- readxl::read_xlsx("_meta/data-raw/population/EstimateSerie
   )
 
 
+
+# create index -----
+
+ctu_index <- ctu_estimates_2011 %>%
+  select(geoid, ctuid, coctu_id_fips, gnis, coctu_id_gnis) %>%
+  unique()
+
 # join ----
 
 ctu_pop_estimates <- ctu_estimates_2000 %>%
+  left_join(ctu_index, by = c("geoid", "ctuid")) %>%
+  select(
+    geoid,
+    ctuid,
+    ctu_name,
+    coctu_id_fips,
+    coctu_id_gnis,
+    gnis,
+    inventory_year,
+    ctu_population,
+    population_data_source
+  ) %>%
   rbind(
     ctu_estimates_2011,
     # ctu_2020,
@@ -141,6 +168,9 @@ ctu_pop_estimates <- ctu_estimates_2000 %>%
   select(
     geoid,
     ctuid,
+    gnis,
+    coctu_id_fips,
+    coctu_id_gnis,
     ctu_name,
     ctu_class,
     inventory_year,
@@ -150,6 +180,14 @@ ctu_pop_estimates <- ctu_estimates_2000 %>%
     ctu_proportion_of_county_pop
   ) # added this for ordering columns
 
+
+any(is.na(c(
+  ctu_pop_estimates$geoid,
+  ctu_pop_estimates$ctuid,
+  ctu_pop_estimates$gnis,
+  ctu_pop_estimates$coctu_id_fips,
+  ctu_pop_estimates$coctu_id_gnis
+)))
 ## test ----
 # pop_summary <- ctu_pop_estimates %>%
 #   group_by(inventory_year, geoid) %>%
@@ -166,13 +204,15 @@ ctu_pop_estimates <- ctu_estimates_2000 %>%
 ## save ----
 ctu_pop_meta <- tribble(
   ~Column, ~Class, ~Description,
-  "geoid", class(ctu_pop_estimates$geoid), "GEOID tag for MN county",
-  "ctuid", class(ctu_pop_estimates$ctuid), "CTU census tag",
+  "geoid", class(ctu_pop_estimates$geoid), "GEOID tag for MN county. 3 digit.",
+  "ctuid", class(ctu_pop_estimates$ctuid), "CTU FIPS tag. 5 digit.",
+  "gnis", class(ctu_pop_estimates$gnis), "Geographic names information system (GNIS) identifier. 8 digit.",
+  "coctu_id_fips", class(ctu_pop_estimates$coctu_id_fips), "County-CTU FIPS identifier. 8 digit.",
+  "coctu_id_gnis", class(ctu_pop_estimates$coctu_id_gnis), "County-CTU GNIS identifier. 11 digit.",
   "ctu_name", class(ctu_pop_estimates$ctu_name), "CTU name",
   "ctu_class", class(ctu_pop_estimates$ctu_class), "CTU class (either CITY,
   TOWNSHIP, or UNORGANIZED TERRITORY",
-  "inventory_year", class(ctu_pop_estimates$inventory_year),
-  "Population year, between 2000 and 2023",
+  "inventory_year", class(ctu_pop_estimates$inventory_year), "Inventory year",
   "population_data_source", class(ctu_pop_estimates$population_data_source),
   "Source of CTU-level population data",
   "ctu_population", class(ctu_pop_estimates$ctu_population),

@@ -53,7 +53,6 @@ testthat::test_that("CTU population matches county totals", {
   }
 })
 
-
 testthat::test_that("CTU names, year, county combinations are as expected", {
   ctu_population <- readRDS(file.path(here::here(), "_meta/data/ctu_population.RDS"))
 
@@ -114,4 +113,23 @@ testthat::test_that("CTU names, year, county combinations are as expected", {
       "White Bear Lake"
     )
   )
+})
+
+testthat::test_that("COCTU and CTU counts are correct", {
+  ctu_population <- readRDS(file.path(here::here(), "_meta/data/ctu_population.RDS"))
+
+
+  n_ctu_fips <- length(unique(ctu_population$ctuid))
+  n_ctu_gnis <- length(unique(ctu_population$gnis))
+
+  testthat::expect_equal(n_ctu_fips, n_ctu_gnis)
+
+  testthat::expect_equal(n_ctu_fips, 188)
+
+  n_coctu_fips <- length(unique(ctu_population$coctu_id_fips))
+  n_coctu_gnis <- length(unique(ctu_population$coctu_id_gnis))
+
+  testthat::expect_equal(n_coctu_fips, n_coctu_gnis)
+
+  testthat::expect_equal(n_coctu_fips, 195)
 })

@@ -3,7 +3,7 @@ source("R/_load_pkgs.R")
 
 
 ### directory to save ggplot items in
-wd <- "C:/Users/WilfahPA/OneDrive - Metropolitan Council/CPRG/story session graphics/"
+wd <- "C:/Users/WilfahPA/OneDrive - Metropolitan Council/CPRG/Steering committee graphics/"
 
 ### county graphs
 
@@ -32,7 +32,7 @@ baseline_emissions_sector <- county_emissions %>%
   group_by(emissions_year, baseline_sector) %>%
   summarize(MT_CO2e = sum(value_emissions, na.rm = TRUE)) %>%
   mutate(baseline_sector = factor(baseline_sector,
-    levels = c("Electricity", "Transportation", "Building Fuel", "Industrial", "Waste", "Agriculture", "Natural Systems")
+    levels = c("Transportation", "Electricity", "Building Fuel", "Industrial", "Waste", "Agriculture", "Natural Systems")
   ))
 
 # Define custom colors for sectors and tones for years
@@ -67,6 +67,35 @@ baseline_comparison <- ggplot(
   )
 
 baseline_comparison
+
+# Stacked area plot by year
+baseline_comparison <- ggplot(
+  baseline_emissions_sector %>%
+    filter(emissions_year >= 2005 & emissions_year <= 2021),
+  aes(x = emissions_year, y = MT_CO2e / 1000000, fill = baseline_sector)
+) +
+  geom_area(size = 0.3, color = "black", position = "stack") +
+  geom_hline(yintercept = 0, size = 2, col = "black", linetype = "dashed") +
+  ggtitle("Eleven-County Regional Emissions Inventory") +
+  scale_fill_manual(values = baseline_colors, name = "Sector") +
+  theme_bw() +
+  xlab("") +
+  ylab(expression(paste("Million metric tons of ", CO[2], "e"))) +
+  theme(
+    panel.grid.major.x = element_blank(),
+    axis.text.x = element_text(size = 20),
+    text = element_text(size = 20, family = "sans")
+  )
+
+baseline_comparison
+
+# ggsave(paste0(wd, "ghg_sector_baseline.png"),
+#        baseline_comparison,
+#        width = 12,
+#        height = 8,
+#        units = "in",
+#        dpi = 600
+# )
 
 baseline_comparison_facet <- ggplot(
   baseline_emissions_sector %>%
@@ -144,12 +173,12 @@ baseline_comparison_facet_spanish <- ggplot(
 
 baseline_comparison_facet_spanish
 
-ggsave(paste0(wd, "ghg_sector_2021_spanish.png"),
-  baseline_comparison_facet_spanish,
-  width = 12,
-  height = 8,
-  units = "in"
-)
+# ggsave(paste0(wd, "ghg_sector_2021_spanish.png"),
+#   baseline_comparison_facet_spanish,
+#   width = 12,
+#   height = 8,
+#   units = "in"
+# )
 
 emissions_sector <- county_emissions %>%
   mutate(category = case_when(
@@ -157,14 +186,14 @@ emissions_sector <- county_emissions %>%
     category == "Natural Gas" ~ paste(sector, "natural gas"),
     TRUE ~ category
   )) %>%
-  group_by(year, sector) %>%
+  group_by(emissions_year, sector) %>%
   summarize(MT_CO2e = sum(value_emissions)) %>%
   mutate(sector = factor(sector, levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")))
 
 
 # Plot by sector
 sector_comparison <- ggplot(
-  emissions_sector %>% filter(year == 2021),
+  emissions_sector %>% filter(emissions_year == 2021),
   aes(x = sector, y = MT_CO2e / 1000000, fill = sector)
 ) +
   geom_bar(stat = "identity", position = position_dodge(), col = "black") +
@@ -201,23 +230,24 @@ sector_comparison
 # Plot by subsector
 
 category_order <- c(
-  "Aviation", "Passenger vehicles", "Buses", "Trucks", # Transportation
+  "On-road", "Off-road", # Transportation
   "Residential electricity", "Residential natural gas", # Residential
   "Commercial electricity", "Commercial natural gas", "Commercial fuel combustion", # Commercial
   "Industrial electricity", "Industrial natural gas", "Industrial fuel combustion",
   "Industrial processes", "Refinery processes", # Industrial
   "Solid waste", "Wastewater", # Waste
   "Livestock", "Cropland", # Agriculture
-  "Natural systems", "Urban greenery" # Natural Systems
+  "Freshwater", "Sequestration" # Natural Systems
 )
 
 emissions_subsector <- county_emissions %>%
+  filter(!county_name %in% c("St. Croix", "Pierce", "Sherburne", "Chisago")) %>%
   mutate(category = case_when(
     category == "Electricity" ~ paste(sector, "electricity"),
-    category == "Natural Gas" ~ paste(sector, "natural gas"),
+    category == "Building Fuel" ~ paste(sector, "natural gas"),
     TRUE ~ category
   )) %>%
-  group_by(year, sector, category) %>%
+  group_by(emissions_year, sector, category) %>%
   summarize(MT_CO2e = sum(value_emissions)) %>%
   mutate(sector = factor(sector, levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")))
 
@@ -228,7 +258,7 @@ subsector_comparison <- ggplot(
     mutate(
       category = factor(category, levels = category_order)
     ) %>%
-    filter(year == 2021),
+    filter(emissions_year == 2021),
   aes(x = sector, y = MT_CO2e / 1000000, fill = category)
 ) +
   geom_bar(stat = "identity", position = "stack", col = "black") +

@@ -27,7 +27,8 @@ testthat::test_that("CTU data is as expected", {
   testthat::expect_equal(nrow(cprg_ctu), 288)
   testthat::expect_equal(names(cprg_ctu), c(
     "ctu_name", "ctu_class", "county_name", "state_name", "statefp",
-    "state_abb", "geoid_wis", "gnis", "cprg_area", "geometry", "thrive_designation"
+    "state_abb", "geoid_wis", "gnis", "cprg_area", "geometry", "ctu_id",
+    "thrive_designation", "imagine_designation"
   ))
 
   testthat::expect_equal(cprg_ctu$state_name %>% unique(), c("Minnesota", "Wisconsin"))
