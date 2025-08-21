@@ -114,21 +114,22 @@ Note that this does not include freight rail, light rail, and other transportati
 
 <!-- TODO add section with emissions by gas type (CO2, CH4, etc) -->
 
+<!-- TODO Rework plots -->
 Transportation emissions totaled `r round(transportation_2022/1000000, digits = 2)` MMtCO~2~e, accounting for `r scales::percent(sector_percentages %>% filter(sector == "Transportation") %>% extract2("value_emissions"))` of regional emissions in `r transportation_max_year`. 
 
-```{r fig-transportation-county-emissions}
-#| fig-cap: "2022 transportation emissions by county"
-#| out-width: "95%"
+<!-- ```{r fig-transportation-county-emissions} -->
+<!-- #| fig-cap: "2022 transportation emissions by county" -->
+<!-- #| out-width: "95%" -->
 
-fig_transportation_county_emissions <- plot_county_sector_emissions(
-  county_emissions %>%
-    filter(emissions_year == transportation_max_year),
-  .sector = "Transportation",
-  .plotly_source = "fig-transportation-county-emissions"
-)
+<!-- fig_transportation_county_emissions <- plot_county_sector_emissions( -->
+<!--   county_emissions %>% -->
+<!--     filter(emissions_year == transportation_max_year), -->
+<!--   .sector = "Transportation", -->
+<!--   .plotly_source = "fig-transportation-county-emissions" -->
+<!-- ) -->
 
-fig_transportation_county_emissions
-```
+<!-- fig_transportation_county_emissions -->
+<!-- ``` -->
 
 <!--
 We can also view this data broken out by vehicle weight in @fig-transportation-county-emissions-by-weight. 
