@@ -22,7 +22,7 @@ ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
 # transportation -----
 
 transportation_emissions <- readRDS("_transportation/data/ctu_transportation_emissions.RDS") %>%
-  ungroup() %>%  
+  ungroup() %>%
   select(
     emissions_year,
     geog_level,
