@@ -221,6 +221,14 @@ testthat::expect_equal(
   193
 )
 
+# check that Oakdale is Suburban
+testthat::expect_equal(
+  ctu_pop_jobs_vmt %>%
+    filter(ctu_name == "Oakdale") %>%
+    pluck("imagine_designation") %>% unique(), "Suburban"
+)
+
+
 saveRDS(ctu_pop_jobs_vmt, "_transportation/data/vmt_model_data.RDS")
 
 # create metadata
