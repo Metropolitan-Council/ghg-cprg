@@ -27,15 +27,15 @@ wi_inventory <- read.csv(file.path(here::here(), "_waste/data-raw/solid_waste/ta
     inventory_year = as.numeric(inventory_year),
     value_emissions = as.numeric(value_emissions) * 10^6
   ) %>%
-  # add 2021 with values == 2018
+  # add 2022 with values == 2018
   rbind(
     tibble(
       source = c("Landfills", "Waste Combustion"),
-      inventory_year = c(2021, 2021),
+      inventory_year = c(2022, 2022),
       value_emissions = c(2.1, 0.1) * 10^6
     )
   ) %>%
-  complete(source, inventory_year = 2005:2021) %>%
+  complete(source, inventory_year = 2005:2022) %>%
   group_by(source) %>%
   mutate(
     value_emissions = zoo::na.approx(value_emissions, na.rm = FALSE)
@@ -44,7 +44,7 @@ wi_inventory <- read.csv(file.path(here::here(), "_waste/data-raw/solid_waste/ta
 wi_pop <- cprg_county_proportions %>%
   filter(
     state_name == "Wisconsin",
-    population_year %in% 2005:2021
+    population_year %in% 2005:2022
   )
 # names will need to be fixed later
 

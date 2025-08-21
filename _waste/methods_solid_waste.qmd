@@ -112,7 +112,7 @@ Emissions are not calculated for waste that is recycled, as any emissions genera
 
 Wisconsin emissions are calculated by interpolating and scaling down state-level data from the Wisconsin DNR [@wisconsindnrGreenhouseGas2021].
 
-This 2021 inventory estimates landfill and waste-to-energy emissions for the years 2005 and 2018, including methane recovery offsets. In order to fill in missing years, emissions between 2005 and 2018 were linearly interpolated. Due to the small amount of change in emissions, it was assumed that emissions from 2018 to 2021 were constant. These emissions were then allocated to counties based on population.
+This 2022 inventory estimates landfill and waste-to-energy emissions for the years 2005 and 2018, including methane recovery offsets. In order to fill in missing years, emissions between 2005 and 2018 were linearly interpolated. Due to the small amount of change in emissions, it was assumed that emissions from 2018 to 2022 were constant. These emissions were then allocated to counties based on population.
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))

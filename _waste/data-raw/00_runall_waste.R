@@ -34,6 +34,10 @@ source("_waste/data-raw/solid_waste/03_compile_solid_waste_MN_allyrs.R")
 
 ## WI ----
 source("_waste/data-raw/solid_waste/03_compile_solid_waste_WI_allyrs.R")
+source("_waste/data-raw/solid_waste/03_compile_solid_waste_gas_WI_allyrs.R")
 
 ## MN and WI combined ----
 source("_waste/data-raw/solid_waste/04_compile_final_solid_waste_allyrs.R")
+
+## Scaled to CTUs ----
+source("_waste/data-raw/solid_waste/05_compile_final_solid_waste_ctu_allyrs.R")
