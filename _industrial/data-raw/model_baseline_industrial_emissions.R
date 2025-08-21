@@ -53,6 +53,42 @@ ghgrp_emissions_combustion <- bind_rows(
 ) %>%
   mutate(city_name = str_to_title(city_name))
 
+# problem with st paul refinery having diminished subpart c 2011 emissions
+# not reflected in ghgrp
+
+
+sppr_ratios <- left_join(
+  ghgrp_emissions %>% filter( facility_name == "St. Paul Park Refining Company, LLC",
+                              category == "stationary_combustion") %>% 
+    group_by(inventory_year) %>% summarize(value_emissions_ghgrp = sum(value_emissions)) %>% 
+    ungroup(),
+  subpart_c_emissions %>% filter(facility_name == "St. Paul Park Refining Company, LLC") %>% 
+    group_by(reporting_year) %>% summarize(value_emissions_subc = sum(values_emissions)) %>% 
+    ungroup() %>% rename(inventory_year = reporting_year),
+) %>% 
+  mutate(ratio = value_emissions_subc / value_emissions_ghgrp)
+
+# # A tibble: 13 × 4
+# inventory_year value_emissions_ghgrp value_emissions_subc ratio
+# <dbl>                 <dbl>                <dbl> <dbl>
+#   1           2011               444753.              116524. 0.262
+# 2           2012               445394.              481500. 1.08 
+# 3           2013               414426.              447932. 1.08 
+# 4           2014               545864.              597114. 1.09 
+# 5           2015               534725.              585310. 1.09 
+# 6           2016               506016.              560484. 1.11 
+# 7           2017               523682.              593695. 1.13 
+# 8           2018               541573.              588930. 1.09 
+# 9           2019               581011.              580364. 0.999
+# 10           2020               557969.              592715. 1.06 
+# 11           2021               568676.              608100. 1.07 
+# 12           2022               515393.              557448. 1.08 
+# 13           2023               575766.              613922. 1.07 
+
+# hold 2011 value
+sppr_2011 <- sppr_ratios %>% filter(inventory_year == 2011) %>% pull(value_emissions_ghgrp) *
+  sppr_ratios %>% filter(inventory_year != 2011) %>% pull(ratio) %>% mean()
+
 ### match ghgrp emission categories to mpca subsectors as much as possible
 sort(unique(mpca_industrial_inv$Subsector))
 sort(unique(ghgrp_emissions_combustion$source))
@@ -105,7 +141,13 @@ ghgrp_simplified <- ghgrp_emissions_combustion %>%
   group_by(inventory_year, city_name, county_name, mpca_subsector) %>%
   summarize(value_emissions = sum(value_emissions)) %>%
   mutate(data_source = "GHGRP") %>%
-  ungroup()
+  ungroup() %>% 
+  ## replace st paul park natural gas with correct value from earlier
+  mutate(value_emissions = if_else(city_name == "Saint Paul Park" &
+                                     inventory_year == 2011 &
+                                     mpca_subsector == "Natural gas",
+                                   sppr_2011,
+                                   value_emissions))
 
 ### Now add in MPCA data for cities without industrial emissions in GHGRP
 ### Later we need to look for industrial point sources in MPCA missed in GHGRP cities
