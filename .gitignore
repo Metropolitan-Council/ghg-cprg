@@ -1285,3 +1285,6 @@ _transportation/data-raw/mndot/metadata/
 _transportation/data-raw/mndot/mileage_city_route_system/
 
 _transportation/data-raw/mndot/vmt_county.CSV
+_waste/data-raw/solid_waste/score_summary.csv
+_waste/data-raw/solid_waste/solid_waste_flaring.xlsx
+_waste/data-raw/solid_waste/solid_waste_lfgte.xlsx
