@@ -304,7 +304,7 @@ cprg_ctu_meta <-
       "geoid_wis", class(cprg_ctu$geoid_wis), "Wisconsin geographic identifier",
       "geometry", class(cprg_ctu$geometry)[1], "Simple feature geometry",
       "thrive_designation", class(cprg_ctu$thrive_designation), "Community designation in Thrive 2040",
-      "imagine_designation", class(cprg_ctu$thrive_designation), "Community designation in Imagine 2050",
+      "imagine_designation", class(cprg_ctu$imagine_designation), "Community designation in Imagine 2050",
     )
   ) %>%
   bind_rows(cprg_county_meta) %>%
