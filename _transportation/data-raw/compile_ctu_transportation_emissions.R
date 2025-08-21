@@ -58,12 +58,12 @@ ctu_county_year_pct_index <- mndot_vmt_county %>%
   ) %>%
   # get CTU VMT percent from 2010-2022
   left_join(ctu_vmt_percent,
-            by = join_by(county_name, geoid, gnis, coctu_id_gnis, vmt_year == inventory_year)
+    by = join_by(county_name, geoid, gnis, coctu_id_gnis, vmt_year == inventory_year)
   ) %>%
   unique() %>%
   # join with 2010 CTU VMT percent
   left_join(ctu_vmt_pct_2010,
-            by = join_by(geoid, county_name, gnis, coctu_id_gnis)
+    by = join_by(geoid, county_name, gnis, coctu_id_gnis)
   ) %>%
   # for years 2002-2010, use 2010 CTU VMT percentage
   # for years 2010-2022, use actual CTU proportion of county VMT
@@ -92,11 +92,11 @@ ctu_transportation_emissions <- readRDS("_transportation/data/onroad_emissions.R
   summarize(value_emissions = sum(emissions_metric_tons_co2e), .groups = "keep") %>%
   # join with ctu-county VMT percentaegs
   left_join(ctu_county_year_pct_index,
-            by = c("county_name",
-                   "emissions_year" = "vmt_year",
-                   "geoid"
-            ),
-            relationship = "many-to-many"
+    by = c("county_name",
+      "emissions_year" = "vmt_year",
+      "geoid"
+    ),
+    relationship = "many-to-many"
   ) %>%
   ungroup() %>%
   mutate(
@@ -107,8 +107,8 @@ ctu_transportation_emissions <- readRDS("_transportation/data/onroad_emissions.R
   ) %>%
   # get ctuid column
   left_join(ctu_population %>%
-              select(coctu_id_gnis, ctuid, ctu_class) %>%
-              unique(), by = c("coctu_id_gnis")) %>%
+    select(coctu_id_gnis, ctuid, ctu_class) %>%
+    unique(), by = c("coctu_id_gnis")) %>%
   # group at the CTU level (not coctu) and summarize
   group_by(emissions_year, geog_level, sector, category, source, ctu_name, ctu_class, ctuid, gnis) %>%
   summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
@@ -126,5 +126,7 @@ ctu_transportation_emissions <- readRDS("_transportation/data/onroad_emissions.R
     value_emissions
   )
 
-saveRDS(ctu_transportation_emissions, 
-        "_transportation/data/ctu_transportation_emissions.RDS")
+saveRDS(
+  ctu_transportation_emissions,
+  "_transportation/data/ctu_transportation_emissions.RDS"
+)
