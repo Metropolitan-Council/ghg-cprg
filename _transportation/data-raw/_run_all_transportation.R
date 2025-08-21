@@ -5,13 +5,19 @@
 #
 # # mndot processing
 # source("_transportation/data-raw/mndot_extract_yearly_volume_trends.R")
-# source("_transportation/data-raw/mndot_vmt_county.R")
+source("_transportation/data-raw/mndot_vmt_county.R")
 #
 # # dot combination and processing
-# source("_transportation/data-raw/dot_vmt.R")
-# source("_transportation/data-raw/stl_calibration_lines_points.R")
+source("_transportation/data-raw/dot_vmt.R")
+
+# CTU level data and modeling
+source("_transportation/data-raw/mndot_vmt_ctu.R")
+source("_transportation/data-raw/vmt_model_data.R")
+source("_transportation/data-raw/mndot_vmt_ctu_gap_fill_model.R")
+
 #
 # # streetlight upload, run, and fetch analyses
+# source("_transportation/data-raw/stl_calibration_lines_points.R")
 # source("_transportation/data-raw/stl_upload_zone_sets.R")
 # source("_transportation/data-raw/stl_run_analyses.R")
 # source("_transportation/data-raw/stl_fetch_analyses.R")
@@ -43,3 +49,4 @@ source("_transportation/data-raw/epa_onroad_emissions_compile.R")
 
 source("_transportation/data-raw/_transportation_compile.R")
 source("_meta/data-raw/compile_county_emissions.R")
+source("_meta/data-raw/compile_ctu_emissions.R")
