@@ -15,14 +15,14 @@ county_emissions <- read_rds("_meta/data/cprg_county_emissions.RDS")
 
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   left_join(cprg_county %>% select(geoid, county_name),
-            by = join_by(geoid)
+    by = join_by(geoid)
   )
 
 
 # transportation -----
 
 # fetch gap-filled/modeled ctu level data from 2010 to 2022
-mndot_vmt_ctu_gap_filled <- readRDS("_transportation/data/mndot_vmt_ctu_gap_filled.RDS") %>% 
+mndot_vmt_ctu_gap_filled <- readRDS("_transportation/data/mndot_vmt_ctu_gap_filled.RDS") %>%
   filter(inventory_year < 2023)
 
 # fetch mndot vmt by county, 2002-2022
@@ -30,55 +30,66 @@ mndot_vmt_county <- readRDS("_transportation/data-raw/mndot/mndot_vmt_county.RDS
   mutate(
     vmt_year = as.numeric(year),
     county_daily_vmt = daily_vmt,
-    county_name = county) %>% 
-  left_join(ctu_coctu_index %>% 
-              select(geoid, county_name) %>% 
-              unique(), 
-            by = c("county_name")) %>% 
+    county_name = county
+  ) %>%
+  left_join(
+    ctu_coctu_index %>%
+      select(geoid, county_name) %>%
+      unique(),
+    by = c("county_name")
+  ) %>%
   # remove Wright, Sherburne, WI counties
   filter(!is.na(geoid))
 
 # find the percentage of county VMT each CTU makes up
 # 2010-2022
 ctu_vmt_percent <- (mndot_vmt_ctu_gap_filled) %>%
-  left_join(mndot_vmt_county, by = c("geoid", "inventory_year" = "vmt_year")) %>% 
+  left_join(mndot_vmt_county, by = c("geoid", "inventory_year" = "vmt_year")) %>%
   ungroup() %>%
-  rowwise() %>% 
+  rowwise() %>%
   mutate(
     ctu_vmt_percent = final_city_vmt / county_daily_vmt,
     vmt_year = as.numeric(inventory_year)
-  ) %>% 
-  select(inventory_year, geoid, county_name, gnis, 
-         coctu_id_gnis, final_vmt_source, ctu_vmt_percent) %>% 
+  ) %>%
+  select(
+    inventory_year, geoid, county_name, gnis,
+    coctu_id_gnis, final_vmt_source, ctu_vmt_percent
+  ) %>%
   unique()
 
 # get the ctu percentage of county VMT for year 2010
-ctu_vmt_pct_2010 <- ctu_vmt_percent %>% 
-  filter(inventory_year == "2010") %>% 
-  mutate(ctu_vmt_percent10 = ctu_vmt_percent) %>% 
-  select(coctu_id_gnis, geoid, gnis,county_name, ctu_vmt_percent10) %>% 
+ctu_vmt_pct_2010 <- ctu_vmt_percent %>%
+  filter(inventory_year == "2010") %>%
+  mutate(ctu_vmt_percent10 = ctu_vmt_percent) %>%
+  select(coctu_id_gnis, geoid, gnis, county_name, ctu_vmt_percent10) %>%
   unique()
 
-ctu_county_year_pct_index <- mndot_vmt_county %>% 
-  select(vmt_year, geoid, county_name = county, daily_vmt) %>% 
-  unique() %>% 
+ctu_county_year_pct_index <- mndot_vmt_county %>%
+  select(vmt_year, geoid, county_name = county, daily_vmt) %>%
+  unique() %>%
   # get mapping of CTUs to counties
-  left_join(ctu_coctu_index %>% 
-              select(-imagine_designation, -ctu_name_full, -ctu_name_full_county) %>% 
-              unique(),
-            relationship = "many-to-many",
-            by = join_by(geoid, county_name)) %>% 
+  left_join(
+    ctu_coctu_index %>%
+      select(-imagine_designation, -ctu_name_full, -ctu_name_full_county) %>%
+      unique(),
+    relationship = "many-to-many",
+    by = join_by(geoid, county_name)
+  ) %>%
   # get CTU VMT percent from 2010-2022
   left_join(ctu_vmt_percent,
-            by = join_by(county_name, geoid, gnis, coctu_id_gnis, vmt_year == inventory_year)) %>% 
-  unique() %>% 
+    by = join_by(county_name, geoid, gnis, coctu_id_gnis, vmt_year == inventory_year)
+  ) %>%
+  unique() %>%
   # join with 2010 CTU VMT percent
-  left_join(ctu_vmt_pct_2010, 
-            by = join_by(geoid, county_name, gnis, coctu_id_gnis)) %>% 
+  left_join(ctu_vmt_pct_2010,
+    by = join_by(geoid, county_name, gnis, coctu_id_gnis)
+  ) %>%
   # for years 2002-2010, use 2010 CTU VMT percentage
   # for years 2010-2022, use actual CTU proportion of county VMT
-  mutate(ctu_vmt_percent = ifelse(is.na(ctu_vmt_percent), ctu_vmt_percent10, ctu_vmt_percent),
-         pct_data_source = ifelse(is.na(final_vmt_source), "2010 CTU share of county VMT", final_vmt_source)) %>% 
+  mutate(
+    ctu_vmt_percent = ifelse(is.na(ctu_vmt_percent), ctu_vmt_percent10, ctu_vmt_percent),
+    pct_data_source = ifelse(is.na(final_vmt_source), "2010 CTU share of county VMT", final_vmt_source)
+  ) %>%
   select(-ctu_vmt_percent10)
 
 
@@ -98,23 +109,23 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
   summarize(value_emissions = sum(emissions_metric_tons_co2e), .groups = "keep") %>%
   # join with ctu-county VMT percentaegs
   left_join(ctu_county_year_pct_index,
-            by = c("county_name",
-                   "emissions_year" = "vmt_year",
-                   "geoid"
-            ),
-            relationship = "many-to-many"
-  ) %>% 
+    by = c("county_name",
+      "emissions_year" = "vmt_year",
+      "geoid"
+    ),
+    relationship = "many-to-many"
+  ) %>%
   ungroup() %>%
   mutate(
-    # CTU emissions total is county emissions multiplied by 
+    # CTU emissions total is county emissions multiplied by
     # ctu proportion of county VMT
     value_emissions = value_emissions * ctu_vmt_percent,
     geog_level = "ctu"
-  ) %>% 
+  ) %>%
   # get ctuid column
-  left_join(ctu_population %>% 
-              select(coctu_id_gnis, ctuid, ctu_class) %>% 
-              unique(), by = c("coctu_id_gnis")) %>% 
+  left_join(ctu_population %>%
+    select(coctu_id_gnis, ctuid, ctu_class) %>%
+    unique(), by = c("coctu_id_gnis")) %>%
   # group at the CTU level (not coctu) and summarize
   group_by(emissions_year, geog_level, sector, category, source, ctu_name, ctu_class, ctuid, gnis) %>%
   summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
@@ -330,35 +341,39 @@ emissions_all %>%
   sum(cprg_county_pop[cprg_county_pop$population_year == 2021, ]$population)
 
 
-emissions_all_meta <- 
-  readRDS("_meta/data/ctu_population_meta.RDS") %>% 
+emissions_all_meta <-
+  readRDS("_meta/data/ctu_population_meta.RDS") %>%
   mutate(
-    Column = case_when(Column == "gnis" ~ "ctu_id_gnis",
-                       Column == "ctuid" ~ "ctu_id_fips",
-                       TRUE ~ Column)) %>% 
-    filter(Column %in% names(emissions_all)) %>% 
+    Column = case_when(
+      Column == "gnis" ~ "ctu_id_gnis",
+      Column == "ctuid" ~ "ctu_id_fips",
+      TRUE ~ Column
+    )
+  ) %>%
+  filter(Column %in% names(emissions_all)) %>%
   bind_rows(
-  tibble::tribble(
-  ~"Column", ~"Class", ~"Description",
-  "emissions_year", class(emissions_all$emissions_year), "Emissions estimation year",
-  "geog_name", class(emissions_all$geog_name), "Name of geographic area",
-  "geog_level", class(emissions_all$geog_level), "Geography level; ctu or county",
-  "sector", class(emissions_all$sector), paste0(
-    "Emissions sector. One of ",
-    paste0(unique(emissions_all$sector), collapse = ", ")
-  ),
-  "sector_alt", class(emissions_all$sector), paste0(
-    "Alternative sector grouping. One of ",
-    paste0(unique(emissions_all$sector_alt), collapse = ", ")
-  ),
-  "category", class(emissions_all$category), "Category of emissions within given sector",
-  "source", class(emissions_all$source), "Source of emissions. Most detailed sub-category in this table",
-  "value_emissions", class(emissions_all$value_emissions), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given geography for given year",
-  # "data_source", class(emissions_all$data_source), "Activity data source",
-  # "factor_source", class(emissions_all$factor_source), "Emissions factor data source",
-  # "population_data_source", class(emissions_all$population_data_source), "Population data source",
-  "emissions_per_capita", class(emissions_all$emissions_per_capita), "Metric tons CO~2~e per person living in given county for given sector and category"
-)) %>% 
+    tibble::tribble(
+      ~"Column", ~"Class", ~"Description",
+      "emissions_year", class(emissions_all$emissions_year), "Emissions estimation year",
+      "geog_name", class(emissions_all$geog_name), "Name of geographic area",
+      "geog_level", class(emissions_all$geog_level), "Geography level; ctu or county",
+      "sector", class(emissions_all$sector), paste0(
+        "Emissions sector. One of ",
+        paste0(unique(emissions_all$sector), collapse = ", ")
+      ),
+      "sector_alt", class(emissions_all$sector), paste0(
+        "Alternative sector grouping. One of ",
+        paste0(unique(emissions_all$sector_alt), collapse = ", ")
+      ),
+      "category", class(emissions_all$category), "Category of emissions within given sector",
+      "source", class(emissions_all$source), "Source of emissions. Most detailed sub-category in this table",
+      "value_emissions", class(emissions_all$value_emissions), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given geography for given year",
+      # "data_source", class(emissions_all$data_source), "Activity data source",
+      # "factor_source", class(emissions_all$factor_source), "Emissions factor data source",
+      # "population_data_source", class(emissions_all$population_data_source), "Population data source",
+      "emissions_per_capita", class(emissions_all$emissions_per_capita), "Metric tons CO~2~e per person living in given county for given sector and category"
+    )
+  ) %>%
   arrange(match(Column, names(emissions_all)))
 
 

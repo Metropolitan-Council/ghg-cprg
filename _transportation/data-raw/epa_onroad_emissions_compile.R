@@ -400,7 +400,7 @@ epa_onroad_emissions_year_pollutant_index <- epa_emissions_combine %>%
   select(-value) %>%
   unique() %>%
   left_join(pollutant_key, by = "pollutant")
-  
+
 # export -----
 # pack everything up for future use
 
