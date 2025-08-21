@@ -11,12 +11,23 @@ cprg_colors <- list(
 
 # sector colors
 sector_colors <- list(
-  "Electricity" = "#1f77b4",
+  "Electricity" = "#ecb81c",
   "Transportation" = "#191970",
   "Residential" = "#9467bd",
-  "Commercial" = "#d62728",
+  "Commercial" = "#DB5755",
   "Industrial" = "slategray",
-  "Waste" = "#8c564b",
+  "Waste" = "#D47E30",
+  "Agriculture" = "#8fb910",
+  "Natural Systems" = "#006f3c"
+)
+
+## with building fuel
+sector_colors_alt <- list(
+  "Electricity" = "#ecb81c",
+  "Transportation" = "#191970",
+  "Building Fuel" = "#DB5755",
+  "Industrial Processes" = "slategray",
+  "Waste" = "#D47E30",
   "Agriculture" = "#8fb910",
   "Natural Systems" = "#006f3c"
 )
@@ -27,7 +38,9 @@ category_colors <-
   list(
 
     # Electricity
-    "Electricity" = "#FFEF00",
+    "Residential electricity" = "#FFCE1B",
+    "Commercial electricity" = "#DBA400",
+    "Industrial electricity" = "#B38600",
 
     # Residential
     "Residential natural gas" = "#483248",
@@ -37,22 +50,29 @@ category_colors <-
     # Commercial
     "Commercial natural gas" = "#800000",
     "Commercial fuel combustion" = "#DE3163",
-    "Commercial electricity" = "#FAA0A0",
+
+    # Building Fuel
+    "Residential building fuel" = "#FF9E99",
+    "Commercial building fuel" = "#FF746C",
+    "Industrial building fuel" = "#7A3734",
+
 
     # Industrial
-    "Industrial electricity" = "#E5E4E2",
+
     "Industrial natural gas" = "#36454F",
     "Industrial processes" = "#B2BEB5",
     "Industrial fuel combustion" = "#818589",
     "Refinery processes" = "#708090",
 
     # Transportation
-    "On-road" = "#6F8FAF",
-    "Off-road" = "#191970",
+    "Passenger vehicles" = "#0047AB",
+    "Buses" = "#6F8FAF",
+    "Trucks" = "#6495ED",
+    "Aviation" = "#191970",
 
     # Waste
-    "Solid waste" = "#8B4513",
-    "Wastewater" = "#CD853F",
+    "Solid waste" = "#CD853F",
+    "Wastewater" = "#8B4513",
 
     # Agriculture
     "Cropland" = "#c7e960",
@@ -70,10 +90,8 @@ source_colors <- list(
   # "Light-duty vehicles" = "#993404",
   # we still need these colors for DOT VMT docs
   # Transportation 1
-  "Passenger vehicles" = "#0047AB",
-  "Buses" = "#6F8FAF",
-  "Trucks" = "#6495ED",
-  "Aviation" = "#191970",
+  "On-road" = "#6F8FAF",
+  "Off-road" = "#191970",
 
   # Electricity
   "Residential electricity" = "#ffc300",

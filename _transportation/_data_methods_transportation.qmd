@@ -52,6 +52,8 @@ Geographic emissions are essential for quantifying air pollution experienced by 
 
 <!-- Met Council researchers chose to use an alternative activity-induced method to provide the most actionable information for jurisdictions within our region in both the recent PCAP and the 2018 Metro Climate Stats inventory. -->
 
+<!-- TODO include summary table with geographic level, year, data source -->
+
 ## Data sources
 
 <!-- {{< include data_aviation.qmd >}} -->
@@ -65,6 +67,9 @@ Geographic emissions are essential for quantifying air pollution experienced by 
 <!-- {{< include data_epa_moves.qmd >}} -->
 
 <!-- {{< include data_tbi.qmd >}} -->
+
+{{< include data_regional_travel_demand_model.qmd >}}
+
 
 ## Limitations {#sec-transportation-data-limitations}
 

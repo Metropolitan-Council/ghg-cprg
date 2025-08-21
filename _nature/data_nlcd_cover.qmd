@@ -20,11 +20,11 @@ hookaddcap()
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
-county_waterways_emissions <- readRDS(file.path(here::here(), "_nature/data/nhd_county_waterways_emissions_2001_2021.RDS"))
-ctu_waterways_emissions <- readRDS(file.path(here::here(), "_nature/data/nhd_ctu_waterways_emissions_2001_2021.RDS"))
+county_waterways_emissions <- readRDS(file.path(here::here(), "_nature/data/nhd_county_waterways_emissions_allyrs.RDS"))
+ctu_waterways_emissions <- readRDS(file.path(here::here(), "_nature/data/nhd_ctu_waterways_emissions_allyrs.RDS"))
 
-county_carbon_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_sequestration_2001_2021.RDS"))
-ctu_carbon_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_ctu_landcover_sequestration_2001_2021.RDS"))
+county_carbon_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_sequestration_allyrs.RDS"))
+ctu_carbon_sequestration <- readRDS(file.path(here::here(), "_nature/data/nlcd_ctu_landcover_sequestration_allyrs.RDS"))
 
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
