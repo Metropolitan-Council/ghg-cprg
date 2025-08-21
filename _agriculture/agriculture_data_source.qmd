@@ -29,8 +29,10 @@ county_area <- cprg_county %>%
   st_drop_geometry()
 
 county_agriculture <- landcover %>%
-  filter(!is.na(area), land_cover_type == "Cropland",
-         inventory_year == 2021) %>%
+  filter(
+    !is.na(area), land_cover_type == "Cropland",
+    inventory_year == 2021
+  ) %>%
   left_join(., county_area,
     by = c("county_name")
   ) %>%
@@ -144,7 +146,7 @@ We would expect that counties with higher amounts of agricultural land would hav
 
 
 cropland_2021 <- county_agriculture %>%
-  filter(inventory_year  == 2021) %>%
+  filter(inventory_year == 2021) %>%
   left_join(., county_emissions %>%
     filter(
       sector == "Agriculture",

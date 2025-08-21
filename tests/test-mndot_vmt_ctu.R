@@ -50,9 +50,9 @@ testthat::test_that("state DOT VMT", {
       filter(n >= 2) %>%
       extract2("ctu_name"),
     c(
-      # "Blaine", 
+      # "Blaine",
       "Chanhassen",
-      # "Hastings", 
+      # "Hastings",
       "Saint Anthony",
       # "Shorewood",
       "Spring Lake Park"

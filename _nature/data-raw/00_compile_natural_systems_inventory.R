@@ -27,7 +27,7 @@ source("_nature/data-raw/02_compile_nhd_waterways_byCTU.R")
 
 # 03 ----------------------------------------------------------------------
 # 03_compile_extrapolated_nlcd_land_cover.R
-# Computes the area of Urban_Tree and Urban_Grassland as a function of 
+# Computes the area of Urban_Tree and Urban_Grassland as a function of
 # total developed area during periods where tree canopy data is not available
 source("_nature/data-raw/03_compile_extrapolated_nlcd_land_cover.R")
 
@@ -42,7 +42,3 @@ source("_nature/data-raw/03_compile_waterways_emissions_from_nhd.R")
 # Applies sequestration rates to area estimates of land cover type to summarize
 # C sequestration at the county and ctu scale
 source("_nature/data-raw/04_compile_land_area_sequestration_from_nlcd.R")
-
-
-
-
