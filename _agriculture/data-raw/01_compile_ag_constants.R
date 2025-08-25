@@ -178,7 +178,7 @@ animal_mass <- data.frame(
     "breeding_swine",
     "swine_under_60lbs",
     "swine_60_119_lbs",
-    "swine_120_179_lbs", # KS: fixed minor typo here
+    "swine_120_179_lbs", 
     "swine_over_180lbs",
     NA, NA,
     "hens",
@@ -193,7 +193,7 @@ animal_mass <- data.frame(
   )
 ) %>%
   rename(
-    description = State.Inventory.Tool...Carbon.Dioxide..Methane..and.Nitrous.Oxide.Emissions.from.Agriculture.ModuleVersion.2024.1,
+    description = State.Inventory.Tool...Carbon.Dioxide..Methane..and.Nitrous.Oxide.Emissions.from.Agriculture.ModuleVersion.2025.1,
     value = ...2
   ) %>%
   mutate(
@@ -237,7 +237,7 @@ animal_Bo <- data.frame( # max potential emissions (m3 CH4/kg VS)
   )
 ) %>%
   rename(
-    description = State.Inventory.Tool...Carbon.Dioxide..Methane..and.Nitrous.Oxide.Emissions.from.Agriculture.ModuleVersion.2024.1,
+    description = State.Inventory.Tool...Carbon.Dioxide..Methane..and.Nitrous.Oxide.Emissions.from.Agriculture.ModuleVersion.2025.1,
     value = ...10
   ) %>%
   mutate(
