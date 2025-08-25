@@ -178,7 +178,7 @@ animal_mass <- data.frame(
     "breeding_swine",
     "swine_under_60lbs",
     "swine_60_119_lbs",
-    "swine_120_179_lbs", 
+    "swine_120_179_lbs",
     "swine_over_180lbs",
     NA, NA,
     "hens",
