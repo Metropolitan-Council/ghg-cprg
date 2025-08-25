@@ -142,7 +142,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
 
 # agriculture ----
 
-agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds") %>%
+agriculture_emissions <- readRDS("_agriculture/data/agricultural_emissions_county.rds") %>%
   left_join(cprg_county %>% select(county_name, geoid), by = join_by(geoid)) %>%
   mutate(
     emissions_year = inventory_year,

@@ -111,7 +111,7 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
 
 
 agriculture_emissions <-
-  readRDS(file.path(here::here(), "_agriculture/data/_ctu_agricultural_emissions.RDS")) %>%
+  readRDS(file.path(here::here(), "_agriculture/data/agricultural_emissions_ctu.RDS")) %>%
   group_by(ctu_id, ctu_name, ctu_class, inventory_year, sector, category, source, data_source, factor_source) %>%
   summarize(value_emissions = sum(mt_co2e), .groups = "keep") %>%
   mutate(
@@ -227,10 +227,10 @@ emissions_all <- bind_rows(
 
 
 emissions_all %>%
-  filter(emissions_year == 2021, !is.na(value_emissions)) %>%
+  filter(emissions_year == 2022, !is.na(value_emissions)) %>%
   pull(value_emissions) %>%
   sum() /
-  sum(cprg_county_pop[cprg_county_pop$population_year == 2021, ]$population)
+  sum(cprg_county_pop[cprg_county_pop$population_year == 2022, ]$population)
 
 
 emissions_all_meta <-
