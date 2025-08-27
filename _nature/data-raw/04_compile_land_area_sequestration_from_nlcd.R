@@ -68,7 +68,8 @@ nlcd_ctu_c <- nlcd_ctu %>%
   arrange(inventory_year, ctu_name, source)
 
 
-
+waldo::compare(nlcd_county_c, 
+               read_rds("./_nature/data/nlcd_county_landcover_sequestration_allyrs.rds"))
 
 
 nlcd_county_c_meta <-

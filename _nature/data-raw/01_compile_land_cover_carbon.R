@@ -30,7 +30,8 @@ seq_rates_sum <- seq_rates %>%
     TRUE ~ NA
   )) %>%
   mutate(mtco2e_sqkm = mtco2e / sqkm) %>%
-  filter(!activity == 0.25) %>% # remove hidden carbon cost calculation as it seems to underestimate emissions
+  filter(!activity == 0.25, #  remove hidden carbon cost calculation as it seems to underestimate emissions
+         !grepl("Polasky", Citation)) %>%  #removing high wetland seq estimate
   group_by(land_cover_type) %>%
   summarize(seq_mtco2e_sqkm = sum(mtco2e_sqkm))
 
