@@ -42,31 +42,31 @@ cprg_ctu_df <- cprg_ctu %>%
 
 
 # inpath_histosols <- "./_nature/data-raw/shapefiles/"
-# histosols_sp <-  sf::st_read(paste0(inpath_histosols, "shp_geos_potentially_wet_histosols/potentially_wet_histosols.shp")) %>% 
+# histosols_sp <-  sf::st_read(paste0(inpath_histosols, "shp_geos_potentially_wet_histosols/potentially_wet_histosols.shp")) %>%
 #   sf::st_transform(., crs_use)
-# 
+#
 # histosols_sp <- histosols_sp %>% sf::st_make_valid()
-# 
+#
 # histosols_sp <- histosols_sp %>%
 #   sf::st_crop(cprg_ctu) %>%
 #   sf::st_make_valid()
-# 
+#
 # # histosols_sp %>%
 # #   sf::st_intersection(x) %>%
 # #   sf::st_make_valid()
-# 
+#
 # ggplot(cprg_county) +   geom_sf(color=NA, fill=NA, lwd=0) +
-#   
-#  
+#
+#
 #   councilR::theme_council_geo() +
-#   
+#
 #   geom_sf(data= cprg_county, color="gray65", fill=NA, lwd=0.4) +
 #   ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
-#   
+#
 #   geom_sf(data = histosols_sp, aes(fill=wetland_ty), color="gray80", alpha=0.8,  lwd=0.2)  +
-#   
-#   
-#   
+#
+#
+#
 #   theme(
 #     legend.position = c(0,1),
 #     legend.direction = "vertical",

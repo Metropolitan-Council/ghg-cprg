@@ -44,15 +44,9 @@ cprg_ctu_df <- cprg_ctu %>%
 
 tmp_path <- "~/SSURGO Data/"
 
-ssurgo_sp <-  sf::st_read(paste0(tmp_path, "cprg_soilTaxOrder2.shp"))# %>% sf::st_transform(., "EPSG:26915")
+ssurgo_sp <- sf::st_read(paste0(tmp_path, "cprg_soilTaxOrder2.shp")) # %>% sf::st_transform(., "EPSG:26915")
 
 ssurgo_vect <- terra::vect(ssurgo_sp)
 
 
 plot(ssurgo_vect)
-
-
-
-
-
-
