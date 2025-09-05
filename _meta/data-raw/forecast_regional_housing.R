@@ -53,15 +53,15 @@ wi_housing <- get_acs(
 
 housing_type <- bind_rows(mn_housing, wi_housing) %>%
   mutate(variable = recode(variable,
-                           "B25024_002" = "Single-family detached",
-                           "B25024_003" = "Single-family attached",
-                           "B25024_004" = "Single-family attached",
-                           "B25024_005" = "Multifamily",
-                           "B25024_006" = "Multifamily",
-                           "B25024_007" = "Multifamily",
-                           "B25024_008" = "Multifamily",
-                           "B25024_009" = "Multifamily",
-                           "B25024_010" = "Mobile home"
+                           "B25024_002" = "single_family_detached",
+                           "B25024_003" = "single_family_attached",
+                           "B25024_004" = "single_family_attached",
+                           "B25024_005" = "multifamily_units",
+                           "B25024_006" = "multifamily_units",
+                           "B25024_007" = "multifamily_units",
+                           "B25024_008" = "multifamily_units",
+                           "B25024_009" = "multifamily_units",
+                           "B25024_010" = "manufactured_homes"
   )) %>%
   group_by(geoid, variable) %>% 
   summarize(value = sum(estimate)) %>% 
@@ -132,7 +132,8 @@ regional_housing_forecast <- eleven_county_housing_forecast %>%
   group_by (inventory_year, sp_categories) %>% 
   summarize(value = sum(dwelling_number)) %>% 
   ungroup() %>% 
-  mutate(geog_name = "CCAP Region")
+  mutate(geog_name = "CCAP Region",
+         value_change_from_base = value - value[inventory_year == 2020]) 
   
 
 write_rds(regional_housing_forecast,

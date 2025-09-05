@@ -16,14 +16,10 @@ interpolate_emissions <- function(df) {
 }
 
 
-regional_housing_forecast <- read_rds("_meta/data/regional_housing_forecast.RDS") %>% 
-  mutate(geog_name = "all") # to avoid check_input error
-
-# regional density_output (seven county, but only importance is no change in density here)
-density_output <- run_scenario_land_use()
 
 # work around check_input issues:
 
+# if you rerun this you will cause recursion (stack overflow!), so restart and only run once
 orig_check_inputs <- ghg.ccap:::check_inputs
 
 assignInNamespace(
@@ -42,24 +38,118 @@ assignInNamespace(
   ns = "ghg.ccap"
 )
 
+# load needed objects
+regional_housing_forecast <- read_rds("_meta/data/regional_housing_forecast.RDS") %>% 
+  mutate(geog_id = "1")
+
+# regional density_output (seven county, but only importance is no change in density here)
+density_output <- run_scenario_land_use()
+
+
 # bau
 bau_results <- run_scenario_building(
   res_tb = regional_housing_forecast,
   res_tb_bau = regional_housing_forecast,
     .baseline_year = 2022,
-    .selected_ctu = "CCAP Region",  # iterates across all ctus
+    .selected_ctu = "CCAP Region",  
     .density_output = density_output
   )
+# empty
 
+#look downstream to find errors
 
-) %>%
-  group_by(inventory_year, scenario) %>%
-  summarize(mwh = sum(residential_mwh),
-            mcf = sum(residential_mcf),
-            electricity_emissions = sum(electricity_emissions),
-            natgas_emissions = sum(natural_gas_emissions)) %>%
-  ungroup() %>%
-  filter(scenario == "bau")
+scen_building_residential(
+  res_tb = regional_housing_forecast,
+  res_tb_bau = regional_housing_forecast,
+  .baseline_year = 2022,
+  .selected_ctu = "CCAP Region",
+  .density_output = density_output,
+  .leed_start_year = 2028,
+  .new_sf_homes_leed_gold_pct = 0.0,
+  .new_mf_homes_leed_gold_pct = 0.0,
+  .retrofit_start_year = 2028,
+  .retrofit_end_year = 2050,
+  .existing_sf_retrofit_pct = 0.0,
+  .existing_mf_retrofit_pct = 0.0,
+  # electrification
+  .heatpump_start_year = 2028,
+  .heatpump_end_year = 2050,
+  .sf_heat_pump_pct = 0.0,
+  .mf_heat_pump_pct = 0.0,
+  .grid_emissions = ghg.ccap::grid_emissions,
+  .enviro_factors = ghg.ccap::enviro_factors
+)
+## still NAs
+
+tb01 <- adj_unit_counts(
+  res_tb = regional_housing_forecast,
+  .selected_ctu = "CCAP Region", 
+  density_output = density_output
+)
+
+tb02 <- calc_housing_leed(
+  res_tb = tb01,
+  .selected_ctu = "CCAP Region", 
+  .leed_start_year = 2028,
+  .new_sf_homes_leed_gold_pct = 0.0,
+  .new_mf_homes_leed_gold_pct = 0.0,
+  .enviro_factors = ghg.ccap::enviro_factors
+)
+
+tb03 <- calc_residential_retrofit(
+  res_tb = regional_housing_forecast,
+  .selected_ctu = "CCAP Region", 
+  .retrofit_start_year = 2028,
+  .retrofit_end_year = 2050,
+  .existing_sf_retrofit_pct = 0.0,
+  .existing_mf_retrofit_pct = 0.0
+)
+
+tb04 <- bind_rows(tb02, tb03)
+
+tb05 <- calc_housing_leed(
+  res_tb = regional_housing_forecast,
+  .selected_ctu = "CCAP Region", 
+  .leed_start_year = 2028,
+  .new_sf_homes_leed_gold_pct = 0.0,
+  .new_mf_homes_leed_gold_pct = 0.0,
+  .enviro_factors = ghg.ccap::enviro_factors
+)
+
+tb06 <- calc_residential_retrofit(
+  res_tb = regional_housing_forecast,
+  .selected_ctu = "CCAP Region", 
+  .retrofit_start_year = 2028,
+  .retrofit_end_year = 2050,
+  .existing_sf_retrofit_pct = 0.0,
+  .existing_mf_retrofit_pct = 0.0
+)
+
+tb07 <- bind_rows(tb05, tb06)
+
+tb09 <- calc_energy_residential(
+  res_tb = tb04,
+  res_tb_bau = tb07,
+  .scenario = "bau",
+  .baseline_year = 2022,
+  .heatpump_start_year = .heatpump_start_year,
+  .heatpump_end_year = .heatpump_end_year,
+  .sf_heat_pump_pct = .sf_heat_pump_pct,
+  .mf_heat_pump_pct = .mf_heat_pump_pct,
+  .selected_ctu =  "CCAP Region",
+  .enviro_factors = .enviro_factors
+)
+### errors occur here
+
+left_join(filter_ctu(ghg.ccap::building_energy_data$electricity_inventory, 
+                     .selected_ctu = "CCAP Region") %>% 
+            dplyr::filter(inventory_year <= .baseline_year, 
+                          sector == "Residential"), 
+          filter_ctu(ghg.ccap::building_energy_data$natgas_inventory, 
+                                                                                                                             .selected_ctu = .selected_ctu) %>% dplyr::filter(inventory_year <= 
+                                                                                                                                                                                .baseline_year, sector == "Residential"), by = join_by(geog_name, 
+                                                                                                                                                                                                                                       geog_id, geog_level, sector, inventory_year)
+
 
 #### read in and create business as usual projections from different sectors #
 
