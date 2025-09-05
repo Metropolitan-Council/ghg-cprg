@@ -121,15 +121,16 @@ eleven_county_housing_forecast <- bind_rows(
     filter(inventory_year %in% c(2020, 2030, 2040, 2050)),
   urbansim_housing_county %>% 
     filter(inventory_year %in% c(2020, 2030, 2040, 2050))
-)
+) %>% 
+  rename(sp_categories = housing_type)
 # holding in case of interest later, but currently no plans for county level forecasts
 
 
 ## sum to region and output
 
 regional_housing_forecast <- eleven_county_housing_forecast %>% 
-  group_by (inventory_year, housing_type) %>% 
-  summarize(dwelling_number = sum(dwelling_number)) %>% 
+  group_by (inventory_year, sp_categories) %>% 
+  summarize(value = sum(dwelling_number)) %>% 
   ungroup() %>% 
   mutate(geog_name = "CCAP Region")
   
