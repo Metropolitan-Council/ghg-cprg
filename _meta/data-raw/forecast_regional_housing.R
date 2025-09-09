@@ -50,6 +50,25 @@ wi_housing <- get_acs(
 ) %>% 
   clean_names()
 
+## get 2010 data
+
+mn_housing_2010 <- get_acs(
+  geography = "county",
+  variables = housing_vars,
+  state = "MN",
+  county = c("Chisago", "Sherburne"),
+  year = 2010
+) %>% 
+  clean_names()
+
+wi_housing_2010 <- get_acs(
+  geography = "county",
+  variables = housing_vars,
+  state = "WI",
+  county = c("St. Croix", "Pierce"),
+  year = 2010
+) %>% 
+  clean_names()
 
 housing_type <- bind_rows(mn_housing, wi_housing) %>%
   mutate(variable = recode(variable,
@@ -70,7 +89,25 @@ housing_type <- bind_rows(mn_housing, wi_housing) %>%
 
 housing_type
 
-### calculate percentage of each housing type per county
+housing_type_2010 <- bind_rows(mn_housing_2010, wi_housing_2010) %>%
+  mutate(variable = recode(variable,
+                           "B25024_002" = "single_family_detached",
+                           "B25024_003" = "single_family_attached",
+                           "B25024_004" = "single_family_attached",
+                           "B25024_005" = "multifamily_units",
+                           "B25024_006" = "multifamily_units",
+                           "B25024_007" = "multifamily_units",
+                           "B25024_008" = "multifamily_units",
+                           "B25024_009" = "multifamily_units",
+                           "B25024_010" = "manufactured_homes"
+  )) %>%
+  group_by(geoid, variable) %>% 
+  summarize(value = sum(estimate)) %>% 
+  ungroup() %>% 
+  mutate(inventory_year = 2010)
+
+
+### calculate percentage of each housing type per county in 2022
 
 housing_percent <- housing_type %>% 
   group_by(geoid) %>% 
@@ -79,7 +116,8 @@ housing_percent <- housing_type %>%
   mutate(housing_percent = value / total_households) %>% 
   select(geoid, housing_type = variable, housing_percent)
 
-taz_acs_forecast <- left_join(taz_forecast,
+taz_acs_forecast <- left_join(taz_forecast %>% 
+                                filter(variable == "total_households"),
                               housing_percent,
                               by = "geoid") %>% 
   filter(!is.na(housing_percent)) %>% 
@@ -88,6 +126,7 @@ taz_acs_forecast <- left_join(taz_forecast,
 # now compile housing from urbansim
 
 urbansim_housing_county <-  urbansim %>% 
+  filter(!is.na(coctu_id_gnis)) %>% 
   mutate(housing_type = case_when(
   variable %in% c(
     "manufactured_homes"
@@ -110,27 +149,36 @@ geoid = paste0("27",
                    substr(coctu_id_gnis,1,3 ))) %>%
   filter(!is.na(housing_type)) %>% 
   group_by(housing_type, geoid, inventory_year) %>% 
-  summarize(dwelling_number = sum(value))
+  summarize(value = sum(value))
 
 
 ## bind data sources
 
 eleven_county_housing_forecast <- bind_rows(
   taz_acs_forecast %>% 
-    select(inventory_year, geoid, dwelling_number, housing_type) %>% 
+    select(inventory_year, geoid, value = dwelling_number, housing_type) %>% 
     filter(inventory_year %in% c(2020, 2030, 2040, 2050)),
+  housing_type_2010 %>% 
+    rename(housing_type = variable),
   urbansim_housing_county %>% 
-    filter(inventory_year %in% c(2020, 2030, 2040, 2050))
+    filter(inventory_year %in% c(2010,2020, 2030, 2040, 2050))
 ) %>% 
-  rename(sp_categories = housing_type)
-# holding in case of interest later, but currently no plans for county level forecasts
+  rename(sp_categories = housing_type) %>% 
+  # Make sure all year/category/geoid combinations exist
+  group_by(geoid, sp_categories) %>%
+  complete(inventory_year = full_seq(inventory_year, 1)) %>%
+  arrange(geoid, sp_categories, inventory_year) %>%
+  # Interpolate missing values linearly
+  mutate(value = zoo::na.approx(value, x = inventory_year, na.rm = FALSE)) %>%
+  ungroup()
+
 
 
 ## sum to region and output
 
 regional_housing_forecast <- eleven_county_housing_forecast %>% 
   group_by (inventory_year, sp_categories) %>% 
-  summarize(value = sum(dwelling_number)) %>% 
+  summarize(value = sum(value)) %>% 
   ungroup() %>% 
   mutate(geog_name = "CCAP Region",
          value_change_from_base = value - value[inventory_year == 2020]) 
