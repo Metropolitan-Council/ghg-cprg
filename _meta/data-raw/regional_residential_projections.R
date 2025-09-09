@@ -7,18 +7,6 @@
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
 
-interpolate_emissions <- function(df) {
-  df %>%
-    mutate(emissions_year = as.numeric(emissions_year)) %>%
-    group_by(sector, category) %>%
-    # complete sequence of years from min to max
-    complete(emissions_year = seq(min(emissions_year), max(emissions_year), by = 1)) %>%
-    # interpolate missing values linearly
-    mutate(value_emissions = approx(emissions_year, value_emissions, 
-                                    xout = emissions_year, rule = 1)$y) %>%
-    ungroup()
-}
-
 
 ## load state gcam modeling
 
@@ -52,256 +40,247 @@ bau_results <- run_scenario_building(
     .density_output = density_output
   )
 
+### accelerated policy pathway ####
 
-# potential policy pathways - goal of 55.4% reduction in 2050
-bau_results <- run_scenario_building(
+## how can we reverse engineer to meet targets?
+### try basic optimization
+
+## create targets
+
+# Create a grid of parameter combinations, starting high to avoid too many permutations
+param_grid <- expand.grid(
+  new_homes_leed_gold_pct = seq(0.4, 1, 0.2),
+  existing_retrofit_pct = seq(0.4, 1, 0.2),
+  heat_pump_pct = seq(0.4, 1, 0.2)
+)
+
+### create emission target for 2050
+
+target_emissions_2050 <- (bau_results %>% 
+  filter(scenario == "bau",
+         inventory_year == 2005) %>% 
+    pull(natural_gas_emissions)) *
+  res_targets %>% 
+  filter(emissions_year == 2050,
+         scenario == "PPP after Fed RB") %>% 
+  pull(proportion_of_2005)
+
+evaluate_scenario <- function(params, target_emissions_2050) {
+  result <- run_scenario_building(
+    res_tb = regional_housing_forecast,
+    res_tb_bau = regional_housing_forecast,
+    .baseline_year = 2022,
+    .selected_ctu = "CCAP Region",
+    .scenario = "ppp",
+    .density_output = density_output,
+    .new_sf_homes_leed_gold_pct = params$new_homes_leed_gold_pct,
+    .existing_sf_retrofit_pct = params$existing_retrofit_pct,
+    .sf_heat_pump_pct = params$heat_pump_pct,
+    .new_mf_homes_leed_gold_pct = params$new_homes_leed_gold_pct,
+    .existing_mf_retrofit_pct = params$existing_retrofit_pct,
+    .mf_heat_pump_pct = params$heat_pump_pct
+  )
+  
+  # Calculate total emissions for target years
+  # emissions_2030 <- result %>% filter(inventory_year == 2030,
+  #                                     scenario == "ppp") %>% pull(natural_gas_emissions)
+  emissions_2050 <- result %>% filter(inventory_year == 2050,
+                                      scenario == "ppp") %>% pull(natural_gas_emissions)
+  
+  # Calculate distance from targets (you want to minimize this)
+  distance <- abs(emissions_2050 - target_emissions_2050)
+  
+  return(distance)
+}
+
+cat("Running", nrow(param_grid), "parameter combinations...\n")
+
+param_grid$distance <- NA
+
+for(i in 1:nrow(param_grid)) {
+  
+  # Show progress every 100 iterations
+  if(i %% 100 == 0) {
+    cat("Progress:", i, "/", nrow(param_grid), "\n")
+  }
+  
+  # Get current parameter combination
+  current_params <- param_grid[i, ]
+  
+  # Evaluate distance using your function
+  param_grid$distance[i] <- evaluate_scenario(current_params, target_emissions_2050)
+}
+
+param_grid_sorted <- param_grid %>% 
+  arrange(distance)
+
+#### rerun at finer scale
+
+param_grid_finer <- expand.grid(
+  new_homes_leed_gold_pct = seq(0.35, 0.45, 0.02),
+  existing_retrofit_pct = seq(0.75, 0.85, 0.02),
+  heat_pump_pct = seq(0.55, 0.65, 0.02)
+)
+
+cat("Running", nrow(param_grid_finer), "parameter combinations...\n")
+
+param_grid_finer$distance <- NA
+
+for(i in 1:nrow(param_grid_finer)) {
+  
+  # Show progress every 100 iterations
+  if(i %% 100 == 0) {
+    cat("Progress:", i, "/", nrow(param_grid_finer), "\n")
+  }
+  
+  # Get current parameter combination
+  current_params <- param_grid_finer[i, ]
+  
+  # Evaluate distance using your function
+  param_grid_finer$distance[i] <- evaluate_scenario(current_params, target_emissions_2050)
+}
+
+ppp_residential_vars <- param_grid_finer %>% 
+  arrange(distance) %>% 
+  slice(1)
+
+ppp_results <- run_scenario_building(
   res_tb = regional_housing_forecast,
   res_tb_bau = regional_housing_forecast,
   .baseline_year = 2022,
   .selected_ctu = "CCAP Region",  
-  .density_output = density_output
+  .density_output = density_output,
+  .scenario = "ppp",
+  .new_sf_homes_leed_gold_pct = ppp_residential_vars$new_homes_leed_gold_pct,
+  .existing_sf_retrofit_pct = ppp_residential_vars$existing_retrofit_pct,
+  .sf_heat_pump_pct = ppp_residential_vars$heat_pump_pct,
+  .new_mf_homes_leed_gold_pct = ppp_residential_vars$new_homes_leed_gold_pct,
+  .existing_mf_retrofit_pct = ppp_residential_vars$existing_retrofit_pct,
+  .mf_heat_pump_pct = ppp_residential_vars$heat_pump_pct
+) %>% 
+  filter(scenario == "ppp")
+
+
+
+### net-zero pathway ####
+
+
+## create targets
+
+# Create a grid of parameter combinations, starting high to avoid too many permutations
+param_grid <- expand.grid(
+  new_homes_leed_gold_pct = seq(0.4, 1, 0.2),
+  existing_retrofit_pct = seq(0.4, 1, 0.2),
+  heat_pump_pct = seq(0.4, 1, 0.2)
 )
 
+### create emission target for 2050
 
-#### read in and create business as usual projections from different sectors #
+target_emissions_2050_nz <- (bau_results %>% 
+                            filter(scenario == "bau",
+                                   inventory_year == 2005) %>% 
+                            pull(natural_gas_emissions)) *
+  res_targets %>% 
+  filter(emissions_year == 2050,
+         scenario == "Net-Zero Pathway") %>% 
+  pull(proportion_of_2005)
 
-county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") 
-
-tr_bau <- read_csv("./_meta/data-raw/bau_projections/transportation_county_emissions_time_series.csv")
-wd_ns_bau <- read_csv("./_meta/data-raw/bau_projections/bau_region_ww_sw_ns.csv")
-res_bau <- read_csv("./_meta/data-raw/bau_projections/residential_bau.csv")
-comm_bau <- read_csv("./_meta/data-raw/bau_projections/comm_nonres_bau_2005_2050.csv")
-
-ind_mpca <- read_rds("_meta/data/gcam/mpca_subsector_gcam.RDS") %>% 
-  filter(sector == "Industry", scenario == "Current policies",
-         emissions_year >= 2025) %>% 
-  select(emissions_year, subsector_mc, proportion_of_2020)
-
-aviation_mpca <- read_rds("_meta/data/gcam/mpca_subsector_gcam.RDS") %>% 
-  filter(subsector_mc == "Aviation", scenario == "Current policies",
-         emissions_year >= 2025) %>% 
-  select(emissions_year, subsector_mc, proportion_of_2020)
-
-ind_bau <- county_emissions %>% 
-  filter(category %in% unique(ind_mpca$subsector_mc),
-         emissions_year == 2020,
-         !county_name %in% c("St. Croix",
-                             "Pierce",
-                             "Chisago",
-                             "Sherburne")) %>% 
-  group_by(sector, category) %>% 
-  summarise(value_emissions_2020 = sum(value_emissions)) %>% 
-  ungroup() %>% 
-  left_join(ind_mpca, by = c("category" = "subsector_mc")) %>% 
-  mutate(value_emissions = value_emissions_2020 * proportion_of_2020,
-         emissions_year = as.numeric(emissions_year)) %>% 
-  select(sector, category, emissions_year, value_emissions) %>% 
-  #bring back in inventory data
-  bind_rows(
-    county_emissions %>% 
-      filter(category %in% unique(ind_mpca$subsector_mc),
-             emissions_year >= 2005,
-             !county_name %in% c("St. Croix",
-                                 "Pierce",
-                                 "Chisago",
-                                 "Sherburne")) %>% 
-      group_by(emissions_year,sector, category) %>% 
-      summarise(value_emissions = sum(value_emissions)) %>% 
-      ungroup()
+evaluate_scenario_nz <- function(params, target_emissions_2050_nz) {
+  result <- run_scenario_building(
+    res_tb = regional_housing_forecast,
+    res_tb_bau = regional_housing_forecast,
+    .baseline_year = 2022,
+    .selected_ctu = "CCAP Region",
+    .scenario = "nz",
+    .density_output = density_output,
+    .new_sf_homes_leed_gold_pct = params$new_homes_leed_gold_pct,
+    .existing_sf_retrofit_pct = params$existing_retrofit_pct,
+    .sf_heat_pump_pct = params$heat_pump_pct,
+    .new_mf_homes_leed_gold_pct = params$new_homes_leed_gold_pct,
+    .existing_mf_retrofit_pct = params$existing_retrofit_pct,
+    .mf_heat_pump_pct = params$heat_pump_pct
   )
+  
+  # Calculate total emissions for target years
+  # emissions_2030 <- result %>% filter(inventory_year == 2030,
+  #                                     scenario == "ppp") %>% pull(natural_gas_emissions)
+  emissions_2050 <- result %>% filter(inventory_year == 2050,
+                                      scenario == "nz") %>% pull(natural_gas_emissions)
+  
+  # Calculate distance from targets (you want to minimize this)
+  distance <- abs(emissions_2050 - target_emissions_2050_nz)
+  
+  return(distance)
+}
 
+cat("Running", nrow(param_grid), "parameter combinations...\n")
 
+param_grid$distance_nz <- NA
 
-# Apply the interpolation function to your data
-ind_bau_interpolated <- interpolate_emissions(ind_bau)
+for(i in 1:nrow(param_grid)) {
+  
+  # Show progress every 100 iterations
+  if(i %% 100 == 0) {
+    cat("Progress:", i, "/", nrow(param_grid), "\n")
+  }
+  
+  # Get current parameter combination
+  current_params <- param_grid[i, ]
+  
+  # Evaluate distance using your function
+  param_grid$distance_nz[i] <- evaluate_scenario_nz(current_params, target_emissions_2050_nz)
+}
 
-aviation_bau <- county_emissions %>% 
-  filter(category == "Aviation",
-         emissions_year == 2021,
-         !county_name %in% c("St. Croix",
-                             "Pierce",
-                             "Chisago",
-                             "Sherburne")) %>% 
-  group_by(sector, category) %>% 
-  summarise(value_emissions_2021 = sum(value_emissions)) %>% 
-  ungroup() %>% 
-  left_join(aviation_mpca, by = c("category" = "subsector_mc")) %>% 
-  mutate(value_emissions = value_emissions_2021 * proportion_of_2020,
-         emissions_year = as.numeric(emissions_year)) %>% 
-  select(sector, category, emissions_year, value_emissions) %>% 
-  bind_rows(
-    county_emissions %>% 
-      filter(emissions_year >= 2005,
-             category == "Aviation",
-             !county_name %in% c("St. Croix",
-                                 "Pierce",
-                                 "Chisago",
-                                 "Sherburne")) %>% 
-      group_by(emissions_year, sector, category) %>% 
-      summarise(value_emissions = sum(value_emissions)) %>% 
-      ungroup()
-  )
+param_grid_sorted_nz <- param_grid %>% 
+  arrange(distance_nz) %>% 
+  slice(1:10)
 
-aviation_bau_interpolated <- interpolate_emissions(aviation_bau)
+#### rerun at finer scale
 
+param_grid_finer_nz <- expand.grid(
+  new_homes_leed_gold_pct = seq(0.9,1, 0.02),
+  existing_retrofit_pct = seq(0.9,1, 0.02),
+  heat_pump_pct = seq(0.55, 0.65, 0.02)
+)
 
-# complete ag by holding steady
+cat("Running", nrow(param_grid_finer_nz), "parameter combinations...\n")
 
-ag_bau <- county_emissions %>% 
-  filter(emissions_year == 2021,
-         sector == "Agriculture",
-         !county_name %in% c("St. Croix",
-                             "Pierce",
-                             "Chisago",
-                             "Sherburne")) %>% 
-  group_by(sector, category) %>% 
-  summarize(value_emissions = sum(value_emissions)) %>% 
-  ungroup() %>% 
-  cross_join(data.frame(emissions_year = seq(2025, 2050, by = 1))) %>% 
-  bind_rows(county_emissions %>% 
-              filter(sector == "Agriculture",
-                     !county_name %in% c("St. Croix",
-                                         "Pierce",
-                                         "Chisago",
-                                         "Sherburne")) %>% 
-              group_by(emissions_year,sector, category) %>% 
-              summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>% 
-              ungroup()
-  )
+param_grid_finer_nz$distance <- NA
 
-ag_bau_interpolated <- interpolate_emissions(ag_bau)
+for(i in 1:nrow(param_grid_finer_nz)) {
+  
+  # Show progress every 100 iterations
+  if(i %% 100 == 0) {
+    cat("Progress:", i, "/", nrow(param_grid_finer_nz), "\n")
+  }
+  
+  # Get current parameter combination
+  current_params <- param_grid_finer_nz[i, ]
+  
+  # Evaluate distance using your function
+  param_grid_finer_nz$distance[i] <- evaluate_scenario_nz(current_params, target_emissions_2050_nz)
+}
 
+residential_vars_nz <- param_grid_finer_nz %>% 
+  arrange(distance) %>% 
+  slice(1)
 
-### calculate commercial natural gas emissions
-
-comm_bau_out <- comm_bau %>% 
-  group_by(inventory_year, sector) %>% 
-  summarize(mwh = sum(mwh, na.rm = TRUE),
-            mcf = sum(mcf, na.rm = TRUE)) %>% 
-  # grab EFs from res data
-  left_join(res_bau %>% 
-              mutate(mwh_ef = electricity_emissions / mwh,
-                     mcf_ef = natgas_emissions / mcf) %>% 
-              select(inventory_year, mwh_ef, mcf_ef)
-  ) %>% 
-  mutate(electricity_emissions = mwh * mwh_ef,
-         natgas_emissions = mcf * mcf_ef)
-
-#process and bind_rows into one bau object
-
-bau <- bind_rows(wd_ns_bau %>% 
-                   group_by(inventory_year, sector) %>% 
-                   summarise(value_emissions = sum(value_emissions)) %>% 
-                   ungroup() %>% 
-                   mutate(sector = str_to_title(sector)) %>% 
-                   rename(emissions_year = inventory_year),
-                 tr_bau %>% 
-                   group_by(emissions_year) %>% 
-                   summarise(value_emissions = sum(emissions_metric_tons_co2e)) %>% 
-                   ungroup() %>% 
-                   mutate(sector = "Transportation"),
-                 aviation_bau_interpolated %>% 
-                   select(-category),
-                 res_bau %>% 
-                   select(emissions_year = inventory_year, 
-                          value_emissions = electricity_emissions) %>% 
-                   mutate(sector = "Electricity"),
-                 res_bau %>% 
-                   select(emissions_year = inventory_year, 
-                          value_emissions = natgas_emissions) %>% 
-                   mutate(sector = "Building Fuel"),
-                 comm_bau_out %>% 
-                   select(emissions_year = inventory_year, 
-                          value_emissions = electricity_emissions) %>% 
-                   mutate(sector = "Electricity"),
-                 comm_bau_out %>% 
-                   select(emissions_year = inventory_year, 
-                          value_emissions = natgas_emissions) %>% 
-                   mutate(sector = "Building Fuel"),
-                 ind_bau_interpolated %>% 
-                   group_by(sector, emissions_year) %>% 
-                   summarize(value_emissions = sum(value_emissions)) %>% 
-                   ungroup()%>% 
-                   mutate(sector = "Industrial Processes"),
-                 ag_bau %>% group_by(sector, emissions_year) %>% 
-                   summarize(value_emissions = sum(value_emissions)) %>% 
-                   ungroup()
+nz_results <- run_scenario_building(
+  res_tb = regional_housing_forecast,
+  res_tb_bau = regional_housing_forecast,
+  .baseline_year = 2022,
+  .selected_ctu = "CCAP Region",  
+  .density_output = density_output,
+  .scenario = "nz",
+  .new_sf_homes_leed_gold_pct = residential_vars_nz$new_homes_leed_gold_pct,
+  .existing_sf_retrofit_pct = residential_vars_nz$existing_retrofit_pct,
+  .sf_heat_pump_pct = residential_vars_nz$heat_pump_pct,
+  .new_mf_homes_leed_gold_pct = residential_vars_nz$new_homes_leed_gold_pct,
+  .existing_mf_retrofit_pct = residential_vars_nz$existing_retrofit_pct,
+  .mf_heat_pump_pct = residential_vars_nz$heat_pump_pct
 ) %>% 
-  filter(emissions_year >= 2005) %>% 
-  group_by(emissions_year, sector) %>% 
-  summarize(value_emissions = sum(value_emissions)) %>% 
-  ungroup() 
+  filter(scenario == "nz")
 
-bau
+tail(nz_results)
 
-bau %>%
-  filter(emissions_year %in% c(2005,2022, 2030, 2050)) %>%
-  group_by(emissions_year) %>%
-  summarize(total_emissions = sum(value_emissions)) %>%
-  mutate(proportion_of_2005 = total_emissions / total_emissions[emissions_year == 2005])
-
-bau %>%
-  filter(emissions_year %in% c(2005, 2022, 2030, 2050)) %>%
-  group_by(emissions_year, sector)%>%
-  summarize(total_emissions = sum(value_emissions)) %>% 
-  print(n = 100)
-
-sector_colors <- unlist(sector_colors_alt)
-
-bau_positive <- bau %>%
-  filter(value_emissions >= 0) %>% 
-  mutate(sector = factor(sector,
-                         levels = c("Electricity",
-                                    "Transportation",
-                                    "Building Fuel",
-                                    "Industrial Processes",
-                                    "Waste",
-                                    "Agriculture")))
-
-bau_negative <- bau %>%
-  filter(value_emissions < 0)
-
-bau_projection_plot <- ggplot() +
-  # Add positive emissions as stacked areas above zero
-  geom_area(data = bau_positive, 
-            aes(x = emissions_year, y = value_emissions, fill = sector),
-            position = "stack") +
-  # Add negative emissions (natural systems) below zero
-  geom_area(data = bau_negative,
-            aes(x = emissions_year, y = value_emissions, fill = sector)) +
-  # Apply the custom color palette
-  scale_fill_manual(values = sector_colors, name = "Sector") +
-  # Add labels and formatting
-  labs(
-    title = "Business as usual projections by sector",
-    subtitle = expression(paste("(Million metric tons of ", CO[2], "e)")),
-    x = "Year",
-    y = ""
-  ) +
-  # Add a horizontal line at y = 0 for reference
-  geom_hline(yintercept = 0, color = "black", linetype = "solid", alpha = 0.7) +
-  # Clean theme
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 22, face = "bold"),
-    plot.subtitle = element_text(size =18),
-    legend.position = "right",
-    legend.text = element_text(size = 16),
-    legend.title = element_text(size = 18),
-    panel.grid.minor = element_blank(),
-    axis.text = element_text(size = 14),
-    axis.title = element_text(size = 16)
-  ) +
-  # Format y-axis to show values in scientific notation or scaled
-  scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
-
-bau_projection_plot
-
-ggsave(plot = bau_projection_plot,
-       filename = paste0(wd,"/seven_county_bau_projections.png"),  # add your file path here
-       width = 12,          
-       height = 6,          
-       units = "in",
-       dpi = 300, 
-       bg = "white")
 
