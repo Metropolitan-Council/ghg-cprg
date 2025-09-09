@@ -284,3 +284,9 @@ nz_results <- run_scenario_building(
 tail(nz_results)
 
 
+residential_pathways <- bind_rows(bau_results %>% 
+                                    filter(scenario == "bau"),
+                                  ppp_results,
+                                  nz_results)
+
+saveRDS(residential_pathways, "_meta/data/residential_pathways.RDS")
