@@ -169,9 +169,9 @@ ppp_results <- run_scenario_building(
 
 # Create a grid of parameter combinations, starting high to avoid too many permutations
 param_grid <- expand.grid(
-  new_homes_leed_gold_pct = seq(0.4, 1, 0.2),
-  existing_retrofit_pct = seq(0.4, 1, 0.2),
-  heat_pump_pct = seq(0.4, 1, 0.2)
+  new_homes_leed_gold_pct = seq(0.5, 1, 0.1),
+  existing_retrofit_pct = seq(0.5, 1, 0.1),
+  heat_pump_pct = seq(0.5, 1, 0.1)
 )
 
 ### create emission target for 2050
@@ -233,14 +233,14 @@ for(i in 1:nrow(param_grid)) {
 
 param_grid_sorted_nz <- param_grid %>% 
   arrange(distance_nz) %>% 
-  slice(1:10)
+  slice(1:5)
 
 #### rerun at finer scale
 
 param_grid_finer_nz <- expand.grid(
-  new_homes_leed_gold_pct = seq(0.9,1, 0.02),
-  existing_retrofit_pct = seq(0.9,1, 0.02),
-  heat_pump_pct = seq(0.55, 0.65, 0.02)
+  new_homes_leed_gold_pct = seq(0.5,0.6, 0.02),
+  existing_retrofit_pct = seq(0.5,0.6, 0.02),
+  heat_pump_pct = seq(0.65, 0.75, 0.02)
 )
 
 cat("Running", nrow(param_grid_finer_nz), "parameter combinations...\n")
@@ -290,3 +290,41 @@ residential_pathways <- bind_rows(bau_results %>%
                                   nz_results)
 
 saveRDS(residential_pathways, "_meta/data/residential_pathways.RDS")
+
+
+### numbers for CCAP document
+# sector wide 2030/2050 scenario to BAU comparisons
+
+residential_pathways_2030 <- residential_pathways %>% 
+  filter(inventory_year == 2030) %>% 
+  mutate(total_emissions = electricity_emissions + natural_gas_emissions)
+
+bau2030 <- residential_pathways_2030 %>% filter(scenario == "bau") %>% pull(total_emissions)
+
+ppp2030 <- residential_pathways_2030 %>% filter(scenario == "ppp") %>% pull(total_emissions) -
+  bau2030
+
+nz2030 <- residential_pathways_2030 %>% filter(scenario == "nz") %>% pull(total_emissions) -
+  bau2030
+
+ppp2030 / bau2030
+nz2030 / bau2030
+
+#2050
+
+residential_pathways_2050 <- residential_pathways %>% 
+  filter(inventory_year == 2050) %>% 
+  mutate(total_emissions = electricity_emissions + natural_gas_emissions)
+
+bau2050 <- residential_pathways_2050 %>% filter(scenario == "bau") %>% pull(total_emissions)
+
+ppp2050 <- residential_pathways_2050 %>% filter(scenario == "ppp") %>% pull(total_emissions) -
+  bau2050
+
+nz2050 <- residential_pathways_2050 %>% filter(scenario == "nz") %>% pull(total_emissions) -
+  bau2050
+
+ppp2050
+nz2050
+ppp2050 / bau2050
+nz2050 / bau2050
