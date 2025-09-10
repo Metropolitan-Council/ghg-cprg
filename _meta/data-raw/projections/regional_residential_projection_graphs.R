@@ -1,152 +1,123 @@
 #### plot residential pathways graphics
 
+source("R/_load_pkgs.R")
+
 residential_pathways <- readRDS("_meta/data/residential_pathways.RDS")
 
-plot_data <- bind_rows(
-  res_bau,
-  res_50,
-  res_100
-) %>%
-  mutate()
+total_emissions <- residential_pathways %>%
+    mutate(total_emissions = electricity_emissions + natural_gas_emissions)%>%
+  mutate(scenario = factor(scenario,
+                           levels = c("bau","ppp","nz")))
 
-# Create plotting categories (duplicate 2028 for continuity)
-plot_data <- residential_pathways %>%
-  mutate(
-    total_emissions = electricity_emissions + natural_gas_emissions,
-    scenario_plot = case_when(
-      inventory_year <= 2028 ~ "pre2028_black",
-      inventory_year >= 2028 & scenario == "bau" ~ "bau_post2028",
-      inventory_year >= 2028 & scenario == "ppp" ~ "ppp",
-      inventory_year >= 2028 & scenario == "nz" ~ "nz"
-    )
-  )
+#  base data (2005-2025, identical across scenarios)
+base_data <- total_emissions %>%
+  filter(inventory_year <= 2025, scenario == "bau") %>%  # Use any scenario since they're identical
+  mutate(segment = "base")
 
-plot_data <- bind_rows(
-  plot_data,
-  plot_data %>% filter(inventory_year == 2028) %>%
-    mutate(scenario_plot = case_when(
-      scenario == "bau" ~ "bau_post2028",
-      scenario == "ppp" ~ "ppp",
-      scenario == "nz" ~ "nz"
-    ))
-)
+#  diverging scenarios (2026+)
+diverging_data <- total_emissions %>%
+  filter(inventory_year >= 2025) %>%
+  mutate(segment = "diverging")
 
-# Prepare special points
-# asterisks <- tibble::tribble(
-#   ~inventory_year, ~total_emissions, ~label,
-#   2030, half_2005, "*",       # 50% reduction
-#   max(plot_data$inventory_year), 0, "*"   # Net-zero for "full"
-# )
+net_zero_data <- diverging_data %>% filter(scenario == "nz")
 
-plot_data <- plot_data %>%
-  mutate(scenario_plot = factor(scenario_plot, levels = c(
-    "pre2028_black",
-    "bau_post2028",
-    "ppp",
-    "nz"
-  )))
+# PPP data - need to merge with net_zero for the lower bound
+ppp_data <- diverging_data %>%
+  filter(scenario == "ppp") %>%
+  select(inventory_year, total_emissions) %>%
+  rename(ppp_emissions = total_emissions)
 
-# Plot
-ggplot(plot_data, aes(x = inventory_year, y = total_emissions,
-                      color = scenario_plot, linetype = scenario_plot,
-                      group = interaction(scenario, scenario_plot))) +
-  geom_hline(yintercept = 0, color = "grey50", linewidth = 0.8) +
-  geom_line(linewidth = 1) +
-  # geom_text(
-  #   data = asterisks,
-  #   aes(x = inventory_year, y = total_emissions, label = label),
-  #   inherit.aes = FALSE,
-  #   size = 15
-  # ) +
+net_zero_for_ppp <- diverging_data %>%
+  filter(scenario == "nz") %>%
+  select(inventory_year, total_emissions) %>%
+  rename(net_zero_emissions = total_emissions)
+
+ppp_ribbon_data <- ppp_data %>%
+  left_join(net_zero_for_ppp, by = "inventory_year")
+
+# Create the plot
+emissions_gg <- ggplot() +
+  # Base fill (2005-2025, gray)
+  geom_ribbon(data = base_data,
+              aes(x = inventory_year, ymin = 0, ymax = total_emissions),
+              fill = "gray80", alpha = 0.7) +
+  
+  # Net zero fill (maroon)
+  geom_ribbon(data = net_zero_data,
+              aes(x = inventory_year, ymin = 0, ymax = total_emissions),
+              fill = "maroon", alpha = 0.3) +
+  
+  # PPP fill (from net_zero to ppp)
+  geom_ribbon(data = ppp_ribbon_data,
+              aes(x = inventory_year, ymin = net_zero_emissions, ymax = ppp_emissions),
+              fill = "rosybrown1", alpha = 0.5) +
+  
+  # Base line (2005-2025)
+  geom_line(data = base_data,
+            aes(x = inventory_year, y = total_emissions),
+            color = "black", size = 1) +
+  
+  # Diverging scenario lines
+  geom_line(data = diverging_data %>% filter(scenario == "bau"),
+            aes(x = inventory_year, y = total_emissions, color = "Business as usual"),
+            linetype = "dashed", size = 1) +
+  
+  geom_line(data = diverging_data %>% filter(scenario == "ppp"),
+            aes(x = inventory_year, y = total_emissions, color = "Accelerated policy pathways"),
+            size = 1) +
+  
+  geom_line(data = diverging_data %>% filter(scenario == "nz"),
+            aes(x = inventory_year, y = total_emissions, color = "Net zero"),
+            size = 1) +
+  
+  geom_segment(aes(x = 2025, xend = 2025, y = 0, yend = base_data %>% filter(inventory_year == 2025) %>% pull(total_emissions)),
+               color = "black", linetype = "solid", size = 0.8) +
+  # annotate("text", x = 2025, y = max(your_data$total_emissions) * 0.9,
+  #          label = "Historical | Projected", angle = 90, hjust = 1, size = 3.5) +
+  
+  # Manual color scale with correct order
   scale_color_manual(
     values = c(
-      "pre2028_black" = "black",
-      "bau_post2028" = "black",
-      "ppp" = "red",
-      "nz" = "blue"
+      "Business as usual" = "black",
+      "Net zero" = "maroon",
+      "Accelerated policy pathways" = "rosybrown3"
     ),
-    labels = c(
-      "pre2028_black" = "Inventory",
-      "bau_post2028" = "Business as usual",
-      "ppp" = "Current strategies",
-      "nz" = "Net-zero"
-    )
+    breaks = c("Business as usual", "Accelerated policy pathways", "Net zero")  # Force legend order
   ) +
-  scale_linetype_manual(
-    values = c(
-      "pre2028_black" = "solid",
-      "bau_post2028" = "dotdash",
-      "ppp" = "solid",
-      "nz" = "solid"
-    ),
-    labels = c(
-      "pre2028_black" = "Inventory",
-      "bau_post2028" = "Business as usual",
-      "ppp" = "Current strategies",
-      "nz" = "Net-zero"
+  
+  # Manual legend guide to show line types
+  guides(
+    color = guide_legend(
+      title = "Scenarios",
+      override.aes = list(
+        linetype = c("dashed", "solid", "solid"),
+        color = c("black", "rosybrown3", "maroon")
+      )
     )
   ) +
   labs(
     x = "Year",
     y = "",
-    title = "Residential Emissions (MT CO2e)",
-    color = "Scenario",
-    linetype = "Scenario"
+    title = "Residential Building Emissions \n(Millions of CO2-equivalency)"
   ) +
-  theme_minimal(base_size = 16) +
+  scale_y_continuous(labels = label_number(scale = 1e-6)) +  # convert to millions
+  theme_minimal() +
   theme(
-    axis.title = element_text(size = 18),
-    axis.text = element_text(size = 16),
-    plot.title = element_text(size = 22, face = "bold"),
-    legend.title = element_text(size = 18),
-    legend.text = element_text(size = 16)
-  )
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom",
+    plot.title = element_text(size = 18),
+    axis.text =  element_text(size = 14),
+    legend.text = element_text(size = 18),
+    legend.key.width = unit(1.2, "cm")
+  ) +
+  xlim(2005, 2050)
 
-ggplot(plot_data, aes(x = inventory_year, y = residential_mwh ,
-                      color = scenario_plot, linetype = scenario_plot,
-                      group = interaction(scenario, scenario_plot))) +
-  geom_hline(yintercept = 0, color = "grey50", linewidth = 0.8) +
-  geom_line(linewidth = 1) +
-  scale_color_manual(
-    values = c(
-      "pre2028_black" = "black",
-      "bau_post2028" = "black",
-      "ppp" = "red",
-      "nz" = "blue"
-    ),
-    labels = c(
-      "pre2028_black" = "Inventory",
-      "bau_post2028" = "Business as usual",
-      "ppp" = "Current strategies",
-      "nz" = "Net-zero"
-    )
-  ) +
-  scale_linetype_manual(
-    values = c(
-      "pre2028_black" = "solid",
-      "bau_post2028" = "dotdash",
-      "ppp" = "solid",
-      "nz" = "solid"
-    ),
-    labels = c(
-      "pre2028_black" = "Inventory",
-      "bau_post2028" = "Business as usual",
-      "ppp" = "Current strategies",
-      "nz" = "Net-zero"
-    )
-  ) +
-  labs(
-    x = "Year",
-    y = "",
-    title = "Residential Electricity Demand (Megawatt Hours)",
-    color = "Scenario",
-    linetype = "Scenario"
-  ) +
-  theme_minimal(base_size = 16) +
-  theme(
-    axis.title = element_text(size = 18),
-    axis.text = element_text(size = 16),
-    plot.title = element_text(size = 22, face = "bold"),
-    legend.title = element_text(size = 18),
-    legend.text = element_text(size = 16)
-  )
+print(emissions_gg)
+
+ggplot2::ggsave(plot = emissions_gg,
+                filename = paste0(wd,"/residential_decarbonization_pathways.png"),  # add your file path here
+                width = 12,
+                height = 6,
+                units = "in",
+                dpi = 300,
+                bg = "white")
