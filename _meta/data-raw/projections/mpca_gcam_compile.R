@@ -18,6 +18,14 @@ state_projections <- read_xlsx("_meta/data-raw/gcam_all_scenarios.xlsx",
   summarize(value_emissions = sum(value_emissions)) %>%
   ungroup()
 
+ag_lulucf <- read_xlsx("_meta/data-raw/MN_ag_lulucf.xlsx") %>%
+  pivot_longer(
+    cols = 8:68,
+    names_to = "emissions_year",
+    values_to = "value_emissions"
+  ) %>%
+  clean_names()
+
 scenarios_annual <- state_projections %>%
   filter(sector != "Emission Reductions Needed") %>%
   mutate(source_sink = if_else(value_emissions < 0, "Sequestration", "Emission")) %>%
