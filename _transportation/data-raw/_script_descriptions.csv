@@ -1,6 +1,6 @@
 ﻿file_name,status,prefix,type,description,output_datasets,github_issue
 _calculate_emissions.R,Deprecated,_,function,StreetLight Data - Calculate emissions using vehicle miles traveled ,None,
-_calculate_vmt.R,Deprecated,_,function,StreetLight Data - calculate vehicle miles traveled from a given StreetLight Analysis,None,
+x_calculate_vmt.R,Deprecated,_,function,StreetLight Data - calculate vehicle miles traveled from a given StreetLight Analysis,None,
 _read_smoke_ff10.R,Active,_,function,"EPA - read, clean, and save a given SMOKE FF10 file.",None,
 _run_all_transportation.R,Active,_,compilation,Sequentially sources critical scripts for generating output datasets,None,
 _source_method_compare.xlsx,Needs update,,dataset,"Comparison of US GHGI, NEI, MPCA, and Met Council inventory characteristics. To be used in documentation ",,
@@ -29,24 +29,28 @@ epa_verify_emis_type.R,Active,epa,validation,"Review differences in emis_type co
 epa_verify_emis_type_change.R,Active,epa,validation,Verify increase in emisssions when when all process types are included,None,https://github.com/Metropolitan-Council/ghg-cprg/issues/129
 epa_verify_nei_envirofacts_smoke.R,Active,epa,validation,Verify emissions compiled from SMOKE FF10 match summary tables,None,
 mndot_cdp_mode_split.R,Active,mndot,data processing,"Calculate passenger, medium, and heavy-duty mode proportions of on-road traffic for CDP",None,
-mndot_extract_yearly_volume_trends.R,Active,mndot,data processing,Import and clean MnDOT vehicle classification data,most_recent_yearly_volume_percentage_by_class.RDS,
+mndot_extract_yearly_volume_trends.R,Deprecated,mndot,data processing,Import and clean MnDOT vehicle classification data,most_recent_yearly_volume_percentage_by_class.RDS,
 mndot_stations.R,Deprecated,mndot,data processing,Create calibration points and lines from MnDOT vehicle classification data,"mn_stations_ratios.RDS, mn_stations_ratios_points.RDS",
 mndot_vmt_county_functional_class.R,Active,mndot,data processing,Pulls and processes MnDOT county VMT at the functional class level,None,
 mndot_vmt_county.R,Active,mndot,data processing,Pulls and processes MnDOT county VMT from county route system level data,mndot_vmt_county.RDS,
 mndot_route_system.R,Active,mndot,data processing,Creates index of route system IDs and labels,mndot_route_system.RDS,
+mndot_vmt_ctu_gap_fill_model.R,Active,mndot,data processing,"Creates gap-filled CTU VMT time series using data from UrbanSim, MnDOT, and the RTDM using a model. ","mndot_vmt_ctu_gap_filled_meta.RDS, mndot_vmt_ctu_gap_filled.RDS, vmt_gap_fill_model.RDS",
 mndot_vmt_ctu.R,Active,mndot,data processing,Pulls and processes MnDOT CTU VMT from CTU route system level data,mndot_vmt_ctu.RDS,
 mpca_mac_aviation_emissions.R,Active,mpca_mac,data processing,Calculates aviation GHG emissions using MPCA and MAC airport emissions data,"aviation_emissions.rds, aviation_emissions_meta.rds, aviation_emissions_data_source_compare.RDS",https://github.com/Metropolitan-Council/ghg-cprg/issues/123
 rii_bundle_emissions.R,Active,rii,compilation,Bundles compiled EPA datasets for sharing with colleagues at the Regional Indicators Initiative (RII),Timestamped zipped folder within directory,
-stl_aadt.R,Deprecated,stl,validation,StreetLight Data - Compiles AADT data from StreetLight analyses for verification,None,
-stl_calibration_lines_points.R,Deprecated,stl,compilation,StreetLight Data - compiles MN and WI point and line datasets for use calibrating StreetLight Index to actual traffic counts for medium and heavy duty traffic,"commercial_calibration_points.RDS, commercial_calibration_lines.RDS, commercial_calibration_meta.RDS",
-stl_fetch_analyses.R,Deprecated,stl,data processing,"StreetLight Data - fetch, clean, and save analysis results directly using streetlightR","county21_data.RDS, ctu21_data.RDS, county21_truck.RDS, county21_truck_data.rds, county21_truck_calib_data.rds",
-stl_run_analyses.R,Deprecated,stl,data processing,StreetLight Data - create StreetLight analyses using streetlightR. Analysis identifying information saved,"county21.RDS, ctu21.RDS, county21_truck.RDS, county21_truck_calib.RDS",
-stl_upload_zone_sets.R,Deprecated,stl,data processing,"StreetLight Data - upload county, CTU, and calibration datasets to StreetLight platform. Some data are then edited within the StreetLight Platform. ",None,
+rtdm_forecast_vmt_emissions.R,Active,rtdm,data processing,"Read in a process outputs from the regional travel demand model. Data includes county-CTU and CTU VMT forecasts to 2050, plus county-level GHG emissions forecasts","rtdm_forecast_ctu.RDS, rtdm_forecast_county.RDS, rtdm_county_emissions_forecast.RDS, rtdm_county_emissions_forecast_meta.RDS",https://github.com/Metropolitan-Council/ghg-cprg/issues/209
+x_stl_aadt.R,Deprecated,stl,validation,StreetLight Data - Compiles AADT data from StreetLight analyses for verification,None,
+x_stl_calibration_lines_points.R,Deprecated,stl,compilation,StreetLight Data - compiles MN and WI point and line datasets for use calibrating StreetLight Index to actual traffic counts for medium and heavy duty traffic,"commercial_calibration_points.RDS, commercial_calibration_lines.RDS, commercial_calibration_meta.RDS",
+x_stl_fetch_analyses.R,Deprecated,stl,data processing,"StreetLight Data - fetch, clean, and save analysis results directly using streetlightR","county21_data.RDS, ctu21_data.RDS, county21_truck.RDS, county21_truck_data.rds, county21_truck_calib_data.rds",
+x_stl_run_analyses.R,Deprecated,stl,data processing,StreetLight Data - create StreetLight analyses using streetlightR. Analysis identifying information saved,"county21.RDS, ctu21.RDS, county21_truck.RDS, county21_truck_calib.RDS",
+x_stl_upload_zone_sets.R,Deprecated,stl,data processing,"StreetLight Data - upload county, CTU, and calibration datasets to StreetLight platform. Some data are then edited within the StreetLight Platform. ",None,
 tbi_cdp_passenger_mode_split.R,Needs update,tbi,data processing,TBI - estimate proportion of passenger travel for each mode using 2023 TBI data,None,https://github.com/Metropolitan-Council/ghg-cprg/issues/125
 tbi_survey_stats.R,Needs update,tbi,data processing,TBI - estimate survey coverage of CPRG  counties,tbi_home_county.RDS,https://github.com/Metropolitan-Council/ghg-cprg/issues/125
 tbi_trip_length.R,Needs update,tbi,data processing,TBI - estimate trip lengths within and between CPRG counties using 2021 TBI data,"tbi_mean_trip_length.RDS, tbi_od_ordered_trip_length.RDS, tbi_regional_trip_length_avg.RDS, trip21.RDS",https://github.com/Metropolitan-Council/ghg-cprg/issues/125
 tbi_vehicle_stats.R,Needs update,tbi,data processing,TBI - find average vehicle age by fuel type for CPRG counties using 2021 TBI data,"tbi_veh_age_orig_fuel_binned.RDS, tbi_veh_age_fuel_binned.RDS, tbi_vehicle_age.RDS, tbi_vehicle_orig_fuel_age.RDS, tbi_vehicle_fuel_age.RDS, veh21.RDS",https://github.com/Metropolitan-Council/ghg-cprg/issues/125
-vmt_emissions.R,Deprecated,vmt,compilation,StreetLight Data - calculate passenger and commercial vehicle emisions values at the county level,"county_vmt_emissions.RDS, county_vmt_emissions_meta.RDS",
+vmt_model_data.R,Active,vmt,compilation,"Compiles CTU and county data from UrbanSim, MnDOT, and the RTDM",vmt_model_data.RDS,https://github.com/Metropolitan-Council/ghg-cprg/issues/209
+x_vmt_emissions.R,Deprecated,vmt,compilation,StreetLight Data - calculate passenger and commercial vehicle emisions values at the county level,"county_vmt_emissions.RDS, county_vmt_emissions_meta.RDS",
 wisdot_stations.R,Active,wisdot,data processing,Fetch and compile WisDOT station passenger/medium/heavy duty traffic ratios and assign to segments,"wi_stations_ratios_lines.RDS, wi_stations_ratios_points.RDS, wi_osm_meta.RDS",
 wisdot_vmt_county.R,Active,wisdot,data processing,Comile WisDOT VMT county reports into time series data table,wisdot_vmt_county.RDS,
 x_epa_scrap.R,Deprecated,x,scrap,Scrap code from various EPA sources. May be useful in the future,,
+_compile_county_inventory_forecast.R,Active,_,compilation,Compile county emissions inventory and forecasts from onroad EPA data and RTDM forecasst.,"county_inventory_forecast_emissions.RDS, county_inventory_forecast_emissions_meta.RDS",

@@ -43,7 +43,7 @@ mcf_livestock <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
     grepl("Feedlot", livestock_type) ~ "Feedlot Cattle",
     TRUE ~ livestock_type
   )) %>%
-  filter(year >= 2005 & year <= 2021) %>%
+  filter(year >= 2005 & year <= 2022) %>%
   group_by(year, state, livestock_type) %>%
   summarize(mcf_percent = mean(mcf_percent))
 
@@ -58,7 +58,7 @@ mcf_livestock_pasture <- data.frame(livestock_type = c(
   left_join(., mcf_system %>%
     filter(management_system == "Pasture") %>%
     select(-management_system)) %>%
-  crossing(year = 2005:2021)
+  crossing(year = 2005:2022)
 
 mcf_constant <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   sheet = "MCF",
@@ -70,7 +70,7 @@ mcf_constant <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
     add_row(., livestock_type = "Pullets", mcf_percent = broilers_mcf_percent)
   } %>%
   crossing(
-    year = 2005:2021,
+    year = 2005:2022,
     state = c("Minnesota", "Wisconsin")
   )
 

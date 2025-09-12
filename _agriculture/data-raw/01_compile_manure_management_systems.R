@@ -48,7 +48,7 @@ feedlot_cattle_mm <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
     managed = "Yes",
     livestock_type = "Feedlot Cattle"
   ) %>%
-  crossing(year = 2005:2021)
+  crossing(year = 2005:2022)
 
 beef_cattle_mm <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   sheet = "manure%",
@@ -62,7 +62,7 @@ beef_cattle_mm <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
     managed = "No",
     livestock_type = "Beef Cows"
   ) %>%
-  crossing(year = 2005:2021)
+  crossing(year = 2005:2022)
 
 swine_mm <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   sheet = "manure%",
@@ -108,7 +108,7 @@ turkeys_mm <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
     managed = if_else(mgmt_system %in% c("Range"), "No", "Yes"),
     livestock_type = "Turkeys"
   ) %>%
-  crossing(year = 2005:2021)
+  crossing(year = 2005:2022)
 
 sheep_mm <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   sheet = "manure%",
@@ -122,7 +122,7 @@ sheep_mm <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
     managed = "Unknown",
     livestock_type = "Sheep"
   ) %>%
-  crossing(year = 2005:2021)
+  crossing(year = 2005:2022)
 
 goats_mm <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   sheet = "manure%",
@@ -136,7 +136,7 @@ goats_mm <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
     managed = "No",
     livestock_type = "Goats"
   ) %>%
-  crossing(year = 2005:2021)
+  crossing(year = 2005:2022)
 
 manure_mgmt_formatted <- bind_rows(
   dairy_mm,

@@ -18,8 +18,8 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
   ))
 
 
-county_emissions_summary_2021 <- county_emissions %>%
-  filter(emissions_year == 2021) %>%
+county_emissions_summary_2022 <- county_emissions %>%
+  filter(emissions_year == 2022) %>%
   group_by(sector, category, source, data_source, factor_source) %>%
   summarize(
     value_emissions = sum(value_emissions),
@@ -46,7 +46,7 @@ This document will be updated continuously in preparation of the Metropolitan Co
 :::
 
 ```{r sector-percentages, echo=FALSE, include=FALSE}
-sector_percentages <- county_emissions_summary_2021 %>%
+sector_percentages <- county_emissions_summary_2022 %>%
   filter(
     !category == "Sequestration"
   ) %>% # not contributing to emissions
@@ -57,12 +57,12 @@ sector_percentages <- county_emissions_summary_2021 %>%
 
 sector_percentages
 
-emissions_total <- county_emissions_summary_2021 %>%
+emissions_total <- county_emissions_summary_2022 %>%
   filter(category != "Sequestration") %>%
   pull(value_emissions) %>%
-  sum()
+  sum(na.rm = T)
 
-seq_total <- county_emissions_summary_2021 %>%
+seq_total <- county_emissions_summary_2022 %>%
   filter(category == "Sequestration") %>%
   pull(value_emissions) %>%
   sum() * -1
@@ -74,7 +74,7 @@ emissions_2005 <- county_emissions_summary_2005 %>%
   pull(value_emissions) %>%
   sum()
 
-electricity_2021 <- county_emissions_summary_2021 %>%
+electricity_2022 <- county_emissions_summary_2022 %>%
   filter(category == "Electricity") %>%
   pull(value_emissions) %>%
   sum()
@@ -85,14 +85,14 @@ electricity_2005 <- county_emissions_summary_2005 %>%
   sum()
 ```
 
-In 2021, the Twin-Cities MSA generated `r round(emissions_total/1000000, digits = 2)` million metric tons CO~2~ equivalent (MMtCO~2~e) emissions from the energy, transportation, industrial, waste, and agricultural sectors. `r sector_percentages[[1]][1]` was the largest contributor to GHG emissions (`r scales::percent(sector_percentages[[2]][1], accuracy = 0.1)`), followed by `r sector_percentages[[1]][2]` (`r scales::percent(sector_percentages[[2]][2], accuracy = 0.1)`), and `r sector_percentages[[1]][3]` (`r scales::percent(sector_percentages[[2]][3], accuracy = 0.1)`). Carbon sequestration from natural systems offset `r scales::percent(seq_percentage, accuracy = 0.1)` of total emissions. In the methodology sector breakdown, we explain how electricity and natural gas emissions are calculated and apportioned to the residential, commercial, and industrial sectors.
+In 2022, the Twin-Cities MSA generated `r round(emissions_total/1000000, digits = 2)` million metric tons CO~2~ equivalent (MMtCO~2~e) emissions from the energy, transportation, industrial, waste, and agricultural sectors. `r sector_percentages[[1]][1]` was the largest contributor to GHG emissions (`r scales::percent(sector_percentages[[2]][1], accuracy = 0.1)`), followed by `r sector_percentages[[1]][2]` (`r scales::percent(sector_percentages[[2]][2], accuracy = 0.1)`), and `r sector_percentages[[1]][3]` (`r scales::percent(sector_percentages[[2]][3], accuracy = 0.1)`). Carbon sequestration from natural systems offset `r scales::percent(seq_percentage, accuracy = 0.1)` of total emissions. In the methodology sector breakdown, we explain how electricity and natural gas emissions are calculated and apportioned to the residential, commercial, and industrial sectors.
 
 ```{r fig-county-emissions-sector}
 #| fig-cap: "Regional emissions by sector and category"
 #| out-width: "95%"
 
-county_emissions_2021 <- county_emissions %>%
-  filter(emissions_year == 2021) %>%
+county_emissions_2022 <- county_emissions %>%
+  filter(emissions_year == 2022) %>%
   mutate(category = if_else(category %in% c(
     "Building Fuel",
     "Electricity"
@@ -101,12 +101,12 @@ county_emissions_2021 <- county_emissions %>%
   ))
 
 # reorder to put sequestration at end
-county_emissions_2021$sector <- factor(county_emissions_2021$sector,
+county_emissions_2022$sector <- factor(county_emissions_2022$sector,
   levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")
 )
 
 fig_county_emissions_sector <- plot_ly(
-  data = county_emissions_2021 %>%
+  data = county_emissions_2022 %>%
     group_by(sector, category) %>%
     summarize(
       value_emissions = sum(value_emissions),
@@ -125,7 +125,7 @@ fig_county_emissions_sector <- plot_ly(
     "<extra></extra>"
   )
 ) %>%
-  plotly_layout("11-county regional greenhouse gas emissions, 2021",
+  plotly_layout("11-county regional greenhouse gas emissions, 2022",
     subtitle = "",
     x_title = "Sector",
     y_title = "Metric tons CO<sub>2</sub>e",
@@ -139,7 +139,7 @@ fig_county_emissions_sector
 
 ## Emissions through time
 
-Emissions in the region fell by `r scales::percent((emissions_2005 - emissions_total) / emissions_2005, accuracy = 0.1)` from 2005 to 2021. This is principally attributed to decarbonization of the electric grid, which fell `r scales::percent((electricity_2005 - electricity_2021) / electricity_2005, accuracy = 0.1)` from 2005 to 2021. Other sectors showed small increases or decreases.
+Emissions in the region fell by `r scales::percent((emissions_2005 - emissions_total) / emissions_2005, accuracy = 0.1)` from 2005 to 2022. This is principally attributed to decarbonization of the electric grid, which fell `r scales::percent((electricity_2005 - electricity_2022) / electricity_2005, accuracy = 0.1)` from 2005 to 2022. Other sectors showed small increases or decreases.
 
 ```{r fig-temporal-emissions}
 #| fig-cap: "Regional emissions by sector through time"
@@ -147,7 +147,7 @@ Emissions in the region fell by `r scales::percent((emissions_2005 - emissions_t
 
 
 sector_order <- county_emissions %>%
-  filter(emissions_year >= 2005 & emissions_year <= 2021, category != "Sequestration") %>%
+  filter(emissions_year >= 2005 & emissions_year <= 2022, category != "Sequestration") %>%
   group_by(sector) %>%
   mutate(sector = if_else(sector == "Natural Systems", "Freshwater", sector)) %>%
   summarize(total_emissions = sum(value_emissions, na.rm = TRUE)) %>%
@@ -156,7 +156,7 @@ sector_order <- county_emissions %>%
 
 emissions_data <- county_emissions %>%
   filter(
-    emissions_year >= 2005 & emissions_year <= 2021,
+    emissions_year >= 2005 & emissions_year <= 2022,
     category != "Sequestration"
   ) %>%
   group_by(sector, emissions_year) %>%
@@ -170,7 +170,7 @@ emissions_data <- county_emissions %>%
 
 sequestration_data <- county_emissions %>%
   filter(
-    emissions_year >= 2005 & emissions_year <= 2021,
+    emissions_year >= 2005 & emissions_year <= 2022,
     category == "Sequestration"
   ) %>%
   group_by(sector, emissions_year) %>%
@@ -209,7 +209,7 @@ emissions_through_time <- p %>%
     ),
     name = "Natural Systems"
   ) %>%
-  plotly_layout("11-county regional greenhouse gas emissions: 2005-2021",
+  plotly_layout("11-county regional greenhouse gas emissions: 2005-2022",
     subtitle = "",
     x_title = "Year",
     y_title = "Metric tons CO<sub>2</sub>e"
@@ -225,18 +225,18 @@ emissions_through_time
 Different counties have different emission profiles depending on land-use and community characteristics.
 
 ``` {r fig-county-emissions}
-#| fig-cap: "County emissions by sector in 2021"
+#| fig-cap: "County emissions by sector in 2022"
 #| out-width: "95%"
 
-county_emissions_2021 <- county_emissions %>%
+county_emissions_2022 <- county_emissions %>%
   filter(
-    emissions_year == 2021,
+    emissions_year == 2022,
     county_name != "MSP Airport",
     category != "Sequestration"
   )
 
 county_emissions_raw <- plot_ly(
-  data = county_emissions_2021,
+  data = county_emissions_2022,
   source = "fig-county-emissions",
   type = "bar",
   x = ~county_name,
@@ -256,7 +256,7 @@ county_emissions_raw <- plot_ly(
     "<extra></extra>"
   )
 ) %>%
-  plotly_layout("County greenhouse gas emissions, 2021",
+  plotly_layout("County greenhouse gas emissions, 2022",
     subtitle = "",
     x_title = "County",
     y_title = "Metric tons CO<sub>2</sub>e",
@@ -270,11 +270,11 @@ county_emissions_raw
 However, most emissions are closely tied to population and a per capita emissions profile shows a more even distribution.
 
 ``` {r fig-county-emissions-per-capita}
-#| fig-cap: "County emissions per capita by sector in 2021"
+#| fig-cap: "County emissions per capita by sector in 2022"
 #| out-width: "95%"
 
-county_emissions_2021_per_capita <- plot_ly(
-  data = county_emissions_2021,
+county_emissions_2022_per_capita <- plot_ly(
+  data = county_emissions_2022,
   source = "fig-county-emissions-per-capita",
   type = "bar",
   x = ~county_name,
@@ -294,7 +294,7 @@ county_emissions_2021_per_capita <- plot_ly(
     "<extra></extra>"
   )
 ) %>%
-  plotly_layout("County greenhouse gas emissions per capita, 2021",
+  plotly_layout("County greenhouse gas emissions per capita, 2022",
     subtitle = "",
     x_title = "County",
     y_title = "Metric tons CO<sub>2</sub>e",
@@ -302,7 +302,7 @@ county_emissions_2021_per_capita <- plot_ly(
     barmode = "stack"
   )
 
-county_emissions_2021_per_capita
+county_emissions_2022_per_capita
 ```
 
 

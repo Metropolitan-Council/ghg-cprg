@@ -42,11 +42,11 @@ ctu_agricultural_emissions <- bind_rows(
 
 waldo::compare(
   agricultural_emissions %>%
-    filter(inventory_year == 2021) %>%
+    filter(inventory_year == 2022) %>%
     pull(mt_co2e) %>%
     sum(),
   ctu_agricultural_emissions %>%
-    filter(inventory_year == 2021) %>%
+    filter(inventory_year == 2022) %>%
     pull(mt_co2e) %>%
     sum()
 ) # checks out
@@ -76,7 +76,7 @@ agricultural_emissions_meta <-
     "mt_co2e", class(agricultural_emissions$mt_co2e), "Metric tons of gas in CO2 equivalency"
   )
 
-saveRDS(agricultural_emissions, "./_agriculture/data/_agricultural_emissions.rds")
-saveRDS(agricultural_emissions_meta, "./_agriculture/data/_agricultural_emissions_meta.rds")
+saveRDS(agricultural_emissions, "./_agriculture/data/agricultural_emissions_county.rds")
+saveRDS(agricultural_emissions_meta, "./_agriculture/data/agricultural_emissions_meta.rds")
 
-saveRDS(ctu_agricultural_emissions, "./_agriculture/data/_ctu_agricultural_emissions.rds")
+saveRDS(ctu_agricultural_emissions, "./_agriculture/data/agricultural_emissions_ctu.rds")

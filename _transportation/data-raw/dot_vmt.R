@@ -13,7 +13,7 @@ dot_vmt <- bind_rows(
 ) %>%
   ungroup() %>%
   rename(county_name = county) %>%
-  left_join(cprg_county) %>%
+  left_join(cprg_county, by = join_by(county_name, cprg_area)) %>%
   select(
     vmt_year = year,
     geoid,

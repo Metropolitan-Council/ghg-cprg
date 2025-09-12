@@ -1,5 +1,5 @@
 testthat::test_that("Compiled agriculture emissions", {
-  ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/_agricultural_emissions.RDS"))
+  ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/agricultural_emissions_county.RDS"))
 
   testthat::expect_equal(
     unique(ag_emissions$data_source),
@@ -26,7 +26,7 @@ testthat::test_that("Compiled agriculture emissions", {
 
   # enteric fermentation is the biggest emitter
   ag_emissions %>%
-    filter(inventory_year == 2021) %>%
+    filter(inventory_year == 2022) %>%
     group_by(source) %>%
     summarize(mt_co2e = sum(mt_co2e)) %>%
     ungroup() %>%

@@ -26,7 +26,7 @@ solid_waste_emissions <- readRDS(file.path(
 ))
 
 solidwaste_totals <- solid_waste_emissions %>%
-  filter(inventory_year == 2021) %>%
+  filter(inventory_year == 2022) %>%
   group_by(geoid) %>%
   summarise(
     value_emissions = sum(value_emissions)
@@ -62,7 +62,7 @@ metc_epa_comp_solid <- epa_inventory %>%
   bind_rows(solid_waste_emissions %>%
     select(names(epa_inventory)) %>%
     mutate(data_source = "Met Council") %>%
-    filter(inventory_year == 2021)) %>%
+    filter(inventory_year == 2022)) %>%
   mutate(
     source_unified = case_when(
       # source == "Anaerobic digestion" ~ "Waste to energy",
@@ -95,7 +95,7 @@ solidwaste_totals_prev <- waste_emissions_old %>%
   )
 
 solidwaste_totals_new <- solid_waste_emissions %>%
-  filter(inventory_year == 2021) %>%
+  filter(inventory_year == 2022) %>%
   group_by(geoid) %>%
   summarise(
     value_emissions = sum(value_emissions)
@@ -166,7 +166,7 @@ fig_emissions_population_solidwaste <- plot_ly(
 ) %>%
   plotly_layout(
     main_title = "County population and solid waste emissions",
-    subtitle = "2021 ACS 5-year population estimates. Strong positive correlation",
+    subtitle = "2022 ACS 5-year population estimates. Strong positive correlation",
     x_title = "Total population",
     y_title = "Metric tons CO<sub>2</sub>e",
     legend_title = "",
