@@ -71,6 +71,21 @@ base_data <- industrial_emissions %>%
   summarize(value_emissions = sum(value_emissions)) %>% 
   ungroup()
 
+bau_2025 <- industrial_emissions_proj %>%
+  filter(scenario == "bau", emissions_year == 2025) %>%
+  select(emissions_year, value_emissions)
+
+# Append to base_data
+extended <- base_data %>%
+  bind_rows(bau_2025) %>%
+  arrange(emissions_year)
+
+# Fill in missing years by linear interpolation
+base_data <- extended %>%
+  complete(emissions_year = full_seq(emissions_year, 1)) %>%
+  arrange(emissions_year) %>%
+  mutate(value_emissions = zoo::na.approx(value_emissions, emissions_year, na.rm = FALSE))
+
 #  diverging scenarios (2026+)
 diverging_data <- industrial_emissions_proj %>%
   filter(emissions_year >= 2025) %>%
@@ -101,15 +116,15 @@ emissions_gg <- ggplot() +
               aes(x = emissions_year, ymin = 0, ymax = value_emissions),
               fill = "gray80", alpha = 0.7) +
   
-  # Net zero fill (maroon)
+  # Net zero fill (#36454F)
   geom_ribbon(data = net_zero_data,
               aes(x = emissions_year, ymin = 0, ymax = value_emissions),
-              fill = "maroon", alpha = 0.3) +
+              fill = "#36454F", alpha = 0.3) +
   
   # PPP fill (from net_zero to ppp)
   geom_ribbon(data = ppp_ribbon_data,
               aes(x = emissions_year, ymin = net_zero_emissions, ymax = ppp_emissions),
-              fill = "rosybrown1", alpha = 0.5) +
+              fill = "#708090", alpha = 0.5) +
   
   # Base line (2005-2025)
   geom_line(data = base_data,
@@ -138,8 +153,8 @@ emissions_gg <- ggplot() +
   scale_color_manual(
     values = c(
       "Business as usual" = "black",
-      "Net zero" = "maroon",
-      "Accelerated policy pathways" = "rosybrown3"
+      "Net zero" = "#36454F",
+      "Accelerated policy pathways" = "#708090"
     ),
     breaks = c("Business as usual", "Accelerated policy pathways", "Net zero")  # Force legend order
   ) +
@@ -150,14 +165,14 @@ emissions_gg <- ggplot() +
       title = "Scenarios",
       override.aes = list(
         linetype = c("dashed", "solid", "solid"),
-        color = c("black", "rosybrown3", "maroon")
+        color = c("black", "#708090", "#36454F")
       )
     )
   ) +
   labs(
     x = "Year",
     y = "",
-    title = "Residential Building Emissions \n(Millions of CO2-equivalency)"
+    title = "Industrial Process Emissions \n(Millions of CO2-equivalency)"
   ) +
   scale_y_continuous(labels = label_number(scale = 1e-6)) +  # convert to millions
   theme_minimal() +
@@ -174,9 +189,44 @@ emissions_gg <- ggplot() +
 print(emissions_gg)
 
 ggplot2::ggsave(plot = emissions_gg,
-                filename = paste0(wd,"/residential_decarbonization_pathways.png"),  # add your file path here
+                filename = paste0(wd,"/industrial_decarbonization_pathways.png"),  # add your file path here
                 width = 12,
                 height = 6,
                 units = "in",
                 dpi = 300,
                 bg = "white")
+
+### numbers for CCAP document
+# sector wide 2030/2050 scenario to BAU comparisons
+
+ind_2030 <- industrial_emissions_proj %>% 
+  filter(emissions_year == 2030) 
+
+bau2030 <- ind_2030 %>% filter(scenario == "bau") %>% pull(value_emissions)
+
+ppp2030 <- ind_2030 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
+  bau2030
+
+nz2030 <- ind_2030 %>% filter(scenario == "nz") %>% pull(value_emissions) -
+  bau2030
+
+ppp2030 / bau2030
+nz2030 / bau2030
+
+#2050
+
+ind_2050 <- industrial_emissions_proj %>% 
+  filter(emissions_year == 2050) 
+
+bau2050 <- ind_2050 %>% filter(scenario == "bau") %>% pull(value_emissions)
+
+ppp2050 <- ind_2050 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
+  bau2050
+
+nz2050 <- ind_2050 %>% filter(scenario == "nz") %>% pull(value_emissions) -
+  bau2050
+
+ppp2050
+nz2050
+ppp2050 / bau2050
+nz2050 / bau2050
