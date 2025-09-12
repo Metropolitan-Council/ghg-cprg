@@ -224,10 +224,11 @@ county_emissions %>%
 scenarios_sources_annual <- state_projections %>%
   filter(sector != "Emission Reductions Needed") %>%
   mutate(source_sink = if_else(value_emissions < 0, "Sequestration", "Emission")) %>%
-  group_by(emissions_year, scenario, source_sink, sector, subsector_mc, units) %>%
+  ungroup() %>% 
+  group_by(emissions_year, scenario, source_sink, sector, subsector_mc) %>%
   summarize(value_emissions = sum(value_emissions)) %>%
   #### add proportion relative to 2005
-  group_by(scenario, subsector_mc, source_sink, sector, units) %>%
+  group_by(scenario, subsector_mc, source_sink, sector) %>%
   mutate(
     value_2005 = value_emissions[emissions_year == 2005],
     value_2020 = value_emissions[emissions_year == 2020]
@@ -239,7 +240,7 @@ scenarios_sources_annual <- state_projections %>%
   ) %>%
   ungroup() %>%
   select(-value_2005) %>%
-  rename(units_emission = units)
+  mutate(units_emission = "MMTCO2e")
 
 scenarios_sources_annual_meta <-
   bind_rows(
