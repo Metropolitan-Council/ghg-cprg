@@ -287,7 +287,7 @@ emissions_all_meta <- tibble::tribble(
 )
 
 
- waldo::compare(emissions_all, readRDS("_meta/data/cprg_county_emissions.RDS"))
+ #waldo::compare(emissions_all, readRDS("_meta/data/cprg_county_emissions.RDS"))
 
 
 
