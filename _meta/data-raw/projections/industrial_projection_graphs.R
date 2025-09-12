@@ -4,22 +4,40 @@ source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
 
 
+interpolate_emissions <- function(df) {
+  df %>%
+    mutate(emissions_year = as.numeric(emissions_year)) %>%
+    group_by(scenario) %>%
+    # complete sequence of years from min to max
+    complete(emissions_year = seq(min(emissions_year), max(emissions_year), by = 1)) %>%
+    # interpolate missing values linearly
+    mutate(value_emissions = approx(emissions_year, value_emissions, 
+                                    xout = emissions_year, rule = 1)$y) %>%
+    ungroup()
+}
+
 ## load state gcam modeling
 
 gcam <- read_rds("_meta/data/gcam/mpca_subsector_gcam.RDS")
 unique(gcam$subsector_mc)
 
 industrial_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS")) %>% 
-  filter(sector == "Industrial")
+  filter(sector == "Industrial")%>% 
+  mutate(category = if_else(
+    category == "Industrial fuel combustion",
+    "Industrial processes",
+    category
+  ))
 
 industrial_scenarios <- gcam %>% 
   filter(subsector_mc %in% c("Industrial fuel combustion",
+                             "Industrial natural gas",
                              "Industrial processes",
                              "Refinery processes"),
          scenario %in% c("Net-Zero Pathway",
                          "PPP after Fed RB",
                          "CP after Fed RB")
-  )
+  ) 
 
 industrial_emissions_proj <- industrial_emissions %>% 
   filter(emissions_year == 2020) %>% 
@@ -35,15 +53,23 @@ industrial_emissions_proj <- industrial_emissions %>%
            scenario == "CP after Fed RB" ~ "bau",
            scenario == "PPP after Fed RB" ~ "ppp",
            scenario == "Net-Zero Pathway" ~ "nz"
-         ))
+         )) %>% 
+  filter(!is.na(value_emissions)) %>% 
+  group_by(emissions_year,
+           scenario) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>% 
+  ungroup()
   
-  
-
+industrial_emissions_proj <- interpolate_emissions(industrial_emissions_proj)
 
 #  base data (2005-2025, identical across scenarios)
 base_data <- industrial_emissions %>%
   filter(emissions_year <= 2025) %>%  # Use any scenario since they're identical
-  mutate(segment = "base", scenario = "bau")
+  mutate(segment = "base", scenario = "bau") %>% 
+  filter(!category %in% c("Electricity", "Building Fuel")) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>% 
+  ungroup()
 
 #  diverging scenarios (2026+)
 diverging_data <- industrial_emissions_proj %>%
@@ -52,6 +78,7 @@ diverging_data <- industrial_emissions_proj %>%
 
 net_zero_data <- diverging_data %>% filter(scenario == "nz")
 
+bau_data <- diverging_data %>% filter(scenario == "bau")
 
 # PPP data - need to merge with net_zero for the lower bound
 ppp_data <- diverging_data %>%
