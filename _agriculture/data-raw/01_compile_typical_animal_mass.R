@@ -53,7 +53,7 @@ tam <- rows_append(
     "Heifer Feedlot"
   )),
   tam_other %>%
-    crossing(year = 2005:2021)
+    crossing(year = 2005:2022)
 ) ### repeat years for non-cattle (static)
 
 

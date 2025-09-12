@@ -11,7 +11,8 @@ cprg_colors <- list(
 
 # sector colors
 sector_colors <- list(
-  "Electricity" =  "#ecb81c",
+
+  "Electricity" = "#ecb81c",
   "Transportation" = "#191970",
   "Residential" = "#9467bd",
   "Commercial" = "#DB5755",
@@ -23,7 +24,8 @@ sector_colors <- list(
 
 ## with building fuel
 sector_colors_alt <- list(
-  "Electricity" =  "#ecb81c",
+
+  "Electricity" = "#ecb81c",
   "Transportation" = "#191970",
   "Building Fuel" = "#DB5755",
   "Industrial Processes" = "slategray",
@@ -50,15 +52,15 @@ category_colors <-
     # Commercial
     "Commercial natural gas" = "#800000",
     "Commercial fuel combustion" = "#DE3163",
-    
+
     # Building Fuel
     "Residential building fuel" = "#FF9E99",
     "Commercial building fuel" = "#FF746C",
     "Industrial building fuel" = "#7A3734",
-    
-    
+
     # Industrial
-    
+
+
     "Industrial natural gas" = "#36454F",
     "Industrial processes" = "#B2BEB5",
     "Industrial fuel combustion" = "#818589",

@@ -261,7 +261,7 @@ manure_soils_emissions_county <- manure_soils_emissions %>%
   summarize(co2e = sum(co2e_combined))
 
 manure_soils_emissions_county %>%
-  filter(year == 2021) %>%
+  filter(year == 2022) %>%
   pull(co2e) %>%
   sum()
 # 69983.24
@@ -511,7 +511,7 @@ manure_soils_emissions_ts <- ts_manure_soils_emissions %>%
   summarize(co2e = sum(co2e_combined))
 
 manure_soils_emissions_ts %>%
-  filter(inventory_year == 2021) %>%
+  filter(inventory_year == 2022) %>%
   pull(co2e) %>%
   sum()
 # 69983.24
@@ -573,11 +573,11 @@ ts_manure_emissions_out <- ts_manure_emissions %>%
 
 waldo::compare(
   manure_emissions_out %>%
-    filter(inventory_year == 2021) %>%
+    filter(inventory_year == 2022) %>%
     pull(mt_co2e) %>%
     sum(),
   ts_manure_emissions_out %>%
-    filter(inventory_year == 2021) %>%
+    filter(inventory_year == 2022) %>%
     pull(mt_co2e) %>%
     sum()
 ) # checks out

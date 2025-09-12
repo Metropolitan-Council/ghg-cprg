@@ -1,6 +1,7 @@
 # compile emissions from all sectors into a single data table, reducing to CTU
 source("R/_load_pkgs.R")
-cprg_county <- readRDS("_meta/data/cprg_county.RDS") %>% st_drop_geometry()
+source("_meta/data-raw/ctu_coctu_index.R")
+
 cprg_county_pop <- readRDS("_meta/data/census_county_population.RDS") %>%
   filter(cprg_area == TRUE) %>%
   mutate(
@@ -17,51 +18,11 @@ ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
     by = join_by(geoid)
   )
 
-mndot_vmt_ctu <- readRDS("_transportation/data/mndot_vmt_ctu.RDS")
-
-
-ctu_vmt_percent <- left_join(mndot_vmt_ctu, cprg_county %>%
-  select(geoid, county_name),
-by = "geoid"
-) %>%
-  group_by(county_name, vmt_year) %>%
-  mutate(county_annual_vmt = sum(annual_vmt)) %>%
-  ungroup() %>%
-  mutate(
-    ctu_vmt_percent = annual_vmt / county_annual_vmt,
-    vmt_year = as.numeric(vmt_year)
-  )
-
 
 # transportation -----
-transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS") %>%
-  ungroup() %>%
-  rowwise() %>%
-  mutate(
-    year = emissions_year,
-    sector = "Transportation",
-    source = paste0(vehicle_fuel_label, " fueled vehicles"),
-    category = category,
-    data_source = data_source,
-    factor_source = moves_edition
-  ) %>%
-  group_by(emissions_year, county_name, sector, category, source) %>%
-  summarize(value_emissions = sum(emissions_metric_tons_co2e), .groups = "keep") %>%
-  left_join(ctu_vmt_percent,
-    by = c("county_name",
-      "emissions_year" = "vmt_year"
-    ),
-    relationship = "many-to-many"
-  ) %>%
-  ungroup() %>%
-  mutate(
-    value_emissions = value_emissions * ctu_vmt_percent,
-    geog_level = "ctu"
-  ) %>%
-  group_by(emissions_year, geog_level, sector, category, source, ctu_name, ctu_class, ctuid, gnis) %>%
-  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
-  ungroup() %>%
-  mutate(sector_alt = sector) %>% # electricity and nat gas need this
+
+transportation_emissions <- readRDS("_transportation/data/ctu_transportation_emissions.RDS") %>%
+  ungroup() %>%  
   select(
     emissions_year,
     geog_level,
@@ -150,7 +111,7 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
 
 
 agriculture_emissions <-
-  readRDS(file.path(here::here(), "_agriculture/data/_ctu_agricultural_emissions.RDS")) %>%
+  readRDS(file.path(here::here(), "_agriculture/data/agricultural_emissions_ctu.RDS")) %>%
   group_by(ctu_id, ctu_name, ctu_class, inventory_year, sector, category, source, data_source, factor_source) %>%
   summarize(value_emissions = sum(mt_co2e), .groups = "keep") %>%
   mutate(
@@ -266,38 +227,49 @@ emissions_all <- bind_rows(
 
 
 emissions_all %>%
-  filter(emissions_year == 2021, !is.na(value_emissions)) %>%
+  filter(emissions_year == 2022, !is.na(value_emissions)) %>%
   pull(value_emissions) %>%
   sum() /
-  sum(cprg_county_pop[cprg_county_pop$population_year == 2021, ]$population)
+  sum(cprg_county_pop[cprg_county_pop$population_year == 2022, ]$population)
 
-emissions_all_meta <- tibble::tribble(
-  ~"Column", ~"Class", ~"Description",
-  "emissions_year", class(emissions_all$emissions_year), "Emissions estimation year",
-  "geog_name", class(emissions_all$geog_name), "Name of geographic area",
-  "geog_level", class(emissions_all$geog_level), "Geography level; ctu or county",
-  "ctu_class", class(emissions_all$ctu_class), "CTU classification; city, township, unorganized",
-  "ctu_id_fips", class(emissions_all$ctu_id_fips), "FIPS code",
-  "ctu_id_gnis", class(emissions_all$ctu_id_gnis), "GNIS code",
-  "sector", class(emissions_all$sector), paste0(
-    "Emissions sector. One of ",
-    paste0(unique(emissions_all$sector), collapse = ", ")
-  ),
-  "sector_alt", class(emissions_all$sector), paste0(
-    "Alternative sector grouping. One of ",
-    paste0(unique(emissions_all$sector_alt), collapse = ", ")
-  ),
-  "category", class(emissions_all$category), "Category of emissions within given sector",
-  "source", class(emissions_all$source), "Source of emissions. Most detailed sub-category in this table",
-  "value_emissions", class(emissions_all$value_emissions), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given geography for given year",
-  # "data_source", class(emissions_all$data_source), "Activity data source",
-  # "factor_source", class(emissions_all$factor_source), "Emissions factor data source",
-  "ctu_population", class(emissions_all$ctu_population), "Total geography population",
-  # "population_data_source", class(emissions_all$population_data_source), "Population data source",
-  "emissions_per_capita", class(emissions_all$emissions_per_capita), "Metric tons CO~2~e per person living in given county for given sector and category"
-)
 
-waldo::compare(emissions_all, readRDS("_meta/data/ctu_emissions.RDS"))
+emissions_all_meta <-
+  readRDS("_meta/data/ctu_population_meta.RDS") %>%
+  mutate(
+    Column = case_when(
+      Column == "gnis" ~ "ctu_id_gnis",
+      Column == "ctuid" ~ "ctu_id_fips",
+      TRUE ~ Column
+    )
+  ) %>%
+  filter(Column %in% names(emissions_all)) %>%
+  bind_rows(
+    tibble::tribble(
+      ~"Column", ~"Class", ~"Description",
+      "emissions_year", class(emissions_all$emissions_year), "Emissions estimation year",
+      "geog_name", class(emissions_all$geog_name), "Name of geographic area",
+      "geog_level", class(emissions_all$geog_level), "Geography level; ctu or county",
+      "sector", class(emissions_all$sector), paste0(
+        "Emissions sector. One of ",
+        paste0(unique(emissions_all$sector), collapse = ", ")
+      ),
+      "sector_alt", class(emissions_all$sector), paste0(
+        "Alternative sector grouping. One of ",
+        paste0(unique(emissions_all$sector_alt), collapse = ", ")
+      ),
+      "category", class(emissions_all$category), "Category of emissions within given sector",
+      "source", class(emissions_all$source), "Source of emissions. Most detailed sub-category in this table",
+      "value_emissions", class(emissions_all$value_emissions), "Annual total metric tons CO~2~ and CO~2~ equivalent attributed to the given geography for given year",
+      # "data_source", class(emissions_all$data_source), "Activity data source",
+      # "factor_source", class(emissions_all$factor_source), "Emissions factor data source",
+      # "population_data_source", class(emissions_all$population_data_source), "Population data source",
+      "emissions_per_capita", class(emissions_all$emissions_per_capita), "Metric tons CO~2~e per person living in given county for given sector and category"
+    )
+  ) %>%
+  arrange(match(Column, names(emissions_all)))
+
+
+# waldo::compare(emissions_all, readRDS("_meta/data/ctu_emissions.RDS"))
 
 saveRDS(emissions_all, "_meta/data/ctu_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/ctu_emissions_meta.RDS")

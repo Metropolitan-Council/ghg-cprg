@@ -41,6 +41,47 @@ cprg_ctu_df <- cprg_ctu %>%
   )
 
 
+# inpath_histosols <- "./_nature/data-raw/shapefiles/"
+# histosols_sp <-  sf::st_read(paste0(inpath_histosols, "shp_geos_potentially_wet_histosols/potentially_wet_histosols.shp")) %>%
+#   sf::st_transform(., crs_use)
+#
+# histosols_sp <- histosols_sp %>% sf::st_make_valid()
+#
+# histosols_sp <- histosols_sp %>%
+#   sf::st_crop(cprg_ctu) %>%
+#   sf::st_make_valid()
+#
+# # histosols_sp %>%
+# #   sf::st_intersection(x) %>%
+# #   sf::st_make_valid()
+#
+# ggplot(cprg_county) +   geom_sf(color=NA, fill=NA, lwd=0) +
+#
+#
+#   councilR::theme_council_geo() +
+#
+#   geom_sf(data= cprg_county, color="gray65", fill=NA, lwd=0.4) +
+#   ggnewscale::new_scale_fill() + ## geoms added after this will use a new scale definition
+#
+#   geom_sf(data = histosols_sp, aes(fill=wetland_ty), color="gray80", alpha=0.8,  lwd=0.2)  +
+#
+#
+#
+#   theme(
+#     legend.position = c(0,1),
+#     legend.direction = "vertical",
+#     legend.justification = c("left","top"),
+#     legend.margin = margin(0, 0, 0, 0),
+#     legend.key.height = unit(0.4, "cm"),
+#     legend.key.width = unit(0.4, "cm"),
+#     legend.box = "vertical",
+#     legend.box.just = "left",
+#     legend.spacing = unit(-0.28, "cm")
+#   )
+
+
+
+
 # Set inpath for nlcd raw images
 inpath_nlcd <- "./_nature/data-raw/nlcd_raw_imgs"
 # List all files in the NLCD directory

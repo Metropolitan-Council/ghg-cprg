@@ -1268,12 +1268,76 @@ _transportation/data-raw/mndot/updated_VMT_County_City_Route_System/
 /_energy/data-raw/dakotaElectricDataRequest
 
 
+
 _meta/data-raw/mpca_inventory_2022.csv
 _meta/data-raw/bau_projections/bau_ctu_ww_sw_ns.csv
 _meta/data-raw/bau_projections/bau_region_ww_sw_ns.csv
 _meta/data-raw/bau_projections/comm_nonres_bau_2005_2050.csv
 _meta/data-raw/bau_projections/residential_bau.csv
 _meta/data-raw/bau_projections/transportation_county_emissions_time_series.CSV
+
+
+_transportation/data-raw/mndot/metadata/
+
+_transportation/data-raw/mndot/gpkg_trans_aadt_traffic_segments.zip
+
+_transportation/data-raw/mndot/gpkg_trans_historic_aadt.zip
+
+_transportation/data-raw/mndot/trans_annual average daily traffic segments.gpkg
+
+_transportation/data-raw/mndot/trans_Historic Annual Average Daily Traffic.gpkg
+
+_transportation/data-raw/mndot/updated_VMT_County_City_Route_System.zip
+
+_transportation/data-raw/mndot/mileage_city_route_system/
+_transportation/data-raw/mndot/mileage_city_route_system/2024_Mileage_City_Route_System-38747964-v1.XLSX
+_transportation/data-raw/mndot/vmt_county.CSV
+
+_transportation/data_state_dot_files/
+
+_transportation/data_state_dot.html
+
+_nature/_natural_systems_inventory.html
+
+_nature/data_nhd_waterways.html
+
+_nature/data_nlcd_cover.html
+
+_meta/additional_resources.html
+
+_industrial/_industrial.html
+
+_industrial/industrial_data_source.html
+
+_energy/data_natural_gas.html
+
+_energy/data_propane_kerosene.html
+
+_energy/utility_service_area_maps.html
+
+_agriculture/_agriculture.html
+
+_agriculture/agriculture_data_source.html
+
+_energy/data_electricity.html
+
+_waste/_data_methods_waste.html
+
+_waste/_solid_waste.html
+
+_waste/data_solid_waste.html
+
+_waste/methods_solid_waste.html
+
+changelog.html
+
+_meta/lidac_maps.html
+
+_energy/_energy_natural_gas_emissions.html
+
+_transportation/data-raw/epa/air_emissions_modeling/
+
+_transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2025-0820-150847.csv
 
 
 _waste/_data_methods_waste.html
@@ -1310,3 +1374,8 @@ _meta/data-raw/forecast_taz/SOCIO_2040_TAZ.csv
 _meta/data-raw/forecast_taz/SOCIO_2050_TAZ.csv
 _meta/data-raw/gcam_all_scenarios.xlsx
 _meta/data-raw/MN_ag_lulucf.xlsx
+
+_waste/data-raw/solid_waste/score_summary.csv
+_waste/data-raw/solid_waste/solid_waste_flaring.xlsx
+_waste/data-raw/solid_waste/solid_waste_lfgte.xlsx
+

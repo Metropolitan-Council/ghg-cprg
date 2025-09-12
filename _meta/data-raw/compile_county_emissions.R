@@ -20,7 +20,7 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
     category,
     data_source = data_source,
     factor_source = moves_edition,
-    value_emissions = emissions_metric_tons_co2e,
+    value_emissions = round(emissions_metric_tons_co2e, digits = 2),
     unit_emissions = "Metric tons CO2e"
   ) %>%
   select(
@@ -45,7 +45,7 @@ aviation_emissions <- readRDS("_transportation/data/aviation_emissions.RDS") %>%
     category = "Aviation",
     data_source = data_source,
     factor_source = data_source,
-    value_emissions,
+    value_emissions = round(value_emissions, digits = 2),
     unit_emissions = "Metric tons CO2e",
     emissions_year = inventory_year
   ) %>%
@@ -132,8 +132,9 @@ propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
 
 # agriculture ----
 
-agriculture_emissions <- readRDS("_agriculture/data/_agricultural_emissions.rds") %>%
-  left_join(cprg_county %>% select(county_name, geoid)) %>%
+
+agriculture_emissions <- readRDS("_agriculture/data/agricultural_emissions_county.rds") %>%
+  left_join(cprg_county %>% select(county_name, geoid), by = join_by(geoid)) %>%
   mutate(
     emissions_year = inventory_year,
     sector = "Agriculture",
@@ -284,6 +285,11 @@ emissions_all_meta <- tibble::tribble(
   "population_data_source", class(emissions_all$population_data_source), "Population data source",
   "emissions_per_capita", class(emissions_all$emissions_per_capita), "Metric tons CO~2~e per person living in given county for given sector and category"
 )
+
+
+ waldo::compare(emissions_all, readRDS("_meta/data/cprg_county_emissions.RDS"))
+
+
 
 saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")
 saveRDS(emissions_all_meta, "_meta/data/cprg_county_emissions_meta.RDS")

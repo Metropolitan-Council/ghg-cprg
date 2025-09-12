@@ -24,7 +24,7 @@ ag_constants_vec <- ag_constants %>%
 ### and then multiply by year constants to convert to organic vs synthetic rates
 state_fertilizer <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   sheet = "FertilizerData",
-  range = "A3:AG54"
+  range = "A3:AH54"
 ) %>%
   filter(!row_number() == 1) %>%
   rename(state = `...1`) %>%
@@ -39,7 +39,7 @@ state_fertilizer <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
     # percentage fertilizer amount that is synthetic
     readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
       sheet = "FertilizerData",
-      range = "A3:AG60"
+      range = "A3:AH60"
     ) %>%
       filter(!row_number() %in% c(1:53)) %>%
       rename(fertilizer_type = `...1`) %>%

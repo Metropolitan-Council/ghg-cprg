@@ -1,7 +1,7 @@
 testthat::test_that("state DOT VMT", {
   dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS"))
 
-  testthat::expect_equal(nrow(dot_vmt), 237)
+  testthat::expect_equal(nrow(dot_vmt), 246)
 
   # ensure we have all available years
   testthat::expect_equal(
@@ -9,7 +9,7 @@ testthat::test_that("state DOT VMT", {
     c(
       "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008",
       "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016",
-      "2017", "2018", "2019", "2020", "2021", "2022", "2023"
+      "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"
     )
   )
 
