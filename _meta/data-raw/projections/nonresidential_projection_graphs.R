@@ -85,9 +85,12 @@ nonres_emissions_forecast <- total_jobs %>%
               select(county_name, emissions_per_job),
             by = "county_name") %>% 
   mutate(value_emissions = value * emissions_per_job,
-         scenario = "bau")
+         scenario = "bau") %>% 
+  rename(emissions_year = inventory_year) %>% 
+  group_by(emissions_year, scenario) %>% 
+  summarize(value_emissions = sum(value_emissions))
 
-nonres_emissions_forecast
+nonres_emissions_forecast <- interpolate_emissions(nonres_emissions_forecast)
 
 industrial_scenarios <- gcam %>% 
   filter(subsector_mc %in% c("Industrial fuel combustion",
