@@ -21,13 +21,37 @@ interpolate_emissions <- function(df) {
 gcam <- read_rds("_meta/data/gcam/mpca_subsector_gcam.RDS")
 unique(gcam$subsector_mc)
 
-industrial_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS")) %>% 
+
+### set net-zero by regional analysis
+
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+## to be updated once we have better sequestration growth potential
+seq_target <- county_emissions %>% 
+  filter(emissions_year == 2022 & category == "Sequestration") %>% 
+  pull(value_emissions) %>% sum()
+
+
+
+industrial_emissions <- county_emissions %>% 
   filter(sector == "Industrial")%>% 
   mutate(category = if_else(
     category == "Industrial fuel combustion",
     "Industrial processes",
     category
   ))
+
+
+### industrial target 
+ind_target <- industrial_emissions %>% 
+  filter(emissions_year == 2022,
+         category != "Electricity") %>%
+  pull(value_emissions) %>% sum() /  #residential natural gas emissions
+  county_emissions %>% 
+  filter(emissions_year == 2022,
+         category != "Electricity") %>%
+  pull(value_emissions) %>% sum() * #regional wide emissions minus electricity
+  seq_target * -1 # emissions goal
 
 industrial_scenarios <- gcam %>% 
   filter(subsector_mc %in% c("Industrial fuel combustion",
@@ -101,13 +125,13 @@ ppp_data <- diverging_data %>%
   select(emissions_year, value_emissions) %>%
   rename(ppp_emissions = value_emissions)
 
-net_zero_for_ppp <- diverging_data %>%
-  filter(scenario == "nz") %>%
-  select(emissions_year, value_emissions) %>%
-  rename(net_zero_emissions = value_emissions)
-
-ppp_ribbon_data <- ppp_data %>%
-  left_join(net_zero_for_ppp, by = "emissions_year")
+# net_zero_for_ppp <- diverging_data %>%
+#   filter(scenario == "nz") %>%
+#   select(emissions_year, value_emissions) %>%
+#   rename(net_zero_emissions = value_emissions)
+# 
+# ppp_ribbon_data <- ppp_data %>%
+#   left_join(net_zero_for_ppp, by = "emissions_year")
 
 # Create the plot
 emissions_gg <- ggplot() +
@@ -117,13 +141,13 @@ emissions_gg <- ggplot() +
               fill = "gray80", alpha = 0.7) +
   
   # Net zero fill (#36454F)
-  geom_ribbon(data = net_zero_data,
-              aes(x = emissions_year, ymin = 0, ymax = value_emissions),
-              fill = "#36454F", alpha = 0.3) +
+  # geom_ribbon(data = net_zero_data,
+  #             aes(x = emissions_year, ymin = 0, ymax = value_emissions),
+  #             fill = "#36454F", alpha = 0.3) +
   
   # PPP fill (from net_zero to ppp)
-  geom_ribbon(data = ppp_ribbon_data,
-              aes(x = emissions_year, ymin = net_zero_emissions, ymax = ppp_emissions),
+  geom_ribbon(data = ppp_data,
+              aes(x = emissions_year, ymin = 0, ymax = ppp_emissions),
               fill = "#708090", alpha = 0.5) +
   
   # Base line (2005-2025)
@@ -140,9 +164,14 @@ emissions_gg <- ggplot() +
             aes(x = emissions_year, y = value_emissions, color = "Accelerated policy pathways"),
             size = 1) +
   
-  geom_line(data = diverging_data %>% filter(scenario == "nz"),
-            aes(x = emissions_year, y = value_emissions, color = "Net zero"),
-            size = 1) +
+  geom_point(
+    data = data.frame(emissions_year = 2050, value_emissions = ind_target),
+    aes(x = emissions_year, y = value_emissions),
+    shape = "*",    # asterisk
+    size = 12,     # make larger or smaller
+    stroke = 1.5, # line thickness of the asterisk
+    color = "black"
+  ) +
   
   geom_segment(aes(x = 2025, xend = 2025, y = 0, yend = base_data %>% filter(emissions_year == 2025) %>% pull(value_emissions)),
                color = "black", linetype = "solid", size = 0.8) +
@@ -153,7 +182,7 @@ emissions_gg <- ggplot() +
   scale_color_manual(
     values = c(
       "Business as usual" = "black",
-      "Net zero" = "#36454F",
+      # "Net zero" = "#36454F",
       "Accelerated policy pathways" = "#708090"
     ),
     breaks = c("Business as usual", "Accelerated policy pathways", "Net zero")  # Force legend order
@@ -164,8 +193,8 @@ emissions_gg <- ggplot() +
     color = guide_legend(
       title = "Scenarios",
       override.aes = list(
-        linetype = c("dashed", "solid", "solid"),
-        color = c("black", "#708090", "#36454F")
+        linetype = c("dashed", "solid"),
+        color = c("black", "#36454F")
       )
     )
   ) +
@@ -223,10 +252,10 @@ bau2050 <- ind_2050 %>% filter(scenario == "bau") %>% pull(value_emissions)
 ppp2050 <- ind_2050 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
   bau2050
 
-nz2050 <- ind_2050 %>% filter(scenario == "nz") %>% pull(value_emissions) -
-  bau2050
+# nz2050 <- ind_2050 %>% filter(scenario == "nz") %>% pull(value_emissions) -
+#   bau2050
 
 ppp2050
 nz2050
 ppp2050 / bau2050
-nz2050 / bau2050
+ind_target / bau2050

@@ -9,7 +9,28 @@ source("R/cprg_colors.R")
 gcam <- read_rds("_meta/data/gcam/mpca_subsector_gcam.RDS")
 unique(gcam$subsector_mc)
 
-agriculture_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS")) %>% 
+
+### set net-zero by regional analysis
+
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+
+## to be updated once we have better sequestration growth potential
+seq_target <- county_emissions %>% 
+  filter(emissions_year == 2022 & category == "Sequestration") %>% 
+  pull(value_emissions) %>% sum()
+
+### agricultural target
+ag_target <- county_emissions %>% 
+  filter(emissions_year == 2022,
+         sector == "Agriculture") %>%
+  pull(value_emissions) %>% sum() /  #residential natural gas emissions
+  county_emissions %>% 
+  filter(emissions_year == 2022,
+         category != "Electricity") %>%
+  pull(value_emissions) %>% sum() * #regional wide emissions minus electricity
+  seq_target * -1 # emissions goal
+
+agriculture_emissions <- county_emissions %>% 
   filter(sector == "Agriculture")
 
 agriculture_scenarios <- gcam %>% 
@@ -108,9 +129,14 @@ emissions_gg <- ggplot() +
             aes(x = emissions_year, y = value_emissions, color = "Accelerated policy pathways"),
             size = 1) +
   
-  # geom_line(data = diverging_data %>% filter(scenario == "nz"),
-  #           aes(x = emissions_year, y = value_emissions, color = "Net zero"),
-  #           size = 1) +
+  geom_point(
+    data = data.frame(emissions_year = 2050, value_emissions = ag_target),
+    aes(x = emissions_year, y = value_emissions),
+    shape = "*",    # asterisk
+    size = 12,     # make larger or smaller
+    stroke = 1.5, # line thickness of the asterisk
+    color = "black"
+  ) +
   
   geom_segment(aes(x = 2022, xend = 2022, y = 0, yend = base_data %>% filter(emissions_year == 2022) %>% pull(value_emissions)),
                color = "black", linetype = "solid", size = 0.8) +
@@ -195,6 +221,6 @@ ppp2050 <- ag_2050 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
 #   bau2050
 
 ppp2050
-nz2050
+ag_target
 ppp2050 / bau2050
-# nz2050 / bau2050
+ag_target / bau2050
