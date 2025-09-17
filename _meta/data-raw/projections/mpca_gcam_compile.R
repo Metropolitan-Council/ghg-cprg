@@ -203,7 +203,7 @@ state_projections <- state_projections %>%
     sector == "Agriculture" & source== "N2O from Ag Soil Management" ~ "Cropland soil",
     # waste
     source %in% c("Landfills","RDF", "Incineration") ~ "Solid waste",
-    source == "Wastewater treatment" ~ "Wastewater",
+    source == "Wastewater" ~ "Wastewater",
     # electricity
     sector == "Electricity" ~ "Electricity",
     # # natural systems
