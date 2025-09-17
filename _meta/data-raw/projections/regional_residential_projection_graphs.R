@@ -73,7 +73,7 @@ emissions_gg <- ggplot() +
   # PPP fill (from net_zero to ppp)
   geom_ribbon(data = ppp_data,
               aes(x = inventory_year, ymin = 0, ymax = ppp_emissions),
-              fill = "rosybrown1", alpha = 0.5) +
+              fill = "#9467bd", alpha = 0.5) +
   
   # Base line (2005-2025)
   geom_line(data = base_data,
@@ -108,7 +108,7 @@ emissions_gg <- ggplot() +
     values = c(
       "Business as usual" = "black",
       # "Net zero" = "maroon",
-      "Accelerated policy pathways" = "rosybrown3"
+      "Accelerated policy pathways" = "#9467bd"
     ),
     breaks = c("Business as usual", "Accelerated policy pathways", "Net zero")  # Force legend order
   ) +
@@ -119,7 +119,7 @@ emissions_gg <- ggplot() +
       title = "Scenarios",
       override.aes = list(
         linetype = c("dashed", "solid"),
-        color = c("black", "rosybrown3")
+        color = c("black", "#9467bd")
       )
     )
   ) +
