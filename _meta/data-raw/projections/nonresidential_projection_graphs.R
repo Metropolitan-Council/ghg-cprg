@@ -202,8 +202,8 @@ nonres_elec_bau <- bind_rows(
   interpolate_emissions(nonres_elec_emissions_bau)
 )
 
-saveRDS(nonres_elec_bau,
-  "_meta/data-raw/projections/nonres_elec_bau.rds")
+# saveRDS(nonres_elec_bau,
+#   "_meta/data-raw/projections/nonres_elec_bau.rds")
 
 nonres_emissions_pathways <- left_join(
   nonres_emissions_pathways_natgas,
