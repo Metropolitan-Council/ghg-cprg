@@ -74,12 +74,11 @@ ag_bau <- bind_rows(
     group_by(emissions_year, scenario) %>% 
     summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>% 
     ungroup(),
-  agriculture_emissions_proj %>% 
-    filter(scenario == "bau")
+  agriculture_emissions_proj
 )
 
 # saveRDS(ag_bau,
-#   "_meta/data-raw/projections/ag_bau.rds")
+#   "_meta/data-raw/projections/ag_pathways.rds")
 
 #  base data (2005-2025, identical across scenarios)
 base_data <- agriculture_emissions %>%
