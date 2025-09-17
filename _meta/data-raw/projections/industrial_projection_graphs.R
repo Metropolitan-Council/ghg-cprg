@@ -83,6 +83,7 @@ industrial_emissions_proj <- industrial_emissions %>%
   
 industrial_emissions_proj <- interpolate_emissions(industrial_emissions_proj)
 
+
 #  base data (2005-2025, identical across scenarios)
 base_data <- industrial_emissions %>%
   filter(emissions_year <= 2025) %>%  # Use any scenario since they're identical
@@ -106,6 +107,19 @@ base_data <- extended %>%
   complete(emissions_year = full_seq(emissions_year, 1)) %>%
   arrange(emissions_year) %>%
   mutate(value_emissions = zoo::na.approx(value_emissions, emissions_year, na.rm = FALSE))
+
+## save bau data
+
+ind_bau <- bind_rows(
+  base_data %>%
+    mutate(scenario = "bau"),
+  industrial_emissions_proj %>%
+    filter(emissions_year >= 2026,
+           scenario == "bau")
+)
+
+# saveRDS(ind_bau,
+#   "_meta/data-raw/projections/ind_bau.rds")
 
 #  diverging scenarios (2026+)
 diverging_data <- industrial_emissions_proj %>%

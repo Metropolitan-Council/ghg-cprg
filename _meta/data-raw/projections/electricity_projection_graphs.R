@@ -16,6 +16,11 @@ electricity <- left_join(residential_elec, commercial_elec) %>%
   mutate(value_emissions = electricity_emissions + value_emissions) %>% 
   select(-electricity_emissions)
 
+## save bau data
+
+# saveRDS(electricity,
+#   "_meta/data-raw/projections/electricity_bau.rds")
+
 base_data <- electricity %>%
   filter(inventory_year <= 2025, scenario == "bau") %>%  # Use any scenario since they're identical
   mutate(segment = "base")

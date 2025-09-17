@@ -152,6 +152,24 @@ nonres_emissions_pathways_natgas <- interpolate_emissions(bind_rows(
     filter(scenario == "ppp")
 ))
 
+## save bau data
+
+nonres_ng_bau <- bind_rows(
+  county_emissions %>%
+    filter(sector %in% c("Commercial",
+                         "Industrial"),
+           category %in% c("Building Fuel"),
+           emissions_year <= 2021) %>%  # Use any scenario since they're identical
+    mutate(scenario = "bau") %>% 
+    group_by(emissions_year, scenario) %>% 
+    summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>% 
+    ungroup(),
+  interpolate_emissions(nonres_emissions_bau)
+)
+
+# saveRDS(nonres_ng_bau,
+#   "_meta/data-raw/projections/nonres_ng_bau.rds")
+
 ### electricity emissions ####
 
 

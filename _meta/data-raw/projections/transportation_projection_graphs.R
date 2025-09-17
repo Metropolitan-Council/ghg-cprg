@@ -127,6 +127,10 @@ tr_emissions_pathways <- interpolate_emissions(bind_rows(
     filter(scenario == "ppp")
 ))
 
+
+# saveRDS(tr_emissions_pathways %>% filter(scenario == "bau"),
+#   "_meta/data-raw/projections/tr_bau.rds")
+
 ### problems with state's PPP, shifting up
 
 # create a new alternative PPP scenario

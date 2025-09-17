@@ -64,6 +64,22 @@ agriculture_emissions_proj <- agriculture_emissions %>%
   ungroup() %>% 
   mutate(emissions_year = as.numeric(emissions_year))
 
+## save bau data
+
+ag_bau <- bind_rows(
+  county_emissions %>%
+    filter(sector %in% c("Agriculture"),
+           emissions_year <= 2021) %>%  # Use any scenario since they're identical
+    mutate(scenario = "bau") %>% 
+    group_by(emissions_year, scenario) %>% 
+    summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>% 
+    ungroup(),
+  agriculture_emissions_proj %>% 
+    filter(scenario == "bau")
+)
+
+# saveRDS(ag_bau,
+#   "_meta/data-raw/projections/ag_bau.rds")
 
 #  base data (2005-2025, identical across scenarios)
 base_data <- agriculture_emissions %>%

@@ -113,10 +113,22 @@ sw_emissions_pathways <- interpolate_emissions(bind_rows(
 ))
 
 
+## save bau data
 
+sw_bau <- bind_rows(
+  county_emissions %>%
+    filter(category %in% c("Solid waste"),
+           emissions_year <= 2021) %>%  # Use any scenario since they're identical
+    mutate(scenario = "bau") %>% 
+    group_by(emissions_year, scenario) %>% 
+    summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>% 
+    ungroup(),
+  sw_emissions_pathways %>% 
+    filter(scenario == "bau")
+)
 
-
-
+# saveRDS(sw_bau,
+#   "_meta/data-raw/projections/sw_bau.rds")
 
 ### graph it!!####
 
