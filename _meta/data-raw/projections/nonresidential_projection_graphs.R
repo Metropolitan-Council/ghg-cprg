@@ -380,7 +380,7 @@ ggplot2::ggsave(plot = emissions_gg,
 ### numbers for CCAP document
 # sector wide 2030/2050 scenario to BAU comparisons
 
-nonres_2030 <- nonres_emissions_proj %>% 
+nonres_2030 <- nonres_emissions_pathways %>% 
   filter(emissions_year == 2030) 
 
 bau2030 <- nonres_2030 %>% filter(scenario == "bau") %>% pull(value_emissions)
@@ -397,7 +397,7 @@ nz2030 / bau2030
 
 #2050
 
-nonres_2050 <- nonres_emissions_proj %>% 
+nonres_2050 <- nonres_emissions_pathways %>% 
   filter(emissions_year == 2050) 
 
 bau2050 <- nonres_2050 %>% filter(scenario == "bau") %>% pull(value_emissions)
