@@ -154,7 +154,7 @@ nonres_emissions_pathways_natgas <- interpolate_emissions(bind_rows(
 
 ## save bau data
 
-nonres_ng_bau <- bind_rows(
+nonres_ng_pathways <- bind_rows(
   county_emissions %>%
     filter(sector %in% c("Commercial",
                          "Industrial"),
@@ -164,11 +164,11 @@ nonres_ng_bau <- bind_rows(
     group_by(emissions_year, scenario) %>% 
     summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>% 
     ungroup(),
-  interpolate_emissions(nonres_emissions_bau)
+  nonres_emissions_pathways_natgas
 )
 
-# saveRDS(nonres_ng_bau,
-#   "_meta/data-raw/projections/nonres_ng_bau.rds")
+# saveRDS(nonres_ng_pathways,
+#   "_meta/data-raw/projections/nonres_ng_pathways.rds")
 
 ### electricity emissions ####
 

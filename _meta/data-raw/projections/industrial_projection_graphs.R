@@ -115,11 +115,11 @@ ind_bau <- bind_rows(
     mutate(scenario = "bau"),
   industrial_emissions_proj %>%
     filter(emissions_year >= 2026,
-           scenario == "bau")
+           scenario != "nz")
 )
 
 # saveRDS(ind_bau,
-#   "_meta/data-raw/projections/ind_bau.rds")
+#   "_meta/data-raw/projections/ind_pathways.rds")
 
 #  diverging scenarios (2026+)
 diverging_data <- industrial_emissions_proj %>%

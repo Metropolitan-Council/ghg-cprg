@@ -128,8 +128,7 @@ tr_emissions_pathways <- interpolate_emissions(bind_rows(
 ))
 
 
-# saveRDS(tr_emissions_pathways %>% filter(scenario == "bau"),
-#   "_meta/data-raw/projections/tr_bau.rds")
+
 
 ### problems with state's PPP, shifting up
 
@@ -147,6 +146,9 @@ tr_emissions_pathways <- tr_emissions_pathways %>%
   mutate(value_emissions = if_else(scenario == "ppp" & emissions_year >=2025,
                                    value_emissions + ppp_2025,
                                    value_emissions))
+
+saveRDS(tr_emissions_pathways %>% filter(scenario == "bau"),
+        "_meta/data-raw/projections/tr_pathways.rds")
 
 ### graph it!!####
 
