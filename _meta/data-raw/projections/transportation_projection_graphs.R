@@ -147,8 +147,8 @@ tr_emissions_pathways <- tr_emissions_pathways %>%
                                    value_emissions + ppp_2025,
                                    value_emissions))
 
-saveRDS(tr_emissions_pathways,
-        "_meta/data-raw/projections/tr_pathways.rds")
+# saveRDS(tr_emissions_pathways,
+#         "_meta/data-raw/projections/tr_pathways.rds")
 
 ### graph it!!####
 
