@@ -21,7 +21,8 @@ county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS")
 
 tr_bau <- readRDS("./_meta/data-raw/projections/tr_pathways.rds")%>% 
   filter(scenario == "bau")
-sw_bau <- readRDS("./_meta/data-raw/projections/sw_bau.rds")
+sw_bau <- readRDS("./_meta/data-raw/projections/waste_pathways.rds")%>% 
+  filter(scenario == "bau")
 res_bau <- readRDS("_meta/data/residential_pathways.RDS") %>% 
   filter(scenario == "bau")
 nonres_ng_bau <- readRDS("./_meta/data-raw/projections/nonres_ng_pathways.rds")%>% 
@@ -100,6 +101,13 @@ bau
 
 bau %>%
   filter(emissions_year %in% c(2005,2022, 2030, 2050)) %>%
+  group_by(emissions_year) %>%
+  summarize(total_emissions = sum(value_emissions)) %>%
+  mutate(proportion_of_2005 = total_emissions / total_emissions[emissions_year == 2005])
+
+# bau %>%
+  filter(emissions_year %in% c(2005,2022, 2030, 2050),
+         sector != "Natural Systems") %>%
   group_by(emissions_year) %>%
   summarize(total_emissions = sum(value_emissions)) %>%
   mutate(proportion_of_2005 = total_emissions / total_emissions[emissions_year == 2005])
