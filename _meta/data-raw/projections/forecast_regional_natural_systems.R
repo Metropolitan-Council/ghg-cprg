@@ -203,9 +203,9 @@ target_seq_for_netZero <- df_netZero %>% pull(net_zero_target)
 
 
 
-
-write_rds(df_netZero,
-          "_meta/data/regional_net_zero_target.RDS")
+# 
+# write_rds(df_netZero,
+#           "_meta/data/regional_net_zero_target.RDS")
 
 
 
@@ -314,6 +314,14 @@ plot_emissions <- function(bau, scenario, target) {
 
 
 
+# ggplot2::ggsave(plot = seq_gg,
+#                 filename = paste0(here::here(),"/imgs/ns_decarbonization_pathways.png"),  # add your file path here
+#                 width = 12,
+#                 height = 6,
+#                 units = "in",
+#                 dpi = 300,
+#                 bg = "white")
+
 
 
 
@@ -394,8 +402,8 @@ regional_ns_forecast <- rbind(
                   scenario, total_emissions)
 )
 
-
-write_rds(regional_ns_forecast,
-          "_meta/data/regional_ns_forecast.RDS")
+# 
+# write_rds(regional_ns_forecast,
+#           "_meta/data/regional_ns_forecast.RDS")
 
 
