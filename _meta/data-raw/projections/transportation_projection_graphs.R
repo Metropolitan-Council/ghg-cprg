@@ -3,6 +3,17 @@
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
 
+interpolate_emissions <- function(df) {
+  df %>%
+    mutate(emissions_year = as.numeric(emissions_year)) %>%
+    group_by(scenario) %>%
+    # complete sequence of years from min to max
+    complete(emissions_year = seq(min(emissions_year), max(emissions_year), by = 1)) %>%
+    # interpolate missing values linearly
+    mutate(value_emissions = approx(emissions_year, value_emissions, 
+                                    xout = emissions_year, rule = 1)$y) %>%
+    ungroup()
+}
 
 ## load state gcam modeling
 
@@ -32,13 +43,45 @@ tr_target <- county_emissions %>%
 
 # load in transportation bau for seven county
 
-tr_bau <- read_csv(paste0(wd,"/transportation_county_emissions_time_series.csv"))
+tr_bau <- read_csv(paste0(wd,"/transportation_county_emissions_time_series.csv")) %>% 
+  group_by(emissions_year) %>% 
+  summarize(value_emissions = sum(emissions_metric_tons_co2e)) %>% 
+  ungroup()
 
-tr_emissions <- county_emissions %>% 
-  filter( sector == "Transportation",
-          category != "Aviation")
+bau_percentage <- tr_bau %>% 
+  mutate(perc_2022 = value_emissions / value_emissions[emissions_year == 2022])
 
+tr_emissions_collar <- county_emissions %>% 
+  filter(sector == "Transportation",
+         category != "Aviation",
+         county_name %in% c("St. Croix",
+                            "Pierce",
+                            "Sherburne",
+                            "Chisago")) %>% 
+  
+  filter(emissions_year == 2022) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>% 
+  ungroup() %>% 
+  cross_join(bau_percentage) %>% 
+  mutate(value_emissions_collar = value_emissions.x * perc_2022) %>% 
+  filter(emissions_year >= 2023) %>% 
+  select(emissions_year,value_emissions_collar)
 
+# join seven county with 4 collar counties
+tr_emissions_bau <- bind_rows(
+  county_emissions %>% 
+    filter(sector == "Transportation",
+           category != "Aviation") %>% 
+    group_by(emissions_year) %>% 
+    summarize(value_emissions = sum(value_emissions)) %>% 
+    mutate(scenario = "bau"),
+  tr_bau %>% 
+  left_join(tr_emissions_collar) %>% 
+  mutate(value_emissions = value_emissions + value_emissions_collar,
+         scenario = "bau") %>% 
+  filter(emissions_year >= 2023) %>% 
+  select(emissions_year, value_emissions, scenario)
+)
 
 tr_scenarios <- gcam %>% 
   filter(sector == "Transportation",
@@ -54,48 +97,66 @@ tr_scenarios <- gcam %>%
   ungroup() %>% 
   mutate(value_2020 = value_emissions /  value_emissions[emissions_year == 2020])
 
-agriculture_emissions_proj <- agriculture_emissions %>% 
-  filter(emissions_year == 2022) %>% 
-  mutate(category = case_when(
-    grepl("manure", ignore.case = TRUE, source) ~ "Manure management",
-    grepl("Enteric fermentation", ignore.case = TRUE, source) ~ "Enteric fermentation",
-    TRUE ~ "Cropland soil"
-  )) %>% 
-  group_by(category) %>% 
-  summarize(baseline_emissions = sum(value_emissions)) %>% 
+
+tr_emissions_proj <- tr_emissions_bau %>% 
+  filter(emissions_year == 2020) %>% 
+  mutate(baseline_emissions = value_emissions,
+         sector = "Transportation") %>% 
+  select(-scenario) %>% 
   left_join(
-    agriculture_scenarios %>% 
-      filter(emissions_year >= 2022),
-    by = c("category" = "subsector_mc")
+    tr_scenarios %>% 
+      filter(emissions_year >= 2025),
+    by = c("sector")
   ) %>% 
-  mutate(value_emissions = baseline_emissions * proportion_of_2020,
+  mutate(value_emissions = baseline_emissions * value_2020,
          scenario = case_when(
-           scenario == "Current policies without federal support" ~ "bau",
-           scenario == "CAF Pathway without federal support" ~ "ppp"
-         )) %>% 
-  filter(!is.na(value_emissions)) %>% 
+           scenario == "CP after Fed RB" ~ "bau",
+           scenario == "PPP after Fed RB" ~ "ppp"
+         ),
+         emissions_year = as.numeric(emissions_year.y)) %>% 
+  filter(!is.na(scenario)) %>% 
   group_by(emissions_year,
            scenario) %>% 
   summarize(value_emissions = sum(value_emissions)) %>% 
-  ungroup() %>% 
-  mutate(emissions_year = as.numeric(emissions_year))
-
-
-#  base data (2005-2025, identical across scenarios)
-base_data <- agriculture_emissions %>%
-  filter(emissions_year <= 2022) %>%  # Use any scenario since they're identical
-  mutate(segment = "base", scenario = "bau") %>% 
-  #filter(!category %in% c("Electricity", "Building Fuel")) %>% 
-  group_by(emissions_year) %>% 
-  summarize(value_emissions = sum(value_emissions)) %>% 
   ungroup()
 
+
+tr_emissions_pathways <- interpolate_emissions(bind_rows(
+  tr_emissions_bau,
+  tr_emissions_proj %>% 
+    filter(scenario == "ppp")
+))
+
+### problems with state's PPP, shifting up
+
+# create a new alternative PPP scenario
+ppp_2025 <- 
+  tr_emissions_pathways %>%
+  filter(scenario == "bau", emissions_year == "2025") %>%
+  pull(value_emissions) -
+  tr_emissions_pathways %>%
+  filter(scenario == "ppp", emissions_year == "2025") %>%
+  pull(value_emissions)
+
+# create new scenario
+tr_emissions_pathways <- tr_emissions_pathways %>% 
+  mutate(value_emissions = if_else(scenario == "ppp" & emissions_year >=2025,
+                                   value_emissions + ppp_2025,
+                                   value_emissions))
+
+### graph it!!####
+
+#  base data (2005-2025, identical across scenarios)
+base_data <- tr_emissions_pathways %>% 
+  filter(emissions_year <= 2025)
+
+
 #  diverging scenarios (2026+)
-diverging_data <- agriculture_emissions_proj %>%
-  filter(emissions_year >= 2022) %>%
+diverging_data <- tr_emissions_pathways %>%
+  filter(emissions_year >= 2025) %>%
   mutate(segment = "diverging")
 
-#net_zero_data <- diverging_data %>% filter(scenario == "nz")
+# net_zero_data <- diverging_data %>% filter(scenario == "nz")
 
 bau_data <- diverging_data %>% filter(scenario == "bau")
 
@@ -103,7 +164,7 @@ bau_data <- diverging_data %>% filter(scenario == "bau")
 ppp_data <- diverging_data %>%
   filter(scenario == "ppp") %>%
   select(emissions_year, value_emissions) %>%
-  rename(ppp_emissions = value_emissions) 
+  rename(ppp_emissions = value_emissions)
 
 # net_zero_for_ppp <- diverging_data %>%
 #   filter(scenario == "nz") %>%
@@ -120,7 +181,7 @@ emissions_gg <- ggplot() +
               aes(x = emissions_year, ymin = 0, ymax = value_emissions),
               fill = "gray80", alpha = 0.7) +
   
-  # # Net zero fill (#36454F)
+  # Net zero fill (#36454F)
   # geom_ribbon(data = net_zero_data,
   #             aes(x = emissions_year, ymin = 0, ymax = value_emissions),
   #             fill = "#36454F", alpha = 0.3) +
@@ -128,7 +189,7 @@ emissions_gg <- ggplot() +
   # PPP fill (from net_zero to ppp)
   geom_ribbon(data = ppp_data,
               aes(x = emissions_year, ymin = 0, ymax = ppp_emissions),
-              fill = "#8fb910", alpha = 0.5) +
+              fill = "#191970", alpha = 0.5) +
   
   # Base line (2005-2025)
   geom_line(data = base_data,
@@ -141,11 +202,11 @@ emissions_gg <- ggplot() +
             linetype = "dashed", size = 1) +
   
   geom_line(data = diverging_data %>% filter(scenario == "ppp"),
-            aes(x = emissions_year, y = value_emissions, color = "Accelerated policy pathways"),
+            aes(x = emissions_year, y = value_emissions, color = "Potential policy pathways"),
             size = 1) +
   
   geom_point(
-    data = data.frame(emissions_year = 2050, value_emissions = ag_target),
+    data = data.frame(emissions_year = 2050, value_emissions = tr_target),
     aes(x = emissions_year, y = value_emissions),
     shape = "*",    # asterisk
     size = 12,     # make larger or smaller
@@ -153,7 +214,7 @@ emissions_gg <- ggplot() +
     color = "black"
   ) +
   
-  geom_segment(aes(x = 2022, xend = 2022, y = 0, yend = base_data %>% filter(emissions_year == 2022) %>% pull(value_emissions)),
+  geom_segment(aes(x = 2025, xend = 2025, y = 0, yend = base_data %>% filter(emissions_year == 2025) %>% pull(value_emissions)),
                color = "black", linetype = "solid", size = 0.8) +
   # annotate("text", x = 2025, y = max(your_data$value_emissions) * 0.9,
   #          label = "Historical | Projected", angle = 90, hjust = 1, size = 3.5) +
@@ -163,9 +224,9 @@ emissions_gg <- ggplot() +
     values = c(
       "Business as usual" = "black",
       # "Net zero" = "#36454F",
-      "Accelerated policy pathways" ="#8fb910"
+      "Potential policy pathways" = "#191970"
     ),
-    breaks = c("Business as usual", "Accelerated policy pathways")  # Force legend order
+    breaks = c("Business as usual", "Potential policy pathways")  # Force legend order
   ) +
   
   # Manual legend guide to show line types
@@ -174,14 +235,14 @@ emissions_gg <- ggplot() +
       title = "Scenarios",
       override.aes = list(
         linetype = c("dashed", "solid"),
-        color = c("black", "#8fb910")
+        color = c("black", "#191970")
       )
     )
   ) +
   labs(
     x = "Year",
     y = "",
-    title = "Agricultural Emissions \n(Millions of CO2-equivalency)"
+    title = "On-road Transportation Emissions \n(Millions of CO2-equivalency)"
   ) +
   scale_y_continuous(labels = label_number(scale = 1e-6)) +  # convert to millions
   theme_minimal() +
@@ -198,7 +259,7 @@ emissions_gg <- ggplot() +
 print(emissions_gg)
 
 ggplot2::ggsave(plot = emissions_gg,
-                filename = paste0(wd,"/agriculture_decarbonization_pathways.png"),  # add your file path here
+                filename = paste0(wd,"/transportation_decarbonization_pathways.png"),  # add your file path here
                 width = 12,
                 height = 6,
                 units = "in",
@@ -208,31 +269,32 @@ ggplot2::ggsave(plot = emissions_gg,
 ### numbers for CCAP document
 # sector wide 2030/2050 scenario to BAU comparisons
 
-ag_2030 <- agriculture_emissions_proj %>% 
+nonres_2030 <- nonres_emissions_proj %>% 
   filter(emissions_year == 2030) 
 
-bau2030 <- ag_2030 %>% filter(scenario == "bau") %>% pull(value_emissions)
+bau2030 <- nonres_2030 %>% filter(scenario == "bau") %>% pull(value_emissions)
 
-ppp2030 <- ag_2030 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
+ppp2030 <- nonres_2030 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
   bau2030
 
-# nz2030 <- ind_2030 %>% filter(scenario == "nz") %>% pull(value_emissions) -
-bau2030
+nz2030 <- nonres_2030 %>% filter(scenario == "nz") %>% pull(value_emissions) -
+  bau2030
 
+ppp2030
 ppp2030 / bau2030
-# nz2030 / bau2030
+nz2030 / bau2030
 
 #2050
 
-ag_2050 <- agriculture_emissions_proj %>% 
+nonres_2050 <- nonres_emissions_proj %>% 
   filter(emissions_year == 2050) 
 
-bau2050 <- ag_2050 %>% filter(scenario == "bau") %>% pull(value_emissions)
+bau2050 <- nonres_2050 %>% filter(scenario == "bau") %>% pull(value_emissions)
 
-ppp2050 <- ag_2050 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
+ppp2050 <- nonres_2050 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
   bau2050
 
-nz2050 <- ag_target - bau2050
+nz2050 <- nonres_target - bau2050
 
 ppp2050
 nz2050
