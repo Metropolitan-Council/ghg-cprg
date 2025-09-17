@@ -25,17 +25,17 @@ interpolate_emissions <- function(df) {
 gcam <- read_rds("_meta/data/gcam/mpca_subsector_gcam.RDS")
 unique(gcam$subsector_mc)
 
-comm_scenarios <- gcam %>% 
+nonres_scenarios <- gcam %>% 
   filter(subsector_mc == "Commercial natural gas",
          scenario %in% c("PPP after Fed RB",
                          "CP after Fed RB")
   )
 
-elec_scenarios <- gcam %>% 
-  filter(sector == "Electricity",
-         scenario == "PPP after Fed RB")
+# elec_scenarios <- gcam %>% 
+#   filter(sector == "Electricity",
+#          scenario == "PPP after Fed RB")
 
-comm_targets <- comm_scenarios %>% 
+nonres_targets <- nonres_scenarios %>% 
   filter(emissions_year %in% c(2030, 2050),
 )
 
@@ -43,18 +43,16 @@ comm_targets <- comm_scenarios %>%
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
-## to be updated once we have better sequestration growth potential
-seq_target <- county_emissions %>% 
-  filter(emissions_year == 2022 & category == "Sequestration") %>% 
-  pull(value_emissions) %>% sum()
+seq_target <- readRDS(file.path(here::here(), "_meta/data/regional_net_zero_target.RDS")) %>% 
+  pull(net_zero_target)
 
 
 nonres_emissions <- county_emissions %>% 
   filter((sector == "Commercial" & category != "Electricity") |
-         (sector == "nonres" & category == "Building Fuel")
+         (sector == "Industrial" & category == "Building Fuel")
   )
 
-### nonres target 
+### nonres target - based on natural gas emissions, not electricity
 nonres_target <- (nonres_emissions %>% 
   filter(emissions_year == 2022) %>%
   pull(value_emissions) %>% sum() /  #residential natural gas emissions
@@ -94,7 +92,7 @@ nonres_emissions_bau <- total_jobs %>%
 
 nonres_scenarios <- gcam %>%
   filter(subsector_mc %in% c("Commercial natural gas",
-                             "nonres natural gas",
+                             "Industrial natural gas",
                              "Commercial fuel combustion"),
          scenario %in% c("PPP after Fed RB",
                          "CP after Fed RB")
@@ -125,21 +123,97 @@ nonres_emissions_proj <- nonres_emissions %>%
   summarize(value_emissions = sum(value_emissions)) %>% 
   ungroup()
 
-nonres_emissions_pathways <- interpolate_emissions(bind_rows(
+nonres_emissions_proj <- nonres_emissions %>% 
+  filter(emissions_year == 2020) %>% 
+  group_by(sector, category) %>% 
+  summarize(baseline_emissions = sum(value_emissions, na.rm = "TRUE")) %>% 
+  left_join(
+    nonres_scenarios %>% 
+      filter(emissions_year >= 2025),
+    by = c("sector",
+           "category" = "subsector_mc")
+  ) %>% 
+  mutate(value_emissions = baseline_emissions * proportion_of_2020,
+         scenario = case_when(
+           scenario == "CP after Fed RB" ~ "bau",
+           scenario == "PPP after Fed RB" ~ "ppp"
+         ),
+         emissions_year = as.numeric(emissions_year)) %>% 
+  filter(!is.na(value_emissions)) %>% 
+  group_by(emissions_year,
+           scenario) %>% 
+  summarize(value_emissions = sum(value_emissions)) %>% 
+  ungroup()
+
+
+nonres_emissions_pathways_natgas <- interpolate_emissions(bind_rows(
   nonres_emissions_bau,
   nonres_emissions_proj %>% 
     filter(scenario == "ppp")
 ))
 
+### electricity emissions ####
+
+
+nonres_elec_emissions <- county_emissions %>% 
+  filter((sector == "Commercial" & category == "Electricity") |
+           (sector == "Industrial" & category == "Electricity")
+  ) %>% 
+  left_join(ghg.ccap::grid_emissions,
+            by = c("emissions_year" = "inventory_year")) %>% 
+  mutate(mwh = value_emissions / mt_co2e_per_mwh)
+
+
+
+# base this on 2020 to match to state elec decarb values
+mwh_per_job <- total_jobs %>% 
+  filter(inventory_year == 2022) %>% 
+  left_join(nonres_elec_emissions %>% 
+              filter(emissions_year == 2022) %>% 
+              group_by(county_name) %>% 
+              summarise(mwh = sum(mwh)) %>% 
+              ungroup(),
+            by = "county_name") %>% 
+  mutate(mwh_per_job = mwh / value)
+
+nonres_elec_emissions_bau <- total_jobs %>% 
+  filter(inventory_year >= 2022) %>% 
+  left_join(mwh_per_job %>% 
+              select(county_name, mwh_per_job),
+            by = "county_name") %>%
+  left_join(ghg.ccap::grid_emissions,
+            by = "inventory_year") %>% 
+  mutate(value_emissions = value * mwh_per_job * mt_co2e_per_mwh,
+         scenario = "bau") %>% 
+  rename(emissions_year = inventory_year) %>% 
+  group_by(emissions_year, scenario) %>% 
+  summarize(value_emissions = sum(value_emissions))
+
+nonres_emissions_pathways <- left_join(
+  nonres_emissions_pathways_natgas,
+  interpolate_emissions(nonres_elec_emissions_bau) %>% 
+    select(emissions_year, elec_emissions = value_emissions),
+  by = "emissions_year"
+) %>% 
+  mutate(value_emissions = value_emissions + elec_emissions) %>% 
+  select(-elec_emissions)
+
+
+### graph it!!####
+
 #  base data (2005-2025, identical across scenarios)
-base_data <- nonres_emissions %>%
-  filter(emissions_year <= 2022) %>%  # Use any scenario since they're identical
+base_data <- county_emissions %>%
+  filter(sector %in% c("Commercial",
+                       "Industrial"),
+         category %in% c("Electricity",
+                         "Building Fuel"),
+    emissions_year <= 2022) %>%  # Use any scenario since they're identical
   mutate(segment = "base", scenario = "bau") %>% 
   group_by(emissions_year) %>% 
   summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>% 
   ungroup()
 
-bau_2025 <- nonres_emissions_proj %>%
+bau_2025 <- nonres_emissions_pathways %>%
   filter(scenario == "bau", emissions_year == 2025) %>%
   select(emissions_year, value_emissions)
 
@@ -156,7 +230,7 @@ base_data <- extended %>%
 
 #  diverging scenarios (2026+)
 diverging_data <- nonres_emissions_pathways %>%
-  filter(emissions_year >= 2025) %>%
+  filter(emissions_year >= 2022) %>%
   mutate(segment = "diverging")
 
 # net_zero_data <- diverging_data %>% filter(scenario == "nz")
@@ -283,6 +357,7 @@ ppp2030 <- nonres_2030 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
 nz2030 <- nonres_2030 %>% filter(scenario == "nz") %>% pull(value_emissions) -
   bau2030
 
+ppp2030
 ppp2030 / bau2030
 nz2030 / bau2030
 
@@ -296,10 +371,9 @@ bau2050 <- nonres_2050 %>% filter(scenario == "bau") %>% pull(value_emissions)
 ppp2050 <- nonres_2050 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
   bau2050
 
-# nz2050 <- nonres_2050 %>% filter(scenario == "nz") %>% pull(value_emissions) -
-#   bau2050
+nz2050 <- nonres_target - bau2050
 
 ppp2050
-nonres_target
+nz2050
 ppp2050 / bau2050
-nonres_target / bau2050
+nz2050 / bau2050

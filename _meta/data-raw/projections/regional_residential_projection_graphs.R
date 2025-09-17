@@ -8,10 +8,9 @@ residential_pathways <- readRDS("_meta/data/residential_pathways.RDS")
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
-## to be updated once we have better sequestration growth potential
-seq_target <- county_emissions %>% 
-  filter(emissions_year == 2022 & category == "Sequestration") %>% 
-  pull(value_emissions) %>% sum()
+# pull in net zero sequestration estimate
+seq_target <- readRDS(file.path(here::here(), "_meta/data/regional_net_zero_target.RDS")) %>% 
+  pull(net_zero_target)
 
 ### residential target will be linked to proportion natural gas in 2022
 ### minus total electricity emissions (as they go to zero)
@@ -149,3 +148,41 @@ ggplot2::ggsave(plot = emissions_gg,
                 units = "in",
                 dpi = 300,
                 bg = "white")
+
+residential_pathways_2030 <- residential_pathways %>% 
+  filter(inventory_year == 2030) %>% 
+  mutate(total_emissions = electricity_emissions + natural_gas_emissions)
+
+bau2030 <- residential_pathways_2030 %>% filter(scenario == "bau") %>% pull(total_emissions)
+
+ppp2030 <- residential_pathways_2030 %>% filter(scenario == "ppp") %>% pull(total_emissions) -
+  bau2030
+
+# nz2030 <- residential_pathways_2030 %>% filter(scenario == "nz") %>% pull(total_emissions) -
+#   bau2030
+
+ppp2030
+ppp2030 / bau2030
+# nz2030 / bau2030
+
+#2050
+
+residential_pathways_2050 <- residential_pathways %>% 
+  filter(inventory_year == 2050) %>% 
+  mutate(total_emissions = electricity_emissions + natural_gas_emissions)
+
+bau2050 <- residential_pathways_2050 %>% filter(scenario == "bau") %>% pull(total_emissions)
+
+ppp2050 <- residential_pathways_2050 %>% filter(scenario == "ppp") %>% pull(total_emissions) -
+  bau2050
+
+nz2050 <- res_target - bau2050
+
+# nz2050 <- residential_pathways_2050 %>% filter(scenario == "nz") %>% pull(total_emissions) -
+#   bau2050
+
+ppp2050
+nz2050
+ppp2050 / bau2050
+nz2050 / bau2050
+

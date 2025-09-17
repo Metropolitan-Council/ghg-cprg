@@ -15,9 +15,8 @@ unique(gcam$subsector_mc)
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 ## to be updated once we have better sequestration growth potential
-seq_target <- county_emissions %>% 
-  filter(emissions_year == 2022 & category == "Sequestration") %>% 
-  pull(value_emissions) %>% sum()
+seq_target <- readRDS(file.path(here::here(), "_meta/data/regional_net_zero_target.RDS")) %>% 
+  pull(net_zero_target)
 
 ### agricultural target
 ag_target <- county_emissions %>% 
@@ -217,10 +216,9 @@ bau2050 <- ag_2050 %>% filter(scenario == "bau") %>% pull(value_emissions)
 ppp2050 <- ag_2050 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
   bau2050
 
-# nz2050 <- ind_2050 %>% filter(scenario == "nz") %>% pull(value_emissions) -
-#   bau2050
+nz2050 <- ag_target - bau2050
 
 ppp2050
-ag_target
+nz2050
 ppp2050 / bau2050
-ag_target / bau2050
+nz2050 / bau2050
