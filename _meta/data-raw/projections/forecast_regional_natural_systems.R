@@ -314,13 +314,7 @@ plot_emissions <- function(bau, scenario, target) {
 
 
 
-# ggplot2::ggsave(plot = seq_gg,
-#                 filename = paste0(here::here(),"/imgs/ns_decarbonization_pathways.png"),  # add your file path here
-#                 width = 12,
-#                 height = 6,
-#                 units = "in",
-#                 dpi = 300,
-#                 bg = "white")
+
 
 
 
@@ -346,8 +340,13 @@ scen2_gg <- plot_emissions(
 print(scen2_gg)
 
 
-
-
+ggplot2::ggsave(plot = scen1_gg,
+                filename = paste0(here::here(),"/imgs/ns_decarbonization_pathways.png"),  # add your file path here
+                width = 12,
+                height = 6,
+                units = "in",
+                dpi = 300,
+                bg = "white")
 
 
 
@@ -406,4 +405,35 @@ regional_ns_forecast <- rbind(
 # write_rds(regional_ns_forecast,
 #           "_meta/data/regional_ns_forecast.RDS")
 
+### numbers for CCAP document
+# sector wide 2030/2050 scenario to BAU comparisons
 
+ns_2030 <- regional_ns_forecast %>% 
+  filter(inventory_year == 2030) 
+
+bau2030 <- ns_2030 %>% filter(scenario == "bau") %>% pull(total_emissions)
+
+ppp2030 <- ns_2030 %>% filter(scenario == "ppp") %>% pull(total_emissions) -
+  bau2030
+
+
+ppp2030
+ppp2030 / bau2030
+
+#2050
+
+ns_2050 <- regional_ns_forecast %>% 
+  filter(inventory_year == 2050) 
+
+bau2050 <- ns_2050 %>% filter(scenario == "bau") %>% pull(total_emissions)
+
+ppp2050 <- ns_2050 %>% filter(scenario == "ppp") %>% pull(total_emissions) -
+  bau2050
+
+nz2050 <- ns_2050 %>% filter(scenario == "nz") %>% pull(total_emissions) -
+  bau2050
+
+ppp2050
+nz2050
+ppp2050 / bau2050
+nz2050 / bau2050
