@@ -19,14 +19,18 @@ interpolate_emissions <- function(df) {
 
 county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") 
 
-tr_bau <- readRDS("./_meta/data-raw/projections/tr_bau.rds")
+tr_bau <- readRDS("./_meta/data-raw/projections/tr_pathways.rds")%>% 
+  filter(scenario == "bau")
 sw_bau <- readRDS("./_meta/data-raw/projections/sw_bau.rds")
 res_bau <- readRDS("_meta/data/residential_pathways.RDS") %>% 
   filter(scenario == "bau")
-nonres_ng_bau <- readRDS("./_meta/data-raw/projections/nonres_ng_bau.rds")
+nonres_ng_bau <- readRDS("./_meta/data-raw/projections/nonres_ng_pathways.rds")%>% 
+  filter(scenario == "bau")
 nonres_elec_bau <- readRDS("./_meta/data-raw/projections/nonres_elec_bau.rds")
-ind_bau <- readRDS("./_meta/data-raw/projections/ind_bau.rds")
-ag_bau <- readRDS("./_meta/data-raw/projections/ag_bau.rds")
+ind_bau <- readRDS("./_meta/data-raw/projections/ind_bau.rds")%>% 
+  filter(scenario == "bau")
+ag_bau <- readRDS("./_meta/data-raw/projections/ag_bau.rds")%>% 
+  filter(scenario == "bau")
 ns_bau <- readRDS("_meta/data/regional_ns_forecast.RDS") %>% 
   filter(scenario == "bau")
 
@@ -60,17 +64,9 @@ aviation_bau <- county_emissions %>%
 aviation_bau_interpolated <- interpolate_emissions(aviation_bau)
 
 
-
-bau <- bind_rows(wd_ns_bau %>% 
-                   group_by(inventory_year, sector) %>% 
-                   summarise(value_emissions = sum(value_emissions)) %>% 
-                   ungroup() %>% 
-                   mutate(sector = str_to_title(sector)) %>% 
-                   rename(emissions_year = inventory_year),
+bau <- bind_rows(sw_bau %>% 
+                   mutate(sector = "Waste"),
                  tr_bau %>% 
-                   group_by(emissions_year) %>% 
-                   summarise(value_emissions = sum(emissions_metric_tons_co2e)) %>% 
-                   ungroup() %>% 
                    mutate(sector = "Transportation"),
                  aviation_bau_interpolated %>% 
                    select(-category),
@@ -80,24 +76,20 @@ bau <- bind_rows(wd_ns_bau %>%
                    mutate(sector = "Electricity"),
                  res_bau %>% 
                    select(emissions_year = inventory_year, 
-                          value_emissions = natgas_emissions) %>% 
+                          value_emissions = natural_gas_emissions) %>% 
                    mutate(sector = "Building Fuel"),
-                 comm_bau_out %>% 
-                   select(emissions_year = inventory_year, 
-                          value_emissions = electricity_emissions) %>% 
+                 nonres_elec_bau %>% 
                    mutate(sector = "Electricity"),
-                 comm_bau_out %>% 
-                   select(emissions_year = inventory_year, 
-                          value_emissions = natgas_emissions) %>% 
+                 nonres_ng_bau %>% 
                    mutate(sector = "Building Fuel"),
-                 ind_bau_interpolated %>% 
-                   group_by(sector, emissions_year) %>% 
-                   summarize(value_emissions = sum(value_emissions)) %>% 
-                   ungroup()%>% 
+                 ind_bau %>% 
                    mutate(sector = "Industrial Processes"),
-                 ag_bau %>% group_by(sector, emissions_year) %>% 
-                   summarize(value_emissions = sum(value_emissions)) %>% 
-                   ungroup()
+                 ag_bau %>% 
+                   mutate(sector = "Agriculture"),
+                 ns_bau %>% 
+                   select(emissions_year = inventory_year,
+                          sector,
+                          value_emissions = total_emissions)
 ) %>% 
   filter(emissions_year >= 2005) %>% 
   group_by(emissions_year, sector) %>% 
@@ -170,7 +162,7 @@ bau_projection_plot <- ggplot() +
 bau_projection_plot
 
 ggsave(plot = bau_projection_plot,
-       filename = paste0(wd,"/seven_county_bau_projections.png"),  # add your file path here
+       filename = paste0(wd,"/eleven_county_bau_projections.png"),  # add your file path here
        width = 12,          
        height = 6,          
        units = "in",
