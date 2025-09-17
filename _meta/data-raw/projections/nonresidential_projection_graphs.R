@@ -189,6 +189,22 @@ nonres_elec_emissions_bau <- total_jobs %>%
   group_by(emissions_year, scenario) %>% 
   summarize(value_emissions = sum(value_emissions))
 
+nonres_elec_bau <- bind_rows(
+  county_emissions %>%
+    filter(sector %in% c("Commercial",
+                         "Industrial"),
+           category %in% c("Electricity"),
+           emissions_year <= 2021) %>%  # Use any scenario since they're identical
+    mutate(scenario = "bau") %>% 
+    group_by(emissions_year, scenario) %>% 
+    summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>% 
+    ungroup(),
+  interpolate_emissions(nonres_elec_emissions_bau)
+)
+
+saveRDS(nonres_elec_bau,
+  "_meta/data-raw/projections/nonres_elec_bau.rds")
+
 nonres_emissions_pathways <- left_join(
   nonres_emissions_pathways_natgas,
   interpolate_emissions(nonres_elec_emissions_bau) %>% 

@@ -158,7 +158,7 @@ emissions_gg <- ggplot() +
             linetype = "dashed", size = 1) +
   
   geom_line(data = diverging_data %>% filter(scenario == "ppp"),
-            aes(x = emissions_year, y = value_emissions, color = "Accelerated policy pathways"),
+            aes(x = emissions_year, y = value_emissions, color = "Potential policy pathways"),
             size = 1) +
   
   geom_point(
@@ -180,9 +180,9 @@ emissions_gg <- ggplot() +
     values = c(
       "Business as usual" = "black",
       # "Net zero" = "#36454F",
-      "Accelerated policy pathways" = "#708090"
+      "Potential policy pathways" = "#708090"
     ),
-    breaks = c("Business as usual", "Accelerated policy pathways", "Net zero")  # Force legend order
+    breaks = c("Business as usual", "Potential policy pathways", "Net zero")  # Force legend order
   ) +
   
   # Manual legend guide to show line types
@@ -236,6 +236,7 @@ ppp2030 <- ind_2030 %>% filter(scenario == "ppp") %>% pull(value_emissions) -
 nz2030 <- ind_2030 %>% filter(scenario == "nz") %>% pull(value_emissions) -
   bau2030
 
+ppp2030
 ppp2030 / bau2030
 nz2030 / bau2030
 

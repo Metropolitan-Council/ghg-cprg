@@ -85,7 +85,7 @@ emissions_gg <- ggplot() +
             linetype = "dashed", size = 1) +
   
   geom_line(data = diverging_data %>% filter(scenario == "ppp"),
-            aes(x = inventory_year, y = total_emissions, color = "Accelerated policy pathways"),
+            aes(x = inventory_year, y = total_emissions, color = "Potential policy pathways"),
             size = 1) +
   
   geom_point(
@@ -107,9 +107,9 @@ emissions_gg <- ggplot() +
     values = c(
       "Business as usual" = "black",
       # "Net zero" = "maroon",
-      "Accelerated policy pathways" = "#9467bd"
+      "Potential policy pathways" = "#9467bd"
     ),
-    breaks = c("Business as usual", "Accelerated policy pathways", "Net zero")  # Force legend order
+    breaks = c("Business as usual", "Potential policy pathways", "Net zero")  # Force legend order
   ) +
   
   # Manual legend guide to show line types
