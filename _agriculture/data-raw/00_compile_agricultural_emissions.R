@@ -11,12 +11,12 @@
 # source("_agriculture/data-raw/01_compile_typical_animal_mass.R")
 # source("_agriculture/data-raw/01_compile_usda_cattle_survey.R")
 # source("_agriculture/data-raw/01_compile_usda_census_data.R")
-#
+# 
 # #02
 # source("_agriculture/data-raw/02_compile_county_crop_production.R")
 # source("_agriculture/data-raw/02_compile_nitrogen_excretion.R")
 # source("_agriculture/data-raw/02_compile_volatile_solids.R")
-#
+# 
 # #03
 # source("_agriculture/data-raw/03_compile_enteric_fermentation_emissions.R")
 # source("_agriculture/data-raw/03_compile_fertilizer_emissions.R")
@@ -60,6 +60,15 @@ waldo::compare(
     arrange(inventory_year)
 )
 # county has 2023 soil residue emissions but not ctu (expected)
+
+
+## after rerunning ctu livestock designations, no apparent difference. Could mean we did a good job on the first split.
+waldo::compare(
+  read_rds("./_agriculture/data/agricultural_emissions_ctu.rds")%>%
+    filter(inventory_year == 2022, category == "Livestock"),
+  ctu_agricultural_emissions %>%
+    filter(inventory_year == 2022, category == "Livestock")
+)
 
 agricultural_emissions_meta <-
   tibble::tribble(
