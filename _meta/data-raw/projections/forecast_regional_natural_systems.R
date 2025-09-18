@@ -1,4 +1,4 @@
-rm(list=ls())
+rm(list = ls())
 
 
 
@@ -10,7 +10,7 @@ source("R/_load_pkgs.R")
 # Load data
 natural_systems_data <- c()
 
-natural_systems_data$land_cover_carbon <- readr::read_rds(paste0(here::here(), "/_nature/data/","land_cover_carbon.rds"))
+natural_systems_data$land_cover_carbon <- readr::read_rds(paste0(here::here(), "/_nature/data/", "land_cover_carbon.rds"))
 
 
 lc_county <- readr::read_rds(paste0(here::here(), "/_nature/data/", "nlcd_county_landcover_allyrs.rds")) %>%
@@ -80,24 +80,30 @@ county_projections_null <- county_projections_2022 %>%
 # Regional inventory by summing county inventories
 natural_systems_data$regional$inventory <- natural_systems_data$county$inventory %>%
   group_by(inventory_year) %>%
-  summarize(Bare = sum(Bare),
-            Developed_Low = sum(Developed_Low),
-            Developed_Med = sum(Developed_Med),
-            Developed_High = sum(Developed_High),
-            Urban_Grassland = sum(Urban_Grassland),
-            Urban_Tree = sum(Urban_Tree),
-            Cropland = sum(Cropland),
-            Grassland = sum(Grassland),
-            Tree = sum(Tree),
-            Water = sum(Water),
-            Wetland = sum(Wetland),
-            TOTAL = sum(TOTAL)) %>%
-  mutate(geog_name = "Regional",
-         ctu_class = "REGION",
-         geog_id = "00000000") %>%
-  dplyr::select(geog_name, ctu_class, geog_id, inventory_year,
-                Bare, Cropland, Developed_High, Developed_Low, Developed_Med,
-                Grassland, Tree, Urban_Grassland, Urban_Tree, Water, Wetland, TOTAL) 
+  summarize(
+    Bare = sum(Bare),
+    Developed_Low = sum(Developed_Low),
+    Developed_Med = sum(Developed_Med),
+    Developed_High = sum(Developed_High),
+    Urban_Grassland = sum(Urban_Grassland),
+    Urban_Tree = sum(Urban_Tree),
+    Cropland = sum(Cropland),
+    Grassland = sum(Grassland),
+    Tree = sum(Tree),
+    Water = sum(Water),
+    Wetland = sum(Wetland),
+    TOTAL = sum(TOTAL)
+  ) %>%
+  mutate(
+    geog_name = "Regional",
+    ctu_class = "REGION",
+    geog_id = "00000000"
+  ) %>%
+  dplyr::select(
+    geog_name, ctu_class, geog_id, inventory_year,
+    Bare, Cropland, Developed_High, Developed_Low, Developed_Med,
+    Grassland, Tree, Urban_Grassland, Urban_Tree, Water, Wetland, TOTAL
+  )
 
 
 regional_projections_2022 <- natural_systems_data$regional$inventory %>%
@@ -131,7 +137,6 @@ mod_bau <- ghg.ccap::run_scenario_natural_systems(
   tb_future = natural_systems_data$regional$null_projections,
   tb_seq = natural_systems_data$land_cover_carbon,
   .enviro_factors = ghg.ccap::enviro_factors,
-  
 )
 
 # Scenario 1: Reforest all barren land, 5% of cropland, and 10% of grassland
@@ -146,7 +151,7 @@ mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
   tb_future = natural_systems_data$regional$null_projections,
   tb_seq = natural_systems_data$land_cover_carbon,
   .enviro_factors = ghg.ccap::enviro_factors,
-  
+
   # user inputs here!
   .urban_tree_start = 2025,
   .urban_tree_time = 25,
@@ -157,7 +162,6 @@ mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
   .grassland_area_perc = scen1_grassland_2050,
   .cropland_area_perc = scen1_cropland_2050,
   .bare_area_perc = scen1_bare_2050,
-  
   .restoration_start = 2025,
   .restoration_time = 25,
 )
@@ -175,7 +179,7 @@ mod_scen2 <- ghg.ccap::run_scenario_natural_systems(
   tb_future = natural_systems_data$regional$null_projections,
   tb_seq = natural_systems_data$land_cover_carbon,
   .enviro_factors = ghg.ccap::enviro_factors,
-  
+
   # user inputs here!
   .urban_tree_start = 2025,
   .urban_tree_time = 25,
@@ -186,24 +190,25 @@ mod_scen2 <- ghg.ccap::run_scenario_natural_systems(
   .grassland_area_perc = scen2_grassland_2050,
   .cropland_area_perc = scen2_cropland_2050,
   .bare_area_perc = scen2_bare_2050,
-  
   .restoration_start = 2025,
   .restoration_time = 25,
 )
 
 
-df_netZero <-  mod_scen2 %>%
+df_netZero <- mod_scen2 %>%
   filter(inventory_year == 2050) %>%
   group_by(geog_name, ctu_class, geog_id, inventory_year) %>%
-  summarize(net_zero_target = sum(value_emissions, na.rm=T),
-            .groups="keep") 
-  
+  summarize(
+    net_zero_target = sum(value_emissions, na.rm = T),
+    .groups = "keep"
+  )
+
 
 target_seq_for_netZero <- df_netZero %>% pull(net_zero_target)
 
 
 
-# 
+#
 # write_rds(df_netZero,
 #           "_meta/data/regional_net_zero_target.RDS")
 
@@ -211,7 +216,6 @@ target_seq_for_netZero <- df_netZero %>% pull(net_zero_target)
 
 # Plotting function -------------------------------------------------------
 plot_emissions <- function(bau, scenario, target) {
-  
   # Aggregate helper
   agg <- function(df) {
     df %>%
@@ -219,10 +223,10 @@ plot_emissions <- function(bau, scenario, target) {
       group_by(inventory_year) %>%
       summarize(total_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop")
   }
-  
+
   scenario_agg <- agg(scenario)
-  bau_agg   <- agg(bau)
-  
+  bau_agg <- agg(bau)
+
   ggplot() +
     # Base fill (2005–2025, gray)
     geom_ribbon(
@@ -230,21 +234,21 @@ plot_emissions <- function(bau, scenario, target) {
       aes(x = inventory_year, ymin = 0, ymax = total_emissions),
       fill = "gray80", alpha = 0.7
     ) +
-    
+
     # Scenario fill (lightgreen, 2025+)
     geom_ribbon(
       data = scenario_agg %>% filter(inventory_year >= 2025),
       aes(x = inventory_year, ymin = 0, ymax = total_emissions),
       fill = "lightgreen", alpha = 0.5
     ) +
-    
+
     # Base line (2005–2025)
     geom_line(
       data = scenario_agg %>% filter(inventory_year <= 2025),
       aes(x = inventory_year, y = total_emissions),
       color = "black", linewidth = 1
     ) +
-    
+
     # Diverging scenario lines
     geom_line(
       data = bau_agg %>% filter(inventory_year >= 2025),
@@ -256,14 +260,14 @@ plot_emissions <- function(bau, scenario, target) {
       aes(x = inventory_year, y = total_emissions, color = "Potential policy pathways"),
       linewidth = 1
     ) +
-    
+
     # 2050 target point
     geom_point(
       data = data.frame(emissions_year = 2050, value_emissions = target),
       aes(x = emissions_year, y = value_emissions),
       shape = "*", size = 12, stroke = 1.5, color = "black"
     ) +
-    
+
     # Divider at 2025
     geom_segment(
       aes(
@@ -272,7 +276,7 @@ plot_emissions <- function(bau, scenario, target) {
       ),
       color = "black", linetype = "solid", linewidth = 0.8
     ) +
-    
+
     # Manual color scale
     scale_color_manual(
       values = c(
@@ -281,7 +285,6 @@ plot_emissions <- function(bau, scenario, target) {
       ),
       breaks = c("Business as usual", "Potential policy pathways", "Net zero")
     ) +
-    
     guides(
       color = guide_legend(
         title = "Scenarios",
@@ -291,7 +294,6 @@ plot_emissions <- function(bau, scenario, target) {
         )
       )
     ) +
-    
     labs(
       x = "Year",
       y = "",
@@ -303,7 +305,7 @@ plot_emissions <- function(bau, scenario, target) {
       panel.grid.minor = element_blank(),
       legend.position = "bottom",
       plot.title = element_text(size = 18),
-      axis.text  = element_text(size = 14),
+      axis.text = element_text(size = 14),
       legend.text = element_text(size = 18),
       legend.key.width = unit(1.2, "cm")
     ) +
@@ -323,7 +325,7 @@ plot_emissions <- function(bau, scenario, target) {
 
 scen1_gg <- plot_emissions(
   bau = mod_bau,
-  scenario =  mod_scen1,
+  scenario = mod_scen1,
   target = target_seq_for_netZero
 )
 
@@ -333,20 +335,22 @@ print(scen1_gg)
 
 scen2_gg <- plot_emissions(
   bau = mod_bau,
-  scenario =  mod_scen2,
+  scenario = mod_scen2,
   target = target_seq_for_netZero
 )
 
 print(scen2_gg)
 
 
-ggplot2::ggsave(plot = scen1_gg,
-                filename = paste0(here::here(),"/imgs/ns_decarbonization_pathways.png"),  # add your file path here
-                width = 12,
-                height = 6,
-                units = "in",
-                dpi = 300,
-                bg = "white")
+ggplot2::ggsave(
+  plot = scen1_gg,
+  filename = paste0(here::here(), "/imgs/ns_decarbonization_pathways.png"), # add your file path here
+  width = 12,
+  height = 6,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
 
 
 
@@ -360,77 +364,99 @@ ggplot2::ggsave(plot = scen1_gg,
 regional_ns_forecast <- rbind(
   # business as usual
   mod_bau %>%
-  filter(!is.na(value_emissions)) %>%
-  group_by(inventory_year) %>%
-  summarize(total_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
-  mutate(scenario = "bau",
-         geog_name = "Regional",
-         geog_class = "REGION",
-         geog_id = "00000000",
-         sector = "Natural Systems") %>%
-  dplyr::select(geog_name, geog_class, geog_id, sector, 
-                inventory_year,
-                scenario, total_emissions),
-  
+    filter(!is.na(value_emissions)) %>%
+    group_by(inventory_year) %>%
+    summarize(total_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
+    mutate(
+      scenario = "bau",
+      geog_name = "Regional",
+      geog_class = "REGION",
+      geog_id = "00000000",
+      sector = "Natural Systems"
+    ) %>%
+    dplyr::select(
+      geog_name, geog_class, geog_id, sector,
+      inventory_year,
+      scenario, total_emissions
+    ),
+
   # potential policy pathways
   mod_scen1 %>%
     filter(!is.na(value_emissions)) %>%
     group_by(inventory_year) %>%
     summarize(total_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
-    mutate(scenario = "ppp",
-           geog_name = "Regional",
-           geog_class = "REGION",
-           geog_id = "00000000",
-           sector = "Natural Systems") %>%
-    dplyr::select(geog_name, geog_class, geog_id, sector, 
-                  inventory_year,
-                  scenario, total_emissions),
+    mutate(
+      scenario = "ppp",
+      geog_name = "Regional",
+      geog_class = "REGION",
+      geog_id = "00000000",
+      sector = "Natural Systems"
+    ) %>%
+    dplyr::select(
+      geog_name, geog_class, geog_id, sector,
+      inventory_year,
+      scenario, total_emissions
+    ),
 
   # net zero
   mod_scen2 %>%
     filter(!is.na(value_emissions)) %>%
     group_by(inventory_year) %>%
     summarize(total_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
-    mutate(scenario = "nz",
-           geog_name = "Regional",
-           geog_class = "REGION",
-           geog_id = "00000000",
-           sector = "Natural Systems") %>%
-    dplyr::select(geog_name, geog_class, geog_id, sector, 
-                  inventory_year,
-                  scenario, total_emissions)
+    mutate(
+      scenario = "nz",
+      geog_name = "Regional",
+      geog_class = "REGION",
+      geog_id = "00000000",
+      sector = "Natural Systems"
+    ) %>%
+    dplyr::select(
+      geog_name, geog_class, geog_id, sector,
+      inventory_year,
+      scenario, total_emissions
+    )
 )
 
-# 
+#
 # write_rds(regional_ns_forecast,
 #           "_meta/data/regional_ns_forecast.RDS")
 
 ### numbers for CCAP document
 # sector wide 2030/2050 scenario to BAU comparisons
 
-ns_2030 <- regional_ns_forecast %>% 
-  filter(inventory_year == 2030) 
+ns_2030 <- regional_ns_forecast %>%
+  filter(inventory_year == 2030)
 
-bau2030 <- ns_2030 %>% filter(scenario == "bau") %>% pull(total_emissions)
+bau2030 <- ns_2030 %>%
+  filter(scenario == "bau") %>%
+  pull(total_emissions)
 
-ppp2030 <- ns_2030 %>% filter(scenario == "ppp") %>% pull(total_emissions) -
+ppp2030 <- ns_2030 %>%
+  filter(scenario == "ppp") %>%
+  pull(total_emissions) -
   bau2030
 
 
 ppp2030
 ppp2030 / bau2030
 
-#2050
+# 2050
 
-ns_2050 <- regional_ns_forecast %>% 
-  filter(inventory_year == 2050) 
+ns_2050 <- regional_ns_forecast %>%
+  filter(inventory_year == 2050)
 
-bau2050 <- ns_2050 %>% filter(scenario == "bau") %>% pull(total_emissions)
+bau2050 <- ns_2050 %>%
+  filter(scenario == "bau") %>%
+  pull(total_emissions)
 
-ppp2050 <- ns_2050 %>% filter(scenario == "ppp") %>% pull(total_emissions) -
+ppp2050 <- ns_2050 %>%
+  filter(scenario == "ppp") %>%
+  pull(total_emissions) -
   bau2050
 
-nz2050 <- ns_2050 %>% filter(scenario == "nz") %>% pull(total_emissions) -
+nz2050 <- ns_2050 %>%
+  filter(scenario == "nz") %>%
+  pull(total_emissions) -
   bau2050
 
 ppp2050

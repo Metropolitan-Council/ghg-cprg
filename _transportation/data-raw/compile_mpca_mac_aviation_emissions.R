@@ -51,11 +51,11 @@ msp_emissions <- mac_emissions %>%
   select(inventory_year = year, msp_mt_co2e)
 
 ### load in state aviation data
-mpca_aviation <- 
+mpca_aviation <-
   read_rds("_meta/data/mpca_ghg_inv_2022.RDS") %>%
   filter(Source == "Aviation") %>%
-  mutate(inventory_year = as.numeric(inventory_year)) %>% 
-  group_by(Sector, Source, inventory_year) %>% 
+  mutate(inventory_year = as.numeric(inventory_year)) %>%
+  group_by(Sector, Source, inventory_year) %>%
   summarise(state_mt_co2e = sum(co2e))
 
 # explore ways of interpolating NAs in MSP emissions

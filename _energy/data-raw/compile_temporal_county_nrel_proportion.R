@@ -66,25 +66,32 @@ electric_raw <- readRDS(file.path(here::here("_energy", "data", "minnesota_count
 
 county_pop <- readRDS(file.path(here::here("_meta", "data", "census_county_population.RDS")))
 
-wi_electric <- readRDS(file.path(here::here("_energy", "data", "wisconsin_elecUtils_ActivityAndEmissions.RDS"))) %>% 
-  group_by(county_name) %>% 
-  summarize(mwh = sum(coalesced_utilityCounty_mWh)) %>% 
-  ungroup() %>% 
-  left_join(county_pop %>% 
-              filter(population_year == 2021),
-            by = "county_name") %>% 
-  mutate(mwh_per_capita = mwh / population) %>% 
-  select(county_name, mwh_per_capita) %>% 
-  left_join(county_pop%>% 
-              filter(population_year >= 2005),
-            by = "county_name") %>% 
-  mutate(mwh = mwh_per_capita * population,
-         sector = "Electricity",
-         year = as.numeric(population_year)) %>% 
+wi_electric <- readRDS(file.path(here::here("_energy", "data", "wisconsin_elecUtils_ActivityAndEmissions.RDS"))) %>%
+  group_by(county_name) %>%
+  summarize(mwh = sum(coalesced_utilityCounty_mWh)) %>%
+  ungroup() %>%
+  left_join(
+    county_pop %>%
+      filter(population_year == 2021),
+    by = "county_name"
+  ) %>%
+  mutate(mwh_per_capita = mwh / population) %>%
+  select(county_name, mwh_per_capita) %>%
+  left_join(
+    county_pop %>%
+      filter(population_year >= 2005),
+    by = "county_name"
+  ) %>%
+  mutate(
+    mwh = mwh_per_capita * population,
+    sector = "Electricity",
+    year = as.numeric(population_year)
+  ) %>%
   select(year,
-         county = county_name,
-         mwh,
-         sector)
+    county = county_name,
+    mwh,
+    sector
+  )
 
 
 electric_interpolated <- left_join(
@@ -96,13 +103,14 @@ electric_interpolated <- left_join(
   electric_raw,
   by = join_by(year, county, sector)
 ) %>%
-  bind_rows(wi_electric) %>% 
+  bind_rows(wi_electric) %>%
   mutate(
     mwh_modeled = na_kalman(mwh),
     data_source = case_when(
-      is.na(mwh) ~ "Interpolated", 
+      is.na(mwh) ~ "Interpolated",
       county %in% c("St. Croix", "Pierce") & year != 2021 ~ "Population based estimate",
-      TRUE ~ "Utility report")
+      TRUE ~ "Utility report"
+    )
   ) %>%
   left_join(egrid_temporal, by = c("year" = "Year")) %>%
   mutate(

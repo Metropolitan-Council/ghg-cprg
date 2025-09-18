@@ -6,7 +6,8 @@ demographer_state_population <- readRDS("_meta/data/state_population_demographer
 county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS")
 
 gcam_projections <- read_xlsx("_meta/data-raw/gcam_all_scenarios.xlsx",
-                               sheet = "Emissions by Inventory Category") %>%
+  sheet = "Emissions by Inventory Category"
+) %>%
   pivot_longer(
     cols = 6:27,
     names_to = "emissions_year",
@@ -24,18 +25,21 @@ ag <- read_xlsx("_meta/data-raw/MN_ag_lulucf.xlsx") %>%
     names_to = "emissions_year",
     values_to = "value_emissions"
   ) %>%
-  clean_names() %>% 
+  clean_names() %>%
   filter(sector == "Agriculture")
 
-state_projections <- bind_rows(gcam_projections %>% 
-                                 filter(sector != "Agriculture"),
-                               ag %>% 
-                                 select(sector,
-                                        scenario,
-                                        source,
-                                        units = ghg,
-                                        emissions_year,
-                                        value_emissions))
+state_projections <- bind_rows(
+  gcam_projections %>%
+    filter(sector != "Agriculture"),
+  ag %>%
+    select(sector,
+      scenario,
+      source,
+      units = ghg,
+      emissions_year,
+      value_emissions
+    )
+)
 
 scenarios_annual <- state_projections %>%
   filter(sector != "Emission Reductions Needed") %>%
@@ -99,14 +103,14 @@ saveRDS(scenarios_sector_annual_meta, "_meta/data/gcam/mpca_sector_gcam_meta.RDS
 #   filter(sector == "Agriculture") %>%
 #   distinct(source) %>%
 #   print(n = 50)
-# 
-# 
+#
+#
 # # only labeling categories where we have current emissions
 # livestock <- c(
 #   "American Bison", "Beef Cattle", "Dairy Cattle", "Dairy Heifers",
 #   "Goats", "Horses", "Swine", "Poultry", "Sheep", "Mules and Asses"
 # )
-# 
+#
 # cropland <- c("Biofuels", "Cereals", "Cropland") # omitting liming, mineral soils, grasslands (emitters?), rice, as these are not accounted for in our inv
 
 
@@ -196,13 +200,13 @@ state_projections <- state_projections %>%
     sector == "Industrial" & source == "Natural gas" ~ "Industrial natural gas",
     sector == "Industrial" & source %in% c("Oil refining") ~ "Refinery processes",
     sector == "Industrial" & !source %in% c("Natural gas", "Oil refining") ~ "Industrial processes",
-    
-    #agriculture
+
+    # agriculture
     sector == "Agriculture" & source == "Enteric Fermentation" ~ "Enteric fermentation",
     sector == "Agriculture" & source == "Manure Management" ~ "Manure management",
-    sector == "Agriculture" & source== "N2O from Ag Soil Management" ~ "Cropland soil",
+    sector == "Agriculture" & source == "N2O from Ag Soil Management" ~ "Cropland soil",
     # waste
-    source %in% c("Landfills","RDF", "Incineration") ~ "Solid waste",
+    source %in% c("Landfills", "RDF", "Incineration") ~ "Solid waste",
     source == "Wastewater" ~ "Wastewater",
     # electricity
     sector == "Electricity" ~ "Electricity",
@@ -224,7 +228,7 @@ county_emissions %>%
 scenarios_sources_annual <- state_projections %>%
   filter(sector != "Emission Reductions Needed") %>%
   mutate(source_sink = if_else(value_emissions < 0, "Sequestration", "Emission")) %>%
-  ungroup() %>% 
+  ungroup() %>%
   group_by(emissions_year, scenario, source_sink, sector, subsector_mc) %>%
   summarize(value_emissions = sum(value_emissions)) %>%
   #### add proportion relative to 2005

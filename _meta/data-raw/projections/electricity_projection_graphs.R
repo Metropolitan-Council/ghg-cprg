@@ -4,16 +4,16 @@
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
 
-residential_elec <- readRDS("_meta/data/residential_pathways.RDS") %>% 
-  filter(scenario == "bau") %>% 
+residential_elec <- readRDS("_meta/data/residential_pathways.RDS") %>%
+  filter(scenario == "bau") %>%
   select(inventory_year, scenario, electricity_emissions)
 
 
-commercial_elec <- readRDS("_meta/data-raw/projections/nonres_elec_bau.rds") %>% 
+commercial_elec <- readRDS("_meta/data-raw/projections/nonres_elec_bau.rds") %>%
   rename(inventory_year = emissions_year)
 
-electricity <- left_join(residential_elec, commercial_elec) %>% 
-  mutate(value_emissions = electricity_emissions + value_emissions) %>% 
+electricity <- left_join(residential_elec, commercial_elec) %>%
+  mutate(value_emissions = electricity_emissions + value_emissions) %>%
   select(-electricity_emissions)
 
 ## save bau data
@@ -22,7 +22,7 @@ electricity <- left_join(residential_elec, commercial_elec) %>%
 #   "_meta/data-raw/projections/electricity_bau.rds")
 
 base_data <- electricity %>%
-  filter(inventory_year <= 2025, scenario == "bau") %>%  # Use any scenario since they're identical
+  filter(inventory_year <= 2025, scenario == "bau") %>% # Use any scenario since they're identical
   mutate(segment = "base")
 
 #  diverging scenarios (2026+)
@@ -41,34 +41,42 @@ ppp_data <- diverging_data %>%
 # Create the plot
 emissions_gg <- ggplot() +
   # Base fill (2005-2025, gray)
-  geom_ribbon(data = base_data,
-              aes(x = inventory_year, ymin = 0, ymax = value_emissions),
-              fill = "gray80", alpha = 0.7) +
-  
+  geom_ribbon(
+    data = base_data,
+    aes(x = inventory_year, ymin = 0, ymax = value_emissions),
+    fill = "gray80", alpha = 0.7
+  ) +
+
   # # Net zero fill (maroon)
   # geom_ribbon(data = net_zero_data,
   #             aes(x = inventory_year, ymin = 0, ymax = total_emissions),
   #             fill = "maroon", alpha = 0.3) +
-  
+
   # PPP fill (from net_zero to ppp)
-  geom_ribbon(data = ppp_data,
-              aes(x = inventory_year, ymin = 0, ymax = ppp_emissions),
-              fill = "#ecb81c", alpha = 0.5) +
-  
+  geom_ribbon(
+    data = ppp_data,
+    aes(x = inventory_year, ymin = 0, ymax = ppp_emissions),
+    fill = "#ecb81c", alpha = 0.5
+  ) +
+
   # Base line (2005-2025)
-  geom_line(data = base_data,
-            aes(x = inventory_year, y = value_emissions),
-            color = "black", size = 1) +
-  
+  geom_line(
+    data = base_data,
+    aes(x = inventory_year, y = value_emissions),
+    color = "black", size = 1
+  ) +
+
   # Diverging scenario lines
-  geom_line(data = diverging_data %>% filter(scenario == "bau"),
-            aes(x = inventory_year, y = value_emissions, color = "Business as usual"),
-            linetype = "dashed", size = 1) +
-  
+  geom_line(
+    data = diverging_data %>% filter(scenario == "bau"),
+    aes(x = inventory_year, y = value_emissions, color = "Business as usual"),
+    linetype = "dashed", size = 1
+  ) +
+
   # geom_line(data = diverging_data %>% filter(scenario == "ppp"),
   #           aes(x = inventory_year, y = total_emissions, color = "Potential policy pathways"),
   #           size = 1) +
-  
+
   # geom_point(
   #   data = data.frame(emissions_year = 2050, value_emissions = res_target),
   #   aes(x = emissions_year, y = value_emissions),
@@ -77,12 +85,13 @@ emissions_gg <- ggplot() +
   #   stroke = 1.5, # line thickness of the asterisk
   #   color = "black"
   # ) +
-  # 
+  #
   geom_segment(aes(x = 2025, xend = 2025, y = 0, yend = base_data %>% filter(inventory_year == 2025) %>% pull(value_emissions)),
-               color = "black", linetype = "solid", size = 0.8) +
+    color = "black", linetype = "solid", size = 0.8
+  ) +
   # annotate("text", x = 2025, y = max(your_data$total_emissions) * 0.9,
   #          label = "Historical | Projected", angle = 90, hjust = 1, size = 3.5) +
-  
+
   # Manual color scale with correct order
   scale_color_manual(
     values = c(
@@ -90,9 +99,9 @@ emissions_gg <- ggplot() +
       # "Net zero" = "maroon",
       "Business as usual" = "black"
     ),
-    breaks = c("Business as usual")  # Force legend order
+    breaks = c("Business as usual") # Force legend order
   ) +
-  
+
   # Manual legend guide to show line types
   guides(
     color = guide_legend(
@@ -108,13 +117,13 @@ emissions_gg <- ggplot() +
     y = "",
     title = "Electricity Emissions \n(Millions of CO2-equivalency)"
   ) +
-  scale_y_continuous(labels = label_number(scale = 1e-6)) +  # convert to millions
+  scale_y_continuous(labels = label_number(scale = 1e-6)) + # convert to millions
   theme_minimal() +
   theme(
     panel.grid.minor = element_blank(),
     legend.position = "bottom",
     plot.title = element_text(size = 18),
-    axis.text =  element_text(size = 14),
+    axis.text = element_text(size = 14),
     legend.text = element_text(size = 18),
     legend.key.width = unit(1.2, "cm")
   ) +
@@ -122,10 +131,12 @@ emissions_gg <- ggplot() +
 
 print(emissions_gg)
 
-ggplot2::ggsave(plot = emissions_gg,
-                filename = paste0(wd,"/electricity_decarbonization.png"),  # add your file path here
-                width = 12,
-                height = 6,
-                units = "in",
-                dpi = 300,
-                bg = "white")
+ggplot2::ggsave(
+  plot = emissions_gg,
+  filename = paste0(wd, "/electricity_decarbonization.png"), # add your file path here
+  width = 12,
+  height = 6,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)

@@ -11,7 +11,6 @@ cprg_colors <- list(
 
 # sector colors
 sector_colors <- list(
-
   "Electricity" = "#ecb81c",
   "Transportation" = "#191970",
   "Residential" = "#9467bd",
@@ -24,7 +23,6 @@ sector_colors <- list(
 
 ## with building fuel
 sector_colors_alt <- list(
-
   "Electricity" = "#ecb81c",
   "Transportation" = "#191970",
   "Building Fuel" = "#DB5755",
