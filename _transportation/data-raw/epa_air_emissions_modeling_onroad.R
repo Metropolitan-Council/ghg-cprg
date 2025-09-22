@@ -22,7 +22,6 @@ if (any(purrr::map(
     "_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k/inputs/onroad/2021hb_onroad_SMOKE_MOVES_MOVES4_hapcap_04dec2023_v0.csv",
     # "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/onroad/2022hc_onroad_SMOKE_MOVES_MOVES4_forAQ_27jun2024_v0.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022hd_cb6_22m/inputs/onroad/2022hd_onroad_SMOKE_MOVES_MOVES5_FF10_HAPCAP_28may2025_v0.csv"
-    
   ),
   file_exists
 ) == FALSE)) {
@@ -46,7 +45,6 @@ air_emissions_platform <- c(
   "_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k/inputs/onroad/2021hb_onroad_SMOKE_MOVES_MOVES4_hapcap_04dec2023_v0.csv",
   # "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/onroad/2022hc_onroad_SMOKE_MOVES_MOVES4_forAQ_27jun2024_v0.csv"
   "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022hd_cb6_22m/inputs/onroad/2022hd_onroad_SMOKE_MOVES_MOVES5_FF10_HAPCAP_28may2025_v0.csv"
-  
 )
 
 
@@ -55,13 +53,13 @@ purrr::map(
   safely(
     function(x) {
       future::plan(strategy = future::multisession, workers = length(x))
-      
+
       furrr::future_map(
         x,
         read_smoke_ff10,
         out_directory = "_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi//"
       )
-      
+
       Sys.sleep(5)
     }
   )
@@ -70,7 +68,7 @@ purrr::map(
 # read back in, combine, and save -----
 purrr::map(
   list.files("_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/onroad/",
-             full.names = TRUE
+    full.names = TRUE
   ),
   readRDS
 ) %>%

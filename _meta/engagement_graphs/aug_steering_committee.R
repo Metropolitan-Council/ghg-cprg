@@ -10,7 +10,7 @@ wd <- "C:/Users/WilfahPA/OneDrive - Metropolitan Council/CPRG/story session grap
 cprg_colors <- source("R/cprg_colors.R")
 
 # create baseline and subsector sectors
-county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") %>% 
+county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") %>%
   filter(!source == "Aviation") # need to estimate 2022 aviation emissions
 # %>%
 #   ## keep 7 counties only for CTU estimates
@@ -34,7 +34,7 @@ baseline_emissions_sector <- county_emissions %>%
   group_by(emissions_year, sector) %>%
   summarize(MT_CO2e = sum(value_emissions, na.rm = TRUE)) %>%
   mutate(baseline_sector = factor(sector,
-    levels = c( "Transportation", "Commercial", "Industrial","Residential", "Waste", "Agriculture", "Natural Systems")
+    levels = c("Transportation", "Commercial", "Industrial", "Residential", "Waste", "Agriculture", "Natural Systems")
   ))
 
 # Define custom colors for sectors and tones for years
