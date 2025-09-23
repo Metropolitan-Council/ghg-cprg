@@ -1,5 +1,5 @@
 ﻿file_name,status,prefix,type,description,output_datasets,github_issue
-_calculate_emissions.R,Deprecated,_,function,StreetLight Data - Calculate emissions using vehicle miles traveled ,None,
+x_calculate_emissions.R,Deprecated,_,function,StreetLight Data - Calculate emissions using vehicle miles traveled ,None,
 x_calculate_vmt.R,Deprecated,_,function,StreetLight Data - calculate vehicle miles traveled from a given StreetLight Analysis,None,
 _read_smoke_ff10.R,Active,_,function,"EPA - read, clean, and save a given SMOKE FF10 file.",None,
 _run_all_transportation.R,Active,_,compilation,Sequentially sources critical scripts for generating output datasets,None,
