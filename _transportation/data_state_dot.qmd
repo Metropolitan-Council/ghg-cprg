@@ -213,6 +213,8 @@ fig_vmt_county_ctu_gap <- plot_ly(
     yaxis = list(tickformat = "1%"),
     xaxis = list(categoryorder = "total descending")
   )
+
+fig_vmt_county_ctu_gap
 ```
 
 For cites without reported annual MnDOT VMT, we estimated VMT from 2010 to 2022 using a model trained on population, households, employment, county, and Imagine 2050 designation. 
