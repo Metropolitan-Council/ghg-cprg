@@ -76,6 +76,9 @@ saveRDS(county_vmt_forecast, "_transportation/data/rtdm_forecast_county.RDS")
 saveRDS(county_vmt_forecast_meta, "_transportation/data/rtdm_forecast_county_meta.RDS")
 
 # county-level emissions from model outputs, fed into MOVES, and then output from MOVES
+# Note Wright and Sherburne counties only include the urbanized portions, not the entire county.
+# This means that interpolating from EPA emissions would be inappropritate
+# so for now, we will remove them until we get better data points
 co_emis_for <- readRDS("_transportation/data-raw/metc_travel_model/moves_emissions_forecast.RDS") %>%
   filter(
     !is.na(geoid),
