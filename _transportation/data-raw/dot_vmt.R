@@ -37,7 +37,7 @@ dot_vmt_meta <-
     "data_source", class(dot_vmt$data_source), "State DOT. Either \"MnDOT\" or \"WisDOT\""
   ) %>%
   bind_rows(cprg_county_meta) %>%
-  filter(Column %in% names(dot_vmt)) %>% 
+  filter(Column %in% names(dot_vmt)) %>%
   arrange(match(Column, names(dot_vmt)))
 
 
