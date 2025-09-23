@@ -49,7 +49,7 @@ county_emissions <- county_emissions_hist_forecast %>%
   group_by(county_name) %>%
   arrange(county_name, emissions_year) %>%
   mutate(
-    emissions_metric_tons_co2e = zoo::na.approx(emissions_metric_tons_co2e),
+    emissions_metric_tons_co2e = zoo::na.approx(emissions_metric_tons_co2e) %>% round(digits = 2),
     data_source = ifelse(is.na(data_source), "Interpolation", data_source)
   )
 
