@@ -16,7 +16,7 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(datapasta, quietly = TRUE))
   suppressMessages(library(data.table, quietly = TRUE))
   suppressMessages(library(imputeTS, quietly = TRUE))
-
+  suppressMessages(library(ghg.ccap, quietly = TRUE))
 
 
   # Workflow ------
