@@ -13,7 +13,7 @@ testthat::test_that("County emissions data is as expected", {
     names(cprg_county_emissions),
     c(
       "emissions_year", "geog_level", "geoid", "county_name", "sector", "category",
-      "source", "sector_alt", "value_emissions", "unit_emissions", "data_source", "factor_source",
+      "source", "value_emissions", "unit_emissions", "data_source", "factor_source",
       "county_total_population", "population_data_source", "emissions_per_capita"
     )
   )
@@ -27,11 +27,11 @@ testthat::test_that("County emissions data is as expected", {
 
   testthat::expect_equal(
     unique(cprg_county_emissions$emissions_year),
-    c(
-      2005, 2006, 2007, 2008, 2009, 2010, 2011,
-      2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023
+    c(2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 
+      2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 1990, 1991, 1992, 
+      1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 
+      2004, 2023)
     )
-  )
 
 
   # temporarily comment out, since we expect NAs for 2005 sector level numbers
