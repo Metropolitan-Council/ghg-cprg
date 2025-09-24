@@ -3,6 +3,7 @@
 
 source("R/_load_pkgs.R")
 onroad_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
+collar_county_emissions_change <- readRDS("_transportation/data/rtdm_collar_county_emissions_change.RDS")
 county_emissions_forecast_meta <- readRDS("_transportation/data/rtdm_county_emissions_forecast_meta.RDS")
 
 onroad_emissions_forecast <- readRDS("_transportation/data/rtdm_county_emissions_forecast.RDS") %>%
@@ -16,7 +17,9 @@ onroad_emissions_forecast <- readRDS("_transportation/data/rtdm_county_emissions
     emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
     .groups = "keep"
   ) %>%
-  select("county_name", "geoid", "emissions_year", "data_source", "emissions_metric_tons_co2e")
+  select("county_name", "geoid", "emissions_year", "data_source", "emissions_metric_tons_co2e") %>% 
+  bind_rows(collar_county_emissions_change %>% 
+              mutate(data_source = "Expected change in emissions in similar county applied to 2022 value"))
 
 
 onroad_emissions_summary <- onroad_emissions %>%

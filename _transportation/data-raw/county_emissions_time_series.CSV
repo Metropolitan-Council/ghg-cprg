@@ -97,6 +97,55 @@
 "Carver","27019",2048,"Interpolation",299621.8
 "Carver","27019",2049,"Interpolation",292650.18
 "Carver","27019",2050,"RTDM and EPA MOVES4",285678.55
+"Chisago","27025",2002,"EQUATES",420249.71
+"Chisago","27025",2003,"EQUATES",428160.02
+"Chisago","27025",2004,"EQUATES",431342.38
+"Chisago","27025",2005,"EQUATES",439955.76
+"Chisago","27025",2006,"EQUATES",448421.84
+"Chisago","27025",2007,"EQUATES",451860.87
+"Chisago","27025",2008,"EQUATES",443305.9
+"Chisago","27025",2009,"EQUATES",434858.79
+"Chisago","27025",2010,"EQUATES",431177.88
+"Chisago","27025",2011,"EQUATES",426899.84
+"Chisago","27025",2012,"EQUATES",438476.4
+"Chisago","27025",2013,"EQUATES",419054.71
+"Chisago","27025",2014,"EQUATES",416175.85
+"Chisago","27025",2015,"EQUATES",416805.04
+"Chisago","27025",2016,"EQUATES",420613.12
+"Chisago","27025",2017,"EQUATES",419701.77
+"Chisago","27025",2018,"EQUATES",413769.64
+"Chisago","27025",2019,"EQUATES",405606.44
+"Chisago","27025",2020,"National Emissions Inventory",364036.86
+"Chisago","27025",2021,"Air Emissions Modeling",407191.15
+"Chisago","27025",2022,"Air Emissions Modeling",433842.58
+"Chisago","27025",2023,"Interpolation",431529.13
+"Chisago","27025",2024,"Interpolation",429215.67
+"Chisago","27025",2025,"Interpolation",426902.21
+"Chisago","27025",2026,"Interpolation",424588.76
+"Chisago","27025",2027,"Interpolation",422275.3
+"Chisago","27025",2028,"Interpolation",419961.85
+"Chisago","27025",2029,"Interpolation",417648.39
+"Chisago","27025",2030,"Interpolation",415334.94
+"Chisago","27025",2031,"Interpolation",413021.48
+"Chisago","27025",2032,"Interpolation",410708.02
+"Chisago","27025",2033,"Interpolation",408394.57
+"Chisago","27025",2034,"Interpolation",406081.11
+"Chisago","27025",2035,"Interpolation",403767.66
+"Chisago","27025",2036,"Interpolation",401454.2
+"Chisago","27025",2037,"Interpolation",399140.75
+"Chisago","27025",2038,"Interpolation",396827.29
+"Chisago","27025",2039,"Interpolation",394513.83
+"Chisago","27025",2040,"Interpolation",392200.38
+"Chisago","27025",2041,"Interpolation",389886.92
+"Chisago","27025",2042,"Interpolation",387573.47
+"Chisago","27025",2043,"Interpolation",385260.01
+"Chisago","27025",2044,"Interpolation",382946.56
+"Chisago","27025",2045,"Interpolation",380633.1
+"Chisago","27025",2046,"Interpolation",378319.64
+"Chisago","27025",2047,"Interpolation",376006.19
+"Chisago","27025",2048,"Interpolation",373692.73
+"Chisago","27025",2049,"Interpolation",371379.28
+"Chisago","27025",2050,"Expected change in emissions in similar county applied to 2022 value",369065.82
 "Dakota","27037",2002,"EQUATES",1962864.45
 "Dakota","27037",2003,"EQUATES",1998915.36
 "Dakota","27037",2004,"EQUATES",2006125.88
@@ -195,6 +244,55 @@
 "Hennepin","27053",2048,"Interpolation",3196108.78
 "Hennepin","27053",2049,"Interpolation",3094338.52
 "Hennepin","27053",2050,"RTDM and EPA MOVES4",2992568.26
+"Pierce","55093",2002,"EQUATES",198207.1
+"Pierce","55093",2003,"EQUATES",201886.74
+"Pierce","55093",2004,"EQUATES",190840.6
+"Pierce","55093",2005,"EQUATES",194549.74
+"Pierce","55093",2006,"EQUATES",198998.23
+"Pierce","55093",2007,"EQUATES",184482
+"Pierce","55093",2008,"EQUATES",181166.09
+"Pierce","55093",2009,"EQUATES",178798.09
+"Pierce","55093",2010,"EQUATES",172726.69
+"Pierce","55093",2011,"EQUATES",172141.26
+"Pierce","55093",2012,"EQUATES",177345.84
+"Pierce","55093",2013,"EQUATES",179233.92
+"Pierce","55093",2014,"EQUATES",178112.04
+"Pierce","55093",2015,"EQUATES",178471.99
+"Pierce","55093",2016,"EQUATES",175641.64
+"Pierce","55093",2017,"EQUATES",174823.4
+"Pierce","55093",2018,"EQUATES",172619.58
+"Pierce","55093",2019,"EQUATES",172061.14
+"Pierce","55093",2020,"National Emissions Inventory",175795.23
+"Pierce","55093",2021,"Air Emissions Modeling",198707.33
+"Pierce","55093",2022,"Air Emissions Modeling",194970.39
+"Pierce","55093",2023,"Interpolation",193930.71
+"Pierce","55093",2024,"Interpolation",192891.04
+"Pierce","55093",2025,"Interpolation",191851.36
+"Pierce","55093",2026,"Interpolation",190811.69
+"Pierce","55093",2027,"Interpolation",189772.01
+"Pierce","55093",2028,"Interpolation",188732.34
+"Pierce","55093",2029,"Interpolation",187692.66
+"Pierce","55093",2030,"Interpolation",186652.99
+"Pierce","55093",2031,"Interpolation",185613.31
+"Pierce","55093",2032,"Interpolation",184573.63
+"Pierce","55093",2033,"Interpolation",183533.96
+"Pierce","55093",2034,"Interpolation",182494.28
+"Pierce","55093",2035,"Interpolation",181454.61
+"Pierce","55093",2036,"Interpolation",180414.93
+"Pierce","55093",2037,"Interpolation",179375.26
+"Pierce","55093",2038,"Interpolation",178335.58
+"Pierce","55093",2039,"Interpolation",177295.91
+"Pierce","55093",2040,"Interpolation",176256.23
+"Pierce","55093",2041,"Interpolation",175216.56
+"Pierce","55093",2042,"Interpolation",174176.88
+"Pierce","55093",2043,"Interpolation",173137.21
+"Pierce","55093",2044,"Interpolation",172097.53
+"Pierce","55093",2045,"Interpolation",171057.86
+"Pierce","55093",2046,"Interpolation",170018.18
+"Pierce","55093",2047,"Interpolation",168978.51
+"Pierce","55093",2048,"Interpolation",167938.83
+"Pierce","55093",2049,"Interpolation",166899.16
+"Pierce","55093",2050,"Expected change in emissions in similar county applied to 2022 value",165859.48
 "Ramsey","27123",2002,"EQUATES",2219841.35
 "Ramsey","27123",2003,"EQUATES",2255432.06
 "Ramsey","27123",2004,"EQUATES",2257555.81
@@ -293,6 +391,104 @@
 "Scott","27139",2048,"Interpolation",424642.2
 "Scott","27139",2049,"Interpolation",409962
 "Scott","27139",2050,"RTDM and EPA MOVES4",395281.79
+"Sherburne","27141",2002,"EQUATES",460857.36
+"Sherburne","27141",2003,"EQUATES",469648.76
+"Sherburne","27141",2004,"EQUATES",473176.67
+"Sherburne","27141",2005,"EQUATES",482675.19
+"Sherburne","27141",2006,"EQUATES",492172.17
+"Sherburne","27141",2007,"EQUATES",493013.82
+"Sherburne","27141",2008,"EQUATES",484063.83
+"Sherburne","27141",2009,"EQUATES",474866.27
+"Sherburne","27141",2010,"EQUATES",471599.22
+"Sherburne","27141",2011,"EQUATES",467490.53
+"Sherburne","27141",2012,"EQUATES",480211.74
+"Sherburne","27141",2013,"EQUATES",455374.47
+"Sherburne","27141",2014,"EQUATES",452479.78
+"Sherburne","27141",2015,"EQUATES",452664.18
+"Sherburne","27141",2016,"EQUATES",456119.45
+"Sherburne","27141",2017,"EQUATES",455351.27
+"Sherburne","27141",2018,"EQUATES",485556.83
+"Sherburne","27141",2019,"EQUATES",483773.56
+"Sherburne","27141",2020,"National Emissions Inventory",432402.97
+"Sherburne","27141",2021,"Air Emissions Modeling",477405.44
+"Sherburne","27141",2022,"Air Emissions Modeling",495992.09
+"Sherburne","27141",2023,"Interpolation",493347.23
+"Sherburne","27141",2024,"Interpolation",490702.36
+"Sherburne","27141",2025,"Interpolation",488057.49
+"Sherburne","27141",2026,"Interpolation",485412.63
+"Sherburne","27141",2027,"Interpolation",482767.76
+"Sherburne","27141",2028,"Interpolation",480122.89
+"Sherburne","27141",2029,"Interpolation",477478.03
+"Sherburne","27141",2030,"Interpolation",474833.16
+"Sherburne","27141",2031,"Interpolation",472188.29
+"Sherburne","27141",2032,"Interpolation",469543.43
+"Sherburne","27141",2033,"Interpolation",466898.56
+"Sherburne","27141",2034,"Interpolation",464253.69
+"Sherburne","27141",2035,"Interpolation",461608.83
+"Sherburne","27141",2036,"Interpolation",458963.96
+"Sherburne","27141",2037,"Interpolation",456319.09
+"Sherburne","27141",2038,"Interpolation",453674.23
+"Sherburne","27141",2039,"Interpolation",451029.36
+"Sherburne","27141",2040,"Interpolation",448384.49
+"Sherburne","27141",2041,"Interpolation",445739.63
+"Sherburne","27141",2042,"Interpolation",443094.76
+"Sherburne","27141",2043,"Interpolation",440449.89
+"Sherburne","27141",2044,"Interpolation",437805.03
+"Sherburne","27141",2045,"Interpolation",435160.16
+"Sherburne","27141",2046,"Interpolation",432515.29
+"Sherburne","27141",2047,"Interpolation",429870.43
+"Sherburne","27141",2048,"Interpolation",427225.56
+"Sherburne","27141",2049,"Interpolation",424580.69
+"Sherburne","27141",2050,"Expected change in emissions in similar county applied to 2022 value",421935.83
+"St. Croix","55109",2002,"EQUATES",685161.44
+"St. Croix","55109",2003,"EQUATES",699167.86
+"St. Croix","55109",2004,"EQUATES",661656.86
+"St. Croix","55109",2005,"EQUATES",674606.23
+"St. Croix","55109",2006,"EQUATES",689328.41
+"St. Croix","55109",2007,"EQUATES",659922.12
+"St. Croix","55109",2008,"EQUATES",649390.84
+"St. Croix","55109",2009,"EQUATES",635759.05
+"St. Croix","55109",2010,"EQUATES",654379.5
+"St. Croix","55109",2011,"EQUATES",646817.37
+"St. Croix","55109",2012,"EQUATES",664095.3
+"St. Croix","55109",2013,"EQUATES",641446.58
+"St. Croix","55109",2014,"EQUATES",637671.03
+"St. Croix","55109",2015,"EQUATES",638138.33
+"St. Croix","55109",2016,"EQUATES",656146.94
+"St. Croix","55109",2017,"EQUATES",655632.65
+"St. Croix","55109",2018,"EQUATES",668301.73
+"St. Croix","55109",2019,"EQUATES",661190.54
+"St. Croix","55109",2020,"National Emissions Inventory",784978.83
+"St. Croix","55109",2021,"Air Emissions Modeling",904178.22
+"St. Croix","55109",2022,"Air Emissions Modeling",875644.17
+"St. Croix","55109",2023,"Interpolation",870974.82
+"St. Croix","55109",2024,"Interpolation",866305.46
+"St. Croix","55109",2025,"Interpolation",861636.11
+"St. Croix","55109",2026,"Interpolation",856966.76
+"St. Croix","55109",2027,"Interpolation",852297.41
+"St. Croix","55109",2028,"Interpolation",847628.05
+"St. Croix","55109",2029,"Interpolation",842958.7
+"St. Croix","55109",2030,"Interpolation",838289.35
+"St. Croix","55109",2031,"Interpolation",833619.99
+"St. Croix","55109",2032,"Interpolation",828950.64
+"St. Croix","55109",2033,"Interpolation",824281.29
+"St. Croix","55109",2034,"Interpolation",819611.94
+"St. Croix","55109",2035,"Interpolation",814942.58
+"St. Croix","55109",2036,"Interpolation",810273.23
+"St. Croix","55109",2037,"Interpolation",805603.88
+"St. Croix","55109",2038,"Interpolation",800934.53
+"St. Croix","55109",2039,"Interpolation",796265.17
+"St. Croix","55109",2040,"Interpolation",791595.82
+"St. Croix","55109",2041,"Interpolation",786926.47
+"St. Croix","55109",2042,"Interpolation",782257.11
+"St. Croix","55109",2043,"Interpolation",777587.76
+"St. Croix","55109",2044,"Interpolation",772918.41
+"St. Croix","55109",2045,"Interpolation",768249.06
+"St. Croix","55109",2046,"Interpolation",763579.7
+"St. Croix","55109",2047,"Interpolation",758910.35
+"St. Croix","55109",2048,"Interpolation",754241
+"St. Croix","55109",2049,"Interpolation",749571.65
+"St. Croix","55109",2050,"Expected change in emissions in similar county applied to 2022 value",744902.29
 "Washington","27163",2002,"EQUATES",1155705.79
 "Washington","27163",2003,"EQUATES",1177085.71
 "Washington","27163",2004,"EQUATES",1179913.88
