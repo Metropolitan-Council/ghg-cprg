@@ -25,7 +25,51 @@ transportation_gas <- readRDS("_transportation/data/epa_onroad_emissions_compile
                 grepl("CO2",units_emissions) ~ value_emissions * gwp$co2)
   )
 
-aviation_gas <- read
+aviation_2022 <- read_rds("_transportation/data/aviation_emissions.rds") %>% 
+  filter(inventory_year == 2022)
+## need to back-calculate to gases for 2022
+
+aviation_ef <- read_rds("_meta/data/epa_ghg_factor_hub.RDS") %>%
+  pluck("stationary_combustion") %>%
+  filter(`Fuel type` == "Kerosene-Type Jet Fuel" & per_unit == "gallon" & emission != "mmBtu") %>% 
+  mutate(
+    mt_gas = case_when(
+      # CO2 emissions factor is reported in kilograms per gallon
+      grepl("CO2", emission) ~ value %>%
+        units::as_units("kilogram") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+      # all others are reported in grams per gallon
+      grepl("CH4", emission) ~ value %>%
+        units::as_units("gram") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+      grepl("N2O", emission) ~ value %>%
+        units::as_units("gram") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+    ),
+    mt_co2e = case_when(
+      grepl("CO2", emission) ~ mt_gas,
+      grepl("CH4", emission) ~ mt_gas * gwp$ch4,
+      grepl("N2O", emission) ~ mt_gas * gwp$n2o,
+    ),
+    mt_co2e_perc = mt_co2e / sum(mt_co2e),
+    gas_type = str_extract(emission, "(CO2|CH4|N2O)$")
+  ) %>% 
+  select(gas_type, mt_co2e_perc, gas_type)
+
+aviation_gas <- aviation_2022 %>% 
+  ungroup() %>% 
+  cross_join(aviation_ef) %>% 
+  mutate(metric_tons_co2e = value_emissions * mt_co2e_perc,
+         units_emissions = paste("Metric tons",gas_type),
+         value_emissions = case_when(
+           grepl("CO2", units_emissions) ~ metric_tons_co2e,
+           grepl("CH4", units_emissions) ~ metric_tons_co2e / gwp$ch4,
+           grepl("N2O", units_emissions) ~ metric_tons_co2e / gwp$n2o,
+         )) %>% 
+  select(sector, emissions_year = inventory_year, units_emissions, metric_tons_co2e, value_emissions, county_name = geog_name)
 
 ## already by gas
 agriculture_gas <- readRDS("_agriculture/data/agricultural_emissions_county.rds") %>% 
@@ -198,6 +242,7 @@ fluorinated_gases <- readRDS("_industrial/data/fluorinated_gas_emissions.RDS") %
   mutate(sector = "Industrial")
   
 gas_by_county <- bind_rows(transportation_gas,
+                           aviation_gas,
                            building_gas,
                            electricity_gas,
                            waste_gas,
@@ -207,3 +252,77 @@ gas_by_county <- bind_rows(transportation_gas,
                            industrial_fuel_gas_epa_out,
                            industrial_fuel_gas_mpca,
                            fluorinated_gases)
+
+county_emissions <- read_rds("_meta/data/cprg_county_emissions.RDS")
+
+gas_by_county %>% pull(metric_tons_co2e) %>% sum() #59751182
+county_emissions %>% 
+  filter(value_emissions > 0,
+         emissions_year == 2022) %>% 
+  pull(value_emissions) %>% sum() #55377863
+
+59751182 - 55377863 #4373319 more in gas type analysis
+
+county_emissions %>% 
+  filter(value_emissions > 0,
+         emissions_year == 2022) %>% 
+  group_by(sector, category, source) %>% 
+  summarize(value_emission = sum(value_emissions)) %>% 
+  print(n = 50) # no obvious contenders
+
+gas_by_county %>% 
+  group_by(sector) %>% 
+  summarize(metric_tons_co2e = sum(metric_tons_co2e))
+
+county_emissions %>% 
+  filter(value_emissions > 0,
+         emissions_year == 2022) %>% 
+  group_by(sector) %>% 
+  summarize(value_emission = sum(value_emissions))
+
+# ag, ns, transportation, waste, spot on. Problem is in energy
+
+county_emissions %>% 
+  filter(value_emissions > 0,
+         emissions_year == 2022,
+         category == "Electricity") %>% 
+  pull(value_emissions) %>% sum()
+# electricity matches. Problem is in natural gas/industrial
+
+
+county_emissions %>% 
+  filter(value_emissions > 0,
+         emissions_year == 2022,
+         category == "Building Fuel") %>% 
+  pull(value_emissions) %>% sum()
+# Building Fuel and Natural Gas by gas match. Problem is in industrial
+
+gas_by_county %>% 
+  filter(sector == "Industrial") %>% 
+  group_by(county_name) %>% 
+  summarize(value_emissions = sum(metric_tons_co2e))
+  
+county_emissions %>% 
+  filter(value_emissions > 0,
+         emissions_year == 2022,
+         sector == "Industrial",
+         category != "Building Fuel",
+         category != "Electricity") %>% 
+  group_by(county_name) %>% 
+  summarize(value_emissions = sum(value_emissions))
+# these are wildly off.
+
+industrial_fuel_gas_epa_out %>% 
+  filter(sector == "Industrial") %>% 
+  group_by(county_name) %>% 
+  summarize(value_emissions = sum(metric_tons_co2e))
+
+industrial_fuel_gas_mpca %>% 
+  filter(sector == "Industrial") %>% 
+  group_by(county_name) %>% 
+  summarize(value_emissions = sum(metric_tons_co2e))
+
+fluorinated_gases %>% 
+  filter(sector == "Industrial") %>% 
+  group_by(county_name) %>% 
+  summarize(value_emissions = sum(metric_tons_co2e))
