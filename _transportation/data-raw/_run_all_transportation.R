@@ -52,7 +52,7 @@ source("_transportation/data-raw/mndot_vmt_ctu.R")
 source("_transportation/data-raw/vmt_model_data.R")
 source("_transportation/data-raw/mndot_vmt_ctu_gap_fill_model.R")
 source("_transportation/data-raw/compile_ctu_transportation_emissions.R")
-
+source("_transportation/data-raw/calc_gross_emissions_rates.R")
 
 # run compilations in _meta/
 source("_meta/data-raw/compile_county_emissions.R")
