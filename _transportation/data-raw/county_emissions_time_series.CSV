@@ -145,7 +145,7 @@
 "Chisago","27025",2047,"Interpolation",376006.19
 "Chisago","27025",2048,"Interpolation",373692.73
 "Chisago","27025",2049,"Interpolation",371379.28
-"Chisago","27025",2050,"Expected change in emissions in similar county applied to 2022 value",369065.82
+"Chisago","27025",2050,"Expected change in emissions in similar county",369065.82
 "Dakota","27037",2002,"EQUATES",1962864.45
 "Dakota","27037",2003,"EQUATES",1998915.36
 "Dakota","27037",2004,"EQUATES",2006125.88
@@ -292,7 +292,7 @@
 "Pierce","55093",2047,"Interpolation",168978.51
 "Pierce","55093",2048,"Interpolation",167938.83
 "Pierce","55093",2049,"Interpolation",166899.16
-"Pierce","55093",2050,"Expected change in emissions in similar county applied to 2022 value",165859.48
+"Pierce","55093",2050,"Expected change in emissions in similar county",165859.48
 "Ramsey","27123",2002,"EQUATES",2219841.35
 "Ramsey","27123",2003,"EQUATES",2255432.06
 "Ramsey","27123",2004,"EQUATES",2257555.81
@@ -439,7 +439,7 @@
 "Sherburne","27141",2047,"Interpolation",429870.43
 "Sherburne","27141",2048,"Interpolation",427225.56
 "Sherburne","27141",2049,"Interpolation",424580.69
-"Sherburne","27141",2050,"Expected change in emissions in similar county applied to 2022 value",421935.83
+"Sherburne","27141",2050,"Expected change in emissions in similar county",421935.83
 "St. Croix","55109",2002,"EQUATES",685161.44
 "St. Croix","55109",2003,"EQUATES",699167.86
 "St. Croix","55109",2004,"EQUATES",661656.86
@@ -488,7 +488,7 @@
 "St. Croix","55109",2047,"Interpolation",758910.35
 "St. Croix","55109",2048,"Interpolation",754241
 "St. Croix","55109",2049,"Interpolation",749571.65
-"St. Croix","55109",2050,"Expected change in emissions in similar county applied to 2022 value",744902.29
+"St. Croix","55109",2050,"Expected change in emissions in similar county",744902.29
 "Washington","27163",2002,"EQUATES",1155705.79
 "Washington","27163",2003,"EQUATES",1177085.71
 "Washington","27163",2004,"EQUATES",1179913.88
