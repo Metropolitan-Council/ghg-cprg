@@ -16,7 +16,7 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
-ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/_agricultural_emissions.RDS"))
+ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/agricultural_emissions_county.RDS"))
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 
 emissions_2021 <- county_emissions %>%
@@ -226,7 +226,7 @@ Agricultural emissions are apportioned to cities and townships in two ways. Firs
 # load the county boundaries layer
 
 ### load emissions and downscaling var (proportion of county ag land)
-ctu_ag_emissions <- readRDS(file.path(here::here(), "./_agriculture/data/_ctu_agricultural_emissions.rds"))
+ctu_ag_emissions <- readRDS(file.path(here::here(), "./_agriculture/data/agricultural_emissions_ctu.rds"))
 
 agricultural_emissions_2021 <- ctu_ag_emissions %>%
   filter(inventory_year == 2021) %>%
