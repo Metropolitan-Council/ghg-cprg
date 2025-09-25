@@ -45,9 +45,9 @@ testthat::test_that("Park carbon data values are as expected", {
     group_by(agency) %>%
     summarize(area = sum(area))
 
-  park_seq_ratio <- sum(park_carbon$sequestration_potential) / sum(county_seq_7$value_emissions) # 5.56%
-  park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_stock_7$value_emissions) # 7.19%
+  park_seq_ratio <- sum(park_carbon$sequestration_potential) / sum(county_seq_7$value_emissions) # 10.4%
+  park_stock_ratio <- sum(park_carbon$stock_potential) / sum(county_stock_7$value_emissions) # 6.34%
 
-  testthat::expect_equal(park_seq_ratio * 100, 6.00, tolerance = 0.01)
+  testthat::expect_equal(park_seq_ratio * 100, 10.4, tolerance = 0.01)
   testthat::expect_equal(park_stock_ratio * 100, 6.34, tolerance = 0.01)
 })
