@@ -259,6 +259,5 @@ fig_transportation_time_series_county
 ## Future projections
 
 ```{r}
-
 ```
 

@@ -68,7 +68,7 @@ ww_emissions <- readRDS("_waste/data/final_wastewater_allyrs.RDS") %>%
 
 ## solid waste -----
 solid_waste <- readRDS("_waste/data/final_solid_waste_allyrs.RDS") %>%
-  left_join(cprg_county %>% select(county_name, geoid)) %>%
+  left_join(cprg_county %>% select(county_name, geoid), by = c("geoid")) %>%
   ungroup() %>%
   mutate(
     geog_level = "county",
@@ -167,7 +167,7 @@ industrial_emissions <- readRDS("_industrial/data/modeled_industrial_baseline_em
     )
   ) %>%
   group_by(emissions_year, unit_emissions, county_name, geog_level, county_id, sector, category, source, data_source, factor_source) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup() %>%
   select(names(transportation_emissions))
 
