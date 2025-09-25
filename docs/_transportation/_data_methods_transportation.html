@@ -402,9 +402,9 @@ div.csl-indent {
   <li><a href="#methodological-framework" id="toc-methodological-framework" class="nav-link active" data-scroll-target="#methodological-framework"><span class="header-section-number">2.1</span> Methodological framework</a></li>
   <li><a href="#data-sources" id="toc-data-sources" class="nav-link" data-scroll-target="#data-sources"><span class="header-section-number">2.2</span> Data sources</a>
   <ul class="collapse">
-  <li><a href="#epa-emissions-data" id="toc-epa-emissions-data" class="nav-link" data-scroll-target="#epa-emissions-data"><span class="header-section-number">2.2.1</span> EPA emissions data</a></li>
-  <li><a href="#state-dot-data" id="toc-state-dot-data" class="nav-link" data-scroll-target="#state-dot-data"><span class="header-section-number">2.2.2</span> State DOT data</a></li>
-  <li><a href="#regional-travel-demand-model" id="toc-regional-travel-demand-model" class="nav-link" data-scroll-target="#regional-travel-demand-model"><span class="header-section-number">2.2.3</span> Regional Travel Demand Model</a></li>
+  <li><a href="#sec-epa-emissions-data-transportation" id="toc-sec-epa-emissions-data-transportation" class="nav-link" data-scroll-target="#sec-epa-emissions-data-transportation"><span class="header-section-number">2.2.1</span> EPA emissions data</a></li>
+  <li><a href="#sec-state-dot-data" id="toc-sec-state-dot-data" class="nav-link" data-scroll-target="#sec-state-dot-data"><span class="header-section-number">2.2.2</span> State DOT data</a></li>
+  <li><a href="#sec-regional-travel-demand-model" id="toc-sec-regional-travel-demand-model" class="nav-link" data-scroll-target="#sec-regional-travel-demand-model"><span class="header-section-number">2.2.3</span> Regional Travel Demand Model</a></li>
   </ul></li>
   <li><a href="#sec-transportation-data-limitations" id="toc-sec-transportation-data-limitations" class="nav-link" data-scroll-target="#sec-transportation-data-limitations"><span class="header-section-number">2.3</span> Limitations</a></li>
   <li><a href="#validation" id="toc-validation" class="nav-link" data-scroll-target="#validation"><span class="header-section-number">2.4</span> Validation</a>
@@ -445,8 +445,8 @@ div.csl-indent {
 <section id="data-sources" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="data-sources"><span class="header-section-number">2.2</span> Data sources</h2>
 <!-- {{< include data_aviation.qmd >}} -->
-<section id="epa-emissions-data" class="level3" data-number="2.2.1">
-<h3 data-number="2.2.1" class="anchored" data-anchor-id="epa-emissions-data"><span class="header-section-number">2.2.1</span> EPA emissions data</h3>
+<section id="sec-epa-emissions-data-transportation" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="sec-epa-emissions-data-transportation"><span class="header-section-number">2.2.1</span> EPA emissions data</h3>
 <p>The EPA releases various emissions estimates as part of several programs and initiatives.</p>
 <p>All datasets are compiled from Sparse Matrix Operator Kernel Emissions (SMOKE) Flat File 10 (FF10) formatted data downloaded from the EPA website. SMOKE FF10 is a standardized format regularly released by the EPA for NEI, EQUATES, and Air Emissions Modeling platforms <span class="citation" data-cites="cmasSMOKEV51Users2024">(<a href="../references.html#ref-cmasSMOKEV51Users2024" role="doc-biblioref">CMAS 2024, sec. 2.2.3</a>)</span>.</p>
 <p>SMOKE FF10 files were processed using <a href="data-raw/_read_smoke_ff10.R"><code>read_smoke_ff10()</code></a>, which reads in the raw data, records relevant metadata, filters to only include relevant counties and pollutants, and saves an intermediary dataset. These intermediary datasets are read back in, combined, and saved.</p>
@@ -461,40 +461,23 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
 </figcaption>
 <div aria-describedby="tbl-epa-intermediary-smoke-datasets-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<<<<<<< HEAD
-<div id="knnctwyjdx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#knnctwyjdx table {
-=======
-<div id="yzturbizog" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#yzturbizog table {
->>>>>>> origin/main
+<div id="lxkyjeymvp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#lxkyjeymvp table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx thead, #knnctwyjdx tbody, #knnctwyjdx tfoot, #knnctwyjdx tr, #knnctwyjdx td, #knnctwyjdx th {
+#lxkyjeymvp thead, #lxkyjeymvp tbody, #lxkyjeymvp tfoot, #lxkyjeymvp tr, #lxkyjeymvp td, #lxkyjeymvp th {
   border-style: none;
 }
 
-#knnctwyjdx p {
-=======
-#yzturbizog thead, #yzturbizog tbody, #yzturbizog tfoot, #yzturbizog tr, #yzturbizog td, #yzturbizog th {
-  border-style: none;
-}
-
-#yzturbizog p {
->>>>>>> origin/main
+#lxkyjeymvp p {
   margin: 0;
   padding: 0;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_table {
-=======
-#yzturbizog .gt_table {
->>>>>>> origin/main
+#lxkyjeymvp .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -520,20 +503,12 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   border-left-color: #D3D3D3;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_caption {
-=======
-#yzturbizog .gt_caption {
->>>>>>> origin/main
+#lxkyjeymvp .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_title {
-=======
-#yzturbizog .gt_title {
->>>>>>> origin/main
+#lxkyjeymvp .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -545,11 +520,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   border-bottom-width: 0;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_subtitle {
-=======
-#yzturbizog .gt_subtitle {
->>>>>>> origin/main
+#lxkyjeymvp .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -561,11 +532,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   border-top-width: 0;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_heading {
-=======
-#yzturbizog .gt_heading {
->>>>>>> origin/main
+#lxkyjeymvp .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -577,21 +544,13 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   border-right-color: #D3D3D3;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_bottom_border {
-=======
-#yzturbizog .gt_bottom_border {
->>>>>>> origin/main
+#lxkyjeymvp .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_col_headings {
-=======
-#yzturbizog .gt_col_headings {
->>>>>>> origin/main
+#lxkyjeymvp .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -606,11 +565,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   border-right-color: #D3D3D3;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_col_heading {
-=======
-#yzturbizog .gt_col_heading {
->>>>>>> origin/main
+#lxkyjeymvp .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -630,11 +585,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   overflow-x: hidden;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_column_spanner_outer {
-=======
-#yzturbizog .gt_column_spanner_outer {
->>>>>>> origin/main
+#lxkyjeymvp .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -646,27 +597,15 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   padding-right: 4px;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_column_spanner_outer:first-child {
+#lxkyjeymvp .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#knnctwyjdx .gt_column_spanner_outer:last-child {
+#lxkyjeymvp .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#knnctwyjdx .gt_column_spanner {
-=======
-#yzturbizog .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#yzturbizog .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#yzturbizog .gt_column_spanner {
->>>>>>> origin/main
+#lxkyjeymvp .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -678,19 +617,11 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   width: 100%;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_spanner_row {
+#lxkyjeymvp .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#knnctwyjdx .gt_group_heading {
-=======
-#yzturbizog .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#yzturbizog .gt_group_heading {
->>>>>>> origin/main
+#lxkyjeymvp .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -716,11 +647,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   text-align: left;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_empty_group_heading {
-=======
-#yzturbizog .gt_empty_group_heading {
->>>>>>> origin/main
+#lxkyjeymvp .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -735,27 +662,15 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   vertical-align: middle;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_from_md > :first-child {
+#lxkyjeymvp .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#knnctwyjdx .gt_from_md > :last-child {
+#lxkyjeymvp .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#knnctwyjdx .gt_row {
-=======
-#yzturbizog .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#yzturbizog .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#yzturbizog .gt_row {
->>>>>>> origin/main
+#lxkyjeymvp .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -774,11 +689,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   overflow-x: hidden;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_stub {
-=======
-#yzturbizog .gt_stub {
->>>>>>> origin/main
+#lxkyjeymvp .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -791,11 +702,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   padding-right: 5px;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_stub_row_group {
-=======
-#yzturbizog .gt_stub_row_group {
->>>>>>> origin/main
+#lxkyjeymvp .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -809,27 +716,15 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   vertical-align: top;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_row_group_first td {
+#lxkyjeymvp .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#knnctwyjdx .gt_row_group_first th {
+#lxkyjeymvp .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#knnctwyjdx .gt_summary_row {
-=======
-#yzturbizog .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#yzturbizog .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#yzturbizog .gt_summary_row {
->>>>>>> origin/main
+#lxkyjeymvp .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -839,28 +734,16 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   padding-right: 5px;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_first_summary_row {
-=======
-#yzturbizog .gt_first_summary_row {
->>>>>>> origin/main
+#lxkyjeymvp .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_first_summary_row.thick {
+#lxkyjeymvp .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#knnctwyjdx .gt_last_summary_row {
-=======
-#yzturbizog .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#yzturbizog .gt_last_summary_row {
->>>>>>> origin/main
+#lxkyjeymvp .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -870,11 +753,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   border-bottom-color: #D3D3D3;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_grand_summary_row {
-=======
-#yzturbizog .gt_grand_summary_row {
->>>>>>> origin/main
+#lxkyjeymvp .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -884,11 +763,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   padding-right: 5px;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_first_grand_summary_row {
-=======
-#yzturbizog .gt_first_grand_summary_row {
->>>>>>> origin/main
+#lxkyjeymvp .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -898,11 +773,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   border-top-color: #D3D3D3;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_last_grand_summary_row_top {
-=======
-#yzturbizog .gt_last_grand_summary_row_top {
->>>>>>> origin/main
+#lxkyjeymvp .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -912,19 +783,11 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   border-bottom-color: #D3D3D3;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_striped {
+#lxkyjeymvp .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#knnctwyjdx .gt_table_body {
-=======
-#yzturbizog .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#yzturbizog .gt_table_body {
->>>>>>> origin/main
+#lxkyjeymvp .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -933,11 +796,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   border-bottom-color: #D3D3D3;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_footnotes {
-=======
-#yzturbizog .gt_footnotes {
->>>>>>> origin/main
+#lxkyjeymvp .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -951,11 +810,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   border-right-color: #D3D3D3;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_footnote {
-=======
-#yzturbizog .gt_footnote {
->>>>>>> origin/main
+#lxkyjeymvp .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -964,11 +819,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   padding-right: 5px;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_sourcenotes {
-=======
-#yzturbizog .gt_sourcenotes {
->>>>>>> origin/main
+#lxkyjeymvp .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -982,11 +833,7 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   border-right-color: #D3D3D3;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_sourcenote {
-=======
-#yzturbizog .gt_sourcenote {
->>>>>>> origin/main
+#lxkyjeymvp .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -994,136 +841,72 @@ Table&nbsp;2.1: Intermediary datasets and processing scripts
   padding-right: 5px;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_left {
+#lxkyjeymvp .gt_left {
   text-align: left;
 }
 
-#knnctwyjdx .gt_center {
+#lxkyjeymvp .gt_center {
   text-align: center;
 }
 
-#knnctwyjdx .gt_right {
-=======
-#yzturbizog .gt_left {
-  text-align: left;
-}
-
-#yzturbizog .gt_center {
-  text-align: center;
-}
-
-#yzturbizog .gt_right {
->>>>>>> origin/main
+#lxkyjeymvp .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_font_normal {
+#lxkyjeymvp .gt_font_normal {
   font-weight: normal;
 }
 
-#knnctwyjdx .gt_font_bold {
+#lxkyjeymvp .gt_font_bold {
   font-weight: bold;
 }
 
-#knnctwyjdx .gt_font_italic {
+#lxkyjeymvp .gt_font_italic {
   font-style: italic;
 }
 
-#knnctwyjdx .gt_super {
+#lxkyjeymvp .gt_super {
   font-size: 65%;
 }
 
-#knnctwyjdx .gt_footnote_marks {
-=======
-#yzturbizog .gt_font_normal {
-  font-weight: normal;
-}
-
-#yzturbizog .gt_font_bold {
-  font-weight: bold;
-}
-
-#yzturbizog .gt_font_italic {
-  font-style: italic;
-}
-
-#yzturbizog .gt_super {
-  font-size: 65%;
-}
-
-#yzturbizog .gt_footnote_marks {
->>>>>>> origin/main
+#lxkyjeymvp .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_asterisk {
-=======
-#yzturbizog .gt_asterisk {
->>>>>>> origin/main
+#lxkyjeymvp .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx .gt_indent_1 {
+#lxkyjeymvp .gt_indent_1 {
   text-indent: 5px;
 }
 
-#knnctwyjdx .gt_indent_2 {
+#lxkyjeymvp .gt_indent_2 {
   text-indent: 10px;
 }
 
-#knnctwyjdx .gt_indent_3 {
+#lxkyjeymvp .gt_indent_3 {
   text-indent: 15px;
 }
 
-#knnctwyjdx .gt_indent_4 {
+#lxkyjeymvp .gt_indent_4 {
   text-indent: 20px;
 }
 
-#knnctwyjdx .gt_indent_5 {
+#lxkyjeymvp .gt_indent_5 {
   text-indent: 25px;
 }
 
-#knnctwyjdx .katex-display {
-=======
-#yzturbizog .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#yzturbizog .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#yzturbizog .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#yzturbizog .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#yzturbizog .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#yzturbizog .katex-display {
->>>>>>> origin/main
+#lxkyjeymvp .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-<<<<<<< HEAD
-#knnctwyjdx div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-=======
-#yzturbizog div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
->>>>>>> origin/main
+#lxkyjeymvp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1170,11 +953,7 @@ Table&nbsp;2.2: On-road pollutants available by year and EPA data source
 </figcaption>
 <div aria-describedby="tbl-epa-source-moves-edition-year-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<<<<<<< HEAD
-<div id="cawpcbmdri" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-=======
-<div id="mpxqogscft" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
->>>>>>> origin/main
+<div id="vncnlskffs" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
 <table class="gt_table do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" data-bgcolor="#FFFFFF">
@@ -1224,11 +1003,7 @@ Table&nbsp;2.3: On-road pollutants available by year and EPA data source
 </figcaption>
 <div aria-describedby="tbl-epa-source-pollutant-year-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<<<<<<< HEAD
-<div id="viwmwmbstc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-=======
-<div id="ughhjxsamy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
->>>>>>> origin/main
+<div id="hjdcgvonka" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
 <table class="gt_table do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" data-bgcolor="#FFFFFF">
@@ -1278,11 +1053,7 @@ Table&nbsp;2.4: Pollutants provided by EPA datasets
 </figcaption>
 <div aria-describedby="tbl-epa-pollutants-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<<<<<<< HEAD
-<div id="ntrottnnjz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-=======
-<div id="hwpngjuuob" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
->>>>>>> origin/main
+<div id="kzuqggndsa" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
 <table class="gt_table do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" data-bgcolor="#FFFFFF">
@@ -1367,11 +1138,7 @@ Table&nbsp;2.5: Vehicle and fuel types provided by EPA datasets
 </figcaption>
 <div aria-describedby="tbl-epa-vehicle-fuel-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<<<<<<< HEAD
-<div id="tjuycuhlng" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-=======
-<div id="arcqhriupn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
->>>>>>> origin/main
+<div id="ebdhyphkls" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   
 <table class="gt_table do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false" data-bgcolor="#FFFFFF">
@@ -1639,8 +1406,8 @@ Table&nbsp;2.5: Vehicle and fuel types provided by EPA datasets
 <section id="sec-epa-air-emissions-modeling" class="level4">
 <h4 class="anchored" data-anchor-id="sec-epa-air-emissions-modeling">Air Emissions Modeling Platforms</h4>
 <p>The EPA continually works on emissions inventories for various projects.</p>
-<p>Air Emissions Modeling data are available for several years, but years 2021 and 2022 are used in the final inventory.</p>
-<p>Both the 2021 and 2022 estimates are based on the 2020 NEI <span class="citation" data-cites="usepa2022v1EmissionsModeling2024">USEPA (<a href="../references.html#ref-usepa2021EmissionsModeling2024" role="doc-biblioref">2024a</a>)</span>.</p>
+<p>Air Emissions Modeling data are available for several years, but only years 2021 and 2022 are used in the final inventory.</p>
+<p>Both the 2021 and 2022 estimates are based on the 2020 NEI <span class="citation" data-cites="usepa2022v2EmissionsModeling2025">USEPA (<a href="../references.html#ref-usepa2021EmissionsModeling2024" role="doc-biblioref">2024</a>)</span>.</p>
 <p>Air Emissions Modeling SMOKE FF10 data are processed in <a href="data-raw/epa_air_emissions_modeling_onroad.R">epa_air_emissions_modeling_onroad.R</a>.</p>
 <section id="sec-epa-air-emis-verif-valid" class="level5">
 <h5 class="anchored" data-anchor-id="sec-epa-air-emis-verif-valid">Verification and validation</h5>
@@ -1678,8 +1445,8 @@ Table&nbsp;2.5: Vehicle and fuel types provided by EPA datasets
 </section>
 </section>
 </section>
-<section id="state-dot-data" class="level3" data-number="2.2.2">
-<h3 data-number="2.2.2" class="anchored" data-anchor-id="state-dot-data"><span class="header-section-number">2.2.2</span> State DOT data</h3>
+<section id="sec-state-dot-data" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="sec-state-dot-data"><span class="header-section-number">2.2.2</span> State DOT data</h3>
 <p>As required by federal law, Minnesota and Wisconsin state departments of transportation (MnDOT and WisDOT) report various traffic measures for planning, forecasting, and various analysis endeavors.</p>
 <section id="vehicle-miles-traveled" class="level4">
 <h4 class="anchored" data-anchor-id="vehicle-miles-traveled">Vehicle miles traveled</h4>
@@ -1698,13 +1465,8 @@ Table&nbsp;2.5: Vehicle and fuel types provided by EPA datasets
 Figure&nbsp;2.1: County annual vehicle miles traveled
 </figcaption>
 <div aria-describedby="fig-dot-vmt-county-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<<<<<<< HEAD
-<div class="plotly html-widget html-fill-item" id="htmlwidget-dfd4fe85d3a0c6144442" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-dfd4fe85d3a0c6144442">{"x":{"visdat":{"956215771c9c":["function () ","plotlyVisDat"]},"cur_data":"956215771c9c","attrs":{"956215771c9c":{"x":{},"y":{},"opacity":0.69999999999999996,"mode":"lines+markers","marker":{"size":14,"line":{"color":"lightgray","width":2}},"line":{"width":3},"hovertemplate":{},"color":{},"colors":["#78A22F","#A14D5D"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County annual vehicle miles traveled","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Data source","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["2018","2019","2020","2021","2022","2023","2024"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-dot-vmt-county","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024"],"y":[3260020669.4699998,3269721881.8299999,2719984528.5550003,3034208521.1700006,3065677307.5149999,3120587009.8109999,3164702237.1090002,null,930128493.69499993,922698888.03500009,767316933.50999999,862227391.125,879853967.84000003,912684086.60100007,922292341.97600007,null,849399657.0200001,843432209.97000003,724265583.91499996,814803132.75000012,812261795.79500008,810821970.18000019,825939666.92600012,null,4263597940.52,4243172748.9350004,3519337991.3099995,3904822155.2149997,3953143970.4900007,4037110632.928,4148053859.5010004,null,11637081249.795,11738257455.089998,9477296916.3149986,10467617359.625002,10798614427.190002,10900501755.292,11109760235.747997,null,4721964865.6949997,4681422231.9099989,3802866661.4150009,4187440299.6049995,4254176134.565001,4344978586.7610006,4472155632.4550009,null,1420712856.3500001,1449799403.0350001,1222885820.8800001,1387487459.6899998,1427060627.925,1446210910.2359998,1502741844.723,null,968358529.08999991,972172594.76499987,842025804.38,939572892.05500019,928209905.1400001,932775714.29899991,968451915.278,null,2465143296.6150002,2490500966.8000002,2071080392.0749998,2316517539.1750002,2376891102.9349995,2471301874.9069996,2500401441.006],"opacity":0.69999999999999996,"mode":"lines+markers","marker":{"color":"rgba(120,162,47,1)","size":14,"line":{"color":"lightgray","width":2}},"line":{"color":"rgba(120,162,47,1)","width":3},"hovertemplate":["Anoka County<br>2018<br>3.26 billion VMT annually<br><extra><\/extra>","Anoka County<br>2019<br>3.27 billion VMT annually<br><extra><\/extra>","Anoka County<br>2020<br>2.72 billion VMT annually<br><extra><\/extra>","Anoka County<br>2021<br>3.03 billion VMT annually<br><extra><\/extra>","Anoka County<br>2022<br>3.07 billion VMT annually<br><extra><\/extra>","Anoka County<br>2023<br>3.12 billion VMT annually<br><extra><\/extra>","Anoka County<br>2024<br>3.16 billion VMT annually<br><extra><\/extra>",null,"Carver County<br>2018<br>0.93 billion VMT annually<br><extra><\/extra>","Carver County<br>2019<br>0.92 billion VMT annually<br><extra><\/extra>","Carver County<br>2020<br>0.77 billion VMT annually<br><extra><\/extra>","Carver County<br>2021<br>0.86 billion VMT annually<br><extra><\/extra>","Carver County<br>2022<br>0.88 billion VMT annually<br><extra><\/extra>","Carver County<br>2023<br>0.91 billion VMT annually<br><extra><\/extra>","Carver County<br>2024<br>0.92 billion VMT annually<br><extra><\/extra>",null,"Chisago County<br>2018<br>0.85 billion VMT annually<br><extra><\/extra>","Chisago County<br>2019<br>0.84 billion VMT annually<br><extra><\/extra>","Chisago County<br>2020<br>0.72 billion VMT annually<br><extra><\/extra>","Chisago County<br>2021<br>0.81 billion VMT annually<br><extra><\/extra>","Chisago County<br>2022<br>0.81 billion VMT annually<br><extra><\/extra>","Chisago County<br>2023<br>0.81 billion VMT annually<br><extra><\/extra>","Chisago County<br>2024<br>0.83 billion VMT annually<br><extra><\/extra>",null,"Dakota County<br>2018<br>4.26 billion VMT annually<br><extra><\/extra>","Dakota County<br>2019<br>4.24 billion VMT annually<br><extra><\/extra>","Dakota County<br>2020<br>3.52 billion VMT annually<br><extra><\/extra>","Dakota County<br>2021<br>3.9 billion VMT annually<br><extra><\/extra>","Dakota County<br>2022<br>3.95 billion VMT annually<br><extra><\/extra>","Dakota County<br>2023<br>4.04 billion VMT annually<br><extra><\/extra>","Dakota County<br>2024<br>4.15 billion VMT annually<br><extra><\/extra>",null,"Hennepin County<br>2018<br>11.64 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2019<br>11.74 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2020<br>9.48 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2021<br>10.47 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2022<br>10.8 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2023<br>10.9 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2024<br>11.11 billion VMT annually<br><extra><\/extra>",null,"Ramsey County<br>2018<br>4.72 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2019<br>4.68 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2020<br>3.8 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2021<br>4.19 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2022<br>4.25 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2023<br>4.34 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2024<br>4.47 billion VMT annually<br><extra><\/extra>",null,"Scott County<br>2018<br>1.42 billion VMT annually<br><extra><\/extra>","Scott County<br>2019<br>1.45 billion VMT annually<br><extra><\/extra>","Scott County<br>2020<br>1.22 billion VMT annually<br><extra><\/extra>","Scott County<br>2021<br>1.39 billion VMT annually<br><extra><\/extra>","Scott County<br>2022<br>1.43 billion VMT annually<br><extra><\/extra>","Scott County<br>2023<br>1.45 billion VMT annually<br><extra><\/extra>","Scott County<br>2024<br>1.5 billion VMT annually<br><extra><\/extra>",null,"Sherburne County<br>2018<br>0.97 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2019<br>0.97 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2020<br>0.84 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2021<br>0.94 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2022<br>0.93 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2023<br>0.93 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2024<br>0.97 billion VMT annually<br><extra><\/extra>",null,"Washington County<br>2018<br>2.47 billion VMT annually<br><extra><\/extra>","Washington County<br>2019<br>2.49 billion VMT annually<br><extra><\/extra>","Washington County<br>2020<br>2.07 billion VMT annually<br><extra><\/extra>","Washington County<br>2021<br>2.32 billion VMT annually<br><extra><\/extra>","Washington County<br>2022<br>2.38 billion VMT annually<br><extra><\/extra>","Washington County<br>2023<br>2.47 billion VMT annually<br><extra><\/extra>","Washington County<br>2024<br>2.5 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"MnDOT","textfont":{"color":"rgba(120,162,47,1)"},"error_y":{"color":"rgba(120,162,47,1)"},"error_x":{"color":"rgba(120,162,47,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2018","2019","2020","2021","2022","2023",null,"2018","2019","2020","2021","2022","2023"],"y":[389929500,401220045,347585442,392274990,389701375,402712895,null,1358578180,1360704670,1167367980,1322625315,1356294375,1390678835],"opacity":0.69999999999999996,"mode":"lines+markers","marker":{"color":"rgba(161,77,93,1)","size":14,"line":{"color":"lightgray","width":2}},"line":{"color":"rgba(161,77,93,1)","width":3},"hovertemplate":["Pierce County<br>2018<br>0.39 billion VMT annually<br><extra><\/extra>","Pierce County<br>2019<br>0.4 billion VMT annually<br><extra><\/extra>","Pierce County<br>2020<br>0.35 billion VMT annually<br><extra><\/extra>","Pierce County<br>2021<br>0.39 billion VMT annually<br><extra><\/extra>","Pierce County<br>2022<br>0.39 billion VMT annually<br><extra><\/extra>","Pierce County<br>2023<br>0.4 billion VMT annually<br><extra><\/extra>",null,"St. Croix County<br>2018<br>1.36 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2019<br>1.36 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2020<br>1.17 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2021<br>1.32 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2022<br>1.36 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2023<br>1.39 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"WisDOT","textfont":{"color":"rgba(161,77,93,1)"},"error_y":{"color":"rgba(161,77,93,1)"},"error_x":{"color":"rgba(161,77,93,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-=======
-<div class="plotly html-widget html-fill-item" id="htmlwidget-31009874de285e4727f2" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-31009874de285e4727f2">{"x":{"visdat":{"a19a1a3f91ff":["function () ","plotlyVisDat"]},"cur_data":"a19a1a3f91ff","attrs":{"a19a1a3f91ff":{"x":{},"y":{},"opacity":0.69999999999999996,"mode":"lines+markers","marker":{"size":14,"line":{"color":"lightgray","width":2}},"line":{"width":3},"hovertemplate":{},"color":{},"colors":["#78A22F","#A14D5D"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County annual vehicle miles traveled","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Data source","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["2018","2019","2020","2021","2022","2023","2024"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-dot-vmt-county","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024"],"y":[3260020669.4699998,3269721881.8299999,2719984528.5550003,3034208521.1700006,3065677307.5149999,3120587009.8109999,3164702237.1090002,null,930128493.69499993,922698888.03500009,767316933.50999999,862227391.125,879853967.84000003,912684086.60100007,922292341.97600007,null,849399657.0200001,843432209.97000003,724265583.91499996,814803132.75000012,812261795.79500008,810821970.18000019,825939666.92600012,null,4263597940.52,4243172748.9350004,3519337991.3099995,3904822155.2149997,3953143970.4900007,4037110632.928,4148053859.5010004,null,11637081249.795,11738257455.089998,9477296916.3149986,10467617359.625002,10798614427.190002,10900501755.292,11109760235.747997,null,4721964865.6949997,4681422231.9099989,3802866661.4150009,4187440299.6049995,4254176134.565001,4344978586.7610006,4472155632.4550009,null,1420712856.3500001,1449799403.0350001,1222885820.8800001,1387487459.6899998,1427060627.925,1446210910.2359998,1502741844.723,null,968358529.08999991,972172594.76499987,842025804.38,939572892.05500019,928209905.1400001,932775714.29899991,968451915.278,null,2465143296.6150002,2490500966.8000002,2071080392.0749998,2316517539.1750002,2376891102.9349995,2471301874.9069996,2500401441.006],"opacity":0.69999999999999996,"mode":"lines+markers","marker":{"color":"rgba(120,162,47,1)","size":14,"line":{"color":"lightgray","width":2}},"line":{"color":"rgba(120,162,47,1)","width":3},"hovertemplate":["Anoka County<br>2018<br>3.26 billion VMT annually<br><extra><\/extra>","Anoka County<br>2019<br>3.27 billion VMT annually<br><extra><\/extra>","Anoka County<br>2020<br>2.72 billion VMT annually<br><extra><\/extra>","Anoka County<br>2021<br>3.03 billion VMT annually<br><extra><\/extra>","Anoka County<br>2022<br>3.07 billion VMT annually<br><extra><\/extra>","Anoka County<br>2023<br>3.12 billion VMT annually<br><extra><\/extra>","Anoka County<br>2024<br>3.16 billion VMT annually<br><extra><\/extra>",null,"Carver County<br>2018<br>0.93 billion VMT annually<br><extra><\/extra>","Carver County<br>2019<br>0.92 billion VMT annually<br><extra><\/extra>","Carver County<br>2020<br>0.77 billion VMT annually<br><extra><\/extra>","Carver County<br>2021<br>0.86 billion VMT annually<br><extra><\/extra>","Carver County<br>2022<br>0.88 billion VMT annually<br><extra><\/extra>","Carver County<br>2023<br>0.91 billion VMT annually<br><extra><\/extra>","Carver County<br>2024<br>0.92 billion VMT annually<br><extra><\/extra>",null,"Chisago County<br>2018<br>0.85 billion VMT annually<br><extra><\/extra>","Chisago County<br>2019<br>0.84 billion VMT annually<br><extra><\/extra>","Chisago County<br>2020<br>0.72 billion VMT annually<br><extra><\/extra>","Chisago County<br>2021<br>0.81 billion VMT annually<br><extra><\/extra>","Chisago County<br>2022<br>0.81 billion VMT annually<br><extra><\/extra>","Chisago County<br>2023<br>0.81 billion VMT annually<br><extra><\/extra>","Chisago County<br>2024<br>0.83 billion VMT annually<br><extra><\/extra>",null,"Dakota County<br>2018<br>4.26 billion VMT annually<br><extra><\/extra>","Dakota County<br>2019<br>4.24 billion VMT annually<br><extra><\/extra>","Dakota County<br>2020<br>3.52 billion VMT annually<br><extra><\/extra>","Dakota County<br>2021<br>3.9 billion VMT annually<br><extra><\/extra>","Dakota County<br>2022<br>3.95 billion VMT annually<br><extra><\/extra>","Dakota County<br>2023<br>4.04 billion VMT annually<br><extra><\/extra>","Dakota County<br>2024<br>4.15 billion VMT annually<br><extra><\/extra>",null,"Hennepin County<br>2018<br>11.64 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2019<br>11.74 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2020<br>9.48 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2021<br>10.47 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2022<br>10.8 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2023<br>10.9 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2024<br>11.11 billion VMT annually<br><extra><\/extra>",null,"Ramsey County<br>2018<br>4.72 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2019<br>4.68 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2020<br>3.8 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2021<br>4.19 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2022<br>4.25 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2023<br>4.34 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2024<br>4.47 billion VMT annually<br><extra><\/extra>",null,"Scott County<br>2018<br>1.42 billion VMT annually<br><extra><\/extra>","Scott County<br>2019<br>1.45 billion VMT annually<br><extra><\/extra>","Scott County<br>2020<br>1.22 billion VMT annually<br><extra><\/extra>","Scott County<br>2021<br>1.39 billion VMT annually<br><extra><\/extra>","Scott County<br>2022<br>1.43 billion VMT annually<br><extra><\/extra>","Scott County<br>2023<br>1.45 billion VMT annually<br><extra><\/extra>","Scott County<br>2024<br>1.5 billion VMT annually<br><extra><\/extra>",null,"Sherburne County<br>2018<br>0.97 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2019<br>0.97 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2020<br>0.84 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2021<br>0.94 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2022<br>0.93 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2023<br>0.93 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2024<br>0.97 billion VMT annually<br><extra><\/extra>",null,"Washington County<br>2018<br>2.47 billion VMT annually<br><extra><\/extra>","Washington County<br>2019<br>2.49 billion VMT annually<br><extra><\/extra>","Washington County<br>2020<br>2.07 billion VMT annually<br><extra><\/extra>","Washington County<br>2021<br>2.32 billion VMT annually<br><extra><\/extra>","Washington County<br>2022<br>2.38 billion VMT annually<br><extra><\/extra>","Washington County<br>2023<br>2.47 billion VMT annually<br><extra><\/extra>","Washington County<br>2024<br>2.5 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"MnDOT","textfont":{"color":"rgba(120,162,47,1)"},"error_y":{"color":"rgba(120,162,47,1)"},"error_x":{"color":"rgba(120,162,47,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2018","2019","2020","2021","2022","2023",null,"2018","2019","2020","2021","2022","2023"],"y":[389929500,401220045,347585442,392274990,389701375,402712895,null,1358578180,1360704670,1167367980,1322625315,1356294375,1390678835],"opacity":0.69999999999999996,"mode":"lines+markers","marker":{"color":"rgba(161,77,93,1)","size":14,"line":{"color":"lightgray","width":2}},"line":{"color":"rgba(161,77,93,1)","width":3},"hovertemplate":["Pierce County<br>2018<br>0.39 billion VMT annually<br><extra><\/extra>","Pierce County<br>2019<br>0.4 billion VMT annually<br><extra><\/extra>","Pierce County<br>2020<br>0.35 billion VMT annually<br><extra><\/extra>","Pierce County<br>2021<br>0.39 billion VMT annually<br><extra><\/extra>","Pierce County<br>2022<br>0.39 billion VMT annually<br><extra><\/extra>","Pierce County<br>2023<br>0.4 billion VMT annually<br><extra><\/extra>",null,"St. Croix County<br>2018<br>1.36 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2019<br>1.36 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2020<br>1.17 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2021<br>1.32 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2022<br>1.36 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2023<br>1.39 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"WisDOT","textfont":{"color":"rgba(161,77,93,1)"},"error_y":{"color":"rgba(161,77,93,1)"},"error_x":{"color":"rgba(161,77,93,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
->>>>>>> origin/main
+<div class="plotly html-widget html-fill-item" id="htmlwidget-b7ef16197f1410268b70" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-b7ef16197f1410268b70">{"x":{"visdat":{"1012d26b35fa7":["function () ","plotlyVisDat"]},"cur_data":"1012d26b35fa7","attrs":{"1012d26b35fa7":{"x":{},"y":{},"opacity":0.69999999999999996,"mode":"lines+markers","marker":{"size":14,"line":{"color":"lightgray","width":2}},"line":{"width":3},"hovertemplate":{},"color":{},"colors":["#78A22F","#A14D5D"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County annual vehicle miles traveled","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Data source","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":20}},"type":"category","categoryorder":"array","categoryarray":["2018","2019","2020","2021","2022","2023","2024"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-dot-vmt-county","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024",null,"2018","2019","2020","2021","2022","2023","2024"],"y":[3260020669.4699998,3269721881.8299999,2719984528.5550003,3034208521.1700006,3065677307.5149999,3120587009.8109999,3164702237.1090002,null,930128493.69499993,922698888.03500009,767316933.50999999,862227391.125,879853967.84000003,912684086.60100007,922292341.97600007,null,849399657.0200001,843432209.97000003,724265583.91499996,814803132.75000012,812261795.79500008,810821970.18000019,825939666.92600012,null,4263597940.52,4243172748.9350004,3519337991.3099995,3904822155.2149997,3953143970.4900007,4037110632.928,4148053859.5010004,null,11637081249.795,11738257455.089998,9477296916.3149986,10467617359.625002,10798614427.190002,10900501755.292,11109760235.747997,null,4721964865.6949997,4681422231.9099989,3802866661.4150009,4187440299.6049995,4254176134.565001,4344978586.7610006,4472155632.4550009,null,1420712856.3500001,1449799403.0350001,1222885820.8800001,1387487459.6899998,1427060627.925,1446210910.2359998,1502741844.723,null,968358529.08999991,972172594.76499987,842025804.38,939572892.05500019,928209905.1400001,932775714.29899991,968451915.278,null,2465143296.6150002,2490500966.8000002,2071080392.0749998,2316517539.1750002,2376891102.9349995,2471301874.9069996,2500401441.006],"opacity":0.69999999999999996,"mode":"lines+markers","marker":{"color":"rgba(120,162,47,1)","size":14,"line":{"color":"lightgray","width":2}},"line":{"color":"rgba(120,162,47,1)","width":3},"hovertemplate":["Anoka County<br>2018<br>3.26 billion VMT annually<br><extra><\/extra>","Anoka County<br>2019<br>3.27 billion VMT annually<br><extra><\/extra>","Anoka County<br>2020<br>2.72 billion VMT annually<br><extra><\/extra>","Anoka County<br>2021<br>3.03 billion VMT annually<br><extra><\/extra>","Anoka County<br>2022<br>3.07 billion VMT annually<br><extra><\/extra>","Anoka County<br>2023<br>3.12 billion VMT annually<br><extra><\/extra>","Anoka County<br>2024<br>3.16 billion VMT annually<br><extra><\/extra>",null,"Carver County<br>2018<br>0.93 billion VMT annually<br><extra><\/extra>","Carver County<br>2019<br>0.92 billion VMT annually<br><extra><\/extra>","Carver County<br>2020<br>0.77 billion VMT annually<br><extra><\/extra>","Carver County<br>2021<br>0.86 billion VMT annually<br><extra><\/extra>","Carver County<br>2022<br>0.88 billion VMT annually<br><extra><\/extra>","Carver County<br>2023<br>0.91 billion VMT annually<br><extra><\/extra>","Carver County<br>2024<br>0.92 billion VMT annually<br><extra><\/extra>",null,"Chisago County<br>2018<br>0.85 billion VMT annually<br><extra><\/extra>","Chisago County<br>2019<br>0.84 billion VMT annually<br><extra><\/extra>","Chisago County<br>2020<br>0.72 billion VMT annually<br><extra><\/extra>","Chisago County<br>2021<br>0.81 billion VMT annually<br><extra><\/extra>","Chisago County<br>2022<br>0.81 billion VMT annually<br><extra><\/extra>","Chisago County<br>2023<br>0.81 billion VMT annually<br><extra><\/extra>","Chisago County<br>2024<br>0.83 billion VMT annually<br><extra><\/extra>",null,"Dakota County<br>2018<br>4.26 billion VMT annually<br><extra><\/extra>","Dakota County<br>2019<br>4.24 billion VMT annually<br><extra><\/extra>","Dakota County<br>2020<br>3.52 billion VMT annually<br><extra><\/extra>","Dakota County<br>2021<br>3.9 billion VMT annually<br><extra><\/extra>","Dakota County<br>2022<br>3.95 billion VMT annually<br><extra><\/extra>","Dakota County<br>2023<br>4.04 billion VMT annually<br><extra><\/extra>","Dakota County<br>2024<br>4.15 billion VMT annually<br><extra><\/extra>",null,"Hennepin County<br>2018<br>11.64 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2019<br>11.74 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2020<br>9.48 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2021<br>10.47 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2022<br>10.8 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2023<br>10.9 billion VMT annually<br><extra><\/extra>","Hennepin County<br>2024<br>11.11 billion VMT annually<br><extra><\/extra>",null,"Ramsey County<br>2018<br>4.72 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2019<br>4.68 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2020<br>3.8 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2021<br>4.19 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2022<br>4.25 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2023<br>4.34 billion VMT annually<br><extra><\/extra>","Ramsey County<br>2024<br>4.47 billion VMT annually<br><extra><\/extra>",null,"Scott County<br>2018<br>1.42 billion VMT annually<br><extra><\/extra>","Scott County<br>2019<br>1.45 billion VMT annually<br><extra><\/extra>","Scott County<br>2020<br>1.22 billion VMT annually<br><extra><\/extra>","Scott County<br>2021<br>1.39 billion VMT annually<br><extra><\/extra>","Scott County<br>2022<br>1.43 billion VMT annually<br><extra><\/extra>","Scott County<br>2023<br>1.45 billion VMT annually<br><extra><\/extra>","Scott County<br>2024<br>1.5 billion VMT annually<br><extra><\/extra>",null,"Sherburne County<br>2018<br>0.97 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2019<br>0.97 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2020<br>0.84 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2021<br>0.94 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2022<br>0.93 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2023<br>0.93 billion VMT annually<br><extra><\/extra>","Sherburne County<br>2024<br>0.97 billion VMT annually<br><extra><\/extra>",null,"Washington County<br>2018<br>2.47 billion VMT annually<br><extra><\/extra>","Washington County<br>2019<br>2.49 billion VMT annually<br><extra><\/extra>","Washington County<br>2020<br>2.07 billion VMT annually<br><extra><\/extra>","Washington County<br>2021<br>2.32 billion VMT annually<br><extra><\/extra>","Washington County<br>2022<br>2.38 billion VMT annually<br><extra><\/extra>","Washington County<br>2023<br>2.47 billion VMT annually<br><extra><\/extra>","Washington County<br>2024<br>2.5 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"MnDOT","textfont":{"color":"rgba(120,162,47,1)"},"error_y":{"color":"rgba(120,162,47,1)"},"error_x":{"color":"rgba(120,162,47,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2018","2019","2020","2021","2022","2023",null,"2018","2019","2020","2021","2022","2023"],"y":[389929500,401220045,347585442,392274990,389701375,402712895,null,1358578180,1360704670,1167367980,1322625315,1356294375,1390678835],"opacity":0.69999999999999996,"mode":"lines+markers","marker":{"color":"rgba(161,77,93,1)","size":14,"line":{"color":"lightgray","width":2}},"line":{"color":"rgba(161,77,93,1)","width":3},"hovertemplate":["Pierce County<br>2018<br>0.39 billion VMT annually<br><extra><\/extra>","Pierce County<br>2019<br>0.4 billion VMT annually<br><extra><\/extra>","Pierce County<br>2020<br>0.35 billion VMT annually<br><extra><\/extra>","Pierce County<br>2021<br>0.39 billion VMT annually<br><extra><\/extra>","Pierce County<br>2022<br>0.39 billion VMT annually<br><extra><\/extra>","Pierce County<br>2023<br>0.4 billion VMT annually<br><extra><\/extra>",null,"St. Croix County<br>2018<br>1.36 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2019<br>1.36 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2020<br>1.17 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2021<br>1.32 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2022<br>1.36 billion VMT annually<br><extra><\/extra>","St. Croix County<br>2023<br>1.39 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"WisDOT","textfont":{"color":"rgba(161,77,93,1)"},"error_y":{"color":"rgba(161,77,93,1)"},"error_x":{"color":"rgba(161,77,93,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </figure>
 </div>
@@ -1729,13 +1491,8 @@ Figure&nbsp;2.1: County annual vehicle miles traveled
 Figure&nbsp;2.2: City annual vehicle miles traveled
 </figcaption>
 <div aria-describedby="fig-dot-vmt-ctu-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<<<<<<< HEAD
-<div class="plotly html-widget html-fill-item" id="htmlwidget-d31d6c0da8382203aa19" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-d31d6c0da8382203aa19">{"x":{"visdat":{"95623cec32f8":["function () ","plotlyVisDat"]},"cur_data":"95623cec32f8","attrs":{"95623cec32f8":{"mode":"lines+markers","x":{},"y":{},"opacity":0.69999999999999996,"marker":{"size":10,"line":{"color":"lightgray","width":1}},"line":{"width":3},"hovertemplate":{},"color":{},"colors":"Dark2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"City annual vehicle miles traveled","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"Source: MnDOT VMT reports","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"City","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16},"categoryorder":"trace"},"yaxis2":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-dot-vmt-ctu","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[2369681410.5050001,2392499701.5950007,1908192307.4500003,2103739419.6950002,2142360275.5550001,2137076760.27,2205795518.1610007],"opacity":0.69999999999999996,"marker":{"color":"rgba(27,158,119,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(27,158,119,1)","width":3},"hovertemplate":["Minneapolis<br>2018<br>2.37 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2019<br>2.39 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2020<br>1.91 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2021<br>2.1 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2022<br>2.14 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2023<br>2.14 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2024<br>2.21 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Minneapolis","textfont":{"color":"rgba(27,158,119,1)"},"error_y":{"color":"rgba(27,158,119,1)"},"error_x":{"color":"rgba(27,158,119,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[2002974365.365,1992129163.8000002,1605352508.9800003,1745283065.6000001,1741358230.4549997,1774943688.3679998,1816288333.335],"opacity":0.69999999999999996,"marker":{"color":"rgba(192,115,39,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(192,115,39,1)","width":3},"hovertemplate":["Saint Paul<br>2018<br>2 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2019<br>1.99 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2020<br>1.61 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2021<br>1.75 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2022<br>1.74 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2023<br>1.77 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2024<br>1.82 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Saint Paul","textfont":{"color":"rgba(192,115,39,1)"},"error_y":{"color":"rgba(192,115,39,1)"},"error_x":{"color":"rgba(192,115,39,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[1142204532.7549999,1135877296.4449999,915693178.04500008,1014260501.6750001,1044705168.0999999,1020201365.0619999,1026321018.6770002],"opacity":0.69999999999999996,"marker":{"color":"rgba(177,104,111,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(177,104,111,1)","width":3},"hovertemplate":["Bloomington<br>2018<br>1.14 billion VMT annually<br><extra><\/extra>","Bloomington<br>2019<br>1.14 billion VMT annually<br><extra><\/extra>","Bloomington<br>2020<br>0.92 billion VMT annually<br><extra><\/extra>","Bloomington<br>2021<br>1.01 billion VMT annually<br><extra><\/extra>","Bloomington<br>2022<br>1.04 billion VMT annually<br><extra><\/extra>","Bloomington<br>2023<br>1.02 billion VMT annually<br><extra><\/extra>","Bloomington<br>2024<br>1.03 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Bloomington","textfont":{"color":"rgba(177,104,111,1)"},"error_y":{"color":"rgba(177,104,111,1)"},"error_x":{"color":"rgba(177,104,111,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[780421817.95500004,820365991.16999984,661505131.125,732444842.2700001,783424676.97000003,805027205.88800001,827004062.98900008],"opacity":0.69999999999999996,"marker":{"color":"rgba(163,98,165,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(163,98,165,1)","width":3},"hovertemplate":["Maple Grove<br>2018<br>0.78 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2019<br>0.82 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2020<br>0.66 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2021<br>0.73 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2022<br>0.78 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2023<br>0.81 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2024<br>0.83 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Maple Grove","textfont":{"color":"rgba(163,98,165,1)"},"error_y":{"color":"rgba(163,98,165,1)"},"error_x":{"color":"rgba(163,98,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[818063702.20499992,819200573.17999995,661562588.33000004,738477176.46500003,761400120.35500002,756919875.27700007,773656331.51400006],"opacity":0.69999999999999996,"marker":{"color":"rgba(220,71,128,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(220,71,128,1)","width":3},"hovertemplate":["Eagan<br>2018<br>0.82 billion VMT annually<br><extra><\/extra>","Eagan<br>2019<br>0.82 billion VMT annually<br><extra><\/extra>","Eagan<br>2020<br>0.66 billion VMT annually<br><extra><\/extra>","Eagan<br>2021<br>0.74 billion VMT annually<br><extra><\/extra>","Eagan<br>2022<br>0.76 billion VMT annually<br><extra><\/extra>","Eagan<br>2023<br>0.76 billion VMT annually<br><extra><\/extra>","Eagan<br>2024<br>0.77 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Eagan","textfont":{"color":"rgba(220,71,128,1)"},"error_y":{"color":"rgba(220,71,128,1)"},"error_x":{"color":"rgba(220,71,128,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[740601935.2700001,753182359.97500002,619360767.84000003,706628437.52999997,745963833.44999993,751082449.10300004,757596737.44699991],"opacity":0.69999999999999996,"marker":{"color":"rgba(124,158,49,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(124,158,49,1)","width":3},"hovertemplate":["Brooklyn Park<br>2018<br>0.74 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2019<br>0.75 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2020<br>0.62 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2021<br>0.71 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2022<br>0.75 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2023<br>0.75 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2024<br>0.76 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Brooklyn Park","textfont":{"color":"rgba(124,158,49,1)"},"error_y":{"color":"rgba(124,158,49,1)"},"error_x":{"color":"rgba(124,158,49,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[713256117.38499987,722543353.31500006,607330968.26499999,678016359.45499992,675113277.93499994,694731875.64399993,704000930.44400001],"opacity":0.69999999999999996,"marker":{"color":"rgba(191,171,15,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(191,171,15,1)","width":3},"hovertemplate":["Plymouth<br>2018<br>0.71 billion VMT annually<br><extra><\/extra>","Plymouth<br>2019<br>0.72 billion VMT annually<br><extra><\/extra>","Plymouth<br>2020<br>0.61 billion VMT annually<br><extra><\/extra>","Plymouth<br>2021<br>0.68 billion VMT annually<br><extra><\/extra>","Plymouth<br>2022<br>0.68 billion VMT annually<br><extra><\/extra>","Plymouth<br>2023<br>0.69 billion VMT annually<br><extra><\/extra>","Plymouth<br>2024<br>0.7 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Plymouth","textfont":{"color":"rgba(191,171,15,1)"},"error_y":{"color":"rgba(191,171,15,1)"},"error_x":{"color":"rgba(191,171,15,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[619103781.92499995,648103502.04500008,524121928.48499995,590608046.13999999,619189588.31500006,649142228.19800007,657590684.87300003],"opacity":0.69999999999999996,"marker":{"color":"rgba(201,147,20,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(201,147,20,1)","width":3},"hovertemplate":["Woodbury<br>2018<br>0.62 billion VMT annually<br><extra><\/extra>","Woodbury<br>2019<br>0.65 billion VMT annually<br><extra><\/extra>","Woodbury<br>2020<br>0.52 billion VMT annually<br><extra><\/extra>","Woodbury<br>2021<br>0.59 billion VMT annually<br><extra><\/extra>","Woodbury<br>2022<br>0.62 billion VMT annually<br><extra><\/extra>","Woodbury<br>2023<br>0.65 billion VMT annually<br><extra><\/extra>","Woodbury<br>2024<br>0.66 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Woodbury","textfont":{"color":"rgba(201,147,20,1)"},"error_y":{"color":"rgba(201,147,20,1)"},"error_x":{"color":"rgba(201,147,20,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[610060948.16999996,603189611.1049999,502065246.03000003,568770368.79500008,581696964.24500012,599839890.24000001,622482798.60199988],"opacity":0.69999999999999996,"marker":{"color":"rgba(154,114,50,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(154,114,50,1)","width":3},"hovertemplate":["Blaine<br>2018<br>0.61 billion VMT annually<br><extra><\/extra>","Blaine<br>2019<br>0.6 billion VMT annually<br><extra><\/extra>","Blaine<br>2020<br>0.5 billion VMT annually<br><extra><\/extra>","Blaine<br>2021<br>0.57 billion VMT annually<br><extra><\/extra>","Blaine<br>2022<br>0.58 billion VMT annually<br><extra><\/extra>","Blaine<br>2023<br>0.6 billion VMT annually<br><extra><\/extra>","Blaine<br>2024<br>0.62 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Blaine","textfont":{"color":"rgba(154,114,50,1)"},"error_y":{"color":"rgba(154,114,50,1)"},"error_x":{"color":"rgba(154,114,50,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[558409894.16500008,570617999.88999999,467294409.80500007,534213672.59499991,554781241.19000006,577036831.49199998,603004169.01600003],"opacity":0.69999999999999996,"marker":{"color":"rgba(102,102,102,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(102,102,102,1)","width":3},"hovertemplate":["Lakeville<br>2018<br>0.56 billion VMT annually<br><extra><\/extra>","Lakeville<br>2019<br>0.57 billion VMT annually<br><extra><\/extra>","Lakeville<br>2020<br>0.47 billion VMT annually<br><extra><\/extra>","Lakeville<br>2021<br>0.53 billion VMT annually<br><extra><\/extra>","Lakeville<br>2022<br>0.55 billion VMT annually<br><extra><\/extra>","Lakeville<br>2023<br>0.58 billion VMT annually<br><extra><\/extra>","Lakeville<br>2024<br>0.6 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Lakeville","textfont":{"color":"rgba(102,102,102,1)"},"error_y":{"color":"rgba(102,102,102,1)"},"error_x":{"color":"rgba(102,102,102,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-=======
-<div class="plotly html-widget html-fill-item" id="htmlwidget-e38efcd7c8c88e119fe9" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-e38efcd7c8c88e119fe9">{"x":{"visdat":{"a19a7186cfb":["function () ","plotlyVisDat"]},"cur_data":"a19a7186cfb","attrs":{"a19a7186cfb":{"mode":"lines+markers","x":{},"y":{},"opacity":0.69999999999999996,"marker":{"size":10,"line":{"color":"lightgray","width":1}},"line":{"width":3},"hovertemplate":{},"color":{},"colors":"Dark2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"City annual vehicle miles traveled","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"Source: MnDOT VMT reports","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"City","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16},"categoryorder":"trace"},"yaxis2":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-dot-vmt-ctu","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[2369681410.5050001,2392499701.5950007,1908192307.4500003,2103739419.6950002,2142360275.5550001,2137076760.27,2205795518.1610007],"opacity":0.69999999999999996,"marker":{"color":"rgba(27,158,119,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(27,158,119,1)","width":3},"hovertemplate":["Minneapolis<br>2018<br>2.37 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2019<br>2.39 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2020<br>1.91 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2021<br>2.1 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2022<br>2.14 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2023<br>2.14 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2024<br>2.21 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Minneapolis","textfont":{"color":"rgba(27,158,119,1)"},"error_y":{"color":"rgba(27,158,119,1)"},"error_x":{"color":"rgba(27,158,119,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[2002974365.365,1992129163.8000002,1605352508.9800003,1745283065.6000001,1741358230.4549997,1774943688.3679998,1816288333.335],"opacity":0.69999999999999996,"marker":{"color":"rgba(192,115,39,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(192,115,39,1)","width":3},"hovertemplate":["Saint Paul<br>2018<br>2 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2019<br>1.99 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2020<br>1.61 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2021<br>1.75 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2022<br>1.74 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2023<br>1.77 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2024<br>1.82 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Saint Paul","textfont":{"color":"rgba(192,115,39,1)"},"error_y":{"color":"rgba(192,115,39,1)"},"error_x":{"color":"rgba(192,115,39,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[1142204532.7549999,1135877296.4449999,915693178.04500008,1014260501.6750001,1044705168.0999999,1020201365.0619999,1026321018.6770002],"opacity":0.69999999999999996,"marker":{"color":"rgba(177,104,111,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(177,104,111,1)","width":3},"hovertemplate":["Bloomington<br>2018<br>1.14 billion VMT annually<br><extra><\/extra>","Bloomington<br>2019<br>1.14 billion VMT annually<br><extra><\/extra>","Bloomington<br>2020<br>0.92 billion VMT annually<br><extra><\/extra>","Bloomington<br>2021<br>1.01 billion VMT annually<br><extra><\/extra>","Bloomington<br>2022<br>1.04 billion VMT annually<br><extra><\/extra>","Bloomington<br>2023<br>1.02 billion VMT annually<br><extra><\/extra>","Bloomington<br>2024<br>1.03 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Bloomington","textfont":{"color":"rgba(177,104,111,1)"},"error_y":{"color":"rgba(177,104,111,1)"},"error_x":{"color":"rgba(177,104,111,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[780421817.95500004,820365991.16999984,661505131.125,732444842.2700001,783424676.97000003,805027205.88800001,827004062.98900008],"opacity":0.69999999999999996,"marker":{"color":"rgba(163,98,165,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(163,98,165,1)","width":3},"hovertemplate":["Maple Grove<br>2018<br>0.78 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2019<br>0.82 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2020<br>0.66 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2021<br>0.73 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2022<br>0.78 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2023<br>0.81 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2024<br>0.83 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Maple Grove","textfont":{"color":"rgba(163,98,165,1)"},"error_y":{"color":"rgba(163,98,165,1)"},"error_x":{"color":"rgba(163,98,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[818063702.20499992,819200573.17999995,661562588.33000004,738477176.46500003,761400120.35500002,756919875.27700007,773656331.51400006],"opacity":0.69999999999999996,"marker":{"color":"rgba(220,71,128,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(220,71,128,1)","width":3},"hovertemplate":["Eagan<br>2018<br>0.82 billion VMT annually<br><extra><\/extra>","Eagan<br>2019<br>0.82 billion VMT annually<br><extra><\/extra>","Eagan<br>2020<br>0.66 billion VMT annually<br><extra><\/extra>","Eagan<br>2021<br>0.74 billion VMT annually<br><extra><\/extra>","Eagan<br>2022<br>0.76 billion VMT annually<br><extra><\/extra>","Eagan<br>2023<br>0.76 billion VMT annually<br><extra><\/extra>","Eagan<br>2024<br>0.77 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Eagan","textfont":{"color":"rgba(220,71,128,1)"},"error_y":{"color":"rgba(220,71,128,1)"},"error_x":{"color":"rgba(220,71,128,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[740601935.2700001,753182359.97500002,619360767.84000003,706628437.52999997,745963833.44999993,751082449.10300004,757596737.44699991],"opacity":0.69999999999999996,"marker":{"color":"rgba(124,158,49,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(124,158,49,1)","width":3},"hovertemplate":["Brooklyn Park<br>2018<br>0.74 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2019<br>0.75 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2020<br>0.62 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2021<br>0.71 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2022<br>0.75 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2023<br>0.75 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2024<br>0.76 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Brooklyn Park","textfont":{"color":"rgba(124,158,49,1)"},"error_y":{"color":"rgba(124,158,49,1)"},"error_x":{"color":"rgba(124,158,49,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[713256117.38499987,722543353.31500006,607330968.26499999,678016359.45499992,675113277.93499994,694731875.64399993,704000930.44400001],"opacity":0.69999999999999996,"marker":{"color":"rgba(191,171,15,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(191,171,15,1)","width":3},"hovertemplate":["Plymouth<br>2018<br>0.71 billion VMT annually<br><extra><\/extra>","Plymouth<br>2019<br>0.72 billion VMT annually<br><extra><\/extra>","Plymouth<br>2020<br>0.61 billion VMT annually<br><extra><\/extra>","Plymouth<br>2021<br>0.68 billion VMT annually<br><extra><\/extra>","Plymouth<br>2022<br>0.68 billion VMT annually<br><extra><\/extra>","Plymouth<br>2023<br>0.69 billion VMT annually<br><extra><\/extra>","Plymouth<br>2024<br>0.7 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Plymouth","textfont":{"color":"rgba(191,171,15,1)"},"error_y":{"color":"rgba(191,171,15,1)"},"error_x":{"color":"rgba(191,171,15,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[619103781.92499995,648103502.04500008,524121928.48499995,590608046.13999999,619189588.31500006,649142228.19800007,657590684.87300003],"opacity":0.69999999999999996,"marker":{"color":"rgba(201,147,20,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(201,147,20,1)","width":3},"hovertemplate":["Woodbury<br>2018<br>0.62 billion VMT annually<br><extra><\/extra>","Woodbury<br>2019<br>0.65 billion VMT annually<br><extra><\/extra>","Woodbury<br>2020<br>0.52 billion VMT annually<br><extra><\/extra>","Woodbury<br>2021<br>0.59 billion VMT annually<br><extra><\/extra>","Woodbury<br>2022<br>0.62 billion VMT annually<br><extra><\/extra>","Woodbury<br>2023<br>0.65 billion VMT annually<br><extra><\/extra>","Woodbury<br>2024<br>0.66 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Woodbury","textfont":{"color":"rgba(201,147,20,1)"},"error_y":{"color":"rgba(201,147,20,1)"},"error_x":{"color":"rgba(201,147,20,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[610060948.16999996,603189611.1049999,502065246.03000003,568770368.79500008,581696964.24500012,599839890.24000001,622482798.60199988],"opacity":0.69999999999999996,"marker":{"color":"rgba(154,114,50,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(154,114,50,1)","width":3},"hovertemplate":["Blaine<br>2018<br>0.61 billion VMT annually<br><extra><\/extra>","Blaine<br>2019<br>0.6 billion VMT annually<br><extra><\/extra>","Blaine<br>2020<br>0.5 billion VMT annually<br><extra><\/extra>","Blaine<br>2021<br>0.57 billion VMT annually<br><extra><\/extra>","Blaine<br>2022<br>0.58 billion VMT annually<br><extra><\/extra>","Blaine<br>2023<br>0.6 billion VMT annually<br><extra><\/extra>","Blaine<br>2024<br>0.62 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Blaine","textfont":{"color":"rgba(154,114,50,1)"},"error_y":{"color":"rgba(154,114,50,1)"},"error_x":{"color":"rgba(154,114,50,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[558409894.16500008,570617999.88999999,467294409.80500007,534213672.59499991,554781241.19000006,577036831.49199998,603004169.01600003],"opacity":0.69999999999999996,"marker":{"color":"rgba(102,102,102,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(102,102,102,1)","width":3},"hovertemplate":["Lakeville<br>2018<br>0.56 billion VMT annually<br><extra><\/extra>","Lakeville<br>2019<br>0.57 billion VMT annually<br><extra><\/extra>","Lakeville<br>2020<br>0.47 billion VMT annually<br><extra><\/extra>","Lakeville<br>2021<br>0.53 billion VMT annually<br><extra><\/extra>","Lakeville<br>2022<br>0.55 billion VMT annually<br><extra><\/extra>","Lakeville<br>2023<br>0.58 billion VMT annually<br><extra><\/extra>","Lakeville<br>2024<br>0.6 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Lakeville","textfont":{"color":"rgba(102,102,102,1)"},"error_y":{"color":"rgba(102,102,102,1)"},"error_x":{"color":"rgba(102,102,102,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
->>>>>>> origin/main
+<div class="plotly html-widget html-fill-item" id="htmlwidget-bf37accb5948f6509f79" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-bf37accb5948f6509f79">{"x":{"visdat":{"1012d6fef5901":["function () ","plotlyVisDat"]},"cur_data":"1012d6fef5901","attrs":{"1012d6fef5901":{"mode":"lines+markers","x":{},"y":{},"opacity":0.69999999999999996,"marker":{"size":10,"line":{"color":"lightgray","width":1}},"line":{"width":3},"hovertemplate":{},"color":{},"colors":"Dark2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"City annual vehicle miles traveled","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"Source: MnDOT VMT reports","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"City","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16},"categoryorder":"trace"},"yaxis2":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Annual VMT","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Year","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-dot-vmt-ctu","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[2369681410.5050001,2392499701.5950007,1908192307.4500003,2103739419.6950002,2142360275.5550001,2137076760.27,2205795518.1610007],"opacity":0.69999999999999996,"marker":{"color":"rgba(27,158,119,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(27,158,119,1)","width":3},"hovertemplate":["Minneapolis<br>2018<br>2.37 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2019<br>2.39 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2020<br>1.91 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2021<br>2.1 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2022<br>2.14 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2023<br>2.14 billion VMT annually<br><extra><\/extra>","Minneapolis<br>2024<br>2.21 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Minneapolis","textfont":{"color":"rgba(27,158,119,1)"},"error_y":{"color":"rgba(27,158,119,1)"},"error_x":{"color":"rgba(27,158,119,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[2002974365.365,1992129163.8000002,1605352508.9800003,1745283065.6000001,1741358230.4549997,1774943688.3679998,1816288333.335],"opacity":0.69999999999999996,"marker":{"color":"rgba(192,115,39,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(192,115,39,1)","width":3},"hovertemplate":["Saint Paul<br>2018<br>2 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2019<br>1.99 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2020<br>1.61 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2021<br>1.75 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2022<br>1.74 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2023<br>1.77 billion VMT annually<br><extra><\/extra>","Saint Paul<br>2024<br>1.82 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Saint Paul","textfont":{"color":"rgba(192,115,39,1)"},"error_y":{"color":"rgba(192,115,39,1)"},"error_x":{"color":"rgba(192,115,39,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[1142204532.7549999,1135877296.4449999,915693178.04500008,1014260501.6750001,1044705168.0999999,1020201365.0619999,1026321018.6770002],"opacity":0.69999999999999996,"marker":{"color":"rgba(177,104,111,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(177,104,111,1)","width":3},"hovertemplate":["Bloomington<br>2018<br>1.14 billion VMT annually<br><extra><\/extra>","Bloomington<br>2019<br>1.14 billion VMT annually<br><extra><\/extra>","Bloomington<br>2020<br>0.92 billion VMT annually<br><extra><\/extra>","Bloomington<br>2021<br>1.01 billion VMT annually<br><extra><\/extra>","Bloomington<br>2022<br>1.04 billion VMT annually<br><extra><\/extra>","Bloomington<br>2023<br>1.02 billion VMT annually<br><extra><\/extra>","Bloomington<br>2024<br>1.03 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Bloomington","textfont":{"color":"rgba(177,104,111,1)"},"error_y":{"color":"rgba(177,104,111,1)"},"error_x":{"color":"rgba(177,104,111,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[780421817.95500004,820365991.16999984,661505131.125,732444842.2700001,783424676.97000003,805027205.88800001,827004062.98900008],"opacity":0.69999999999999996,"marker":{"color":"rgba(163,98,165,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(163,98,165,1)","width":3},"hovertemplate":["Maple Grove<br>2018<br>0.78 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2019<br>0.82 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2020<br>0.66 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2021<br>0.73 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2022<br>0.78 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2023<br>0.81 billion VMT annually<br><extra><\/extra>","Maple Grove<br>2024<br>0.83 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Maple Grove","textfont":{"color":"rgba(163,98,165,1)"},"error_y":{"color":"rgba(163,98,165,1)"},"error_x":{"color":"rgba(163,98,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[818063702.20499992,819200573.17999995,661562588.33000004,738477176.46500003,761400120.35500002,756919875.27700007,773656331.51400006],"opacity":0.69999999999999996,"marker":{"color":"rgba(220,71,128,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(220,71,128,1)","width":3},"hovertemplate":["Eagan<br>2018<br>0.82 billion VMT annually<br><extra><\/extra>","Eagan<br>2019<br>0.82 billion VMT annually<br><extra><\/extra>","Eagan<br>2020<br>0.66 billion VMT annually<br><extra><\/extra>","Eagan<br>2021<br>0.74 billion VMT annually<br><extra><\/extra>","Eagan<br>2022<br>0.76 billion VMT annually<br><extra><\/extra>","Eagan<br>2023<br>0.76 billion VMT annually<br><extra><\/extra>","Eagan<br>2024<br>0.77 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Eagan","textfont":{"color":"rgba(220,71,128,1)"},"error_y":{"color":"rgba(220,71,128,1)"},"error_x":{"color":"rgba(220,71,128,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[740601935.2700001,753182359.97500002,619360767.84000003,706628437.52999997,745963833.44999993,751082449.10300004,757596737.44699991],"opacity":0.69999999999999996,"marker":{"color":"rgba(124,158,49,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(124,158,49,1)","width":3},"hovertemplate":["Brooklyn Park<br>2018<br>0.74 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2019<br>0.75 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2020<br>0.62 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2021<br>0.71 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2022<br>0.75 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2023<br>0.75 billion VMT annually<br><extra><\/extra>","Brooklyn Park<br>2024<br>0.76 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Brooklyn Park","textfont":{"color":"rgba(124,158,49,1)"},"error_y":{"color":"rgba(124,158,49,1)"},"error_x":{"color":"rgba(124,158,49,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[713256117.38499987,722543353.31500006,607330968.26499999,678016359.45499992,675113277.93499994,694731875.64399993,704000930.44400001],"opacity":0.69999999999999996,"marker":{"color":"rgba(191,171,15,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(191,171,15,1)","width":3},"hovertemplate":["Plymouth<br>2018<br>0.71 billion VMT annually<br><extra><\/extra>","Plymouth<br>2019<br>0.72 billion VMT annually<br><extra><\/extra>","Plymouth<br>2020<br>0.61 billion VMT annually<br><extra><\/extra>","Plymouth<br>2021<br>0.68 billion VMT annually<br><extra><\/extra>","Plymouth<br>2022<br>0.68 billion VMT annually<br><extra><\/extra>","Plymouth<br>2023<br>0.69 billion VMT annually<br><extra><\/extra>","Plymouth<br>2024<br>0.7 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Plymouth","textfont":{"color":"rgba(191,171,15,1)"},"error_y":{"color":"rgba(191,171,15,1)"},"error_x":{"color":"rgba(191,171,15,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[619103781.92499995,648103502.04500008,524121928.48499995,590608046.13999999,619189588.31500006,649142228.19800007,657590684.87300003],"opacity":0.69999999999999996,"marker":{"color":"rgba(201,147,20,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(201,147,20,1)","width":3},"hovertemplate":["Woodbury<br>2018<br>0.62 billion VMT annually<br><extra><\/extra>","Woodbury<br>2019<br>0.65 billion VMT annually<br><extra><\/extra>","Woodbury<br>2020<br>0.52 billion VMT annually<br><extra><\/extra>","Woodbury<br>2021<br>0.59 billion VMT annually<br><extra><\/extra>","Woodbury<br>2022<br>0.62 billion VMT annually<br><extra><\/extra>","Woodbury<br>2023<br>0.65 billion VMT annually<br><extra><\/extra>","Woodbury<br>2024<br>0.66 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Woodbury","textfont":{"color":"rgba(201,147,20,1)"},"error_y":{"color":"rgba(201,147,20,1)"},"error_x":{"color":"rgba(201,147,20,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[610060948.16999996,603189611.1049999,502065246.03000003,568770368.79500008,581696964.24500012,599839890.24000001,622482798.60199988],"opacity":0.69999999999999996,"marker":{"color":"rgba(154,114,50,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(154,114,50,1)","width":3},"hovertemplate":["Blaine<br>2018<br>0.61 billion VMT annually<br><extra><\/extra>","Blaine<br>2019<br>0.6 billion VMT annually<br><extra><\/extra>","Blaine<br>2020<br>0.5 billion VMT annually<br><extra><\/extra>","Blaine<br>2021<br>0.57 billion VMT annually<br><extra><\/extra>","Blaine<br>2022<br>0.58 billion VMT annually<br><extra><\/extra>","Blaine<br>2023<br>0.6 billion VMT annually<br><extra><\/extra>","Blaine<br>2024<br>0.62 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Blaine","textfont":{"color":"rgba(154,114,50,1)"},"error_y":{"color":"rgba(154,114,50,1)"},"error_x":{"color":"rgba(154,114,50,1)"},"xaxis":"x","yaxis":"y","frame":null},{"mode":"lines+markers","x":[2018,2019,2020,2021,2022,2023,2024],"y":[558409894.16500008,570617999.88999999,467294409.80500007,534213672.59499991,554781241.19000006,577036831.49199998,603004169.01600003],"opacity":0.69999999999999996,"marker":{"color":"rgba(102,102,102,1)","size":10,"line":{"color":"lightgray","width":1}},"line":{"color":"rgba(102,102,102,1)","width":3},"hovertemplate":["Lakeville<br>2018<br>0.56 billion VMT annually<br><extra><\/extra>","Lakeville<br>2019<br>0.57 billion VMT annually<br><extra><\/extra>","Lakeville<br>2020<br>0.47 billion VMT annually<br><extra><\/extra>","Lakeville<br>2021<br>0.53 billion VMT annually<br><extra><\/extra>","Lakeville<br>2022<br>0.55 billion VMT annually<br><extra><\/extra>","Lakeville<br>2023<br>0.58 billion VMT annually<br><extra><\/extra>","Lakeville<br>2024<br>0.6 billion VMT annually<br><extra><\/extra>"],"type":"scatter","name":"Lakeville","textfont":{"color":"rgba(102,102,102,1)"},"error_y":{"color":"rgba(102,102,102,1)"},"error_x":{"color":"rgba(102,102,102,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </figure>
 </div>
@@ -1753,8 +1510,8 @@ Figure&nbsp;2.2: City annual vehicle miles traveled
 Figure&nbsp;2.3: Proportion of county VMT accounted for by city VMT
 </figcaption>
 <div aria-describedby="fig-vmt-county-ctu-gap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-96b4eaea7bbddd83943c" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-96b4eaea7bbddd83943c">{"x":{"visdat":{"956273c66667":["function () ","plotlyVisDat"]},"cur_data":"956273c66667","attrs":{"956273c66667":{"x":{},"y":{},"hoverinfo":"text","hovertemplate":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"Most county VMT is accounted for in city estimates","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"% of county VMT accounted for","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16},"tickformat":"1%"},"yaxis2":{"title":{"text":"% of county VMT accounted for","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"% of county VMT accounted for","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"% of county VMT accounted for","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"categoryorder":"total descending","type":"category","categoryarray":["Anoka","Carver","Dakota","Hennepin","Ramsey","Scott","Washington"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-vmt-county-ctu-gap","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Anoka","Carver","Dakota","Hennepin","Ramsey","Scott","Washington"],"y":[0.99101556428085835,0.63764917155209511,0.89701422431383471,0.9736086266704348,0.97929910268771581,0.64893553839162477,0.91020095310153681],"hoverinfo":["text","text","text","text","text","text","text"],"hovertemplate":["Anoka<br>2022<br>99.10% of VMT accounted for in city estimates<br><extra><\/extra>","Carver<br>2022<br>63.76% of VMT accounted for in city estimates<br><extra><\/extra>","Dakota<br>2022<br>89.70% of VMT accounted for in city estimates<br><extra><\/extra>","Hennepin<br>2022<br>97.36% of VMT accounted for in city estimates<br><extra><\/extra>","Ramsey<br>2022<br>97.93% of VMT accounted for in city estimates<br><extra><\/extra>","Scott<br>2022<br>64.89% of VMT accounted for in city estimates<br><extra><\/extra>","Washington<br>2022<br>91.02% of VMT accounted for in city estimates<br><extra><\/extra>"],"type":"bar","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-f3fd66018406975c688a" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-f3fd66018406975c688a">{"x":{"visdat":{"1012d5fa3ff3":["function () ","plotlyVisDat"]},"cur_data":"1012d5fa3ff3","attrs":{"1012d5fa3ff3":{"x":{},"y":{},"hoverinfo":"text","hovertemplate":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"Most county VMT is accounted for in city estimates","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"% of county VMT accounted for","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16},"tickformat":"1%"},"yaxis2":{"title":{"text":"% of county VMT accounted for","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"% of county VMT accounted for","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"% of county VMT accounted for","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":20}},"categoryorder":"total descending","type":"category","categoryarray":["Anoka","Carver","Dakota","Hennepin","Ramsey","Scott","Washington"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-vmt-county-ctu-gap","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Anoka","Carver","Dakota","Hennepin","Ramsey","Scott","Washington"],"y":[0.99101556428085835,0.63764917155209511,0.89701422431383471,0.9736086266704348,0.97929910268771581,0.64893553839162477,0.91020095310153681],"hoverinfo":["text","text","text","text","text","text","text"],"hovertemplate":["Anoka<br>2022<br>99.10% of VMT accounted for in city estimates<br><extra><\/extra>","Carver<br>2022<br>63.76% of VMT accounted for in city estimates<br><extra><\/extra>","Dakota<br>2022<br>89.70% of VMT accounted for in city estimates<br><extra><\/extra>","Hennepin<br>2022<br>97.36% of VMT accounted for in city estimates<br><extra><\/extra>","Ramsey<br>2022<br>97.93% of VMT accounted for in city estimates<br><extra><\/extra>","Scott<br>2022<br>64.89% of VMT accounted for in city estimates<br><extra><\/extra>","Washington<br>2022<br>91.02% of VMT accounted for in city estimates<br><extra><\/extra>"],"type":"bar","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </figure>
 </div>
@@ -1792,8 +1549,8 @@ Figure&nbsp;2.3: Proportion of county VMT accounted for by city VMT
 <!-- {{< include data_tbi.qmd >}} -->
 </section>
 </section>
-<section id="regional-travel-demand-model" class="level3" data-number="2.2.3">
-<h3 data-number="2.2.3" class="anchored" data-anchor-id="regional-travel-demand-model"><span class="header-section-number">2.2.3</span> Regional Travel Demand Model</h3>
+<section id="sec-regional-travel-demand-model" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="sec-regional-travel-demand-model"><span class="header-section-number">2.2.3</span> Regional Travel Demand Model</h3>
 <p>VMT forecasts for counties and cities are generated from our <a href="https://metrocouncil.org/Transportation/Performance/Travel-Forecasting.aspx">regional travel demand model</a>.</p>
 <p>The current regional travel demand forecast model (TourCast) is an activity-based model, which means that it simulates transportation decisions made by individuals ranging from long-term (e.g.&nbsp;regular work/school location, whether to own an automobile), day-level (e.g, what activities to engage in, with whom, where, and when), and trip-level (what transportation mode to use, what route to take) in order to evaluate policy and investment choices at a high level of detail.</p>
 <p>Model inputs include</p>
@@ -1815,6 +1572,11 @@ Figure&nbsp;2.3: Proportion of county VMT accounted for by city VMT
 <p>The regional travel demand model network is made up of nodes and segments. We use the network segment-level information to calculate VMT.</p>
 <p>The network based approach is based on attributing all the vehicle traffic that occurs within a given city or county to that city or county, regardless of where the trip starts or ends. VMT is calculated by multiplying segment vehicle volume (vehicles) by segment length (miles traveled). Network segments are attributed to cities by a spatial join. When a segment crosses more than one city boundary, the segment is split at the boundary. The segment total volume is attributed to both sub-segments, and the segment length is re-calculated for each sub-segment. Thus, no volume is lost. All time periods are road types are aggregated to represent average daily vehicle miles traveled. Daily VMT are expanded to annual VMT using an annualization factor of 340 (<span class="citation" data-cites="castigliegoCarbonFreeBoston2019">Castigliego et al. (<a href="../references.html#ref-castigliegoCarbonFreeBoston2019" role="doc-biblioref">2019</a>)</span>).</p>
 <p>Code for processing RTDM outputs relies on internal file system access and is not available publicly. Please contact us for more information and reproducible examples.</p>
+</section>
+<section id="emissions-forecast-with-moves" class="level4">
+<h4 class="anchored" data-anchor-id="emissions-forecast-with-moves">Emissions forecast with MOVES</h4>
+<p>Emissions forecasts for our region were calculated using the EPA’s <a href="https://www.epa.gov/moves">Motor Vehicle Emissions Simulator (MOVES)</a> <span class="citation" data-cites="usepaPopulationActivityOnroad2023">(<a href="../references.html#ref-usepaPopulationActivityOnroad2023" role="doc-biblioref">USEPA 2023c</a>)</span>. MOVES calculates emissions using outputs from the Regional Travel Demand Model, Minnesota Department of Vehicle Services’ county vehicle registration data, and the Minnesota Pollution Control Agency’s vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region and expected changes in the regional fleet. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle’s age and size, as well as its fuel intake (diesel or gasoline).</p>
+<p>Gross emissions rates in grams CO<sub>2</sub>e per vehicle mile traveled are provided in <a href="../_meta/supplementary_data.html" class="quarto-xref"><span>Appendix A</span></a>.</p>
 <!-- Potentially add forecasting vmt quarto doc as appendix here -->
 </section>
 <section id="limitations-1" class="level4">
@@ -1865,13 +1627,8 @@ Figure&nbsp;2.3: Proportion of county VMT accounted for by city VMT
 Figure&nbsp;2.4: County population and transportation emissions
 </figcaption>
 <div aria-describedby="fig-emissions-population-transportation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<<<<<<< HEAD
-<div class="plotly html-widget html-fill-item" id="htmlwidget-b72358175c90cf94d64f" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-b72358175c90cf94d64f">{"x":{"visdat":{"95625623f828":["function () ","plotlyVisDat"]},"cur_data":"95625623f828","attrs":{"95625623f828":{"x":{},"y":{},"mode":"markers","hovertemplate":{},"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County population and emissions","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"2022 ACS 5-year population estimates. Strong positive correlation","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"h"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-emissions-population-transportation","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":[363985,107216,56927,439179,1270787,42187,547202,151347,97820,93752,268651],"y":[1696154.9058350439,480884.06804803334,433842.5818880666,2100995.8754391973,5842135.4903521203,194970.38660905408,2406797.8111776402,806327.57411363174,495992.09176670964,875644.16874852485,1249737.8529417566],"mode":"markers","hovertemplate":["Anoka County<br>Population: 363,985<br>Emissions: 1.7 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Population: 107,216<br>Emissions: 0.48 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Population: 56,927<br>Emissions: 0.43 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Population: 439,179<br>Emissions: 2.1 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Population: 1,270,787<br>Emissions: 5.84 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Population: 42,187<br>Emissions: 0.19 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Population: 547,202<br>Emissions: 2.41 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Population: 151,347<br>Emissions: 0.81 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Population: 97,820<br>Emissions: 0.5 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Population: 93,752<br>Emissions: 0.88 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Population: 268,651<br>Emissions: 1.25 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-=======
-<div class="plotly html-widget html-fill-item" id="htmlwidget-d3dc3687a000e3280ab3" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-d3dc3687a000e3280ab3">{"x":{"visdat":{"a19a17ea7e8a":["function () ","plotlyVisDat"]},"cur_data":"a19a17ea7e8a","attrs":{"a19a17ea7e8a":{"x":{},"y":{},"mode":"markers","hovertemplate":{},"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County population and emissions","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"2022 ACS 5-year population estimates. Strong positive correlation","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"h"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-emissions-population-transportation","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":[363985,107216,56927,439179,1270787,42187,547202,151347,97820,93752,268651],"y":[1664576.5044228553,471271.56305251602,417517.11166116921,2068837.6530097048,5816262.9385053683,190507.26342538005,2421563.7729466138,791156.77559788548,481499.82624488627,868760.36443415214,1217253.018549931],"mode":"markers","hovertemplate":["Anoka County<br>Population: 363,985<br>Emissions: 1.66 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Population: 107,216<br>Emissions: 0.47 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Population: 56,927<br>Emissions: 0.42 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Population: 439,179<br>Emissions: 2.07 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Population: 1,270,787<br>Emissions: 5.82 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Population: 42,187<br>Emissions: 0.19 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Population: 547,202<br>Emissions: 2.42 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Population: 151,347<br>Emissions: 0.79 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Population: 97,820<br>Emissions: 0.48 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Population: 93,752<br>Emissions: 0.87 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Population: 268,651<br>Emissions: 1.22 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
->>>>>>> origin/main
+<div class="plotly html-widget html-fill-item" id="htmlwidget-6aa3e8dccb2f0fe80454" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-6aa3e8dccb2f0fe80454">{"x":{"visdat":{"1012d5bf4d7da":["function () ","plotlyVisDat"]},"cur_data":"1012d5bf4d7da","attrs":{"1012d5bf4d7da":{"x":{},"y":{},"mode":"markers","hovertemplate":{},"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County population and emissions","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"2022 ACS 5-year population estimates. Strong positive correlation","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"h"},"yaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":20}}},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-emissions-population-transportation","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":[363985,107216,56927,439179,1270787,42187,547202,151347,97820,93752,268651],"y":[1696154.9058350439,480884.06804803334,433842.5818880666,2100995.8754391973,5842135.4903521203,194970.38660905408,2406797.8111776402,806327.57411363174,495992.09176670964,875644.16874852485,1249737.8529417566],"mode":"markers","hovertemplate":["Anoka County<br>Population: 363,985<br>Emissions: 1.7 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Population: 107,216<br>Emissions: 0.48 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Population: 56,927<br>Emissions: 0.43 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Population: 439,179<br>Emissions: 2.1 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Population: 1,270,787<br>Emissions: 5.84 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Population: 42,187<br>Emissions: 0.19 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Population: 547,202<br>Emissions: 2.41 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Population: 151,347<br>Emissions: 0.81 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Population: 97,820<br>Emissions: 0.5 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Population: 93,752<br>Emissions: 0.88 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Population: 268,651<br>Emissions: 1.25 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </figure>
 </div>
@@ -2010,49 +1767,52 @@ Figure&nbsp;2.4: County population and transportation emissions
 Beidler, James, and Alison Eyth. 2024. <span>“Blank Emis_type.”</span> <em>CMAS Center Forum</em>. <a href="https://forum.cmascenter.org/t/blank-emis-type/5244/7">https://forum.cmascenter.org/t/blank-emis-type/5244/7</a>.
 </div>
 <div id="ref-castigliegoCarbonFreeBoston2019" class="csl-entry" role="listitem">
-Castigliego, Joshua R., Michael J Walsh, Adam Pollack, and Cutler J Cleveland. 2019. <span>“Carbon <span>Free Boston</span>: <span>Waste Technical Report</span>.”</span> Boston, MA, USA: Boston University Institute for Sustainable Energy. <a href="https://sites.bu.edu/cfb/carbon-free-boston-report-released/technical-reports/">https://sites.bu.edu/cfb/carbon-free-boston-report-released/technical-reports/</a>.
+Castigliego, Joshua R., Michael J Walsh, Adam Pollack, and Cutler J Cleveland. 2019. <span>“Carbon Free Boston: Waste Technical Report.”</span> Boston, MA, USA: Boston University Institute for Sustainable Energy. <a href="https://sites.bu.edu/cfb/carbon-free-boston-report-released/technical-reports/">https://sites.bu.edu/cfb/carbon-free-boston-report-released/technical-reports/</a>.
 </div>
 <div id="ref-cmasSMOKEV51Users2024" class="csl-entry" role="listitem">
-CMAS. 2024. <span>“<span>SMOKE</span> V5.1 <span>User</span>’s <span>Manual</span>.”</span> Chapel Hill: <span>Community Modeling and Analysis System Center (CMAS)</span>. <a href="https://www.cmascenter.org/smoke/documentation/5.1/html/ch02s02s03.html">https://www.cmascenter.org/smoke/documentation/5.1/html/ch02s02s03.html</a>.
+CMAS. 2024. <span>“SMOKE V5.1 User’s Manual.”</span> Chapel Hill: <span>Community Modeling and Analysis System Center (CMAS)</span>. <a href="https://www.cmascenter.org/smoke/documentation/5.1/html/ch02s02s03.html">https://www.cmascenter.org/smoke/documentation/5.1/html/ch02s02s03.html</a>.
 </div>
 <div id="ref-foleyEQUATESAnthropogenic2023" class="csl-entry" role="listitem">
-Foley, Kristen M., George A. Pouliot, Alison Eyth, Michael F. Aldridge, Christine Allen, K. Wyat Appel, Jesse O. Bash, et al. 2023. <span>“2002–2017 Anthropogenic Emissions Data for Air Quality Modeling over the <span>United States</span>.”</span> <em>Data in Brief</em> 47 (April): 109022. <a href="https://doi.org/10.1016/j.dib.2023.109022">https://doi.org/10.1016/j.dib.2023.109022</a>.
+Foley, Kristen M., George A. Pouliot, Alison Eyth, Michael F. Aldridge, Christine Allen, K. Wyat Appel, Jesse O. Bash, et al. 2023. <span>“2002–2017 Anthropogenic Emissions Data for Air Quality Modeling over the United States.”</span> <em>Data in Brief</em> 47 (April): 109022. <a href="https://doi.org/10.1016/j.dib.2023.109022">https://doi.org/10.1016/j.dib.2023.109022</a>.
 </div>
 <div id="ref-foleyNitrousOxideCMASForum2024" class="csl-entry" role="listitem">
-Foley, Kristen, Allison Eyth, and Christopher Allen. 2024. <span>“Nitrous Oxide (<span>N2O</span>) Availability in <span>EQUATES</span> County-Level.”</span> <em>CMAS Center Forum</em>. <a href="https://forum.cmascenter.org/t/nitrous-oxide-n2o-availability-in-equates-county-level/5199/5">https://forum.cmascenter.org/t/nitrous-oxide-n2o-availability-in-equates-county-level/5199/5</a>.
+Foley, Kristen, Allison Eyth, and Christopher Allen. 2024. <span>“Nitrous Oxide (N2O) Availability in EQUATES County-Level.”</span> <em>CMAS Center Forum</em>. <a href="https://forum.cmascenter.org/t/nitrous-oxide-n2o-availability-in-equates-county-level/5199/5">https://forum.cmascenter.org/t/nitrous-oxide-n2o-availability-in-equates-county-level/5199/5</a>.
 </div>
 <div id="ref-fongGlobalProtocolCommunityScale2021" class="csl-entry" role="listitem">
-Fong, Wee Kean, Mary Sotos, Michael Doust, Seth Schultz, Ana Marques, and Chang Deng-Beck. 2021. <span>“Global <span>Protocol</span> for <span>Community-Scale Greenhouse Gas Inventories</span>.”</span> Version 1.1. <span>World Resources Institute, C40 Cities Climate Leadership Group, and ICLEI - Local Governments for Sustainability</span>. <a href="https://ghgprotocol.org/ghg-protocol-cities">https://ghgprotocol.org/ghg-protocol-cities</a>.
+Fong, Wee Kean, Mary Sotos, Michael Doust, Seth Schultz, Ana Marques, and Chang Deng-Beck. 2021. <span>“Global Protocol for Community-Scale Greenhouse Gas Inventories.”</span> Version 1.1. <span>World Resources Institute, C40 Cities Climate Leadership Group, and ICLEI - Local Governments for Sustainability</span>. <a href="https://ghgprotocol.org/ghg-protocol-cities">https://ghgprotocol.org/ghg-protocol-cities</a>.
 </div>
 <div id="ref-mndotTFADataCollection2023" class="csl-entry" role="listitem">
-MnDOT. 2023. <span>“<span>TFA Data Collection Methods</span>.”</span> Government. <a href="https://www.dot.state.mn.us/traffic/data/coll-methods.html#TVPO">https://www.dot.state.mn.us/traffic/data/coll-methods.html#TVPO</a>.
+MnDOT. 2023. <span>“TFA Data Collection Methods.”</span> Government. <a href="https://www.dot.state.mn.us/traffic/data/coll-methods.html#TVPO">https://www.dot.state.mn.us/traffic/data/coll-methods.html#TVPO</a>.
 </div>
 <div id="ref-usepa2011NationalEmissions2015" class="csl-entry" role="listitem">
-USEPA. 2015. <span>“2011 <span>National Emissions Inventory</span>, Version 2 <span>Technical Support Document</span>.”</span> Government. <a href="https://www.epa.gov/sites/default/files/2015-10/documents/nei2011v2_tsd_14aug2015.pdf">https://www.epa.gov/sites/default/files/2015-10/documents/nei2011v2_tsd_14aug2015.pdf</a>.
+USEPA. 2015. <span>“2011 National Emissions Inventory, Version 2 Technical Support Document.”</span> Government. <a href="https://www.epa.gov/sites/default/files/2015-10/documents/nei2011v2_tsd_14aug2015.pdf">https://www.epa.gov/sites/default/files/2015-10/documents/nei2011v2_tsd_14aug2015.pdf</a>.
 </div>
 <div id="ref-usepa2014NationalEmissions2018" class="csl-entry" role="listitem">
-———. 2018. <span>“2014 <span>National Emissions Inventory</span>, Version 2 <span>Technical Support Document</span>.”</span> Government. <a href="https://www.epa.gov/sites/default/files/2018-07/documents/nei2014v2_tsd_05jul2018.pdf">https://www.epa.gov/sites/default/files/2018-07/documents/nei2014v2_tsd_05jul2018.pdf</a>.
+———. 2018. <span>“2014 National Emissions Inventory, Version 2 Technical Support Document.”</span> Government. <a href="https://www.epa.gov/sites/default/files/2018-07/documents/nei2014v2_tsd_05jul2018.pdf">https://www.epa.gov/sites/default/files/2018-07/documents/nei2014v2_tsd_05jul2018.pdf</a>.
 </div>
 <div id="ref-usepa2017NationalEmissions2021" class="csl-entry" role="listitem">
-———. 2021. <span>“2017 <span>National Emissions Inventory</span>: <span>January</span> 2021 <span>Updated Release</span>, <span>Technical Support Document</span>.”</span> Government EPA-454/R-21-001. <a href="https://www.epa.gov/sites/default/files/2021-02/documents/nei2017_tsd_full_jan2021.pdf">https://www.epa.gov/sites/default/files/2021-02/documents/nei2017_tsd_full_jan2021.pdf</a>.
+———. 2021. <span>“2017 National Emissions Inventory: January 2021 Updated Release, Technical Support Document.”</span> Government EPA-454/R-21-001. <a href="https://www.epa.gov/sites/default/files/2021-02/documents/nei2017_tsd_full_jan2021.pdf">https://www.epa.gov/sites/default/files/2021-02/documents/nei2017_tsd_full_jan2021.pdf</a>.
 </div>
 <div id="ref-usepa2020NationalEmissions2023onroad" class="csl-entry" role="listitem">
-———. 2023a. <span>“2020 <span>National Emissions Inventory Technical Support Document</span>: <span>Onroad Mobile Sources</span>.”</span> Government EPA-454/R-23-001e. <span>Office of Air Quality Planning and Standards</span>. <a href="https://www.epa.gov/air-emissions-inventories/2020-national-emissions-inventory-nei-technical-support-document-tsd">https://www.epa.gov/air-emissions-inventories/2020-national-emissions-inventory-nei-technical-support-document-tsd</a>.
+———. 2023a. <span>“2020 National Emissions Inventory Technical Support Document: Onroad Mobile Sources.”</span> Government EPA-454/R-23-001e. <span>Office of Air Quality Planning and Standards</span>. <a href="https://www.epa.gov/air-emissions-inventories/2020-national-emissions-inventory-nei-technical-support-document-tsd">https://www.epa.gov/air-emissions-inventories/2020-national-emissions-inventory-nei-technical-support-document-tsd</a>.
 </div>
 <div id="ref-usepa2020NationalEmissions2023" class="csl-entry" role="listitem">
-———. 2023b. <span>“2020 <span>National Emissions Inventory Technical Support Document</span>: <span>Introduction</span>.”</span> Government EPA-454/R-23-001a. Office of Air Quality Planning; Standards. <a href="https://www.epa.gov/air-emissions-inventories/2020-national-emissions-inventory-nei-technical-support-document-tsd">https://www.epa.gov/air-emissions-inventories/2020-national-emissions-inventory-nei-technical-support-document-tsd</a>.
+———. 2023b. <span>“2020 National Emissions Inventory Technical Support Document: Introduction.”</span> Government EPA-454/R-23-001a. Office of Air Quality Planning; Standards. <a href="https://www.epa.gov/air-emissions-inventories/2020-national-emissions-inventory-nei-technical-support-document-tsd">https://www.epa.gov/air-emissions-inventories/2020-national-emissions-inventory-nei-technical-support-document-tsd</a>.
+</div>
+<div id="ref-usepaPopulationActivityOnroad2023" class="csl-entry" role="listitem">
+———. 2023c. <span>“Population and Activity of Onroad Vehicles in MOVES4.”</span> Government EPA-420-R-23-005. Ann Arbor, MI: <span>Office of Transportation and Air Quality</span>. <a href="https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P101867U.pdf">https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P101867U.pdf</a>.
 </div>
 <div id="ref-usepa2021EmissionsModeling2024" class="csl-entry" role="listitem">
-———. 2024a. <span>“2021 <span>Emissions Modeling Platform</span>.”</span> Air {{Emissions Modeling Platforms}}. <a href="https://www.epa.gov/air-emissions-modeling/2021-emissions-modeling-platform">https://www.epa.gov/air-emissions-modeling/2021-emissions-modeling-platform</a>.
+———. 2024. <span>“2021 Emissions Modeling Platform.”</span> Air Emissions Modeling Platforms. <a href="https://www.epa.gov/air-emissions-modeling/2021-emissions-modeling-platform">https://www.epa.gov/air-emissions-modeling/2021-emissions-modeling-platform</a>.
 </div>
-<div id="ref-usepa2022v1EmissionsModeling2024" class="csl-entry" role="listitem">
-———. 2024b. <span>“2022v1 <span>Emissions Modeling Platform</span>.”</span> Air {{Emissions Modeling Platforms}}. <a href="https://www.epa.gov/air-emissions-modeling/2022v1-emissions-modeling-platform">https://www.epa.gov/air-emissions-modeling/2022v1-emissions-modeling-platform</a>.
+<div id="ref-usepa2022v2EmissionsModeling2025" class="csl-entry" role="listitem">
+———. 2025. <span>“2022v2 Emissions Modeling Platform.”</span> Air Emissions Modeling Platforms. <a href="https://www.epa.gov/air-emissions-modeling/2022v2-emissions-modeling-platform">https://www.epa.gov/air-emissions-modeling/2022v2-emissions-modeling-platform</a>.
 </div>
 <div id="ref-usepaDevelopment2020DefaultData2022" class="csl-entry" role="listitem">
-USEPA, Janice Godfrey, and Alison Eyth. 2022. <span>“Development of 2020 <span>Default Onroad Activity Data</span> for the <span>National Emissions Inventory</span>.”</span> <a href="https://gaftp.epa.gov/air/nei/2020/doc/supporting_data/onroad/DefaultOnroadActivity.pdf">https://gaftp.epa.gov/air/nei/2020/doc/supporting_data/onroad/DefaultOnroadActivity.pdf</a>.
+USEPA, Janice Godfrey, and Alison Eyth. 2022. <span>“Development of 2020 Default Onroad Activity Data for the National Emissions Inventory.”</span> <a href="https://gaftp.epa.gov/air/nei/2020/doc/supporting_data/onroad/DefaultOnroadActivity.pdf">https://gaftp.epa.gov/air/nei/2020/doc/supporting_data/onroad/DefaultOnroadActivity.pdf</a>.
 </div>
 <div id="ref-wisdotTransportationPlanningManual2023" class="csl-entry" role="listitem">
-WisDOT. 2023. <span>“Transportation <span>Planning Manual</span> - <span>Chapter</span> 9 <span>Traffic Forecasting</span>, <span>Travel Demand Models</span> and <span>Planning Data</span>.”</span> Government. <span>Bureau of Planning and Economic Development, Traffic Forecasting Section</span>. <a href="https://wisconsindot.gov/Documents/projects/data-plan/plan-res/tpm/9.pdf">https://wisconsindot.gov/Documents/projects/data-plan/plan-res/tpm/9.pdf</a>.
+WisDOT. 2023. <span>“Transportation Planning Manual - Chapter 9 Traffic Forecasting, Travel Demand Models and Planning Data.”</span> Government. <span>Bureau of Planning and Economic Development, Traffic Forecasting Section</span>. <a href="https://wisconsindot.gov/Documents/projects/data-plan/plan-res/tpm/9.pdf">https://wisconsindot.gov/Documents/projects/data-plan/plan-res/tpm/9.pdf</a>.
 </div>
 </div>
 </section>
