@@ -184,7 +184,8 @@ electricity_gas <- readRDS("_energy/data/county_elec_activity.RDS") %>%
   select(emissions_year = year, county_name, sector, value_emissions, units_emissions, metric_tons_co2e)
   
 industrial_fuel_gas_epa <- readRDS("_industrial/data/fuel_combustion_emissions_by_gas.RDS") %>% 
-  filter(doublecount != "Yes")
+  filter(doublecount != "Yes",
+         specific_fuel_type != "Municipal Solid Waste")
 
 industrial_fuel_gas_epa_out <- industrial_fuel_gas_epa %>% 
     group_by(reporting_year, county_name, city_name, units_emissions) %>% 
@@ -258,47 +259,15 @@ gas_by_county <- bind_rows(transportation_gas,
 
 county_emissions <- read_rds("_meta/data/cprg_county_emissions.RDS")
 
-gas_by_county %>% pull(metric_tons_co2e) %>% sum() #53363766
+gas_by_county %>% pull(metric_tons_co2e) %>% sum() #52999987
 county_emissions %>% 
   filter(value_emissions > 0,
          emissions_year == 2022) %>% 
   pull(value_emissions) %>% sum() #55377863
 
-53363766 - 55377863 #4373319 more in gas type analysis
+52999987 - 55377863 #4373319 more in gas type analysis
 
-county_emissions %>% 
-  filter(value_emissions > 0,
-         emissions_year == 2022) %>% 
-  group_by(sector, category, source) %>% 
-  summarize(value_emission = sum(value_emissions)) %>% 
-  print(n = 50) # no obvious contenders
-
-gas_by_county %>% 
-  group_by(sector) %>% 
-  summarize(metric_tons_co2e = sum(metric_tons_co2e))
-
-county_emissions %>% 
-  filter(value_emissions > 0,
-         emissions_year == 2022) %>% 
-  group_by(sector) %>% 
-  summarize(value_emission = sum(value_emissions))
-
-# ag, ns, transportation, waste, spot on. Problem is in energy
-
-county_emissions %>% 
-  filter(value_emissions > 0,
-         emissions_year == 2022,
-         category == "Electricity") %>% 
-  pull(value_emissions) %>% sum()
-# electricity matches. Problem is in natural gas/industrial
-
-
-county_emissions %>% 
-  filter(value_emissions > 0,
-         emissions_year == 2022,
-         category == "Building Fuel") %>% 
-  pull(value_emissions) %>% sum()
-# Building Fuel and Natural Gas by gas match. Problem is in industrial
+#Problem is in industrial
 
 gas_by_county %>% 
   filter(sector == "Industrial") %>% 
@@ -313,7 +282,10 @@ county_emissions %>%
          category != "Electricity") %>% 
   group_by(county_name) %>% 
   summarize(value_emissions = sum(value_emissions))
-# these are wildly off.
+#
+
+# The remaining differences are from specific industrial processes (e.g. hydrogen production, lead production, industrial landfill) that are
+# provided by GHGRP but don't have gas type break downs. This needs to be reviewed at a later date.
 
 industrial_fuel_gas_epa_out %>% 
   filter(sector == "Industrial") %>% 
