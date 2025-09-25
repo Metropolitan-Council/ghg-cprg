@@ -183,7 +183,8 @@ electricity_gas <- readRDS("_energy/data/county_elec_activity.RDS") %>%
            grepl("CO2",units_emissions) ~ value_emissions * gwp$co2)) %>%
   select(emissions_year = year, county_name, sector, value_emissions, units_emissions, metric_tons_co2e)
   
-industrial_fuel_gas_epa <- readRDS("_industrial/data/fuel_combustion_emissions_by_gas.RDS") 
+industrial_fuel_gas_epa <- readRDS("_industrial/data/fuel_combustion_emissions_by_gas.RDS") %>% 
+  filter(doublecount != "Yes")
 
 industrial_fuel_gas_epa_out <- industrial_fuel_gas_epa %>% 
     group_by(reporting_year, county_name, city_name, units_emissions) %>% 
@@ -206,6 +207,7 @@ industrial_fuel_gas_epa_out <- industrial_fuel_gas_epa %>%
   mutate(sector = "Industrial")
 
 industrial_fuel_gas_mpca <- readRDS("_industrial/data/mpca_fuel_emissions_by_gas.RDS") %>% 
+  filter(fuel_type != "Natural Gas") %>% 
   group_by(inventory_year, county_name, ctu_name, unit_emissions) %>% 
   summarize(value_emissions = sum(value_emissions)) %>% 
   ungroup() %>% 
@@ -221,7 +223,8 @@ industrial_fuel_gas_mpca <- readRDS("_industrial/data/mpca_fuel_emissions_by_gas
   summarize(value_emissions = sum(value_emissions),
             metric_tons_co2e = sum(metric_tons_co2e)) %>% 
   ungroup()%>% 
-  mutate(sector = "Industrial")
+  mutate(sector = "Industrial") %>% 
+  filter(emissions_year == 2022)
 
 fluorinated_gases <- readRDS("_industrial/data/fluorinated_gas_emissions.RDS") %>% 
   mutate(mt_gas = case_when(
@@ -255,13 +258,13 @@ gas_by_county <- bind_rows(transportation_gas,
 
 county_emissions <- read_rds("_meta/data/cprg_county_emissions.RDS")
 
-gas_by_county %>% pull(metric_tons_co2e) %>% sum() #59751182
+gas_by_county %>% pull(metric_tons_co2e) %>% sum() #53363766
 county_emissions %>% 
   filter(value_emissions > 0,
          emissions_year == 2022) %>% 
   pull(value_emissions) %>% sum() #55377863
 
-59751182 - 55377863 #4373319 more in gas type analysis
+53363766 - 55377863 #4373319 more in gas type analysis
 
 county_emissions %>% 
   filter(value_emissions > 0,
