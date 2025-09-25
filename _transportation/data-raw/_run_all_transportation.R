@@ -51,6 +51,7 @@ source("_transportation/data-raw/_compile_county_inventory_forecast.R")
 source("_transportation/data-raw/mndot_vmt_ctu.R")
 source("_transportation/data-raw/vmt_model_data.R")
 source("_transportation/data-raw/mndot_vmt_ctu_gap_fill_model.R")
+source("_transportation/data-raw/compile_ctu_transportation_emissions.R")
 
 
 # run compilations in _meta/
