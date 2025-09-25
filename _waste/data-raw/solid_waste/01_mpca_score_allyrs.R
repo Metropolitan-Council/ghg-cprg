@@ -6,14 +6,14 @@ cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 
 score_summary <- readr::read_csv(file.path(here::here(), "_waste/data-raw/solid_waste/score_summary.csv"))
 
-score_filtered <- score_summary %>% 
+score_filtered <- score_summary %>%
   dplyr::select(-Recycling_Rate) %>%
   pivot_longer(cols = Landfill:Recycling, names_to = "Method", values_to = "Tons") %>%
   group_by(Year, Method) %>%
   mutate(state_total = sum(Tons) %>%
-           units::as_units("ton") %>%
-           units::set_units("metric_ton") %>%
-           as.numeric())  %>%
+    units::as_units("ton") %>%
+    units::set_units("metric_ton") %>%
+    as.numeric()) %>%
   ungroup() %>%
   filter(
     County %in% cprg_county$county_name,
@@ -36,15 +36,15 @@ score_filtered <- score_summary %>%
     units_activity,
     state_total
   )
-  
+
 saveRDS(score_filtered, paste0("_waste/data-raw/solid_waste/mpca_score_allyrs.RDS"))
 
 
 # # Original summary data collected from https://public.tableau.com/app/profile/mpca.data.services/viz/SCOREOverview/1991-2021SCORE
 # score_summary_orig <- readr::read_csv(file.path(here::here(), "_waste/data-raw/solid_waste/score_summary.csv"))
-# 
+#
 # # filter to only counties in 9-county MN region, for years between 2005 and 2021
-# 
+#
 # score_filtered <- score_summary_orig %>%
 #   group_by(Year, Method) %>%
 #   mutate(state_total = sum(Tons) %>%
@@ -73,7 +73,7 @@ saveRDS(score_filtered, paste0("_waste/data-raw/solid_waste/mpca_score_allyrs.RD
 #     state_total
 #   ) %>%
 #   ungroup()
-# 
+#
 # # add score metadata
 # # mpca_score_meta <- tribble(
 # #   ~Column, ~Class, ~Description,
@@ -86,6 +86,6 @@ saveRDS(score_filtered, paste0("_waste/data-raw/solid_waste/mpca_score_allyrs.RD
 # #   "Statewide Total", class(score_filtered$`Statewide Total`),
 # #   "Statewide total metric tons collected for given disposal method and year"
 # # )
-# 
+#
 # saveRDS(score_filtered, paste0("_waste/data-raw/solid_waste/mpca_score_allyrs.RDS"))
 # # saveRDS(mpca_score_meta, paste0("_waste/data/mpca_score_meta.RDS"))
