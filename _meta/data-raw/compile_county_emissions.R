@@ -274,8 +274,10 @@ emissions_all <- bind_rows(
     by = join_by(geoid, emissions_year == population_year)
   ) %>%
   rowwise() %>%
-  mutate(emissions_per_capita = round(value_emissions / county_total_population, digits = 2),
-         value_emission = round(value_emissions, digits = 2)) %>%
+  mutate(
+    emissions_per_capita = round(value_emissions / county_total_population, digits = 2),
+    value_emissions = round(value_emissions, digits = 2)
+  ) %>%
   select(emissions_year, geog_level, geoid, county_name, everything()) %>%
   ungroup()
 
