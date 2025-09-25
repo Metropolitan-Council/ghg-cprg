@@ -192,7 +192,7 @@ tbl_gwp <- tibble(
     Gas == "ch4" ~ "CH₄",
     Gas == "n2o" ~ "N₂O",
     Gas == "cf4" ~ "CF4",
-    Gas == "sf6" ~  "SF₆",
+    Gas == "sf6" ~ "SF₆",
     Gas == "nf3" ~ "NF₃",
     Gas == "hfc" ~ "HFC",
     Gas == "HFC-152a" ~ Gas

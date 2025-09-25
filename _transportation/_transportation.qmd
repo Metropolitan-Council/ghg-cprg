@@ -26,12 +26,12 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 #     value_emissions = sum(value_emissions)
 #   )
 
-county_inventory_forecast_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_inventory_forecast_emissions.RDS")) %>% 
-  rowwise() %>% 
+county_inventory_forecast_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_inventory_forecast_emissions.RDS")) %>%
+  rowwise() %>%
   mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
 
 
-onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>% 
+onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>%
   mutate(value_emissions = emissions_metric_tons_co2e)
 
 onroad_county_summary <- onroad_emissions %>%
@@ -125,11 +125,11 @@ Transportation emissions totaled `r round(transportation_2022/1000000, digits = 
 #| out-width: "95%"
 
 fig_transportation_county_emissions <- county_emissions %>%
-  filter(emissions_year == transportation_max_year,
-         sector == "Transportation",
-  ) %>% 
-  mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions)) %>% 
-  
+  filter(
+    emissions_year == transportation_max_year,
+    sector == "Transportation",
+  ) %>%
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions)) %>%
   plot_ly(
     type = "bar",
     source = "fig-transportation-county-emissions",
@@ -148,7 +148,8 @@ fig_transportation_county_emissions <- county_emissions %>%
       sector, " - ", category, ", ", source, "<br>",
       rounded_tons,
       "<extra></extra>"
-    )) %>% 
+    )
+  ) %>%
   councilR::plotly_layout(
     main_title = "Transportation emissions",
     subtitle = "",
@@ -282,9 +283,11 @@ fig_transportation_time_series_county <- onroad_county_summary %>%
     x_title = "Year",
     y_title = "Metric tons CO<sub>2</sub>e",
     legend_title = "County"
-  ) %>% 
-  layout(legend = list(orientation = "h",
-                       y = -0.35))
+  ) %>%
+  layout(legend = list(
+    orientation = "h",
+    y = -0.35
+  ))
 
 fig_transportation_time_series_county
 ```
@@ -299,9 +302,9 @@ Despite expected increases in vehicle miles traveled, generally, emissions are e
 #| out-width: "95%"
 
 
-fig_transportation_forecast_county <- county_inventory_forecast_emissions %>% 
+fig_transportation_forecast_county <- county_inventory_forecast_emissions %>%
   group_by(county_name) %>%
-  filter(emissions_year >= transportation_max_year) %>% 
+  filter(emissions_year >= transportation_max_year) %>%
   plot_ly(
     source = "fig-transportation-projections-county",
     x = ~emissions_year,
@@ -314,7 +317,7 @@ fig_transportation_forecast_county <- county_inventory_forecast_emissions %>%
     hoverinfo = "text",
     hovertext = ~ paste0(
       county_name, " County, ", emissions_year, " ", "<br>",
-      rounded_tons, 
+      rounded_tons,
       data_source, "<br>"
     )
   ) %>%
@@ -327,9 +330,11 @@ fig_transportation_forecast_county <- county_inventory_forecast_emissions %>%
     x_title = "Year",
     y_title = "Metric tons CO<sub>2</sub>e",
     legend_title = "County"
-  ) %>% 
-    layout(legend = list(orientation = "h",
-                       y = -0.35))
+  ) %>%
+  layout(legend = list(
+    orientation = "h",
+    y = -0.35
+  ))
 
 fig_transportation_forecast_county
 ```
