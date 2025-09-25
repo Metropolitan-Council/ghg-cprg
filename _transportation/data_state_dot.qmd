@@ -1,4 +1,4 @@
-### State DOT data
+### State DOT data {#sec-state-dot-data}
 
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))

@@ -76,11 +76,11 @@ tbl_stationary_combustion <-
     emission != "mmBtu"
   ) %>%
   tidyr::separate_wider_delim(emission,
-                              delim = " ",
-                              names = c(
-                                "Quantity",
-                                "GHG"
-                              )
+    delim = " ",
+    names = c(
+      "Quantity",
+      "GHG"
+    )
   ) %>%
   mutate(
     Quantity = ifelse(Quantity == "g", "Grams", "Kilograms"),
@@ -96,11 +96,11 @@ tbl_stationary_combustion <-
       )
   ) %>%
   select(`Fuel type`,
-         `Fuel category` = fuel_category,
-         GHG,
-         `GHG Quantity` = Quantity,
-         `Unit` = per_unit,
-         Value = value
+    `Fuel category` = fuel_category,
+    GHG,
+    `GHG Quantity` = Quantity,
+    `Unit` = per_unit,
+    Value = value
   ) %>%
   group_by(`Fuel category`) %>%
   gt() %>%
@@ -120,8 +120,8 @@ tbl_stationary_combustion
 tbl_waste_factors <-
   epa_ghg_factor_hub$waste %>%
   select(Material,
-         Method = name,
-         `Metric tons CO₂e per short ton material` = value
+    Method = name,
+    `Metric tons CO₂e per short ton material` = value
   ) %>%
   group_by(Method) %>%
   gt() %>%
@@ -146,9 +146,10 @@ Compilation provided in [calc_gross_emissions_rates.R](../_transportation/data-r
 #| fig-cap: "Gross emissions rates, 2010-2022"
 #| out-width: "95%"
 
-fig_gross_emissions_rates_historical <- gross_emissions_rates %>% 
+fig_gross_emissions_rates_historical <- gross_emissions_rates %>%
   filter(
-    vmt_data_source != "RTDM") %>% 
+    vmt_data_source != "RTDM"
+  ) %>%
   plot_ly(
     x = ~vmt_year,
     y = ~emissions_per_mile,
@@ -162,14 +163,14 @@ fig_gross_emissions_rates_historical <- gross_emissions_rates %>%
       county_name, " County, ", vmt_year, " ", "<br>",
       round(emissions_per_mile), " Grams CO<sub>2</sub>e per vehicle mile traveled"
     )
-  ) %>% 
+  ) %>%
   plotly_layout(
     "Gross transportation emissions rates",
     y_title = "Grams CO<sub>2</sub>e per vehicle mile traveled",
     x_title = "Year",
     subtitle = "Compiled EPA emissions for all vehicle types, DOT annual vehicle miles traveled",
     legend_title = "County"
-  ) %>% 
+  ) %>%
   layout(legend = list(
     orientation = "h",
     y = -0.35
@@ -186,18 +187,20 @@ Future work will complete MOVES runs for all counties, including the 4 collar co
 #| tbl-cap: "Forecasted annual gross emissions rates by county, 2050"
 #| out-width: "95%"
 
-tbl_emissions_rates_forecast <- gross_emissions_rates %>% 
-  ungroup() %>% 
-  filter(vmt_data_source == "RTDM",
-         vmt_year == 2050) %>% 
-  ungroup() %>% 
+tbl_emissions_rates_forecast <- gross_emissions_rates %>%
+  ungroup() %>%
+  filter(
+    vmt_data_source == "RTDM",
+    vmt_year == 2050
+  ) %>%
+  ungroup() %>%
   select(
     `County` = county_name,
-    `VMT data source`  = vmt_data_source,
+    `VMT data source` = vmt_data_source,
     `Emissions data source` = emissions_data_source,
     `Grams CO₂e per vehicle mile traveled` = emissions_per_mile
-  ) %>% 
-  gt() %>% 
+  ) %>%
+  gt() %>%
   gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
