@@ -19,7 +19,7 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
-ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/_agricultural_emissions.RDS"))
+ag_emissions <- readRDS(file.path(here::here(), "_agriculture/data/agricultural_emissions_county.RDS"))
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 landcover <- readRDS(file.path(here::here(), "_nature/data/nlcd_county_landcover_allyrs.RDS"))
 
