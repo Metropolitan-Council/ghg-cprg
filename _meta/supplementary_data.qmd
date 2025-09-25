@@ -1,4 +1,4 @@
-# Supplementary data
+# Supplementary data {#sec-supplementary-data}
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -19,6 +19,8 @@ source(file.path(here::here(), "R/global_warming_potential.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 epa_ghg_factor_hub <- readRDS(file.path(here::here(), "_meta/data/epa_ghg_factor_hub.RDS"))
 epa_moves <- readRDS(file.path(here::here(), "_transportation/data/epa_moves.RDS"))
+gross_emissions_rates <- readRDS(file.path(here::here(), "_transportation/data/gross_emissions_rates.RDS"))
+
 
 hookaddcap()
 ```
@@ -74,11 +76,11 @@ tbl_stationary_combustion <-
     emission != "mmBtu"
   ) %>%
   tidyr::separate_wider_delim(emission,
-    delim = " ",
-    names = c(
-      "Quantity",
-      "GHG"
-    )
+                              delim = " ",
+                              names = c(
+                                "Quantity",
+                                "GHG"
+                              )
   ) %>%
   mutate(
     Quantity = ifelse(Quantity == "g", "Grams", "Kilograms"),
@@ -94,11 +96,11 @@ tbl_stationary_combustion <-
       )
   ) %>%
   select(`Fuel type`,
-    `Fuel category` = fuel_category,
-    GHG,
-    `GHG Quantity` = Quantity,
-    `Unit` = per_unit,
-    Value = value
+         `Fuel category` = fuel_category,
+         GHG,
+         `GHG Quantity` = Quantity,
+         `Unit` = per_unit,
+         Value = value
   ) %>%
   group_by(`Fuel category`) %>%
   gt() %>%
@@ -118,8 +120,8 @@ tbl_stationary_combustion
 tbl_waste_factors <-
   epa_ghg_factor_hub$waste %>%
   select(Material,
-    Method = name,
-    `Metric tons CO₂e per short ton material` = value
+         Method = name,
+         `Metric tons CO₂e per short ton material` = value
   ) %>%
   group_by(Method) %>%
   gt() %>%
@@ -130,6 +132,79 @@ tbl_waste_factors <-
   )
 
 tbl_waste_factors
+```
+
+### Transportation emissions rates 
+
+We can calculate gross emissions rates in grams emitted per vehicle mile traveled for each county by combining the historical VMT (@sec-state-dot-data), VMT forecasts, (@sec-regional-travel-demand-model), compiled historical annual emissions (@sec-epa-emissions-data-transportation), and emissions forecasts (). 
+
+These emissions rates are comprehensive, in that they do not account for differences in vehicle or fuel type. 
+
+Compilation provided in [calc_gross_emissions_rates.R](../_transportation/data-raw/calc_gross_emissions_rates.R). 
+
+```{r fig-gross-emissions-rates-historical}
+#| fig-cap: "Gross emissions rates, 2010-2022"
+#| out-width: "95%"
+
+fig_gross_emissions_rates_historical <- gross_emissions_rates %>% 
+  filter(
+    vmt_data_source != "RTDM") %>% 
+  plot_ly(
+    x = ~vmt_year,
+    y = ~emissions_per_mile,
+    color = ~county_name,
+    colors = "Dark2",
+    type = "scatter",
+    mode = "lines+markers",
+    marker = list(size = 10),
+    hoverinfo = "text",
+    hovertext = ~ paste0(
+      county_name, " County, ", vmt_year, " ", "<br>",
+      round(emissions_per_mile), " Grams CO<sub>2</sub>e per vehicle mile traveled"
+    )
+  ) %>% 
+  plotly_layout(
+    "Gross transportation emissions rates",
+    y_title = "Grams CO<sub>2</sub>e per vehicle mile traveled",
+    x_title = "Year",
+    subtitle = "Compiled EPA emissions for all vehicle types, DOT annual vehicle miles traveled",
+    legend_title = "County"
+  ) %>% 
+  layout(legend = list(
+    orientation = "h",
+    y = -0.35
+  ))
+
+fig_gross_emissions_rates_historical
+```
+
+The Council does not currently run MOVES for counties outside the core metro region. For collar counties (Sherburne, Chisago, Pierce, St. Croix), we calculated the change in emissions from 2022 to 2050 in the most similar core county and applied this value to 2022 county-specific emissions. 
+
+Future work will complete MOVES runs for all counties, including the 4 collar counties. 
+
+```{r tbl-emissions-rates-forecast}
+#| tbl-cap: "Forecasted annual gross emissions rates by county, 2050"
+#| out-width: "95%"
+
+tbl_emissions_rates_forecast <- gross_emissions_rates %>% 
+  ungroup() %>% 
+  filter(vmt_data_source == "RTDM",
+         vmt_year == 2050) %>% 
+  ungroup() %>% 
+  select(
+    `County` = county_name,
+    `VMT data source`  = vmt_data_source,
+    `Emissions data source` = emissions_data_source,
+    `Grams CO₂e per vehicle mile traveled` = emissions_per_mile
+  ) %>% 
+  gt() %>% 
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  )
+
+tbl_emissions_rates_forecast
 ```
 
 <!-- Transportation emissions factors were processed in [epa_moves.R](../_transportation/data-raw/epa_moves.R). Read more about these emission factors in @sec-epa-moves.  -->
