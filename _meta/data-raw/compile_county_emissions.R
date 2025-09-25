@@ -274,7 +274,8 @@ emissions_all <- bind_rows(
     by = join_by(geoid, emissions_year == population_year)
   ) %>%
   rowwise() %>%
-  mutate(emissions_per_capita = round(value_emissions / county_total_population, digits = 2)) %>%
+  mutate(emissions_per_capita = round(value_emissions / county_total_population, digits = 2),
+         value_emission = round(value_emissions, digits = 2)) %>%
   select(emissions_year, geog_level, geoid, county_name, everything()) %>%
   ungroup()
 
@@ -322,7 +323,7 @@ natural_systems_stock <- readRDS("_nature/data/nlcd_county_landcover_sequestrati
     geog_level = "county",
     category = "Sequestration",
     factor_source = "Various primary literature",
-    value_emissions = stock_potential,
+    value_emissions = round(stock_potential, digits = 2),
     unit_emissions = "Metric tons CO2e"
   ) %>%
   ungroup() %>%
