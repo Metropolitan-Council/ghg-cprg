@@ -14,7 +14,7 @@ county_inventory_forecast_emissions <- readRDS(file.path(here::here(), "_transpo
 # read in VMT data
 dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
   filter(
-    # vmt_year < 2022,
+    vmt_year <= 2022,
     vmt_year >= 2010,
     cprg_area == TRUE
   ) %>%
