@@ -65,7 +65,7 @@
     "href": "_transportation/_transportation.html#emissions",
     "title": "1  Mobile combustion",
     "section": "1.2 2022 emissions",
-    "text": "1.2 2022 emissions\n\nTransportation emissions totaled 16.58 MMtCO2e, accounting for 35% of regional emissions in 2022.\n\n\n\n\nFigure 1.1: 2022 transportation emissions by county\n\n\n\n\n\n\n\n\nWe can also view this data broken out by vehicle weight in Figure 1.2.\n\n\n\n\nFigure 1.2: 2022 annual emissions by vehicle weight\n\n\n\n\n\n\n\n\nWe can also view this data broken out by fuel type.\n\n\n\n\nFigure 1.3: 2022 annual emissions transportation by fuel type",
+    "text": "1.2 2022 emissions\n\nTransportation emissions totaled 16.58 MMtCO2e, accounting for 35% of regional emissions in 2022.\n\n\n\n\nFigure 1.1: 2022 transportation emissions by county\n\n\n\n\n\n\n\n\nWe can also view this data broken out by vehicle weight in Figure 1.2.\n\n\n\n\nFigure 1.2: 2022 annual emissions by vehicle weight\n\n\n\n\n\n\n\n\nWe can also view this data broken out by fuel type.\n\n\n\n\nFigure 1.3: 2022 annual emissions transportation by fuel type\n\n\n\n\n\n\n\n\nLower population counties have high transportation emissions per person. These counties also have higher emissions from trucks than the higher population counties.\n\n\n\n\nFigure 1.4: 2022 transportation emissions per capita by county",
     "crumbs": [
       "Transportation",
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Mobile combustion</span>"
@@ -76,7 +76,7 @@
     "href": "_transportation/_transportation.html#historical-emissions",
     "title": "1  Mobile combustion",
     "section": "1.3 Historical emissions",
-    "text": "1.3 Historical emissions\nDespite a 10.3% reduction in the transportation sector due to the Covid pandemic, emissions in this sector rebounded in 2022.\n\n\n\n\nFigure 1.4: Transportation emissions, 2002-2022",
+    "text": "1.3 Historical emissions\nDespite a 10.3% reduction in the transportation sector due to the Covid pandemic, emissions in this sector rebounded in 2022.\n\n\n\n\nFigure 1.5: Transportation emissions, 2002-2022",
     "crumbs": [
       "Transportation",
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Mobile combustion</span>"
@@ -87,7 +87,7 @@
     "href": "_transportation/_transportation.html#forecasted-emissions",
     "title": "1  Mobile combustion",
     "section": "1.4 Forecasted emissions",
-    "text": "1.4 Forecasted emissions\nDespite expected increases in vehicle miles traveled, generally, emissions are expected to decrease over time due to improvements in fuel efficiency and changes in vehicle fuel types. We supply outputs from our Regional Travel Demand Model (RTDM) to EPA MOVES4 to create these estimates.\n\n\n\n\nFigure 1.5: Transportation emissions forecast, 2022-2050",
+    "text": "1.4 Forecasted emissions\nDespite expected increases in vehicle miles traveled, generally, emissions are expected to decrease over time due to improvements in fuel efficiency and changes in vehicle fuel types. We supply outputs from our Regional Travel Demand Model (RTDM) to EPA MOVES4 to create these estimates.\n\n\n\n\nFigure 1.6: Transportation emissions forecast, 2022-2050",
     "crumbs": [
       "Transportation",
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Mobile combustion</span>"

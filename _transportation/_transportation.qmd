@@ -30,6 +30,7 @@ county_inventory_forecast_emissions <- readRDS(file.path(here::here(), "_transpo
   rowwise() %>%
   mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
 
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>%
   mutate(value_emissions = emissions_metric_tons_co2e)
@@ -43,14 +44,14 @@ onroad_county_summary <- onroad_emissions %>%
   rowwise() %>%
   mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions))
 
-county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+census_county_population <- readRDS(file.path(here::here(), "_meta/data/census_county_population.RDS")) %>%
+  filter(cprg_area == TRUE) %>%
+  mutate(
+    population_year = as.numeric(population_year)
+  ) %>%
+  select(-cprg_area)
 
-county_emissions_summary <- county_emissions %>%
-  group_by(sector, category, source, data_source, factor_source) %>%
-  summarize(
-    value_emissions = sum(value_emissions),
-    .groups = "keep"
-  )
+cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 
 # transportation_max_year <- onroad_emissions %>%
 #   filter(emissions_year == max(emissions_year)) %>%
@@ -103,6 +104,23 @@ sector_percentages <- county_emissions_summary_2022 %>%
   janitor::adorn_percentages(denominator = "col")
 
 
+
+county_transport_per_cap <- county_emissions %>%
+  filter(
+    sector == "Transportation",
+    source == "On-road",
+    emissions_year == transportation_max_year
+  ) %>%
+  select(-county_total_population, -population_data_source, -emissions_per_capita) %>%
+  group_by(sector, geoid, county_name, emissions_year) %>%
+  summarize(value_emissions = sum(value_emissions)) %>%
+  left_join(
+    census_county_population,
+    join_by(geoid, county_name, emissions_year == population_year)
+  ) %>%
+  mutate(emissions_per_capita = value_emissions / population)
+
+
 hookaddcap()
 ```
 
@@ -151,7 +169,7 @@ fig_transportation_county_emissions <- county_emissions %>%
     )
   ) %>%
   councilR::plotly_layout(
-    main_title = "Transportation emissions",
+    main_title = paste0("Transportation emissions, ", transportation_max_year),
     subtitle = "",
     # y_title = stringr::str_to_title(unique(plot_data$geog_level)),
     x_title = "Metric tons CO<sub>2</sub>e",
@@ -244,6 +262,51 @@ fig_transportation_county_emissions_by_fuel <- plot_ly(
   )
 
 fig_transportation_county_emissions_by_fuel
+```
+
+Lower population counties have high transportation emissions per person. These counties also have higher emissions from trucks than the higher population counties. 
+
+```{r fig-transportation-county-emissions-per-capita}
+#| fig-cap: "2022 transportation emissions per capita by county"
+#| out-width: "95%"
+
+fig_transportation_county_emissions_per_capita <- county_transport_per_cap %>%
+  plot_ly(
+    type = "bar",
+    source = "fig-transportation-county-emissions-per-capita",
+    x = ~emissions_per_capita,
+    y = ~ reorder(county_name, emissions_per_capita),
+    # color = ~source,
+    # colors = unlist(source_colors),
+    marker = list(
+      color = colors$councilBlue,
+      line = list(
+        width = 0
+      )
+    ),
+    hovertemplate = ~ paste0(
+      county_name, " County", "<br>",
+      emissions_year, "<br>",
+      round(emissions_per_capita, digits = 2), " metric tons CO<sub>2</sub>e per person",
+      "<extra></extra>"
+    )
+  ) %>%
+  councilR::plotly_layout(
+    main_title = paste0("Transportation emissions per capita, ", transportation_max_year),
+    subtitle = "",
+    # y_title = stringr::str_to_title(unique(plot_data$geog_level)),
+    x_title = "Metric tons CO<sub>2</sub>e per person"
+  ) %>%
+  plotly::layout(
+    barmode = "stack",
+    legend = list(
+      traceorder = "reversed"
+    ),
+    yaxis = list(categoryorder = "total ascending")
+  )
+
+
+fig_transportation_county_emissions_per_capita
 ```
 
 
