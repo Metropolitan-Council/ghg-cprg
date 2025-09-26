@@ -67,7 +67,7 @@ The network based approach is based on attributing all the vehicle traffic that 
 Code for processing RTDM outputs relies on internal file system access and is not available publicly. Please contact us for more information and reproducible examples. 
 
 
-#### Emissions forecast with MOVES
+#### Emissions forecast with MOVES  {#sec-emissions-forecast-with-moves}
 
 Emissions forecasts for our region were calculated using the EPA's [Motor Vehicle Emissions Simulator (MOVES)](https://www.epa.gov/moves) [@usepaPopulationActivityOnroad2023]. MOVES calculates emissions using outputs from the Regional Travel Demand Model, Minnesota Department of Vehicle Services' county vehicle registration data, and the Minnesota Pollution Control Agency's vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region and expected changes in the regional fleet. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle's age and size, as well as its fuel intake (diesel or gasoline). 
 

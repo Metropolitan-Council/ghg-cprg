@@ -136,7 +136,7 @@ tbl_waste_factors
 
 ### Transportation emissions rates 
 
-We can calculate gross emissions rates in grams emitted per vehicle mile traveled for each county by combining the historical VMT (@sec-state-dot-data), VMT forecasts, (@sec-regional-travel-demand-model), compiled historical annual emissions (@sec-epa-emissions-data-transportation), and emissions forecasts (). 
+We can calculate gross emissions rates in grams emitted per vehicle mile traveled for each county by combining the historical VMT (@sec-state-dot-data), VMT forecasts, (@sec-regional-travel-demand-model), compiled historical annual emissions (@sec-epa-emissions-data-transportation), and emissions forecasts (@sec-emissions-forecast-with-moves). 
 
 These emissions rates are comprehensive, in that they do not account for differences in vehicle or fuel type. 
 

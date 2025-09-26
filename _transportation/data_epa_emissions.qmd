@@ -197,12 +197,8 @@ onroad_emissions %>%
 - Minnesota did not submit custom data inputs for the 2020 NEI, meaning that inputs to MOVES were based on national default values. Wisconsin submitted custom data for VMT, vehicle population, and road type distribution. Both Minnesota and Wisconsin submitted data for 2017, 2014, and 2011 [@usepa2017NationalEmissions2021, @usepa2014NationalEmissions2018, @usepa2011NationalEmissions2015]. 
 - The NEI augmented vehicle miles traveled (VMT) data for Minnesota and Wisconsin in 2020 using federal and state-level datasets due to data availability issues [@usepaDevelopment2020DefaultData2022]. 
 - To reduce model run-time, the EPA groups counties together and only runs MOVES on a single representative county. The resulting MOVES emissions factors are multiplied by county-specific activity data (including VMT, vehicle population, hourly speed distribution, among others) to get county-specific emissions [@usepa2020NationalEmissions2023onroad, section 5.6.2.1]. Effectively, emissions factors are generated on a single representative county, and are then applied to similar counties. 
+- Though nitrous oxide  N~2~O has a high global warming potential (@sec-gwp), the amount of N~2~O released is relatively small when compared to other sectors. N~2~O is unavailable in EQUATES, except years 2018 and 2019. 
 
-##### Nitrous oxide (N~2~O) availability
-
-Though nitrous oxide  N~2~O has a high global warming potential (@sec-gwp), the amount of N~2~O released is relatively small when compared to other sectors. 
-
-N~2~O is unavailable in EQUATES, except years 2018 and 2019. 
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
