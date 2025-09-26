@@ -265,9 +265,9 @@ emissions_by_gas_2021 <- bind_rows(
   mpca_gas_emissions_2021
 )
 
-fig_ind_gas_type <- plot_ly(
+fig_ind_county_emissions_by_gas_type <- plot_ly(
   type = "bar",
-  source = "fig-ag-county-emissions-by-gas-type",
+  source = "fig-ind-county-emissions-by-gas-type",
   data = emissions_by_gas_2021,
   y = ~ reorder(county_name, mt_co2e),
   x = ~mt_co2e,
@@ -296,7 +296,7 @@ fig_ind_gas_type <- plot_ly(
     )
   )
 
-fig_ind_gas_type
+fig_ind_county_emissions_by_gas_type
 ```
 
 

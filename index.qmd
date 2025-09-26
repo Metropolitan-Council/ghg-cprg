@@ -182,7 +182,7 @@ sequestration_data <- county_emissions %>%
   summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
   mutate(value_emissions = value_emissions / 1000000) #
 
-p <- plot_ly(    source = "fig-temporal-emissions")
+p <- plot_ly(source = "fig-temporal-emissions")
 
 # Create plotly traces for each sector
 emissions_through_time <- p %>%

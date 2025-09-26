@@ -179,7 +179,7 @@ N<sub>2</sub>O: `r 100 * round(n2o_2021/ag_emissions_2021, digits = 3)`%
 #| fig-cap: "2021 county agricultural emissions by gas type (CO2e)"
 #| out-width: "95%"
 
-fig_ag_gas_co2e <- plot_ly(
+fig_ag_county_emissions_by_gas_type_co2e <- plot_ly(
   type = "bar",
   source = "fig-ag-county-emissions-by-gas-type-co2e",
   data = ag_emissions %>%
@@ -212,7 +212,7 @@ fig_ag_gas_co2e <- plot_ly(
     )
   )
 
-fig_ag_gas_co2e
+fig_ag_county_emissions_by_gas_type_co2e
 ```
 
 ## CTU Estimates
@@ -251,7 +251,7 @@ ctu_ag_map <- left_join(cprg_ctu,
 pal <- colorNumeric(palette = "plasma", domain = ctu_ag_map$mt_co2e)
 
 # Create the leaflet map
-map_ctu_ag <- leaflet(ctu_ag_map) %>%
+fig_ctu_ag_emissions <- leaflet(ctu_ag_map) %>%
   addTiles() %>% # Add default OpenStreetMap tiles
   addPolygons(
     fillColor = ~ pal(mt_co2e),
@@ -280,7 +280,7 @@ map_ctu_ag <- leaflet(ctu_ag_map) %>%
 #   theme_minimal() +
 #   labs(fill = "CTU Ag Emissions", title = "CTU Emissions Map")
 
-map_ctu_ag
+fig_ctu_ag_emissions
 ```
 
 ## Summary
