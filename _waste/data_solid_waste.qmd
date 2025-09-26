@@ -21,6 +21,14 @@ hookaddcap()
 
 <!-- {{< include data_mpca_score.qmd >}} -->
 
+### MPCA SCORE {#sec-mpca-score}
+
+The Minnesota Pollution Control Agency collects an annual inventory, [SCORE](https://public.tableau.com/app/profile/mpca.data.services/viz/SCOREOverview/1991-2021SCORE), of solid waste, recycling and organics as reported by counties across the state. For this project, we used MPCA data for the nine Minnesota counties for the years 2005 through 2021. SCORE is named for the Governor's Select Committee on Recycling and the Environment, which first proposed funding laws in 1989 [@mpcaUnderstandingSolidWaste2023]. 
+
+The SCORE data is a high-quality government dataset submitted annually by solid waste staff in each county of Minnesota, as a part of Minnesota's SCORE laws to support waste reduction and calculate the cost of managing waste and recycling. The data provided includes the total short tons of waste generated in each county within each "Method" category, described below.
+
+The data was accessed through the SCORE tool's Tableau dashboard, then filtered to include only the 9-county Minnesota portion of the region studied in this report.
+
 ### MPCA Waste Characterization Study
 
 In 2013, the MPCA contracted with Burns & McDonnell Engineering Company, Inc. to conduct a waste characterization study of landfill waste, an update to an earlier study in the year 2000 [@mpcaMinnesotaStatewideWaste2013]. For simplicity, we have chosen to set waste proportions equal to those 2013 values for all years in this inventory.
