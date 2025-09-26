@@ -182,14 +182,14 @@ sequestration_data <- county_emissions %>%
   summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
   mutate(value_emissions = value_emissions / 1000000) #
 
-p <- plot_ly()
+p <- plot_ly(    source = "fig-temporal-emissions")
 
 # Create plotly traces for each sector
 emissions_through_time <- p %>%
   add_trace(
     data = emissions_data,
-    source = "fig-temporal-emissions",
     x = ~emissions_year, y = ~value_emissions,
+    alpha = 0.85,
     type = "scatter", mode = "none", fill = "tonexty",
     stackgroup = "one", # Stack sectors
     color = ~sector, colors = c(unlist(sector_colors), Freshwater = "#1E90FF"),
@@ -204,6 +204,7 @@ emissions_through_time <- p %>%
   add_trace(
     data = sequestration_data,
     x = ~emissions_year, y = ~value_emissions,
+    alpha = 0.85,
     type = "scatter", mode = "none", fill = "tozeroy", # Prevent stacking
     color = ~sector, colors = unlist(sector_colors),
     hoverinfo = "text",
@@ -217,7 +218,8 @@ emissions_through_time <- p %>%
   plotly_layout("11-county regional greenhouse gas emissions: 2005-2022",
     subtitle = "",
     x_title = "Year",
-    y_title = "Metric tons CO<sub>2</sub>e"
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Sector"
   )
 
 
