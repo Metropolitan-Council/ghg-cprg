@@ -583,7 +583,7 @@ vmt_county_raw_interp <- vmt_interp %>%
 # save county data for our CPRG counties only -----
 vmt_county <- vmt_county_raw_interp %>%
   # filter to only the 7-county metro
-  filter(cprg_area == TRUE) %>%
+  filter(cprg_area == TRUE | county == "Wright") %>%
   group_by(year, county, cprg_area) %>%
   # calculate daily, annual vmt and centerline miles
   # grouped by year

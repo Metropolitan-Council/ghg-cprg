@@ -1,7 +1,7 @@
 testthat::test_that("state DOT VMT", {
   dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS"))
 
-  testthat::expect_equal(nrow(dot_vmt), 246)
+  testthat::expect_gte(nrow(dot_vmt), 246)
 
   # ensure we have all available years
   testthat::expect_equal(

@@ -1,5 +1,5 @@
 ﻿file_name,status,prefix,type,description,output_datasets,github_issue
-_calculate_emissions.R,Deprecated,_,function,StreetLight Data - Calculate emissions using vehicle miles traveled ,None,
+x_calculate_emissions.R,Deprecated,_,function,StreetLight Data - Calculate emissions using vehicle miles traveled ,None,
 x_calculate_vmt.R,Deprecated,_,function,StreetLight Data - calculate vehicle miles traveled from a given StreetLight Analysis,None,
 _read_smoke_ff10.R,Active,_,function,"EPA - read, clean, and save a given SMOKE FF10 file.",None,
 _run_all_transportation.R,Active,_,compilation,Sequentially sources critical scripts for generating output datasets,None,
@@ -54,3 +54,4 @@ wisdot_stations.R,Active,wisdot,data processing,Fetch and compile WisDOT station
 wisdot_vmt_county.R,Active,wisdot,data processing,Comile WisDOT VMT county reports into time series data table,wisdot_vmt_county.RDS,
 x_epa_scrap.R,Deprecated,x,scrap,Scrap code from various EPA sources. May be useful in the future,,
 _compile_county_inventory_forecast.R,Active,_,compilation,Compile county emissions inventory and forecasts from onroad EPA data and RTDM forecasst.,"county_inventory_forecast_emissions.RDS, county_inventory_forecast_emissions_meta.RDS",
+calc_gross_emissions_rates.R,Active,calc,compilation,Calculate gross emissions rates for historic and forecast years,"gross_eimssions_rates.RDS, gross_eimssions_rates_meta.RDS",https://github.com/Metropolitan-Council/ghg-cprg/issues/151

@@ -92,7 +92,7 @@ scc_onroad <- download_read_table(
 # https://sor-scc-api.epa.gov/sccwebservices/sccsearch/
 # contains onroad and nonroad, retired and active SCCs
 scc_complete_road <-
-  download_read_table("https://sor-scc-api.epa.gov/sccwebservices/v1/SCC?format=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2024-0812-144242.csv",
+  download_read_table("https://sor-scc-api.epa.gov/sccwebservices/v1/SCC?format=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2025-0820-150847.csv",
     exdir = "_transportation/data-raw/epa/",
     col_types = "c"
   ) %>%

@@ -23,15 +23,14 @@ if (Sys.info()["user"][[1]] == "rotenle") {
   )
 }
 
-
 # CNG school buses, motor homes, and short haul trucks
 # have very low data availability
 # we will remove them from our datasets
 scc6_remove <- c(
-  "220352", # single unit short haul
-  "220343", # school buses
-  "220361", # combination short haul
-  "220354" # motor homes
+  # "220352", # single unit short haul
+  # "220343", # school buses
+  # "220361", # combination short haul
+  # "220354" # motor homes
 )
 
 # read in base datasets -----
@@ -432,7 +431,19 @@ epa_onroad_emissions_compile <- epa_emissions_combine %>%
   ungroup()
 
 
-names(epa_onroad_emissions_compile)
+# expect no missing SCC codes
+testthat::expect_equal(
+  epa_onroad_emissions_compile %>%
+    filter(is.na(vehicle_type)) %>%
+    select(emissions_year, scc6, scc6_desc) %>%
+    unique() %>%
+    nrow(),
+  0
+)
+
+
+
+# names(epa_onroad_emissions_compile)
 epa_onroad_emissions_compile_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
   "emissions_year", class(epa_onroad_emissions_compile$emissions_year), "Emissions year",

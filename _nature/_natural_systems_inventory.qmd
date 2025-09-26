@@ -203,6 +203,39 @@ p_nlcd_lc
 p_nlcd_tcc
 ```
 
+```{r tbl-sequestration}
+#| tbl-cap: "Ecosystem sequestration rates"
+#| out-width: "95%"
+land_cover_carbon <- readRDS(file.path(here::here(), "_nature/data/land_cover_carbon.RDS")) %>%
+  mutate(land_cover_type = str_replace_all(land_cover_type, "_", " "))
+
+seq_citations <- tibble(
+  land_cover_type = land_cover_carbon$land_cover_type,
+  Citation = c(
+    "[@knopsSoilCarbonNitrogen2009]",
+    "[@russellCarbonMinnesotaTrees2020]",
+    "[@phillipsHighSoilCarbon2023]",
+    "[@nowakCarbonStorageSequestration2013]",
+    "[@polaskySupplyTerrestrialCarbon2006]"
+  )
+)
+
+tbl_sequestration <- kable(
+  land_cover_carbon %>%
+    dplyr::select(
+      land_cover_type,
+      `Metric tons CO₂e per square kilometer per year` = seq_mtco2e_sqkm
+    ) %>%
+    mutate(across(where(is.numeric), scales::comma)) %>%
+    left_join(., seq_citations) %>%
+    unite("Land Cover Type", c("land_cover_type", "Citation"), sep = " "),
+  row.names = FALSE, format = "markdown"
+)
+
+tbl_sequestration
+```
+
+
 ## Results
 
 There is considerable variation across counties in two key components that affect natural system carbon sequestration and stock potential: total area of green spaces and the ratio of 'natural' to 'urban' green spaces. For example, Chisago County features a higher proportion of green spaces in undeveloped lands compared to Hennepin County, and consequently has nearly 40% greater stock potential than Hennepin County owing to the former's higher stock capacity in wetlands and forests. Despite this discrepencancy, Hennepin and Chisago Counties have nearly identical sequestration rates due to Hennepin County's high proportion of urban trees and turf grass (urban grasslands) which have high potential for rapid carbon sequestration. This dichotomy illustrates that different counties curation of natural spaces may play different roles. Highly developed areas may help offset carbon emissions by providing rapid sequestration sinks in urban greenery, whereas less developed counties can provide longer term carbon sinks in natural areas with a higher capacity to continue drawing down atmospheric carbon even if future emissions approach net zero. The high stock capacity also reinforces the need for natural systems protection, as currently captured carbon would be released into the atmosphere upon development.

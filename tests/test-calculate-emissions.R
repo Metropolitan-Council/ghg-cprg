@@ -1,5 +1,5 @@
 testthat::test_that("Correct number of calibration zone sets", {
-  source(file.path(here::here(), "_transportation/data-raw/_calculate_emissions.R"))
+  source(file.path(here::here(), "_transportation/data-raw/x_calculate_emissions.R"))
 
   vmt <- readRDS(file.path(here::here(), "_transportation/data/county_vmt_emissions.RDS")) %>%
     select(1:11)

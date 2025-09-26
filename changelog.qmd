@@ -50,7 +50,7 @@ Additional changes
 
 - Some energy data processing to get back to 2005 in `_energy/data-raw/MNWI_2005_CensusCrosswalk_UtilityAllocation.R`  
 - Text for GWP updated @sec-gwp  
-- Noted differences in LGGIT values @sec-epa-lggit-transportation  
+- Noted differences in LGGIT values 
 - Re-ran transportation LGGIT comparison values. Minor change in values    
 - Test values updated for EPA MOVES and GWP  
 - Slight updates to renv package repository locations (RSPM vs. CRAN)  
