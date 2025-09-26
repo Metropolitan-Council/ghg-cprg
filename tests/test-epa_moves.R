@@ -1,4 +1,4 @@
-testthat::test_that("epa moves", {
+testthat::test_that("epa moves emissions rates", {
   epa_moves <- readRDS(file.path(here::here(), "_transportation/data/epa_moves.RDS"))
   source(file.path(here::here(), "R/global_warming_potential.R"))
 
