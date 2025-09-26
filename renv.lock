@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.4.0",
+    "Version": "4.4.1",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -1099,6 +1099,33 @@
       ],
       "Hash": "c5ba8f5056487403a299b91984be86ca"
     },
+    "ghg.ccap": {
+      "Package": "ghg.ccap",
+      "Version": "1.0.1",
+      "Source": "GitHub",
+      "Remotes": "github::Metropolitan-Council/councilR",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "ghg.ccap",
+      "RemoteUsername": "Metropolitan-Council",
+      "RemoteRef": "main",
+      "RemoteSha": "5119df80d0f0bb8dd2fe9a8373d18cf651a7a7c8",
+      "Requirements": [
+        "R",
+        "cli",
+        "dplyr",
+        "janitor",
+        "magrittr",
+        "mathjaxr",
+        "purrr",
+        "rlang",
+        "stringr",
+        "tibble",
+        "tidyr",
+        "tidyselect"
+      ],
+      "Hash": "1f43f392ebc35ee8fa60a3deb8927ed2"
+    },
     "globals": {
       "Package": "globals",
       "Version": "0.16.3",
@@ -1675,6 +1702,13 @@
         "xfun"
       ],
       "Hash": "074efab766a9d6360865ad39512f2a7e"
+    },
+    "mathjaxr": {
+      "Package": "mathjaxr",
+      "Version": "1.8-0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "699322a556bb01554046ccb995ca0201"
     },
     "memoise": {
       "Package": "memoise",

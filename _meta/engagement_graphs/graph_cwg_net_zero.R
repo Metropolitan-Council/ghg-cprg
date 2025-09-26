@@ -18,18 +18,18 @@ mpca_2020 <- mpca_economy_projections %>%
   filter(emissions_year == 2020, scenario == "Current policies") %>%
   mutate(
     geography = "State",
-    values_emissions = values_emissions
+    value_emissions = values_emissions
   ) %>%
-  select(source_sink, values_emissions, geography)
+  select(source_sink, value_emissions, geography)
 
 mc_2021 <- county_emissions %>%
-  filter(year == 2021) %>%
-  mutate(source_sink = if_else(emissions_metric_tons_co2e > 0, "Emission", "Sequestration")) %>%
+  filter(emissions_year == 2021) %>%
+  mutate(source_sink = if_else(value_emissions > 0, "Emission", "Sequestration")) %>%
   group_by(source_sink) %>%
-  summarize(values_emissions = sum(emissions_metric_tons_co2e) / 10^6) %>%
+  summarize(value_emissions = sum(value_emissions) / 10^6) %>%
   mutate(geography = "Metro")
 
-ggplot(rbind(mpca_2020, mc_2021), aes(x = source_sink, y = values_emissions, fill = source_sink)) +
+ggplot(rbind(mpca_2020, mc_2021), aes(x = source_sink, y = value_emissions, fill = source_sink)) +
   geom_bar(stat = "identity", col = "black") +
   scale_fill_manual(values = c("darkorange", "forestgreen"), guide = "none") +
   facet_wrap(. ~ geography) +
