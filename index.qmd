@@ -105,6 +105,11 @@ county_emissions_2022$sector <- factor(county_emissions_2022$sector,
   levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")
 )
 
+county_emissions_2022$category <- factor(county_emissions_2022$category,
+  levels = rev(names(category_colors) %>% unique())
+)
+
+
 fig_county_emissions_sector <- plot_ly(
   data = county_emissions_2022 %>%
     group_by(sector, category) %>%
