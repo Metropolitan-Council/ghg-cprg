@@ -1,6 +1,9 @@
-rm(list = ls())
+# rm(list = ls())
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
+
+# browser()
+
 
 interpolate_emissions <- function(df) {
   df %>%
@@ -62,8 +65,8 @@ waste_target <- (waste_emissions %>%
     sum()) * # regional wide emissions minus electricity
   seq_target * -1 # emissions goal
 
-### project commercial growth based on population
 
+### project waste emissions based on population growth
 total_pop <- read_rds("_meta/data/demographic_forecast_11_county.RDS") %>%
   filter(variable == "total_pop")
 
@@ -92,14 +95,14 @@ waste_emissions_bau <- total_pop %>%
   ) %>%
   rename(emissions_year = inventory_year) %>%
   group_by(emissions_year, scenario) %>%
-  summarize(value_emissions = sum(value_emissions))
+  summarize(value_emissions = sum(value_emissions),.groups="keep")
 
 
 
 waste_emissions_proj <- waste_emissions %>%
   filter(emissions_year == 2020) %>%
   group_by(sector, category) %>%
-  summarize(baseline_emissions = sum(value_emissions, na.rm = "TRUE")) %>%
+  summarize(baseline_emissions = sum(value_emissions, na.rm = "TRUE"), .groups = "keep") %>%
   left_join(
     waste_scenarios %>%
       filter(emissions_year >= 2025),
@@ -120,11 +123,11 @@ waste_emissions_proj <- waste_emissions %>%
     emissions_year,
     scenario
   ) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup()
 
 
-
+# combine and interpolate
 waste_emissions_pathways <- interpolate_emissions(bind_rows(
   waste_emissions_bau,
   waste_emissions_proj %>%
@@ -133,7 +136,6 @@ waste_emissions_pathways <- interpolate_emissions(bind_rows(
 
 
 ## save bau data
-
 waste_bau <- bind_rows(
   county_emissions %>%
     filter(
@@ -142,11 +144,12 @@ waste_bau <- bind_rows(
     ) %>% # Use any scenario since they're identical
     mutate(scenario = "bau") %>%
     group_by(emissions_year, scenario) %>%
-    summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>%
+    summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups="keep") %>%
     ungroup(),
   waste_emissions_pathways
 )
 
+message("Saving waste projections data to: \n\t _meta/data-raw/projections/waste_pathways.rds")
 saveRDS(
   waste_bau,
   "_meta/data-raw/projections/waste_pathways.rds"
@@ -166,6 +169,7 @@ base_data <- county_emissions %>%
   summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>%
   ungroup()
 
+# add 2025 point from bau scenario
 bau_2025 <- waste_emissions_pathways %>%
   filter(scenario == "bau", emissions_year == 2025) %>%
   select(emissions_year, value_emissions)
@@ -287,9 +291,11 @@ emissions_gg <- ggplot() +
 
 print(emissions_gg)
 
+
+message("Saving waste projections plot to: \n\t ~/imgs/waste_decarbonization_pathways.png")
 ggplot2::ggsave(
   plot = emissions_gg,
-  filename = paste0(here::here(), "/imgs/solid_waste_decarbonization_pathways.png"), # add your file path here
+  filename = paste0(here::here(), "/imgs/waste_decarbonization_pathways.png"), 
   width = 12,
   height = 6,
   units = "in",
@@ -339,3 +345,8 @@ ppp2050
 nz2050
 ppp2050 / bau2050
 nz2050 / bau2050
+
+
+
+message("Finished waste projections")
+

@@ -257,3 +257,7 @@ scenarios_sources_annual_meta <-
 
 saveRDS(scenarios_sources_annual, "_meta/data/gcam/mpca_subsector_gcam.RDS")
 saveRDS(scenarios_sources_annual_meta, "_meta/data/gcam/mpca_subsector_gcam_meta.RDS")
+
+
+
+message("Finished compiling gcam")
