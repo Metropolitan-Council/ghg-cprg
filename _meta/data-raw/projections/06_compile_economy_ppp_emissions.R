@@ -92,8 +92,8 @@ pathways <- bind_rows(
     mutate(sector = "Waste"),
   tr_bau %>%
     mutate(sector = "Transportation"),
-  aviation_bau_interpolated %>%
-    select(-category),
+  # aviation_bau_interpolated %>%
+  #   select(-category),
   res_bau %>%
     select(
       emissions_year = inventory_year,
