@@ -1,9 +1,12 @@
-rm(list = ls())
+### develop regional natural systems sequestration targets based on tree planting and restoration efforts
 
-remotes::install_github("Metropolitan-Council/ghg.ccap", ref = "ccap-graphics")
+## restart and rerun when making updates to ghg.ccap@ccap-graphics
+# remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
+# enter 3 ('none') if prompted to update other packages
+
 source("R/_load_pkgs.R")
+source("R/cprg_colors.R")
 
-# library(ghg.ccap)
 
 # Load data
 natural_systems_data <- c()
@@ -26,7 +29,6 @@ lc_county <- readr::read_rds(paste0(here::here(), "/_nature/data/", "nlcd_county
 inventory_start_year <- 2005
 inventory_end_year <- 2022
 future_years <- 2023:2050
-
 
 
 
@@ -65,14 +67,6 @@ county_projections_null <- county_projections_2022 %>%
   ungroup() %>%
   # replace NAs with 0
   mutate(across(everything(), ~ tidyr::replace_na(., 0)))
-
-
-
-
-
-
-
-
 
 
 # Regional inventory by summing county inventories
@@ -206,9 +200,10 @@ target_seq_for_netZero <- df_netZero %>% pull(net_zero_target)
 
 
 
-#
-# write_rds(df_netZero,
-#           "_meta/data/regional_net_zero_target.RDS")
+
+message("Saving regional net zero target data to: \n\t _meta/data/regional_net_zero_target.RDS")
+write_rds(df_netZero,
+          "_meta/data/regional_net_zero_target.RDS")
 
 
 
@@ -312,15 +307,6 @@ plot_emissions <- function(bau, scenario, target) {
 
 
 
-
-
-
-
-
-
-
-
-
 scen1_gg <- plot_emissions(
   bau = mod_bau,
   scenario = mod_scen1,
@@ -330,16 +316,7 @@ scen1_gg <- plot_emissions(
 print(scen1_gg)
 
 
-
-scen2_gg <- plot_emissions(
-  bau = mod_bau,
-  scenario = mod_scen2,
-  target = target_seq_for_netZero
-)
-
-print(scen2_gg)
-
-
+message("Saving natural systems projections plot to: \n\t ~/imgs/ns_decarbonization_pathways.png")
 ggplot2::ggsave(
   plot = scen1_gg,
   filename = paste0(here::here(), "/imgs/ns_decarbonization_pathways.png"), # add your file path here
@@ -351,6 +328,7 @@ ggplot2::ggsave(
 )
 
 
+message("Finished natural systems projections")
 
 
 
