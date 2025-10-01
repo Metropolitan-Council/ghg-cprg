@@ -3,7 +3,7 @@
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
 
-residential_elec <- readRDS("_meta/data/residential_pathways.RDS") %>%
+residential_elec <- readRDS("_meta/data-raw/projections/residential_pathways.RDS") %>%
   filter(scenario == "bau") %>%
   select(inventory_year, scenario, electricity_emissions)
 

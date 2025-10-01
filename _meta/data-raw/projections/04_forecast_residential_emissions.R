@@ -2,7 +2,7 @@
 
 source("R/_load_pkgs.R")
 
-residential_pathways <- readRDS("_meta/data/residential_pathways.RDS")
+residential_pathways <- readRDS("_meta/data-raw/projections/residential_pathways.RDS")
 
 ### set net-zero by regional analysis
 

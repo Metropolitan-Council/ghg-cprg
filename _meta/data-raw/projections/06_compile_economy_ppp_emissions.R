@@ -11,7 +11,7 @@ county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS")
 
 tr_bau <- readRDS("./_meta/data-raw/projections/tr_pathways.rds")
 sw_bau <- readRDS("./_meta/data-raw/projections/waste_pathways.rds")
-res_bau <- readRDS("_meta/data/residential_pathways.RDS")
+res_bau <- readRDS("_meta/data-raw/projections/residential_pathways.RDS")
 nonres_ng_bau <- readRDS("./_meta/data-raw/projections/nonres_ng_pathways.rds")
 nonres_elec_bau <- readRDS("./_meta/data-raw/projections/nonres_elec_bau.rds")
 ind_bau <- readRDS("./_meta/data-raw/projections/ind_pathways.rds")
