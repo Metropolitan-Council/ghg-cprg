@@ -307,8 +307,8 @@ residential_pathways <- bind_rows(
 )
 # waldo::compare(residential_pathways, readRDS("_meta/data/residential_pathways.RDS"))
 
-message("Saving residential projections data to: \n\t _meta/data/residential_pathways.RDS")
-saveRDS(residential_pathways, "_meta/data/residential_pathways.RDS")
+message("Saving residential projections data to: \n\t _meta/data-raw/projections/residential_pathways.RDS")
+saveRDS(residential_pathways, "_meta/data-raw/projections/residential_pathways.RDS")
 
 
 ### numbers for CCAP document
