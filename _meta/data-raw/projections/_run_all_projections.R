@@ -33,10 +33,9 @@ source("_meta/data-raw/projections/04_forecast_waste_emissions.R")
 # electricity ----
 source("_meta/data-raw/projections/05_forecast_electricity_emissions.R")
 
+rm(list = ls())
 
 # compile all sectors ----
 source("_meta/data-raw/projections/06_compile_economy_bau_emissions.R")
 source("_meta/data-raw/projections/06_compile_economy_ppp_emissions.R")
-
-
 
