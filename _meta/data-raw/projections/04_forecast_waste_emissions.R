@@ -149,6 +149,7 @@ waste_bau <- bind_rows(
   waste_emissions_pathways
 )
 
+# waldo::compare(waste_bau, readRDS( "_meta/data-raw/projections/waste_pathways.rds"))
 message("Saving waste projections data to: \n\t _meta/data-raw/projections/waste_pathways.rds")
 saveRDS(
   waste_bau,
@@ -247,7 +248,7 @@ emissions_gg <- ggplot() +
     color = "black"
   ) +
   geom_segment(aes(x = 2025, xend = 2025, y = 0, yend = base_data %>% filter(emissions_year == 2025) %>% pull(value_emissions)),
-    color = "black", linetype = "solid", size = 0.8
+    color = "black", linetype = "solid", linewidth = 0.8
   ) +
   # annotate("text", x = 2025, y = max(your_data$value_emissions) * 0.9,
   #          label = "Historical | Projected", angle = 90, hjust = 1, size = 3.5) +

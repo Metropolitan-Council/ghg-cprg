@@ -173,6 +173,7 @@ tr_emissions_pathways <- tr_emissions_pathways %>%
     value_emissions
   ))
 
+# waldo::compare(tr_emissions_pathways, readRDS("_meta/data-raw/projections/tr_pathways.rds"))
 message("Saving transportation projections data to: \n\t _meta/data-raw/projections/tr_pathways.rds")
 saveRDS(
   tr_emissions_pathways,
@@ -234,7 +235,7 @@ emissions_gg <- ggplot() +
   geom_line(
     data = base_data,
     aes(x = emissions_year, y = value_emissions),
-    color = "black", size = 1
+    color = "black", linewidth = 1
   ) +
 
   # Diverging scenario lines

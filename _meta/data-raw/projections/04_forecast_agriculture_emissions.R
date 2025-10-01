@@ -158,7 +158,7 @@ emissions_gg <- ggplot() +
   geom_line(
     data = base_data,
     aes(x = emissions_year, y = value_emissions),
-    color = "black", size = 1
+    color = "black", linewidth = 1
   ) +
 
   # Diverging scenario lines
@@ -181,7 +181,7 @@ emissions_gg <- ggplot() +
     color = "black"
   ) +
   geom_segment(aes(x = 2022, xend = 2022, y = 0, yend = base_data %>% filter(emissions_year == 2022) %>% pull(value_emissions)),
-    color = "black", linetype = "solid", size = 0.8
+    color = "black", linetype = "solid", linewidth = 0.8
   ) +
   # annotate("text", x = 2025, y = max(your_data$value_emissions) * 0.9,
   #          label = "Historical | Projected", angle = 90, hjust = 1, size = 3.5) +

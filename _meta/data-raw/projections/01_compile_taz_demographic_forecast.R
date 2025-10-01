@@ -203,6 +203,7 @@ forecast_us <- forecast_interpolated %>%
 #   facet_wrap(. ~ variable)
 # 
 # # again looks good
+# waldo::compare(forecast_interpolated, readRDS("_meta/data/demographic_forecast_11_county.RDS"))
 
 message("Saving demographic forecast data to: \n\t _meta/data/demographic_forecast_11_county.RDS")
 write_rds(

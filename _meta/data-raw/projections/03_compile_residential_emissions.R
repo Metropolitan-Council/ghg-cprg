@@ -305,6 +305,7 @@ residential_pathways <- bind_rows(
   ppp_results,
   nz_results
 )
+# waldo::compare(residential_pathways, readRDS("_meta/data/residential_pathways.RDS"))
 
 message("Saving residential projections data to: \n\t _meta/data/residential_pathways.RDS")
 saveRDS(residential_pathways, "_meta/data/residential_pathways.RDS")

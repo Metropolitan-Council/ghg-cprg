@@ -191,6 +191,8 @@ regional_housing_forecast <- eleven_county_housing_forecast %>%
     value_change_from_base = value - value[inventory_year == 2020]
   )
 
+# waldo::compare(regional_housing_forecast, readRDS("_meta/data/regional_housing_forecast.RDS"))
+
 message("Saving regional housing projections data to: \n\t _meta/data/regional_housing_forecast.RDS")
 write_rds(
   regional_housing_forecast,
