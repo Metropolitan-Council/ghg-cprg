@@ -1,0 +1,323 @@
+"emissions_year","sector","value_emissions"
+2005,"Agriculture",1226170.11
+2005,"Building Fuel",11447555.82
+2005,"Electricity",27564576.73
+2005,"Industrial Processes",4940901.86
+2005,"Natural Systems",-1657926.29
+2005,"Transportation",19744882.23
+2005,"Waste",1695692.04
+2006,"Agriculture",1221965.12
+2006,"Building Fuel",12187444.58
+2006,"Electricity",26883515.16
+2006,"Industrial Processes",5459257.86
+2006,"Natural Systems",-1666633.23
+2006,"Transportation",19555870.63
+2006,"Waste",1704889.8
+2007,"Agriculture",1198682.4
+2007,"Building Fuel",12169730.61
+2007,"Electricity",26189888.7
+2007,"Industrial Processes",5512227.75
+2007,"Natural Systems",-1672014.25
+2007,"Transportation",20153025.87
+2007,"Waste",1678194.4
+2008,"Agriculture",1170794.17
+2008,"Building Fuel",12152016.67
+2008,"Electricity",25529380.38
+2008,"Industrial Processes",5920172.46
+2008,"Natural Systems",-1675153.95
+2008,"Transportation",19571998.18
+2008,"Waste",1557013.78
+2009,"Agriculture",1183608.98
+2009,"Building Fuel",12134302.75
+2009,"Electricity",24856322.84
+2009,"Industrial Processes",5582929.61
+2009,"Natural Systems",-1679722.32
+2009,"Transportation",19138326.63
+2009,"Waste",1485462.99
+2010,"Agriculture",1222749.68
+2010,"Building Fuel",12116588.81
+2010,"Electricity",23257154.77
+2010,"Industrial Processes",5930643.64
+2010,"Natural Systems",-1682460.37
+2010,"Transportation",18830159.41
+2010,"Waste",1433527.27
+2011,"Agriculture",1173545.19
+2011,"Building Fuel",12098874.91
+2011,"Electricity",22675339.25
+2011,"Industrial Processes",6299999.85
+2011,"Natural Systems",-1681914.19
+2011,"Transportation",18713328.31
+2011,"Waste",1460067.39
+2012,"Agriculture",1192832.88
+2012,"Building Fuel",12081160.95
+2012,"Electricity",21856829.61
+2012,"Industrial Processes",5515768.13
+2012,"Natural Systems",-1689705.46
+2012,"Transportation",19067051.35
+2012,"Waste",1448027.94
+2013,"Agriculture",1104374.35
+2013,"Building Fuel",11933873.97
+2013,"Electricity",21461763.21
+2013,"Industrial Processes",5580300.52
+2013,"Natural Systems",-1692857.96
+2013,"Transportation",19109291.42
+2013,"Waste",1440795.35
+2014,"Agriculture",1115257.64
+2014,"Building Fuel",12564599.09
+2014,"Electricity",20904572.48
+2014,"Industrial Processes",5615146.58
+2014,"Natural Systems",-1690576.5
+2014,"Transportation",19162487.28
+2014,"Waste",1550634.56
+2015,"Agriculture",1178605.13
+2015,"Building Fuel",11959624.6
+2015,"Electricity",19713297.35
+2015,"Industrial Processes",5776538.89
+2015,"Natural Systems",-1699701.38
+2015,"Transportation",19199486.76
+2015,"Waste",1591418.66
+2016,"Agriculture",1195097.86
+2016,"Building Fuel",12048428.17
+2016,"Electricity",18802033.19
+2016,"Industrial Processes",5659535.65
+2016,"Natural Systems",-1704376.85
+2016,"Transportation",19373976.28
+2016,"Waste",1641736.62
+2017,"Agriculture",1175353.86
+2017,"Building Fuel",11927820.66
+2017,"Electricity",18479902.56
+2017,"Industrial Processes",5875704.34
+2017,"Natural Systems",-1705740.84
+2017,"Transportation",19399576.01
+2017,"Waste",1705875.15
+2018,"Agriculture",1108810.93
+2018,"Building Fuel",13878858.82
+2018,"Electricity",19098763.96
+2018,"Industrial Processes",5937575.75
+2018,"Natural Systems",-1709196.64
+2018,"Transportation",19301303.49
+2018,"Waste",1691040.87
+2019,"Agriculture",1013477.09
+2019,"Building Fuel",15123813.13
+2019,"Electricity",16290376.65
+2019,"Industrial Processes",5814359.42
+2019,"Natural Systems",-1713027.81
+2019,"Transportation",19159938.85
+2019,"Waste",1744554.04
+2020,"Agriculture",1107456.68
+2020,"Building Fuel",13532488.25
+2020,"Electricity",14209282.47
+2020,"Industrial Processes",5902309.19
+2020,"Natural Systems",-1720488.22
+2020,"Transportation",16034454.96
+2020,"Waste",1747699.81
+2021,"Agriculture",1080152.49
+2021,"Building Fuel",12243481.88
+2021,"Electricity",14727910.06
+2021,"Industrial Processes",6089769.8
+2021,"Natural Systems",-1722006.24
+2021,"Transportation",18065353.18
+2021,"Waste",1813329.17
+2022,"Agriculture",1040587.29
+2022,"Building Fuel",13538967.38
+2022,"Electricity",13299448.08
+2022,"Industrial Processes",6009117.57
+2022,"Natural Systems",-1726986.35
+2022,"Transportation",19352543.33
+2022,"Waste",1791993.92
+2023,"Agriculture",1053912.63
+2023,"Building Fuel",13780554.51
+2023,"Electricity",12703357.62
+2023,"Industrial Processes",5993800.72
+2023,"Natural Systems",-1726986.35
+2023,"Transportation",18984315.63
+2023,"Waste",1803329.22
+2024,"Agriculture",1054539.9
+2024,"Building Fuel",13839661.76
+2024,"Electricity",11890731.55
+2024,"Industrial Processes",5978483.88
+2024,"Natural Systems",-1726986.35
+2024,"Transportation",18616087.94
+2024,"Waste",1814664.52
+2025,"Agriculture",1058208.53
+2025,"Building Fuel",13898769.01
+2025,"Electricity",11040939
+2025,"Industrial Processes",5963167.03
+2025,"Natural Systems",-1726986.35
+2025,"Transportation",18247860.25
+2025,"Waste",1825999.83
+2026,"Agriculture",1059122.33
+2026,"Building Fuel",13957876.27
+2026,"Electricity",10172369.5
+2026,"Industrial Processes",5995734.55
+2026,"Natural Systems",-1727600.38
+2026,"Transportation",17957893.44
+2026,"Waste",1837335.13
+2027,"Agriculture",1058544.68
+2027,"Building Fuel",14016983.52
+2027,"Electricity",8822456.89
+2027,"Industrial Processes",6028302.07
+2027,"Natural Systems",-1728399.63
+2027,"Transportation",17667926.62
+2027,"Waste",1848670.43
+2028,"Agriculture",1059458.48
+2028,"Building Fuel",14076090.77
+2028,"Electricity",7802434.22
+2028,"Industrial Processes",6060869.59
+2028,"Natural Systems",-1729388.42
+2028,"Transportation",17377959.81
+2028,"Waste",1860005.74
+2029,"Agriculture",1060372.28
+2029,"Building Fuel",14135198.03
+2029,"Electricity",6202663.91
+2029,"Industrial Processes",6093437.11
+2029,"Natural Systems",-1730537.54
+2029,"Transportation",17087992.99
+2029,"Waste",1871341.04
+2030,"Agriculture",1061286.08
+2030,"Building Fuel",14194305.28
+2030,"Electricity",4871174.17
+2030,"Industrial Processes",6126004.63
+2030,"Natural Systems",-1731779.81
+2030,"Transportation",16798026.18
+2030,"Waste",1882676.34
+2031,"Agriculture",1062199.88
+2031,"Building Fuel",14259637.34
+2031,"Electricity",4359926.5
+2031,"Industrial Processes",6116493.31
+2031,"Natural Systems",-1733022.09
+2031,"Transportation",16496370.76
+2031,"Waste",1893147.1
+2032,"Agriculture",1063113.68
+2032,"Building Fuel",14324969.4
+2032,"Electricity",3827634.39
+2032,"Industrial Processes",6106981.99
+2032,"Natural Systems",-1734171.21
+2032,"Transportation",16194715.34
+2032,"Waste",1903617.85
+2033,"Agriculture",1064027.48
+2033,"Building Fuel",14390301.46
+2033,"Electricity",3549604.57
+2033,"Industrial Processes",6097470.67
+2033,"Natural Systems",-1735160
+2033,"Transportation",15893059.91
+2033,"Waste",1914088.61
+2034,"Agriculture",1064941.28
+2034,"Building Fuel",14455633.52
+2034,"Electricity",2982137.72
+2034,"Industrial Processes",6087959.35
+2034,"Natural Systems",-1735959.25
+2034,"Transportation",15591404.49
+2034,"Waste",1924559.36
+2035,"Agriculture",1065855.08
+2035,"Building Fuel",14520965.58
+2035,"Electricity",2309087.59
+2035,"Industrial Processes",6078448.03
+2035,"Natural Systems",-1736573.28
+2035,"Transportation",15289749.07
+2035,"Waste",1935030.11
+2036,"Agriculture",1066768.88
+2036,"Building Fuel",14586297.64
+2036,"Electricity",1975386.6
+2036,"Industrial Processes",6066621.64
+2036,"Natural Systems",-1736573.28
+2036,"Transportation",15026236.92
+2036,"Waste",1945500.87
+2037,"Agriculture",1067682.68
+2037,"Building Fuel",14651629.7
+2037,"Electricity",1638396.82
+2037,"Industrial Processes",6054795.25
+2037,"Natural Systems",-1736573.28
+2037,"Transportation",14762724.77
+2037,"Waste",1955971.62
+2038,"Agriculture",1068596.49
+2038,"Building Fuel",14716961.76
+2038,"Electricity",1273185.11
+2038,"Industrial Processes",6042968.86
+2038,"Natural Systems",-1736573.28
+2038,"Transportation",14499212.63
+2038,"Waste",1966442.38
+2039,"Agriculture",1069510.29
+2039,"Building Fuel",14782293.82
+2039,"Electricity",990251.74
+2039,"Industrial Processes",6031142.48
+2039,"Natural Systems",-1736573.28
+2039,"Transportation",14235700.48
+2039,"Waste",1976913.13
+2040,"Agriculture",1067327.63
+2040,"Building Fuel",14847625.88
+2040,"Electricity",477877.85
+2040,"Industrial Processes",6019316.09
+2040,"Natural Systems",-1736573.28
+2040,"Transportation",13972188.33
+2040,"Waste",1987383.89
+2041,"Agriculture",1067915.77
+2041,"Building Fuel",14952488.07
+2041,"Electricity",459069.47
+2041,"Industrial Processes",5961930.25
+2041,"Natural Systems",-1736573.28
+2041,"Transportation",13707932.62
+2041,"Waste",2001741.71
+2042,"Agriculture",1068503.92
+2042,"Building Fuel",15057350.27
+2042,"Electricity",368746.07
+2042,"Industrial Processes",5904544.41
+2042,"Natural Systems",-1736573.28
+2042,"Transportation",13443676.9
+2042,"Waste",2016099.54
+2043,"Agriculture",1069092.07
+2043,"Building Fuel",15162212.47
+2043,"Electricity",318899.48
+2043,"Industrial Processes",5847158.57
+2043,"Natural Systems",-1736573.28
+2043,"Transportation",13179421.19
+2043,"Waste",2030457.37
+2044,"Agriculture",1069680.22
+2044,"Building Fuel",15267074.67
+2044,"Electricity",271588.99
+2044,"Industrial Processes",5789772.73
+2044,"Natural Systems",-1736573.28
+2044,"Transportation",12915165.48
+2044,"Waste",2044815.19
+2045,"Agriculture",1070268.37
+2045,"Building Fuel",15371936.87
+2045,"Electricity",226693.91
+2045,"Industrial Processes",5732386.89
+2045,"Natural Systems",-1736573.28
+2045,"Transportation",12650909.76
+2045,"Waste",2059173.02
+2046,"Agriculture",1070856.51
+2046,"Building Fuel",15476799.06
+2046,"Electricity",185011.3
+2046,"Industrial Processes",5681418.08
+2046,"Natural Systems",-1736573.28
+2046,"Transportation",12386809.69
+2046,"Waste",2073530.85
+2047,"Agriculture",1071444.66
+2047,"Building Fuel",15581661.26
+2047,"Electricity",145760.51
+2047,"Industrial Processes",5630449.28
+2047,"Natural Systems",-1736573.28
+2047,"Transportation",12122709.62
+2047,"Waste",2087888.67
+2048,"Agriculture",1072032.81
+2048,"Building Fuel",15686523.46
+2048,"Electricity",108350.52
+2048,"Industrial Processes",5579480.48
+2048,"Natural Systems",-1736573.28
+2048,"Transportation",11858609.55
+2048,"Waste",2102246.5
+2049,"Agriculture",1072620.96
+2049,"Building Fuel",15791385.66
+2049,"Electricity",72333.94
+2049,"Industrial Processes",5528511.67
+2049,"Natural Systems",-1736573.28
+2049,"Transportation",11594509.48
+2049,"Waste",2116604.33
+2050,"Agriculture",1073209.11
+2050,"Building Fuel",15896247.85
+2050,"Electricity",37372.06
+2050,"Industrial Processes",5477542.87
+2050,"Natural Systems",-1736573.28
+2050,"Transportation",11330409.41
+2050,"Waste",2130962.15

@@ -2,7 +2,19 @@
 
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
-source("_meta/data-raw/projections/interpolate_emissions.R")
+
+interpolate_emissions <- function(df) {
+  df %>%
+    mutate(emissions_year = as.numeric(emissions_year)) %>%
+    group_by(sector, category) %>%
+    # complete sequence of years from min to max
+    complete(emissions_year = seq(min(emissions_year), max(emissions_year), by = 1)) %>%
+    # interpolate missing values linearly
+    mutate(value_emissions = approx(emissions_year, value_emissions,
+      xout = emissions_year, rule = 1
+    )$y) %>%
+    ungroup()
+}
 
 #### read in and create business as usual projections from different sectors #
 
@@ -98,9 +110,11 @@ bau <- bind_rows(
 ) %>%
   filter(emissions_year >= 2005) %>%
   group_by(emissions_year, sector) %>%
-  summarize(value_emissions = sum(value_emissions), .groups="keep") %>%
+  summarize(value_emissions = sum(value_emissions) %>% round(digits = 2), .groups="keep") %>%
   ungroup()
 
+saveRDS(bau, "_meta/data-raw/projections/economy_bau_emissions.RDS")
+write.csv(bau, "_meta/data-raw/projections/economy_bau_emissions.csv",row.names = FALSE)
 # bau
 # 
 # bau %>%

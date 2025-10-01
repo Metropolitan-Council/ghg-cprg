@@ -65,14 +65,14 @@ emissions_gg <- ggplot() +
   geom_line(
     data = base_data,
     aes(x = inventory_year, y = value_emissions),
-    color = "black", size = 1
+    color = "black", linewidth = 1
   ) +
 
   # Diverging scenario lines
   geom_line(
     data = diverging_data %>% filter(scenario == "bau"),
     aes(x = inventory_year, y = value_emissions, color = "Business as usual"),
-    linetype = "dashed", size = 1
+    linetype = "dashed", linewidth = 1
   ) +
 
   # geom_line(data = diverging_data %>% filter(scenario == "ppp"),

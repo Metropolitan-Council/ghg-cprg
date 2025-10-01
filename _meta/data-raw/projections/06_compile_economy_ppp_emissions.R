@@ -118,11 +118,12 @@ pathways <- bind_rows(
     scenario %in% c("bau", "ppp")
   ) %>%
   group_by(emissions_year, sector, scenario) %>%
-  summarize(value_emissions = sum(value_emissions), .groups="keep") %>%
+  summarize(value_emissions = sum(value_emissions) %>% round(digits = 2), .groups="keep") %>%
   ungroup() %>%
   filter(!(emissions_year <= 2025 & scenario == "ppp"))
 
-
+saveRDS(pathways, "_meta/data-raw/projections/economy_ppp_emissions.RDS")
+write.csv(pathways, "_meta/data-raw/projections/economy_ppp_emissions.csv",row.names = FALSE)
 
 bau_line <- pathways %>%
   filter(
@@ -175,7 +176,7 @@ ppp_projection_plot <- ggplot() +
   geom_line(
     data = bau_line,
     aes(x = emissions_year, y = value_emissions),
-    linetype = "dashed", color = "black", size = 1
+    linetype = "dashed", color = "black", linewidth = 1
   ) +
   geom_point(
     data = data.frame(emissions_year = 2050, value_emissions = net_zero),

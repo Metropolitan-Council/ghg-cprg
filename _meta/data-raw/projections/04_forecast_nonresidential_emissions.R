@@ -349,19 +349,19 @@ emissions_gg <- ggplot() +
   geom_line(
     data = base_data,
     aes(x = emissions_year, y = value_emissions),
-    color = "black", size = 1
+    color = "black", linewidth = 1
   ) +
 
   # Diverging scenario lines
   geom_line(
     data = diverging_data %>% filter(scenario == "bau"),
     aes(x = emissions_year, y = value_emissions, color = "Business as usual"),
-    linetype = "dashed", size = 1
+    linetype = "dashed", linewidth = 1
   ) +
   geom_line(
     data = diverging_data %>% filter(scenario == "ppp"),
     aes(x = emissions_year, y = value_emissions, color = "Potential policy pathways"),
-    size = 1
+    linewidth = 1
   ) +
   geom_point(
     data = data.frame(emissions_year = 2050, value_emissions = nonres_target),
