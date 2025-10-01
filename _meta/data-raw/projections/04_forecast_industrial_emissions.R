@@ -81,7 +81,7 @@ industrial_emissions_proj <- industrial_emissions %>%
     emissions_year,
     scenario
   ) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup()
 
 industrial_emissions_proj <- interpolate_emissions(industrial_emissions_proj)
@@ -93,7 +93,7 @@ base_data <- industrial_emissions %>%
   mutate(segment = "base", scenario = "bau") %>%
   filter(!category %in% c("Electricity", "Building Fuel")) %>%
   group_by(emissions_year) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup()
 
 bau_2025 <- industrial_emissions_proj %>%
