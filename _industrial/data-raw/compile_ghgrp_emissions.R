@@ -65,7 +65,7 @@ fc_emitters <- ghgrp_gas %>%
     gas_type
   ) %>%
   mutate(
-    unit_emisisons = "Metric tons CO2e",
+    unit_emissions = "Metric tons CO2e",
     county_name = str_to_title(county_name),
     city_name = str_to_title(city_name)
   )
