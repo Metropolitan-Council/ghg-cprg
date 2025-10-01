@@ -38,4 +38,3 @@ rm(list = ls())
 # compile all sectors ----
 source("_meta/data-raw/projections/06_compile_economy_bau_emissions.R")
 source("_meta/data-raw/projections/06_compile_economy_ppp_emissions.R")
-

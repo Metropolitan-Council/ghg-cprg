@@ -55,7 +55,7 @@ agriculture_emissions_proj <- agriculture_emissions %>%
     TRUE ~ "Cropland soil"
   )) %>%
   group_by(category) %>%
-  summarize(baseline_emissions = sum(value_emissions), .groups="keep") %>%
+  summarize(baseline_emissions = sum(value_emissions), .groups = "keep") %>%
   left_join(
     agriculture_scenarios %>%
       filter(emissions_year >= 2022),
@@ -73,7 +73,7 @@ agriculture_emissions_proj <- agriculture_emissions %>%
     emissions_year,
     scenario
   ) %>%
-  summarize(value_emissions = sum(value_emissions), .groups="keep") %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup() %>%
   mutate(emissions_year = as.numeric(emissions_year))
 
@@ -87,7 +87,7 @@ ag_bau <- bind_rows(
     ) %>% # Use any scenario since they're identical
     mutate(scenario = "bau") %>%
     group_by(emissions_year, scenario) %>%
-    summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups="keep") %>%
+    summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "keep") %>%
     ungroup(),
   agriculture_emissions_proj
 )
@@ -230,7 +230,7 @@ print(emissions_gg)
 message("Saving agriculture projections plot to: \n\t ~/imgs/agriculture_decarbonization_pathways.png")
 ggplot2::ggsave(
   plot = emissions_gg,
-  filename = paste0(here::here(), "/imgs/agriculture_decarbonization_pathways.png"), 
+  filename = paste0(here::here(), "/imgs/agriculture_decarbonization_pathways.png"),
   width = 12,
   height = 6,
   units = "in",
@@ -284,4 +284,3 @@ nz2050 / bau2050
 
 
 message("Finished agriculture projections")
-

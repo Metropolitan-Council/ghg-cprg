@@ -12,7 +12,8 @@ commercial_elec <- readRDS("_meta/data-raw/projections/nonres_elec_bau.rds") %>%
   rename(inventory_year = emissions_year)
 
 electricity <- left_join(residential_elec, commercial_elec,
-                         by = join_by(inventory_year, scenario)) %>%
+  by = join_by(inventory_year, scenario)
+) %>%
   mutate(value_emissions = electricity_emissions + value_emissions) %>%
   select(-electricity_emissions)
 
@@ -20,8 +21,10 @@ electricity <- left_join(residential_elec, commercial_elec,
 # waldo::compare(electricity, readRDS( "_meta/data-raw/projections/electricity_bau.rds"))
 
 message("Saving electricity BAU projections data to: \n\t _meta/data-raw/projections/electricity_bau.rds")
-saveRDS(electricity,
-  "_meta/data-raw/projections/electricity_bau.rds")
+saveRDS(
+  electricity,
+  "_meta/data-raw/projections/electricity_bau.rds"
+)
 
 base_data <- electricity %>%
   filter(inventory_year <= 2025, scenario == "bau") %>% # Use any scenario since they're identical

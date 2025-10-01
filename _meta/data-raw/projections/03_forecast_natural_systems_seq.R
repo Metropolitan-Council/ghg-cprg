@@ -202,8 +202,10 @@ target_seq_for_netZero <- df_netZero %>% pull(net_zero_target)
 
 # waldo::compare(df_netZero, readRDS("_meta/data/regional_net_zero_target.RDS"))
 message("Saving regional net zero target data to: \n\t _meta/data/regional_net_zero_target.RDS")
-write_rds(df_netZero,
-          "_meta/data/regional_net_zero_target.RDS")
+write_rds(
+  df_netZero,
+  "_meta/data/regional_net_zero_target.RDS"
+)
 
 
 

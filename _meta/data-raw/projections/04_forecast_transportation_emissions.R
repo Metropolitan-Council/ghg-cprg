@@ -1,5 +1,5 @@
 ### develop transportation emissions targets based on state GCAM models
-### TODO: Liz replace with ghg.ccap runs 
+### TODO: Liz replace with ghg.ccap runs
 
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
@@ -349,4 +349,3 @@ nz2050 / bau2050
 
 
 message("Finished transportation projections")
-

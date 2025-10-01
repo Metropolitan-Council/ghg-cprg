@@ -83,7 +83,7 @@ housing_type <- bind_rows(mn_housing, wi_housing) %>%
     "B25024_010" = "manufactured_homes"
   )) %>%
   group_by(geoid, variable) %>%
-  summarize(value = sum(estimate), .groups="keep") %>%
+  summarize(value = sum(estimate), .groups = "keep") %>%
   ungroup() %>%
   mutate(inventory_year = 2022)
 
@@ -201,5 +201,3 @@ write_rds(
 
 
 message("Finished regional housing projections")
-
-

@@ -41,7 +41,7 @@ aviation <- county_emissions %>%
     emissions_year == 2021
   ) %>%
   group_by(sector, category) %>%
-  summarise(value_emissions_2021 = sum(value_emissions), .groups="keep") %>%
+  summarise(value_emissions_2021 = sum(value_emissions), .groups = "keep") %>%
   ungroup() %>%
   left_join(aviation_mpca, by = c("category" = "subsector_mc")) %>%
   mutate(
@@ -60,7 +60,7 @@ aviation <- county_emissions %>%
         category == "Aviation"
       ) %>%
       group_by(emissions_year, sector, category) %>%
-      summarise(value_emissions = sum(value_emissions), .groups="keep") %>%
+      summarise(value_emissions = sum(value_emissions), .groups = "keep") %>%
       ungroup() %>%
       mutate(scenario = "bau")
   ) %>%
@@ -118,12 +118,12 @@ pathways <- bind_rows(
     scenario %in% c("bau", "ppp")
   ) %>%
   group_by(emissions_year, sector, scenario) %>%
-  summarize(value_emissions = sum(value_emissions) %>% round(digits = 2), .groups="keep") %>%
+  summarize(value_emissions = sum(value_emissions) %>% round(digits = 2), .groups = "keep") %>%
   ungroup() %>%
   filter(!(emissions_year <= 2025 & scenario == "ppp"))
 
 saveRDS(pathways, "_meta/data-raw/projections/economy_ppp_emissions.RDS")
-write.csv(pathways, "_meta/data-raw/projections/economy_ppp_emissions.csv",row.names = FALSE)
+write.csv(pathways, "_meta/data-raw/projections/economy_ppp_emissions.csv", row.names = FALSE)
 
 bau_line <- pathways %>%
   filter(
@@ -131,7 +131,7 @@ bau_line <- pathways %>%
     value_emissions > 0
   ) %>%
   group_by(emissions_year) %>%
-  summarize(value_emissions = sum(value_emissions), .groups="keep") %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup()
 
 pathways_pos <- pathways %>%

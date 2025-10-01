@@ -7,7 +7,7 @@
 
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
- source("_meta/data-raw/projections/interpolate_emissions.R")
+source("_meta/data-raw/projections/interpolate_emissions.R")
 
 ## load state gcam modeling
 
@@ -66,7 +66,7 @@ emissions_per_job <- total_jobs %>%
     nonres_emissions %>%
       filter(emissions_year == 2022) %>%
       group_by(county_name) %>%
-      summarise(value_emissions = sum(value_emissions), .groups="keep") %>%
+      summarise(value_emissions = sum(value_emissions), .groups = "keep") %>%
       ungroup(),
     by = "county_name"
   ) %>%
@@ -85,7 +85,7 @@ nonres_emissions_bau <- total_jobs %>%
   ) %>%
   rename(emissions_year = inventory_year) %>%
   group_by(emissions_year, scenario) %>%
-  summarize(value_emissions = sum(value_emissions), .groups="keep")
+  summarize(value_emissions = sum(value_emissions), .groups = "keep")
 
 # nonres_emissions_forecast <- interpolate_emissions(nonres_emissions_forecast)
 
@@ -109,7 +109,7 @@ nonres_scenarios <- gcam %>%
 nonres_emissions_proj <- nonres_emissions %>%
   filter(emissions_year == 2020) %>%
   group_by(sector, category) %>%
-  summarize(baseline_emissions = sum(value_emissions, na.rm = "TRUE"), .groups="keep") %>%
+  summarize(baseline_emissions = sum(value_emissions, na.rm = "TRUE"), .groups = "keep") %>%
   left_join(
     nonres_scenarios %>%
       filter(emissions_year >= 2025),
@@ -130,13 +130,13 @@ nonres_emissions_proj <- nonres_emissions %>%
     emissions_year,
     scenario
   ) %>%
-  summarize(value_emissions = sum(value_emissions), .groups="keep") %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup()
 
 nonres_emissions_proj <- nonres_emissions %>%
   filter(emissions_year == 2020) %>%
   group_by(sector, category) %>%
-  summarize(baseline_emissions = sum(value_emissions, na.rm = "TRUE"), .groups="keep") %>%
+  summarize(baseline_emissions = sum(value_emissions, na.rm = "TRUE"), .groups = "keep") %>%
   left_join(
     nonres_scenarios %>%
       filter(emissions_year >= 2025),
@@ -157,7 +157,7 @@ nonres_emissions_proj <- nonres_emissions %>%
     emissions_year,
     scenario
   ) %>%
-  summarize(value_emissions = sum(value_emissions), .groups="keep") %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup()
 
 
@@ -181,14 +181,16 @@ nonres_ng_pathways <- bind_rows(
     ) %>% # Use any scenario since they're identical
     mutate(scenario = "bau") %>%
     group_by(emissions_year, scenario) %>%
-    summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups="keep") %>%
+    summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "keep") %>%
     ungroup(),
   nonres_emissions_pathways_natgas
 )
 
 message("Saving nonresidential projections data to: \n\t _meta/data-raw/projections/nonres_ng_pathways.rds")
-saveRDS(nonres_ng_pathways,
-  "_meta/data-raw/projections/nonres_ng_pathways.rds")
+saveRDS(
+  nonres_ng_pathways,
+  "_meta/data-raw/projections/nonres_ng_pathways.rds"
+)
 
 ### electricity emissions ####
 
@@ -210,7 +212,7 @@ mwh_per_job <- total_jobs %>%
     nonres_elec_emissions %>%
       filter(emissions_year == 2022) %>%
       group_by(county_name) %>%
-      summarise(mwh = sum(mwh), .groups="keep") %>%
+      summarise(mwh = sum(mwh), .groups = "keep") %>%
       ungroup(),
     by = "county_name"
   ) %>%
@@ -232,7 +234,7 @@ nonres_elec_emissions_bau <- total_jobs %>%
   ) %>%
   rename(emissions_year = inventory_year) %>%
   group_by(emissions_year, scenario) %>%
-  summarize(value_emissions = sum(value_emissions), .groups="keep")
+  summarize(value_emissions = sum(value_emissions), .groups = "keep")
 
 nonres_elec_bau <- bind_rows(
   county_emissions %>%
@@ -246,15 +248,17 @@ nonres_elec_bau <- bind_rows(
     ) %>% # Use any scenario since they're identical
     mutate(scenario = "bau") %>%
     group_by(emissions_year, scenario) %>%
-    summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups="keep") %>%
+    summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "keep") %>%
     ungroup(),
   interpolate_emissions(nonres_elec_emissions_bau)
 )
 # waldo::compare(nonres_elec_bau, readRDS("_meta/data-raw/projections/nonres_elec_bau.RDS"))
 
 message("Saving nonresidential BAU projections data to: \n\t _meta/data-raw/projections/nonres_elec_bau.rds")
-saveRDS(nonres_elec_bau,
-  "_meta/data-raw/projections/nonres_elec_bau.rds")
+saveRDS(
+  nonres_elec_bau,
+  "_meta/data-raw/projections/nonres_elec_bau.rds"
+)
 
 nonres_emissions_pathways <- left_join(
   nonres_emissions_pathways_natgas,
@@ -283,7 +287,7 @@ base_data <- county_emissions %>%
   ) %>% # Use any scenario since they're identical
   mutate(segment = "base", scenario = "bau") %>%
   group_by(emissions_year) %>%
-  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups="keep") %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "keep") %>%
   ungroup()
 
 bau_2025 <- nonres_emissions_pathways %>%

@@ -21,7 +21,7 @@ taz_emp_format <- function(taz_file) {
       names_to = "variable"
     ) %>%
     group_by(year, county, variable) %>%
-    summarize(value = sum(value), .groups="keep") %>%
+    summarize(value = sum(value), .groups = "keep") %>%
     mutate(
       state_id = stringr::str_sub(county, 1, 2),
       county_id = stringr::str_sub(county, 3, 5),
@@ -72,7 +72,7 @@ taz_socio_format <- function(taz_file) {
       names_to = "variable"
     ) %>%
     group_by(year, state, co_code, variable) %>%
-    summarize(value = sum(value), .groups="keep") %>%
+    summarize(value = sum(value), .groups = "keep") %>%
     ungroup() %>%
     rename(
       inventory_year = year,
@@ -149,7 +149,7 @@ taz_us <- forecast_out %>%
 #   geom_point() +
 #   geom_abline(intercept = 0, slope = 1) +
 #   facet_wrap(. ~ variable)
-# 
+#
 # # looks good, need to interpolate the missing TAZ years
 
 forecast_interpolated <- forecast_out %>%
@@ -201,7 +201,7 @@ forecast_us <- forecast_interpolated %>%
 #   geom_point() +
 #   geom_abline(intercept = 0, slope = 1) +
 #   facet_wrap(. ~ variable)
-# 
+#
 # # again looks good
 # waldo::compare(forecast_interpolated, readRDS("_meta/data/demographic_forecast_11_county.RDS"))
 
@@ -213,6 +213,3 @@ write_rds(
 
 
 message("Finished demographic forecast")
-
-
-

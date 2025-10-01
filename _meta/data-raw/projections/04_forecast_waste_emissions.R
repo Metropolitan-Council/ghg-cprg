@@ -80,7 +80,7 @@ waste_emissions_bau <- total_pop %>%
   ) %>%
   rename(emissions_year = inventory_year) %>%
   group_by(emissions_year, scenario) %>%
-  summarize(value_emissions = sum(value_emissions),.groups="keep")
+  summarize(value_emissions = sum(value_emissions), .groups = "keep")
 
 
 
@@ -129,7 +129,7 @@ waste_bau <- bind_rows(
     ) %>% # Use any scenario since they're identical
     mutate(scenario = "bau") %>%
     group_by(emissions_year, scenario) %>%
-    summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups="keep") %>%
+    summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "keep") %>%
     ungroup(),
   waste_emissions_pathways
 )
@@ -281,7 +281,7 @@ print(emissions_gg)
 message("Saving waste projections plot to: \n\t ~/imgs/waste_decarbonization_pathways.png")
 ggplot2::ggsave(
   plot = emissions_gg,
-  filename = paste0(here::here(), "/imgs/waste_decarbonization_pathways.png"), 
+  filename = paste0(here::here(), "/imgs/waste_decarbonization_pathways.png"),
   width = 12,
   height = 6,
   units = "in",
@@ -335,4 +335,3 @@ nz2050 / bau2050
 
 
 message("Finished waste projections")
-

@@ -125,8 +125,10 @@ ind_bau <- bind_rows(
 # waldo::compare(ind_bau, readRDS("_meta/data-raw/projections/ind_pathways.rds"))
 
 message("Saving industrial projections data to: \n\t _meta/data-raw/projections/ind_pathways.rds")
-saveRDS(ind_bau,
-  "_meta/data-raw/projections/ind_pathways.rds")
+saveRDS(
+  ind_bau,
+  "_meta/data-raw/projections/ind_pathways.rds"
+)
 
 #  diverging scenarios (2026+)
 diverging_data <- industrial_emissions_proj %>%
@@ -301,4 +303,3 @@ nz2050 / bau2050
 
 
 message("Finished industrial projections")
-
