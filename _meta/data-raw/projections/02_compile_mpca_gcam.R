@@ -16,7 +16,7 @@ gcam_projections <- read_xlsx("_meta/data-raw/gcam_all_scenarios.xlsx",
   clean_names() %>%
   # sum different GHG gases
   group_by(scenario, region, sector, source, units, emissions_year) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup()
 
 ag <- read_xlsx("_meta/data-raw/MN_ag_lulucf.xlsx") %>%
@@ -45,7 +45,7 @@ scenarios_annual <- state_projections %>%
   filter(sector != "Emission Reductions Needed") %>%
   mutate(source_sink = if_else(value_emissions < 0, "Sequestration", "Emission")) %>%
   group_by(emissions_year, scenario, source_sink, units) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   #### add proportion relative to 2005
   group_by(scenario, source_sink, units) %>%
   mutate(value_2005 = value_emissions[emissions_year == 2005]) %>%
@@ -66,6 +66,9 @@ scenarios_annual_meta <-
     "proportion_of_2005", class(scenarios_annual$proportion_of_2005), "Proportion of emissions or sequestration relative to 2005 baseline"
   )
 
+
+# waldo::compare(scenarios_annual, readRDS("_meta/data/gcam/mpca_economy_wide_gcam.RDS"))
+
 saveRDS(scenarios_annual, "_meta/data/gcam/mpca_economy_wide_gcam.RDS")
 saveRDS(scenarios_annual_meta, "_meta/data/gcam/mpca_economy_wide_gcam_meta.RDS")
 
@@ -74,7 +77,7 @@ scenarios_sector_annual <- state_projections %>%
   filter(sector != "Emission Reductions Needed") %>%
   mutate(source_sink = if_else(value_emissions < 0, "Sequestration", "Emission")) %>%
   group_by(emissions_year, scenario, source_sink, sector, units) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   #### add proportion relative to 2005
   group_by(scenario, source_sink, sector, units) %>%
   mutate(value_2005 = value_emissions[emissions_year == 2005]) %>%
@@ -92,6 +95,9 @@ scenarios_sector_annual_meta <-
       "sector", class(scenarios_sector_annual$sector), "Sector of emission of sequestration",
     )
   )
+
+# waldo::compare(scenarios_sector_annual, readRDS("_meta/data/gcam/mpca_sector_gcam.RDS"))
+
 
 saveRDS(scenarios_sector_annual, "_meta/data/gcam/mpca_sector_gcam.RDS")
 saveRDS(scenarios_sector_annual_meta, "_meta/data/gcam/mpca_sector_gcam_meta.RDS")
@@ -230,7 +236,7 @@ scenarios_sources_annual <- state_projections %>%
   mutate(source_sink = if_else(value_emissions < 0, "Sequestration", "Emission")) %>%
   ungroup() %>%
   group_by(emissions_year, scenario, source_sink, sector, subsector_mc) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   #### add proportion relative to 2005
   group_by(scenario, subsector_mc, source_sink, sector) %>%
   mutate(
@@ -255,5 +261,12 @@ scenarios_sources_annual_meta <-
     )
   )
 
+
+# waldo::compare(scenarios_sources_annual, readRDS("_meta/data/gcam/mpca_subsector_gcam.RDS"))
+
 saveRDS(scenarios_sources_annual, "_meta/data/gcam/mpca_subsector_gcam.RDS")
 saveRDS(scenarios_sources_annual_meta, "_meta/data/gcam/mpca_subsector_gcam_meta.RDS")
+
+
+
+message("Finished compiling gcam")

@@ -289,9 +289,9 @@ emissions_all_meta <- tibble::tribble(
   "emissions_per_capita", class(emissions_all$emissions_per_capita), "Metric tons CO~2~e per person living in given county for given sector and category"
 )
 
-waldo::compare(emissions_all, readRDS("_meta/data/cprg_county_emissions.RDS"))
 
 # waldo::compare(emissions_all, readRDS("_meta/data/cprg_county_emissions.RDS"))
+
 
 
 

@@ -121,11 +121,11 @@ bau %>%
   summarize(total_emissions = sum(value_emissions)) %>%
   mutate(proportion_of_2005 = total_emissions / total_emissions[emissions_year == 2005])
 
-# bau %>%
-filter(
-  emissions_year %in% c(2005, 2022, 2030, 2050),
-  sector != "Natural Systems"
-) %>%
+bau %>%
+  filter(
+    emissions_year %in% c(2005, 2022, 2030, 2050),
+    sector != "Natural Systems"
+  ) %>%
   group_by(emissions_year) %>%
   summarize(total_emissions = sum(value_emissions)) %>%
   mutate(proportion_of_2005 = total_emissions / total_emissions[emissions_year == 2005])

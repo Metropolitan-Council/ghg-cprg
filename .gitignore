@@ -1380,6 +1380,8 @@ _waste/data-raw/solid_waste/solid_waste_flaring.xlsx
 _waste/data-raw/solid_waste/solid_waste_lfgte.xlsx
 
 
+_meta/data-raw/Minnesota GCAM Modeling Data.xlsx
+
 _transportation/data-raw/mndot/gpkg_trans_aadt_traffic_segments.zip
 
 _transportation/data-raw/mndot/gpkg_trans_historic_aadt.zip
