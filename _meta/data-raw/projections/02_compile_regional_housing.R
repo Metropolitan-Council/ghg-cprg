@@ -1,6 +1,6 @@
 # This script will develop an expected housing profile for the region for use
 # with
-
+source("R/_load_pkgs.R")
 #### residential building emissions estimate rely on four building categories
 #### will use urbansim estimates for seven county
 #  ACS estimates for surrounding counties combined with TAZ forecast data
