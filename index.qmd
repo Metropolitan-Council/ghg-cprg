@@ -91,6 +91,23 @@ In 2022, the Twin-Cities MSA generated `r round(emissions_total/1000000, digits 
 #| fig-cap: "Regional emissions by sector and category"
 #| out-width: "95%"
 
+sector_order <- county_emissions %>%
+  filter(emissions_year >= 2005 & emissions_year <= 2022, category != "Sequestration") %>%
+  group_by(sector) %>%
+  mutate(sector = if_else(sector == "Natural Systems", "Freshwater", sector)) %>%
+  summarize(total_emissions = sum(value_emissions, na.rm = TRUE)) %>%
+  arrange((total_emissions)) %>% # Sort descending (biggest at top)
+  pull(sector)
+
+sector_order <- c("Natural Systems", sector_order)
+
+category_order <- county_emissions %>%
+  select(category, sector) %>%
+  unique() %>%
+  mutate(sector = factor(sector, levels = sector_order, ordered = TRUE)) %>%
+  pull(category)
+
+
 county_emissions_2022 <- county_emissions %>%
   filter(emissions_year == 2022) %>%
   mutate(category = if_else(category %in% c(
@@ -102,8 +119,16 @@ county_emissions_2022 <- county_emissions %>%
 
 # reorder to put sequestration at end
 county_emissions_2022$sector <- factor(county_emissions_2022$sector,
-  levels = c("Transportation", "Residential", "Commercial", "Industrial", "Waste", "Agriculture", "Natural Systems")
+  levels = rev(sector_order),
+  ordered = TRUE
+) %>%
+  droplevels()
+
+
+county_emissions_2022$category <- factor(county_emissions_2022$category,
+  levels = rev(names(category_colors) %>% unique())
 )
+
 
 fig_county_emissions_sector <- plot_ly(
   data = county_emissions_2022 %>%
@@ -111,7 +136,8 @@ fig_county_emissions_sector <- plot_ly(
     summarize(
       value_emissions = sum(value_emissions),
       .groups = "keep"
-    ),
+    ) %>%
+    arrange(sector),
   source = "fig-county-emissions-sector",
   x = ~sector,
   y = ~value_emissions,
@@ -145,15 +171,6 @@ Emissions in the region fell by `r scales::percent((emissions_2005 - emissions_t
 #| fig-cap: "Regional emissions by sector through time"
 #| out-width: "95%"
 
-
-sector_order <- county_emissions %>%
-  filter(emissions_year >= 2005 & emissions_year <= 2022, category != "Sequestration") %>%
-  group_by(sector) %>%
-  mutate(sector = if_else(sector == "Natural Systems", "Freshwater", sector)) %>%
-  summarize(total_emissions = sum(value_emissions, na.rm = TRUE)) %>%
-  arrange((total_emissions)) %>% # Sort descending (biggest at top)
-  pull(sector)
-
 emissions_data <- county_emissions %>%
   filter(
     emissions_year >= 2005 & emissions_year <= 2022,
@@ -177,30 +194,20 @@ sequestration_data <- county_emissions %>%
   summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
   mutate(value_emissions = value_emissions / 1000000) #
 
-p <- plot_ly()
+p <- plot_ly(source = "fig-temporal-emissions")
 
 # Create plotly traces for each sector
 emissions_through_time <- p %>%
   add_trace(
-    data = emissions_data,
-    source = "fig-temporal-emissions",
-    x = ~emissions_year, y = ~value_emissions,
-    type = "scatter", mode = "none", fill = "tonexty",
-    stackgroup = "one", # Stack sectors
-    color = ~sector, colors = c(unlist(sector_colors), Freshwater = "#1E90FF"),
-    hoverinfo = "text",
-    text = ~ paste0(
-      "Year: ", emissions_year, "<br>",
-      "Sector: ", sector, "<br>",
-      "Emissions: ", round(value_emissions, 2), " MtCO2e"
-    ),
-    name = ~sector
-  ) %>%
-  add_trace(
     data = sequestration_data,
-    x = ~emissions_year, y = ~value_emissions,
-    type = "scatter", mode = "none", fill = "tozeroy", # Prevent stacking
-    color = ~sector, colors = unlist(sector_colors),
+    x = ~emissions_year,
+    y = ~value_emissions,
+    alpha = 0.5,
+    type = "scatter",
+    mode = "none",
+    fill = "tozeroy", # Prevent stacking
+    color = ~sector,
+    colors = c(unlist(sector_colors), Freshwater = "#1E90FF"),
     hoverinfo = "text",
     text = ~ paste0(
       "Year: ", emissions_year, "<br>",
@@ -209,10 +216,29 @@ emissions_through_time <- p %>%
     ),
     name = "Natural Systems"
   ) %>%
+  add_trace(
+    data = emissions_data,
+    x = ~emissions_year,
+    y = ~value_emissions,
+    alpha = 0.5,
+    type = "scatter",
+    mode = "lines",
+    stackgroup = "mode", # Stack sectors
+    color = ~sector,
+    colors = c(unlist(sector_colors), Freshwater = "#1E90FF"),
+    hoverinfo = "text",
+    text = ~ paste0(
+      "Year: ", emissions_year, "<br>",
+      "Sector: ", sector, "<br>",
+      "Emissions: ", round(value_emissions, 2), " MtCO2e"
+    ),
+    name = ~sector
+  ) %>%
   plotly_layout("11-county regional greenhouse gas emissions: 2005-2022",
     subtitle = "",
     x_title = "Year",
-    y_title = "Metric tons CO<sub>2</sub>e"
+    y_title = "Metric tons CO<sub>2</sub>e",
+    legend_title = "Sector"
   )
 
 
@@ -233,6 +259,10 @@ county_emissions_2022 <- county_emissions %>%
     emissions_year == 2022,
     county_name != "MSP Airport",
     category != "Sequestration"
+  ) %>%
+  mutate(
+    # sector = ifelse(category == "Freshwater", "Natural Systems", sector),
+    sector = factor(sector, levels = rev(sector_order), ordered = TRUE)
   )
 
 county_emissions_raw <- plot_ly(
@@ -262,7 +292,8 @@ county_emissions_raw <- plot_ly(
     y_title = "Metric tons CO<sub>2</sub>e",
     legend_title = "Sector",
     barmode = "stack"
-  )
+  ) %>%
+  layout(legend = list(traceorder = "reversed"))
 
 county_emissions_raw
 ```
@@ -273,34 +304,37 @@ However, most emissions are closely tied to population and a per capita emission
 #| fig-cap: "County emissions per capita by sector in 2022"
 #| out-width: "95%"
 
-county_emissions_2022_per_capita <- plot_ly(
-  data = county_emissions_2022,
-  source = "fig-county-emissions-per-capita",
-  type = "bar",
-  x = ~county_name,
-  y = ~emissions_per_capita,
-  color = ~sector,
-  split = ~sector,
-  colors = unlist(sector_colors),
-  marker = list(
-    line = list(
-      width = 0
+county_emissions_2022_per_capita <-
+  county_emissions_2022 %>%
+  mutate(sector = factor(sector, levels = rev(sector_order), ordered = TRUE)) %>%
+  plot_ly(
+    source = "fig-county-emissions-per-capita",
+    type = "bar",
+    x = ~county_name,
+    y = ~emissions_per_capita,
+    color = ~sector,
+    split = ~sector,
+    colors = unlist(sector_colors),
+    marker = list(
+      line = list(
+        width = 0
+      )
+    ),
+    hovertemplate = ~ paste0(
+      county_name, " County", "<br>",
+      sector, " - ", category, ", ", source, "<br>",
+      round(emissions_per_capita, digits = 2), " million metric tons CO<sub>2</sub>e per person", "<br>",
+      "<extra></extra>"
     )
-  ),
-  hovertemplate = ~ paste0(
-    county_name, " County", "<br>",
-    sector, " - ", category, ", ", source, "<br>",
-    round(emissions_per_capita),
-    "<extra></extra>"
-  )
-) %>%
+  ) %>%
   plotly_layout("County greenhouse gas emissions per capita, 2022",
     subtitle = "",
     x_title = "County",
-    y_title = "Metric tons CO<sub>2</sub>e",
+    y_title = "Metric tons CO<sub>2</sub>e per person",
     legend_title = "Sector",
     barmode = "stack"
-  )
+  ) %>%
+  layout(legend = list(traceorder = "reversed"))
 
 county_emissions_2022_per_capita
 ```

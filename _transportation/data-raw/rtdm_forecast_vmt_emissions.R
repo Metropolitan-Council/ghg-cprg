@@ -76,6 +76,9 @@ saveRDS(county_vmt_forecast, "_transportation/data/rtdm_forecast_county.RDS")
 saveRDS(county_vmt_forecast_meta, "_transportation/data/rtdm_forecast_county_meta.RDS")
 
 # county-level emissions from model outputs, fed into MOVES, and then output from MOVES
+# Note Wright and Sherburne counties only include the urbanized portions, not the entire county.
+# This means that interpolating from EPA emissions would be inappropriate
+# so for now, we will remove them until we get better data points
 co_emis_for <- readRDS("_transportation/data-raw/metc_travel_model/moves_emissions_forecast.RDS") %>%
   filter(
     !is.na(geoid),
@@ -122,3 +125,102 @@ county_emissions_forecast_meta <- readRDS("_transportation/data/onroad_emissions
 
 saveRDS(county_emissions_forecast, "_transportation/data/rtdm_county_emissions_forecast.RDS")
 saveRDS(county_emissions_forecast_meta, "_transportation/data/rtdm_county_emissions_forecast_meta.RDS")
+
+
+# create collar county estimates
+onroad_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
+demographic_forecast_11_county <- readRDS("_meta/data/demographic_forecast_11_county.rds")
+
+
+onroad_emissions_summary <- onroad_emissions %>%
+  unique() %>%
+  group_by(county_name, geoid, emissions_year, data_source) %>%
+  summarize(
+    emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e),
+    .groups = "keep"
+  )
+
+target_counties <- demographic_forecast_11_county %>%
+  filter(!county_name %in% c(
+    "Anoka",
+    "Carver",
+    "Dakota",
+    "Hennepin",
+    "Ramsey",
+    "Scott",
+    "Washington"
+  )) %>%
+  select(county_name, geoid) %>%
+  unique()
+
+demographic_forecast_11_county_wide <- demographic_forecast_11_county %>%
+  pivot_wider(names_from = variable, values_from = value) %>%
+  filter(inventory_year == "2050")
+
+# find most similar county in core metro for each target county needed
+target_county_pairs <- purrr::map_dfr(
+  target_counties$county_name,
+  function(target_county) {
+    demographic_forecast_11_county_wide %>%
+      ungroup() %>%
+      mutate(
+        target_county_name = target_county,
+        target_households = demographic_forecast_11_county_wide$total_households[demographic_forecast_11_county_wide$county_name == target_county],
+        target_pop = demographic_forecast_11_county_wide$total_pop[demographic_forecast_11_county_wide$county_name == target_county],
+        target_jobs = demographic_forecast_11_county_wide$total_jobs[demographic_forecast_11_county_wide$county_name == target_county],
+        distance = sqrt((total_pop - target_pop)^2 + (total_jobs - target_jobs)^2 + (total_households - target_households)^2)
+      ) %>%
+      filter(
+        county_name != target_county,
+        county_name %in% c(
+          "Anoka",
+          "Carver",
+          "Dakota",
+          "Hennepin",
+          "Ramsey",
+          "Scott",
+          "Washington"
+        )
+      ) %>%
+      arrange(distance) %>%
+      slice(1) %>%
+      select(geoid, county_name, target_county_name)
+  }
+)
+
+# find the expected percent change in each pair county from 2022 to 2050
+county_emissions_forecast_change <- county_emissions_forecast %>%
+  arrange(county_name, inventory_year) %>%
+  group_by(county_name) %>%
+  mutate(growth = (emissions_metric_tons_co2e - lag(emissions_metric_tons_co2e)) / lag(emissions_metric_tons_co2e)) %>%
+  filter(
+    county_name %in% target_county_pairs$county_name,
+    inventory_year == max(inventory_year)
+  ) %>%
+  select(-inventory_year, -emissions_metric_tons_co2e)
+
+# generate 2050 emissions value for each target county
+collar_county_emissions_change <- onroad_emissions_summary %>%
+  ungroup() %>%
+  select(geoid, county_name, emissions_year, emissions_metric_tons_co2e) %>%
+  # get target county data for most recent year
+  filter(
+    geoid %in% target_counties$geoid,
+    emissions_year == max(emissions_year)
+  ) %>%
+  # join with the pair county change factor
+  left_join(
+    county_emissions_forecast_change %>%
+      left_join(target_county_pairs, by = c("county_name", "geoid")) %>%
+      select(-geoid),
+    by = c("county_name" = "target_county_name")
+  ) %>%
+  select(-county_name.y, -county_id) %>%
+  # multiply the change factor by most recent emissions to get 2050 emissions projection
+  mutate(
+    emissions_metric_tons_co2e = emissions_metric_tons_co2e * (1 - abs(growth)),
+    emissions_year = 2050
+  ) %>%
+  select(-growth)
+
+saveRDS(collar_county_emissions_change, "_transportation/data/rtdm_collar_county_emissions_change.RDS")

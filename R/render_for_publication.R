@@ -1,6 +1,7 @@
 source("R/_load_pkgs.R")
 source("R/remove_caches.R")
 source("_meta/data-raw/compile_county_emissions.R")
+source("_meta/data-raw/compile_ctu_emissions.R")
 
 styler::style_dir(include_roxygen_examples = FALSE)
 

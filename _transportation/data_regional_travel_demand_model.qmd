@@ -1,4 +1,4 @@
-### Regional Travel Demand Model
+### Regional Travel Demand Model {#sec-regional-travel-demand-model}
 
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
@@ -12,14 +12,10 @@ cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 rtdm_forecast_ctu <- readRDS(file.path(here::here(), "_transportation/data/rtdm_forecast_ctu.RDS"))
 rtdm_forecast_county <- readRDS(file.path(here::here(), "_transportation/data/rtdm_forecast_county.RDS"))
 
-# read in VMT data
-dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
-  filter(
-    # vmt_year < 2022,
-    vmt_year >= 2018,
-    cprg_area == TRUE
-  ) %>%
-  group_by(county_name)
+
+county_inventory_forecast_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_inventory_forecast_emissions.RDS")) %>%
+  rowwise() %>%
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
 
 mndot_vmt_ctu <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu.RDS"))
 
@@ -69,6 +65,13 @@ The regional travel demand model network is made up of nodes and segments. We us
 The network based approach is based on attributing all the vehicle traffic that occurs within a given city or county to that city or county, regardless of where the trip starts or ends. VMT is calculated by multiplying segment vehicle volume (vehicles) by segment length (miles traveled). Network segments are attributed to cities by a spatial join. When a segment crosses more than one city boundary, the segment is split at the boundary. The segment total volume is attributed to both sub-segments, and the segment length is re-calculated for each sub-segment. Thus, no volume is lost. All time periods are road types are aggregated to represent average daily vehicle miles traveled. Daily VMT are expanded to annual VMT using an annualization factor of 340 (@castigliegoCarbonFreeBoston2019).   
 
 Code for processing RTDM outputs relies on internal file system access and is not available publicly. Please contact us for more information and reproducible examples. 
+
+
+#### Emissions forecast with MOVES  {#sec-emissions-forecast-with-moves}
+
+Emissions forecasts for our region were calculated using the EPA's [Motor Vehicle Emissions Simulator (MOVES)](https://www.epa.gov/moves) [@usepaPopulationActivityOnroad2023]. MOVES calculates emissions using outputs from the Regional Travel Demand Model, Minnesota Department of Vehicle Services' county vehicle registration data, and the Minnesota Pollution Control Agency's vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region and expected changes in the regional fleet. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle's age and size, as well as its fuel intake (diesel or gasoline). 
+
+Gross emissions rates in grams CO~2~e per vehicle mile traveled are provided in @sec-supplementary-data. 
 
 <!-- Potentially add forecasting vmt quarto doc as appendix here -->
 

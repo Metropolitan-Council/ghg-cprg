@@ -1381,3 +1381,25 @@ _waste/data-raw/solid_waste/solid_waste_lfgte.xlsx
 
 
 _meta/data-raw/Minnesota GCAM Modeling Data.xlsx
+
+_transportation/data-raw/mndot/gpkg_trans_aadt_traffic_segments.zip
+
+_transportation/data-raw/mndot/gpkg_trans_historic_aadt.zip
+
+_transportation/data-raw/mndot/trans_annual average daily traffic segments.gpkg
+
+_transportation/data-raw/mndot/trans_Historic Annual Average Daily Traffic.gpkg
+
+_transportation/data-raw/mndot/updated_VMT_County_City_Route_System.zip
+
+_transportation/data-raw/mndot/vmt_county.CSV
+
+_transportation/data-raw/mndot/metadata/
+
+_transportation/data-raw/mndot/mileage_city_route_system/
+
+_transportation/data-raw/epa/air_emissions_modeling/2022v2/
+
+_transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2025-0820-150847.csv
+
+_meta/data-raw/Minnesota GCAM Modeling Data.xlsx

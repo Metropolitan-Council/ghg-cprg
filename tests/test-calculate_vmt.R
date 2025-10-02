@@ -1,4 +1,4 @@
-testthat::test_that("Correct number of calibration zone sets", {
+testthat::test_that("Calculate VMT", {
   source(file.path(here::here(), "_transportation/data-raw/x_calculate_vmt.R"))
 
   county21_data <- readRDS(file.path(here::here(), "_transportation/data-raw/analysis_runs/county21_data.RDS"))
