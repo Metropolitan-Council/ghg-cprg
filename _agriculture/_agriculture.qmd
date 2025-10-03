@@ -120,7 +120,7 @@ fig_ag_county_emissions
 
 ### Baseline emissions
 
-Regional agricultural emissions have decreased by `r 100*round(1 - (ag_emissions_2022/ag_emissions_2005))`% since 2005, potentially reflecting increased agricultural abandonment and suburban expansion in the region.
+Regional agricultural emissions have decreased by `r 100*round(1 - (ag_emissions_2022/ag_emissions_2005),2)`% since 2005, potentially reflecting increased agricultural abandonment and suburban expansion in the region.
 
 ```{r fig-ag-baseline-emissions}
 #| fig-cap: "Baseline agricultural emissions"
@@ -218,7 +218,7 @@ fig_ag_county_emissions_by_gas_type_co2e
 
 ## CTU Estimates
 
-Agricultural emissions are apportioned to cities and townships in two ways. First, county crop production and fertilizer application are apportioned to cities and townships by their percentage of the counties cropland acreage. Second, livestock are assumed to have minimal occurrences in city boundaries, so the headcounts are apportioned to only townships by their proportional cropland acreage (in Hennepin, where there are no townships, we instead include only cities with more than 10 square kilometers of cropland). Based on these activity data, we follow the same emission calculations as for counties.
+Agricultural emissions are apportioned to cities and townships in two ways. First, county crop production and fertilizer application are apportioned to cities and townships by their percentage of the counties cropland acreage. Second, livestock are assumed to have minimal occurrences in city boundaries, so the headcounts are apportioned to cities and townships designated as Rural Diversified, Rural Residential, or Agricultural. Based on these activity data, we follow the same emission calculations as for counties.
 
 ```{r fig-ctu-ag-emissions}
 #| fig-cap: "2022 city level agricultural emissions"
