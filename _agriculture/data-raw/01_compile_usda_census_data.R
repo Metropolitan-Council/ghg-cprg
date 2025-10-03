@@ -201,9 +201,11 @@ saveRDS(livestock_census_meta, "./_agriculture/data/usda_census_data_meta.rds")
 
 ### assigning livestock to agricultural community designations only. Assuming livestock within city limits is rare
 rural_ag_proportion <- ctu_ag_proportion %>%
-  filter(imagine_designation %in% c("Diversified Rural",
-                                    "Agricultural",
-                                    "Rural Residential")) %>% # no townships in Hennepin, making minimum ag area for now
+  filter(imagine_designation %in% c(
+    "Diversified Rural",
+    "Agricultural",
+    "Rural Residential"
+  )) %>% # no townships in Hennepin, making minimum ag area for now
   group_by(county_name, inventory_year) %>%
   mutate(
     total_rural_ag_area = sum(ctu_ag_area, na.rm = TRUE),

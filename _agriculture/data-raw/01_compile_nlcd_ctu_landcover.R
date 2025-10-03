@@ -21,10 +21,10 @@ ctu_ag_proportion <- left_join(
   by = c("county_name", "inventory_year", "county_id", "state_name")
 ) %>%
   mutate(proportion_ag_land = ctu_ag_area / county_ag_area) %>%
-  ungroup() %>% 
-  left_join(cprg_ctu %>% 
-            st_drop_geometry() %>% 
-            select(ctu_name, ctu_class, county_name, imagine_designation))
+  ungroup() %>%
+  left_join(cprg_ctu %>%
+    st_drop_geometry() %>%
+    select(ctu_name, ctu_class, county_name, imagine_designation))
 
 # make sure proportions add to 100
 ctu_ag_proportion %>%

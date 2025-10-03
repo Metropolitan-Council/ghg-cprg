@@ -131,8 +131,10 @@ Regional agricultural emissions have decreased by `r 100*round(1 - (ag_emissions
 fig_ag_baseline <- plot_ly(
   source = "fig-ag-baseline-emissions",
   data = county_emissions %>%
-    filter(sector == "Agriculture",
-           emissions_year <= 2022) %>%
+    filter(
+      sector == "Agriculture",
+      emissions_year <= 2022
+    ) %>%
     group_by(emissions_year, category) %>%
     summarise(value_emissions = sum(value_emissions)),
   x = ~emissions_year,
