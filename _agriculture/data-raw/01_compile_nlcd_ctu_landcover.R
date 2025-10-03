@@ -11,16 +11,20 @@ ag_county <- read_rds("_nature/data/nlcd_county_landcover_allyrs.rds") %>%
 ag_ctu <- read_rds("_nature/data/nlcd_ctu_landcover_allyrs.rds") %>%
   filter(land_cover_type == "Cropland")
 
+cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS")
 
 ctu_ag_proportion <- left_join(
   ag_ctu %>%
     select(ctu_id, ctu_name, ctu_class, county_name, state_name, inventory_year, ctu_ag_area = area),
   ag_county %>%
     select(county_name, county_ag_area = area, inventory_year),
-  by = c("county_name", "inventory_year")
+  by = c("county_name", "inventory_year", "county_id", "state_name")
 ) %>%
   mutate(proportion_ag_land = ctu_ag_area / county_ag_area) %>%
-  ungroup()
+  ungroup() %>%
+  left_join(cprg_ctu %>%
+    st_drop_geometry() %>%
+    select(ctu_name, ctu_class, county_name, imagine_designation))
 
 # make sure proportions add to 100
 ctu_ag_proportion %>%
@@ -43,6 +47,7 @@ ctu_ag_proportion_meta <-
     "ctu_ag_area", class(ctu_ag_proportion$ctu_ag_area), "Area of CTU cropland cover in square kilometers",
     "county_ag_area", class(ctu_ag_proportion$county_ag_area), "Area of county cropland cover in square kilometers",
     "proportion_ag_land", class(ctu_ag_proportion$proportion_ag_land), "Proportion of county land in city or township boundary",
+    "imagine_designation", class(ctu_ag_proportion$imagine_designation), "Community designation in Imagine 2050"
   )
 
 saveRDS(ctu_ag_proportion, "./_agriculture/data/ctu_ag_proportion.rds")

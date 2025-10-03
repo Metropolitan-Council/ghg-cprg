@@ -40,7 +40,7 @@ county_agriculture <- landcover %>%
   mutate(percent_area = area / county_area_sqkm)
 ```
 
-Agricultural emissions are derived from two primary sources. First is the USDA agricultural census which provides county level livestock head counts, crop production, and fertilizer sales. Second is the EPA State Inventory Tool (SIT) that provides state specific values for emission factors as well as activity data such as state-wide fertilizer application (different from sales). These are both the highest rank of data.
+Agricultural emissions are derived from two primary sources. First is the USDA agricultural census [@usdaUSDANationalAgricultural] which provides county level livestock head counts, crop production, and fertilizer sales. Second is the EPA State Inventory Tool (SIT) [@epaUSERGUIDEESTIMATING2024] that provides state specific values for emission factors as well as activity data such as state-wide fertilizer application (different from sales). These are both the highest rank of data.
 
 The USDA census is conducted once every five years (years ending in '2 and '7). For interstitial years we used linear interpolation to provide county level estimates.
 
@@ -126,13 +126,6 @@ The USDA census program does not report data in counties having less than a mini
 
 ## Missing subsectors
 Small emission sources not currently accounted for: liming, indirect N2O from livestock/soils-animal sheet, residue burning.
-
-## Potential errors
-Calculation fixes - Fertilizer runoff (from ag soils-animals) sheet is currently calculated from total fertilizer but should only be from volatized, leading to a likely small over estimation.
-
-
-
-Be sure to add a citation of this dataset to the Zotero shared library.
 
 ## Data validation
 
@@ -321,7 +314,7 @@ Estimates from the census and surveys are reasonably close for dairy cows and be
 
 ### Scaling to CTUs
 
-In the absence of CTU level livestock or crop production data, the ICLEI U.S. Community Protocol recommends downscaling from county data using the ratio of agricultural land in the community to agricultural land in the county. We followed this approach for downscaling county level emissions using NLCD land cover data to find the ratio of CTU agricultural land to county agricultural land. Future work should seek to downscale livestock counts and crop production (i.e. activity data) and recalculate emissions, enabling more direct reduction measure estimations for various agricultural components (e.g. changes to cattle feed additives that may reduce enteric fermentation).
+In the absence of CTU level livestock or crop production data, the ICLEI U.S. Community Protocol[@usaUSCommunityProtocol2015] recommends downscaling from county data using the ratio of agricultural land in the community to agricultural land in the county. We followed this approach for downscaling county level emissions using NLCD land cover data to find the ratio of CTU agricultural land to county agricultural land. Future work should seek to downscale livestock counts and crop production (i.e. activity data) and recalculate emissions, enabling more direct reduction measure estimations for various agricultural components (e.g. changes to cattle feed additives that may reduce enteric fermentation).
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))

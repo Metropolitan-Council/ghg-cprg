@@ -61,6 +61,15 @@ waldo::compare(
 )
 # county has 2023 soil residue emissions but not ctu (expected)
 
+
+## after rerunning ctu livestock designations, no apparent difference. Could mean we did a good job on the first split.
+waldo::compare(
+  read_rds("./_agriculture/data/agricultural_emissions_ctu.rds") %>%
+    filter(inventory_year == 2022, category == "Livestock"),
+  ctu_agricultural_emissions %>%
+    filter(inventory_year == 2022, category == "Livestock")
+)
+
 agricultural_emissions_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
