@@ -50,6 +50,7 @@ onroad_emissions_meta <- epa_onroad_emissions_compile_meta %>%
     )
   ) %>%
   filter(Column %in% names(onroad_emissions)) %>%
+  arrange(match(Column, names(onroad_emissions))) %>%
   unique()
 
 saveRDS(onroad_emissions, "_transportation/data/onroad_emissions.RDS")

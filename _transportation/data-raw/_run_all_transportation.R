@@ -9,12 +9,6 @@ source("_transportation/data-raw/mndot_vmt_county.R")
 #
 # # dot combination and processing
 source("_transportation/data-raw/dot_vmt.R")
-
-# CTU level data and modeling
-source("_transportation/data-raw/mndot_vmt_ctu.R")
-source("_transportation/data-raw/vmt_model_data.R")
-source("_transportation/data-raw/mndot_vmt_ctu_gap_fill_model.R")
-
 #
 # # streetlight upload, run, and fetch analyses
 # source("_transportation/data-raw/stl_calibration_lines_points.R")
@@ -46,7 +40,20 @@ source("_transportation/data-raw/epa_pollutants.R")
 source("_transportation/data-raw/epa_source_classification_codes.R")
 source("_transportation/data-raw/epa_onroad_emissions_compile.R")
 
+# compile onroad and nonroad items (nonroad in future)
+source("_transportation/data-raw/_epa_transportation_compile.R")
 
-source("_transportation/data-raw/_transportation_compile.R")
+source("_transportation/data-raw/rtdm_forecast_vmt_emissions.R")
+source("_transportation/data-raw/_compile_county_inventory_forecast.R")
+
+
+# CTU level data and modeling
+source("_transportation/data-raw/mndot_vmt_ctu.R")
+source("_transportation/data-raw/vmt_model_data.R")
+source("_transportation/data-raw/mndot_vmt_ctu_gap_fill_model.R")
+source("_transportation/data-raw/compile_ctu_transportation_emissions.R")
+source("_transportation/data-raw/calc_gross_emissions_rates.R")
+
+# run compilations in _meta/
 source("_meta/data-raw/compile_county_emissions.R")
 source("_meta/data-raw/compile_ctu_emissions.R")

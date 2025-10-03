@@ -48,17 +48,15 @@ msp_emissions <- mac_emissions %>%
     group_by(year) %>%
     summarize(mt_co2e = sum(mt_co2e))) %>%
   mutate(msp_mt_co2e = if_else(is.na(mt_co2e), mac_emissions, mt_co2e)) %>%
-  select(year, msp_mt_co2e)
+  select(inventory_year = year, msp_mt_co2e)
 
 ### load in state aviation data
-mpca_aviation <- read_csv("_transportation/data-raw/aviation/mpca_tran_inv.csv",
-  skip = 1
-) %>%
-  pivot_longer(cols = -c(1:2), names_to = "year", values_to = "co2e") %>%
-  rename(Subsector = `Sources (group)`) %>%
-  filter(Subsector == "Aviation") %>%
-  rename(state_mt_co2e = co2e) %>%
-  mutate(year = as.numeric(year))
+mpca_aviation <-
+  read_rds("_meta/data/mpca_ghg_inv_2022.RDS") %>%
+  filter(Source == "Aviation") %>%
+  mutate(inventory_year = as.numeric(inventory_year)) %>%
+  group_by(Sector, Source, inventory_year) %>%
+  summarise(state_mt_co2e = sum(co2e))
 
 # explore ways of interpolating NAs in MSP emissions
 aviation_emissions <- full_join(mpca_aviation, msp_emissions) %>%
@@ -83,7 +81,7 @@ aviation_emissions <- full_join(mpca_aviation, msp_emissions) %>%
 aviation_emissions_data_source_compare <- aviation_emissions
 
 aviation_out <- aviation_emissions %>%
-  select(sector = Sector, source = Subsector, inventory_year = year, value_emissions = msp_mt_co2e_state_prop) %>%
+  select(sector = Sector, source = Source, inventory_year, value_emissions = msp_mt_co2e_state_prop) %>%
   mutate(
     category = "Off-road",
     geog_name = "MSP Airport",
@@ -91,7 +89,7 @@ aviation_out <- aviation_emissions %>%
     data_source = case_when(
       inventory_year %in% c(2005, 2021) ~ "Metropolitan Airport Commission: fuel dispersement reporting",
       inventory_year %in% c(2016:2020) ~ "Metropolitan Airport Commission: GHG emission reporting",
-      inventory_year %in% c(2006:2015) ~ "MPCA state aviation emission proportional analysis"
+      inventory_year %in% c(2006:2015, 2022) ~ "MPCA state aviation emission proportional analysis"
     ),
     factor_source = "EPA GHG Emission Factor Hub"
   )
@@ -104,7 +102,7 @@ aviation_emissions_meta <- tibble::tribble(
   "inventory_year", class(aviation_out$inventory_year), "Inventory year of emissions",
   "value_emissions", class(aviation_out$value_emissions), "Numeric value of emissions",
   "units_emissions", class(aviation_out$units_emissions), "Units of emissions",
-  "geog_name", class(aviation_out$geog_name), "Geographic locaiton",
+  "geog_name", class(aviation_out$geog_name), "Geographic location",
   "data_source", class(aviation_out$data_source), "Source of activity data used to calculate emissions",
   "factor_source", class(aviation_out$factor_source), "Source of emission factor for translating activity to emissions"
 )
