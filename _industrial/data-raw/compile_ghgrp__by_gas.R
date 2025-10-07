@@ -117,9 +117,24 @@ ghgrp_gas <- ghgrp_other %>%
     gas_type == "nf3" ~ value_emissions / gwp$nf3,
     gas_type == "hfc" ~ value_emissions / gwp$hfc,
     gas_type == "pfc" ~ value_emissions / gwp$cf4,
-    gas_type == "other_fully_fluorinated_ghg" ~ value_emissions / ((gwp$cf4 + gwp$nf3) / 2) # best guess for what these might be based on NAICS codes
-  ))
+    gas_type == "other_fully_fluorinated_ghg" ~ value_emissions / ((gwp$cf4 + gwp$nf3) / 2), # best guess for what these might be based on NAICS codes
+    gas_type == "hfe" ~ value_emissions / 200, # ChatGPT estimate based on HFE-7xxx compounds, typically used in electronics manufacture
+    TRUE ~ NA # unID'ed compounds - nothing to be done if we don't know what they are
+    ))
 
+### subtract away combustion emissions
+
+ghgrp_process <- left_join(
+  ghgrp_gas %>% 
+    group_by(facility_id, county_name, city, inventory_year, gas_type ) %>% 
+    summarize(mt_gas = sum(mt_gas)) %>% 
+    ungroup(),
+  ind_fuel_combustion %>% 
+    group_by(facility_id, county_name, city_name, reporting_year, units_emissions) %>% 
+    summarize(mt_gas = sum(values_emissions)) %>% 
+    ungroup(),
+  by
+)
 
 industrial_waste_gas <- ghgrp %>% 
   filter(!is.na(industrial_waste_landfills)) %>%  
