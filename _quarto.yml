@@ -108,6 +108,7 @@ crossref:
 execute:
  echo: false
  code-overflow: wrap
+ htmlwidgets: true
 
 format: 
   html:
