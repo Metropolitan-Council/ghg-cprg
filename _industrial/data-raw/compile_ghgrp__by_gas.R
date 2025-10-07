@@ -1,5 +1,6 @@
 #### Script to read in and process EPA GHG FLIGHT data
 source("R/_load_pkgs.R")
+source("R/global_warming_potential.R")
 
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
@@ -99,14 +100,25 @@ ghgrp_other <- ghgrp %>%
   
 ## convert ghgrp_other to mt of gas from mt_co2e
 ghgrp_gas <- ghgrp_other %>%
-  select(1:26, 40:42) %>%
+  select(1:5,11:26, 40:42) %>%
   pivot_longer(
-    cols = 14:26,
+    cols = all_of(gas_cols),
     names_to = "gas_type",
     values_to = "value_emissions"
   ) %>%
   filter(!is.na(value_emissions)) %>%
-  mutate(gas_type = str_replace_all(gas_type, "_emissions", ""))
+  mutate(gas_type = str_replace_all(gas_type, "_emissions", ""),  
+  mt_gas = case_when(
+    gas_type == "co2_non_biogenic" ~ value_emissions / gwp$co2,
+    gas_type == "biogenic_co2_metric_tons" ~ value_emissions / gwp$co2,
+    gas_type == "methane_ch4" ~ value_emissions / 25, # they used IPCC 4th assessment values, so can't use stored values
+    gas_type == "nitrous_oxide_n2o" ~ value_emissions /298, # they used IPCC 4th assessment values, so can't use stored values
+    gas_type == "sf6" ~ value_emissions / gwp$sf6,
+    gas_type == "nf3" ~ value_emissions / gwp$nf3,
+    gas_type == "hfc" ~ value_emissions / gwp$hfc,
+    gas_type == "pfc" ~ value_emissions / gwp$cf4,
+    gas_type == "other_fully_fluorinated_ghg" ~ value_emissions / ((gwp$cf4 + gwp$nf3) / 2) # best guess for what these might be based on NAICS codes
+  ))
 
 
 industrial_waste_gas <- ghgrp %>% 
@@ -146,6 +158,26 @@ fc_emitters <- ghgrp_gas %>%
     county_name = str_to_title(county_name),
     city_name = str_to_title(city_name)
   )
+
+mutate(
+  mt_gas = case_when(
+    gas_type == "sf6" ~ value_emissions / gwp$sf6,
+    gas_type == "nf3" ~ value_emissions / gwp$nf3,
+    gas_type == "hfc" ~ value_emissions / gwp$hfc,
+    gas_type == "pfc" ~ value_emissions / gwp$cf4,
+    gas_type == "other_fully_fluorinated_ghg" ~ value_emissions / ((gwp$cf4 + gwp$nf3) / 2) # best guess for what these might be based on NAICS codes
+  ),
+  units_emissions = paste("Metric tons fluorocarbons"),
+  emissions_year = as.numeric(inventory_year)
+) %>%
+  filter(emissions_year == 2022) %>%
+  group_by(emissions_year, county_name, units_emissions) %>%
+  summarize(
+    metric_tons_co2e = sum(value_emissions),
+    value_emissions = sum(mt_gas)
+  ) %>%
+  ungroup() %>%
+  mutate(sector = "Industrial")
 
 ng_transmission <- ghgrp %>% 
   filter(facility_name == "Farmington Compressor Station (Farmington, MN)")
