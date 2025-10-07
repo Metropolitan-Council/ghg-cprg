@@ -334,7 +334,7 @@ _nature/data-raw/DBO_RPTAdministrativeBoundary.shx
 _nature/data-raw/land_cover_stock.csv
 /_nature/_natural_systems_files
 
-site_libs/
+/site_libs/
 _nature/_natural_systems_files/*
 
 _energy/data-raw/nhgis_blk2000_blk2010_MN/

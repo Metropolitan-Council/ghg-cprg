@@ -227,20 +227,15 @@ for (cat in levels(cropland_2021$category)) {
 
 # Final layout and titles
 fig_cropland_area_emissions <- fig_cropland_area_emissions %>%
+  plotly_layout(
+    main_title = "Area of county cropland and county agricultural emissions",
+    x_title = "Agricultural area km<sup>2</sup>",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
   layout(
-    title = list(
-      text = "Area of county cropland and county agricultural emissions"
-    ),
-    xaxis = list(
-      title = "Agricultural area km<sup>2</sup>"
-    ),
-    yaxis = list(
-      title = "Metric tons CO<sub>2</sub>e"
-    ),
     barmode = "stack",
-    legend = list(
-      traceorder = "reversed"
-    )
+    legend = list(traceorder = "reversed")
   )
 
 fig_cropland_area_emissions
@@ -287,6 +282,7 @@ cattle_comparison <- plot_ly(
   add_trace(
     x = ~head_count_survey,
     y = ~head_count_census,
+    alpha = 0.7,
     color = ~livestock_type, # Color by livestock_type
     symbol = ~data_type, # Change symbol based on data_type
     symbols = c("census" = "circle", "interpolated" = "triangle-up"), # Custom symbols for data_type
@@ -297,12 +293,6 @@ cattle_comparison <- plot_ly(
       "Survey head count: ", scales::comma(head_count_survey), "<br>",
       "<extra></extra>"
     )
-  ) %>%
-  layout(
-    title = "Comparison of Livestock Estimates: Survey vs Census",
-    xaxis = list(title = "Survey Head Count"),
-    yaxis = list(title = "Census Head Count"),
-    legend = list(title = list(text = "Livestock Type and Data Type"))
   ) %>%
   add_trace(
     x = c(min_val, max_val),
@@ -316,12 +306,20 @@ cattle_comparison <- plot_ly(
     data = cattle_merged %>% filter(livestock_type == "Beef Cows"),
     x = ~head_count_survey,
     y = ~head_count_census,
+    alpha = 0.7,
     color = ~livestock_type, # Color by livestock_type
     symbol = ~data_type, # Change symbol based on data_type
     symbols = c("census" = "circle", "interpolated" = "triangle-up"),
     marker = list(size = 10),
     name = "Beef Cows"
+  ) %>%
+  plotly_layout(
+    main_title = "Comparison of Livestock Estimates: Survey vs Census",
+    x_title = "Survey Head Count",
+    y_title = "Census Head Count",
+    legend_title = "Livestock Type and Data Type"
   )
+
 
 cattle_comparison
 ```
