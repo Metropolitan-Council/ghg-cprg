@@ -169,13 +169,13 @@ fig_subpart_c_comparison <- plot_ly(
   mode = "markers",
   source = "fig-subpart-c-emissions",
   data = subpart_c,
-  y = ~value_emissions_flight,
   x = ~value_emissions_subpart,
+  y = ~value_emissions_flight,
   color = ~ as.character(inventory_year), # Map colors by year
   hovertemplate = ~ paste0(
     facility_name, "<br>",
-    "FLIGHT emissions: ", round(value_emissions_flight, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
-    "SUBPART C Emissions: ", round(value_emissions_subpart, digits = 2), " metric tons CO<sub>2</sub>e", "<br>",
+    "FLIGHT: ", scales::comma(round(value_emissions_flight, digits = 2)), " metric tons CO<sub>2</sub>e", "<br>",
+    "SUBPART C: ", scales::comma(round(value_emissions_subpart, digits = 2)), " metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   ),
   marker = list(
@@ -201,7 +201,14 @@ fig_subpart_c_comparison <- fig_subpart_c_comparison %>%
     showlegend = FALSE, # Hide this trace from the legend
     inherit = FALSE, # Ensure no properties are inherited from the previous trace
     hoverinfo = "none" # Disable hover for this line
+  ) %>%
+  plotly_layout(
+    main_title = "Comparison of industrial combustion emissions from FLIGHT and subpart C analysis",
+    x_title = "Subpart C emissions",
+    y_title = "FLIGHT emissions",
+    legend_title = "Year"
   )
+
 
 fig_subpart_c_comparison
 ```
