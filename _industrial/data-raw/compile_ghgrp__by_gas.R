@@ -4,9 +4,16 @@ source("R/_load_pkgs.R")
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
 
+## industrial factor hub
+industrial_hub <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
+  extract2("industrial_combustion") %>%
+  clean_names()
+
 ### download flight data: https://ghgdata.epa.gov/ghgp/main.do
 ghgrp_files <- list.files(file.path(here::here(), "_industrial/data-raw/ghgrp"))
 
+#subpart_c emissions
+ind_fuel_combustion <- readRDS("./_industrial/data/fuel_combustion_emissions_by_gas.rds")
 
 #### There is no EPA flight records for Pierce or St. Croix counties in WI
 
@@ -33,13 +40,30 @@ ghgrp <- lapply(as.character(2011:2023), function(y) {
       inventory_year = y
     )
 }) %>%
-  bind_rows()
+  bind_rows() %>% 
+  # remove sources/gases where there is only NAs
+  select(where(~ !all(is.na(.)))) %>% 
+  mutate(petroleum_and_natural_gas_systems_transmission_compression = 
+           as.numeric(petroleum_and_natural_gas_systems_transmission_compression))
 
 ### split out emissions by gas type
 ## start by pulling out sources with only fuel combustion as we'll get them in subpart c analysis
 
 gas_cols <- colnames(ghgrp)[15:26]
-source_cols <- colnames(ghgrp)[27:63]
+source_cols <- colnames(ghgrp)[27:39]
+
+## look at crosstabs of emissions sources (i.e. does everything also have stationary combustion?)
+emission_sources <- ghgrp %>%
+  select(stationary_combustion:industrial_waste_landfills) %>% 
+  mutate(across(everything(), ~ as.integer(!is.na(.) & . > 0))) %>% 
+  as.matrix()
+
+cross_counts <- t(emission_sources) %*% emission_sources
+cross_counts[1:10, 1:10] 
+### everything has stationary combustion which will need to be subtracted away to deal with
+### utility natural gas delivery
+
+## pulling out refinery emissions
 
 refinery_gas <- ghgrp %>% 
   filter(grepl("Y", industry_type_subparts)) %>%  #refinery subpart
@@ -59,6 +83,31 @@ refinery_gas <- ghgrp %>%
          value_emissions,
          gas_type
   )
+
+#### non-refinery industrial ####
+
+ghgrp_other <- ghgrp %>% 
+  filter(!grepl("Y", industry_type_subparts), #remove refineries
+         !grepl("D", industry_type_subparts), #remove power plants
+         !(grepl("Waste", industry_type_sectors) & is.na(industrial_waste_landfills))) %>%   #remove municipal waste
+  # remove facilities with only stationary combustion
+  filter(
+    rowSums(
+      across(electricity_generation:industrial_waste_landfills,
+             ~ as.integer(!is.na(.) & . > 0))
+    ) > 0)
+  
+## convert ghgrp_other to mt of gas from mt_co2e
+ghgrp_gas <- ghgrp_other %>%
+  select(1:26, 40:42) %>%
+  pivot_longer(
+    cols = 14:26,
+    names_to = "gas_type",
+    values_to = "value_emissions"
+  ) %>%
+  filter(!is.na(value_emissions)) %>%
+  mutate(gas_type = str_replace_all(gas_type, "_emissions", ""))
+
 
 industrial_waste_gas <- ghgrp %>% 
   filter(!is.na(industrial_waste_landfills)) %>%  
