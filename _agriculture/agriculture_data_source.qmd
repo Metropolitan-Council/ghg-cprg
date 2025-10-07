@@ -40,7 +40,7 @@ county_agriculture <- landcover %>%
   mutate(percent_area = area / county_area_sqkm)
 ```
 
-Agricultural emissions are derived from two primary sources. First is the USDA agricultural census which provides county level livestock head counts, crop production, and fertilizer sales. Second is the EPA State Inventory Tool (SIT) that provides state specific values for emission factors as well as activity data such as state-wide fertilizer application (different from sales). These are both the highest rank of data.
+Agricultural emissions are derived from two primary sources. First is the USDA agricultural census [@usdaUSDANationalAgricultural2022] which provides county level livestock head counts, crop production, and fertilizer sales. Second is the EPA State Inventory Tool (SIT) [@epaUSERGUIDEESTIMATING2024] that provides state specific values for emission factors as well as activity data such as state-wide fertilizer application (different from sales). These are both the highest rank of data.
 
 The USDA census is conducted once every five years (years ending in '2 and '7). For interstitial years we used linear interpolation to provide county level estimates.
 
@@ -50,24 +50,33 @@ The SIT provides guidance on how to translate livestock counts, crop production,
 
 ## Enteric fermentation
 
-Enteric fermentation is methane emitted from livestock during digestion.
+Enteric fermentation is methane (CH~4~) emitted from livestock during digestion.
 
-$$\text{Emissions (Metric tons CH}_4) =  \text{Animal Population} \times  \text{Emission Factor (MT CH4/head)}$$
+$$
+\text{Emissions (Metric tons CH}_4\text{)} = \text{Animal Population} \times \text{Emission Factor (MT CH}_4\text{/head)}
+$$
+
 ## Manure management
 
-Manure in lagoons and holding facilities emits methane and nitrous oxide. Both gaseous emissions depend on the amount of volatile solids produced by livestock and the management regimes, both of which vary by livestock type. Adult cattle volatile solids are calculated using a variable based on heads of cattle; other livestock (including cattle calves) volatile solids are calculated based on animal mass, which is itself calculated by multiplying number of livestock by the typical animal mass of that livestock type.
+Manure in lagoons and holding facilities emits methane and nitrous oxide (N~2~O). Both gaseous emissions depend on the amount of volatile solids produced by livestock and the management regimes, both of which vary by livestock type. Adult cattle volatile solids are calculated using a variable based on heads of cattle; other livestock (including cattle calves) volatile solids are calculated based on animal mass, which is itself calculated by multiplying number of livestock by the typical animal mass of that livestock type.
 
-$$\text{Metric tons volatile solids (MT VS)} =  \sum_{i}(\text{Animal Population}_i \times  \text{Volatile solids per head (MT/head/yr)}_ i)$$
+$$
+\text{Metric tons volatile solids (MT VS)} =  \sum_{i}(\text{Animal Population}_i \times  \text{Volatile solids per head (MT/head/yr)}_ i)
+$$
 
 Methane emissions are calculated as follows:
 
-$$\text{Emissions (Metric tons CH}_4) =  \sum_{i}(\text{MT VS}_i \times \text{Maximum Potential Emissions (m3 CH4/kg VS)}_i \times \text{Methane conversion factor}_i)$$
+$$
+\text{Emissions (Metric tons CH}_4) =  \sum_{i}(\text{MT VS}_i \times \text{Maximum Potential Emissions (m3 CH4/kg VS)}_i \times \text{Methane conversion factor}_i)
+$$
 where *i* represents livestock from the following categories: Dairy Cows, Beef Cows, Feedlot Cattle, Calves, Swine, Sheep, Goats, Chickens (Broilers, Pullets, and Layers), and Turkeys.
 
 
 Nitrous oxide emissions are calculated as follows:
 
-$$\text{Emissions (Metric tons N}_2 \text{O)} =  \sum_{i,j}(\text{MT VS}_{i,j} \times \text{(1 - Volatilization Percent)} \times  \text{Percentage manure management}_{i,j} \times \text{Manure management emission factor}_{i,j})$$
+$$
+\text{Emissions (Metric tons N}_2 \text{O)} =  \sum_{i,j}(\text{MT VS}_{i,j} \times \text{(1 - Volatilization Percent)} \times  \text{Percentage manure management}_{i,j} \times \text{Manure management emission factor}_{i,j})
+$$
 where *i* represents livestock from the following categories: Dairy Cows, Beef Cows, Feedlot Cattle, Calves, Swine, Sheep, Goats, Chickens (Broilers, Pullets, and Layers), and Turkeys; and *j* is dry or wet manure management systems. In other words, total nitrous oxide emissions are the sum of manure managed in wet systems or dry systems, each of which have different emission factors. EPA assumes no nitrogen is volatilized prior to storage (i.e. Volatilization Percent is 0 in the above equation).
 
 ## Manure runoff
@@ -76,43 +85,50 @@ Manure from managed and unmanaged systems enter soil via application or runoff a
 
 Indirect manure runoff emissions also occur when unvolatilized nitrogen runoff and later volatilizing on or off site. It is calculated as:
 
-$$\text{Emissions (Metric tons N}_2 \text{O)} =  \sum_{i}(\text{MT VS}_i \times \text{(1 - Volatilization Percent)} \times \text{Leaching Percent})$$
+$$
+\text{Emissions (Metric tons N}_2 \text{O)} =  \sum_{i}(\text{MT VS}_i \times \text{(1 - Volatilization Percent)} \times \text{Leaching Percent})
+$$
 where EPA provides an estimate of volatilization percent of 0% (i.e. all volatilization occurs after manure runoff) and a leaching percent of 30%.
 
 There are also direct nitrous oxide emissions from manure applied to soils as fertilizer or manure left on soils in pasture. Manure applied to soils is calculated as: 
 
-$$\text{Emissions (Metric tons N}_2 \text{O)} =  \sum_{i}(\text{MT manure}_i \times \text{(1 - Indirect Volatilization Percent)} \times \text{Non-volatized emission factor} \times \text{N}_2 \text{O:N}_2)$$
-where *i* is the livestock type. EPA provides estimates of 20% for Indirect Volatilization Percent, 0.0125 as the non-volatized EF, and 1.571 is the ratio of nitrous oxide to N_2_.
+$$
+\text{Emissions (Metric tons N}_2 \text{O)} =  \sum_{i}(\text{MT manure}_i \times \text{(1 - Indirect Volatilization Percent)} \times \text{Non-volatized emission factor} \times \text{N}_2 \text{O:N}_2)
+$$
+where *i* is the livestock type. EPA provides estimates of 20% for Indirect Volatilization Percent, 0.0125 as the non-volatized EF, and 1.571 is the ratio of nitrous oxide to N~2~.
 
 Manure left on soils in pasture emissions are calculated as:
-$$\text{Emissions (Metric tons N}_2 \text{O)} =  \sum_{i}(\text{MT manure}_i \times \text{Pasture emission factor} \times \text{N}_2 \text{O:N}_2)$$
-where *i* is the livestock type. EPA provides an EF of 0.02 for manure on pasture soils and 1.571 is the ratio of nitrous oxide to N_2_.
+$$
+\text{Emissions (Metric tons N}_2 \text{O)} =  \sum_{i}(\text{MT manure}_i \times \text{Pasture emission factor} \times \text{N}_2 \text{O:N}_2)
+$$
+where *i* is the livestock type. EPA provides an emissions factor of 0.02 for manure on pasture soils and 1.571 is the ratio of nitrous oxide to N~2~.
 
-The SIT calculates emissions by multiplying each animal population (entered in the manure management worksheet) by the rate of N excreted by animal type, provided in kg/head/year for cattle (excluding calves), and kg/1,000 kg animal mass/day for calves and all other livestock (i.e., swine, poultry, sheep, goats, and horses). For cattle (excluding calves), animal population is multiplied by the K-nitrogen excretion rate (kg/head/year) for total K-nitrogen excreted. For calves and all other livestock, animal population is multiplied by the TAM (kg), the K-nitrogen excretion rate (kg/1,000 kg animal mass/day), and 365 days per year for total K-nitrogen excreted. Next, the total K-nitrogen is disaggregated into manure handled in managed systems, manure applied as daily spread, and manure deposited directly into pastures, ranges, or paddocks, based on default percentages obtained from the U.S. Inventory (EPA 2023a).
-Direct emissions from manure handled in management systems and applied as daily spread is multiplied by the volatilization factor (0.8) to obtain the total unvolatilized N. Additionally, for poultry an adjustment must be made for the small portion of waste used as animal feed. For all poultry categories (i.e., layers (hens, pullets, and chickens), broilers, and turkeys), the total K-nitrogen in managed systems is multiplied by 0.958, as it is assumed that 4.2 percent of all poultry manure is used as animal feed and not applied to agricultural soils (Carpenter 1992). The total unvolatilized N is multiplied by the emission factor for direct emissions of N2O (1.0 percent) to obtain the amount of emissions in N2O-N/yr.
-For animal waste deposited directly onto pasture, range, and paddock the total K-nitrogen is multiplied by the percent of manure deposited on pasture, range, and paddocks and the IPCC default emission factor for direct emissions (0.02 kg N2O-N/kg N excreted) (IPCC 1997, EPA 2023a) to obtain the amount of emissions in N2O-N/yr.
+The SIT calculates emissions by multiplying each animal population (entered in the manure management worksheet) by the rate of N excreted by animal type, provided in kg/head/year for cattle (excluding calves), and kg/1,000 kg animal mass/day for calves and all other livestock (i.e., swine, poultry, sheep, goats, and horses). For cattle (excluding calves), animal population is multiplied by the K-nitrogen excretion rate (kg/head/year) for total K-nitrogen excreted. For calves and all other livestock, animal population is multiplied by the TAM (kg), the K-nitrogen excretion rate (kg/1,000 kg animal mass/day), and 365 days per year for total K-nitrogen excreted. Next, the total K-nitrogen is disaggregated into manure handled in managed systems, manure applied as daily spread, and manure deposited directly into pastures, ranges, or paddocks, based on default percentages obtained from the U.S. Inventory [@usepa2020NationalEmissions2023onroad].
+
+Direct emissions from manure handled in management systems and applied as daily spread is multiplied by the volatilization factor (0.8) to obtain the total unvolatilized N. Additionally, for poultry an adjustment must be made for the small portion of waste used as animal feed. For all poultry categories (i.e., layers (hens, pullets, and chickens), broilers, and turkeys), the total K-nitrogen in managed systems is multiplied by 0.958, as it is assumed that 4.2 percent of all poultry manure is used as animal feed and not applied to agricultural soils [@carpenterCurrentLitterPractices1992]. The total unvolatilized N is multiplied by the emission factor for direct emissions of N~2~O (1.0 percent) to obtain the amount of emissions in N~2~O-N/yr. For animal waste deposited directly onto pasture, range, and paddock the total K-nitrogen is multiplied by the percent of manure deposited on pasture, range, and paddocks and the IPCC default emission factor for direct emissions (0.02 kg N~2~O-N/kg N excreted) [@ipccGHGI1997; @usepa2020NationalEmissions2023onroad] to obtain the amount of emissions in N~2~O-N/yr.
+
 
 # Cropland - 
 
 ## Plant residue
 
-Croplands emit nitrous oxide via legumes (i.e. soybeans, alfalfa, beans) that fix atmospheric N2 in the soil, some of which is converted to nitrous oxide via soil biochemical processes. Additionally, non-legume crops have residues that are left on soils and breakdown into the soil, emitting further nitrous oxide.
+Croplands emit nitrous oxide via legumes (i.e. soybeans, alfalfa, beans) that fix atmospheric N~2~ in the soil, some of which is converted to nitrous oxide via soil biochemical processes. Additionally, non-legume crops have residues that are left on soils and breakdown into the soil, emitting further nitrous oxide.
 
 ### Legumes: 
-Emissions (MTCO2E) = Crop Production (MT) × Mass ratio (residue/crop) × Dry Matter Fraction × N content × Emission Factor (1.0%) × 44/28 (Ratio of N2O to N2O-N) 
+Emissions (MTCO~2~E) = Crop Production (MT) × Mass ratio (residue/crop) × Dry Matter Fraction × N content × Emission Factor (1.0%) × 44/28 (Ratio of N~2~O to N~2~O-N) 
 
 ### Residues: 
-Emissions (MTCO2E) = Crop Production (MT) × Mass ratio (residue/crop) × Dry Matter Fraction × Fraction Residue Applied × N content × Emission Factor (1.0%) × 44/28 (Ratio of N2O to N2O-N)
+Emissions (MTCO~2~E) = Crop Production (MT) × Mass ratio (residue/crop) × Dry Matter Fraction × Fraction Residue Applied × N content × Emission Factor (1.0%) × 44/28 (Ratio of N~2~O to N~2~O-N)
 
 ## Fertilizer application
 
 Synthetic and organic fertilizers breakdown to provide N to crops, but some fraction of this is converted to nitrous oxide that is emitted to the atmosphere.
 
 ### Direct
-Emissions (MMTCO2E) = Total N × fraction unvolatilized (0.9 synthetic or 0.8 organic) × 0.01 (kg N2O-N/kg N) × 44/28 (Ratio of N2O to N2O-N) × 265 (GWP) ÷ 1,000,000,000 (kg/MMTCO2E)
+Emissions (MMTCO~2~E) = Total N × fraction unvolatilized (0.9 synthetic or 0.8 organic) × 0.01 (kg N~2~O-N/kg N) × 44/28 (Ratio of N~2~O to N~2~O-N) × 265 (GWP) ÷ 1,000,000,000 (kg/MMTCO~2~E)
 
 ### Indirect
-Emissions (MMTCO2E) = Total N × fraction volatilized (0.1 synthetic or 0.2 organic) × 0.001 (kg N2O-N/kg N) × 44/28 (Ratio of N2O to N2O-N) × 265 (GWP) ÷ 1,000,000,000 (kg/MMTCO2E)
+Emissions (MMTCO~2~E) = Total N × fraction volatilized (0.1 synthetic or 0.2 organic) × 0.001 (kg N~2~O-N/kg N) × 44/28 (Ratio of N~2~O to N~2~O-N) × 265 (GWP) ÷ 1,000,000,000 (kg/MMTCO~2~E)
 
 ## Fertilizer runoff
 
@@ -125,14 +141,7 @@ Some proportion of applied fertilized is leached into the soil and runs off into
 The USDA census program does not report data in counties having less than a minimum number of operations. This most notably affects Ramsey County in our inventory, and subsequently the cities within the county. A potential future fix is to model livestock, crop yield, and fertilizer purchases based off of operational data (which is reported) from within Ramsey and other counties.
 
 ## Missing subsectors
-Small emission sources not currently accounted for: liming, indirect N2O from livestock/soils-animal sheet, residue burning.
-
-## Potential errors
-Calculation fixes - Fertilizer runoff (from ag soils-animals) sheet is currently calculated from total fertilizer but should only be from volatized, leading to a likely small over estimation.
-
-
-
-Be sure to add a citation of this dataset to the Zotero shared library.
+Small emission sources not currently accounted for: liming, indirect N~2~O from livestock/soils-animal sheet, residue burning.
 
 ## Data validation
 
@@ -321,7 +330,7 @@ Estimates from the census and surveys are reasonably close for dairy cows and be
 
 ### Scaling to CTUs
 
-In the absence of CTU level livestock or crop production data, the ICLEI U.S. Community Protocol recommends downscaling from county data using the ratio of agricultural land in the community to agricultural land in the county. We followed this approach for downscaling county level emissions using NLCD land cover data to find the ratio of CTU agricultural land to county agricultural land. Future work should seek to downscale livestock counts and crop production (i.e. activity data) and recalculate emissions, enabling more direct reduction measure estimations for various agricultural components (e.g. changes to cattle feed additives that may reduce enteric fermentation).
+In the absence of CTU level livestock or crop production data, the ICLEI U.S. Community Protocol [@usaUSCommunityProtocol2015] recommends downscaling from county data using the ratio of agricultural land in the community to agricultural land in the county. We followed this approach for downscaling county level emissions using NLCD land cover data to find the ratio of CTU agricultural land to county agricultural land. Future work should seek to downscale livestock counts and crop production (i.e. activity data) and recalculate emissions, enabling more direct reduction measure estimations for various agricultural components (e.g. changes to cattle feed additives that may reduce enteric fermentation).
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
