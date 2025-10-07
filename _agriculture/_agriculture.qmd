@@ -256,17 +256,17 @@ ctu_ag_map <- left_join(cprg_ctu,
 pal <- colorNumeric(palette = "plasma", domain = ctu_ag_map$mt_co2e)
 
 # Create the leaflet map
-fig_ctu_ag_emissions <- 
-  council_leaflet() %>% 
+fig_ctu_ag_emissions <-
+  council_leaflet() %>%
   # addTiles() %>% # Add default OpenStreetMap tiles
   addPolygons(
     data = ctu_ag_map,
-    fillColor = ~pal(mt_co2e),
+    fillColor = ~ pal(mt_co2e),
     color = "black", # Border color
     weight = 1,
     fillOpacity = 0.7, # Transparency of the fill color
-    popup = ~paste(ctu_name, " agricultural emissions:", round(mt_co2e, 2)), # Popup with details
-    label = ~paste(ctu_name, " emissions:", round(mt_co2e, 2)), # Hover text
+    popup = ~ paste(ctu_name, " agricultural emissions:", round(mt_co2e, 2)), # Popup with details
+    label = ~ paste(ctu_name, " emissions:", round(mt_co2e, 2)), # Hover text
     highlightOptions = highlightOptions(
       weight = 3,
       color = "blue",

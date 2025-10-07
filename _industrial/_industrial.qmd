@@ -350,13 +350,15 @@ ctu_ind_map <- left_join(
 
 
 # Define color palette based on the plasma scale from viridis
-pal <- colorNumeric(palette = "Greys",
-                    domain = log10(ctu_ind_map$mt_co2e + 1),
-                    na.color = "white")
+pal <- colorNumeric(
+  palette = "Greys",
+  domain = log10(ctu_ind_map$mt_co2e + 1),
+  na.color = "white"
+)
 
 # Create the leaflet map
-map_ctu_ind <- 
-  council_leaflet() %>% 
+map_ctu_ind <-
+  council_leaflet() %>%
   addPolygons(
     data = ctu_ind_map,
     fillColor = ~ pal(log10(mt_co2e + 1)),
