@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
@@ -225,6 +226,7 @@ Agricultural emissions are apportioned to cities and townships in two ways. Firs
 ```{r fig-ctu-ag-emissions}
 #| fig-cap: "2022 city level agricultural emissions"
 #| out-width: "95%"
+#| out-height: "500px"
 
 # load the county boundaries layer
 
@@ -254,15 +256,17 @@ ctu_ag_map <- left_join(cprg_ctu,
 pal <- colorNumeric(palette = "plasma", domain = ctu_ag_map$mt_co2e)
 
 # Create the leaflet map
-fig_ctu_ag_emissions <- leaflet(ctu_ag_map) %>%
-  addTiles() %>% # Add default OpenStreetMap tiles
+fig_ctu_ag_emissions <- 
+  council_leaflet() %>% 
+  # addTiles() %>% # Add default OpenStreetMap tiles
   addPolygons(
-    fillColor = ~ pal(mt_co2e),
+    data = ctu_ag_map,
+    fillColor = ~pal(mt_co2e),
     color = "black", # Border color
     weight = 1,
-    fillOpacity = 0.9, # Transparency of the fill color
-    popup = ~ paste(ctu_name, " agricultural emissions:", round(mt_co2e, 2)), # Popup with details
-    label = ~ paste(ctu_name, " emissions:", round(mt_co2e, 2)), # Hover text
+    fillOpacity = 0.7, # Transparency of the fill color
+    popup = ~paste(ctu_name, " agricultural emissions:", round(mt_co2e, 2)), # Popup with details
+    label = ~paste(ctu_name, " emissions:", round(mt_co2e, 2)), # Hover text
     highlightOptions = highlightOptions(
       weight = 3,
       color = "blue",
@@ -271,6 +275,7 @@ fig_ctu_ag_emissions <- leaflet(ctu_ag_map) %>%
   ) %>%
   addLegend(
     pal = pal,
+    data = ctu_ag_map,
     values = ~mt_co2e,
     title = "CTU Ag Emissions",
     opacity = 0.7
