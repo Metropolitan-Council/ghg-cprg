@@ -298,4 +298,4 @@ industrial_gas_meta <-
   )
 
 saveRDS(industrial_gas, "./_industrial/data/industrial_emissions_by_gas.rds")
-saveRDS(industrial_gas_meta, "./_industrial/data/industrial_emissions_by_gas.rds_meta.rds")
+saveRDS(industrial_gas_meta, "./_industrial/data/industrial_emissions_by_gas_meta.rds")
