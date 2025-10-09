@@ -14,6 +14,7 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
 source(file.path(here::here(), "R/global_warming_potential.R"))
 
 hookaddcap()
@@ -274,11 +275,15 @@ fig_ind_county_emissions_by_gas_type
 
 ### Scaling to CTUs
 
+
 As industrial emissions are provided as point sources, scaling to cities is already done. Note that the color ramp in the map below is on a log scale due to the high magnitude of emissions from two oil refineries - pop-up values are reported as untransformed values, however.
+
 
 ```{r fig-ctu-ind-emissions}
 #| fig-cap: "2022 city level industrial emissions"
 #| out-width: "95%"
+#| out-height: "500px"
+
 
 # load the county boundaries layer
 
@@ -319,12 +324,17 @@ ctu_ind_map <- left_join(
 
 
 # Define color palette based on the plasma scale from viridis
-pal <- colorNumeric(palette = "Greys", domain = log10(ctu_ind_map$mt_co2e + 1), na.color = "white")
+pal <- colorNumeric(
+  palette = "Greys",
+  domain = log10(ctu_ind_map$mt_co2e + 1),
+  na.color = "white"
+)
 
 # Create the leaflet map
-map_ctu_ind <- leaflet(ctu_ind_map) %>%
-  addTiles() %>% # Add default OpenStreetMap tiles
+map_ctu_ind <-
+  council_leaflet() %>%
   addPolygons(
+    data = ctu_ind_map,
     fillColor = ~ pal(log10(mt_co2e + 1)),
     color = "black", # Border color
     weight = 1,
