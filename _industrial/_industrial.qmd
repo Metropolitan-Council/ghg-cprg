@@ -26,6 +26,7 @@ ghgrp_emissions <- readRDS(file.path(here::here(), "_industrial/data/ghgrp_indus
 nei_emissions <- readRDS(file.path(here::here(), "_industrial/data/nei_county_industrial_emissions.RDS"))
 subpart_c_emissions <- readRDS(file.path(here::here(), "_industrial/data/fuel_combustion_emissions.RDS"))
 mpca_emissions <- readRDS(file.path(here::here(), "_industrial/data/mpca_fuel_emissions.RDS"))
+industrial_gas <- readRDS(file.path(here::here(), "_industrial/data/industrial_emissions_by_gas.RDS"))
 
 fg_emissions <- readRDS(file.path(
   here::here(),
@@ -40,18 +41,26 @@ mpca_emissions_by_gas <- readRDS(file.path(here::here(), "_industrial/data/mpca_
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 
-emissions_2021 <- county_emissions %>%
-  filter(emissions_year == 2021) %>%
+emissions_2022 <- county_emissions %>%
+  filter(emissions_year == 2022) %>%
   pull(value_emissions) %>%
   sum()
 
 ## not going to include electricity here
-ind_emissions_2021 <- baseline_emissions %>%
-  filter(inventory_year == 2021, sector == "Industrial") %>%
+ind_emissions_2022 <- county_emissions %>%
+  filter(emissions_year == 2022, sector == "Industrial",
+         !category %in% c("Building Fuel", "Electricity")) %>%
   pull(value_emissions) %>%
   sum()
-refinery_emissions_2021 <- ghgrp_emissions %>%
-  filter(inventory_year == 2021, primary_naics_code == 324110) %>%
+
+ind_co2_2022 <-  industrial_gas %>% 
+  filter(inventory_year == 2022,
+         units_emissions == "Metric tons CO2") %>% 
+  pull(metric_tons_co2e) %>% 
+  sum()
+
+refinery_emissions_2022 <- ghgrp_emissions %>%
+  filter(inventory_year == 2022, primary_naics_code == 324110) %>%
   pull(value_emissions) %>%
   sum()
 
@@ -98,18 +107,18 @@ nei_small <- left_join(
 ```
 
 ## Introduction
-Industrial facilities are major emitters stemming from high electricity demand, on-site fuel combustion, and industrial processes. The data presented here are aggregations of industrial point source reporting to state and federal agencies. Care must be taken to avoid double-counting in this sector, as industry includes emissions from power plants, waste facilities, and natural gas combustion that can be counted in other sectors. Natural gas combustion is the most difficult class to account for, as natural gas is delivered both within and without the services of utilities. Our analysis assumes (and thus omits) all natural gas combustion reported to EPA and MPCA are utility sourced except for the two refineries in boundary, which appear to have direct natural gas pipeline access. Smaller emitters are not required to report to state and federal agencies, meaning a small but potentially significant slice of industrial emissions may be missing, though any natural gas combustion is likely to be included in our utility demand analysis.
+Industrial facilities are major emitters stemming from high electricity demand, on-site fuel combustion, and industrial processes. The data presented here are aggregations of industrial point source reporting to state and federal agencies. Care must be taken to avoid double-counting in this sector, as industry includes emissions from power plants, waste facilities, and natural gas combustion that can be counted in other sectors. Natural gas combustion is the most difficult class to account for, as natural gas is delivered both within and without the services of utilities. Our analysis assumes all natural gas combustion reported to EPA and MPCA is double counted except for the two refineries in boundary, which appear to have direct natural gas pipeline access. Smaller emitters are not required to report to state and federal agencies, meaning a small but potentially significant slice of industrial emissions may be missing, though any natural gas combustion is likely to be included in our utility demand analysis.
 
 The results presented in this section are therefore emissions from major industrial point sources NOT including energy supplied from electric and natural gas utilities.
 
 ## Results
 
-### 2021 county and subsector breakdown
+### 2022 county and subsector breakdown
 
-Industrial point-source emissions (i.e. excluding electricity usage and utility provided natural gas) accounted for `r 100*round(ind_emissions_2021/emissions_2021, digits = 3)`% of total emissions in the 11-county region in 2021. County emissions vary widely due to the point source approach of industrial emissions, as opposed to the demand-side approach of electricity, residential building fuel, waste, and functionally on-road transportation. The largest example is that two in-boundary oil refineries account for `r 100*round(refinery_emissions_2021/ind_emissions_2021, digits = 3)`% of point-source industrial emissions in 2021.
+Industrial point-source emissions (i.e. excluding electricity usage and utility provided natural gas) accounted for `r 100*round(ind_emissions_2022/emissions_2022, digits = 3)`% of total emissions in the 11-county region in 2022. County emissions vary widely due to the point source approach of industrial emissions, as opposed to the demand-side approach of electricity, residential building fuel, waste, and functionally on-road transportation. The largest example is that two in-boundary oil refineries account for `r 100*round(refinery_emissions_2022/ind_emissions_2022, digits = 3)`% of point-source industrial emissions in 2022.
 
 ```{r fig-ind-county-emissions}
-#| fig-cap: "2021 county industrial emissions"
+#| fig-cap: "2022 county industrial emissions"
 #| out-width: "95%"
 #| fig.height: 4  # Set height in inches
 #| fig.width: 10   # Set width in inches
@@ -121,23 +130,23 @@ fig_ind_county_emissions <- plot_ly(
   data = baseline_emissions %>%
     filter(
       sector == "Industrial",
-      inventory_year == 2021
+      inventory_year == 2022
     ) %>%
     mutate(category = if_else(category == "Stationary combustion", "Industrial fuel combustion", category)),
   y = ~ reorder(county_name, value_emissions),
-  x = ~value_emissions,
+  x = ~value_emissions + 1,
   color = ~category,
   colors = unlist(category_colors),
   hovertemplate = ~ paste0(
     county_name, "<br>",
     source, "<br>",
-    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
+    round(value_emissions / 1000, digits = 2), " thousand metric tons CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
   plotly_layout(
-    main_title = "2021 county industrial emissions",
-    x_title = "Million metric tons CO<sub>2</sub>e",
+    main_title = "2022 county industrial emissions",
+    x_title = "Million metric tons CO<sub>2</sub>e (log scale)",
     subtitle = ""
   ) %>%
   layout(
@@ -149,6 +158,10 @@ fig_ind_county_emissions <- plot_ly(
       font = list(
         color = "black" # Set hovertext color to black
       )
+    ),
+        xaxis = list(
+      type = "log",
+      title = "Million metric tons CO<sub>2</sub>e (log scale)"
     )
   )
 
@@ -157,7 +170,7 @@ fig_ind_county_emissions
 
 ### Baseline emissions
 
-Regional industrial emissions have increased by `r 100*round((ind_emissions_2021- ind_emissions_2005)/ind_emissions_2005, digits = 3)`% since 2005, although emissions prior to 2011 are modeled by anchoring to MN Pollution Control Agency industrial emissions, which may or may not adequately represent metro region emissions. Emissions compared to 2011, the earliest year of federally supplied GHG data, there is a much more modest observed increase of `r 100*round((ind_emissions_2021 - ind_emissions_2011)/ind_emissions_2011, digits = 3)`%.
+Regional industrial emissions have increased by `r 100*round((ind_emissions_2022- ind_emissions_2005)/ind_emissions_2005, digits = 3)`% since 2005, although emissions prior to 2011 are modeled by anchoring to MN Pollution Control Agency industrial emissions, which may or may not adequately represent metro region emissions. Emissions compared to 2011, the earliest year of federally supplied GHG data, there is a much more modest observed increase of `r 100*round((ind_emissions_2022 - ind_emissions_2011)/ind_emissions_2011, digits = 3)`%.
 
 ```{r fig-ind-baseline-emissions}
 #| fig-cap: "Baseline industrial emissions"
@@ -213,74 +226,33 @@ fig_ind_baseline
 
 ### Emissions by gas type
 
-Industrial emissions are varied, including carbon dioxide, methane, nitrous oxide, and a variety of fully fluorinated gases from industrial processes.
+Industrial emissions are varied, including carbon dioxide, methane, nitrous oxide, and fluorinated gases from industrial processes. These greenhouse gases range from 28 to 24,300% more potent in trapping heat compared to carbon dioxide and are displayed below in their carbon dioxide equivalencies to make their effect more comparable. Despite being less potent, carbon dioxide is still represents `r 100*round(ind_co2_2022 / ind_emissions_2022, digits = 3)`% of industrial emissions due to being the most common byproduct of industry.
 
 
 ```{r fig-ind-county-emissions-by-gas-type}
-#| fig-cap: "2021 county agricultural emissions by gas type"
+#| fig-cap: "2022 county agricultural emissions by gas type"
 #| out-width: "95%"
 
-fg_emissions_2021 <- fg_emissions %>%
-  filter(inventory_year == 2021) %>%
-  mutate(
-    county_name = str_replace_all(county_name, " County", ""),
-    gas_type = str_to_upper(gas_type)
-  ) %>%
-  group_by(county_name, gas_type) %>%
-  summarize(mt_co2e = sum(value_emissions))
-
-mpca_gas_emissions_2021 <- mpca_emissions_by_gas %>%
-  filter(
-    inventory_year == 2021,
-    !ctu_name %in% unique(fuel_emissions_by_gas$city_name)
-  ) %>%
-  mutate(mt_co2e = case_when(
-    grepl("CH4", unit_emissions) ~ value_emissions * gwp$ch4,
-    grepl("N2O", unit_emissions) ~ value_emissions * gwp$n2o,
-    grepl("CO2", unit_emissions) ~ value_emissions
-  )) %>%
-  group_by(county_name, unit_emissions) %>%
-  summarize(mt_co2e = sum(mt_co2e)) %>%
-  rename(gas_type = unit_emissions) %>%
-  mutate(gas_type = str_replace_all(gas_type, "Metric tons ", ""))
-
-fuel_gas_emissions_2021 <- fuel_emissions_by_gas %>%
-  filter(
-    reporting_year == 2021,
-    units_emissions != "avg_activity"
-  ) %>%
-  mutate(mt_co2e = case_when(
-    grepl("ch4", units_emissions) ~ values_emissions * gwp$ch4,
-    grepl("n2o", units_emissions) ~ values_emissions * gwp$n2o,
-    grepl("co2", units_emissions) ~ values_emissions
-  )) %>%
-  group_by(county_name, units_emissions) %>%
-  summarize(mt_co2e = sum(mt_co2e)) %>%
-  rename(gas_type = units_emissions) %>%
-  mutate(gas_type = str_to_upper(str_replace_all(gas_type, "mt_", "")))
-
-emissions_by_gas_2021 <- bind_rows(
-  fg_emissions_2021,
-  fuel_gas_emissions_2021,
-  mpca_gas_emissions_2021
-)
+emissions_by_gas_2022 <- industrial_gas %>% 
+  filter(inventory_year == 2022) %>% 
+  mutate(gas_type = str_replace_all(units_emissions, "Metric tons ",""))
 
 fig_ind_county_emissions_by_gas_type <- plot_ly(
   type = "bar",
   source = "fig-ind-county-emissions-by-gas-type",
-  data = emissions_by_gas_2021,
-  y = ~ reorder(county_name, mt_co2e),
-  x = ~mt_co2e,
+  data = emissions_by_gas_2022,
+  y = ~ reorder(county_name, metric_tons_co2e ),
+  x = ~metric_tons_co2e,
   color = ~gas_type,
   hovertemplate = ~ paste0(
     county_name, "<br>",
     gas_type, "<br>",
-    round(mt_co2e, digits = 2), "  metric tons of CO<sub>2</sub>e", "<br>",
+    round(metric_tons_co2e , digits = 2), "  metric tons of CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%
   plotly_layout(
-    main_title = "2021 county industrial emissions by gas type",
+    main_title = "2022 county industrial emissions by gas type",
     x_title = "Metric tons CO<sub>2</sub>e",
     subtitle = ""
   ) %>%
@@ -302,16 +274,16 @@ fig_ind_county_emissions_by_gas_type
 
 ### Scaling to CTUs
 
-As industrial emissions are provided as point sources, scaling to cities is already done. Note that the color ramp in the map below is on a log scale due to the oil refinery in Rosemount - pop-up values are reported as untransformed values, however.
+As industrial emissions are provided as point sources, scaling to cities is already done. Note that the color ramp in the map below is on a log scale due to the high magnitude of emissions from two oil refineries - pop-up values are reported as untransformed values, however.
 
 ```{r fig-ctu-ind-emissions}
-#| fig-cap: "2021 city level industrial emissions"
+#| fig-cap: "2022 city level industrial emissions"
 #| out-width: "95%"
 
 # load the county boundaries layer
 
-ind_emissions_ctu_2021 <- baseline_emissions %>%
-  filter(inventory_year == 2021) %>%
+ind_emissions_ctu_2022 <- baseline_emissions %>%
+  filter(inventory_year == 2022) %>%
   group_by(city_name) %>%
   summarize(mt_co2e = sum(value_emissions))
 
@@ -340,7 +312,7 @@ cprg_ctu_9 <- councilR::import_from_gpkg("https://resources.gisdata.mn.gov/pub/g
 ctu_ind_map <- left_join(
   cprg_ctu_9 %>%
     rename(city_name = CTU_NAME),
-  ind_emissions_ctu_2021,
+  ind_emissions_ctu_2022,
   by = "city_name"
 ) %>%
   select(city_name, geometry, mt_co2e)
