@@ -66,6 +66,7 @@ The network based approach is based on attributing all the vehicle traffic that 
 
 Code for processing RTDM outputs relies on internal file system access and is not available publicly. Please contact us for more information and reproducible examples. 
 
+VMT forecasts were completed for all counties and for cities within the 7-county metro area. 
 
 #### Emissions forecast with MOVES  {#sec-emissions-forecast-with-moves}
 
@@ -78,7 +79,8 @@ Gross emissions rates in grams CO~2~e per vehicle mile traveled are provided in 
 #### Limitations
 
 - The regional travel demand model, by definition, is built to function at a regional level. Scaling down to smaller geographies is stretching the limits of what it can do.
-- The model outputs a base year estimate (2023) and future year estimate (2050). All intermediary years (2024-2049) are interpolated linearly between the two points. 
+- The model outputs a base year estimate (2023) and future year estimate (2050). All intermediary years (2024-2049) are interpolated linearly between the two points.
+- Truck VMT forecasts are generally weaker than passenger VMT forecasts. The Council will improve our truck VMT forecasting in coming years. 
 
 <!-- - We may want to consider using non-permanent counters and/or counters from just outside the study region to increase the total number of calibration roads.  -->
 
