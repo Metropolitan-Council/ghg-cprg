@@ -70,7 +70,8 @@ Modeling took place in [mndot_vmt_ctu_gap_fill_model.R](data-raw/mndot_vmt_ctu_g
 #| fig-cap: "City VMT model performance, prior to scaling"
 #| out-width: "95%"
 
-readRDS(file.path(here::here(), "_transportation/data/fig_model_performance.RDS"))
+fig_vmt_model_performance <- readRDS(file.path(here::here(), "_transportation/data/fig_model_performance.RDS"))
+fig_vmt_model_performance
 ```
 
 
@@ -111,9 +112,8 @@ fig_vmt_county_ctu_gap
 #| fig-cap: "City VMT, 2010-2050, by data source"
 #| out-width: "95%"
 
-fig_city_vmt_by_data_source <- 
-
-mndot_vmt_ctu_gap_filled %>% 
+fig_city_vmt_by_data_source <-
+  mndot_vmt_ctu_gap_filled %>%
   plot_ly(
     source = "fig-city-vmt-by-data-source",
     type = "scatter",
@@ -125,24 +125,26 @@ mndot_vmt_ctu_gap_filled %>%
     # symbols = c(
     # "circle-open",
     # "circle"),
-    marker = list(size = 9),
+    marker = list(
+      size = 9,
+      opacity = 0.7
+    ),
     hoverinfo = "text",
-    hovertext = ~paste0(
+    hovertext = ~ paste0(
       ctu_name_full_county, "<br>",
       inventory_year, "<br>",
       scales::comma(final_city_vmt, accuracy = 1), "<br>",
       final_vmt_source
     ),
-    opacity = 0.7
-  ) %>% 
+    opacity = 0.6
+  ) %>%
   plotly_layout(
     x_title = "Year",
     y_title = "City VMT",
-    main_title = "City VMT by year and data source"
-    )
+    main_title = "Final city VMT by year and data source"
+  )
 
 fig_city_vmt_by_data_source
-
 ```
 
 

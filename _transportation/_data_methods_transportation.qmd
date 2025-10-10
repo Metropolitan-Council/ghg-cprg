@@ -64,22 +64,26 @@ Geographic emissions are essential for quantifying air pollution experienced by 
 #| tbl-cap: "County emissions inventory and forecast data sources"
 #| out-width: "95%"
 
-tbl_inv_forecast_sources <- county_inventory_forecast_emissions %>% 
-  ungroup() %>% 
-  select(emissions_year, data_source, county_name) %>% 
-  unique() %>% 
-  arrange(-emissions_year) %>% 
-  group_by(data_source) %>% 
+tbl_inv_forecast_sources <- county_inventory_forecast_emissions %>%
+  ungroup() %>%
+  select(emissions_year, data_source, county_name) %>%
+  unique() %>%
+  arrange(-emissions_year) %>%
+  group_by(data_source) %>%
   summarize(
     Years = paste0(
-      min(emissions_year), " - ", unique(max(emissions_year), min(emissions_year))),
-    Counties = paste0(unique(county_name), collapse = ", ")) %>% 
-  mutate(Years  = case_when(Years == "2050 - 2050"  ~ "2050",
-                            TRUE ~ Years)) %>% 
+      min(emissions_year), " - ", unique(max(emissions_year), min(emissions_year))
+    ),
+    Counties = paste0(unique(county_name), collapse = ", ")
+  ) %>%
+  mutate(Years = case_when(
+    Years == "2050 - 2050" ~ "2050",
+    TRUE ~ Years
+  )) %>%
   arrange(Years)
 
-gt(tbl_inv_forecast_sources) %>% 
-  gt::cols_label("data_source" = c("Data source")) %>% 
+gt(tbl_inv_forecast_sources) %>%
+  gt::cols_label("data_source" = c("Data source")) %>%
   gt::opt_row_striping() %>%
   tab_style(
     style = cell_text(weight = "bold"),
@@ -95,22 +99,30 @@ The Met Council also completed city-level VMT estimates.
 #| tbl-cap: "City VMT history and forecast data sources"
 #| out-width: "95%"
 
-tbl_ctu_modeled_vmt <- mndot_vmt_ctu_gap_filled %>% 
-  select(inventory_year, final_vmt_source, ctu_name_full_county) %>% 
-  unique() %>% 
-  arrange(ctu_name_full_county) %>% 
-  group_by(final_vmt_source) %>% 
+tbl_ctu_modeled_vmt <- mndot_vmt_ctu_gap_filled %>%
+  select(inventory_year, final_vmt_source, ctu_name_full_county) %>%
+  unique() %>%
+  arrange(ctu_name_full_county) %>%
+  group_by(final_vmt_source) %>%
   summarize(
     Years = paste0(
-      min(inventory_year), " - ", unique(max(inventory_year), min(inventory_year))),
-    Cities = paste0(unique(ctu_name_full_county), collapse = "; ")) %>% 
-  mutate(Years  = case_when(Years == "2050 - 2050"  ~ "2050",
-                            TRUE ~ Years),
-         Cities = case_when(final_vmt_source == "Regional Travel Demand Model" ~ "All",
-                            TRUE ~ Cities)) 
+      min(inventory_year), " - ", unique(max(inventory_year), min(inventory_year))
+    ),
+    Cities = paste0(unique(ctu_name_full_county), collapse = "; ")
+  ) %>%
+  mutate(
+    Years = case_when(
+      Years == "2050 - 2050" ~ "2050",
+      TRUE ~ Years
+    ),
+    Cities = case_when(
+      final_vmt_source == "Regional Travel Demand Model" ~ "All",
+      TRUE ~ Cities
+    )
+  )
 
 
-gt(tbl_ctu_modeled_vmt) %>% 
+gt(tbl_ctu_modeled_vmt) %>%
   gt::cols_label("final_vmt_source" = c("Data source")) %>%
   gt::opt_row_striping() %>%
   tab_style(
@@ -166,9 +178,9 @@ onroad_emissions_population <- onroad_emissions %>%
   ) %>%
   rowwise() %>%
   left_join(cprg_census_county_population,
-            by = c("geoid", "county_name",
-                   "emissions_year" = "population_year"
-            )
+    by = c("geoid", "county_name",
+      "emissions_year" = "population_year"
+    )
   )
 
 fig_emissions_pop_transportation <- plot_ly(
