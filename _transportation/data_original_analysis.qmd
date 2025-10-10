@@ -1,0 +1,157 @@
+### Original data analysis {#sec-metc-data-anaylsis}
+
+```{r}
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+
+cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+
+# read in VMT data
+dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
+  filter(
+    # vmt_year < 2022,
+    vmt_year >= 2018,
+    cprg_area == TRUE
+  ) %>%
+  group_by(county_name)
+
+mndot_vmt_ctu <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu.RDS"))
+
+# summarize by CTU name
+mndot_ctu_summary <- mndot_vmt_ctu %>%
+  group_by(vmt_year, ctu_name) %>%
+  summarize(annual_vmt = sum(annual_vmt))
+
+ctu_population <- readRDS(file.path(here::here(), "_meta/data/ctu_population.RDS"))
+
+top_ten_ctu <- ctu_population %>%
+  filter(inventory_year == max(inventory_year)) %>%
+  arrange(-ctu_population) %>%
+  slice(1:10)
+
+multi_county_ctu <- mndot_vmt_ctu %>%
+  select(geoid, ctuid, ctu_name) %>%
+  unique() %>%
+  group_by(ctu_name) %>%
+  count() %>%
+  filter(n >= 2)
+
+vmt_model_data <- readRDS(file.path(here::here(), "_transportation/data/vmt_model_data.RDS"))
+
+mndot_vmt_ctu_gap_filled <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu_gap_filled.RDS"))
+vmt_gap_fill_model <- readRDS(file.path(here::here(), "_transportation/data/vmt_gap_fill_model.RDS"))
+mndot_vmt_county_marginals <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_county_marginals.RDS")) %>%
+  mutate(county_pct = sum_ctu_vmt / county_daily_vmt) %>%
+  left_join(cprg_county %>% select(geoid, county_name) %>% sf::st_drop_geometry() %>% unique())
+
+# hookaddcap()
+```
+
+
+##### Gap-filling city vehicle miles traveled
+
+VMT for unreliable CTUs were modeled. We designed our model such that the total VMT of all CTUs within a county would equal the reported county VMT. Cities that cross multiple counties were modeled at the county-CTU level.
+
+For cites without reported annual MnDOT VMT, we estimated VMT from 2010 to 2022 using a mixed-methods model incorporating historical and forecast city population, households, and employment, plus county and Imagine 2050 community designation. City-level VMT forecasts from the Regional Travel Demand Model (RTDM) were used to ensure a smooth rate of change over time and alignment with regional forecasts.  
+
+The model was trained on a subset of cities, ensuring that all community types and counties were included. 
+
+Once the CTU VMT model was finalized and observed VMT data were incorporated into the dataset, we applied a scaling factor to predicted city VMT. 
+
+All counties have the majority of their VMT accounted for when totaling up reported city level VMT. 
+
+Modeling took place in [mndot_vmt_ctu_gap_fill_model.R](data-raw/mndot_vmt_ctu_gap_fill_model.R).
+
+
+```{r fig-vmt-model-performance}
+#| fig-cap: "City VMT model performance, prior to scaling"
+#| out-width: "95%"
+
+readRDS(file.path(here::here(), "_transportation/data/fig_model_performance.RDS"))
+```
+
+
+```{r fig-vmt-county-ctu-gap}
+#| fig-cap: "Proportion of county VMT accounted for by city VMT"
+#| out-width: "95%"
+
+fig_vmt_county_ctu_gap <- plot_ly(
+  source = "fig-vmt-county-ctu-gap",
+  type = "bar",
+  data = mndot_vmt_county_marginals %>%
+    filter(inventory_year == 2022),
+  x = ~county_name,
+  y = ~county_pct,
+  hoverinfo = "text",
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    inventory_year, "<br>",
+    scales::percent(county_pct), " of VMT accounted for in city estimates", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    x_title = "County",
+    y_title = "% of county VMT accounted for",
+    main_title = "Most county VMT is accounted for in city estimates"
+  ) %>%
+  layout(
+    yaxis = list(tickformat = "1%"),
+    xaxis = list(categoryorder = "total descending")
+  )
+
+fig_vmt_county_ctu_gap
+```
+
+
+```{r fig-city-vmt-by-data-source}
+#| fig-cap: "City VMT, 2010-2050, by data source"
+#| out-width: "95%"
+
+fig_city_vmt_by_data_source <- 
+
+mndot_vmt_ctu_gap_filled %>% 
+  plot_ly(
+    source = "fig-city-vmt-by-data-source",
+    type = "scatter",
+    mode = "lines+markers",
+    x = ~inventory_year,
+    y = ~final_city_vmt,
+    color = ~ctu_name_full_county,
+    symbol = ~final_vmt_source,
+    # symbols = c(
+    # "circle-open",
+    # "circle"),
+    marker = list(size = 9),
+    hoverinfo = "text",
+    hovertext = ~paste0(
+      ctu_name_full_county, "<br>",
+      inventory_year, "<br>",
+      scales::comma(final_city_vmt, accuracy = 1), "<br>",
+      final_vmt_source
+    ),
+    opacity = 0.7
+  ) %>% 
+  plotly_layout(
+    x_title = "Year",
+    y_title = "City VMT",
+    main_title = "City VMT by year and data source"
+    )
+
+fig_city_vmt_by_data_source
+
+```
+
+
+
+
+```{r echo=FALSE}
+# caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+# caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+# saveCap(paste0("cap-", caption_index))
+# saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```
+{{< pagebreak >}}
