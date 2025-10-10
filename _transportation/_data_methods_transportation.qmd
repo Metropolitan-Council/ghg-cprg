@@ -25,6 +25,11 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>%
   rename(value_emissions = emissions_metric_tons_co2e)
 
+county_inventory_forecast_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_inventory_forecast_emissions.RDS")) %>%
+  rowwise() %>%
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
+
+
 transportation_max_year <- onroad_emissions %>%
   filter(emissions_year == max(emissions_year)) %>%
   extract2("emissions_year") %>%
@@ -40,6 +45,7 @@ modes_included <-
   unique() %>%
   stringr::str_to_lower()
 
+mndot_vmt_ctu_gap_filled <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu_gap_filled.RDS"))
 
 hookaddcap()
 ```
@@ -53,6 +59,68 @@ Geographic emissions are essential for quantifying air pollution experienced by 
 <!-- Met Council researchers chose to use an alternative activity-induced method to provide the most actionable information for jurisdictions within our region in both the recent PCAP and the 2018 Metro Climate Stats inventory. -->
 
 <!-- TODO include summary table with geographic level, year, data source -->
+
+```{r tbl-inventory-forecast-sources-county}
+#| tbl-cap: "County emissions inventory and forecast data sources"
+#| out-width: "95%"
+
+tbl_inv_forecast_sources <- county_inventory_forecast_emissions %>% 
+  ungroup() %>% 
+  select(emissions_year, data_source, county_name) %>% 
+  unique() %>% 
+  arrange(-emissions_year) %>% 
+  group_by(data_source) %>% 
+  summarize(
+    Years = paste0(
+      min(emissions_year), " - ", unique(max(emissions_year), min(emissions_year))),
+    Counties = paste0(unique(county_name), collapse = ", ")) %>% 
+  mutate(Years  = case_when(Years == "2050 - 2050"  ~ "2050",
+                            TRUE ~ Years)) %>% 
+  arrange(Years)
+
+gt(tbl_inv_forecast_sources) %>% 
+  gt::cols_label("data_source" = c("Data source")) %>% 
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::cols_align(align = "left")
+```
+
+
+The Met Council also completed city-level VMT estimates. 
+
+```{r tbl-inventory-forecast-sources-city}
+#| tbl-cap: "City VMT history and forecast data sources"
+#| out-width: "95%"
+
+tbl_ctu_modeled_vmt <- mndot_vmt_ctu_gap_filled %>% 
+  select(inventory_year, final_vmt_source, ctu_name_full_county) %>% 
+  unique() %>% 
+  arrange(ctu_name_full_county) %>% 
+  group_by(final_vmt_source) %>% 
+  summarize(
+    Years = paste0(
+      min(inventory_year), " - ", unique(max(inventory_year), min(inventory_year))),
+    Cities = paste0(unique(ctu_name_full_county), collapse = "; ")) %>% 
+  mutate(Years  = case_when(Years == "2050 - 2050"  ~ "2050",
+                            TRUE ~ Years),
+         Cities = case_when(final_vmt_source == "Regional Travel Demand Model" ~ "All",
+                            TRUE ~ Cities)) 
+
+
+gt(tbl_ctu_modeled_vmt) %>% 
+  gt::cols_label("final_vmt_source" = c("Data source")) %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::cols_align(align = "left")
+```
+
+All data processing for transportation is compiled using [_run_all_transportation.R](data-raw/_run_all_transportation.R), ensuring all disparate datasets and sequential processing requirement are correct.  
 
 ## Data sources
 
@@ -70,13 +138,15 @@ Geographic emissions are essential for quantifying air pollution experienced by 
 
 {{< include data_regional_travel_demand_model.qmd >}}
 
+{{< include data_original_analysis.qmd >}}
+
 
 ## Limitations {#sec-transportation-data-limitations}
 
 - Geographic accounting methods
-  - Geographic accounting methods do not account for the decisions or travel behavior of individuals within the geographic boundaries. 
-  - Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a small town with a major freeway. The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction.
-  - We will take these limitations into account and plan to mitigate wherever possible for CTU-level inventories and forecasts.
+- Geographic accounting methods do not account for the decisions or travel behavior of individuals within the geographic boundaries. 
+- Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a small town with a major freeway. The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction.
+- We will take these limitations into account and plan to mitigate wherever possible for CTU-level inventories and forecasts.
 
 ## Validation
 
@@ -96,9 +166,9 @@ onroad_emissions_population <- onroad_emissions %>%
   ) %>%
   rowwise() %>%
   left_join(cprg_census_county_population,
-    by = c("geoid", "county_name",
-      "emissions_year" = "population_year"
-    )
+            by = c("geoid", "county_name",
+                   "emissions_year" = "population_year"
+            )
   )
 
 fig_emissions_pop_transportation <- plot_ly(
