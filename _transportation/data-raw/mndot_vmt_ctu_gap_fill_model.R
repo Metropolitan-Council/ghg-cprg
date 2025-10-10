@@ -290,10 +290,11 @@ train_post %>%
     y_title = "Predicted"
   )
 
-
-pred_df %>%
+fig_model_performance <- 
+  pred_df %>%
   # filter(coctu_id_gnis %in% ctu_missing$coctu_id_gnis) %>%
   plot_ly(
+    source = "fig-vmt-model-performance",
     type = "scatter",
     mode = "markers",
     x = ~daily_vmt,
@@ -301,15 +302,16 @@ pred_df %>%
     color = ~ctu_name_full_county,
     opacity = 0.8,
     size = 4,
+    hoverinfo =  "text",
     hovertext = ~ paste0(
       ctu_name_full_county, "<br>",
       inventory_year, "<br>",
-      "Daily VMT: ", scales::comma(daily_vmt), "<br>",
-      "Pred Daily VMT: ", scales::comma(pred_vmt)
+      "Observed Daily VMT: ", scales::comma(daily_vmt, accuracy = 1), "<br>",
+      "Predicted Daily VMT: ", scales::comma(pred_vmt, accuracy = 1)
     )
   ) %>%
   add_trace(
-    name = "1:1",
+    name = "1:1 Correlation",
     x = c(1, max(pred_df$pred_vmt, pred_df$daily_vmt, na.rm = T)),
     y = c(1, max(pred_df$pred_vmt, pred_df$daily_vmt, na.rm = T)),
     inherit = FALSE,
@@ -318,10 +320,17 @@ pred_df %>%
     line = list(color = "gray")
   ) %>%
   plotly_layout(
-    main_title = "Full dataset",
+    main_title = "City VMT model performance, prior to county scaling",
     x_title = "Observed",
-    y_title = "Predicted"
+    y_title = "Predicted",
+    legend_title = "CTU-County",
+    subtitle = "Markers above correlation line indicate model over-prediction,<br>while markers under correlation line indicate under-prediction"
   )
+
+
+fig_model_performance
+
+saveRDS(fig_model_performance, "_transportation/data/fig_model_performance.RDS")
 
 # # what new information do we want to glean from the counties?
 ranefs <- lme4::ranef(m)$county_name %>%
