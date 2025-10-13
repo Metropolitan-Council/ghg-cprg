@@ -41,28 +41,28 @@ multi_county_ctu <- mndot_vmt_ctu %>%
 hookaddcap()
 ```
 
-VMT forecasts for counties and cities are generated from our [regional travel demand model](https://metrocouncil.org/Transportation/Performance/Travel-Forecasting.aspx). 
+VMT forecasts for counties and cities are generated from our [regional travel demand model](https://metrocouncil.org/Transportation/Performance/Travel-Forecasting.aspx). We use the most recent available model runs, concurrent with TPP amendments. 
 
 The current regional travel demand forecast model (TourCast) is an activity-based model, which means that it simulates transportation decisions made by individuals ranging from long-term (e.g. regular work/school location, whether to own an automobile), day-level (e.g, what activities to engage in, with whom, where, and when), and trip-level (what transportation mode to use, what route to take) in order to evaluate policy and investment choices  at a high level of detail.
 
 Model inputs include
 
-- 2010 Travel Behavior Inventory results
-- Observed/existing vehicle volumes
-- 2022 population, employment, and other demographic characteristics
+- Current population, employment, and other demographic characteristics
 - Demographics from Council [long-range forecasts](https://metrocouncil.org/Data-and-Maps/Research-and-Data/Thrive-2040-Forecasts.aspx) 
-- Road networks based on all [projects programmed through year 2025](https://metrocouncil.org/Planning/Imagine-2050/Policy-Plan-Index/Imagine-2050-Accessible-PDFs/Transportation-Policy-Plan/Long-Range-Capital-Project-Lists.aspx.). The projects generally include
+- Road networks based on all [projects programmed through year 2025](https://imagine2050.metrocouncil.org/reference-materials/transportation/long-range-highway-and-transit-capital-project-lists/). The projects generally include
   - any project that has a change in capacity (number of lanes) or major interchanges
   - any regionally significant project
   - long-range capital projects 
 
-The base-year model outputs best represent year 2023 and forecast out to year 2050. 
+The base-year model outputs best represent 2023 and forecast out to year 2050. 
 
 #### Calculating VMT from the model network
 
-The regional travel demand model network is made up of nodes and segments. We use the network segment-level information to calculate VMT. 
+The regional travel demand model network is made up of nodes and links (segments). We use the network link-level information to calculate VMT. 
 
-The network based approach is based on attributing all the vehicle traffic that occurs within a given city or county to that city or county, regardless of where the trip starts or ends. VMT is calculated by multiplying segment vehicle volume (vehicles) by segment length (miles traveled). Network segments are attributed to cities by a spatial join. When a segment crosses more than one city boundary, the segment is split at the boundary. The segment total volume is attributed to both sub-segments, and the segment length is re-calculated for each sub-segment. Thus, no volume is lost. All time periods are road types are aggregated to represent average daily vehicle miles traveled. Daily VMT are expanded to annual VMT using an annualization factor of 340 (@castigliegoCarbonFreeBoston2019).   
+The network based approach is based on attributing all the vehicle traffic that occurs within a given city or county to that city or county, regardless of where the trip starts or ends. VMT is calculated by multiplying link vehicle volume (vehicles) by link length (miles traveled). Network links are attributed to cities by a spatial join. When a link crosses more than one city boundary, the link is split at the boundary. The link total volume is attributed to both sub-link, and the link length is re-calculated for each sub-link. Thus, no volume is lost. All time periods and road types are aggregated to represent average daily vehicle miles traveled. Daily VMT are expanded to annual VMT using an annualization factor of 340 (@castigliegoCarbonFreeBoston2019).   
+
+The base year model network best represents year 2022. The 2025 base-year includes projects programmed to be built in 2025. 
 
 Code for processing RTDM outputs relies on internal file system access and is not available publicly. Please contact us for more information and reproducible examples. 
 
@@ -78,11 +78,10 @@ Gross emissions rates in grams CO~2~e per vehicle mile traveled are provided in 
 
 #### Limitations
 
-- The regional travel demand model, by definition, is built to function at a regional level. Scaling down to smaller geographies is stretching the limits of what it can do.
+- The regional travel demand model, by definition, is built to function at a regional level. Scaling down to geographies smaller than counties might impact model outputs.
 - The model outputs a base year estimate (2023) and future year estimate (2050). All intermediary years (2024-2049) are interpolated linearly between the two points.
-- Truck VMT forecasts are generally weaker than passenger VMT forecasts. The Council will improve our truck VMT forecasting in coming years. 
-
-<!-- - We may want to consider using non-permanent counters and/or counters from just outside the study region to increase the total number of calibration roads.  -->
+- Truck VMT forecasts are generally weaker than passenger VMT forecasts. The Council will improve our truck VMT forecasting methodology in coming years. 
+<!-- - Electric vehicles are somewhat accounted for in MOVES, but  -->
 
 
 <!-- ### Data dictionaries -->

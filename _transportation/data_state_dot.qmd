@@ -107,7 +107,9 @@ fig_dot_vmt <- plot_ly(
     x_title = "Year",
     y_title = "Annual VMT",
     legend_title = "Data source"
-  )
+  ) %>% 
+  layout(legend = list(orientation = "h",
+                       y = -0.25))
 
 fig_dot_vmt
 ```
@@ -122,10 +124,7 @@ Due to limitations in data consistency, the MnDOT CTU dataset was subsetted to o
 - CTU has a complete time series from 2014-2023 with no missing years. 2015 data were interpolated in the same manner as the county VMT data. 
 - CTU has sampled data on local route systems (including Municipal State Aid Streets) during any year from 2017-2023. Read more about route system designations in [mndot_route_system.R](data-raw/mndot_route_system.R).
 
-Only `r unique(mndot_vmt_ctu$ctu_name) %>% length()` cities were considered reliable for analysis. All other ctus
-
-- Shoreview, Blaine, and West Saint Paul are split among more than one county. For some CTU/county/year combinations, only data from 2016 onward were available. For consistency in the time series, we assigned 2016 VMT data to year 2015 for these CTU/county combinations.
-
+Only `r unique(mndot_vmt_ctu$ctu_name) %>% length()` cities were considered reliable for analysis. All other CTUs were modeled. See @sec-gap-fill-ctu-vmt for more information.
 
 
 ```{r fig-dot-vmt-ctu}
@@ -187,8 +186,6 @@ mndot_ctu_summary %>%
 - City VMT
   - Due to geographic data source differences, MnDOT reports a small amount of VMT invalid CTU/county combinations (i.e., Minneapolis, a Hennepin County CTU, centerline miles and VMT reported in Anoka County). We discussed these anomalies with MnDOT staff and determined this to be a non-issue. The county designations for each CTU were corrected such that summing to the CTU by the CTU name determines the total VMT for each CTU No changes to county designation were made to CTUs known to be split across multiple counties (`r listify(multi_county_ctu$ctu_name)`). 
   - Shoreview, Blaine, and West Saint Paul are split among more than one county. For some CTU/county/year combinations, only data from 2016 onward were available. For consistency in the time series, we assigned 2016 VMT data to year 2015 for these CTU/county combinations.
-
-
 
 
 <!-- ### Data dictionaries -->

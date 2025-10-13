@@ -6,6 +6,7 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
+vmt_max_year <- 2022
 
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 
@@ -51,65 +52,31 @@ mndot_vmt_county_marginals <- readRDS(file.path(here::here(), "_transportation/d
 ```
 
 
-##### Gap-filling city vehicle miles traveled
+##### Gap-filling city vehicle miles traveled {#sec-gap-fill-ctu-vmt}
 
-VMT for unreliable CTUs were modeled. We designed our model such that the total VMT of all CTUs within a county would equal the reported county VMT. Cities that cross multiple counties were modeled at the county-CTU level.
+VMT for unreliable CTUs were modeled. We designed our model such that the total VMT of all CTUs within a county would equal the MnDOT-reported county VMT. Cities that cross multiple counties were modeled at the county-CTU (COCTU) level.
 
-For cites without reported annual MnDOT VMT, we estimated VMT from 2010 to 2022 using a mixed-methods model incorporating historical and forecast city population, households, and employment, plus county and Imagine 2050 community designation. City-level VMT forecasts from the Regional Travel Demand Model (RTDM) were used to ensure a smooth rate of change over time and alignment with regional forecasts.  
+For cites without reported annual MnDOT VMT (mostly townships and small cities under 5,000 people), we estimated VMT from 2010 to `r vmt_max_year` using a mixed-methods model incorporating historical and forecast city population, households, and employment, plus county and Imagine 2050 community designation. City-level VMT forecasts from the Regional Travel Demand Model (RTDM) were used to ensure a smooth rate of change over time and alignment with regional forecasts.  
 
-The model was trained on a subset of cities, ensuring that all community types and counties were included. 
+The model was trained on a subset of COCTUs, ensuring that all community types and counties were included. 
 
-Once the CTU VMT model was finalized and observed VMT data were incorporated into the dataset, we applied a scaling factor to predicted city VMT. 
-
-All counties have the majority of their VMT accounted for when totaling up reported city level VMT. 
+Once the COCTUs VMT model was finalized and observed VMT data were incorporated into the dataset, we applied a scaling factor to predicted city VMT. 
 
 Modeling took place in [mndot_vmt_ctu_gap_fill_model.R](data-raw/mndot_vmt_ctu_gap_fill_model.R).
 
 
 ```{r fig-vmt-model-performance}
-#| fig-cap: "City VMT model performance, prior to scaling"
+#| fig-cap: "County-CTU VMT model performance, prior to scaling"
 #| out-width: "95%"
 
 fig_vmt_model_performance <- readRDS(file.path(here::here(), "_transportation/data/fig_model_performance.RDS"))
 fig_vmt_model_performance
 ```
 
-
-```{r fig-vmt-county-ctu-gap}
-#| fig-cap: "Proportion of county VMT accounted for by city VMT"
-#| out-width: "95%"
-
-fig_vmt_county_ctu_gap <- plot_ly(
-  source = "fig-vmt-county-ctu-gap",
-  type = "bar",
-  data = mndot_vmt_county_marginals %>%
-    filter(inventory_year == 2022),
-  x = ~county_name,
-  y = ~county_pct,
-  hoverinfo = "text",
-  hovertemplate = ~ paste0(
-    county_name, "<br>",
-    inventory_year, "<br>",
-    scales::percent(county_pct), " of VMT accounted for in city estimates", "<br>",
-    "<extra></extra>"
-  )
-) %>%
-  plotly_layout(
-    x_title = "County",
-    y_title = "% of county VMT accounted for",
-    main_title = "Most county VMT is accounted for in city estimates"
-  ) %>%
-  layout(
-    yaxis = list(tickformat = "1%"),
-    xaxis = list(categoryorder = "total descending")
-  )
-
-fig_vmt_county_ctu_gap
-```
-
+The final COCTU VMT estimates are a combination of modeled values and reported MnDOT values. 
 
 ```{r fig-city-vmt-by-data-source}
-#| fig-cap: "City VMT, 2010-2050, by data source"
+#| fig-cap: "County-CTU VMT, 2010-2050, by data source"
 #| out-width: "95%"
 
 fig_city_vmt_by_data_source <-
@@ -141,6 +108,7 @@ fig_city_vmt_by_data_source <-
   plotly_layout(
     x_title = "Year",
     y_title = "City VMT",
+    legend_title = "County-CTU",
     main_title = "Final city VMT by year and data source"
   )
 
@@ -148,6 +116,166 @@ fig_city_vmt_by_data_source
 ```
 
 
+###### Model validation
+
+To cross check our assumptions, we can compare relative amount of VMT not accounted for when we sum up the reported city VMT for each county. 
+
+All counties have the majority of their VMT accounted for when totaling up reported city level VMT. Carver, Scott, and Dakota counties have the largest gaps. We refer to the difference in reported county VMT and summed city VMT as the **marginal VMT**.  
+
+
+```{r fig-vmt-county-ctu-gap}
+#| fig-cap: "Proportion of county VMT accounted for by city VMT"
+#| out-width: "95%"
+
+fig_vmt_county_ctu_gap <- plot_ly(
+  source = "fig-vmt-county-ctu-gap",
+  type = "bar",
+  name = "VMT accounted for in city estimates",
+  data = mndot_vmt_county_marginals %>%
+    filter(inventory_year == vmt_max_year),
+  x = ~ reorder(county_name, county_pct),
+  y = ~county_pct,
+  marker = list(color = colors$councilBlue),
+  hoverinfo = "text",
+  hovertemplate = ~ paste0(
+    county_name, "<br>",
+    inventory_year, "<br>",
+    scales::comma(county_daily_vmt, accuracy = 1), " daily VMT", "<br>",
+    scales::percent(county_pct, accuracy = 0.1), " of VMT accounted for in city estimates", "<br>",
+    "<extra></extra>"
+  )
+) %>%
+  add_trace(
+    y = ~ 1 - county_pct,
+    marker = list(color = colors$metroOrange),
+    name = "Marginal VMT",
+    hovertemplate = ~ paste0(
+      county_name, "<br>",
+      inventory_year, "<br>",
+      scales::comma(marginal_vmt, accuracy = 1), " marginal daily VMT", "<br>",
+      scales::percent(1 - county_pct, accuracy = 0.1), " of VMT not accounted for in city estimates", "<br>",
+      "<extra></extra>"
+    )
+  ) %>%
+  plotly_layout(
+    x_title = "County",
+    # y_title = "% of county VMT accounted for",
+    main_title = "Most county VMT is accounted for in city estimates",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    yaxis = list(tickformat = "1%"),
+    xaxis = list(),
+    legend = list(
+      orientation = "h",
+      traceorder = "normal",
+      y = -0.25
+    )
+  )
+
+fig_vmt_county_ctu_gap
+```
+
+We can then pull out our modeled CTUs and find the proportion of county marginal VMT that is accounted for by each CTU. For example, 100% of Hennepin County's marginal VMT is attributed to Fort Snelling UT, which contains MSP Airport. 
+
+```{r fig-modeled-marginal-vmt}
+#| fig-cap: "Modeled COCTU VMT as proportion of county marginal VMT"
+#| out-width: "95%"
+
+gap_filled_cities <- mndot_vmt_ctu_gap_filled %>%
+  ungroup() %>%
+  filter(
+    final_vmt_source == "MetC Modeled",
+    inventory_year == vmt_max_year
+  ) %>%
+  left_join(cprg_county %>% sf::st_drop_geometry(),
+    by = c("geoid")
+  ) %>%
+  left_join(ctu_population, join_by(inventory_year, coctu_id_gnis, geoid, gnis))
+
+
+modeled_gap_filled_county <- mndot_vmt_county_marginals %>%
+  filter(inventory_year == vmt_max_year) %>%
+  left_join(
+    gap_filled_cities,
+    join_by(geoid, inventory_year, county_name)
+  ) %>%
+  mutate(ctu_proportion_of_marginal = final_city_vmt / marginal_vmt)
+
+fig_modeled_marginal_vmt <-
+  modeled_gap_filled_county %>%
+  plot_ly(
+    source = "fig-modeled-marginal-vmt",
+    x = ~county_name,
+    y = ~ctu_proportion_of_marginal,
+    color = ~ctu_name_full_county,
+    type = "bar",
+    hoverinfo = "text",
+    hovertext = ~ paste0(
+      ctu_name_full_county, "<br>",
+      inventory_year, "<br>",
+      scales::comma(final_city_vmt, accuracy = 1), " VMT", "<br>",
+      scales::percent(ctu_proportion_of_marginal), " of county marginal VMT"
+      # scales::percent(county_pct, accuracy = 0.1), " of VMT accounted for in city estimates", "<br>",
+    )
+  ) %>%
+  plotly_layout(
+    x_title = "County",
+    y_title = "Proportion of county marginal VMT",
+    legend_title = "County-CTUs with modeled VMT",
+    # y_title = "% of county VMT accounted for",
+    main_title = "Modeled COCTU VMT as proportion of county marginal VMT "
+  ) %>%
+  layout(
+    barmode = "stack",
+    yaxis = list(tickformat = "1%"),
+    legend = list(traceorder = "normal")
+    # xaxis = list(categoryorder = "total descending")
+  )
+
+fig_modeled_marginal_vmt
+```
+
+We can also check the correlation with city population and predicted VMT. The correlation is positive, with a few exceptions. Fort Snelling UT has very low population, but is a major job and activity center in our region, so has high VMT. 
+
+```{r fig-modeled-vmt-population-correlation}
+#| fig-cap: "Correlation between COCTU population and modeled VMT"
+#| out-width: "95%"
+
+fig_modeled_vmt_population_correlation <-
+  gap_filled_cities %>%
+  plot_ly(
+    source = "fig-modeled-vmt-population_correlation",
+    x = ~ctu_population,
+    y = ~final_city_vmt,
+    color = ~ctu_name_full_county,
+    marker = list(
+      size = 10,
+      opacity = 0.8
+    ),
+    hoverinfo = "text",
+    hovertext = ~ paste0(
+      ctu_name_full_county, "<br>",
+      inventory_year, "<br>",
+      scales::comma(final_city_vmt, accuracy = 1), " VMT", "<br>",
+      scales::comma(ctu_population, accuracy = 1), " population", "<br>"
+    )
+  ) %>%
+  plotly_layout(
+    x_title = "Population",
+    y_title = "Modeled VMT",
+    legend_title = "County-CTUs with modeled VMT",
+    # y_title = "% of county VMT accounted for",
+    main_title = "Correlation between COCTU population and modeled VMT",
+    subtitle = "Positive correlation with logical outliers"
+  )
+
+fig_modeled_vmt_population_correlation
+```
+
+
+As more data become available, we will re-evaluate this framework and modeling approach.  
 
 
 ```{r echo=FALSE}

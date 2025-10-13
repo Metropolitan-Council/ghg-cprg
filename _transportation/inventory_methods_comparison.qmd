@@ -1,4 +1,4 @@
-# Transportation method comparison
+# Transportation emissions inventory method comparison
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -19,7 +19,9 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 hookaddcap()
 ```
 
-- Which method we chose is inextricably linked to the data sources available. 
+Which method we chose is inextricably linked to the data sources available. 
+
+Ultimately, our data relies on EPA datasets. Full documentation can be found in @sec-epa-emissions-data-transportation. 
 
 - Review GPC scope definitions
 - Consumption based emissions inventories (CBEI)
@@ -44,7 +46,6 @@ The NEI is discussed further in @sec-epa-nei.
 Inventory of US Greenhouse Gas Emissions and Sinks (US GHGI) is an annual report 
 
 More information on the US GHGI is available on the [EPA website](https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks). 
-
 
 The US GHGI is a top-down method, starting from fuel sale information. 
 
@@ -85,7 +86,6 @@ Geographic emissions are essential for quantifying air pollution experienced by 
 
 Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a small town with a major freeway. The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction.
 
-Met Council researchers chose to use an activity-induced method to provide the most actionable information for jurisdictions within our region in both the recent PCAP and the 2018 Metro Climate Stats inventory.
 
 ### Induced activity
 
@@ -94,6 +94,8 @@ Induced activity, or city-induced activity, methods remedy the responsibility ga
 Activity-induced methods estimate the emissions from trips that begin, end, or both begin and end within a given geographic boundary. All passthrough trips (those that neither begin or end in the geographic boundary, but pass through without stopping) are excluded. 
 
 This method most comprehensively covers the emissions caused by a given city or county (and those that live and/or work therein), thus within its area of influence [@dunnebeilBalancingTransportGreenhouse2012]. 
+
+At the time, Met Council researchers chose to use an activity-induced method to provide the most actionable information for jurisdictions within our region in both the recent PCAP and the 2018 Metro Climate Stats inventory.
 
 Though both geographic and activity-induced methods fulfill Scope 1 requirements [@fongGlobalProtocolCommunityScale2021], the resulting values are significantly different.
 

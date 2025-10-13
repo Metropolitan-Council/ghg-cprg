@@ -78,6 +78,7 @@ tbl_inv_forecast_sources <- county_inventory_forecast_emissions %>%
   ) %>%
   mutate(Years = case_when(
     Years == "2050 - 2050" ~ "2050",
+    Years == "2020 - 2020" ~ "2020",
     TRUE ~ Years
   )) %>%
   arrange(Years)
@@ -93,7 +94,7 @@ gt(tbl_inv_forecast_sources) %>%
 ```
 
 
-The Met Council also completed city-level VMT estimates. 
+The Met Council also completed city-level VMT estimates for cities within the 7-county metro area. 
 
 ```{r tbl-inventory-forecast-sources-city}
 #| tbl-cap: "City VMT history and forecast data sources"
@@ -121,7 +122,6 @@ tbl_ctu_modeled_vmt <- mndot_vmt_ctu_gap_filled %>%
     )
   )
 
-
 gt(tbl_ctu_modeled_vmt) %>%
   gt::cols_label("final_vmt_source" = c("Data source")) %>%
   gt::opt_row_striping() %>%
@@ -132,7 +132,7 @@ gt(tbl_ctu_modeled_vmt) %>%
   gt::cols_align(align = "left")
 ```
 
-All data processing for transportation is compiled using [_run_all_transportation.R](data-raw/_run_all_transportation.R), ensuring all disparate datasets and sequential processing requirement are correct.  
+All data processing for transportation is compiled using [_run_all_transportation.R](data-raw/_run_all_transportation.R), ensuring all disparate datasets and sequential processing requirements are correct.  
 
 ## Data sources
 
@@ -156,9 +156,9 @@ All data processing for transportation is compiled using [_run_all_transportatio
 ## Limitations {#sec-transportation-data-limitations}
 
 - Geographic accounting methods
-- Geographic accounting methods do not account for the decisions or travel behavior of individuals within the geographic boundaries. 
-- Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a small town with a major freeway. The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction.
-- We will take these limitations into account and plan to mitigate wherever possible for CTU-level inventories and forecasts.
+  - Geographic accounting methods do not account for the decisions or travel behavior of individuals within the geographic boundaries. Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a small town with a major freeway. The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction.
+  
+<!-- - We will take these limitations into account and plan to mitigate wherever possible for CTU-level inventories and forecasts. -->
 
 ## Validation
 

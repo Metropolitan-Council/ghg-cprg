@@ -323,7 +323,7 @@ fig_model_performance <-
     main_title = "City VMT model performance, prior to county scaling",
     x_title = "Observed",
     y_title = "Predicted",
-    legend_title = "CTU-County",
+    legend_title = "County-CTU",
     subtitle = "Markers above correlation line indicate model over-prediction,<br>while markers under correlation line indicate under-prediction"
   )
 
