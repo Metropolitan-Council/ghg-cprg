@@ -1,4 +1,4 @@
-# Methods and data sources  
+# Methodological framework by mode
 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
@@ -50,11 +50,15 @@ mndot_vmt_ctu_gap_filled <- readRDS(file.path(here::here(), "_transportation/dat
 hookaddcap()
 ```
 
-## Methodological framework
+
+
+## On-road  
 
 Transportation emissions are available for `r listify(modes_included)` using EPA data sources. We use a geographic, or territorial accounting method, aligning with Scope 1 in the Greenhouse Gas Protocol. Geographic methods account for any transportation emissions taking place within a geographic boundary, regardless of origin or destination [@fongGlobalProtocolCommunityScale2021].
 
 Geographic emissions are essential for quantifying air pollution experienced by people living in the area, but they do not give information on the logistic decisions of individuals.
+
+All data sources are detailed in @sec-data-transportation. 
 
 <!-- Met Council researchers chose to use an alternative activity-induced method to provide the most actionable information for jurisdictions within our region in both the recent PCAP and the 2018 Metro Climate Stats inventory. -->
 
@@ -134,35 +138,17 @@ gt(tbl_ctu_modeled_vmt) %>%
 
 All data processing for transportation is compiled using [_run_all_transportation.R](data-raw/_run_all_transportation.R), ensuring all disparate datasets and sequential processing requirements are correct.  
 
-## Data sources
 
-<!-- {{< include data_aviation.qmd >}} -->
-
-{{< include data_epa_emissions.qmd >}}
-
-<!-- {{< include data_streetlight.qmd >}} -->
-
-{{< include data_state_dot.qmd >}}
-
-<!-- {{< include data_epa_moves.qmd >}} -->
-
-<!-- {{< include data_tbi.qmd >}} -->
-
-{{< include data_regional_travel_demand_model.qmd >}}
-
-{{< include data_original_analysis.qmd >}}
-
-
-## Limitations {#sec-transportation-data-limitations}
+### Limitations {#sec-transportation-data-limitations}
 
 - Geographic accounting methods
   - Geographic accounting methods do not account for the decisions or travel behavior of individuals within the geographic boundaries. Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a small town with a major freeway. The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction.
   
 <!-- - We will take these limitations into account and plan to mitigate wherever possible for CTU-level inventories and forecasts. -->
 
-## Validation
+### Validation
 
-### Correlation with related data
+<!-- ## Correlation with related data -->
 
 We would expect counties with higher population to have higher emissions and VMT.
 
@@ -414,6 +400,10 @@ lggit_total_emiss <- (lggit_totals$total %>% sum()) %>% scales::comma()
 ```
 
 <!-- The results from the LGGIT tool estimate a regional emissions total of **`r lggit_total_emiss` metric tons CO~2~e**, while our calculations estimate **`r cprg_total_emiss` metric tons CO~2~e**. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. Additionally, LGGIT uses global warming potential (GWP) values from the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5) [@ipccClimateChange2014], while our calculations use slightly higher values from the 6th Assessment Report (AR6) [@ipccAR62021]. See @sec-epa-moves for a more detailed comparison. -->
+
+
+{{< include data_aviation.qmd >}}
+
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))

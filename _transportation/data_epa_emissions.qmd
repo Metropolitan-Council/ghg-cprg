@@ -1,4 +1,4 @@
-### EPA emissions data {#sec-epa-emissions-data-transportation}
+## EPA emissions data {#sec-epa-emissions-data-transportation}
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -80,7 +80,7 @@ epa_onroad_source_set %>%
     emissions_years == "2021 - 2021" ~ "2021",
     emissions_years == "2020 - 2020" ~ "2020",
     TRUE ~ emissions_years
-  )) %>% 
+  )) %>%
   ungroup() %>%
   arrange(desc(emissions_years)) %>%
   select(
@@ -116,7 +116,6 @@ epa_onroad_emissions_compile %>%
     pollutants_available = paste0(unique(pollutant_format), collapse = ", "),
     .groups = "keep"
   ) %>%
-  
   group_by(data_source, pollutants_available) %>%
   summarize(
     emissions_years = paste0(min(emissions_year), " - ", max(emissions_year)),
@@ -127,8 +126,7 @@ epa_onroad_emissions_compile %>%
     emissions_years == "2021 - 2021" ~ "2021",
     emissions_years == "2020 - 2020" ~ "2020",
     TRUE ~ emissions_years
-  )) %>% 
-  
+  )) %>%
   ungroup() %>%
   arrange(desc(emissions_years)) %>%
   select(
@@ -241,7 +239,7 @@ onroad_emissions %>%
 {{< include data_epa_air_emissions_modeling.qmd >}}
 
 
-#### Consistent EPA data limitations {#sec-epa-emissions-limitations}
+### Consistent EPA data limitations {#sec-epa-emissions-limitations}
 
 
 - The NEI, EQUATES, and Air Emissions Modeling platforms are based on MOVES, which does not account for activity on local roads. 

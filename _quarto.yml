@@ -31,8 +31,9 @@ book:
     - part: "Transportation"
       chapters:
        - _transportation/_transportation.qmd
-       - _transportation/_data_methods_transportation.qmd
-       - _transportation/data_aviation.qmd
+       - _transportation/_methods_transportation.qmd
+       - _transportation/_data_transportation.qmd
+       # - _transportation/data_aviation.qmd
     
     - part: "Electricity"
       chapters:

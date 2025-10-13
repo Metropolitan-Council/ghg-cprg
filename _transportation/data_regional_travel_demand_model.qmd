@@ -1,4 +1,4 @@
-### Regional Travel Demand Model {#sec-regional-travel-demand-model}
+## Regional Travel Demand Model {#sec-regional-travel-demand-model}
 
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
@@ -56,7 +56,7 @@ Model inputs include
 
 The base-year model outputs best represent 2023 and forecast out to year 2050. 
 
-#### Calculating VMT from the model network
+### Calculating VMT from the model network
 
 The regional travel demand model network is made up of nodes and links (segments). We use the network link-level information to calculate VMT. 
 
@@ -68,7 +68,7 @@ Code for processing RTDM outputs relies on internal file system access and is no
 
 VMT forecasts were completed for all counties and for cities within the 7-county metro area. 
 
-#### Emissions forecast with MOVES  {#sec-emissions-forecast-with-moves}
+### Emissions forecast with MOVES  {#sec-emissions-forecast-with-moves}
 
 Emissions forecasts for our region were calculated using the EPA's [Motor Vehicle Emissions Simulator (MOVES)](https://www.epa.gov/moves) [@usepaPopulationActivityOnroad2023]. MOVES calculates emissions using outputs from the Regional Travel Demand Model, Minnesota Department of Vehicle Services' county vehicle registration data, and the Minnesota Pollution Control Agency's vehicle age distribution. Each of these inputs helps the model estimate the characteristics of vehicles on the road in our region and expected changes in the regional fleet. The model takes into account differences in fuel economy (miles per gallon) depending on a vehicle's age and size, as well as its fuel intake (diesel or gasoline). 
 
@@ -76,7 +76,7 @@ Gross emissions rates in grams CO~2~e per vehicle mile traveled are provided in 
 
 <!-- Potentially add forecasting vmt quarto doc as appendix here -->
 
-#### Limitations
+### Limitations
 
 - The regional travel demand model, by definition, is built to function at a regional level. Scaling down to geographies smaller than counties might impact model outputs.
 - The model outputs a base year estimate (2023) and future year estimate (2050). All intermediary years (2024-2049) are interpolated linearly between the two points.
@@ -84,7 +84,7 @@ Gross emissions rates in grams CO~2~e per vehicle mile traveled are provided in 
 <!-- - Electric vehicles are somewhat accounted for in MOVES, but  -->
 
 
-<!-- ### Data dictionaries -->
+<!-- ## Data dictionaries -->
 
 <!-- ```{r tbl-dot-vmt-meta} -->
 <!-- #| tbl-cap: "County vehicle miles traveled metadata" -->

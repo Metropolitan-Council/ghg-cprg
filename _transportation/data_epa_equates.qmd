@@ -1,4 +1,4 @@
-#### EQUATES {#sec-epa-equates}
+### EQUATES {#sec-epa-equates}
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -37,17 +37,17 @@ EQUATES data are available for years `r equates_years[[1]]$emissions_year %>% li
 
 EQUATES SMOKE FF10 data are processed in [epa_equates_read.R](data-raw/epa_equates_read.R). 
 
-##### Verification and validation {#sec-epa-equates-verif-valid}
+#### Verification and validation {#sec-epa-equates-verif-valid}
 
 Though EQUATES datasets are available on the EPA file transfer site and the CMAS Data Warehouse Google Drive, individual file names and file contents were identical.
 
-<!-- ##### Activity data {#sec-epa-equates-activity-data} -->
+<!-- #### Activity data {#sec-epa-equates-activity-data} -->
 
 <!-- TODO Compare underlying activity data with data from state DOTs -->
 
-<!-- ##### Emissions factors -->
+<!-- #### Emissions factors -->
 
-##### Limitations {#sec-epa-equates-limitations}
+#### Limitations {#sec-epa-equates-limitations}
 
 In addition to limitations described in @sec-epa-emissions-limitations, EQUATES has its own set of limitations.
 

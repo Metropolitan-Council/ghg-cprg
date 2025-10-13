@@ -1,4 +1,4 @@
-### Original data analysis {#sec-metc-data-anaylsis}
+## Original data analysis {#sec-metc-data-anaylsis}
 
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
@@ -52,7 +52,7 @@ mndot_vmt_county_marginals <- readRDS(file.path(here::here(), "_transportation/d
 ```
 
 
-##### Gap-filling city vehicle miles traveled {#sec-gap-fill-ctu-vmt}
+### Gap-filling city vehicle miles traveled {#sec-gap-fill-ctu-vmt}
 
 VMT for unreliable CTUs were modeled. We designed our model such that the total VMT of all CTUs within a county would equal the MnDOT-reported county VMT. Cities that cross multiple counties were modeled at the county-CTU (COCTU) level.
 
@@ -116,7 +116,7 @@ fig_city_vmt_by_data_source
 ```
 
 
-###### Model validation
+#### Model validation
 
 To cross check our assumptions, we can compare relative amount of VMT not accounted for when we sum up the reported city VMT for each county. 
 
