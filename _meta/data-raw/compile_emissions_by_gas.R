@@ -268,5 +268,5 @@ county_emissions_by_gas_meta <-
     "metric_tons_co2e", class(gas_by_county$metric_tons_co2e ), "Metric tons of gas in CO2 equivalency"
   )
 
-saveRDS(gas_by_county, "./_industrial/data/county_emissions_by_gas.rds")
-saveRDS(county_emissions_by_gas_meta, "./_industrial/data/county_emissions_by_gas_meta.rds")
+saveRDS(gas_by_county, "./_meta/data/county_emissions_by_gas.rds")
+saveRDS(county_emissions_by_gas_meta, "./_meta/data/county_emissions_by_gas_meta.rds")
