@@ -211,18 +211,22 @@ electricity_gas <- readRDS("_energy/data/county_elec_activity.RDS") %>%
   ) %>%
   select(emissions_year = year, county_name, sector, value_emissions, units_emissions, metric_tons_co2e)
 
-industrial_gas <- readRDS("_industrial/data/industrial_emissions_by_gas.RDS") %>% 
-  filter(inventory_year == 2022) %>% 
-  group_by(inventory_year, county_name, units_emissions) %>% 
-  summarize(value_emissions = sum(mt_gas),
-            metric_tons_co2e = sum(metric_tons_co2e)) %>% 
-  mutate(sector = "Industrial") %>% 
-  select(emissions_year = inventory_year, 
-         county_name, 
-         sector, 
-         value_emissions, 
-         units_emissions, 
-         metric_tons_co2e)
+industrial_gas <- readRDS("_industrial/data/industrial_emissions_by_gas.RDS") %>%
+  filter(inventory_year == 2022) %>%
+  group_by(inventory_year, county_name, units_emissions) %>%
+  summarize(
+    value_emissions = sum(mt_gas),
+    metric_tons_co2e = sum(metric_tons_co2e)
+  ) %>%
+  mutate(sector = "Industrial") %>%
+  select(
+    emissions_year = inventory_year,
+    county_name,
+    sector,
+    value_emissions,
+    units_emissions,
+    metric_tons_co2e
+  )
 
 
 
@@ -236,10 +240,10 @@ gas_by_county <- bind_rows(
   agriculture_gas,
   ns_gas,
   industrial_gas
-)%>% 
-  left_join(cprg_county %>% 
-              st_drop_geometry() %>% 
-              select(geoid, county_name))
+) %>%
+  left_join(cprg_county %>%
+    st_drop_geometry() %>%
+    select(geoid, county_name))
 
 county_emissions <- read_rds("_meta/data/cprg_county_emissions.RDS")
 
@@ -254,18 +258,18 @@ county_emissions %>%
   pull(value_emissions) %>%
   sum() # 55552139
 
-#slight difference due to documented issues in industrial sector
+# slight difference due to documented issues in industrial sector
 
 county_emissions_by_gas_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
-    "emissions_year ", class(gas_by_county$emissions_year ), "Year of survey",
+    "emissions_year ", class(gas_by_county$emissions_year), "Year of survey",
     "geoid", class(gas_by_county$geoid), "County GEOID",
     "county_name", class(gas_by_county$county_name), "County name",
     "sector", class(gas_by_county$sector), "Economic sector",
     "value_emissions", class(gas_by_county$value_emissions), "Numerical value of emissions in metric tons",
     "units_emissions", class(gas_by_county$units_emissions), "Units and gas type of emissions",
-    "metric_tons_co2e", class(gas_by_county$metric_tons_co2e ), "Metric tons of gas in CO2 equivalency"
+    "metric_tons_co2e", class(gas_by_county$metric_tons_co2e), "Metric tons of gas in CO2 equivalency"
   )
 
 saveRDS(gas_by_county, "./_meta/data/county_emissions_by_gas.rds")

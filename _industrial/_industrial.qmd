@@ -49,15 +49,19 @@ emissions_2022 <- county_emissions %>%
 
 ## not going to include electricity here
 ind_emissions_2022 <- county_emissions %>%
-  filter(emissions_year == 2022, sector == "Industrial",
-         !category %in% c("Building Fuel", "Electricity")) %>%
+  filter(
+    emissions_year == 2022, sector == "Industrial",
+    !category %in% c("Building Fuel", "Electricity")
+  ) %>%
   pull(value_emissions) %>%
   sum()
 
-ind_co2_2022 <-  industrial_gas %>% 
-  filter(inventory_year == 2022,
-         units_emissions == "Metric tons CO2") %>% 
-  pull(metric_tons_co2e) %>% 
+ind_co2_2022 <- industrial_gas %>%
+  filter(
+    inventory_year == 2022,
+    units_emissions == "Metric tons CO2"
+  ) %>%
+  pull(metric_tons_co2e) %>%
   sum()
 
 refinery_emissions_2022 <- ghgrp_emissions %>%
@@ -135,7 +139,7 @@ fig_ind_county_emissions <- plot_ly(
     ) %>%
     mutate(category = if_else(category == "Stationary combustion", "Industrial fuel combustion", category)),
   y = ~ reorder(county_name, value_emissions),
-  x = ~value_emissions + 1,
+  x = ~ value_emissions + 1,
   color = ~category,
   colors = unlist(category_colors),
   hovertemplate = ~ paste0(
@@ -160,7 +164,7 @@ fig_ind_county_emissions <- plot_ly(
         color = "black" # Set hovertext color to black
       )
     ),
-        xaxis = list(
+    xaxis = list(
       type = "log",
       title = "Million metric tons CO<sub>2</sub>e (log scale)"
     )
@@ -234,21 +238,21 @@ Industrial emissions are varied, including carbon dioxide, methane, nitrous oxid
 #| fig-cap: "2022 county agricultural emissions by gas type"
 #| out-width: "95%"
 
-emissions_by_gas_2022 <- industrial_gas %>% 
-  filter(inventory_year == 2022) %>% 
-  mutate(gas_type = str_replace_all(units_emissions, "Metric tons ",""))
+emissions_by_gas_2022 <- industrial_gas %>%
+  filter(inventory_year == 2022) %>%
+  mutate(gas_type = str_replace_all(units_emissions, "Metric tons ", ""))
 
 fig_ind_county_emissions_by_gas_type <- plot_ly(
   type = "bar",
   source = "fig-ind-county-emissions-by-gas-type",
   data = emissions_by_gas_2022,
-  y = ~ reorder(county_name, metric_tons_co2e ),
+  y = ~ reorder(county_name, metric_tons_co2e),
   x = ~metric_tons_co2e,
   color = ~gas_type,
   hovertemplate = ~ paste0(
     county_name, "<br>",
     gas_type, "<br>",
-    round(metric_tons_co2e , digits = 2), "  metric tons of CO<sub>2</sub>e", "<br>",
+    round(metric_tons_co2e, digits = 2), "  metric tons of CO<sub>2</sub>e", "<br>",
     "<extra></extra>"
   )
 ) %>%

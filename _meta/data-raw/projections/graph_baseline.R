@@ -238,26 +238,34 @@ ggsave(
 
 ### gas type graph ####
 
-gas_type_2022 <- gas_type %>% 
+gas_type_2022 <- gas_type %>%
   mutate(gas_id = case_when(
     units_emissions %in% c("Metric tons CO2") ~ "CO2",
     units_emissions %in% c("Metric tons CH4") ~ "CH4",
     units_emissions %in% c("Metric tons N2O") ~ "N2O",
-    units_emissions %in% c("Metric tons HFE",
-                          "Metric tons HFC") ~ "HFC",
-    units_emissions %in% c("Metric tons PFC",
-                          "Metric tons Other Fully Fluorinated Gas") ~ "PFC",
+    units_emissions %in% c(
+      "Metric tons HFE",
+      "Metric tons HFC"
+    ) ~ "HFC",
+    units_emissions %in% c(
+      "Metric tons PFC",
+      "Metric tons Other Fully Fluorinated Gas"
+    ) ~ "PFC",
     TRUE ~ "Other fluorinated GHG"
+  )) %>%
+  group_by(gas_id) %>%
+  summarize(
+    value_emissions = sum(value_emissions),
+    mt_co2e = sum(metric_tons_co2e)
+  ) %>%
+  mutate(
+    perc_gas_weight = value_emissions / sum(value_emissions),
+    perc_gas_co2e = mt_co2e / sum(mt_co2e)
   )
-  ) %>% 
-  group_by(gas_id) %>% 
-  summarize(value_emissions = sum(value_emissions),
-            mt_co2e = sum(metric_tons_co2e)) %>% 
-  mutate(perc_gas_weight = value_emissions/sum(value_emissions),
-         perc_gas_co2e = mt_co2e/sum(mt_co2e))
 
 write_csv(gas_type_2022,
-          file = paste0(here::here(), "/_meta/data-raw/projections/gas_type_2022.csv"))
+  file = paste0(here::here(), "/_meta/data-raw/projections/gas_type_2022.csv")
+)
 
 
 # county sector bar charts ####
