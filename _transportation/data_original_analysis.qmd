@@ -56,11 +56,55 @@ mndot_vmt_county_marginals <- readRDS(file.path(here::here(), "_transportation/d
 
 VMT for unreliable CTUs were modeled. We designed our model such that the total VMT of all CTUs within a county would equal the MnDOT-reported county VMT. Cities that cross multiple counties were modeled at the county-CTU (COCTU) level.
 
-For cites without reported annual MnDOT VMT (mostly townships and small cities under 5,000 people), we estimated VMT from 2010 to `r vmt_max_year` using a mixed-methods model incorporating historical and forecast city population, households, and employment, plus county and Imagine 2050 community designation. City-level VMT forecasts from the Regional Travel Demand Model (RTDM) were used to ensure a smooth rate of change over time and alignment with regional forecasts.  
+```{r tbl-coctus-modeled-vmt}
+#| tbl-cap: "Cities modeled for VMT by county, years modeled, and city type"
+#| out-width: "95%"
+
+tbl_coctus_modeled_vmt <- mndot_vmt_ctu_gap_filled %>%
+  left_join(cprg_county %>% sf::st_drop_geometry(), by = "geoid") %>%
+  left_join(ctu_population %>% select(ctu_name, ctu_class, coctu_id_gnis, geoid, gnis) %>% unique(), join_by(coctu_id_gnis, geoid, gnis)) %>%
+  filter(final_vmt_source == "MetC Modeled") %>%
+  select(inventory_year, final_vmt_source, county_name, county_name_full, ctu_name, ctu_class, ctu_name_full_county) %>%
+  mutate(ctu_class = stringr::str_to_sentence(ctu_class)) %>%
+  group_by(county_name_full, ctu_name, ctu_class) %>%
+  summarize(
+    modeled_years = paste0(min(inventory_year), " - ", max(inventory_year)),
+    .groups = "keep"
+  ) %>%
+  group_by(county_name_full, ctu_class, modeled_years) %>%
+  summarize(
+    ctu_names = paste0(ctu_name, collapse = ", "),
+    .groups = "keep"
+  ) %>%
+  unique() %>%
+  ungroup() %>%
+  gt(rowname_col = "ctu_class", groupname_col = "county_name_full") %>%
+  gt::opt_row_striping() %>%
+  gt::cols_label(
+    "ctu_class" = c("City type"),
+    "modeled_years" = c("Years modeled"),
+    "ctu_names" = "Cities"
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_group()
+  ) %>%
+  gt::cols_align(align = "left")
+
+
+tbl_coctus_modeled_vmt
+```
+
+
+For cites without reported annual MnDOT VMT (mostly townships and small cities under 5,000 people, see @tbl-coctus-modeled-vmt), we estimated VMT from 2010 to `r vmt_max_year` using a mixed-methods model incorporating historical and forecast city population, households, and employment, plus county and Imagine 2050 community designation. City-level VMT forecasts from the Regional Travel Demand Model (RTDM) were used to ensure a smooth rate of change over time and alignment with regional forecasts.  
 
 The model was trained on a subset of COCTUs, ensuring that all community types and counties were included. 
 
-Once the COCTUs VMT model was finalized and observed VMT data were incorporated into the dataset, we applied a scaling factor to predicted city VMT. 
+Once the COCTUs VMT model was finalized and observed VMT data were incorporated into the dataset, we applied a scaling factor to predicted city VMT so that the total of all COCTUs within a county would sum to the county total VMT. 
 
 Modeling took place in [mndot_vmt_ctu_gap_fill_model.R](data-raw/mndot_vmt_ctu_gap_fill_model.R).
 
@@ -68,6 +112,7 @@ Modeling took place in [mndot_vmt_ctu_gap_fill_model.R](data-raw/mndot_vmt_ctu_g
 ```{r fig-vmt-model-performance}
 #| fig-cap: "County-CTU VMT model performance, prior to scaling"
 #| out-width: "95%"
+#| out-height: "550px"
 
 fig_vmt_model_performance <- readRDS(file.path(here::here(), "_transportation/data/fig_model_performance.RDS"))
 fig_vmt_model_performance
@@ -225,7 +270,7 @@ fig_modeled_marginal_vmt <-
     y_title = "Proportion of county marginal VMT",
     legend_title = "County-CTUs with modeled VMT",
     # y_title = "% of county VMT accounted for",
-    main_title = "Modeled COCTU VMT as proportion of county marginal VMT "
+    main_title = "Modeled city VMT as proportion of county marginal VMT "
   ) %>%
   layout(
     barmode = "stack",

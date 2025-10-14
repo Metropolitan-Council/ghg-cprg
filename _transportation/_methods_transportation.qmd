@@ -1,4 +1,4 @@
-# Methodological framework by mode
+# Methodological framework 
 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
