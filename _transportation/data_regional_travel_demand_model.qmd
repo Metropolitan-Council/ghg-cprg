@@ -54,7 +54,7 @@ Model inputs include
   - any regionally significant project
   - long-range capital projects 
 
-The base-year model outputs best represent 2023 and forecast out to year 2050. 
+The base-year model outputs best represent 2025 and forecast out to year 2050. 
 
 ### Calculating VMT from the model network
 
@@ -62,7 +62,7 @@ The regional travel demand model network is made up of nodes and links (segments
 
 The network based approach is based on attributing all the vehicle traffic that occurs within a given city or county to that city or county, regardless of where the trip starts or ends. VMT is calculated by multiplying link vehicle volume (vehicles) by link length (miles traveled). Network links are attributed to cities by a spatial join. When a link crosses more than one city boundary, the link is split at the boundary. The link total volume is attributed to both sub-link, and the link length is re-calculated for each sub-link. Thus, no volume is lost. All time periods and road types are aggregated to represent average daily vehicle miles traveled. Daily VMT are expanded to annual VMT using an annualization factor of 340 (@castigliegoCarbonFreeBoston2019).   
 
-The base year model network best represents year 2022. The 2025 base-year includes projects programmed to be built in 2025. 
+The 2025 base-year includes projects programmed to be built in 2025.
 
 Code for processing RTDM outputs relies on internal file system access and is not available publicly. Please contact us for more information and reproducible examples. 
 
@@ -79,8 +79,9 @@ Gross emissions rates in grams CO~2~e per vehicle mile traveled are provided in 
 ### Limitations
 
 - The regional travel demand model, by definition, is built to function at a regional level. Scaling down to geographies smaller than counties might impact model outputs.
-- The model outputs a base year estimate (2023) and future year estimate (2050). All intermediary years (2024-2049) are interpolated linearly between the two points.
+- The model outputs a base year estimate (2025) and future year estimate (2050). All intermediary years (2026-2049) are interpolated linearly between the two points.
 - Truck VMT forecasts are generally weaker than passenger VMT forecasts. The Council will improve our truck VMT forecasting methodology in coming years. 
+- To better homogenize data sources, we assigned the model base-year (2025) estimate to year 2023 and did not use MnDOT VMT estimates from 2023 or 2024. Further research and validation to improve the regional travel demand model is in progress. 
 <!-- - Electric vehicles are somewhat accounted for in MOVES, but  -->
 
 
