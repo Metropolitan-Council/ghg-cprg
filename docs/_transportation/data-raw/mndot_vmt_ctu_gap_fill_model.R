@@ -290,10 +290,11 @@ train_post %>%
     y_title = "Predicted"
   )
 
-
-pred_df %>%
+fig_model_performance <-
+  pred_df %>%
   # filter(coctu_id_gnis %in% ctu_missing$coctu_id_gnis) %>%
   plot_ly(
+    source = "fig-vmt-model-performance",
     type = "scatter",
     mode = "markers",
     x = ~daily_vmt,
@@ -301,15 +302,16 @@ pred_df %>%
     color = ~ctu_name_full_county,
     opacity = 0.8,
     size = 4,
+    hoverinfo = "text",
     hovertext = ~ paste0(
       ctu_name_full_county, "<br>",
       inventory_year, "<br>",
-      "Daily VMT: ", scales::comma(daily_vmt), "<br>",
-      "Pred Daily VMT: ", scales::comma(pred_vmt)
+      "Observed Daily VMT: ", scales::comma(daily_vmt, accuracy = 1), "<br>",
+      "Predicted Daily VMT: ", scales::comma(pred_vmt, accuracy = 1)
     )
   ) %>%
   add_trace(
-    name = "1:1",
+    name = "1:1 Correlation",
     x = c(1, max(pred_df$pred_vmt, pred_df$daily_vmt, na.rm = T)),
     y = c(1, max(pred_df$pred_vmt, pred_df$daily_vmt, na.rm = T)),
     inherit = FALSE,
@@ -318,10 +320,17 @@ pred_df %>%
     line = list(color = "gray")
   ) %>%
   plotly_layout(
-    main_title = "Full dataset",
+    main_title = "City VMT model performance, prior to county scaling",
     x_title = "Observed",
-    y_title = "Predicted"
+    y_title = "Predicted",
+    legend_title = "County-CTU",
+    subtitle = "Markers above correlation line indicate model over-prediction,<br>while markers under correlation line indicate under-prediction"
   )
+
+
+fig_model_performance
+
+saveRDS(fig_model_performance, "_transportation/data/fig_model_performance.RDS")
 
 # # what new information do we want to glean from the counties?
 ranefs <- lme4::ranef(m)$county_name %>%
@@ -511,6 +520,9 @@ pred_df_na_bench %>%
       final_city_vmt = daily_vmt, vmt_source
     ) %>%
     filter(inventory_year >= 2023)) %>%
+  mutate(vmt_source_final = ifelse(is.na(final_vmt_source),
+    vmt_source, final_vmt_source
+  )) %>%
   group_by(ctu_name_full_county) %>%
   plot_ly(
     type = "scatter",
@@ -518,13 +530,21 @@ pred_df_na_bench %>%
     x = ~inventory_year,
     y = ~final_city_vmt,
     color = ~ctu_name_full_county,
-    symbol = ~vmt_source,
+    symbol = ~vmt_source_final,
     # symbols = c(
     # "circle-open",
     # "circle"),
     marker = list(size = 9),
+    hoverinfo = "text",
+    hovertext = ~ paste0(
+      ctu_name_full_county, "<br>",
+      inventory_year, "<br>",
+      scales::comma(final_city_vmt, accuracy = 1), "<br>",
+      vmt_source_final
+    ),
     opacity = 0.7
-  )
+  ) %>%
+  plotly_layout()
 
 # conclusion -----
 # our deciding factor for whether to use the NA benchmark vs total benchmark
@@ -557,7 +577,7 @@ pred_df_na_bench %>%
     x = ~inventory_year,
     y = ~final_city_vmt,
     color = ~ctu_name_full,
-    symbol = ~vmt_source,
+    symbol = ~final_vmt_source,
     # symbols = c(
     # "circle-open",
     # "circle"),
@@ -586,7 +606,11 @@ mndot_vmt_ctu_gap_filled <- pred_df_na_bench %>%
       final_vmt_source = vmt_source
     ) %>%
     filter(inventory_year >= 2023)) %>%
-  select(inventory_year, coctu_id_gnis, geoid, gnis, county_ctu_scaling_factor, final_city_vmt, final_vmt_source) %>%
+  select(
+    inventory_year, coctu_id_gnis,
+    geoid, gnis, ctu_name_full_county, county_ctu_scaling_factor,
+    final_city_vmt, final_vmt_source
+  ) %>%
   arrange(coctu_id_gnis, inventory_year)
 
 
@@ -600,6 +624,7 @@ mndot_vmt_ctu_gap_filled_meta <- ctu_pop_jobs_vmt_meta %>%
     tibble::tribble(
       ~Column, ~Class, ~Description,
       "county_ctu_scaling_factor", class(mndot_vmt_ctu_gap_filled$county_ctu_scaling_factor), "Scaling factor applied to CTU VMT prediction",
+      "ctu_name_full_county", class(mndot_vmt_ctu_gap_filled$ctu_name_full_county), "City, city class, and county names",
       "final_city_vmt", class(mndot_vmt_ctu_gap_filled$final_city_vmt), "Daily VMT for given CTU and year",
       "final_vmt_source", class(mndot_vmt_ctu_gap_filled$final_vmt_source), paste0(
         "Data source for given CTU-year. One of ",
