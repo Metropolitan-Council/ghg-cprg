@@ -239,37 +239,26 @@ ggsave(
 ### gas type graph ####
 
 gas_type_2022 <- gas_type %>% 
-  group_by(units_emissions) %>% 
+  mutate(gas_id = case_when(
+    units_emissions %in% c("Metric tons CO2") ~ "CO2",
+    units_emissions %in% c("Metric tons CH4") ~ "CH4",
+    units_emissions %in% c("Metric tons N2O") ~ "N2O",
+    units_emissions %in% c("Metric tons HFE",
+                          "Metric tons HFC") ~ "HFC",
+    units_emissions %in% c("Metric tons PFC",
+                          "Metric tons Other Fully Fluorinated Gas") ~ "PFC",
+    TRUE ~ "Other fluorinated GHG"
+  )
+  ) %>% 
+  group_by(gas_id) %>% 
   summarize(value_emissions = sum(value_emissions),
-            mt_co2e = sum(metric_tons_co2e))
+            mt_co2e = sum(metric_tons_co2e)) %>% 
+  mutate(perc_gas_weight = value_emissions/sum(value_emissions),
+         perc_gas_co2e = mt_co2e/sum(mt_co2e))
 
-gg_gas <- ggplot(
-  emissions_subsector %>%
-    filter(emissions_year == 2022) %>%
-    mutate(
-      category_alt = factor(category_alt, levels = category_order)
-    ),
-  aes(x = sector_alt, y = value_emissions, fill = category_alt)
-) +
-  geom_bar(stat = "identity", position = "stack", col = "black") +
-  labs(fill = "Subsector") +
-  scale_x_discrete(labels = line_break_labeller) +
-  scale_fill_manual(values = category_colors_vector) +
-  theme_minimal() +
-  labs(
-    title = "2022 Regional Emissions Profile",
-    subtitle = expression(paste("(Million metric tons of ", CO[2], "e)")),
-    x = "",
-    y = ""
-  ) +
-  theme(
-    panel.grid.major.x = element_blank(),
-    axis.text.x = element_text(size = 17, vjust = 1),
-    text = element_text(size = 20, family = "sans")
-  ) +
-  scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
+write_csv(gas_type_2022,
+          file = paste0(here::here(), "/_meta/data-raw/projections/gas_type_2022.csv"))
 
-subsector_comparison
 
 # county sector bar charts ####
 
