@@ -141,7 +141,9 @@ All data processing for transportation is compiled using [_run_all_transportatio
 
 ### Limitations {#sec-transportation-data-limitations}
 
-Geographic accounting methods do not account for the decisions or travel behavior of individuals within the geographic boundaries. Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a small town with a major freeway. The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction.
+Geographic accounting methods do not account for the decisions or travel behavior of individuals within the geographic boundaries. Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a lower-population county with major freeway traffic. 
+
+<!-- The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction. -->
   
 <!-- - We will take these limitations into account and plan to mitigate wherever possible for CTU-level inventories and forecasts. -->
 
