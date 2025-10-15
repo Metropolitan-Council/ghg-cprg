@@ -9,6 +9,8 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 vmt_max_year <- 2022
 
 cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
+cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS"))
+
 
 # read in VMT data
 dot_vmt <- readRDS(file.path(here::here(), "_transportation/data/dot_vmt.RDS")) %>%
@@ -99,12 +101,68 @@ tbl_coctus_modeled_vmt <- mndot_vmt_ctu_gap_filled %>%
 tbl_coctus_modeled_vmt
 ```
 
+```{r fig-map-vmt-data-source}
+#| fig-cap: "County-CTU VMT data source"
+#| out-height: "400px"
 
-For cites without reported annual MnDOT VMT (mostly townships and small cities under 5,000 people, see @tbl-coctus-modeled-vmt), we estimated VMT from 2010 to `r vmt_max_year` using a mixed-methods model incorporating historical and forecast city population, households, and employment, plus county and Imagine 2050 community designation. City-level VMT forecasts from the Regional Travel Demand Model (RTDM) were used to ensure a smooth rate of change over time and alignment with regional forecasts.  
+gap_fill_spatial <- mndot_vmt_ctu_gap_filled %>%
+  filter(inventory_year == vmt_max_year) %>%
+  left_join(
+    cprg_ctu %>%
+      mutate(
+        ctu_name_full = paste0(ctu_name, ", ", ctu_class),
+        ctu_name_full_county = paste0(ctu_name_full, ", ", county_name)
+      ) %>%
+      filter(!is.na(ctu_id)),
+    by = join_by(gnis, ctu_name_full_county)
+  ) %>%
+  select(ctu_name_full_county, gnis, coctu_id_gnis, geoid, final_vmt_source, geometry) %>%
+  unique() %>%
+  sf::st_as_sf()
+
+pal <- colorFactor(
+  palette = c(
+    colors$metroOrange,
+    colors$councilBlue
+  ),
+  domain = gap_fill_spatial$final_vmt_source
+)
+
+fig_map_vmt_data_source <-
+  council_leaflet() %>%
+  addPolygons(
+    data = gap_fill_spatial,
+    fillColor = ~ pal(final_vmt_source),
+    color = ~ pal(final_vmt_source),
+    smoothFactor = 0.1,
+    fillOpacity = 0.4,
+    weight = 2,
+    highlightOptions = highlightOptions(
+      color = "black",
+      weight = 3,
+      stroke = TRUE
+    ),
+    popup = ~ paste0(
+      ctu_name_full_county, "<br>",
+      "VMT data source, ", vmt_max_year, "<br>",
+      final_vmt_source
+    )
+  ) %>%
+  addLegend(
+    pal = pal,
+    values = gap_fill_spatial$final_vmt_source,
+    title = "VMT data source"
+  )
+
+
+fig_map_vmt_data_source
+```
+
+For cities without reported annual MnDOT VMT (mostly townships and small cities under 5,000 people, see @tbl-coctus-modeled-vmt), we estimated VMT from 2010 to `r vmt_max_year` using a mixed-effects model incorporating historical and forecast city population, households, and employment, plus county and Imagine 2050 community designation. City-level VMT forecasts from the Regional Travel Demand Model (RTDM) were used to ensure a smooth rate of change over time and alignment with regional forecasts.  
 
 The model was trained on a subset of COCTUs, ensuring that all community types and counties were included. 
 
-Once the COCTUs VMT model was finalized and observed VMT data were incorporated into the dataset, we applied a scaling factor to predicted city VMT so that the total of all COCTUs within a county would sum to the county total VMT. 
+Once the COCTUs VMT model was finalized and observed VMT data were incorporated into the dataset, we applied a scaling factor to predicted COCTU VMT so that the total of all COCTUs within a county would sum to the county total VMT. 
 
 Modeling took place in [mndot_vmt_ctu_gap_fill_model.R](data-raw/mndot_vmt_ctu_gap_fill_model.R).
 
@@ -295,6 +353,8 @@ fig_modeled_vmt_population_correlation <-
     x = ~ctu_population,
     y = ~final_city_vmt,
     color = ~ctu_name_full_county,
+    type = "scatter",
+    mode = "markers",
     marker = list(
       size = 10,
       opacity = 0.8
