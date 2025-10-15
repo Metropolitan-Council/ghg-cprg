@@ -1,4 +1,4 @@
-# Transportation methods comparison
+# Transportation methods comparison {#sec-transportation-methods-comparison}
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,

@@ -79,8 +79,8 @@ book:
     - _meta/supplementary_tables.qmd
     - _meta/additional_resources.qmd
     - _energy/utility_service_area_maps.qmd
-    # - _transportation/inventory_methods_comparison.qmd
     - _meta/lidac_maps.qmd
+    - _transportation/inventory_methods_comparison.qmd
     - figures.qmd
     - tables.qmd
     - changelog.qmd

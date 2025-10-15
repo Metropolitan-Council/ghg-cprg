@@ -54,11 +54,12 @@ hookaddcap()
 
 ## On-road  
 
-Transportation emissions are available for `r listify(modes_included)` using EPA data sources. We use a geographic, or territorial accounting method, aligning with Scope 1 in the Greenhouse Gas Protocol. Geographic methods account for any transportation emissions taking place within a geographic boundary, regardless of origin or destination [@fongGlobalProtocolCommunityScale2021].
+Transportation emissions are available for `r listify(modes_included)` using EPA data sources. We use a geographic, or territorial accounting method, aligning with Scope 1 in the Greenhouse Gas Protocol. Geographic methods account for any transportation emissions taking place within a geographic boundary, regardless of origin or destination [@fongGlobalProtocolCommunityScale2021]. Various methodologies are explored in @sec-transportation-methods-comparison. 
 
 Geographic emissions are essential for quantifying air pollution experienced by people living in the area, but they do not give information on the logistic decisions of individuals.
 
 All data sources are detailed in @sec-data-transportation. 
+
 
 <!-- Met Council researchers chose to use an alternative activity-induced method to provide the most actionable information for jurisdictions within our region in both the recent PCAP and the 2018 Metro Climate Stats inventory. -->
 
