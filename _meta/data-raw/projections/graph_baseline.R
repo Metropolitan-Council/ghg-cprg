@@ -236,7 +236,7 @@ ggsave(
   bg = "white"
 )
 
-### gas type graph ####
+### gas type data ####
 
 gas_type_2022 <- gas_type %>%
   mutate(gas_id = case_when(
