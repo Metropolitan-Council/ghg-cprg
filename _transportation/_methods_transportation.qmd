@@ -1,4 +1,4 @@
-# Methods and data sources  
+# Methodological framework 
 
 ```{r  include=FALSE}
 knitr::opts_chunk$set(
@@ -25,6 +25,11 @@ county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emis
 onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS")) %>%
   rename(value_emissions = emissions_metric_tons_co2e)
 
+county_inventory_forecast_emissions <- readRDS(file.path(here::here(), "_transportation/data/county_inventory_forecast_emissions.RDS")) %>%
+  rowwise() %>%
+  mutate(rounded_tons = round_emissions_metric_tons_co2e(emissions_metric_tons_co2e))
+
+
 transportation_max_year <- onroad_emissions %>%
   filter(emissions_year == max(emissions_year)) %>%
   extract2("emissions_year") %>%
@@ -40,47 +45,112 @@ modes_included <-
   unique() %>%
   stringr::str_to_lower()
 
+mndot_vmt_ctu_gap_filled <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu_gap_filled.RDS"))
 
 hookaddcap()
 ```
 
-## Methodological framework
 
-Transportation emissions are available for `r listify(modes_included)` using EPA data sources. We use a geographic, or territorial accounting method, aligning with Scope 1 in the Greenhouse Gas Protocol. Geographic methods account for any transportation emissions taking place within a geographic boundary, regardless of origin or destination [@fongGlobalProtocolCommunityScale2021].
+
+## On-road  
+
+Transportation emissions are available for `r listify(modes_included)` using EPA data sources. We use a geographic, or territorial accounting method, aligning with Scope 1 in the Greenhouse Gas Protocol. Geographic methods account for any transportation emissions taking place within a geographic boundary, regardless of origin or destination [@fongGlobalProtocolCommunityScale2021]. Various methodologies are explored in @sec-transportation-methods-comparison. 
 
 Geographic emissions are essential for quantifying air pollution experienced by people living in the area, but they do not give information on the logistic decisions of individuals.
+
+All data sources are detailed in @sec-data-transportation. 
+
 
 <!-- Met Council researchers chose to use an alternative activity-induced method to provide the most actionable information for jurisdictions within our region in both the recent PCAP and the 2018 Metro Climate Stats inventory. -->
 
 <!-- TODO include summary table with geographic level, year, data source -->
 
-## Data sources
+```{r tbl-inventory-forecast-sources-county}
+#| tbl-cap: "County emissions inventory and forecast data sources"
+#| out-width: "95%"
 
-<!-- {{< include data_aviation.qmd >}} -->
+tbl_inv_forecast_sources <- county_inventory_forecast_emissions %>%
+  ungroup() %>%
+  select(emissions_year, data_source, county_name) %>%
+  unique() %>%
+  arrange(-emissions_year) %>%
+  group_by(data_source) %>%
+  summarize(
+    Years = paste0(
+      min(emissions_year), " - ", unique(max(emissions_year), min(emissions_year))
+    ),
+    Counties = paste0(unique(county_name), collapse = ", ")
+  ) %>%
+  mutate(Years = case_when(
+    Years == "2050 - 2050" ~ "2050",
+    Years == "2020 - 2020" ~ "2020",
+    TRUE ~ Years
+  )) %>%
+  arrange(Years)
 
-{{< include data_epa_emissions.qmd >}}
-
-<!-- {{< include data_streetlight.qmd >}} -->
-
-{{< include data_state_dot.qmd >}}
-
-<!-- {{< include data_epa_moves.qmd >}} -->
-
-<!-- {{< include data_tbi.qmd >}} -->
-
-{{< include data_regional_travel_demand_model.qmd >}}
+gt(tbl_inv_forecast_sources) %>%
+  gt::cols_label("data_source" = c("Data source")) %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::cols_align(align = "left")
+```
 
 
-## Limitations {#sec-transportation-data-limitations}
+The Met Council also completed city-level VMT estimates for cities within the 7-county metro area. More information is available in @sec-metc-data-anaylsis. 
 
-- Geographic accounting methods
-  - Geographic accounting methods do not account for the decisions or travel behavior of individuals within the geographic boundaries. 
-  - Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a small town with a major freeway. The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction.
-  - We will take these limitations into account and plan to mitigate wherever possible for CTU-level inventories and forecasts.
+<!-- ```{r tbl-inventory-forecast-sources-city} -->
+<!-- #| tbl-cap: "City VMT history and forecast data sources" -->
+<!-- #| out-width: "95%" -->
 
-## Validation
+<!-- tbl_ctu_modeled_vmt <- mndot_vmt_ctu_gap_filled %>% -->
+<!--   select(inventory_year, final_vmt_source, ctu_name_full_county) %>% -->
+<!--   unique() %>% -->
+<!--   arrange(ctu_name_full_county) %>% -->
+<!--   group_by(final_vmt_source) %>% -->
+<!--   summarize( -->
+<!--     Years = paste0( -->
+<!--       min(inventory_year), " - ", unique(max(inventory_year), min(inventory_year)) -->
+<!--     ), -->
+<!--     Cities = paste0(unique(ctu_name_full_county), collapse = "; ") -->
+<!--   ) %>% -->
+<!--   mutate( -->
+<!--     Years = case_when( -->
+<!--       Years == "2050 - 2050" ~ "2050", -->
+<!--       TRUE ~ Years -->
+<!--     ), -->
+<!--     Cities = case_when( -->
+<!--       final_vmt_source == "Regional Travel Demand Model" ~ "All", -->
+<!--       TRUE ~ Cities -->
+<!--     ) -->
+<!--   ) -->
 
-### Correlation with related data
+<!-- gt(tbl_ctu_modeled_vmt) %>% -->
+<!--   gt::cols_label("final_vmt_source" = c("Data source")) %>% -->
+<!--   gt::opt_row_striping() %>% -->
+<!--   tab_style( -->
+<!--     style = cell_text(weight = "bold"), -->
+<!--     locations = cells_column_labels() -->
+<!--   ) %>% -->
+<!--   gt::cols_align(align = "left") -->
+<!-- ``` -->
+
+All data processing for transportation is compiled using [_run_all_transportation.R](data-raw/_run_all_transportation.R), ensuring all disparate datasets and sequential processing requirements are correct.  
+
+
+### Limitations {#sec-transportation-data-limitations}
+
+Geographic accounting methods do not account for the decisions or travel behavior of individuals within the geographic boundaries. Within the Twin Cities region, this method will show high emissions per capita in low population areas with significant vehicle traffic, such as a lower-population county with major freeway traffic. 
+
+<!-- The residents of the small town are not responsible for the emissions of vehicles passing through their town without stopping, but they are subject to the air pollution associated with those trips. Additionally, the city governing body cannot expect to reduce emissions from freeway traffic, as the road is out of their jurisdiction. -->
+  
+<!-- - We will take these limitations into account and plan to mitigate wherever possible for CTU-level inventories and forecasts. -->
+
+### Validation
+
+<!-- ## Correlation with related data -->
 
 We would expect counties with higher population to have higher emissions and VMT.
 
@@ -332,6 +402,10 @@ lggit_total_emiss <- (lggit_totals$total %>% sum()) %>% scales::comma()
 ```
 
 <!-- The results from the LGGIT tool estimate a regional emissions total of **`r lggit_total_emiss` metric tons CO~2~e**, while our calculations estimate **`r cprg_total_emiss` metric tons CO~2~e**. These values are sufficiently close, and may be explained by differences between nationwide vehicle emission rates and fuel efficiency and region-specific values from EPA MOVES. Additionally, LGGIT uses global warming potential (GWP) values from the Intergovernmental Panel on Climate Change (IPCC) Fifth Assessment Report (AR5) [@ipccClimateChange2014], while our calculations use slightly higher values from the 6th Assessment Report (AR6) [@ipccAR62021]. See @sec-epa-moves for a more detailed comparison. -->
+
+
+{{< include data_aviation.qmd >}}
+
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
