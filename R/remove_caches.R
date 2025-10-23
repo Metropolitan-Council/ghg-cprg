@@ -9,13 +9,10 @@ list.files(path = "_industrial/", pattern = "*_cache", full.names = TRUE) %>%
   fs::dir_delete()
 list.files(path = "_energy/", pattern = "*_cache", full.names = TRUE) %>%
   fs::dir_delete()
-
 list.files(path = "_transportation//", pattern = "*_cache", full.names = TRUE) %>%
   fs::dir_delete()
-
 list.files(path = "_waste/", pattern = "*_cache", full.names = TRUE) %>%
   fs::dir_delete()
-
 list.files(path = "_meta/", pattern = "*_cache", full.names = TRUE) %>%
   fs::dir_delete()
 

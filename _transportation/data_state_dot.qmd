@@ -1,4 +1,4 @@
-### State DOT data {#sec-state-dot-data}
+## State DOT data {#sec-state-dot-data}
 
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
@@ -52,13 +52,13 @@ mndot_vmt_county_marginals <- readRDS(file.path(here::here(), "_transportation/d
 
 As required by federal law, Minnesota and Wisconsin state departments of transportation (MnDOT and WisDOT) report various traffic measures for planning, forecasting, and various analysis endeavors.
 
-#### Vehicle miles traveled
+### Vehicle miles traveled
 
 Vehicle miles traveled (VMT) is a standardized measure created by multiplying average annual daily traffic (AADT) by centerline miles. AADT is an estimate of the total vehicles on a road segment on any given day of the year in all directions of travel. VMT and AADT are common traffic measures and standardized across the United States. 
 
 MnDOT and WisDOT derive VMT using traffic counts from continuous and short term traffic monitoring sites. These raw counts are adjusted by multiplying seasonal, day-of-week, and axle adjustment factors [@mndotTFADataCollection2023, @wisdotTransportationPlanningManual2023]. Data is not collected for every site every year, but the data are sufficient for year-over-year comparisons. 
 
-##### County vehicle miles traveled
+#### County vehicle miles traveled
 
 We consider county-level data to be of the highest quality and most reliable measure of VMT.
 
@@ -107,24 +107,26 @@ fig_dot_vmt <- plot_ly(
     x_title = "Year",
     y_title = "Annual VMT",
     legend_title = "Data source"
-  )
+  ) %>%
+  layout(legend = list(
+    orientation = "h",
+    y = -0.25
+  ))
 
 fig_dot_vmt
 ```
 
-##### City vehicle miles traveled
+#### City vehicle miles traveled
 
-City VMT is available only for a select number of cities, townships, unorganized areas (CTUs). 
+City VMT is available only for cities, townships, unorganized areas (CTUs) in the core 7-county metro area. 
 
 These data were compiled from MnDOT city and route system reports available on their [website](https://www.dot.state.mn.us/roadway/data/data-products.html). Reports were downloaded and aggregated at the CTU level by summing VMT up for all route systems. Processing code can be found in [mndot_vmt_ctu.R](data-raw/mndot_vmt_ctu.R). 
+Due to limitations in data consistency, the MnDOT CTU dataset was subsetted to only include CTUs with reliable data. Reliable CTUs are defined as such:
 
-Due to limitations in data availability and consistency, not all CTUs in the 7-county metro region are included. 
+- CTU has a complete time series from 2014-2023 with no missing years. 2015 data were interpolated in the same manner as the county VMT data. 
+- CTU has sampled data on local route systems (including Municipal State Aid Streets) during any year from 2017-2023. Read more about route system designations in [mndot_route_system.R](data-raw/mndot_route_system.R).
 
-<!-- - CTUs without reported data prior to 2014 are excluded. -->
-<!-- - CTUs without sampled data on local route systems (including Municipal State Aid Streets) during any year from 2017-2023 are excluded. See more about route system designations in [mndot_route_system.R](data-raw/mndot_route_system.R). -->
-- Shoreview, Blaine, and West Saint Paul are split among more than one county. For some CTU/county/year combinations, only data from 2016 onward were available. For consistency in the time series, we assigned 2016 VMT data to year 2015 for these CTU/county combinations.
-- Due to geographic data source differences, MnDOT reports a small amount of VMT invalid CTU/county combinations (i.e., Minneapolis, a Hennepin County CTU, centerline miles and VMT reported in Anoka County). We discussed these anomalies with MnDOT staff and determined this to be a non-issue. The county designations for each CTU were corrected such that summing to the CTU by the CTU name determines the total VMT for each CTU No changes to county designation were made to CTUs known to be split across multiple counties (`r listify(multi_county_ctu$ctu_name)`). 
-- 2015 data were interpolated in the same manner as the county VMT data. 
+Only `r unique(mndot_vmt_ctu$ctu_name) %>% length()` cities were considered reliable for analysis. All other CTUs were modeled. See @sec-gap-fill-ctu-vmt for more information.
 
 
 ```{r fig-dot-vmt-ctu}
@@ -168,7 +170,7 @@ mndot_ctu_summary %>%
     main_title = "City annual vehicle miles traveled",
     x_title = "Year",
     y_title = "Annual VMT",
-    legend_title = "City",
+    legend_title = "Top 10 CTUs by VMT",
     subtitle = "Source: MnDOT VMT reports"
   ) %>%
   layout(
@@ -177,59 +179,15 @@ mndot_ctu_summary %>%
   suppressWarnings()
 ```
 
-Cities without a complete time series from 2010 to 2023 were modeled. 
 
-##### Gap-filled city vehicle miles traveled
-
-Modeling took place in [mndot_vmt_ctu_gap_fill_model.R](data-raw/mndot_vmt_ctu_gap_fill_model.R).
-
-All counties have the majority of their VMT accounted for when totaling up reported city level VMT. 
-
-```{r fig-vmt-county-ctu-gap}
-#| fig-cap: "Proportion of county VMT accounted for by city VMT"
-#| out-width: "95%"
-
-fig_vmt_county_ctu_gap <- plot_ly(
-  source = "fig-vmt-county-ctu-gap",
-  type = "bar",
-  data = mndot_vmt_county_marginals %>%
-    filter(inventory_year == 2022),
-  x = ~county_name,
-  y = ~county_pct,
-  hoverinfo = "text",
-  hovertemplate = ~ paste0(
-    county_name, "<br>",
-    inventory_year, "<br>",
-    scales::percent(county_pct), " of VMT accounted for in city estimates", "<br>",
-    "<extra></extra>"
-  )
-) %>%
-  plotly_layout(
-    x_title = "County",
-    y_title = "% of county VMT accounted for",
-    main_title = "Most county VMT is accounted for in city estimates"
-  ) %>%
-  layout(
-    yaxis = list(tickformat = "1%"),
-    xaxis = list(categoryorder = "total descending")
-  )
-
-fig_vmt_county_ctu_gap
-```
-
-For cites without reported annual MnDOT VMT, we estimated VMT from 2010 to 2022 using a model trained on population, households, employment, county, and Imagine 2050 designation. 
-
-<!-- ```{r vmt-gap-fill-model-latex} -->
-<!-- #| output: asis -->
-<!-- equatiomatic::extract_eq(model = vmt_gap_fill_model) -->
-<!-- ``` -->
-
-
-#### Limitations
+### Limitations
 
 - AADT/VMT data rely on modeling, and not every site will have new observed data every year. 
 - AADT/VMT are generally estimated for high-use arterial roads and highways, leaving most local roads out.
 - We may want to consider using non-permanent counters and/or counters from just outside the study region to increase the total number of calibration roads. 
+- City VMT
+  - Due to geographic data source differences, MnDOT reports a small amount of VMT invalid CTU/county combinations (i.e., Minneapolis, a Hennepin County CTU, centerline miles and VMT reported in Anoka County). We discussed these anomalies with MnDOT staff and determined this to be a non-issue. The county designations for each CTU were corrected such that summing to the CTU by the CTU name determines the total VMT for each CTU No changes to county designation were made to CTUs known to be split across multiple counties (`r listify(multi_county_ctu$ctu_name)`). 
+  - Shoreview, Blaine, and West Saint Paul are split among more than one county. For some CTU/county/year combinations, only data from 2016 onward were available. For consistency in the time series, we assigned 2016 VMT data to year 2015 for these CTU/county combinations.
 
 
 <!-- ### Data dictionaries -->
