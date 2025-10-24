@@ -14,9 +14,32 @@ unique(gcam$subsector_mc)
 
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
+ag_land <- read_rds("_nature/data/nlcd_county_landcover_allyrs.rds") %>%
+  filter(land_cover_type == "Cropland") %>% 
+  group_by(inventory_year) %>% 
+  summarize(ag_area_sq_km = sum(area)) %>% 
+  ungroup() %>% 
+  mutate(
+    pct_of_prev_year = (ag_area_sq_km / lag(ag_area_sq_km) - 1)  # calculate percentage agriculture lost compared to previous year
+  )
+
+# take average loss over last 10 years
+avg_loss <- ag_land %>%
+  filter(inventory_year >= max(inventory_year) - 9) %>%  # last 10 years
+  pull(pct_of_prev_year) %>% 
+  mean()
+# this will be expected loss of emissions per year
+# create vector for 2023–2050
+years <- 2022:2050
+n_years <- length(years)
+
+# cumulative decay vector
+loss_df <- data.frame(avg_decay = avg_loss * seq_len(n_years),
+                      emissions_year = years)
+
 ## to be updated once we have better sequestration growth potential
 seq_target <- readRDS(file.path(here::here(), "_meta/data/regional_net_zero_target.RDS")) %>%
-  pull(net_zero_target)
+  pull(net_zero_target) 
 
 ### agricultural target
 ag_target <- county_emissions %>%
@@ -56,27 +79,52 @@ agriculture_emissions_proj <- agriculture_emissions %>%
   )) %>%
   group_by(category) %>%
   summarize(baseline_emissions = sum(value_emissions), .groups = "keep") %>%
-  left_join(
-    agriculture_scenarios %>%
-      filter(emissions_year >= 2022),
-    by = c("category" = "subsector_mc")
+  cross_join(loss_df) %>% 
+  mutate(value_emissions = baseline_emissions * (1 + avg_decay),
+         scenario = "bau")
+
+ppp_estimates <- agriculture_scenarios %>% 
+  filter(emissions_year >= 2022) %>% 
+  mutate(scenario = case_when(
+    scenario == "Current policies without federal support" ~ "cp",
+    scenario == "CAF Pathway without federal support" ~ "ppp"
+  )) %>% 
+  select(emissions_year, scenario, subsector_mc,value_emissions) %>% 
+  pivot_wider(
+    names_from = scenario,
+    values_from = value_emissions
+  ) %>%
+  # Compute ratio CAF Pathway / Current Policies
+  mutate(
+    ppp_ratio = ppp / cp,
+    emissions_year = as.numeric(emissions_year)
+  )
+
+# calculate ppp values based on reduction compared to cp (bau) and 
+# restructure data frame for graphing
+ag_scenarios <- agriculture_emissions_proj %>% 
+  left_join(ppp_estimates,
+            join_by(emissions_year,
+                    category == subsector_mc))%>%
+  mutate(ppp_value_emissions = value_emissions * ppp_ratio) %>%
+  group_by(emissions_year) %>%
+  summarize(
+    value_emissions = sum(value_emissions, na.rm = TRUE),
+    ppp_value_emissions = sum(ppp_value_emissions, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(
+    cols = c(value_emissions, ppp_value_emissions),
+    names_to = "scenario",
+    values_to = "value_emissions"
   ) %>%
   mutate(
-    value_emissions = baseline_emissions * proportion_of_2020,
-    scenario = case_when(
-      scenario == "Current policies without federal support" ~ "bau",
-      scenario == "CAF Pathway without federal support" ~ "ppp"
+    scenario = recode(scenario,
+                      value_emissions = "bau",
+                      ppp_value_emissions = "ppp"
     )
-  ) %>%
-  filter(!is.na(value_emissions)) %>%
-  group_by(
-    emissions_year,
-    scenario
-  ) %>%
-  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
-  ungroup() %>%
-  mutate(emissions_year = as.numeric(emissions_year))
-
+  )
+  
 ## save bau data
 
 ag_bau <- bind_rows(
@@ -89,7 +137,7 @@ ag_bau <- bind_rows(
     group_by(emissions_year, scenario) %>%
     summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "keep") %>%
     ungroup(),
-  agriculture_emissions_proj
+  ag_scenarios
 )
 
 
@@ -111,7 +159,7 @@ base_data <- agriculture_emissions %>%
   ungroup()
 
 #  diverging scenarios (2026+)
-diverging_data <- agriculture_emissions_proj %>%
+diverging_data <- ag_scenarios %>%
   filter(emissions_year >= 2022) %>%
   mutate(segment = "diverging")
 
