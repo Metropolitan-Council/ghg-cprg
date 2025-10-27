@@ -1,0 +1,10 @@
+Attribute,Inventory of US Greenhouse Gas Emissions and Sinks (US GHGI),National Emissions Inventory (NEI),MPCA Minnesota statewide inventory,Previous Met Council Inventory
+Description,"Annual report that tracks U.S. greenhouse gas emissions and sinks by source, economic sector, and greenhouse gas. [@usepaoarInventoryGreenhouseGas2024]","Comprehensive and detailed estimate of air emissions of criteria pollutants, criteria precursors, and hazardous air pollutants from air emissions sources. [@usepa2020NationalEmissions2023]","Documents Minnesota's GHG emissions from 2005 through 2020 and shows the impact of actions taken by individuals, organizations, and governments across Minnesota. [@claflinGreenhouseGasEmissions2023]","Local emissions estimates for all cities, regardless of size"
+Time periods,"1990-2022, annual","2005-2020, every 3 years","2005-2020, biennial","2018-2021, intermittent"
+GPC Scope,Scope 1,Scope 1,Scopes 1 and 2,Scope 1
+Sectors and categories,"Light and Heavy duty vehicles, UNFCC and IPCC compliant sectors","Light and Heavy duty vehicles, UNFCC and IPCC compliant sectors","Light, Medium, and Heavy-duty vehicles, additional categories ","Light, Medium, and Heavy-duty vehicles"
+Gas availability,CO~2~e (AR5 global warming potential),"CO~2~, CH~4~, N~2~O","CO~2~, CH~4~, N~2~O, CO~2~e (AR4 global warming potential)","CO~2~, CH~4~, N~2~O, CO~2~e"
+Transportation Method,"Territorial, top-down approach","Territorial, bottom-up approach","Territorial, bottom-up approach","Induced activity, bottom-up approach"
+Activity Data,"Fuel consumption, apportioned to vehicle categories using EPA MOVES","Vehicle miles traveled, sourced from State, Local, and Tribal air agencies","State vehicle miles traveled, provided to EPA MOVES",Trips via StreetLight Data
+Geographic scope,"Nation, disaggregated to state","County, aggregated to state and nation",State of Minnesota,"City, aggregated to county and region"
+Citations,"@usepaInventoryGreenhouseGas2024,  @usepaMethodologyReportInventory2024",@usepa2020NationalEmissions2023,@claflinGreenhouseGasEmissions2023,@metCPassengerCommercialTransporation2020

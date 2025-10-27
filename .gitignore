@@ -334,7 +334,7 @@ _nature/data-raw/DBO_RPTAdministrativeBoundary.shx
 _nature/data-raw/land_cover_stock.csv
 /_nature/_natural_systems_files
 
-site_libs/
+/site_libs/
 _nature/_natural_systems_files/*
 
 _energy/data-raw/nhgis_blk2000_blk2010_MN/
@@ -1403,3 +1403,7 @@ _transportation/data-raw/epa/air_emissions_modeling/2022v2/
 _transportation/data-raw/epa/SCCformat=CSV&sortFacet=scc%20level%20one&filename=SCCDownload-2025-0820-150847.csv
 
 _meta/data-raw/Minnesota GCAM Modeling Data.xlsx
+
+_transportation/data_original_analysis_files/
+
+_transportation/inventory_methods_comparison_files/

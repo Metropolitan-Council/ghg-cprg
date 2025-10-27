@@ -31,8 +31,9 @@ book:
     - part: "Transportation"
       chapters:
        - _transportation/_transportation.qmd
-       - _transportation/_data_methods_transportation.qmd
-       - _transportation/data_aviation.qmd
+       - _transportation/_methods_transportation.qmd
+       - _transportation/_data_transportation.qmd
+       # - _transportation/data_aviation.qmd
     
     - part: "Electricity"
       chapters:
@@ -78,8 +79,8 @@ book:
     - _meta/supplementary_tables.qmd
     - _meta/additional_resources.qmd
     - _energy/utility_service_area_maps.qmd
-    # - _transportation/inventory_methods_comparison.qmd
     - _meta/lidac_maps.qmd
+    - _transportation/inventory_methods_comparison.qmd
     - figures.qmd
     - tables.qmd
     - changelog.qmd
@@ -108,6 +109,7 @@ crossref:
 execute:
  echo: false
  code-overflow: wrap
+ htmlwidgets: true
 
 format: 
   html:
@@ -123,7 +125,8 @@ format:
     copyright: "Metropolitan Council"
     fig-responsive: true
     link-external-filter: "metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io"
-    fig-cap-location: top
+    fig-cap-location: bottom
+    tbl-cap-location: top
     knitr: 
       opts_chunk: 
           echo: false

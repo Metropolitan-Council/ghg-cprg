@@ -1,4 +1,4 @@
-### EPA emissions data {#sec-epa-emissions-data-transportation}
+## EPA emissions data {#sec-epa-emissions-data-transportation}
 ```{r}
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_quarto_helpers.R"))
@@ -72,9 +72,15 @@ epa_onroad_source_set %>%
   unique() %>%
   group_by(data_source, moves_edition) %>%
   summarize(
-    emissions_years = paste0(emissions_year, collapse = ", "),
+    emissions_years = paste0(min(emissions_year), " - ", max(emissions_year)),
     .groups = "keep"
   ) %>%
+  mutate(emissions_years = case_when(
+    emissions_years == "2022 - 2022" ~ "2022",
+    emissions_years == "2021 - 2021" ~ "2021",
+    emissions_years == "2020 - 2020" ~ "2020",
+    TRUE ~ emissions_years
+  )) %>%
   ungroup() %>%
   arrange(desc(emissions_years)) %>%
   select(
@@ -112,9 +118,15 @@ epa_onroad_emissions_compile %>%
   ) %>%
   group_by(data_source, pollutants_available) %>%
   summarize(
-    emissions_years = paste0(emissions_years, collapse = ", "),
+    emissions_years = paste0(min(emissions_year), " - ", max(emissions_year)),
     .groups = "keep"
   ) %>%
+  mutate(emissions_years = case_when(
+    emissions_years == "2022 - 2022" ~ "2022",
+    emissions_years == "2021 - 2021" ~ "2021",
+    emissions_years == "2020 - 2020" ~ "2020",
+    TRUE ~ emissions_years
+  )) %>%
   ungroup() %>%
   arrange(desc(emissions_years)) %>%
   select(
@@ -156,19 +168,22 @@ pollutant_key %>%
   gt::as_raw_html()
 ```
 
-Vehicle and fuel types
+Vehicle types
 
-```{r tbl-epa-vehicle-fuel-types}
-#| tbl-cap: "Vehicle and fuel types provided by EPA datasets"
+```{r tbl-epa-vehicle-types}
+#| tbl-cap: "Vehicle types provided by EPA datasets"
 #| out-width: "95%"
 
 onroad_emissions %>%
-  select(vehicle_weight_label, vehicle_types_included, fuel_types_included) %>%
+  select(vehicle_weight_label, vehicle_types_included) %>%
   unique() %>%
+  group_by(vehicle_weight_label) %>%
+  filter(nchar(vehicle_types_included) == max(nchar(vehicle_types_included))) %>%
+  ungroup() %>%
   arrange(vehicle_weight_label) %>%
   select(
     `Vehicle weight label` = vehicle_weight_label,
-    `Fuel types` = fuel_types_included,
+    # `Fuel types` = fuel_types_included,
     `Vehicle types` = vehicle_types_included
   ) %>%
   gt() %>%
@@ -180,6 +195,43 @@ onroad_emissions %>%
   gt::as_raw_html()
 ```
 
+Fuel types. Note that not all vehicle type/fuel type/year combinations are available.  
+```{r tbl-epa-fuel-types}
+#| tbl-cap: "Vehicle fuel types provided by EPA datasets"
+#| out-width: "95%"
+
+onroad_emissions %>%
+  ungroup() %>%
+  select(vehicle_weight_label, fuel_types_included) %>%
+  unique() %>%
+  tidyr::separate_wider_delim(fuel_types_included,
+    delim = ", ",
+    names_sep = "_",
+    too_few = "align_start"
+  ) %>%
+  tidyr::pivot_longer(2:4) %>%
+  filter(!is.na(value)) %>%
+  select(-name) %>%
+  group_by(vehicle_weight_label) %>%
+  summarize(fuel_types_included = paste0(sort(unique(value)), collapse = ", ")) %>%
+  ungroup() %>%
+  arrange(vehicle_weight_label) %>%
+  select(
+    `Vehicle weight label` = vehicle_weight_label,
+    `Fuel types` = fuel_types_included
+    # `Vehicle types` = vehicle_types_included
+  ) %>%
+  gt() %>%
+  gt::opt_row_striping() %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  gt::as_raw_html()
+```
+
+
+
 {{< include data_epa_nei.qmd >}}
 
 {{< include data_epa_equates.qmd >}}
@@ -187,7 +239,7 @@ onroad_emissions %>%
 {{< include data_epa_air_emissions_modeling.qmd >}}
 
 
-#### Consistent limitations {#sec-epa-emissions-limitations}
+### Consistent EPA data limitations {#sec-epa-emissions-limitations}
 
 
 - The NEI, EQUATES, and Air Emissions Modeling platforms are based on MOVES, which does not account for activity on local roads. 
