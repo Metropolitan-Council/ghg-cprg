@@ -11,7 +11,7 @@ rm(county_geography)
 # check that we have all the necessary files -----
 if (any(purrr::map(
   c(
-    "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022hd_cb6_22m/inputs/airports/2022hd_airports_2022_point_top51_adjusted_ATL_data_20250428_27may2025_v0.csv"
+    "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022he_cb6_22m/inputs/airports/2022hd_airports_2022_point_top51_adjusted_ATL_data_20250428_27may2025_v0.csv"
   ),
   file_exists
 ) == FALSE)) {
@@ -24,11 +24,11 @@ if (any(purrr::map(
 
 # read and save -----
 point_emissions_platform <- c(
-  "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022hd_cb6_22m/inputs/airports/2022hd_airports_2022_point_top51_adjusted_ATL_data_20250428_27may2025_v0.csv",
-  "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022hd_cb6_22m/inputs/pt_oilgas/oilgas_2022_POINT_20250812_14aug2025_v0.csv",
-  "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022hd_cb6_22m/inputs/ptegu/egu_2022_POINT_20250812_multifix_2022cems_14aug2025_v0.csv",
-  "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022hd_cb6_22m/inputs/ptnonipm/nonegu_norail_2022_POINT_20250812_14aug2025_nf_v1.csv",
-  "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022hd_cb6_22m/inputs/ptnonipm/railyards_2022_POINT_20250812_14aug2025_v0.csv"
+  "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022he_cb6_22m/inputs/airports/2022hd_airports_2022_point_top51_adjusted_ATL_data_20250428_27may2025_v0.csv",
+  "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022he_cb6_22m/inputs/pt_oilgas/oilgas_2022_POINT_20250812_14aug2025_v0.csv",
+  "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022he_cb6_22m/inputs/ptegu/egu_2022_POINT_20250812_multifix_2022cems_14aug2025_v0.csv",
+  "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022he_cb6_22m/inputs/ptnonipm/nonegu_norail_2022_POINT_20250812_14aug2025_nf_v1.csv",
+  "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022he_cb6_22m/inputs/ptnonipm/railyards_2022_POINT_20250812_14aug2025_v0.csv"
 )
 
 
