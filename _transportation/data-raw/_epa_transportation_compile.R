@@ -13,7 +13,7 @@ onroad_emissions <- epa_onroad_emissions_compile %>%
   # only get CO2e
   filter(
     pollutant == "emissions_metric_tons_co2e",
-    !vehicle_type %in% c("Gas stations", "Trucks and buses")
+    !vehicle_type %in% c("Gas stations")
   ) %>%
   unique() %>%
   group_by(
