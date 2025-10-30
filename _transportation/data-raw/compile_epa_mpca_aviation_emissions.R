@@ -77,8 +77,9 @@ airport_co2 <- air_emis_point_cprg %>%
   mutate(inferred_co2 = state_mt_co2e * county_share)
 
 
-airport_out <- airport_co2 %>%
+reliever_airport_emissions <- airport_co2 %>%
   select(geog_name = county_name, inventory_year, value_emissions = inferred_co2) %>%
+  unique() %>% 
   left_join(air_emis_point_cprg %>%
               mutate(inventory_year = as.numeric(calc_year)) %>% 
               select(inventory_year, data_source) %>% 
@@ -87,6 +88,7 @@ airport_out <- airport_co2 %>%
                 mpca_aviation %>% 
                   ungroup() %>% 
                   select(inventory_year, data_source) %>% 
+                  filter(inventory_year != 2020) %>% 
                   unique()
               ), relationship = "many-to-many",
             by = "inventory_year") %>% 
@@ -99,24 +101,24 @@ airport_out <- airport_co2 %>%
     factor_source = "EPA GHG Emission Factor Hub"
   )
 
-airport_emissions_meta <- tibble::tribble(
+reliever_airport_emissions_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
-  "sector", class(airport_out$sector), "Emissions sector",
-  "category", class(airport_out$category), "Emissions subsector category",
-  "source", class(airport_out$source), "Emissions source",
-  "inventory_year", class(airport_out$inventory_year), "Inventory year of emissions",
-  "value_emissions", class(airport_out$value_emissions), "Numeric value of emissions",
-  "units_emissions", class(airport_out$units_emissions), "Units of emissions",
-  "geog_name", class(airport_out$geog_name), "Geographic location",
-  "data_source", class(airport_out$data_source), "Source of activity data used to calculate emissions",
-  "factor_source", class(airport_out$factor_source), "Source of emission factor for translating activity to emissions"
+  "sector", class(reliever_airport_emissions$sector), "Emissions sector",
+  "category", class(reliever_airport_emissions$category), "Emissions subsector category",
+  "source", class(reliever_airport_emissions$source), "Emissions source",
+  "inventory_year", class(reliever_airport_emissions$inventory_year), "Inventory year of emissions",
+  "value_emissions", class(reliever_airport_emissions$value_emissions), "Numeric value of emissions",
+  "units_emissions", class(reliever_airport_emissions$units_emissions), "Units of emissions",
+  "geog_name", class(reliever_airport_emissions$geog_name), "Geographic location",
+  "data_source", class(reliever_airport_emissions$data_source), "Source of activity data used to calculate emissions",
+  "factor_source", class(reliever_airport_emissions$factor_source), "Source of emission factor for translating activity to emissions"
 )
 
-saveRDS(airport_out, "./_transportation/data/reliever_airport_emissions.rds")
-saveRDS(airport_emissions_meta, "./_transportation/data/reliever_airport_emissions_meta.rds")
+saveRDS(reliever_airport_emissions, "./_transportation/data/reliever_airport_emissions.rds")
+saveRDS(reliever_airport_emissions_meta, "./_transportation/data/reliever_airport_emissions_meta.rds")
 
 
-reliever_source_set <- airport_out %>% 
+reliever_source_set <- reliever_airport_emissions %>% 
   left_join(air_emis_point_cprg %>%
               ungroup() %>% 
               mutate(inventory_year = as.numeric(calc_year)) %>% 
