@@ -173,13 +173,18 @@ ppp_data <- diverging_data %>%
   select(emissions_year, value_emissions) %>%
   rename(ppp_emissions = value_emissions)
 
-# net_zero_for_ppp <- diverging_data %>%
-#   filter(scenario == "nz") %>%
-#   select(emissions_year, value_emissions) %>%
-#   rename(net_zero_emissions = value_emissions)
-#
-# ppp_ribbon_data <- ppp_data %>%
-#   left_join(net_zero_for_ppp, by = "emissions_year")
+ag_plot <- plot_emissions_pathways(
+  base_data = base_data,
+  diverging_data = diverging_data,
+  target_value = ag_target,
+  target_year = 2050,
+  base_cutoff_year = 2022,
+  ppp_bau_color = "#A5CF4C",
+  y_max = 1.5e6,  # Optional: set max y value
+  title = "Agricultural Emissions \n(Millions of CO2-equivalency)"
+)
+
+ag_plot
 
 # Create the plot
 emissions_gg <- ggplot() +
