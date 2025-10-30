@@ -115,25 +115,29 @@ Direct emissions from manure handled in management systems and applied as daily 
 Croplands emit nitrous oxide via legumes (i.e. soybeans, alfalfa, beans) that fix atmospheric N~2~ in the soil, some of which is converted to nitrous oxide via soil biochemical processes. Additionally, non-legume crops have residues that are left on soils and breakdown into the soil, emitting further nitrous oxide.
 
 ### Legumes: 
-Emissions (MTCO~2~E) = Crop Production (MT) × Mass ratio (residue/crop) × Dry Matter Fraction × N content × Emission Factor (1.0%) × 44/28 (Ratio of N~2~O to N~2~O-N) 
+
+$$
+\text{Emissions (Metric tons N}_2 \text{O)} =  \sum_{i}(\text{MT  Crop Production}_i \times \text{Mass ratio (residue/crop)}_i \times \text{Dry Matter Fraction}_i \times \text{N content}_i \times \text{ Emission Factor (1.0%)} \times \text{N}_2 \text{O:N}_2)
+$$
+where *i* is the crop type. EPA provides an emissions factor of 0.01 percentage of N content that is ultimately converted to N~2~O and 1.571 is the mass ratio of nitrous oxide to N~2~.
 
 ### Residues: 
 Emissions (MTCO~2~E) = Crop Production (MT) × Mass ratio (residue/crop) × Dry Matter Fraction × Fraction Residue Applied × N content × Emission Factor (1.0%) × 44/28 (Ratio of N~2~O to N~2~O-N)
 
+$$
+\text{Emissions (Metric tons N}_2 \text{O)} =  \sum_{i}(\text{MT  Crop Production}_i \times \text{Mass ratio (residue/crop)}_i \times \text{Dry Matter Fraction}_i \times \text{Fraction Residue Applied}_i \times \text{N content}_i \times \text{ Emission Factor (1.0%)} \times \text{N}_2 \text{O:N}_2)
+$$
+where *i* is the crop type. EPA provides an emissions factor of 0.01 percentage of N content that is ultimately converted to N~2~O and 1.571 is the mass ratio of nitrous oxide to N~2~. In addition to the calculation for legumes, different ratios of residues tend to be left on the field for different non-leguminous crops.
+
 ## Fertilizer application
 
-Synthetic and organic fertilizers breakdown to provide N to crops, but some fraction of this is converted to nitrous oxide that is emitted to the atmosphere.
+Synthetic and organic fertilizers breakdown to provide N to crops, but are typically over-applied. A fraction of the fertilizer not taken up by plants is converted to nitrous oxide that is emitted to the atmosphere. Some proportion of applied fertilized is additionally leached into the soil and runs off into streams and adjacent soils, where it further is chemically converted to nitrous oxide.  
 
-### Direct
-Emissions (MMTCO~2~E) = Total N × fraction unvolatilized (0.9 synthetic or 0.8 organic) × 0.01 (kg N~2~O-N/kg N) × 44/28 (Ratio of N~2~O to N~2~O-N) × 265 (GWP) ÷ 1,000,000,000 (kg/MMTCO~2~E)
 
-### Indirect
-Emissions (MMTCO~2~E) = Total N × fraction volatilized (0.1 synthetic or 0.2 organic) × 0.001 (kg N~2~O-N/kg N) × 44/28 (Ratio of N~2~O to N~2~O-N) × 265 (GWP) ÷ 1,000,000,000 (kg/MMTCO~2~E)
-
-## Fertilizer runoff
-
-Some proportion of applied fertilized is leached into the soil and runs off into streams and adjacent soils, where it further is chemically converted to nitrous oxide.  
-
+$$
+\text{Emissions (Metric tons N}_2 \text{O)} =  \sum_{i,j}(\text{MT Fertilizer applied}_i \times \text{Fraction volatilized}_i \times \text{ Emission Factor}_j \times \text{N}_2 \text{O:N}_2)
+$$
+where *i* is the type of fertilizer applied, either synthetic or organic, and *j* is the emission factor for either direct, on-site N~2~O emissions (0.01) or off-site, run-off emissions (0.001).
 
 ### Remaining work
 
