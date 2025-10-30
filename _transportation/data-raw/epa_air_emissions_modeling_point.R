@@ -24,6 +24,7 @@ if (any(purrr::map(
 
 # read and save -----
 point_emissions_platform <- c(
+  # "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/airports/2022proj_airports_2022_point_20240626_top51_adjusted_26jun2024_v0.csv",
   "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022he_cb6_22m/inputs/airports/2022hd_airports_2022_point_top51_adjusted_ATL_data_20250428_27may2025_v0.csv",
   "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022he_cb6_22m/inputs/pt_oilgas/oilgas_2022_POINT_20250812_14aug2025_v0.csv",
   "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022he_cb6_22m/inputs/ptegu/egu_2022_POINT_20250812_multifix_2022cems_14aug2025_v0.csv",
