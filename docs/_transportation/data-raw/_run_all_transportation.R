@@ -46,6 +46,9 @@ source("_transportation/data-raw/_epa_transportation_compile.R")
 source("_transportation/data-raw/rtdm_forecast_vmt_emissions.R")
 source("_transportation/data-raw/_compile_county_inventory_forecast.R")
 
+source("_transportation/data-raw/compile_mpca_mac_aviation_emissions.R")
+source("_transportation/data-raw/compile_epa_mpca_aviation_emissions.R")
+
 
 # CTU level data and modeling
 source("_transportation/data-raw/mndot_vmt_ctu.R")

@@ -20,10 +20,24 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 
 aviation_emissions <- readRDS(file.path(here::here(), "_transportation/data/aviation_emissions.rds"))
 
+reliever_emissions <- readRDS(file.path(here::here(), "_transportation/data/reliever_airport_emissions.rds"))
+
 aviation_emissions_data_source_compare <- read_rds(file.path(here::here(), "_transportation/data/aviation_emissions_data_source_compare.RDS"))
+
+msp_2020 <- aviation_emissions %>%
+  filter(inventory_year == 2020) %>%
+  pull(value_emissions) %>%
+  sum()
+
+reliever_2020 <- reliever_emissions %>%
+  filter(inventory_year == 2020) %>%
+  pull(value_emissions) %>%
+  sum()
+
 
 hookaddcap()
 ```
+
 ### Minneapolis-St. Paul International Airport (MSP)
 
 Aviation emissions are derived from three data sources: Metropolitan Airport Commission (MAC) fuel distribution (2005, 2021), MAC Aircraft emission estimates (2016-2020), and MPCA state GHG inventories.
@@ -32,7 +46,7 @@ Fuel distribution at the airport is the most straight-forward approach, as it in
 
 The second data source, MAC provided emissions are also a highly useful source, with the one overlapping year (2021) resulting in an almost identical emission estimate. However, because it lacks the explicit activity data, we prefer using the fuel distribution.
 
-The final data source, which we used to in-fill interstitial years, 2006-2015, relies on MPCA statewide aviation emission estimates. Here, we calculated the proportion of MSP aviation emissions relative to statewide emissions, and used a time-series imputation method to fill in the interstitial years' proportions. Then, we recalculated MSP emissions by multiplying the interpolated proportion by the statewide emission estimate. This method proved superior to directly imputing the MSP emissions between 2005 and 2016-2021 (i.e. not using the state data in any form), as those interpolations resulted in three years with MSP emission estimates exceeding the statewide emission estimate.
+The final data source, which we used to in-fill interstitial years, 2006-2015 and 2022, relies on MPCA statewide aviation emission estimates. Here, we calculated the proportion of MSP aviation emissions relative to statewide emissions, and used a time-series imputation method to fill in the interstitial years' proportions. Then, we recalculated MSP emissions by multiplying the interpolated proportion by the statewide emission estimate. This method proved superior to directly imputing the MSP emissions between 2005 and 2016-2021 (i.e. not using the state data in any form), as those interpolations resulted in three years with MSP emission estimates exceeding the statewide emission estimate.
 
 ```{r fig-aviation-emissions-data-source-compare}
 #| fig-cap: "Comparison of aviation emission interpolations"
@@ -122,7 +136,13 @@ fig_aviation_emissions_data_source_compare <- plot_ly(
 
 fig_aviation_emissions_data_source_compare
 ```
+### Reliever Airports
 
+In addition to MSP International, the EPA Air Emissions Modeling Platform identifies 22 other sources of aviation emissions in the eleven-county region in 2020. Emissions reported in this data set are only those associated with the landing and take-off portion of flights, and thus under reports emissions from these sources. However, these unaccounted for emissions are likely to be small relative to those from MSP and we do not know of an alternative data source. For all other years in our inventory, we calculated the proportion of emissions from these airports relative to the state totals reported by the MPCA in 2020, and used this proportion of state totals for all years. In 2020, reliever airports accounted for `r scales::percent(reliever_2020 / (msp_2020 + reliever_2020), accuracy = 0.1)` of regional aviation emissions.
+
+## Limitations
+
+- EPA Air Emissions Modeling Point data only include CO~2~.
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))

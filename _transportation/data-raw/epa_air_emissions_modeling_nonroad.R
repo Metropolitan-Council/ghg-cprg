@@ -18,7 +18,8 @@ if (any(purrr::map(
     "_transportation/data-raw/epa/air_emissions_modeling/2019/2019ge_cb6_19k/inputs/nonroad/2019ge_nonroad_from_MOVES_aggSCC_29oct2021_v1.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2020/2020ha2_cb6_20k/inputs/nonroad/2020NEI_nonroad_from_MOVES_aggSCC_10may2023_v4.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k/inputs/nonroad/nonroad_ff10_2021hb_MOVES_ROC_AE6_10nov2023_nf_v2.csv",
-    "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/nonroad/nonroad_ff10_2022hc_MOVES_ROC_AE6_13mar2024_v1.csv"
+    "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022he_cb6_22m/inputs/nonroad/nonroad_ff10_2022v2_by2022_MOVES_ROC_AE6_07may2025_nf_v3.csv"
+    # "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/nonroad/nonroad_ff10_2022hc_MOVES_ROC_AE6_13mar2024_v1.csv"
   ),
   file_exists
 ) == FALSE)) {
@@ -40,7 +41,8 @@ furrr::future_map(
     "_transportation/data-raw/epa/air_emissions_modeling/2019/2019ge_cb6_19k/inputs/nonroad/2019ge_nonroad_from_MOVES_aggSCC_29oct2021_v1.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2020/2020ha2_cb6_20k/inputs/nonroad/2020NEI_nonroad_from_MOVES_aggSCC_10may2023_v4.csv",
     "_transportation/data-raw/epa/air_emissions_modeling/2021/2021hb_cb6_21k/inputs/nonroad/nonroad_ff10_2021hb_MOVES_ROC_AE6_10nov2023_nf_v2.csv",
-    "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/nonroad/nonroad_ff10_2022hc_MOVES_ROC_AE6_13mar2024_v1.csv"
+    "_transportation/data-raw/epa/air_emissions_modeling/2022v2/2022he_cb6_22m/inputs/nonroad/nonroad_ff10_2022v2_by2022_MOVES_ROC_AE6_07may2025_nf_v3.csv"
+    # "_transportation/data-raw/epa/air_emissions_modeling/2022v1/2022hc_cb6_22m/inputs/nonroad/nonroad_ff10_2022hc_MOVES_ROC_AE6_13mar2024_v1.csv"
   ),
   read_smoke_ff10,
   out_directory = "_transportation/data-raw/epa/air_emissions_modeling/air_emissions_modeling_mn_wi/nonroad/"
