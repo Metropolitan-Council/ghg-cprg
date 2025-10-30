@@ -11,34 +11,41 @@ air_emis_airport <- readRDS("_transportation/data-raw/epa/air_emissions_modeling
 msp_emissions <- readRDS("_transportation/data/aviation_emissions.rds")
 scc_combine <- readRDS(file.path(here::here(), "_transportation/data/scc_combine.RDS"))
 
-air_codes <- scc_combine %>%  
-  filter(scc6 %in% c(
-    air_emis_airport$scc6 %>% unique,
-    air_emis_nonroad$scc6 %>% unique),
-    vehicle_type != "Pleasure craft")
+air_codes <- scc_combine %>%
+  filter(
+    scc6 %in% c(
+      air_emis_airport$scc6 %>% unique(),
+      air_emis_nonroad$scc6 %>% unique()
+    ),
+    vehicle_type != "Pleasure craft"
+  )
 
-air_emis_point_cprg <- cprg_county %>% 
-  st_drop_geometry() %>% 
-  select(geoid, county_name) %>% 
-  left_join(air_emis_point %>% 
-              select(region_cd, 
-                     facility_id, 
-                     unit_id, 
-                     unit_type_code,
-                     facility_name, 
-                     scc, 
-                     scc6, 
-                     poll, 
-                     emissions_short_tons,
-                     calc_year,
-                     file_location),
-            by = c("geoid" = "region_cd")) %>% 
-  filter(scc6 %in% unique(air_codes$scc6)) %>% 
+air_emis_point_cprg <- cprg_county %>%
+  st_drop_geometry() %>%
+  select(geoid, county_name) %>%
+  left_join(
+    air_emis_point %>%
+      select(
+        region_cd,
+        facility_id,
+        unit_id,
+        unit_type_code,
+        facility_name,
+        scc,
+        scc6,
+        poll,
+        emissions_short_tons,
+        calc_year,
+        file_location
+      ),
+    by = c("geoid" = "region_cd")
+  ) %>%
+  filter(scc6 %in% unique(air_codes$scc6)) %>%
   mutate(
     data_source = "Air Emissions Modeling",
     dataset = "point_mn_wi.RDS",
     process_source = "_transportation/data-raw/epa_air_emissions_modeling_point.R"
-  ) %>% 
+  ) %>%
   left_join(scc_combine)
 
 
@@ -49,7 +56,7 @@ mpca_aviation <-
   filter(Source == "Aviation") %>%
   mutate(inventory_year = as.numeric(inventory_year)) %>%
   group_by(Sector, Source, inventory_year) %>%
-  summarise(state_mt_co2e = sum(co2e), .groups = "keep") %>% 
+  summarise(state_mt_co2e = sum(co2e), .groups = "keep") %>%
   mutate(
     data_source = "MPCA state aviation emission proportional analysis",
     dataset = "mpca_ghg_inv_2022.RDS",
@@ -58,41 +65,45 @@ mpca_aviation <-
 
 
 
-airport_co2 <- air_emis_point_cprg %>% 
+airport_co2 <- air_emis_point_cprg %>%
   filter(
     poll == "CO2",
-    facility_id != 6151711) %>% # MSP intl
-  group_by(county_name, calc_year, poll) %>% 
-  summarize(tons_co2 = sum(emissions_short_tons), .groups = "keep") %>% 
-  ungroup() %>% 
-  mutate(mt_co2 = as.numeric(tons_co2 * units::as_units("short_ton") %>%
-                               units::set_units("metric_ton")
-  ),
-  county_share = mt_co2 / mpca_aviation$state_mt_co2e[mpca_aviation$inventory_year == 2020]
-  ) %>% 
-  cross_join(mpca_aviation %>% 
-               ungroup() %>% 
-               filter(inventory_year >= 2005) %>% 
-               select(inventory_year, state_mt_co2e)) %>% 
+    facility_id != 6151711
+  ) %>% # MSP intl
+  group_by(county_name, calc_year, poll) %>%
+  summarize(tons_co2 = sum(emissions_short_tons), .groups = "keep") %>%
+  ungroup() %>%
+  mutate(
+    mt_co2 = as.numeric(tons_co2 * units::as_units("short_ton") %>%
+      units::set_units("metric_ton")),
+    county_share = mt_co2 / mpca_aviation$state_mt_co2e[mpca_aviation$inventory_year == 2020]
+  ) %>%
+  cross_join(mpca_aviation %>%
+    ungroup() %>%
+    filter(inventory_year >= 2005) %>%
+    select(inventory_year, state_mt_co2e)) %>%
   mutate(inferred_co2 = state_mt_co2e * county_share)
 
 
 reliever_airport_emissions <- airport_co2 %>%
   select(geog_name = county_name, inventory_year, value_emissions = inferred_co2) %>%
-  unique() %>% 
-  left_join(air_emis_point_cprg %>%
-              mutate(inventory_year = as.numeric(calc_year)) %>% 
-              select(inventory_year, data_source) %>% 
-              unique() %>% 
-              bind_rows(
-                mpca_aviation %>% 
-                  ungroup() %>% 
-                  select(inventory_year, data_source) %>% 
-                  filter(inventory_year != 2020) %>% 
-                  unique()
-              ), relationship = "many-to-many",
-            by = "inventory_year") %>% 
-  unique() %>% 
+  unique() %>%
+  left_join(
+    air_emis_point_cprg %>%
+      mutate(inventory_year = as.numeric(calc_year)) %>%
+      select(inventory_year, data_source) %>%
+      unique() %>%
+      bind_rows(
+        mpca_aviation %>%
+          ungroup() %>%
+          select(inventory_year, data_source) %>%
+          filter(inventory_year != 2020) %>%
+          unique()
+      ),
+    relationship = "many-to-many",
+    by = "inventory_year"
+  ) %>%
+  unique() %>%
   mutate(
     sector = "Transportation",
     category = "Aviation",
@@ -118,26 +129,30 @@ saveRDS(reliever_airport_emissions, "./_transportation/data/reliever_airport_emi
 saveRDS(reliever_airport_emissions_meta, "./_transportation/data/reliever_airport_emissions_meta.rds")
 
 
-reliever_source_set <- reliever_airport_emissions %>% 
-  left_join(air_emis_point_cprg %>%
-              ungroup() %>% 
-              mutate(inventory_year = as.numeric(calc_year)) %>% 
-              select(inventory_year, data_source, dataset, process_source, scc6_desc, file_location) %>% 
-              unique() %>% 
-              bind_rows(
-                mpca_aviation %>% 
-                  ungroup() %>% 
-                  select(inventory_year, data_source, dataset, process_source) %>% 
-                  unique()
-              ), 
-            relationship = "many-to-many",
-            by = join_by(inventory_year, data_source)) %>% 
-  select(-value_emissions) %>% 
-  unique() %>% 
-  group_by( inventory_year, data_source, sector, category, 
-            source, units_emissions, factor_source, dataset, process_source, 
-            scc6_desc, file_location) %>% 
+reliever_source_set <- reliever_airport_emissions %>%
+  left_join(
+    air_emis_point_cprg %>%
+      ungroup() %>%
+      mutate(inventory_year = as.numeric(calc_year)) %>%
+      select(inventory_year, data_source, dataset, process_source, scc6_desc, file_location) %>%
+      unique() %>%
+      bind_rows(
+        mpca_aviation %>%
+          ungroup() %>%
+          select(inventory_year, data_source, dataset, process_source) %>%
+          unique()
+      ),
+    relationship = "many-to-many",
+    by = join_by(inventory_year, data_source)
+  ) %>%
+  select(-value_emissions) %>%
+  unique() %>%
+  group_by(
+    inventory_year, data_source, sector, category,
+    source, units_emissions, factor_source, dataset, process_source,
+    scc6_desc, file_location
+  ) %>%
   summarize(geographies = paste0(geog_name, collapse = ", "), .groups = "keep")
-  
-  
+
+
 saveRDS(reliever_source_set, "./_transportation/data/reliever_source_set.RDS")

@@ -50,10 +50,11 @@ scc6_desc <- download_read_table("https://gaftp.epa.gov/Air/emismod/2022/v1/repo
   )
 
 scc6_desc_v2 <- download_read_table("https://gaftp.epa.gov/Air/emismod/2022/v2/reports/state-scc-sector_comparison_2022hc_hd_he_28aug2025.xlsx",
-                                    exdir = "_transportation/data-raw/epa/air_emissions_modeling/2022v2/",
-                                    sheet = 2) %>% 
-  clean_names() %>% 
-  filter(sector %in% c("airports", "onroad", "nonroad")) %>% 
+  exdir = "_transportation/data-raw/epa/air_emissions_modeling/2022v2/",
+  sheet = 2
+) %>%
+  clean_names() %>%
+  filter(sector %in% c("airports", "onroad", "nonroad")) %>%
   select(sector, scc, scc_desc = sccdesc) %>%
   unique() %>%
   mutate(scc6 = stringr::str_sub(scc, 1, 6)) %>%
@@ -62,14 +63,14 @@ scc6_desc_v2 <- download_read_table("https://gaftp.epa.gov/Air/emismod/2022/v2/r
     delim = ";",
     names_sep = "_",
     cols_remove = FALSE
-  ) 
-  
+  )
+
 # manual scc6 descriptions, compiled by Council staff
 scc6_desc_manual <- read.csv(file.path("_transportation/data-raw/epa/nei/scc6_descriptions_all.csv"),
   colClasses = "character"
 )
 
-scc6_desc_v2 %>% 
+scc6_desc_v2 %>%
   filter(!scc6 %in% scc6_desc_manual$scc6_new)
 
 # scc onroad modeling -----
@@ -117,8 +118,10 @@ scc_complete <-
     col_types = "c"
   ) %>%
   clean_names() %>%
-  filter(data_category %in% c("Onroad", "Nonroad", "Point"),
-         scc_level_one  == "Mobile Sources") %>%
+  filter(
+    data_category %in% c("Onroad", "Nonroad", "Point"),
+    scc_level_one == "Mobile Sources"
+  ) %>%
   select(
     scc, data_category, map_to, status,
     last_inventory_year, sector,
@@ -200,7 +203,7 @@ scc_complete <-
       scc_level_three == "LPG" ~ "Liquefied petroleum gas (LPG)",
       scc_level_three == "Coal" ~ "Coal",
       scc_level_three == "Residual" ~ "Residual fuel",
-      scc_level_three == "Off-highway Vehicle Diesel"  ~ "Diesel",
+      scc_level_three == "Off-highway Vehicle Diesel" ~ "Diesel",
       scc_level_three == "unknown" ~ "Unknown fuel",
       scc_level_three == "All Fuels" ~ "All fuels",
       str_detect(scc_level_three, "Gasoline") | str_detect(scc_level_two, "Gasoline") ~ "Gasoline",
@@ -230,24 +233,24 @@ scc_complete <-
   )
 
 
-# scc_complete %>% 
-#   filter(is.na(scc6_desc_broad)) %>% 
+# scc_complete %>%
+#   filter(is.na(scc6_desc_broad)) %>%
 #   select(names(scc6_desc_manual)) %>%
-#   select(-scc6_desc_manual) %>% 
+#   select(-scc6_desc_manual) %>%
 #   filter(!scc6_new %in% scc6_desc_manual$scc6_new) %>%
-#   unique() %>% 
+#   unique() %>%
 #   write.csv("_transportation/data-raw/epa/scc_missing_values.csv")
 
 
 
-scc_complete %>% 
-  ungroup() %>% 
-  # filter(fuel_type_detect == "Liquefied petroleum gas (LPG)") %>% 
+scc_complete %>%
+  ungroup() %>%
+  # filter(fuel_type_detect == "Liquefied petroleum gas (LPG)") %>%
   select(alt_mode, fuel_type_detect, scc_level_three, alt_mode, alt_mode_truck, scc6_new, scc6_desc) %>%
   filter(!is.na(alt_mode)) %>%
   unique()
 
- # scc EQUATES -----
+# scc EQUATES -----
 # best available dataset was found in the New Jersey state website
 # https://dep.nj.gov/wp-content/uploads/airplanning/app-4-4-2016-2023-nj-modeling-inventory-statewide-5-13-24.xlsx
 # download_read_table doesn't seem to work with this link
@@ -351,8 +354,10 @@ scc_equates <- readxl::read_xlsx(
 # create a combined SCC index for use across all data sources
 # including NEI, EQUATES, and air emissions modeling platforms
 scc_combine <- scc_complete %>%
-  filter(scc != "2275001001",
-         scc6 != 228300) %>% 
+  filter(
+    scc != "2275001001",
+    scc6 != 228300
+  ) %>%
   select(scc6, scc6_desc, scc6_desc_broad, scc6_desc_manual) %>%
   unique() %>%
   bind_rows(scc_equates %>%
@@ -378,7 +383,7 @@ scc_combine <- scc_complete %>%
           "223007"
           # "220107"
         ) ~ "Diesel; Trucks and buses",
-        scc6 == "220107" ~  "Gasoline; Trucks and buses",
+        scc6 == "220107" ~ "Gasoline; Trucks and buses",
         TRUE ~ scc6_desc
       )
   ) %>%
@@ -397,8 +402,10 @@ scc_combine <- scc_complete %>%
     )[, 2] %>%
       str_trim()
   ) %>%
-  mutate(fuel_type = case_when(stringr::str_detect(fuel_type, "Marine Vessels") ~ vehicle_type,
-                               TRUE ~ fuel_type)) %>% 
+  mutate(fuel_type = case_when(
+    stringr::str_detect(fuel_type, "Marine Vessels") ~ vehicle_type,
+    TRUE ~ fuel_type
+  )) %>%
   select(scc6, scc6_desc, fuel_type, vehicle_type) %>%
   unique() %>%
   left_join(
@@ -413,8 +420,8 @@ scc_combine <- scc_complete %>%
   ) %>%
   # remove any "equipment" vehicle types
   # except airport support
-  filter(str_detect(vehicle_type, "equipment", negate = TRUE) | 
-           vehicle_type == "Airport Ground Support Equipment") %>% 
+  filter(str_detect(vehicle_type, "equipment", negate = TRUE) |
+    vehicle_type == "Airport Ground Support Equipment") %>%
   mutate(
     # specify outputs for gas stations, pleasure craft, trucks and buses
     alt_mode = ifelse(vehicle_type %in% c(
