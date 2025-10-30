@@ -28,27 +28,18 @@ read_smoke_ff10 <- function(file_location,
     paste0(collapse = "")
 
 
+  column_names <- readLines(file_location,
+    n = n_skip_rows
+  )[n_skip_rows] %>%
+    stringr::str_split(pattern = ",")
+
   # read and complete initial cleaning
   smoke_moves_table <- data.table::fread(
     file = file_location,
     skip = n_skip_rows,
     header = FALSE,
     colClasses = "character",
-    col.names = c(
-      "country_cd", "region_cd", "tribal_code",
-      "census_tract_cd", "shape_id", "scc", "emis_type",
-      "poll", "ann_value", "ann_pct_red", "control_ids",
-      "control_measures", "current_cost",
-      "cumulative_cost", "projection_factor",
-      "reg_codes", "calc_method", "calc_year",
-      "date_updated", "data_set_id", "jan_value",
-      "feb_value", "mar_value", "apr_value", "may_value",
-      "jun_value", "jul_value", "aug_value", "sep_value",
-      "oct_value", "nov_value", "dec_value", "jan_pctred",
-      "feb_pctred", "mar_pctred", "apr_pctred", "may_pctred",
-      "jun_pctred", "jul_pctred", "aug_pctred", "sep_pctred",
-      "oct_pctred", "nov_pctred", "dec_pctred", "comment"
-    )
+    col.names = column_names[[1]]
   ) %>%
     # only include counties in MN and WI
     dplyr::filter(
@@ -82,7 +73,7 @@ read_smoke_ff10 <- function(file_location,
         "CH4", "N2O",
         "CO2", "NO", "NOX", "SO2", "NH3",
         "HFC", "VOC", "O3", "CO", "PFC", "SF6",
-        "PM10-PRI", "PM25-PRI", "PM-CON"
+        "PM10-PRI", "PM25-PRI", "PM-CON", "NF3"
       )
     ) %>%
     dplyr::mutate(
@@ -97,15 +88,19 @@ read_smoke_ff10 <- function(file_location,
       metadata_info = metadata_info
     ) %>%
     dplyr::select(
-      -tribal_code, -census_tract_cd,
-      -shape_id, -country_cd,
-      -date_updated, -data_set_id,
-      -current_cost,
-      -cumulative_cost, -reg_codes,
-      -ann_pct_red,
-      -projection_factor, -calc_method,
-      -control_measures, -control_ids,
-      -tidyr::starts_with(tolower(month.abb))
+      -any_of(
+        c(
+          "tribal_code", "census_tract_cd",
+          "shape_id", "country_cd",
+          "date_updated", "data_set_id",
+          "current_cost",
+          "cumulative_cost", "reg_codes",
+          "ann_pct_red",
+          "projection_factor", "calc_method",
+          "control_measures", "control_ids"
+        )
+      ),
+      -any_of(tidyr::starts_with(tolower(month.abb)))
     )
 
   # create the output file name from the input file name

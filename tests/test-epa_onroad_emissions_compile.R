@@ -23,7 +23,7 @@ testthat::test_that("Compiled onroad emissions", {
       "Intercity buses", "Transit buses", "School buses", "Refuse trucks",
       "Single unit short-haul trucks", "Single unit long-haul trucks",
       "Motor homes", "Combination short-haul trucks", "Combination long-haul trucks",
-      "Trucks and buses", "Gas stations"
+      "Gas stations"
     )
   )
 
