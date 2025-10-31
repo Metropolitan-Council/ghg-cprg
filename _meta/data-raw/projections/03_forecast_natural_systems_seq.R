@@ -213,8 +213,8 @@ scen1_urbanTree_2050 <- 100
 scen1_cropland_2050 <- 5
 scen1_bare_2050 <- 100
 scen1_grassland_2050 <- 10
-scen1_wetland_2050 <- 0
-  # round(pct_increase_in_wetland_area_11co, 1)
+scen1_wetland_2050 <- 
+  round(pct_increase_in_wetland_area_11co, 1)
 
 mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
   .selected_ctu = "Regional",
