@@ -153,7 +153,7 @@ plot_emissions_pathways <- function(
     # and net-zero
     annotate("text", x = 2052, y = target_value, 
              label = "Net zero target",
-             size = 5, hjust = 0, vjust = 0.5, fontface = "bold") +
+             size = 5, hjust = 0, vjust = 0, fontface = "bold") +
     
     # Add "Inventory" and "Projections" annotations below x-axis
     annotation_custom(

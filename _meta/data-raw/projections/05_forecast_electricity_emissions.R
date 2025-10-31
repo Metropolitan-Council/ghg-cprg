@@ -2,6 +2,7 @@
 
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
+source("_meta/data-raw/projections/01_projections_plotter.R")
 
 residential_elec <- readRDS("_meta/data-raw/projections/residential_pathways.RDS") %>%
   filter(scenario == "bau") %>%

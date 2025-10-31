@@ -6,7 +6,7 @@
 
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
-
+source("_meta/data-raw/projections/01_projections_plotter.R")
 
 # Load data
 natural_systems_data <- c()

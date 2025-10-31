@@ -161,12 +161,16 @@ bau_projection_plot <- ggplot() +
   geom_area(
     data = bau_positive,
     aes(x = emissions_year, y = value_emissions, fill = sector),
+    col = "#E8E8E8",
+    size = 0.5,
     position = "stack"
   ) +
   # Add negative emissions (natural systems) below zero
   geom_area(
     data = bau_negative,
-    aes(x = emissions_year, y = value_emissions, fill = sector)
+    aes(x = emissions_year, y = value_emissions, fill = sector),
+    col = "#E8E8E8",
+    size = 0.5
   ) +
   # Apply the custom color palette
   scale_fill_manual(values = sector_colors, name = "Sector") +
@@ -174,7 +178,7 @@ bau_projection_plot <- ggplot() +
   labs(
     title = "Business as usual projections by sector",
     subtitle = expression(paste("(Million metric tons of ", CO[2], "e)")),
-    x = "Year",
+    x = "",
     y = ""
   ) +
   # Add a horizontal line at y = 0 for reference
@@ -187,9 +191,11 @@ bau_projection_plot <- ggplot() +
     legend.position = "right",
     legend.text = element_text(size = 16),
     legend.title = element_text(size = 18),
+    axis.title = element_text(size = 16),
     panel.grid.minor = element_blank(),
-    axis.text = element_text(size = 14),
-    axis.title = element_text(size = 16)
+    panel.grid.major.x = element_blank(),
+    axis.text = element_text(size = 14, color = "black"),
+    plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
   ) +
   # Format y-axis to show values in scientific notation or scaled
   scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))

@@ -164,12 +164,16 @@ ppp_projection_plot <- ggplot() +
   geom_area(
     data = pathways_pos,
     aes(x = emissions_year, y = value_emissions, fill = sector),
+    col = "#E8E8E8",
+    size = 0.5,
     position = "stack"
   ) +
   # Add negative emissions (natural systems) below zero
   geom_area(
     data = pathways_neg,
-    aes(x = emissions_year, y = value_emissions, fill = sector)
+    aes(x = emissions_year, y = value_emissions, fill = sector),
+    col = "#E8E8E8",
+    size = 0.5
   ) +
   # Apply the custom color palette
   scale_fill_manual(values = sector_colors, name = "Sector") +
@@ -193,7 +197,6 @@ ppp_projection_plot <- ggplot() +
     x = "Year",
     y = ""
   ) +
-  # Add a horizontal line at y = 0 for reference
   geom_hline(yintercept = 0, color = "black", linetype = "solid", alpha = 0.7) +
   # Clean theme
   theme_minimal() +
@@ -203,12 +206,15 @@ ppp_projection_plot <- ggplot() +
     legend.position = "right",
     legend.text = element_text(size = 16),
     legend.title = element_text(size = 18),
+    axis.title = element_text(size = 16),
     panel.grid.minor = element_blank(),
-    axis.text = element_text(size = 14),
-    axis.title = element_text(size = 16)
+    panel.grid.major.x = element_blank(),
+    axis.text = element_text(size = 14, color = "black"),
+    plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
   ) +
   # Format y-axis to show values in scientific notation or scaled
   scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
+
 
 print(ppp_projection_plot)
 
