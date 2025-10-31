@@ -37,7 +37,7 @@ transportation_emissions <- readRDS("_transportation/data/onroad_emissions.RDS")
   )
 
 aviation_emissions <- readRDS("_transportation/data/aviation_emissions.RDS") %>%
-  ungroup() %>% 
+  ungroup() %>%
   mutate(
     sector = "Transportation",
     geog_level = "county",
@@ -49,19 +49,18 @@ aviation_emissions <- readRDS("_transportation/data/aviation_emissions.RDS") %>%
     value_emissions = round(value_emissions, digits = 2),
     unit_emissions = "Metric tons CO2e",
     emissions_year = inventory_year
-  ) %>% 
-  bind_rows(readRDS("_transportation/data/reliever_airport_emissions.RDS")%>%
-              mutate(
-                geog_level = "county",
-                county_name = geog_name,
-                source = "Reliever airport",
-                category = "Aviation",
-                value_emissions = round(value_emissions, digits = 2),
-                unit_emissions = "Metric tons CO2e",
-                emissions_year = inventory_year
-              )
-            ) %>% 
-  ungroup() %>% 
+  ) %>%
+  bind_rows(readRDS("_transportation/data/reliever_airport_emissions.RDS") %>%
+    mutate(
+      geog_level = "county",
+      county_name = geog_name,
+      source = "Reliever airport",
+      category = "Aviation",
+      value_emissions = round(value_emissions, digits = 2),
+      unit_emissions = "Metric tons CO2e",
+      emissions_year = inventory_year
+    )) %>%
+  ungroup() %>%
   filter(emissions_year >= 2005) %>%
   select(names(transportation_emissions))
 
