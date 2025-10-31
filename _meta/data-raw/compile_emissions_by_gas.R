@@ -211,84 +211,24 @@ electricity_gas <- readRDS("_energy/data/county_elec_activity.RDS") %>%
   ) %>%
   select(emissions_year = year, county_name, sector, value_emissions, units_emissions, metric_tons_co2e)
 
-industrial_fuel_gas_epa <- readRDS("_industrial/data/fuel_combustion_emissions_by_gas.RDS") %>%
-  filter(
-    doublecount != "Yes",
-    specific_fuel_type != "Municipal Solid Waste"
+industrial_gas <- readRDS("_industrial/data/industrial_emissions_by_gas.RDS") %>%
+  filter(inventory_year == 2022) %>%
+  group_by(inventory_year, county_name, units_emissions) %>%
+  summarize(
+    value_emissions = sum(mt_gas),
+    metric_tons_co2e = sum(metric_tons_co2e)
+  ) %>%
+  mutate(sector = "Industrial") %>%
+  select(
+    emissions_year = inventory_year,
+    county_name,
+    sector,
+    value_emissions,
+    units_emissions,
+    metric_tons_co2e
   )
 
-industrial_fuel_gas_epa_out <- industrial_fuel_gas_epa %>%
-  group_by(reporting_year, county_name, city_name, units_emissions) %>%
-  summarize(value_emissions = sum(values_emissions)) %>%
-  ungroup() %>%
-  filter(
-    reporting_year == 2022,
-    units_emissions != "avg_activity"
-  ) %>%
-  rename(emissions_year = reporting_year) %>%
-  mutate(
-    units_emissions = paste(
-      "Metric tons",
-      toupper(substr(units_emissions, 4, 6))
-    ),
-    metric_tons_co2e = case_when(
-      grepl("CH4", units_emissions) ~ value_emissions * gwp$ch4,
-      grepl("N2O", units_emissions) ~ value_emissions * gwp$n2o,
-      grepl("CO2", units_emissions) ~ value_emissions * gwp$co2
-    )
-  ) %>%
-  group_by(emissions_year, county_name, units_emissions) %>%
-  summarize(
-    value_emissions = sum(value_emissions),
-    metric_tons_co2e = sum(metric_tons_co2e)
-  ) %>%
-  ungroup() %>%
-  mutate(sector = "Industrial")
 
-industrial_fuel_gas_mpca <- readRDS("_industrial/data/mpca_fuel_emissions_by_gas.RDS") %>%
-  filter(fuel_type != "Natural Gas") %>%
-  group_by(inventory_year, county_name, ctu_name, unit_emissions) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
-  ungroup() %>%
-  rename(
-    units_emissions = unit_emissions,
-    emissions_year = inventory_year
-  ) %>%
-  filter(!ctu_name %in% industrial_fuel_gas_epa$city_name) %>%
-  mutate(metric_tons_co2e = case_when(
-    grepl("CH4", units_emissions) ~ value_emissions * gwp$ch4,
-    grepl("N2O", units_emissions) ~ value_emissions * gwp$n2o,
-    grepl("CO2", units_emissions) ~ value_emissions * gwp$co2
-  )) %>%
-  group_by(emissions_year, county_name, units_emissions) %>%
-  summarize(
-    value_emissions = sum(value_emissions),
-    metric_tons_co2e = sum(metric_tons_co2e)
-  ) %>%
-  ungroup() %>%
-  mutate(sector = "Industrial") %>%
-  filter(emissions_year == 2022)
-
-fluorinated_gases <- readRDS("_industrial/data/fluorinated_gas_emissions.RDS") %>%
-  mutate(
-    mt_gas = case_when(
-      gas_type == "sf6" ~ value_emissions / gwp$sf6,
-      gas_type == "nf3" ~ value_emissions / gwp$nf3,
-      gas_type == "hfc" ~ value_emissions / gwp$hfc,
-      gas_type == "pfc" ~ value_emissions / gwp$cf4,
-      gas_type == "other_fully_fluorinated_ghg" ~ value_emissions / ((gwp$cf4 + gwp$nf3) / 2) # best guess for what these might be based on NAICS codes
-    ),
-    units_emissions = paste("Metric tons fluorocarbons"),
-    emissions_year = as.numeric(inventory_year)
-  ) %>%
-  filter(emissions_year == 2022) %>%
-  group_by(emissions_year, county_name, units_emissions) %>%
-  summarize(
-    metric_tons_co2e = sum(value_emissions),
-    value_emissions = sum(mt_gas)
-  ) %>%
-  ungroup() %>%
-  mutate(sector = "Industrial")
 
 gas_by_county <- bind_rows(
   transportation_gas,
@@ -299,59 +239,38 @@ gas_by_county <- bind_rows(
   wastewater_gas,
   agriculture_gas,
   ns_gas,
-  industrial_fuel_gas_epa_out,
-  industrial_fuel_gas_mpca,
-  fluorinated_gases
-)
+  industrial_gas
+) %>%
+  left_join(cprg_county %>%
+    st_drop_geometry() %>%
+    select(geoid, county_name))
 
 county_emissions <- read_rds("_meta/data/cprg_county_emissions.RDS")
 
 gas_by_county %>%
   pull(metric_tons_co2e) %>%
-  sum() # 52999987
+  sum() # 55374642
 county_emissions %>%
   filter(
     value_emissions > 0,
     emissions_year == 2022
   ) %>%
   pull(value_emissions) %>%
-  sum() # 55377863
+  sum() # 55552139
 
-52999987 - 55377863 # 4373319 more in gas type analysis
+# slight difference due to documented issues in industrial sector
 
-# Problem is in industrial
+county_emissions_by_gas_meta <-
+  tibble::tribble(
+    ~"Column", ~"Class", ~"Description",
+    "emissions_year ", class(gas_by_county$emissions_year), "Year of survey",
+    "geoid", class(gas_by_county$geoid), "County GEOID",
+    "county_name", class(gas_by_county$county_name), "County name",
+    "sector", class(gas_by_county$sector), "Economic sector",
+    "value_emissions", class(gas_by_county$value_emissions), "Numerical value of emissions in metric tons",
+    "units_emissions", class(gas_by_county$units_emissions), "Units and gas type of emissions",
+    "metric_tons_co2e", class(gas_by_county$metric_tons_co2e), "Metric tons of gas in CO2 equivalency"
+  )
 
-gas_by_county %>%
-  filter(sector == "Industrial") %>%
-  group_by(county_name) %>%
-  summarize(value_emissions = sum(metric_tons_co2e))
-
-county_emissions %>%
-  filter(
-    value_emissions > 0,
-    emissions_year == 2022,
-    sector == "Industrial",
-    category != "Building Fuel",
-    category != "Electricity"
-  ) %>%
-  group_by(county_name) %>%
-  summarize(value_emissions = sum(value_emissions))
-#
-
-# The remaining differences are from specific industrial processes (e.g. hydrogen production, lead production, industrial landfill) that are
-# provided by GHGRP but don't have gas type break downs. This needs to be reviewed at a later date.
-
-industrial_fuel_gas_epa_out %>%
-  filter(sector == "Industrial") %>%
-  group_by(county_name) %>%
-  summarize(value_emissions = sum(metric_tons_co2e))
-
-industrial_fuel_gas_mpca %>%
-  filter(sector == "Industrial") %>%
-  group_by(county_name) %>%
-  summarize(value_emissions = sum(metric_tons_co2e))
-
-fluorinated_gases %>%
-  filter(sector == "Industrial") %>%
-  group_by(county_name) %>%
-  summarize(value_emissions = sum(metric_tons_co2e))
+saveRDS(gas_by_county, "./_meta/data/county_emissions_by_gas.rds")
+saveRDS(county_emissions_by_gas_meta, "./_meta/data/county_emissions_by_gas_meta.rds")
