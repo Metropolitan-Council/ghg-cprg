@@ -101,7 +101,7 @@ enteric_other <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   ) %>%
   mutate(mt_ch4_head_yr = kgch4_head_yr / 1000) %>%
   crossing(
-    year = 2005:2021,
+    year = 2005:2022,
     state = c("Minnesota", "Wisconsin")
   )
 

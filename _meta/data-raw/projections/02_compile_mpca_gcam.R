@@ -240,8 +240,12 @@ scenarios_sources_annual <- state_projections %>%
   #### add proportion relative to 2005
   group_by(scenario, subsector_mc, source_sink, sector) %>%
   mutate(
-    value_2005 = value_emissions[emissions_year == 2005],
-    value_2020 = value_emissions[emissions_year == 2020]
+    value_2005 = value_emissions[match(2005, emissions_year)],
+    value_2020 = if_else(
+      sector == "Agriculture",
+      value_emissions[match(2022, emissions_year)],
+      value_emissions[match(2020, emissions_year)]
+    )
   ) %>%
   # Calculate the proportion
   mutate(
