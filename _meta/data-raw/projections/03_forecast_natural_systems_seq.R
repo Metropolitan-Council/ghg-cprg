@@ -1,12 +1,26 @@
+#+ Let's max everything out and call it net-zero
+#+ Don't worry about potentially wet histosols at this stage
+#+ Change to 100% planting trees in developed areas
+#+ 5% of croplands to trees
+#+ 100% of barren to trees
+#+ 10% of cropland to trees
+
+
 ### develop regional natural systems sequestration targets based on tree planting and restoration efforts
 
 ## restart and rerun when making updates to ghg.ccap@ccap-graphics
 # remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
 # enter 3 ('none') if prompted to update other packages
-
+# rm(list = ls())
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
+
 source("_meta/data-raw/projections/01_projections_plotter.R")
+
+
+remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
+
+
 
 # Load data
 natural_systems_data <- c()
@@ -131,11 +145,17 @@ mod_bau <- ghg.ccap::run_scenario_natural_systems(
   .enviro_factors = ghg.ccap::enviro_factors,
 )
 
-# Scenario 1: Reforest all barren land, 5% of cropland, and 10% of grassland
-scen1_urbanTree_2050 <- 10
+
+pct_increase_in_wetland_area_11co <- readRDS("_meta/data-raw/projections/pct_increase_in_wetland_area_11co.RDS")
+
+# Scenario 1: Reforest all barren land, 5% of cropland, 10% of grassland, 100% of developed areas
+# new! increase wetland area by the amount of potentially restorable wetlands
+scen1_urbanTree_2050 <- 100
 scen1_cropland_2050 <- 5
 scen1_bare_2050 <- 100
 scen1_grassland_2050 <- 10
+scen1_wetland_2050 <- 
+  round(pct_increase_in_wetland_area_11co, 1) # load rds
 
 mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
   .selected_ctu = "Regional",
@@ -143,7 +163,7 @@ mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
   tb_future = natural_systems_data$regional$null_projections,
   tb_seq = natural_systems_data$land_cover_carbon,
   .enviro_factors = ghg.ccap::enviro_factors,
-
+  
   # user inputs here!
   .urban_tree_start = 2025,
   .urban_tree_time = 25,
@@ -154,40 +174,16 @@ mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
   .grassland_area_perc = scen1_grassland_2050,
   .cropland_area_perc = scen1_cropland_2050,
   .bare_area_perc = scen1_bare_2050,
+  .wetland_area_perc = scen1_wetland_2050,
   .restoration_start = 2025,
   .restoration_time = 25,
 )
 
 
-# Scenario 2: Reforest all barren land, 10% of cropland, and 20% of grassland
-scen2_urbanTree_2050 <- 10
-scen2_cropland_2050 <- 10
-scen2_bare_2050 <- 100
-scen2_grassland_2050 <- 20
-
-mod_scen2 <- ghg.ccap::run_scenario_natural_systems(
-  .selected_ctu = "Regional",
-  tb_inv = natural_systems_data$regional$inventory,
-  tb_future = natural_systems_data$regional$null_projections,
-  tb_seq = natural_systems_data$land_cover_carbon,
-  .enviro_factors = ghg.ccap::enviro_factors,
-
-  # user inputs here!
-  .urban_tree_start = 2025,
-  .urban_tree_time = 25,
-  .urban_tree_area_perc = scen2_urbanTree_2050,
-  # .l2l_start = input$lawnsToLegumes_start_yr,
-  # .l2l_time = input$lawnsToLegumes_comp_time,
-  # .l2l_area_perc = input$lawnsToLegumes_area_pct,
-  .grassland_area_perc = scen2_grassland_2050,
-  .cropland_area_perc = scen2_cropland_2050,
-  .bare_area_perc = scen2_bare_2050,
-  .restoration_start = 2025,
-  .restoration_time = 25,
-)
 
 
-df_netZero <- mod_scen2 %>%
+
+df_netZero <- mod_scen1 %>%
   filter(inventory_year == 2050) %>%
   group_by(geog_name, ctu_class, geog_id, inventory_year) %>%
   summarize(
@@ -206,6 +202,10 @@ write_rds(
   df_netZero,
   "_meta/data/regional_net_zero_target.RDS"
 )
+
+
+
+
 
 
 
@@ -294,7 +294,7 @@ plot_emissions <- function(bau, scenario, target) {
       y = "",
       title = "Sequestration by Natural Systems \n(Millions of CO2-equivalency)"
     ) +
-    scale_y_continuous(labels = label_number(scale = 1e-6)) +
+    scale_y_continuous(labels = scales::label_number(scale = 1e-6)) +
     theme_minimal() +
     theme(
       panel.grid.minor = element_blank(),
@@ -374,25 +374,26 @@ regional_ns_forecast <- rbind(
       geog_name, geog_class, geog_id, sector,
       inventory_year,
       scenario, total_emissions
-    ),
-
-  # net zero
-  mod_scen2 %>%
-    filter(!is.na(value_emissions)) %>%
-    group_by(inventory_year) %>%
-    summarize(total_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
-    mutate(
-      scenario = "nz",
-      geog_name = "Regional",
-      geog_class = "REGION",
-      geog_id = "00000000",
-      sector = "Natural Systems"
-    ) %>%
-    dplyr::select(
-      geog_name, geog_class, geog_id, sector,
-      inventory_year,
-      scenario, total_emissions
     )
+
+  # # net zero
+  # mod_scen2 %>%
+  #   filter(!is.na(value_emissions)) %>%
+  #   group_by(inventory_year) %>%
+  #   summarize(total_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
+  #   mutate(
+  #     scenario = "nz",
+  #     geog_name = "Regional",
+  #     geog_class = "REGION",
+  #     geog_id = "00000000",
+  #     sector = "Natural Systems"
+  #   ) %>%
+  #   dplyr::select(
+  #     geog_name, geog_class, geog_id, sector,
+  #     inventory_year,
+  #     scenario, total_emissions
+  #   )
+  
 )
 
 #
@@ -432,12 +433,224 @@ ppp2050 <- ns_2050 %>%
   pull(total_emissions) -
   bau2050
 
-nz2050 <- ns_2050 %>%
-  filter(scenario == "nz") %>%
-  pull(total_emissions) -
-  bau2050
+# nz2050 <- ns_2050 %>%
+#   filter(scenario == "nz") %>%
+#   pull(total_emissions) -
+#   bau2050
 
 ppp2050
-nz2050
+# nz2050
 ppp2050 / bau2050
-nz2050 / bau2050
+# nz2050 / bau2050
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # Load data
+# natural_systems_data <- c()
+# 
+# natural_systems_data$land_cover_carbon <- readr::read_rds(paste0(here::here(), "/_nature/data/", "land_cover_carbon.rds"))
+# 
+# 
+# lc_county <- readr::read_rds(paste0(here::here(), "/_nature/data/", "nlcd_county_landcover_allyrs.rds")) %>%
+#   mutate(
+#     geog_name = paste(county_name, "County"),
+#     geog_id = county_id,
+#     ctu_class = "COUNTY"
+#   ) %>%
+#   ungroup() %>%
+#   group_by(geog_name, ctu_class, geog_id, inventory_year, land_cover_type) %>%
+#   dplyr::summarize(area = sum(area), .groups = "keep") %>%
+#   ungroup()
+# 
+# 
+# inventory_start_year <- 2005
+# inventory_end_year <- 2022
+# future_years <- 2023:2050
+# 
+# 
+# 
+# natural_systems_data$county$inventory <- lc_county %>%
+#   filter(inventory_year %in% seq(inventory_start_year, inventory_end_year, by = 1)) %>%
+#   # dplyr::select(geog_name, ctu_class, geog_id, inventory_year, land_cover_type, area) %>%
+#   pivot_wider(names_from = land_cover_type, values_from = area) %>%
+#   rowwise() %>%
+#   mutate(TOTAL = rowSums(across(c(
+#     Bare, Developed_Low, Developed_Med, Developed_High,
+#     Urban_Grassland, Urban_Tree,
+#     Cropland, Grassland, Tree, Water,
+#     Wetland
+#   )), na.rm = T)) %>%
+#   ungroup() %>%
+#   # replace NAs with 0
+#   mutate(across(everything(), ~ tidyr::replace_na(., 0)))
+# 
+# 
+# county_projections_2022 <- natural_systems_data$county$inventory %>%
+#   filter(inventory_year == inventory_end_year) %>%
+#   select(-c(inventory_year, TOTAL)) %>%
+#   pivot_longer(cols = -c(geog_name, geog_id, ctu_class), names_to = "land_cover_type", values_to = "area")
+# 
+# 
+# county_projections_null <- county_projections_2022 %>%
+#   tidyr::crossing(inventory_year = future_years) %>%
+#   pivot_wider(names_from = "land_cover_type", values_from = "area") %>%
+#   rowwise() %>%
+#   mutate(TOTAL = sum(dplyr::c_across(c(
+#     Bare, Developed_Low, Developed_Med, Developed_High,
+#     Urban_Grassland, Urban_Tree,
+#     Cropland, Grassland, Tree, Water,
+#     Wetland
+#   )), na.rm = T)) %>%
+#   ungroup() %>%
+#   # replace NAs with 0
+#   mutate(across(everything(), ~ tidyr::replace_na(., 0)))
+# 
+# 
+# # Regional inventory by summing county inventories
+# natural_systems_data$regional$inventory <- natural_systems_data$county$inventory %>%
+#   group_by(inventory_year) %>%
+#   summarize(
+#     Bare = sum(Bare),
+#     Developed_Low = sum(Developed_Low),
+#     Developed_Med = sum(Developed_Med),
+#     Developed_High = sum(Developed_High),
+#     Urban_Grassland = sum(Urban_Grassland),
+#     Urban_Tree = sum(Urban_Tree),
+#     Cropland = sum(Cropland),
+#     Grassland = sum(Grassland),
+#     Tree = sum(Tree),
+#     Water = sum(Water),
+#     Wetland = sum(Wetland),
+#     TOTAL = sum(TOTAL)
+#   ) %>%
+#   mutate(
+#     geog_name = "Regional",
+#     ctu_class = "REGION",
+#     geog_id = "00000000"
+#   ) %>%
+#   dplyr::select(
+#     geog_name, ctu_class, geog_id, inventory_year,
+#     Bare, Cropland, Developed_High, Developed_Low, Developed_Med,
+#     Grassland, Tree, Urban_Grassland, Urban_Tree, Water, Wetland, TOTAL
+#   )
+# 
+# 
+# regional_projections_2022 <- natural_systems_data$regional$inventory %>%
+#   filter(inventory_year == inventory_end_year) %>%
+#   select(-c(inventory_year, TOTAL)) %>%
+#   pivot_longer(cols = -c(geog_name, geog_id, ctu_class), names_to = "land_cover_type", values_to = "area")
+# 
+# 
+# 
+# natural_systems_data$regional$null_projections <- regional_projections_2022 %>%
+#   tidyr::crossing(inventory_year = future_years) %>%
+#   pivot_wider(names_from = "land_cover_type", values_from = "area") %>%
+#   rowwise() %>%
+#   mutate(TOTAL = sum(dplyr::c_across(c(
+#     Bare, Developed_Low, Developed_Med, Developed_High,
+#     Urban_Grassland, Urban_Tree,
+#     Cropland, Grassland, Tree, Water,
+#     Wetland
+#   )), na.rm = T)) %>%
+#   ungroup() %>%
+#   # replace NAs with 0
+#   mutate(across(everything(), ~ tidyr::replace_na(., 0)))
+# 
+# 
+# 
+# 
+# 
+# mod_bau <- ghg.ccap::run_scenario_natural_systems(
+#   .selected_ctu = "Regional",
+#   tb_inv = natural_systems_data$regional$inventory,
+#   tb_future = natural_systems_data$regional$null_projections,
+#   tb_seq = natural_systems_data$land_cover_carbon,
+#   .enviro_factors = ghg.ccap::enviro_factors,
+# )
+# 
+# # Scenario 1: Reforest all barren land, 5% of cropland, 10% of grassland, 100% of developed areas
+# scen1_urbanTree_2050 <- 100
+# scen1_cropland_2050 <- 5
+# scen1_bare_2050 <- 100
+# scen1_grassland_2050 <- 10
+# 
+# mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
+#   .selected_ctu = "Regional",
+#   tb_inv = natural_systems_data$regional$inventory,
+#   tb_future = natural_systems_data$regional$null_projections,
+#   tb_seq = natural_systems_data$land_cover_carbon,
+#   .enviro_factors = ghg.ccap::enviro_factors,
+# 
+#   # user inputs here!
+#   .urban_tree_start = 2025,
+#   .urban_tree_time = 25,
+#   .urban_tree_area_perc = scen1_urbanTree_2050,
+#   # .l2l_start = input$lawnsToLegumes_start_yr,
+#   # .l2l_time = input$lawnsToLegumes_comp_time,
+#   # .l2l_area_perc = input$lawnsToLegumes_area_pct,
+#   .grassland_area_perc = scen1_grassland_2050,
+#   .cropland_area_perc = scen1_cropland_2050,
+#   .bare_area_perc = scen1_bare_2050,
+#   .restoration_start = 2025,
+#   .restoration_time = 25,
+# )
+# 
+# 
+# # Scenario 2: Reforest all barren land, 10% of cropland, 20% of grassland, 100% of developed areas
+# scen2_urbanTree_2050 <- 100
+# scen2_cropland_2050 <- 10
+# scen2_bare_2050 <- 100
+# scen2_grassland_2050 <- 20
+# 
+# mod_scen2 <- ghg.ccap::run_scenario_natural_systems(
+#   .selected_ctu = "Regional",
+#   tb_inv = natural_systems_data$regional$inventory,
+#   tb_future = natural_systems_data$regional$null_projections,
+#   tb_seq = natural_systems_data$land_cover_carbon,
+#   .enviro_factors = ghg.ccap::enviro_factors,
+# 
+#   # user inputs here!
+#   .urban_tree_start = 2025,
+#   .urban_tree_time = 25,
+#   .urban_tree_area_perc = scen2_urbanTree_2050,
+#   # .l2l_start = input$lawnsToLegumes_start_yr,
+#   # .l2l_time = input$lawnsToLegumes_comp_time,
+#   # .l2l_area_perc = input$lawnsToLegumes_area_pct,
+#   .grassland_area_perc = scen2_grassland_2050,
+#   .cropland_area_perc = scen2_cropland_2050,
+#   .bare_area_perc = scen2_bare_2050,
+#   .restoration_start = 2025,
+#   .restoration_time = 25,
+# )
+# 
+# 
+# df_netZero <- mod_scen2 %>%
+#   filter(inventory_year == 2050) %>%
+#   group_by(geog_name, ctu_class, geog_id, inventory_year) %>%
+#   summarize(
+#     net_zero_target = sum(value_emissions, na.rm = T),
+#     .groups = "keep"
+#   )
+# 
+# 
+# target_seq_for_netZero <- df_netZero %>% pull(net_zero_target)
+# 
+# 
+# 
+# # waldo::compare(df_netZero, readRDS("_meta/data/regional_net_zero_target.RDS"))
+# message("Saving regional net zero target data to: \n\t _meta/data/regional_net_zero_target.RDS")
+# write_rds(
+#   df_netZero,
+#   "_meta/data/regional_net_zero_target.RDS"
+# )
