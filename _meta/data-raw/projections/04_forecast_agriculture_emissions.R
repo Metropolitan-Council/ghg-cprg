@@ -100,6 +100,26 @@ ppp_estimates <- agriculture_scenarios %>%
     emissions_year = as.numeric(emissions_year)
   )
 
+# calculate current ratio of sequestration to emissions in cropland soil
+seq_ratio <- ppp_estimates %>% filter(emissions_year ==2022,
+                                      subsector_mc == "sequestration_not_inventoried") %>% 
+  pull(cp) /
+  ppp_estimates %>% filter(emissions_year ==2022,
+                           subsector_mc == "Cropland soil") %>% 
+  pull(cp)
+
+#2022 baseline seq in region (not currently inventoried)
+baseline_seq <- agriculture_emissions_proj %>% filter(emissions_year == 2022,
+                                                      category == "Cropland soil",
+                                                      scenario == "bau") %>% 
+  pull(value_emissions) * seq_ratio
+
+seq_proj <- ppp_estimates %>% 
+  filter(grepl("sequestration", subsector_mc)) %>% 
+  mutate(seq_baseline = baseline_seq,
+         sequestration_ppp = seq_baseline * ppp_ratio - seq_baseline) %>%  # building in seq_baseline to inventory later in script
+  select(emissions_year, sequestration_ppp)
+
 # calculate ppp values based on reduction compared to cp (bau) and 
 # restructure data frame for graphing
 ag_scenarios <- agriculture_emissions_proj %>% 
@@ -123,7 +143,13 @@ ag_scenarios <- agriculture_emissions_proj %>%
                       value_emissions = "bau",
                       ppp_value_emissions = "ppp"
     )
-  )
+  ) %>% 
+  left_join(seq_proj) %>% 
+  #subtract away increasing sequestration in ppp
+  mutate(value_emissions = if_else(scenario == "ppp",
+                                   value_emissions + sequestration_ppp,
+                                   value_emissions)) %>% 
+  select(-sequestration_ppp)
   
 ## save bau data
 
@@ -133,7 +159,10 @@ ag_bau <- bind_rows(
       sector %in% c("Agriculture"),
       emissions_year <= 2021
     ) %>% # Use any scenario since they're identical
-    mutate(scenario = "bau") %>%
+    mutate(scenario = "bau",
+           value_emissions = if_else(category == "Cropland",
+                                     value_emissions * (1+seq_ratio), # build in sequestration to existing inventory
+                                     value_emissions)) %>%
     group_by(emissions_year, scenario) %>%
     summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "keep") %>%
     ungroup(),

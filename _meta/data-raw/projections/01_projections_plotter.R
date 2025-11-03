@@ -130,7 +130,7 @@ plot_emissions_pathways <- function(
       title = title
     ) +
     
-    scale_y_continuous(labels = label_number(scale = 1e-6)) +
+    scale_y_continuous(labels = label_number(scale = 1e-6, suffix = "M")) +
     scale_x_continuous(
       limits = x_limits,
       breaks = seq(2010, x_limits[2], by = 10)

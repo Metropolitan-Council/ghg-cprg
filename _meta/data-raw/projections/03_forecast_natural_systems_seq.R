@@ -284,7 +284,7 @@ plot_emissions <- function(bau, scenario, target) {
       title = "Sequestration by Natural Systems"
     ) +
     
-    scale_y_continuous(labels = scales::label_number(scale = 1e-6)) +
+    scale_y_continuous(labels = label_number(scale = 1e-6, suffix = "M")) +
     scale_x_continuous(
       limits = c(2005, 2059),
       breaks = seq(2010, 2059, by = 10)
@@ -338,7 +338,7 @@ message("Saving natural systems projections plot to: \n\t ~/imgs/ns_decarbonizat
 ggplot2::ggsave(
   plot = scen1_gg,
   filename = paste0(here::here(), "/imgs/ns_decarbonization_pathways.png"), # add your file path here
-  width = 12,
+  width = 14,
   height = 6,
   units = "in",
   dpi = 300,
