@@ -151,7 +151,7 @@ pct_increase_in_wetland_area_11co <- readRDS("_meta/data-raw/projections/pct_inc
 # Scenario 1: Reforest all barren land, 5% of cropland, 10% of grassland, 100% of developed areas
 # new! increase wetland area by the amount of potentially restorable wetlands
 scen1_urbanTree_2050 <- 100
-scen1_cropland_2050 <- 5
+scen1_cropland_2050 <- 2
 scen1_bare_2050 <- 100
 scen1_grassland_2050 <- 10
 scen1_wetland_2050 <- 
@@ -209,7 +209,6 @@ write_rds(
 
 
 
-# Plotting function -------------------------------------------------------
 plot_emissions <- function(bau, scenario, target) {
   # Aggregate helper
   agg <- function(df) {
@@ -218,103 +217,120 @@ plot_emissions <- function(bau, scenario, target) {
       group_by(inventory_year) %>%
       summarize(total_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop")
   }
-
-  scenario_agg <- agg(scenario)
-  bau_agg <- agg(bau)
-
+  
+  scenario_agg <- agg(scenario) %>%
+    mutate(total_emissions = -1 * total_emissions)  # Invert for display
+  
+  bau_agg <- agg(bau) %>%
+    mutate(total_emissions = -1 * total_emissions)  # Invert for display
+  
+  # Calculate text positions
+  text_bau <- bau_agg %>% filter(inventory_year == 2050) %>% pull(total_emissions)
+  text_ppp <- scenario_agg %>% filter(inventory_year == 2040) %>% pull(total_emissions)
+  
   ggplot() +
-    # Base fill (2005–2025, gray)
+    # Gray fill for historical data (2005–2025)
     geom_ribbon(
       data = scenario_agg %>% filter(inventory_year <= 2025),
       aes(x = inventory_year, ymin = 0, ymax = total_emissions),
       fill = "gray80", alpha = 0.7
     ) +
-
-    # Scenario fill (lightgreen, 2025+)
+    
+    # Gray fill below BAU line for projections
     geom_ribbon(
-      data = scenario_agg %>% filter(inventory_year >= 2025),
+      data = bau_agg %>% filter(inventory_year >= 2025),
       aes(x = inventory_year, ymin = 0, ymax = total_emissions),
+      fill = "gray80", alpha = 0.7
+    ) +
+    
+    # Colored ribbon between BAU and PPP (above BAU)
+    geom_ribbon(
+      data = scenario_agg %>% filter(inventory_year >= 2025) %>%
+        left_join(bau_agg %>% filter(inventory_year >= 2025) %>% 
+                    select(inventory_year, bau_emissions = total_emissions), 
+                  by = "inventory_year"),
+      aes(x = inventory_year, ymin = bau_emissions, ymax = total_emissions),
       fill = "lightgreen", alpha = 0.5
     ) +
-
-    # Base line (2005–2025)
+    
+    # Base line (historical, dashed)
     geom_line(
       data = scenario_agg %>% filter(inventory_year <= 2025),
       aes(x = inventory_year, y = total_emissions),
-      color = "black", linewidth = 1
+      color = "black", linewidth = 1, linetype = "dashed"
     ) +
-
-    # Diverging scenario lines
+    
+    # BAU line (dashed)
     geom_line(
       data = bau_agg %>% filter(inventory_year >= 2025),
-      aes(x = inventory_year, y = total_emissions, color = "Business as usual"),
-      linetype = "dashed", linewidth = 1
+      aes(x = inventory_year, y = total_emissions),
+      color = "black", linewidth = 1, linetype = "dashed"
     ) +
+    
+    # PPP line (dotted)
     geom_line(
       data = scenario_agg %>% filter(inventory_year >= 2025),
-      aes(x = inventory_year, y = total_emissions, color = "Potential policy pathways"),
-      linewidth = 1
+      aes(x = inventory_year, y = total_emissions),
+      color = "black", linewidth = 1, linetype = "dotted"
     ) +
-
-    # 2050 target point
-    geom_point(
-      data = data.frame(emissions_year = 2050, value_emissions = target),
-      aes(x = emissions_year, y = value_emissions),
-      shape = "*", size = 12, stroke = 1.5, color = "black"
-    ) +
-
-    # Divider at 2025
-    geom_segment(
-      aes(
-        x = 2025, xend = 2025, y = 0,
-        yend = scenario_agg %>% filter(inventory_year == 2025) %>% pull(total_emissions)
-      ),
-      color = "black", linetype = "solid", linewidth = 0.8
-    ) +
-
-    # Manual color scale
-    scale_color_manual(
-      values = c(
-        "Business as usual" = "black",
-        "Potential policy pathways" = "lightgreen"
-      ),
-      breaks = c("Business as usual", "Potential policy pathways", "Net zero")
-    ) +
-    guides(
-      color = guide_legend(
-        title = "Scenarios",
-        override.aes = list(
-          linetype = c("dashed", "solid"),
-          color = c("black", "lightgreen")
-        )
-      )
-    ) +
+    
+    # Axis lines
+    geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+    geom_vline(xintercept = 2005, color = "black", linewidth = 0.5) +
+    
     labs(
-      x = "Year",
+      x = "",
       y = "",
-      title = "Sequestration by Natural Systems \n(Millions of CO2-equivalency)"
+      title = "Sequestration by Natural Systems"
     ) +
+    
     scale_y_continuous(labels = scales::label_number(scale = 1e-6)) +
+    scale_x_continuous(
+      limits = c(2005, 2059),
+      breaks = seq(2010, 2059, by = 10)
+    ) +
+    
     theme_minimal() +
     theme(
       panel.grid.minor = element_blank(),
+      panel.grid.major.x = element_blank(),
       legend.position = "bottom",
       plot.title = element_text(size = 18),
-      axis.text = element_text(size = 14),
+      axis.text = element_text(size = 14, color = "black"),
       legend.text = element_text(size = 18),
-      legend.key.width = unit(1.2, "cm")
+      legend.key.width = unit(1.2, "cm"),
+      legend.box = "vertical",
+      plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
     ) +
-    xlim(2005, 2050)
+    
+    # Add text annotation for BAU
+    annotate("text", x = 2050.5, y = text_bau, 
+             label = "Business-as-usual",
+             size = 5, hjust = 0, vjust = 0.5, fontface = "bold") +
+    
+    # for PPP wedge
+    annotate("text", x = 2050.5, y = text_ppp, 
+             label = "Sequestration increased by\npotential policy pathway",
+             size = 5, hjust = 0, vjust = 0.5, fontface = "bold") +
+    
+    # Add "Inventory" and "Projections" annotations below x-axis
+    annotation_custom(
+      grob = grid::textGrob("Inventory", gp = grid::gpar(fontsize = 14), vjust = 3),
+      xmin = 2010, xmax = 2010, ymin = -Inf, ymax = -Inf
+    ) +
+    annotation_custom(
+      grob = grid::textGrob("Projections", gp = grid::gpar(fontsize = 14), vjust = 3),
+      xmin = 2030, xmax = 2030, ymin = -Inf, ymax = -Inf
+    ) +
+    
+    coord_cartesian(clip = "off")
 }
-
-
 
 scen1_gg <- plot_emissions(
   bau = mod_bau,
   scenario = mod_scen1,
   target = target_seq_for_netZero
 )
-
 print(scen1_gg)
 
 

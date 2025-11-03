@@ -36,9 +36,13 @@ plot_emissions_pathways <- function(
     pivot_wider(names_from = scenario, values_from = !!sym(emissions_col)) %>%
     filter(!is.na(ppp), !is.na(bau))
   
+  # Calculate position for text annotation
+  text_bau <- diverging_data %>% 
+    filter(!!sym(year_col) == 2050, scenario == "bau") %>% 
+    pull(!!sym(emissions_col))
   
   # Calculate position for text annotation
-  text_y <- diverging_data %>% 
+  text_ppp <- diverging_data %>% 
     filter(!!sym(year_col) == 2040, scenario == "ppp") %>% 
     pull(!!sym(emissions_col))
   
@@ -105,21 +109,21 @@ plot_emissions_pathways <- function(
       guide = "none"
     ) +
     
-    # Manual linetype scale (single scale for all linetypes)
+    # # Manual linetype scale (single scale for all linetypes)
     scale_linetype_manual(
       name = "",
       values = c(
         "Business as usual" = "dashed"
       ),
       breaks = c("Business as usual"),
-      guide = guide_legend(override.aes = list(linewidth = c(1)))
+      guide = "none"
     ) +
-    
-    # Combine legends
-    guides(
-      linetype = guide_legend(order = 1)
-    ) +
-    
+    # 
+    # # Combine legends
+    # guides(
+    #   linetype = guide_legend(order = 1)
+    # ) +
+    # 
     labs(
       x = "",
       y = y_label,
@@ -145,9 +149,13 @@ plot_emissions_pathways <- function(
       plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
     ) +
 
+    # Add text annotation for BAU
+    annotate("text", x = 2050.5, y = text_bau, 
+             label = "Business-as-usual",
+             size = 5, hjust = 0, vjust = 0.5, fontface = "bold") +
     
-    # Add text annotation for the colored wedge
-    annotate("text", x = 2050, y = text_y, 
+    # for PPP wedge
+    annotate("text", x = 2050.5, y = text_ppp, 
              label = "Emissions reduced by\npotential policy pathway",
              size = 5, hjust = 0, vjust = 0.5, fontface = "bold") +
     # and net-zero
