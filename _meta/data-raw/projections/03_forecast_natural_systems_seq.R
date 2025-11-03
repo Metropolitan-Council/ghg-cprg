@@ -19,71 +19,6 @@ remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
 
 
 
-# New values as of Oct 31, 2025 -------------------------------------------
-current_wetlands_9co <- lc_county %>%
-  filter(inventory_year == 2022) %>%
-  # filter for the 9 Minnesota counties only
-  filter(!(geog_name %in% c("St. Croix County", "Pierce County"))) %>%
-  filter(land_cover_type == "Wetland") %>%
-  summarize(actual_wetland_area_km2 = sum(area))
-
-current_wetlands_wi <- lc_county %>%
-  filter(inventory_year == 2022) %>%
-  # filter for the 9 Minnesota counties only
-  filter(geog_name %in% c("St. Croix County", "Pierce County")) %>%
-  filter(land_cover_type == "Wetland") %>%
-  summarize(actual_wetland_area_km2 = sum(area))
-
-
-
-
-# Define the input path
-inpath_wetlands_high_priority <- 
-  paste0(here::here(), "/_nature/data-raw/restorable_wetlands_gdb/RestorableWetlands_CCAP.gdb")
-
-wetlands_high_priority <- st_read(inpath_wetlands_high_priority, layer = "RestorableWetlands_CCAP") %>%
-  sf::st_transform(., crs_use)
-
-wetlands_high_priority <- wetlands_high_priority %>% sf::st_make_valid()
-
-wetlands_tibble <- wetlands_high_priority %>%
-  sf::st_drop_geometry() %>%
-  as_tibble() 
-
-
-restorable_wetlands_9co <- wetlands_tibble %>%
-  mutate(
-    # convert acres to km2 
-    area_km2 = ACRES * 0.00404686
-  ) %>% 
-  summarize(
-    restorable_wetland_area_km2 = sum(area_km2, na.rm = TRUE)
-  )
-
-
-
-
-
-current_wetlands_9co
-current_wetlands_wi
-restorable_wetlands_9co
-
-
-pct_increase_in_wetland_area <- 
-  (restorable_wetlands_9co$restorable_wetland_area_km2 / current_wetlands_9co$actual_wetland_area_km2) * 100 
-## 34% increase in wetland area for the 9-county region, what is that overall for the 11 county region
-
-pct_increase_in_wetland_area_11co <- 
-  (restorable_wetlands_9co$restorable_wetland_area_km2 / 
-     (current_wetlands_9co$actual_wetland_area_km2 + current_wetlands_wi$actual_wetland_area_km2)) * 100
-
-saveRDS(
-  pct_increase_in_wetland_area_11co,
-  "_meta/data/pct_increase_in_wetland_area_11co.RDS"
-)
-
-
-
 # Load data
 natural_systems_data <- c()
 
@@ -207,6 +142,9 @@ mod_bau <- ghg.ccap::run_scenario_natural_systems(
   .enviro_factors = ghg.ccap::enviro_factors,
 )
 
+
+pct_increase_in_wetland_area_11co <- readRDS("_meta/data-raw/projections/pct_increase_in_wetland_area_11co.RDS")
+
 # Scenario 1: Reforest all barren land, 5% of cropland, 10% of grassland, 100% of developed areas
 # new! increase wetland area by the amount of potentially restorable wetlands
 scen1_urbanTree_2050 <- 100
@@ -214,7 +152,7 @@ scen1_cropland_2050 <- 5
 scen1_bare_2050 <- 100
 scen1_grassland_2050 <- 10
 scen1_wetland_2050 <- 
-  round(pct_increase_in_wetland_area_11co, 1)
+  round(pct_increase_in_wetland_area_11co, 1) # load rds
 
 mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
   .selected_ctu = "Regional",
@@ -261,13 +199,6 @@ write_rds(
   df_netZero,
   "_meta/data/regional_net_zero_target.RDS"
 )
-
-
-
-
-
-
-
 
 
 
@@ -440,25 +371,26 @@ regional_ns_forecast <- rbind(
       geog_name, geog_class, geog_id, sector,
       inventory_year,
       scenario, total_emissions
-    ),
-
-  # net zero
-  mod_scen2 %>%
-    filter(!is.na(value_emissions)) %>%
-    group_by(inventory_year) %>%
-    summarize(total_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
-    mutate(
-      scenario = "nz",
-      geog_name = "Regional",
-      geog_class = "REGION",
-      geog_id = "00000000",
-      sector = "Natural Systems"
-    ) %>%
-    dplyr::select(
-      geog_name, geog_class, geog_id, sector,
-      inventory_year,
-      scenario, total_emissions
     )
+
+  # # net zero
+  # mod_scen2 %>%
+  #   filter(!is.na(value_emissions)) %>%
+  #   group_by(inventory_year) %>%
+  #   summarize(total_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
+  #   mutate(
+  #     scenario = "nz",
+  #     geog_name = "Regional",
+  #     geog_class = "REGION",
+  #     geog_id = "00000000",
+  #     sector = "Natural Systems"
+  #   ) %>%
+  #   dplyr::select(
+  #     geog_name, geog_class, geog_id, sector,
+  #     inventory_year,
+  #     scenario, total_emissions
+  #   )
+  
 )
 
 #
@@ -498,15 +430,15 @@ ppp2050 <- ns_2050 %>%
   pull(total_emissions) -
   bau2050
 
-nz2050 <- ns_2050 %>%
-  filter(scenario == "nz") %>%
-  pull(total_emissions) -
-  bau2050
+# nz2050 <- ns_2050 %>%
+#   filter(scenario == "nz") %>%
+#   pull(total_emissions) -
+#   bau2050
 
 ppp2050
-nz2050
+# nz2050
 ppp2050 / bau2050
-nz2050 / bau2050
+# nz2050 / bau2050
 
 
 
