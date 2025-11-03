@@ -1409,3 +1409,7 @@ _transportation/data_original_analysis_files/
 _transportation/inventory_methods_comparison_files/
 
 _transportation/data-raw/stl_raw_downloads/1978181_CPRG_CTU_2022_VMT/
+_meta/data-raw/projections/WFA/table1_priority_occupations_underBA_table.xlsx
+_meta/data-raw/projections/WFA/table2_priority_occupations_overBA_table.xlsx
+_meta/data-raw/projections/WFA/table3_SOC2_demographics_blocks.xlsx
+_meta/data-raw/projections/WFA/table4_cip_program_outcomes.xlsx
