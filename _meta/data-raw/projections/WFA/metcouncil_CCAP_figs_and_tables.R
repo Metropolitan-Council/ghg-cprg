@@ -34,1107 +34,156 @@ for (file in csv_files) {
 
 
 # ---- Overview of Workforce Demand (industry employment) ----
-
-## ---- Pie charts industry and employment count ----
-### ---- Scope ----
-ccap_naics_scope_final <- read_rds(file.path(data_path, "ccap_naics_scope_final.rds")) %>% 
-  mutate(ccap_sector = ifelse(ccap_sector=="NWL", "Natural Systems & Ag", ccap_sector)
-  )
-
-condensed_ccap_naics_scope <- ccap_naics_scope_final %>% 
-  mutate(
-    naics_title = naics_title %>%
-      str_replace_all("^[0-9]+\\s+", "") %>% # remove leading numeric code
-      str_squish() %>% # collapse extra whitespace
-      str_to_title()
-  ) %>%
-  group_by(naics_code) %>%
-  summarize( naics_title = naics_title[which.max(nchar(naics_title))],  # Keep longest version of the cleaned title
-             list_ccap_sectors = paste(sort(unique(ccap_sector)), collapse = ", "),
-             .groups = "drop"
-  )
-
-
-narrow_condensed_scope <- ccap_naics_scope_final %>% 
-  filter(source !="emissions") %>% 
-  filter(
-    !(source %in% c("Manual Add", "Manual Add: full 4digit")) | 
-      (source %in% c("Manual Add", "Manual Add: full 4digit") & str_detect(naics_code, "^8114"))
-  ) %>% 
-  filter(source !="emissions, USEER") %>% 
-  filter(source !="emissions, rmi") %>% 
-  filter(!(source == "USEER" & str_detect(naics_code, "^21"))) %>% 
-  filter(!(source == "USEER" & str_detect(naics_code, "^22"))) %>% 
-  filter(!(naics_code %in% c("333132", "237120",
-                             "486110", "486210", "486910" ))) %>% 
-  mutate(
-    naics_title = naics_title %>%
-      str_replace_all("^[0-9]+\\s+", "") %>% # remove leading numeric code
-      str_squish() %>% # collapse extra whitespace
-      str_to_title()
-  ) %>%
-  group_by(naics_code) %>%
-  summarize( naics_title = naics_title[which.max(nchar(naics_title))],  # Keep longest version of the cleaned title
-             list_ccap_sectors = paste(sort(unique(ccap_sector)), collapse = ", "),
-             .groups = "drop"
-  )
-
-
-### --- Employment data (qcew) ----
-all_naics_2022 <- read_xlsx(file.path(data_path, "naics_2022_6digit.xlsx")) %>%
-  mutate(across(everything(), as.character))
-
-manual_naics_recode <- read_csv(file.path(gen_data_path, "manual_naics_recode.csv")) %>% 
-  mutate(across(everything(), as.character)) %>% 
-  mutate(across(
-    where(is.character),
-    ~ iconv(.x, from = "UTF-8", to = "ASCII", sub = " ") %>% 
-      str_remove_all("[^A-Za-z0-9-(), ]") %>% 
-      str_squish()
-  ))
-
-# Load QCEW 2017 - 2024 
-metro_total_emp <- read_csv(file.path(data_path, "QCEWResults_17-24_7coMetro_6dig.csv")) %>% 
-  filter(indcode=="000000" & periodyear==2024 & ownership == "00") %>% 
-  pull(empYear)
-
-qcew_scoped <- read_csv(file.path(data_path, "QCEWResults_17-24_7coMetro_6dig.csv")) %>% 
-  clean_names() %>% 
-  select(periodyear, indcode,  naicstitle, indlevel, ownership, avg_estab_year,
-         emp_year) %>% 
-  mutate(
-    across(c(indcode,naicstitle, ownership), as.character),
-    across(where(is.character), str_squish)
-  ) %>% 
-  rename(year = periodyear, naics = indcode, naicslvl = indlevel,
-         establishments = avg_estab_year, employment = emp_year,
-         naics_title = naicstitle) %>% 
-  filter(ownership == "00") %>%  #all owernships only
-  filter(naics != "000000") %>%  #dropping employment totals
-  mutate(naics = as.character(naics)) %>%
-  left_join(manual_naics_recode, by = c("naics" = "old_code")) %>%
-  mutate(
-    naics_2022 = coalesce(new_code, naics),  # fallback to original if already 2022
-    naics_title = coalesce(new_title, naics_title) 
-  ) %>% 
-  group_by(year, naics_2022, naics_title) %>%
-  summarise(
-    employment = sum(employment, na.rm = TRUE),
-    establishments = sum(establishments, na.rm = TRUE),
-    naics_title = first(naics_title),
-    .groups = "drop"
-  ) %>%
-  rename(naics = naics_2022) %>% 
-  mutate(scope = ifelse(naics %in% narrow_condensed_scope$naics_code, "in scope", "out of scope")
-  ) %>%
-  left_join(narrow_condensed_scope %>% select(naics_code, list_ccap_sectors),
-            by = c("naics" = "naics_code")) %>% 
-  mutate(
-    naics_2 = substr(naics, 1,2),
-    naics_2_label = case_when(
-      naics_2 == "11" ~ "Ag, Forestry,\nFishing",
-      naics_2 == "21" ~ "Mining &\nExtraction",
-      naics_2 == "22" ~ "Utilities",
-      naics_2 == "23" ~ "Construction",
-      naics_2 %in% c("31", "32", "33") ~ "Manufacturing",
-      naics_2 %in% c("42","44", "45") ~ "Wholesale &\nRetail Trade",
-      naics_2 %in% c("48", "49") ~ "Transport &\nWarehousing",
-      naics_2 == "51" ~ "Information",
-      naics_2 == "52" ~ "Finance &\nInsurance",
-      naics_2 == "53" ~ "Real Estate &\nLeasing",
-      naics_2 == "54" ~ "Professional\nServices",
-      naics_2 == "55" ~ "Company\nManagement",
-      naics_2 == "56" ~ "Admin &\nWaste Svcs",
-      naics_2 == "61" ~ "Education",
-      naics_2 == "62" ~ "Health &\nSocial Svcs",
-      naics_2 == "71" ~ "Arts &\nRecreation",
-      naics_2 == "72" ~ "Accommodation\n& Food",
-      naics_2 == "81" ~ "Other\nServices",
-      naics_2 == "92" ~ "Public Admin",
-      TRUE ~ "Other / Unknown"
-    )
-  )
-
-qcew_2024_6dig <- qcew_scoped %>% 
-  filter(year == 2024)
-
-qcew_2024_totalemp <- read_csv(file.path(data_path, "QCEWResults_17-24_7coMetro_6dig.csv")) %>% 
-  clean_names() %>% 
-  select(periodyear, indcode,  naicstitle, indlevel, ownership, avg_estab_year,
-         emp_year) %>% 
-  mutate(
-    across(c(indcode,naicstitle, ownership), as.character),
-    across(where(is.character), str_squish)
-  ) %>% 
-  rename(year = periodyear, naics = indcode, naicslvl = indlevel,
-         establishments = avg_estab_year, employment = emp_year,
-         naics_title = naicstitle) %>% 
-  filter(ownership == "00") %>%  #all owernships only
-  filter(naics == "000000") %>%  #dropping employment totals
-  filter(year == 2024) %>% 
-  pull(employment)
-
-### ---- Piecharts ----
-metro_scope <- qcew_2024_6dig %>% 
-  filter(scope == "in scope" & !is.na(employment)) %>%   #in scope with unsupressed emp
-  distinct(naics, naics_title, list_ccap_sectors, .keep_all = TRUE)
-
-metro_sector_ind <- metro_scope %>%
-  group_by(naics_2_label) %>%
-  summarise(naics_2_n = n(), 
-            .groups = "drop") %>% 
-  mutate(naics_2_share = naics_2_n/sum(naics_2_n))
-
-metro_ind_total <- metro_scope %>% 
-  count()
-
-metro_sector_emp <- metro_scope %>%
-  group_by(naics_2_label) %>%
-  summarise(naics_2_employment = sum(employment), 
-            .groups = "drop") %>% 
-  mutate(naics_2_share = naics_2_employment/sum(naics_2_employment))
-
-metro_emp_total <- metro_scope %>% 
-  summarise(total_emp = sum(employment))
-
-
-# Metro build donut
-p_ind <- ggplot(metro_sector_ind, aes(x = 2, y = naics_2_share, fill = naics_2_label)) +
-  geom_col(width = 1, color = "white") +
-  geom_text(
-    data = metro_ind_total ,
-    aes(x = 0.5, y = 0, label = n),  # center
-    inherit.aes = FALSE,
-    size = 4, fontface = "bold"
-  ) +
-  coord_polar(theta = "y") +
-  xlim(0.5, 2.5) +
-  scale_fill_manual(name = "Industry Sector",
-                    values = unname(palette36.colors((n_distinct(metro_sector_ind$naics_2_label))))) +
-  theme_void() +
-  labs(title = "Scoped Industries",
-       subtitle = "Number in center = total NAICS codes")
-
-p_emp <- ggplot(metro_sector_emp, aes(x = 2, y = naics_2_share, fill = naics_2_label)) +
-  geom_col(width = 1, color = "white") +
-  geom_text(
-    data = metro_emp_total ,
-    aes(x = 0.5, y = 0, label = comma(total_emp)),  # center
-    inherit.aes = FALSE,
-    size = 4, fontface = "bold"
-  ) +
-  coord_polar(theta = "y") +
-  xlim(0.5, 2.5) +
-  scale_fill_manual(name = "Industry Sector",
-                    values = unname(palette36.colors((n_distinct(metro_sector_emp$naics_2_label))))) +
-  theme_void() +
-  labs(title = "Scoped Employment",
-       subtitle = "Number in center = total employment")
-
-
-final_plot <- p_ind + p_emp +
-  plot_layout(guides = "collect") & 
-  plot_annotation(
-    caption = "Data source: QCEW") &
-  theme(legend.position = "bottom",
-        legend.title.position = "top",
-        legend.title = element_text(hjust = 0.5)) 
-
-final_plot
-
-ggsave(file.path(output_path, "fig1_metro_scope_ind_emp_donuts.png"), width = 6, height = 5.5, dpi = 300)
-
-saveRDS(final_plot, file.path(output_path,"fig1.rds"))
+metro_sector_ind
+metro_sector_emp
+# 
+# # Metro build donut
+# p_ind <- ggplot(metro_sector_ind, aes(x = 2, y = naics_2_share, fill = naics_2_label)) +
+#   geom_col(width = 1, color = "white") +
+#   geom_text(
+#     data = metro_ind_total ,
+#     aes(x = 0.5, y = 0, label = n),  # center
+#     inherit.aes = FALSE,
+#     size = 4, fontface = "bold"
+#   ) +
+#   coord_polar(theta = "y") +
+#   xlim(0.5, 2.5) +
+#   scale_fill_manual(name = "Industry Sector",
+#                     values = unname(palette36.colors((n_distinct(metro_sector_ind$naics_2_label))))) +
+#   theme_void() +
+#   labs(title = "Scoped Industries",
+#        subtitle = "Number in center = total NAICS codes")
+# 
+# p_emp <- ggplot(metro_sector_emp, aes(x = 2, y = naics_2_share, fill = naics_2_label)) +
+#   geom_col(width = 1, color = "white") +
+#   geom_text(
+#     data = metro_emp_total ,
+#     aes(x = 0.5, y = 0, label = comma(total_emp)),  # center
+#     inherit.aes = FALSE,
+#     size = 4, fontface = "bold"
+#   ) +
+#   coord_polar(theta = "y") +
+#   xlim(0.5, 2.5) +
+#   scale_fill_manual(name = "Industry Sector",
+#                     values = unname(palette36.colors((n_distinct(metro_sector_emp$naics_2_label))))) +
+#   theme_void() +
+#   labs(title = "Scoped Employment",
+#        subtitle = "Number in center = total employment")
+# 
+# 
+# final_plot <- p_ind + p_emp +
+#   plot_layout(guides = "collect") & 
+#   plot_annotation(
+#     caption = "Data source: QCEW") &
+#   theme(legend.position = "bottom",
+#         legend.title.position = "top",
+#         legend.title = element_text(hjust = 0.5)) 
+# 
+# final_plot
+# 
+# ggsave(file.path(output_path, "fig1_metro_scope_ind_emp_donuts.png"), width = 6, height = 5.5, dpi = 300)
+# 
+# saveRDS(final_plot, file.path(output_path,"fig1.rds"))
 
 
 ## ---- Industry employment time trends ----
-### ---- Adding projections and binding with qcew ----
-industry_occ_links <- read_xlsx(file.path(gen_data_path, "iowage_LEWIS_NAICS4.xlsx"), sheet = 1)
-
-safe_extract_naics <- function(x) {
-  res <- str_extract_all(x, "\\d{4}")
-  if (length(res) == 0 || length(res[[1]]) == 0) {
-    return(NA_character_)
-  } else {
-    return(res[[1]])
-  }
-}
-
-naics_proj_crosswalk <- industry_occ_links %>%
-  distinct(indcode, IndTitle) %>%
-  rowwise() %>%
-  mutate(
-    naics_4 = case_when(
-      is.na(indcode) ~ list(NA_character_),
-      str_detect(indcode, "A") ~ list(safe_extract_naics(IndTitle)),
-      TRUE ~ list(indcode)
-    )
-  ) %>% 
-  unnest(naics_4) %>%
-  ungroup()
-
-qcew_2024_flagged <- qcew_scoped %>%
-  filter(year == 2024) %>% 
-  mutate(naics_4 = str_sub(naics, 1, 4))
-
-#checking on rolled up projection industries
-qcew_2024_scoped_projections <- qcew_2024_flagged %>% 
-  left_join(naics_proj_crosswalk, by = "naics_4") %>% 
-  mutate(in_proj = !is.na(indcode),
-         proj_rollup = case_when(naics_4 != indcode ~ "rolled",
-                                 naics_4 == indcode ~ "not rolled",
-                                 in_proj == FALSE ~ "not in proj",
-                                 TRUE ~ NA_character_))
-
-
-qcew_scoped_4 <-  qcew_scoped %>%
-  mutate(naics_4 = str_sub(naics, 1, 4)) %>%
-  group_by(year, naics_4, scope) %>%
-  summarise(
-    employment = sum(employment, na.rm = TRUE),
-    .groups = "drop"
-  )
-
-qcew_2022_4digit <- read_csv(file.path(data_path, "QCEWResults_17-24_7coMetro_4dig.csv")) %>% 
-  clean_names() %>% 
-  filter(ownership == "00" & indlevel ==4) %>% 
-  select(year = periodyear, naics_4 = indcode, emp_naics_4 = emp_year) %>% 
-  filter(year >=2021) %>% 
-  pivot_wider(
-    names_from = year,
-    values_from = emp_naics_4,
-    names_prefix = "emp_"
-  ) %>%
-  mutate(emp_2022_est = coalesce(emp_2022, emp_2021, emp_2023, emp_2024)) %>% 
-  select(naics_4, emp_naics_4  = emp_2022_est)  #replaced missing 2022's with first non-missing 21, 23, 24 emp
-
-
-#Scope & 4digit for all 6digits with employment over 2017-2024 period
-
-ind_projections <- read_csv(file.path(data_path, "LongTermIndustriesProj_7coMetro.csv")) %>% 
-  clean_names() %>% 
-  mutate(across(
-    where(is.character),
-    ~ iconv(.x, from = "UTF-8", to = "UTF-8", sub = "")
-  )) %>% 
-  select(projected_year, title, naics_code, emp_pctchange = percent_change) %>% 
-  mutate(
-    across(c(naics_code,title), as.character),
-    across(where(is.character), str_squish),
-    ind_proj_code_lvl = nchar(naics_code)
-  ) %>% 
-  left_join(naics_proj_crosswalk %>% rename(proj_ind_title = IndTitle),
-            by = c("naics_code" = "indcode")) %>% 
-  filter(!is.na(naics_4) & ind_proj_code_lvl == 4)
-
-ind_emp_shares <-  qcew_scoped %>%
-  filter(year == 2022) %>%
-  mutate(naics_4 = str_sub(naics, 1, 4)) %>%
-  left_join(qcew_2022_4digit %>% select(naics_4, emp_naics_4), by = "naics_4") %>% 
-  filter(!is.na(emp_naics_4)) %>% 
-  mutate(emp_share_4digit = employment / emp_naics_4) %>%
-  group_by(naics_4, scope) %>%
-  summarise(
-    scoped_emp_share_in2022 = sum(emp_share_4digit, na.rm = TRUE),
-    scoped_emp_in2022 = sum(employment, na.rm = TRUE),
-    .groups = "drop"
-  )
-
-proj_full_scope_4_adj <- ind_projections %>% 
-  left_join(ind_emp_shares %>% 
-              select(naics_4, scoped_emp_in2022, scope), by = "naics_4") %>% 
-  select(-ind_proj_code_lvl) %>% 
-  rename(naics_title_4 = title, 
-         year = projected_year) %>% 
-  mutate(
-    employment = scoped_emp_in2022 * (1+(emp_pctchange/100))
-  ) %>% 
-  filter(!is.na(employment)) %>% 
-  select(year, naics_4, naics_title_4, employment, emp_pctchange, scope)
-#note 5 industries show 0 as the employment because they are 0s
-#in the 2022 qcew BUT were in projections, eg logging... 
-#doesn't seem right for metro projections... logging in 7coMetro?
-#leaving as is for now - trusting QCEW
-
-title_lookup <- ind_projections %>%
-  distinct(naics_code, title) %>% 
-  rename(naics_4 = naics_code, naics_title_4 = title)
-
-ind_emp_withproj <- qcew_scoped_4 %>%
-  left_join(title_lookup, by = "naics_4") %>% 
-  bind_rows(proj_full_scope_4_adj) %>% 
-  arrange(naics_4, year) %>% 
-  filter(!is.na(naics_title_4))
 
 #### ---- timetrends figure ----
 
-ind_emp <- ind_emp_withproj %>% 
-  group_by(year, scope) %>% 
-  summarise(employment = sum(employment))
+in_scope_emp <- ind_emp %>% 
+  filter(scope == "in scope")
 
-plot <- ggplot(ind_emp, aes(x = year, y = employment, color = scope)) +
+in_scope_plot <- ggplot(in_scope_emp, aes(x = year, y = employment)) +
   geom_point() +
-  geom_line(data = subset(ind_emp, year <= 2024), size = 1) +
-  geom_line(data = subset(ind_emp, year >= 2024), size = 1, linetype = "dashed") +
-  facet_wrap(~scope, scales = "free_y" ) +
-  scale_y_continuous(labels = comma) +
+  geom_line(data = subset(in_scope_emp, year <= 2024), size = 1, color = "black") +
+  geom_line(data = subset(in_scope_emp, year >= 2024), size = 1, color = "black", linetype = "dashed") +
+  scale_y_continuous(labels = comma, limits = c(0, 150000)) +
   labs(
-    title = paste0("Employment by In & Out of Scope Industries"),
+    title = paste0("Employment projections for in scope industries"),
     caption = "Source: QCEW + Projections",
     subtitle = "Historical and projected employment",
+    y= "",
     x = "Year",
-    y = "Employment)",
     color = ""
   ) +
   theme_minimal(base_size = 11) +
   guides(
     color = "none") +
   theme(
-    legend.position = "right",
-    legend.text = element_text(size = 8),
-    legend.title = element_text(size = 10)
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    legend.position = "bottom",
+    plot.title = element_text(size = 18),
+    axis.text = element_text(size = 14, color = "black"),
+    legend.text = element_text(size = 18),
+    legend.key.width = unit(1.2, "cm"),
+    legend.box = "vertical",
+    plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
   )
 
-plot
+in_scope_plot
 
-ggsave(file.path(output_path, "fig2_metro_scope_timetrend.png"), width = 8, height = 4, dpi = 300)
+ggsave(
+  plot = in_scope_plot,
+  filename = paste0(here::here(), "/imgs/in_scope_emp.png"), # add your file path here
+  width = 10,
+  height = 6,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
 
-saveRDS(plot, file.path(output_path,"fig2.rds"))
+ind_emp_graph <- ind_emp_naics2_inscope %>% 
+  mutate(naics_graph = case_when(
+    naics_2_label == "Construction" ~ "Construction",
+    naics_2_label == "Manufacturing" ~ "Manufacturing",
+    TRUE ~ "Other"
+  )) %>% 
+  group_by(year, naics_graph) %>% 
+  summarize(employment = sum(employment)) %>% 
+  ungroup()
 
-ind_emp_naics2_inscope <- ind_emp_withproj %>% 
-  mutate(
-    naics_2 = substr(naics_4, 1,2),
-    naics_2_label = case_when(
-      naics_2 == "11" ~ "Ag, Forestry,\nFishing",
-      naics_2 == "21" ~ "Mining &\nExtraction",
-      naics_2 == "22" ~ "Utilities",
-      naics_2 == "23" ~ "Construction",
-      naics_2 %in% c("31", "32", "33") ~ "Manufacturing",
-      naics_2 %in% c("42","44", "45") ~ "Wholesale &\nRetail Trade",
-      naics_2 %in% c("48", "49") ~ "Transport &\nWarehousing",
-      naics_2 == "51" ~ "Information",
-      naics_2 == "52" ~ "Finance &\nInsurance",
-      naics_2 == "53" ~ "Real Estate &\nLeasing",
-      naics_2 == "54" ~ "Professional\nServices",
-      naics_2 == "55" ~ "Company\nManagement",
-      naics_2 == "56" ~ "Admin &\nWaste Svcs",
-      naics_2 == "61" ~ "Education",
-      naics_2 == "62" ~ "Health &\nSocial Svcs",
-      naics_2 == "71" ~ "Arts &\nRecreation",
-      naics_2 == "72" ~ "Accommodation\n& Food",
-      naics_2 == "81" ~ "Other\nServices",
-      naics_2 == "92" ~ "Public Admin",
-      TRUE ~ "Other / Unknown"
-    )
-  ) %>% 
-  group_by(year, scope, naics_2_label) %>% 
-  summarise(employment = sum(employment),
-            .groups = "drop") %>% 
-  filter(scope == "in scope")
-
-plot <- ggplot(ind_emp_naics2_inscope,
-       aes(x = year, y = employment, color = naics_2_label)) +
+ind_naics_plot <- ggplot(ind_emp_graph,
+       aes(x = year, y = employment, col = naics_graph)) +
   geom_point() +
-  geom_line(data = subset(ind_emp_naics2_inscope, year <= 2024), size = 1) +
-  geom_line(data = subset(ind_emp_naics2_inscope, year >= 2024), size = 1, linetype = "dashed") +
-  scale_color_manual(values = unname(palette36.colors(n_distinct(ind_emp_naics2_inscope$naics_2_label)))) +
-  scale_y_continuous(labels = comma) +
+  geom_line(data = subset(ind_emp_graph, year <= 2024), size = 1) +
+  geom_line(data = subset(ind_emp_graph, year >= 2024), size = 1, linetype = "dashed") +
+  scale_color_manual(values = c("#00AFBB", "#E7B800", "#FC4E07")) +
+  scale_y_continuous(labels = comma, limits = c(0, 100000)) +
   labs(
     title = paste0("Employment by In Scope by Industry Sector"),
     caption = "Source: QCEW + Projections",
     subtitle = "Historical and projected employment",
     x = "Year",
-    y = "Employment",
+    y = "",
     color = ""
   ) +
   theme_minimal(base_size = 11) +
-  guides(
-    color = guide_legend(nrow = 2)) +
   theme(
-    legend.position = "bottom",
-    legend.text = element_text(size = 8),
-    legend.title = element_text(size = 10)
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    legend.position = "right",
+    plot.title = element_text(size = 18),
+    axis.text = element_text(size = 14, color = "black"),
+    legend.text = element_text(size = 18),
+    legend.key.width = unit(1.2, "cm"),
+    legend.box = "vertical",
+    plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
   )
 
-plot
+ind_naics_plot
 
-ggsave(file.path(output_path, "fig3_metro_scope_timetrend_naics2.png"), width = 5, height = 5, dpi = 300)
-
-saveRDS(plot, file.path(output_path,"fig3.rds"))
-
-### ---- Current employment stats ----
-
-table(qcew_2024_scoped_projections$year)
-
-emp_by_scope <- qcew_2024_scoped_projections %>% 
-  group_by(scope) %>% 
-  summarise(emp = sum(employment), 
-            .groups = "drop") %>% 
-  mutate(
-    total_6digit = sum(emp),
-    total_metro = metro_total_emp,
-    metro_share = emp / metro_total_emp
-  )
-
-emp_by_scope
-
-
-### ---- BAU Employment growth ----
-
-growth_24to32 <- ind_emp_withproj %>%
-  filter(year %in% c(2024, 2032)) %>%
-  pivot_wider(names_from = year, values_from = employment, names_prefix = "emp_") %>%
-  filter(!is.na(emp_2024) & !is.na(emp_2032)) %>% 
-  group_by(scope) %>% 
-  summarise(emp_2024 = sum(emp_2024), emp_2032 = sum(emp_2032)) %>% 
-  mutate(
-    total_growth = emp_2032 - emp_2024,
-    pct_growth   = (emp_2032 - emp_2024) / emp_2024 * 100
-  )
-
-growth_24to32
-
-### ---- Industry details 
-ind_growth_24to32 <- ind_emp_withproj %>%
-  filter(year %in% c(2024, 2032)) %>%
-  pivot_wider(names_from = year, values_from = employment, names_prefix = "emp_") %>%
-  filter(!is.na(emp_2024) & !is.na(emp_2032)) %>% 
-  group_by(scope, naics_4, naics_title_4) %>% 
-  summarise(emp_2024 = sum(emp_2024), emp_2032 = sum(emp_2032)) %>% 
-  mutate(
-    total_growth = emp_2032 - emp_2024,
-    pct_growth   = (emp_2032 - emp_2024) / emp_2024 * 100
-  )
-
-ind_growth_22to32 <- ind_emp_withproj %>%
-  filter(year %in% c(2022, 2032)) %>%
-  pivot_wider(names_from = year, values_from = employment, names_prefix = "emp_") %>%
-  filter(!is.na(emp_2022) & !is.na(emp_2032)) %>% 
-  group_by(scope, naics_4, naics_title_4) %>% 
-  summarise(emp_2022 = sum(emp_2022), emp_2032 = sum(emp_2032)) %>% 
-  mutate(
-    total_growth = emp_2032 - emp_2022,
-    pct_growth   = (emp_2032 - emp_2022) / emp_2022 * 100
-  )
-
-
-ind_growth_24to32 %>% 
-  filter(scope == "in scope") %>% 
-  arrange(desc(emp_2024)) %>% 
-  head()
-
-qcew_2024_scoped_projections %>%
-  filter(scope == "in scope") %>%
-  group_by(naics_4) %>% 
-  summarise(employment = sum(employment)) %>% 
-  arrange(desc(employment)) %>% 
-  head()
-  
-
-ind_growth_24to32 %>% 
-  filter(scope == "in scope") %>% 
-  arrange(desc(pct_growth)) %>% 
-  head(10)
-
-ind_growth_22to32 %>% 
-  filter(scope == "in scope") %>% 
-  arrange(desc(pct_growth)) %>% 
-  head(10)
-
-ind_growth_24to32 %>% 
-  filter(scope == "in scope") %>% 
-  arrange(desc(emp_2024)) %>% 
-  head()
-
-ind_growth_22to32 %>% 
-  filter(scope == "in scope") %>% 
-  arrange(desc(emp_2022)) %>% 
-  head()
-
-ind_growth_24to32 %>% 
-  filter(scope == "in scope") %>% 
-  arrange((pct_growth)) %>% 
-  head(10)
-
-ind_growth_22to32 %>% 
-  filter(scope == "in scope") %>% 
-  arrange((pct_growth)) %>% 
-  head(10)
-
-ind_growth_24to32 %>% 
-  filter(scope == "in scope") %>% 
-  arrange((total_growth)) %>% 
-  head()
-
-ind_growth_22to32 %>% 
-  filter(scope == "in scope") %>% 
-  arrange((total_growth)) %>% 
-  head()
-
-#Naics 2 digit growth rates
-
-largest_2dig <-  ind_growth_24to32 %>% 
-  mutate(naics_2 = substr(naics_4, 1,2),
-         naics_2 = ifelse(naics_2 %in% c("31","32","33"), "33", naics_2)) %>% #combining manuf for ease of interpreting
-  group_by(scope, naics_2) %>% 
-  summarise(emp_2024 = sum(emp_2024), emp_2032 = sum(emp_2032),
-            .groups = "drop") %>% 
-  group_by(scope) %>% 
-  mutate(
-    total_growth = emp_2032 - emp_2024,
-    pct_growth   = (emp_2032 - emp_2024) / emp_2024 * 100,
-    scope_share_emp2024 = emp_2024/ sum(emp_2024),
-    scope_share_emp2032 = emp_2032/ sum(emp_2032)
-  )
-
-largest_2dig %>% arrange(scope,desc(emp_2024))
-
-largest_2dig %>% arrange(scope,desc(total_growth))
-
-largest_2dig %>% arrange(scope,desc(pct_growth))
-
-
-# ---- Priority Occupations ----
-### --- Load occupation data ----
-# Scope 
-ccap_soc_scope_final <- read_rds(file.path(scope_path, "ccap_soc_scope_final.rds"))
-
-full_onet2022_scope <- read_xlsx(file.path(gen_data_path, "onet_greentopic_occupations.xlsx"), sheet = 1, skip = 2) %>% 
-  mutate(soc_code = as.character(soc_code)) %>% 
-  distinct(soc_code, soc_title)
-
-full_onet2009_scope <-  read_csv(file = file.path(gen_data_path, "onet_greening_occupations_soc2018.csv")) %>% 
-  mutate(soc_code = as.character(soc_code)) %>% 
-  select(-source)
-
-table(ccap_soc_scope_final$source)
-
-condensed_ccap_soc_scope <- ccap_soc_scope_final %>% 
-  group_by(soc_code) %>%
-  summarize( soc_title = soc_title[which.max(nchar(soc_title))],  # Keep longest version of the cleaned title
-             list_ccap_sectors = paste(sort(unique(ccap_sector)), collapse = ", "),
-             .groups = "drop"
-  )
-
-all_onet <- full_onet2009_scope %>% 
-  rbind(full_onet2022_scope) %>% 
-  distinct(soc_code)
-
-# Scored data from build_occupation_table script
-scope_scored_OID <- read_rds(file.path(data_path, "msa_scope_scored_OID.rds")) %>% 
-  mutate(
-    soc_2 = substr(soc_code, 1, 2),
-    soc_2_label = case_when(
-      soc_2 == "11" ~ "Management",
-      soc_2 == "13" ~ "Business &\nFinancial Ops",
-      soc_2 == "15" ~ "Computer &\nMath",
-      soc_2 == "17" ~ "Architecture &\nEngineering",
-      soc_2 == "19" ~ "Life, Physical,\n& Social Science",
-      soc_2 == "21" ~ "Community &\nSocial Service",
-      soc_2 == "23" ~ "Legal",
-      soc_2 == "25" ~ "Education,\nTraining, & Library",
-      soc_2 == "27" ~ "Arts, Design,\nEntertainment, Sports,\n& Media",
-      soc_2 == "29" ~ "Healthcare\nPractitioners & Tech",
-      soc_2 == "31" ~ "Healthcare\nSupport",
-      soc_2 == "33" ~ "Protective Service",
-      soc_2 == "35" ~ "Food Prep &\nServing",
-      soc_2 == "37" ~ "Building &\nGrounds Cleaning,\n& Maintenance",
-      soc_2 == "39" ~ "Personal Care\n& Service",
-      soc_2 == "41" ~ "Sales &\nRelated",
-      soc_2 == "43" ~ "Office &\nAdministrative Support",
-      soc_2 == "45" ~ "Farming,\nFishing, & Forestry",
-      soc_2 == "47" ~ "Construction\n& Extraction",
-      soc_2 == "49" ~ "Installation,\nMaintenance, & Repair",
-      soc_2 == "51" ~ "Production",
-      soc_2 == "53" ~ "Transportation\n& Material Moving",
-      TRUE ~ "Other / Unknown"
-    )
-  )
-
-# OES MSA Employment
-oews_q12025_MSA <- read_xlsx(file.path(data_path, "OESResults_Q12025_MSA.xlsx")) %>% 
-  clean_names() %>% 
-  mutate(
-    across(c(emp_count, h_mean:h_pct90, a_mean:a_pct90), as.numeric),
-    soc_code = as.character(occ_code),
-    across(where(is.character), str_squish)
-  )
-
-msa_oes_6 <- oews_q12025_MSA %>% 
-  filter(soc_level=="6")
-
-msa_oes_024 <- oews_q12025_MSA %>% 
-  filter(soc_level!="6")
-
-# Checking SOC codes missing from OES Twin City MSA 
-non_oes_msa <- ccap_soc_scope_final %>%
-  anti_join(msa_oes_6, by = "soc_code") %>% 
-  distinct(soc_code, soc_title)
-
-# Fuzzy join non-matched SOCs to group-level OEWS
-oes_fallback_matches_msa <- non_oes_msa %>%
-  stringdist_left_join(
-    msa_oes_024 %>% select(soc_code, soc_title_l, 
-                           starts_with("emp"), starts_with("h_"), starts_with("a_")),
-    by = c("soc_title" = "soc_title_l"),
-    method = "jw",
-    max_dist = 0.15
-  )  # review best match per row
-
-#Correcting fuzzy match
-oes_fallback_best_msa <- oes_fallback_matches_msa %>%
-  filter(soc_code.x == soc_code.y) %>%
-  select(soc_code = soc_code.x, starts_with("emp"), starts_with("h_"), starts_with("a_"))
-
-
-#Join   w/ data
-stat_vars <- c("emp_count", "h_mean", "h_median", "h_pct10", "h_pct25",
-               "h_pct75", "h_pct90", "a_mean", "a_median", "a_pct10", 
-               "a_pct25", "a_pct75", "a_pct90")
-
-msa_oes_6_adj <- msa_oes_6 %>%
-  left_join(oes_fallback_best_msa, by = "soc_code", suffix =  c("", ".y")) %>%
-  mutate(
-    across(
-      all_of(stat_vars),
-      ~ coalesce(.x, get(paste0(cur_column(), ".y")))
-    )
-  )%>%
-  select(-ends_with(".y"))
-
-# Backfills to consider
-
-soc_4dig <- oes_fallback_matches_msa %>% 
-  filter(is.na(soc_code.y)) %>%  #no fuzzy match so check if should backfill with 4dig stats
-  mutate(soc_4 = substr(soc_code.x, 1, 4)) %>% 
-  distinct(soc_4)
-
-for (soc4 in soc_4dig$soc_4) {
-  cat("\n\n========== SOC 4-digit group:", soc4, "==========\n")
-  
-  cat("\n-- OES 6-digit matches (area_oes_6_adj):\n")
-  print(
-    msa_oes_6_adj %>%
-      filter(str_starts(soc_code, soc4)) %>%
-      distinct(soc_code, emp_count)
-  )
-  
-  cat("\n-- OES aggregated (area_oes_024):\n")
-  print(
-    msa_oes_024 %>%
-      filter(str_starts(soc_code, soc4))
-  )
-}
-
-
-oes_patch_msa <- msa_oes_024 %>%
-  filter(soc_code %in% c("474090")) %>%
-  mutate(soc_code6 = case_when(
-    soc_code == "474090" ~ "474099"
-  ))
-
-#Finalize by adding patches
-
-msa_oes_6_adj <- msa_oes_6_adj %>%
-  left_join(oes_patch_msa,
-            by = c("soc_code" = "soc_code6"),
-            suffix = c("", "_patch")
-  )  %>%
-  mutate(
-    across(
-      all_of(stat_vars),
-      ~ coalesce(.x, get(paste0(cur_column(), "_patch")))
-    ),
-    soc_code = if_else(is.na(soc_code_patch), soc_code, soc_code_patch)
-  ) %>%
-  select(-ends_with("_patch")) %>% 
-  filter(!is.na(soc_code))
-
-oes_6_for_loop_msa <- msa_oes_6_adj %>%
-  select(
-    soc_code,
-    soc_title = soc_title_l,
-    all_of(stat_vars)  # emp_count:a_pct90
-  )
-
-
-# Occ descriptives
-role_summary_df <- read_xlsx(file.path(gen_data_path, "soc_2018_definitions.xlsx")) %>%
-  clean_names() %>%
-  select(-soc_code) %>%
-  rename(soc_code = soc_code_num) %>% 
-  mutate(
-    across(everything(), as.character),
-    across(everything(), str_squish)
-  ) 
-
-soc_major_groups <- role_summary_df %>%
-  filter(soc_group == "Major") %>%
-  select(soc_2dig = soc_code, soc_major_title = soc_title) %>%
-  mutate(soc_2dig = str_sub(soc_2dig, 1, 2), 
-         soc_major_title = str_remove(soc_major_title, " Occupations$")
-  ) 
-
-soc_detailed_roles <- role_summary_df %>%
-  filter(soc_group == "Detailed") %>%
-  select(soc_code, description = soc_definition)  # rename for clarity
-
-ex_jobtitles <- read_xlsx(file.path(gen_data_path, "soc_example_jobtitles.xlsx")) %>%
-  clean_names() %>% 
-  mutate(
-    across(everything(), as.character),
-    across(everything(), str_squish)
-  ) %>% 
-  mutate(soc_code = str_replace_all(o_net_soc_code, c("-" = "", "\\..*" = "")),
-         non_soc = ifelse(str_detect(o_net_soc_code, "\\.00$"), 0, 1)
-         )
-
-## ---- Pie chart occupation and employment count ----
-metro_onet <- scope_scored_OID %>% 
-  filter(!is.na(onet)) %>% 
-  select(soc_code, soc_title, soc_2, soc_2_label,emp_count)
-
-metro_soc_ccap <- scope_scored_OID %>% 
-  select(soc_code, soc_title, soc_2, soc_2_label, emp_count)
-
-metro_occ_list <- list(
-  ONET = metro_onet,
-  All = metro_soc_ccap
+ggsave(
+  plot = ind_naics_plot,
+  filename = paste0(here::here(), "/imgs/in_scope_emp_naics.png"), # add your file path here
+  width = 10,
+  height = 6,
+  units = "in",
+  dpi = 300,
+  bg = "white"
 )
 
-all_metro_occ <- bind_rows(metro_occ_list, .id = "scope")
 
-# total obs per scope (for center text later)
-met_totals <- all_metro_occ %>%
-  group_by(scope) %>%
-  summarise(total = n())
-
-met_sector_totals <- all_metro_occ %>%
-  group_by(scope, soc_2_label) %>%
-  summarise(soc_2_n = n(), 
-            .groups = "drop") %>% 
-  group_by(scope) %>% 
-  mutate(soc_2_share = soc_2_n/sum(soc_2_n))
-
-met_emp <- all_metro_occ %>%
-  group_by(scope) %>%
-  summarise(total = sum(emp_count))
-
-met_sector_emp <- all_metro_occ %>%
-  group_by(scope, soc_2_label) %>%
-  summarise(soc_2_emp = sum(emp_count), 
-            .groups = "drop") %>% 
-  group_by(scope) %>% 
-  mutate(soc_2_share = soc_2_emp/sum(soc_2_emp))
-
-# build donut
-p_soc <- ggplot(met_sector_totals,
-       aes(x = 2, y = soc_2_share, fill = soc_2_label)) +
-  geom_col(width = 1, color = "white") +
-  geom_text(
-    data = met_totals,
-    aes(x = 0.5, y = 0, label = total),  # center
-    inherit.aes = FALSE,
-    size = 4, fontface = "bold"
-  ) +
-  coord_polar(theta = "y") +
-  xlim(0.5, 2.5) +
-  scale_fill_manual(values = unname(palette36.colors(n_distinct(met_sector_totals$soc_2_label)))) +
-  facet_wrap(~ scope) +                # multiple donuts
-  theme_void() +
-  labs(fill = "Occupation Group", title = "Scoped Occupations",
-       subtitle = "Number in center = total SOC codes") +
-  guides(fill = guide_legend(ncol = 2))
-
-p_emp <- ggplot(met_sector_emp,
-                  aes(x = 2, y = soc_2_share, fill = soc_2_label)) +
-  geom_col(width = 1, color = "white") +
-  geom_text(
-    data = met_emp,
-    aes(x = 0.5, y = 0, label = comma(total)),  # center
-    inherit.aes = FALSE,
-    size = 3, fontface = "bold"
-  ) +
-  coord_polar(theta = "y") +
-  xlim(0.5, 2.5) +
-  scale_fill_manual(values = unname(palette36.colors(n_distinct(met_sector_emp$soc_2_label)))) +
-  facet_wrap(~ scope) +                # multiple donuts
-  theme_void() +
-  labs(fill = "Occupation Group", title = "Occupation Employment",
-       subtitle = "Number in center = total employment") +
-  guides(fill = guide_legend(ncol = 2))
-
-final_plot <- p_soc / p_emp +
-  plot_layout(guides = "collect") & 
-  theme(legend.position = "right",
-        legend.title.position = "top",
-        legend.title = element_text(hjust = 0.5)) 
-
-final_plot
-
-ggsave(file.path(output_path, "fig4_met_occ_donuts.png"), width = 9, height = 8, dpi = 300)
-
-saveRDS(final_plot, file.path(output_path,"fig4.rds"))
-
-# share of occupation in scoped industries (statewide 2023)
-scoped_indXocc <- industry_occ_links %>% 
-  select(indcode, IndTitle, occcode, empcount) %>% 
-  distinct() %>% 
-  left_join(naics_proj_crosswalk, by = "indcode") %>% 
-  left_join(ind_emp_shares, by = "naics_4") %>% 
-  mutate(occcode = as.character(occcode)) %>% 
-  filter(occcode %in% metro_soc_ccap$soc_code) %>% 
-  mutate(occXindust_emp_adj = empcount*scoped_emp_share_in2022) %>% 
-  select(-naics_4) %>% 
-  distinct() %>% 
-  group_by(occcode, scope) %>% 
-  summarize(empcount = sum(empcount),
-            .groups = "drop") %>% 
-  group_by(occcode) %>% 
-  mutate(occ_emp = sum(empcount),
-         scope_share = empcount/occ_emp) %>% 
-  ungroup() %>% 
-  left_join(ccap_soc_scope_final %>% select(soc_code, soc_title),
-            by = c("occcode" = "soc_code"))
-
-tapply(scoped_indXocc$scope_share, scoped_indXocc$scope, summary)
-
-#some occupations are fully employed in scoped industries, several construction occ.
-# by avg occ employment in scoped industries is ~1/3rd with is in line with the ind
-# emp total / occ emp total  
-# But the follow occupation data is all occ employment regardless of industries
-# bc jobs/skills are important for the work (eg. electricians working in schools
-# or hospitals even though schools and hospitals are in industry scope)
-# also helpful to see range of jobs because people move in & out of clean/green work
-# even in industries so this helps to show people with specific skills regardless 
-# of what industry they work in  -  but do restrict to onet occ for stronger connection & tractability
-
-
-## ---- Priority method scatter ----
-onet_scored_OID <- scope_scored_OID %>% 
-  filter(!is.na(onet)) %>%
-  mutate(demand_stars_fct = ifelse(is.na(demand_stars), "No stars", demand_stars)) %>% 
-  mutate(demand_stars_fct = factor(demand_stars,
-                               levels = c("1","2","3","4","5","No stars"))) %>% 
-  mutate(num_of_sectors = str_count(list_ccap_sectors, ",") + 1)
-
-p90 <- quantile(onet_scored_OID$priority_score, 0.9, na.rm = TRUE)
-
-plot <- ggplot(onet_scored_OID, aes(x = jvr_formula, 
-                         y = projected_growth_rate, 
-                         size = emp_count,
-                         color = demand_stars_fct
-                         )) +
-  # 1. Top 10% outline layer (drawn first so it sits behind)
-  geom_point(
-    data = onet_scored_OID %>% filter(priority_score > p90),
-    aes(size = emp_count),
-    shape = 21, fill = NA, colour = "red", stroke = 2,
-    show.legend = FALSE
-  ) +
-  # 2. All points, filled by demand stars
-  geom_point(alpha = 0.7) +
-  scale_x_continuous(limits = c(0, 15),
-                     name = "Job Vacancy Rate") +
-  scale_y_continuous(labels = percent_format(accuracy = .1),
-                     name = "Projected Growth Rate (2022–2032)") +
-  scale_size_continuous(labels = comma_format(),
-                        name = "Employment (Metro)") +
-  scale_color_manual(
-    values = c(setNames(viridis(5, option = "C", direction = -1), 1:5),
-               "No stars" = "grey60"),
-    name = "Demand Stars"
-  ) +
-  labs(title = "Occupational Demand Signals (for 7 county Metro data)",
-       subtitle = "Occupations with top 10% of priority scores outlined in <span style='color:red;'>red</span>") +
-  theme_minimal(base_size = 12) +
-  theme(legend.position = "right",
-        plot.subtitle = element_markdown()) +
-  guides(
-  color = guide_legend(override.aes = list(size = 5))   # bigger color dots
-)
-
-plot
-
-ggsave(file.path(output_path,"fig5_onet_OID_priority_scatter.png"), width = 8, height = 5, dpi = 300)
-
-saveRDS(plot, file.path(output_path,"fig5.rds"))
-
-
-## ---- Priority occupation tables (10 < BA, 5>=BA) ----
-prop.table(table(onet_scored_OID$num_of_sectors))
-
-# 4+ stars, multiple sectors, and split education group
-onet_scored_OID_occdetails <- onet_scored_OID %>% 
-  left_join(oes_6_for_loop_msa %>% 
-              select(soc_code, emp_count),
-            by = "soc_code", suffix = c("", "_msa")) %>%
-  left_join(soc_detailed_roles, by = "soc_code") %>% 
-  left_join(ex_jobtitles %>% filter(non_soc==0) %>%
-              group_by(soc_code) %>% 
-              summarize(list_ex_titles = paste(sort(unique(reported_job_title))
-                                               , collapse = ", "),
-             .groups = "drop"),
-            by = "soc_code") %>% 
-  select(
-    soc_code,
-    soc_title,
-    description,
-    emp_count_msa,
-    projected_growth_rate,
-    job_vacancy_rate,
-    priority_score,
-    demand_stars,
-    education_requirements,
-    list_ccap_sectors,
-    num_of_sectors,
-    list_ex_titles
-  ) %>% 
-  mutate(list_ccap_sectors = str_replace_all(list_ccap_sectors, "NWL", "Ag & Natural Systems"))
-  
-
-
-priority_underBA <- onet_scored_OID_occdetails %>% 
-  filter(num_of_sectors>1 & demand_stars>=4
-         & !(education_requirements=="Bachelor's degree" |
-               education_requirements=="Doctoral or professional degree" |
-               education_requirements=="Graduate or professional degree")
-  )%>%
-  arrange(desc(priority_score)) %>%
-  head(10) %>%
-  mutate(
-    projected_growth_rate = percent(projected_growth_rate, accuracy = 0.1),
-    job_vacancy_rate = comma(job_vacancy_rate, accuracy = 0.01),
-    emp_count_msa = comma(emp_count_msa)
-  ) %>%
-  select(soc_code, soc_title, description, emp_count_msa,
-         projected_growth_rate, job_vacancy_rate,list_ex_titles, list_ccap_sectors) %>% 
-  rename(
-    `SOC Code` = soc_code,
-    `Occupation Title` = soc_title,
-    `Description` = description,
-    `MSA Employment (2025)` = emp_count_msa,
-    `Projected Growth Rate (2022–2032)` = projected_growth_rate,
-    `Job Vacancy Rate (2024)` = job_vacancy_rate,
-    `Example Job Titles` = list_ex_titles,
-    `Sectors Can Contribute to` = list_ccap_sectors)
-
-write_xlsx(priority_underBA, 
-           file.path(output_path, "table1_priority_occupations_underBA_table.xlsx"))
-
-all_occ_underBA <- onet_scored_OID_occdetails %>% 
-  filter(num_of_sectors>1 & demand_stars>=4
-         & !(education_requirements=="Bachelor's degree" |
-               education_requirements=="Doctoral or professional degree" |
-               education_requirements=="Graduate or professional degree")
-  )
-
-
-priority_overBA <- onet_scored_OID_occdetails %>% 
-  filter(num_of_sectors>1 & demand_stars>=4
-         & (education_requirements=="Bachelor's degree" |
-               education_requirements=="Doctoral or professional degree" |
-               education_requirements=="Graduate or professional degree")
-  )%>%
-  arrange(desc(priority_score)) %>%
-  head(10) %>%
-  mutate(
-    projected_growth_rate = percent(projected_growth_rate, accuracy = 0.1),
-    job_vacancy_rate = comma(job_vacancy_rate, accuracy = 0.01),
-    emp_count_msa = comma(emp_count_msa)
-  ) %>%
-  select(soc_code, soc_title, description, emp_count_msa,
-         projected_growth_rate, job_vacancy_rate,list_ex_titles, list_ccap_sectors) %>% 
-  rename(
-    `SOC Code` = soc_code,
-    `Occupation Title` = soc_title,
-    `Description` = description,
-    `MSA Employment (2025)` = emp_count_msa,
-    `Projected Growth Rate (2022–2032)` = projected_growth_rate,
-    `Job Vacancy Rate (2024)` = job_vacancy_rate,
-    `Example Job Titles` = list_ex_titles,
-    `Sectors Can Contribute to` = list_ccap_sectors)
-
-write_xlsx(priority_overBA, 
-           file.path(output_path, "priority_occupations_overBA_table.xlsx"))
-
-all_occ_overBA <- onet_scored_OID_occdetails %>% 
-  filter(num_of_sectors>1 & demand_stars>=4
-         & (education_requirements=="Bachelor's degree" |
-              education_requirements=="Doctoral or professional degree" |
-              education_requirements=="Graduate or professional degree")
-  )
-
-## ---- Growth under over BA ----
-priority_growth_underBA <-  onet_scored_OID_occdetails %>% 
-  filter(soc_code %in% c(priority_underBA$`SOC Code`))%>%
-  arrange(desc(priority_score)) %>%
-  mutate(jobs_added = emp_count_msa*projected_growth_rate) %>% 
-  select(soc_code, soc_title, priority_score, jobs_added) %>% 
-  mutate(soc_title_wrapped = str_wrap(soc_title, width = 40)) %>% 
-  mutate(soc_title_wrapped = fct_reorder(soc_title_wrapped, desc(priority_score)))
-
-
-ggplot(priority_growth_underBA %>% 
-         arrange(desc(jobs_added)) %>%
-         slice_head(n = 10) %>% 
-         mutate(soc_title_wrapped = str_wrap(soc_title, width = 30)) ,
-  aes(
-  x = jobs_added,
-  y = reorder(soc_title_wrapped, jobs_added)
-)) +
-  geom_col(fill = "#2E86AB") +
-  geom_text(
-    aes(label = comma(round(jobs_added, 0))),
-    hjust = -0.1,
-    size = 3
-  ) +
-  scale_x_continuous("Jobs added", labels = comma, expand = expansion(mult = c(0, 0.1))) +
-  labs(
-    y = NULL,
-    title = "Top 10 Occupations by Jobs Added",
-    subtitle = "Most new jobs require less than a BA"
-  ) +
-  theme_minimal(base_size = 13) +
-  theme(
-    panel.grid.major.y = element_blank(),
-    axis.text.y = element_text(size = 9)
-  )
-
-priority_growth_overBA <-  onet_scored_OID_occdetails %>% 
-  filter(soc_code %in% c(priority_overBA$`SOC Code`))%>%
-  arrange(desc(priority_score)) %>%
-  mutate(jobs_added = emp_count_msa*projected_growth_rate) %>% 
-  select(soc_code, soc_title, priority_score, jobs_added) %>% 
-  mutate(soc_title_wrapped = str_wrap(soc_title, width = 40)) %>% 
-  mutate(soc_title_wrapped = fct_reorder(soc_title_wrapped, desc(priority_score)))
-
-
-ggplot(priority_growth_overBA %>% 
-         arrange(desc(jobs_added)) %>%
-         slice_head(n = 10) %>% 
-         mutate(soc_title_wrapped = str_wrap(soc_title, width = 30)) ,
-       aes(
-         x = jobs_added,
-         y = reorder(soc_title_wrapped, jobs_added)
-       )) +
-  geom_col(fill = "#2E86AB") +
-  geom_text(
-    aes(label = comma(round(jobs_added, 0))),
-    hjust = -0.1,
-    size = 3
-  ) +
-  scale_x_continuous("Jobs added", labels = comma, expand = expansion(mult = c(0, 0.1))) +
-  labs(
-    y = NULL,
-    title = "Top 10 Occupations by Jobs Added",
-    subtitle = "Most new jobs require a BA+"
-  ) +
-  theme_minimal(base_size = 13) +
-  theme(
-    panel.grid.major.y = element_blank(),
-    axis.text.y = element_text(size = 9)
-  )
 
 ## ---- Wages ----
 wage_dumbell <- onet_scored_OID_occdetails %>% 
@@ -1152,87 +201,103 @@ wage_dumbell <- onet_scored_OID_occdetails %>%
 cost_of_living_7co <- 24.53
 
 
-p_underBA <-  ggplot(wage_dumbell %>% filter(soc_code %in% priority_underBA$`SOC Code`),
-                     aes(x = soc_title_wrapped)) +
-  # p25–p75 segment (wage range)
+p_underBA <- ggplot(
+  wage_dumbell %>% filter(soc_code %in% priority_underBA$`SOC Code`),
+  aes(x = soc_title_wrapped)
+) +
   geom_linerange(aes(ymin = h_pct25, ymax = h_pct75, colour = "25th–75th Percentile"),
                  linewidth = 1.2) +
-  # median point
-  geom_point(aes(y = h_median, color = "Median"),
-             size = 3) +
-  # cost-of-living comparison line
+  geom_point(aes(y = h_median, color = "Median"), size = 3) +
   geom_hline(yintercept = cost_of_living_7co, linetype = "dashed", color = "darkgreen") +
-  annotate("text", x = 0.5, y = cost_of_living_7co, label = "Cost of Living, Metro", 
-           vjust = -1, hjust = 0, size = 3.5, color = "darkgreen") +
+  annotate("text", x = 1, y = 12,
+           label = "Cost of Living, Metro",
+           size = 3.5, color = "darkgreen") +
   scale_y_continuous(
-    limits = c(20, 110),
-    breaks = seq(20, 110, by = 10),
+    limits = c(0, 110),
+    breaks = seq(0, 110, by = 20),
     labels = scales::dollar_format()
   ) +
   scale_color_manual(
-    values = c("25th–75th Percentile" = "steelblue", 
-               "Median" = "red"),
+    values = c("25th–75th Percentile" = "steelblue", "Median" = "red"),
     name = NULL
   ) +
   labs(
-    title = "Occupations with Min. Edu. Required < Bachelors",
+    title = "Occupations without required bachelors",
     x = NULL,
-    y = "Hourly Wage ($)",
-    color = NULL
+    y = "Hourly Wage ($)"
   ) +
+  coord_flip() +
   theme_minimal() +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
-    axis.text.y = element_text(size = 10),
-    plot.caption = element_text(size = 10),
-    plot.margin = margin(5, 5, 5, 15)  # top, right, bottom, left
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position = "bottom",
+    plot.title = element_text(size = 18),
+    axis.text = element_text(size = 14, color = "black"),
+    legend.text = element_text(size = 18),
+    legend.key.width = unit(1.2, "cm"),
+    legend.box = "vertical",
+    plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
   )
 
-p_overBA <-  ggplot(wage_dumbell %>% filter(soc_code %in% priority_overBA$`SOC Code`),
-                     aes(x = soc_title_wrapped)) +
-  # p25–p75 segment (wage range)
+p_overBA <- ggplot(
+  wage_dumbell %>% filter(soc_code %in% priority_overBA$`SOC Code`),
+  aes(x = soc_title_wrapped)
+) +
   geom_linerange(aes(ymin = h_pct25, ymax = h_pct75, colour = "25th–75th Percentile"),
                  linewidth = 1.2) +
-  # median point
-  geom_point(aes(y = h_median, color = "Median"),
-             size = 3) +
-  # cost-of-living comparison line
+  geom_point(aes(y = h_median, color = "Median"), size = 3) +
   geom_hline(yintercept = cost_of_living_7co, linetype = "dashed", color = "darkgreen") +
-  annotate("text", x = 0.5, y = cost_of_living_7co, label = "Cost of Living, Metro", 
-           vjust = -1, hjust = 0, size = 3.5, color = "darkgreen") +
+  annotate("text", x = 1, y = 12,
+           label = "Cost of Living, Metro",
+           size = 3.5, color = "darkgreen") +
   scale_y_continuous(
-    limits = c(20, 110),
-    breaks = seq(20, 110, by = 10),
+    limits = c(0, 110),
+    breaks = seq(0, 110, by = 20),
     labels = scales::dollar_format()
   ) +
   scale_color_manual(
-    values = c("25th–75th Percentile" = "steelblue", 
-               "Median" = "red"),
+    values = c("25th–75th Percentile" = "steelblue", "Median" = "red"),
     name = NULL
   ) +
   labs(
-    title = "Occupations with Min. Edu. Required >= Bachelors",
+    title = "Occupations with required bachelors",
     x = NULL,
-    y = "Hourly Wage ($)",
-    color = NULL
+    y = "Hourly Wage ($)"
   ) +
+  coord_flip() +
   theme_minimal() +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
-    axis.text.y = element_text(size = 10),
-    plot.caption = element_text(size = 10)
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position = "bottom",
+    plot.title = element_text(size = 18),
+    axis.text = element_text(size = 14, color = "black"),
+    legend.text = element_text(size = 18),
+    legend.key.width = unit(1.2, "cm"),
+    legend.box = "vertical",
+    plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
   )
 
+# Stack vertically (ncol = 1)
 final_plot <- p_underBA + p_overBA +
-  plot_layout(guides = "collect") +
+  plot_layout(guides = "collect", ncol = 1) +
   plot_annotation(caption = "Source: OEWS") &
   theme(legend.position = "right")
 
 final_plot
 
-ggsave(file.path(output_path, "fig6_metcouncil_wage_dumbbell_jointedu.png"), width = 12, height = 8, dpi = 300)
 
-saveRDS(final_plot, file.path(output_path,"fig6.rds"))
+ggsave(
+  plot = final_plot,
+  filename = paste0(here::here(), "/imgs/priority_wages.png"), # add your file path here
+  width = 14,
+  height = 12,
+  units = "in",
+  dpi = 300,
+  bg = "white"
+)
+
 
 
 ## ---- work context & job quality framing
