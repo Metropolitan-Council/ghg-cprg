@@ -24,18 +24,20 @@ library(tidygraph)
 library(igraph)
 library(ggraph)
 
-data_path <- "C:/Users/EU01240560/OneDrive - State of Minnesota - MN365/Documents/EPA CPRG/Planning Grant/CCAP/data/metro"
-gen_data_path <- "C:/Users/EU01240560/OneDrive - State of Minnesota - MN365/Documents/EPA CPRG/Planning Grant/CCAP/data"
-scope_path <- "C:/Users/EU01240560/OneDrive - State of Minnesota - MN365/Documents/EPA CPRG/Planning Grant/CCAP/general_outputs"
-output_path <- "C:/Users/EU01240560/OneDrive - State of Minnesota - MN365/Documents/EPA CPRG/Planning Grant/CCAP/sector_outputs/metro"
-occ_data_path <- "C:/Users/EU01240560/OneDrive - State of Minnesota - MN365/Documents/EPA CPRG/Planning Grant/CCAP/data/occ_context_skills"
-cert_data_path <- "C:/Users/EU01240560/OneDrive - State of Minnesota - MN365/Documents/EPA CPRG/Planning Grant/CCAP/data/OneStop Cert Excel Files"
+data_path <- "_meta/data-raw/projections/WFA"
+csv_files <- list.files(data_path, pattern = "\\.csv$", full.names = TRUE)
+
+for (file in csv_files) {
+  name <- tools::file_path_sans_ext(basename(file))
+  assign(name, read_csv(file), envir = .GlobalEnv)
+}
+
 
 # ---- Overview of Workforce Demand (industry employment) ----
 
 ## ---- Pie charts industry and employment count ----
 ### ---- Scope ----
-ccap_naics_scope_final <- read_rds(file.path(scope_path, "ccap_naics_scope_final.rds")) %>% 
+ccap_naics_scope_final <- read_rds(file.path(data_path, "ccap_naics_scope_final.rds")) %>% 
   mutate(ccap_sector = ifelse(ccap_sector=="NWL", "Natural Systems & Ag", ccap_sector)
   )
 
@@ -79,7 +81,7 @@ narrow_condensed_scope <- ccap_naics_scope_final %>%
 
 
 ### --- Employment data (qcew) ----
-all_naics_2022 <- read_xlsx(file.path(gen_data_path, "naics_2022_6digit.xlsx")) %>%
+all_naics_2022 <- read_xlsx(file.path(data_path, "naics_2022_6digit.xlsx")) %>%
   mutate(across(everything(), as.character))
 
 manual_naics_recode <- read_csv(file.path(gen_data_path, "manual_naics_recode.csv")) %>% 
@@ -194,6 +196,7 @@ metro_sector_emp <- metro_scope %>%
 
 metro_emp_total <- metro_scope %>% 
   summarise(total_emp = sum(employment))
+
 
 # Metro build donut
 p_ind <- ggplot(metro_sector_ind, aes(x = 2, y = naics_2_share, fill = naics_2_label)) +
