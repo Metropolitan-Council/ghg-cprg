@@ -258,7 +258,7 @@ ggsave(
   plot = ppp_projection_plot,
   filename = paste0(here::here(), "/imgs/eleven_county_ppp_projections.png"), # add your file path here
   width = 16,
-  height = 6,
+  height = 8,
   units = "in",
   dpi = 300,
   bg = "white"
