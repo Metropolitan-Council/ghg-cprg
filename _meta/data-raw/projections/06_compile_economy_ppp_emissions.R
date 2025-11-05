@@ -169,8 +169,12 @@ pathways_neg <- pathways %>%
 
 sector_colors <- unlist(sector_colors_alt)
 
-text_bau <- bau_line %>% filter(emissions_year == 2050) %>% pull(value_emissions)
-text_ppp <- ppp_line %>% filter(emissions_year == 2050) %>% pull(value_emissions)
+text_bau <- bau_line %>%
+  filter(emissions_year == 2050) %>%
+  pull(value_emissions)
+text_ppp <- ppp_line %>%
+  filter(emissions_year == 2050) %>%
+  pull(value_emissions)
 
 
 ppp_projection_plot <- ggplot() +
@@ -198,14 +202,16 @@ ppp_projection_plot <- ggplot() +
   ) +
   geom_line(
     data = ppp_line,
-    aes(x = emissions_year , y = value_emissions),  # Remove linetype aesthetic
-    color = "black", linewidth = 1, linetype = "dotted"  # Set linetype directly
+    aes(x = emissions_year, y = value_emissions), # Remove linetype aesthetic
+    color = "black", linewidth = 1, linetype = "dotted" # Set linetype directly
   ) +
-  
-  #net-zero bar
+
+  # net-zero bar
   geom_segment(
-    aes(x = 2049.5, xend = 2051.5, 
-        y = net_zero, yend = net_zero),
+    aes(
+      x = 2049.5, xend = 2051.5,
+      y = net_zero, yend = net_zero
+    ),
     color = "black", linewidth = 1.5, linetype = "solid"
   ) +
   # Add labels and formatting
@@ -235,18 +241,23 @@ ppp_projection_plot <- ggplot() +
     plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
   ) +
   # Add text annotation for BAU
-  annotate("text", x = 2050.5, y = text_bau, 
-           label = "Business-as-usual",
-           size = 5, hjust = 0, vjust = 0.5, fontface = "bold") +
-  
-  annotate("text", x = 2050.5, y = text_ppp, 
-           label = "Potential policy pathway",
-           size = 5, hjust = 0, vjust = 0.5, fontface = "bold") +
-  
+  annotate("text",
+    x = 2050.5, y = text_bau,
+    label = "Business-as-usual",
+    size = 5, hjust = 0, vjust = 0.5, fontface = "bold"
+  ) +
+  annotate("text",
+    x = 2050.5, y = text_ppp,
+    label = "Potential policy pathway",
+    size = 5, hjust = 0, vjust = 0.5, fontface = "bold"
+  ) +
+
   # for net-zero bar
-  annotate("text", x = 2052, y = net_zero, 
-           label = "Net zero target",
-           size = 5, hjust = 0, vjust = 0, fontface = "bold") +
+  annotate("text",
+    x = 2052, y = net_zero,
+    label = "Net zero target",
+    size = 5, hjust = 0, vjust = 0, fontface = "bold"
+  ) +
   # Format y-axis to show values in scientific notation or scaled
   scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
 

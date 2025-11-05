@@ -194,7 +194,7 @@ waste_plot <- plot_emissions_pathways(
   target_year = 2050,
   base_cutoff_year = 2022,
   ppp_bau_color = "#77645A",
-  y_max = 4e6,  # Optional: set max y value
+  y_max = 4e6, # Optional: set max y value
   title = "Waste Emissions \n(Millions of CO2-equivalency)"
 )
 

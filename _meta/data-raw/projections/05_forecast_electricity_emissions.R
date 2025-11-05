@@ -45,8 +45,8 @@ ppp_data <- diverging_data %>%
   rename(ppp_emissions = value_emissions)
 
 # Calculate text position for BAU annotation
-text_bau <- diverging_data %>% 
-  filter(inventory_year == 2050, scenario == "bau") %>% 
+text_bau <- diverging_data %>%
+  filter(inventory_year == 2050, scenario == "bau") %>%
   pull(value_emissions)
 
 emissions_gg <- ggplot() +
@@ -56,44 +56,41 @@ emissions_gg <- ggplot() +
     aes(x = inventory_year, ymin = 0, ymax = value_emissions),
     fill = "gray80", alpha = 0.7
   ) +
-  
+
   # Gray fill below BAU line for projections
   geom_ribbon(
     data = diverging_data %>% filter(scenario == "bau"),
     aes(x = inventory_year, ymin = 0, ymax = value_emissions),
     fill = "gray80", alpha = 0.7
   ) +
-  
+
   # Base line (historical, dashed)
   geom_line(
     data = base_data,
     aes(x = inventory_year, y = value_emissions),
     color = "black", linewidth = 1, linetype = "dashed"
   ) +
-  
+
   # BAU line (dashed)
   geom_line(
     data = diverging_data %>% filter(scenario == "bau"),
     aes(x = inventory_year, y = value_emissions),
     color = "black", linewidth = 1, linetype = "dashed"
   ) +
-  
+
   # Axis lines
   geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
   geom_vline(xintercept = 2005, color = "black", linewidth = 0.5) +
-  
   labs(
     x = "",
     y = "",
     title = "Electricity Emissions"
   ) +
-  
   scale_y_continuous(labels = label_number(scale = 1e-6, suffix = "M")) +
   scale_x_continuous(
     limits = c(2005, 2059),
     breaks = seq(2010, 2059, by = 10)
   ) +
-  
   theme_minimal() +
   theme(
     panel.grid.minor = element_blank(),
@@ -106,12 +103,14 @@ emissions_gg <- ggplot() +
     legend.box = "vertical",
     plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
   ) +
-  
+
   # Add text annotation for BAU
-  annotate("text", x = 2050.5, y = text_bau + 500000, 
-           label = "Business-as-usual",
-           size = 5, hjust = 0, vjust = 0.5, fontface = "bold") +
-  
+  annotate("text",
+    x = 2050.5, y = text_bau + 500000,
+    label = "Business-as-usual",
+    size = 5, hjust = 0, vjust = 0.5, fontface = "bold"
+  ) +
+
   # Add "Inventory" and "Projections" annotations below x-axis
   annotation_custom(
     grob = grid::textGrob("Inventory", gp = grid::gpar(fontsize = 14), vjust = 3),
@@ -121,7 +120,6 @@ emissions_gg <- ggplot() +
     grob = grid::textGrob("Projections", gp = grid::gpar(fontsize = 14), vjust = 3),
     xmin = 2030, xmax = 2030, ymin = -Inf, ymax = -Inf
   ) +
-  
   coord_cartesian(clip = "off")
 
 print(emissions_gg)

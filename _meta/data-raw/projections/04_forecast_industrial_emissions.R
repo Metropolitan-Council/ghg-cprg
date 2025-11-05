@@ -163,7 +163,7 @@ ind_plot <- plot_emissions_pathways(
   target_year = 2050,
   base_cutoff_year = 2022,
   ppp_bau_color = "#A42264",
-  y_max = 6e6,  # Optional: set max y value
+  y_max = 6e6, # Optional: set max y value
   title = "Industrial Emissions \n(Millions of CO2-equivalency)"
 )
 

@@ -65,7 +65,7 @@ ppp_data <- diverging_data %>%
 # ppp_ribbon_data <- ppp_data %>%
 #   left_join(net_zero_for_ppp, by = "inventory_year")
 
-#graph it ####
+# graph it ####
 
 res_plot <- plot_emissions_pathways(
   base_data = base_data,
@@ -74,7 +74,7 @@ res_plot <- plot_emissions_pathways(
   target_year = 2050,
   base_cutoff_year = 2022,
   ppp_bau_color = "#8856A7",
-  y_max = 20e6,  # Optional: set max y value
+  y_max = 20e6, # Optional: set max y value
   title = "Residential Building Emissions \n(Millions of CO2-equivalency)"
 )
 

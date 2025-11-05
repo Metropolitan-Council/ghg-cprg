@@ -57,7 +57,7 @@ baseline_comparison_facet <- ggplot(
   baseline_emissions_sector %>%
     filter(emissions_year >= 2005 & emissions_year <= 2022),
   aes(
-    x = emissions_year, 
+    x = emissions_year,
     y = value_emissions,
     fill = sector_alt,
     col = sector_alt
@@ -299,7 +299,7 @@ sector_per_capita_comparison <- emissions_sector_per_capita %>%
     panel.grid.major.x = element_blank(),
     panel.grid.minor.y = element_blank(),
     text = element_text(size = 20, family = "sans")
-  )  + 
+  ) +
   geom_hline(yintercept = 0, size = 1.2, col = "black", linetype = "dashed")
 
 
@@ -366,40 +366,40 @@ plot_county_emissions <- function(
     width = 14,
     height = 6,
     dpi = 300,
-    include_airport = FALSE
-) {
+    include_airport = FALSE) {
   # Filter and summarize
   df <- data %>%
     filter(sector_alt == sector_graph, emissions_year == year) %>%
     group_by(sector_alt, category_alt, county_name) %>%
     summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop")
-  
+
   # Optionally add counties with zero emissions
   if (!is.null(add_zero_rows)) {
     df <- df %>%
       bind_rows(add_zero_rows)
   }
-  
+
   # Reassign all aviation to new "aviation column"
-  
+
   df <- if (include_airport) {
-    df %>% 
+    df %>%
       mutate(county_name = if_else(category_alt == "Aviation",
-                                   "Aviation",
-                                   county_name))%>% 
-      group_by(sector_alt, county_name, category_alt) %>% 
-      summarize(value_emissions = sum(value_emissions)) %>% 
+        "Aviation",
+        county_name
+      )) %>%
+      group_by(sector_alt, county_name, category_alt) %>%
+      summarize(value_emissions = sum(value_emissions)) %>%
       ungroup()
   }
-  
+
   county_levels <- if (include_airport) c(county_order, "Aviation") else county_order
-  
+
   # Apply category order if provided
   if (!is.null(category_order)) {
     df <- df %>%
-      mutate(category_alt = factor(category_alt, levels = category_order)) 
+      mutate(category_alt = factor(category_alt, levels = category_order))
   }
-  
+
   # Build plot title if not provided
   if (is.null(title)) title <- sector_graph
 
@@ -441,7 +441,7 @@ plot_county_emissions <- function(
       labels = scales::comma_format(scale = 1e-6, suffix = "M"),
       limits = if (!is.null(y_max)) c(y_min, y_max) else NULL
     )
-  
+
   # Optionally save
   if (!is.null(filename)) {
     ggsave(
@@ -454,7 +454,7 @@ plot_county_emissions <- function(
       bg = "white"
     )
   }
-  
+
   return(gg)
 }
 
@@ -466,10 +466,12 @@ gg_transport <- plot_county_emissions(
   year = 2022,
   county_order = county_order,
   category_colors = category_colors,
-  category_order = c("Passenger vehicles",
-                     "Trucks",
-                     "Buses",
-                     "Aviation"),
+  category_order = c(
+    "Passenger vehicles",
+    "Trucks",
+    "Buses",
+    "Aviation"
+  ),
   y_max = 6e6,
   include_airport = TRUE,
   width = 16,
@@ -487,9 +489,11 @@ gg_county_electricity <- plot_county_emissions(
   year = 2022,
   county_order = county_order,
   category_colors = category_colors,
-  category_order = c("Industrial electricity",
-                     "Commercial electricity",
-                     "Residential electricity"),
+  category_order = c(
+    "Industrial electricity",
+    "Commercial electricity",
+    "Residential electricity"
+  ),
   y_max = 6e6,
   include_airport = TRUE,
   filename = paste0(here::here(), "/imgs/eleven_county_electricity_2022.png")
@@ -505,9 +509,11 @@ gg_county_bf <- plot_county_emissions(
   year = 2022,
   county_order = county_order,
   category_colors = category_colors,
-  category_order = c("Industrial building fuel",
-                     "Commercial building fuel",
-                     "Residential building fuel"),
+  category_order = c(
+    "Industrial building fuel",
+    "Commercial building fuel",
+    "Residential building fuel"
+  ),
   y_max = 6e6,
   include_airport = TRUE,
   filename = paste0(here::here(), "/imgs/eleven_county_building_fuel_2022.png")
@@ -522,8 +528,10 @@ gg_county_ip <- plot_county_emissions(
   data = county_emissions %>%
     filter(
       sector_alt == "Industrial Processes",
-      !category_alt %in% c("Industrial natural gas",
-                           "Refinery processes")
+      !category_alt %in% c(
+        "Industrial natural gas",
+        "Refinery processes"
+      )
     ),
   sector_graph = "Industrial Processes",
   year = 2022,
@@ -545,15 +553,21 @@ gg_county_ip
 refinery_emissions <- county_emissions %>%
   filter(
     sector_alt == "Industrial Processes",
-    category_alt %in% c("Industrial natural gas",
-                        "Refinery processes"),
+    category_alt %in% c(
+      "Industrial natural gas",
+      "Refinery processes"
+    ),
     emissions_year == 2022
   )
 
-gg_refinery <- ggplot(refinery_emissions,
-                      aes(x = factor(county_name),
-                          y = value_emissions,
-                          fill = category_alt)) +
+gg_refinery <- ggplot(
+  refinery_emissions,
+  aes(
+    x = factor(county_name),
+    y = value_emissions,
+    fill = category_alt
+  )
+) +
   geom_bar(stat = "identity", position = "stack", color = "black", alpha = 0.85) +
   scale_fill_manual(
     values = unlist(category_colors)[
