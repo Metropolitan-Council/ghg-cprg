@@ -647,6 +647,12 @@ gg_county_ns
 
 #### summary stats #####
 
+#decrease from 2005-2022
+
+(county_emissions %>% filter(emissions_year == 2022) %>% pull(value_emissions) %>% sum() -
+   county_emissions %>% filter(emissions_year == 2005) %>% pull(value_emissions) %>% sum()) /
+  county_emissions %>% filter(emissions_year == 2005) %>% pull(value_emissions) %>% sum()
+  
 county_emissions %>%
   filter(
     sector_alt == "Transportation",
@@ -736,7 +742,8 @@ county_emissions %>%
 
 county_emissions %>%
   filter(
-    category_alt != "Sequestration",
+    #sector != "Natural Systems",
+    category_alt != "Freshwater",
     emissions_year %in% c(2022)
   ) %>%
   group_by(sector_alt) %>%
@@ -754,27 +761,4 @@ county_emissions %>%
     pct_of_2005 = (emissions_2022 / emissions_2005) * 100
   )
 
-# sector_total_comparison <- emissions_sector_per_county %>%
-#   filter(emissions_year == 2022) %>%
-#   mutate(county_name = factor(county_name, levels = county_order)) %>%
-#   ggplot(aes(x = county_name, y = emissions_total, fill = sector_alt)) +
-#   geom_bar(stat = "identity", position = "stack") +
-#   scale_fill_manual(values = sector_colors_vector, guide = "none") +
-#   coord_flip() +
-#   labs(
-#     fill = "Sector",
-#     x = NULL,
-#     y = expression(paste("Million metric tons of ", CO[2], "e"))
-#   ) +
-#   theme_minimal() +
-#   theme(
-#     panel.grid.major.y = element_blank(),
-#     axis.text.y = element_text(size = 14),
-#     axis.text.x = element_text(size = 14),
-#     text = element_text(size = 16, family = "sans")
-#   ) +
-#   scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
-#
-# sector_total_comparison
 
-### remove less sensible per capita emissions

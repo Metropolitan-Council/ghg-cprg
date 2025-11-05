@@ -31,7 +31,7 @@ nonres_ng_bau <- readRDS("./_meta/data-raw/projections/nonres_ng_pathways.rds") 
 nonres_elec_bau <- readRDS("./_meta/data-raw/projections/nonres_elec_bau.rds")
 ind_bau <- readRDS("./_meta/data-raw/projections/ind_bau.rds") %>%
   filter(scenario == "bau")
-ag_bau <- readRDS("./_meta/data-raw/projections/ag_bau.rds") %>%
+ag_bau <- readRDS("./_meta/data-raw/projections/ag_pathways.rds") %>%
   filter(scenario == "bau")
 ns_bau <- readRDS("_meta/data/regional_ns_forecast.RDS") %>%
   filter(scenario == "bau")
@@ -117,26 +117,26 @@ saveRDS(bau, "_meta/data-raw/projections/economy_bau_emissions.RDS")
 write.csv(bau, "_meta/data-raw/projections/economy_bau_emissions.csv", row.names = FALSE)
 # bau
 #
-# bau %>%
-#   filter(emissions_year %in% c(2005, 2022, 2030, 2050)) %>%
-#   group_by(emissions_year) %>%
-#   summarize(total_emissions = sum(value_emissions)) %>%
-#   mutate(proportion_of_2005 = total_emissions / total_emissions[emissions_year == 2005])
-#
-# bau %>%
-#   filter(
-#     emissions_year %in% c(2005, 2022, 2030, 2050),
-#     sector != "Natural Systems"
-#   ) %>%
-#   group_by(emissions_year) %>%
-#   summarize(total_emissions = sum(value_emissions)) %>%
-#   mutate(proportion_of_2005 = total_emissions / total_emissions[emissions_year == 2005])
-#
-# bau %>%
-#   filter(emissions_year %in% c(2005, 2022, 2030, 2050)) %>%
-#   group_by(emissions_year, sector) %>%
-#   summarize(total_emissions = sum(value_emissions)) %>%
-#   print(n = 100)
+bau %>%
+  filter(emissions_year %in% c(2005, 2022, 2030, 2050)) %>%
+  group_by(emissions_year) %>%
+  summarize(total_emissions = sum(value_emissions)) %>%
+  mutate(proportion_of_2005 = total_emissions / total_emissions[emissions_year == 2005])
+
+bau %>%
+  filter(
+    emissions_year %in% c(2005, 2022, 2030, 2050),
+    sector != "Natural Systems"
+  ) %>%
+  group_by(emissions_year) %>%
+  summarize(total_emissions = sum(value_emissions)) %>%
+  mutate(proportion_of_2005 = total_emissions / total_emissions[emissions_year == 2005])
+
+bau %>%
+  filter(emissions_year %in% c(2005, 2022, 2030, 2050)) %>%
+  group_by(emissions_year, sector) %>%
+  summarize(total_emissions = sum(value_emissions)) %>%
+  print(n = 100)
 
 sector_colors <- unlist(sector_colors_alt)
 

@@ -233,7 +233,7 @@ ggplot2::ggsave(
 ### numbers for CCAP document
 # sector wide 2030/2050 scenario to BAU comparisons
 
-ag_2030 <- agriculture_emissions_proj %>%
+ag_2030 <- ag_scenarios %>%
   filter(emissions_year == 2030)
 
 bau2030 <- ag_2030 %>%
@@ -254,7 +254,7 @@ ppp2030 / bau2030
 
 # 2050
 
-ag_2050 <- agriculture_emissions_proj %>%
+ag_2050 <- ag_scenarios %>%
   filter(emissions_year == 2050)
 
 bau2050 <- ag_2050 %>%
