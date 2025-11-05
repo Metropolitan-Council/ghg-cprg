@@ -134,6 +134,17 @@ bau_line <- pathways %>%
   summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
   ungroup()
 
+ppp_line <- pathways %>%
+  filter(
+    scenario == "ppp",
+    value_emissions > 0,
+    emissions_year > 2022
+  ) %>%
+  group_by(emissions_year) %>%
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
+  ungroup()
+
+
 pathways_pos <- pathways %>%
   filter(
     emissions_year <= 2025 | scenario == "ppp",
@@ -158,18 +169,25 @@ pathways_neg <- pathways %>%
 
 sector_colors <- unlist(sector_colors_alt)
 
+text_bau <- bau_line %>% filter(emissions_year == 2050) %>% pull(value_emissions)
+text_ppp <- ppp_line %>% filter(emissions_year == 2050) %>% pull(value_emissions)
+
 
 ppp_projection_plot <- ggplot() +
   # Add positive emissions as stacked areas above zero
   geom_area(
     data = pathways_pos,
     aes(x = emissions_year, y = value_emissions, fill = sector),
+    col = "#E8E8E8",
+    size = 0.5,
     position = "stack"
   ) +
   # Add negative emissions (natural systems) below zero
   geom_area(
     data = pathways_neg,
-    aes(x = emissions_year, y = value_emissions, fill = sector)
+    aes(x = emissions_year, y = value_emissions, fill = sector),
+    col = "#E8E8E8",
+    size = 0.5
   ) +
   # Apply the custom color palette
   scale_fill_manual(values = sector_colors, name = "Sector") +
@@ -178,13 +196,17 @@ ppp_projection_plot <- ggplot() +
     aes(x = emissions_year, y = value_emissions),
     linetype = "dashed", color = "black", linewidth = 1
   ) +
-  geom_point(
-    data = data.frame(emissions_year = 2050, value_emissions = net_zero),
-    aes(x = emissions_year, y = value_emissions),
-    shape = "*", # asterisk
-    size = 12, # make larger or smaller
-    stroke = 1.5, # line thickness of the asterisk
-    color = "black"
+  geom_line(
+    data = ppp_line,
+    aes(x = emissions_year , y = value_emissions),  # Remove linetype aesthetic
+    color = "black", linewidth = 1, linetype = "dotted"  # Set linetype directly
+  ) +
+  
+  #net-zero bar
+  geom_segment(
+    aes(x = 2049.5, xend = 2051.5, 
+        y = net_zero, yend = net_zero),
+    color = "black", linewidth = 1.5, linetype = "solid"
   ) +
   # Add labels and formatting
   labs(
@@ -193,22 +215,41 @@ ppp_projection_plot <- ggplot() +
     x = "Year",
     y = ""
   ) +
-  # Add a horizontal line at y = 0 for reference
   geom_hline(yintercept = 0, color = "black", linetype = "solid", alpha = 0.7) +
   # Clean theme
   theme_minimal() +
+  scale_x_continuous(
+    limits = c(2005, 2059),
+    breaks = seq(2010, 2059, by = 10)
+  ) +
   theme(
     plot.title = element_text(size = 22, face = "bold"),
     plot.subtitle = element_text(size = 18),
-    legend.position = "right",
+    legend.position = "left",
     legend.text = element_text(size = 16),
     legend.title = element_text(size = 18),
+    axis.title = element_text(size = 16),
     panel.grid.minor = element_blank(),
-    axis.text = element_text(size = 14),
-    axis.title = element_text(size = 16)
+    panel.grid.major.x = element_blank(),
+    axis.text = element_text(size = 14, color = "black"),
+    plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
   ) +
+  # Add text annotation for BAU
+  annotate("text", x = 2050.5, y = text_bau, 
+           label = "Business-as-usual",
+           size = 5, hjust = 0, vjust = 0.5, fontface = "bold") +
+  
+  annotate("text", x = 2050.5, y = text_ppp, 
+           label = "Potential policy pathway",
+           size = 5, hjust = 0, vjust = 0.5, fontface = "bold") +
+  
+  # for net-zero bar
+  annotate("text", x = 2052, y = net_zero, 
+           label = "Net zero target",
+           size = 5, hjust = 0, vjust = 0, fontface = "bold") +
   # Format y-axis to show values in scientific notation or scaled
   scale_y_continuous(labels = scales::comma_format(scale = 1e-6, suffix = "M"))
+
 
 print(ppp_projection_plot)
 
@@ -216,7 +257,7 @@ message("Saving economy-wide PPP projections plot to: \n\t ~/imgs/eleven_county_
 ggsave(
   plot = ppp_projection_plot,
   filename = paste0(here::here(), "/imgs/eleven_county_ppp_projections.png"), # add your file path here
-  width = 12,
+  width = 16,
   height = 6,
   units = "in",
   dpi = 300,
