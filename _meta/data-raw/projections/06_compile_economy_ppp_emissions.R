@@ -257,7 +257,7 @@ message("Saving economy-wide PPP projections plot to: \n\t ~/imgs/eleven_county_
 ggsave(
   plot = ppp_projection_plot,
   filename = paste0(here::here(), "/imgs/eleven_county_ppp_projections.png"), # add your file path here
-  width = 12,
+  width = 16,
   height = 6,
   units = "in",
   dpi = 300,

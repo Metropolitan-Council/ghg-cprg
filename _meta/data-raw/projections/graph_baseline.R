@@ -380,18 +380,29 @@ plot_county_emissions <- function(
       bind_rows(add_zero_rows)
   }
   
-  # Optionally include MSP Airport at the end of the factor order
-  county_levels <- if (include_airport) c(county_order, "MSP Airport") else county_order
+  # Reassign all aviation to new "aviation column"
+  
+  df <- if (include_airport) {
+    df %>% 
+      mutate(county_name = if_else(category_alt == "Aviation",
+                                   "Aviation",
+                                   county_name))%>% 
+      group_by(sector_alt, county_name, category_alt) %>% 
+      summarize(value_emissions = sum(value_emissions)) %>% 
+      ungroup()
+  }
+  
+  county_levels <- if (include_airport) c(county_order, "Aviation") else county_order
   
   # Apply category order if provided
   if (!is.null(category_order)) {
     df <- df %>%
-      mutate(category_alt = factor(category_alt, levels = category_order))
+      mutate(category_alt = factor(category_alt, levels = category_order)) 
   }
   
   # Build plot title if not provided
   if (is.null(title)) title <- sector_graph
-  
+
   # Construct ggplot
   gg <- ggplot(
     df %>%

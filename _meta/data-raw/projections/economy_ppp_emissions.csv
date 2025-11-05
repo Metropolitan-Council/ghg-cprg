@@ -1,153 +1,153 @@
 "emissions_year","sector","scenario","value_emissions"
-2005,"Agriculture","bau",1226170.09
+2005,"Agriculture","bau",1177200.07
 2005,"Building Fuel","bau",11447555.82
 2005,"Electricity","bau",27564576.73
 2005,"Industrial Processes","bau",4940901.89
 2005,"Natural Systems","bau",-1657926.29
-2005,"Transportation","bau",19900144.21
+2005,"Transportation","bau",19900146.93
 2005,"Waste","bau",1695692.04
-2006,"Agriculture","bau",1221965.14
+2006,"Agriculture","bau",1173243.62
 2006,"Building Fuel","bau",12187444.58
 2006,"Electricity","bau",26883515.16
 2006,"Industrial Processes","bau",5459257.84
 2006,"Natural Systems","bau",-1666633.23
-2006,"Transportation","bau",19692038.95
-2006,"Waste","bau",1704889.8
-2007,"Agriculture","bau",1198682.38
+2006,"Transportation","bau",19692042.14
+2006,"Waste","bau",1704889.81
+2007,"Agriculture","bau",1154888.14
 2007,"Building Fuel","bau",12169730.61
 2007,"Electricity","bau",26189888.7
 2007,"Industrial Processes","bau",5512227.76
 2007,"Natural Systems","bau",-1672014.25
-2007,"Transportation","bau",20291702.05
-2007,"Waste","bau",1678194.4
-2008,"Agriculture","bau",1170794.18
+2007,"Transportation","bau",20291704.71
+2007,"Waste","bau",1678194.44
+2008,"Agriculture","bau",1127030.32
 2008,"Building Fuel","bau",12152016.67
 2008,"Electricity","bau",25529380.38
 2008,"Industrial Processes","bau",5920172.45
 2008,"Natural Systems","bau",-1675153.95
-2008,"Transportation","bau",19699416.36
+2008,"Transportation","bau",19699419.21
 2008,"Waste","bau",1557013.78
-2009,"Agriculture","bau",1183608.97
+2009,"Agriculture","bau",1136154.67
 2009,"Building Fuel","bau",12134302.75
 2009,"Electricity","bau",24856322.84
 2009,"Industrial Processes","bau",5582929.59
 2009,"Natural Systems","bau",-1679722.32
-2009,"Transportation","bau",19260949.61
-2009,"Waste","bau",1485462.99
-2010,"Agriculture","bau",1222749.65
+2009,"Transportation","bau",19260952.43
+2009,"Waste","bau",1485462.97
+2010,"Agriculture","bau",1169762.71
 2010,"Building Fuel","bau",12116588.81
 2010,"Electricity","bau",23257154.77
 2010,"Industrial Processes","bau",5930643.65
 2010,"Natural Systems","bau",-1682460.37
-2010,"Transportation","bau",18939530.01
+2010,"Transportation","bau",18939568.04
 2010,"Waste","bau",1433527.27
-2011,"Agriculture","bau",1173545.22
+2011,"Agriculture","bau",1123520.13
 2011,"Building Fuel","bau",12098874.91
 2011,"Electricity","bau",22675339.25
 2011,"Industrial Processes","bau",6299999.88
 2011,"Natural Systems","bau",-1681914.19
-2011,"Transportation","bau",18824938.4
+2011,"Transportation","bau",18824985.15
 2011,"Waste","bau",1460067.39
-2012,"Agriculture","bau",1192832.89
+2012,"Agriculture","bau",1139460.16
 2012,"Building Fuel","bau",12081160.95
 2012,"Electricity","bau",21856829.61
 2012,"Industrial Processes","bau",5515768.12
 2012,"Natural Systems","bau",-1689705.46
-2012,"Transportation","bau",19180412.71
-2012,"Waste","bau",1448027.94
-2013,"Agriculture","bau",1104374.4
+2012,"Transportation","bau",19180478.25
+2012,"Waste","bau",1448027.96
+2013,"Agriculture","bau",1059407.01
 2013,"Building Fuel","bau",11933873.97
 2013,"Electricity","bau",21461763.21
 2013,"Industrial Processes","bau",5580300.54
 2013,"Natural Systems","bau",-1692857.96
-2013,"Transportation","bau",19223247.7
-2013,"Waste","bau",1440795.35
-2014,"Agriculture","bau",1115257.67
+2013,"Transportation","bau",19224392
+2013,"Waste","bau",1440795.34
+2014,"Agriculture","bau",1067123.72
 2014,"Building Fuel","bau",12564599.09
 2014,"Electricity","bau",20904572.48
 2014,"Industrial Processes","bau",5615146.57
 2014,"Natural Systems","bau",-1690576.5
-2014,"Transportation","bau",19281354.57
-2014,"Waste","bau",1550634.56
-2015,"Agriculture","bau",1178605.14
+2014,"Transportation","bau",19283164.86
+2014,"Waste","bau",1550634.58
+2015,"Agriculture","bau",1122627.27
 2015,"Building Fuel","bau",11959624.6
 2015,"Electricity","bau",19713297.35
 2015,"Industrial Processes","bau",5776538.9
 2015,"Natural Systems","bau",-1699701.38
-2015,"Transportation","bau",19318984.26
+2015,"Transportation","bau",19321438.45
 2015,"Waste","bau",1591418.66
-2016,"Agriculture","bau",1195097.88
+2016,"Agriculture","bau",1136567.25
 2016,"Building Fuel","bau",12048428.17
 2016,"Electricity","bau",18802033.19
 2016,"Industrial Processes","bau",5659535.65
 2016,"Natural Systems","bau",-1704376.85
-2016,"Transportation","bau",19496751.47
-2016,"Waste","bau",1641736.62
-2017,"Agriculture","bau",1175353.85
+2016,"Transportation","bau",19499117.02
+2016,"Waste","bau",1641736.69
+2017,"Agriculture","bau",1117908.01
 2017,"Building Fuel","bau",11927820.66
 2017,"Electricity","bau",18479902.56
 2017,"Industrial Processes","bau",5875704.33
 2017,"Natural Systems","bau",-1705740.84
-2017,"Transportation","bau",19524750.29
-2017,"Waste","bau",1705875.15
-2018,"Agriculture","bau",1108810.93
+2017,"Transportation","bau",19527551.46
+2017,"Waste","bau",1705875.17
+2018,"Agriculture","bau",1057596.21
 2018,"Building Fuel","bau",13878858.82
 2018,"Electricity","bau",19098763.96
 2018,"Industrial Processes","bau",5937575.73
 2018,"Natural Systems","bau",-1709196.64
-2018,"Transportation","bau",19428030.11
-2018,"Waste","bau",1691040.87
-2019,"Agriculture","bau",1013477.09
+2018,"Transportation","bau",19430955.09
+2018,"Waste","bau",1691040.91
+2019,"Agriculture","bau",971073.59
 2019,"Building Fuel","bau",15123813.13
 2019,"Electricity","bau",16290376.65
 2019,"Industrial Processes","bau",5814359.44
 2019,"Natural Systems","bau",-1713027.81
-2019,"Transportation","bau",19286677.87
-2019,"Waste","bau",1744554.04
-2020,"Agriculture","bau",1107456.63
+2019,"Transportation","bau",19289578.27
+2019,"Waste","bau",1744554.03
+2020,"Agriculture","bau",1052390.5
 2020,"Building Fuel","bau",13532488.25
 2020,"Electricity","bau",14209282.47
 2020,"Industrial Processes","bau",5902309.21
 2020,"Natural Systems","bau",-1720488.22
-2020,"Transportation","bau",16104684.13
-2020,"Waste","bau",1747699.81
-2021,"Agriculture","bau",1080152.48
+2020,"Transportation","bau",16113299.12
+2020,"Waste","bau",1747699.83
+2021,"Agriculture","bau",1026645.71
 2021,"Building Fuel","bau",12243481.88
 2021,"Electricity","bau",14727910.06
 2021,"Industrial Processes","bau",6089769.8
 2021,"Natural Systems","bau",-1722006.24
-2021,"Transportation","bau",18153449.31
-2021,"Waste","bau",1813329.17
+2021,"Transportation","bau",18162753.75
+2021,"Waste","bau",1813329.14
 2022,"Agriculture","bau",1041356.28
 2022,"Building Fuel","bau",13538967.38
 2022,"Electricity","bau",13299448.08
 2022,"Industrial Processes","bau",6009117.54
 2022,"Natural Systems","bau",-1726986.35
-2022,"Transportation","bau",19454616.22
+2022,"Transportation","bau",19628892.18
 2022,"Waste","bau",1791993.92
 2023,"Agriculture","bau",1038297.73
 2023,"Building Fuel","bau",13780554.51
 2023,"Electricity","bau",12703357.62
 2023,"Industrial Processes","bau",5993800.71
 2023,"Natural Systems","bau",-1726986.35
-2023,"Transportation","bau",19084657.21
+2023,"Transportation","bau",19126063.71
 2023,"Waste","bau",1803329.22
 2024,"Agriculture","bau",1035239.17
 2024,"Building Fuel","bau",13839661.76
 2024,"Electricity","bau",11890731.55
 2024,"Industrial Processes","bau",5978483.88
 2024,"Natural Systems","bau",-1726986.35
-2024,"Transportation","bau",18714698.22
-2024,"Waste","bau",1814664.52
+2024,"Transportation","bau",18755346.58
+2024,"Waste","bau",1814664.53
 2025,"Agriculture","bau",1032180.62
-2025,"Building Fuel","bau",13898769.01
+2025,"Building Fuel","bau",13898769.02
 2025,"Electricity","bau",11040939
 2025,"Industrial Processes","bau",5963167.05
 2025,"Natural Systems","bau",-1726986.35
-2025,"Transportation","bau",18344739.23
+2025,"Transportation","bau",18384629.45
 2025,"Waste","bau",1825999.83
 2026,"Agriculture","bau",1029122.06
-2026,"Agriculture","ppp",1025074.72
+2026,"Agriculture","ppp",1021223.43
 2026,"Building Fuel","bau",13957876.27
 2026,"Building Fuel","ppp",13810688.74
 2026,"Electricity","bau",10172369.5
@@ -156,12 +156,12 @@
 2026,"Industrial Processes","ppp",5926367.99
 2026,"Natural Systems","bau",-1727600.38
 2026,"Natural Systems","ppp",-1730268.52
-2026,"Transportation","bau",18054953.03
-2026,"Transportation","ppp",17336224.34
+2026,"Transportation","bau",18094085.11
+2026,"Transportation","ppp",15553084.7
 2026,"Waste","bau",1837335.13
-2026,"Waste","ppp",1738844.52
+2026,"Waste","ppp",1738844.54
 2027,"Agriculture","bau",1026063.51
-2027,"Agriculture","ppp",1019333
+2027,"Agriculture","ppp",1014173.61
 2027,"Building Fuel","bau",14016983.52
 2027,"Building Fuel","ppp",13847755.46
 2027,"Electricity","bau",8822456.89
@@ -170,13 +170,13 @@
 2027,"Industrial Processes","ppp",5936680.93
 2027,"Natural Systems","bau",-1728399.63
 2027,"Natural Systems","ppp",-1733954.48
-2027,"Transportation","bau",17765166.82
-2027,"Transportation","ppp",16582820.35
-2027,"Waste","bau",1848670.43
-2027,"Waste","ppp",1704628.02
+2027,"Transportation","bau",17803540.77
+2027,"Transportation","ppp",14818485.24
+2027,"Waste","bau",1848670.44
+2027,"Waste","ppp",1704628.04
 2028,"Agriculture","bau",1023004.95
-2028,"Agriculture","ppp",1012172.92
-2028,"Building Fuel","bau",14076090.77
+2028,"Agriculture","ppp",1001469.15
+2028,"Building Fuel","bau",14076090.78
 2028,"Building Fuel","ppp",13687157.94
 2028,"Electricity","bau",7802434.22
 2028,"Electricity","ppp",7841233.89
@@ -184,12 +184,12 @@
 2028,"Industrial Processes","ppp",5946993.88
 2028,"Natural Systems","bau",-1729388.42
 2028,"Natural Systems","ppp",-1738067.42
-2028,"Transportation","bau",17475380.62
-2028,"Transportation","ppp",15829416.36
+2028,"Transportation","bau",17512996.43
+2028,"Transportation","ppp",14083885.79
 2028,"Waste","bau",1860005.74
-2028,"Waste","ppp",1670411.53
+2028,"Waste","ppp",1670411.54
 2029,"Agriculture","bau",1019946.4
-2029,"Agriculture","ppp",1005032.68
+2029,"Agriculture","ppp",988572.63
 2029,"Building Fuel","bau",14135198.03
 2029,"Building Fuel","ppp",13556062.84
 2029,"Electricity","bau",6202663.91
@@ -198,26 +198,26 @@
 2029,"Industrial Processes","ppp",5957306.82
 2029,"Natural Systems","bau",-1730537.54
 2029,"Natural Systems","ppp",-1742624.03
-2029,"Transportation","bau",17185594.42
-2029,"Transportation","ppp",15076012.36
+2029,"Transportation","bau",17222452.09
+2029,"Transportation","ppp",13349286.34
 2029,"Waste","bau",1871341.04
-2029,"Waste","ppp",1636195.03
+2029,"Waste","ppp",1636195.04
 2030,"Agriculture","bau",1016887.84
-2030,"Agriculture","ppp",992696.53
+2030,"Agriculture","ppp",970104.69
 2030,"Building Fuel","bau",14194305.28
-2030,"Building Fuel","ppp",13426338.85
+2030,"Building Fuel","ppp",13426338.86
 2030,"Electricity","bau",4871174.17
 2030,"Electricity","ppp",4950712.39
 2030,"Industrial Processes","bau",6126004.65
 2030,"Industrial Processes","ppp",5967619.76
 2030,"Natural Systems","bau",-1731779.81
 2030,"Natural Systems","ppp",-1747632.31
-2030,"Transportation","bau",16895808.22
-2030,"Transportation","ppp",14322608.37
-2030,"Waste","bau",1882676.34
-2030,"Waste","ppp",1601978.53
+2030,"Transportation","bau",16931907.75
+2030,"Transportation","ppp",12614686.89
+2030,"Waste","bau",1882676.35
+2030,"Waste","ppp",1601978.55
 2031,"Agriculture","bau",1013829.29
-2031,"Agriculture","ppp",980435
+2031,"Agriculture","ppp",951467.7
 2031,"Building Fuel","bau",14259637.34
 2031,"Building Fuel","ppp",13058816.39
 2031,"Electricity","bau",4359926.5
@@ -226,12 +226,12 @@
 2031,"Industrial Processes","ppp",5822977.98
 2031,"Natural Systems","bau",-1733022.09
 2031,"Natural Systems","ppp",-1753089.26
-2031,"Transportation","bau",16593917.67
-2031,"Transportation","ppp",13021073.38
+2031,"Transportation","bau",16629259.06
+2031,"Transportation","ppp",11512487.86
 2031,"Waste","bau",1893147.1
-2031,"Waste","ppp",1570360.55
+2031,"Waste","ppp",1570360.56
 2032,"Agriculture","bau",1010770.73
-2032,"Agriculture","ppp",968247.76
+2032,"Agriculture","ppp",932646.51
 2032,"Building Fuel","bau",14324969.4
 2032,"Building Fuel","ppp",12692842.55
 2032,"Electricity","bau",3827634.39
@@ -240,12 +240,12 @@
 2032,"Industrial Processes","ppp",5678336.2
 2032,"Natural Systems","bau",-1734171.21
 2032,"Natural Systems","ppp",-1758978.91
-2032,"Transportation","bau",16292027.13
-2032,"Transportation","ppp",11719538.39
-2032,"Waste","bau",1903617.85
-2032,"Waste","ppp",1538742.56
+2032,"Transportation","bau",16326610.38
+2032,"Transportation","ppp",10410288.83
+2032,"Waste","bau",1903617.86
+2032,"Waste","ppp",1538742.58
 2033,"Agriculture","bau",1007712.18
-2033,"Agriculture","ppp",956134.48
+2033,"Agriculture","ppp",913624.74
 2033,"Building Fuel","bau",14390301.46
 2033,"Building Fuel","ppp",12328413.98
 2033,"Electricity","bau",3549604.57
@@ -254,12 +254,12 @@
 2033,"Industrial Processes","ppp",5533694.41
 2033,"Natural Systems","bau",-1735160
 2033,"Natural Systems","ppp",-1765270.81
-2033,"Transportation","bau",15990136.58
-2033,"Transportation","ppp",10418003.41
+2033,"Transportation","bau",16023961.69
+2033,"Transportation","ppp",9308089.79
 2033,"Waste","bau",1914088.61
-2033,"Waste","ppp",1507124.58
+2033,"Waste","ppp",1507124.6
 2034,"Agriculture","bau",1004653.62
-2034,"Agriculture","ppp",944094.82
+2034,"Agriculture","ppp",894384.66
 2034,"Building Fuel","bau",14455633.52
 2034,"Building Fuel","ppp",11965530.44
 2034,"Electricity","bau",2982137.72
@@ -268,12 +268,12 @@
 2034,"Industrial Processes","ppp",5389052.63
 2034,"Natural Systems","bau",-1735959.25
 2034,"Natural Systems","ppp",-1771919.32
-2034,"Transportation","bau",15688246.04
-2034,"Transportation","ppp",9116468.42
-2034,"Waste","bau",1924559.36
-2034,"Waste","ppp",1475506.6
+2034,"Transportation","bau",15721313.01
+2034,"Transportation","ppp",8205890.76
+2034,"Waste","bau",1924559.37
+2034,"Waste","ppp",1475506.61
 2035,"Agriculture","bau",1001595.07
-2035,"Agriculture","ppp",932128.46
+2035,"Agriculture","ppp",874907.04
 2035,"Building Fuel","bau",14520965.58
 2035,"Building Fuel","ppp",11604195.33
 2035,"Electricity","bau",2309087.59
@@ -282,12 +282,12 @@
 2035,"Industrial Processes","ppp",5244410.84
 2035,"Natural Systems","bau",-1736573.28
 2035,"Natural Systems","ppp",-1778863.98
-2035,"Transportation","bau",15386355.49
-2035,"Transportation","ppp",7814933.43
+2035,"Transportation","bau",15418664.32
+2035,"Transportation","ppp",7103691.73
 2035,"Waste","bau",1935030.12
-2035,"Waste","ppp",1443888.61
+2035,"Waste","ppp",1443888.63
 2036,"Agriculture","bau",998536.51
-2036,"Agriculture","ppp",920235.08
+2036,"Agriculture","ppp",855171
 2036,"Building Fuel","bau",14586297.64
 2036,"Building Fuel","ppp",11163705.94
 2036,"Electricity","bau",1975386.6
@@ -296,12 +296,12 @@
 2036,"Industrial Processes","ppp",5043314.6
 2036,"Natural Systems","bau",-1736573.28
 2036,"Natural Systems","ppp",-1786030.98
-2036,"Transportation","bau",15123964.89
-2036,"Transportation","ppp",7394657.62
+2036,"Transportation","bau",15155515.58
+2036,"Transportation","ppp",6635454.69
 2036,"Waste","bau",1945500.87
-2036,"Waste","ppp",1415887.14
+2036,"Waste","ppp",1415887.16
 2037,"Agriculture","bau",995477.96
-2037,"Agriculture","ppp",908414.36
+2037,"Agriculture","ppp",835153.78
 2037,"Building Fuel","bau",14651629.7
 2037,"Building Fuel","ppp",10724761.31
 2037,"Electricity","bau",1638396.82
@@ -310,12 +310,12 @@
 2037,"Industrial Processes","ppp",4842218.36
 2037,"Natural Systems","bau",-1736573.28
 2037,"Natural Systems","ppp",-1793335.96
-2037,"Transportation","bau",14861574.29
-2037,"Transportation","ppp",6974381.8
-2037,"Waste","bau",1955971.62
-2037,"Waste","ppp",1387885.67
+2037,"Transportation","bau",14892366.84
+2037,"Transportation","ppp",6167217.65
+2037,"Waste","bau",1955971.63
+2037,"Waste","ppp",1387885.69
 2038,"Agriculture","bau",992419.4
-2038,"Agriculture","ppp",896665.99
+2038,"Agriculture","ppp",814830.57
 2038,"Building Fuel","bau",14716961.76
 2038,"Building Fuel","ppp",10287365.68
 2038,"Electricity","bau",1273185.11
@@ -324,12 +324,12 @@
 2038,"Industrial Processes","ppp",4641122.12
 2038,"Natural Systems","bau",-1736573.28
 2038,"Natural Systems","ppp",-1800687.71
-2038,"Transportation","bau",14599183.68
-2038,"Transportation","ppp",6554105.98
+2038,"Transportation","bau",14629218.1
+2038,"Transportation","ppp",5698980.61
 2038,"Waste","bau",1966442.38
-2038,"Waste","ppp",1359884.2
+2038,"Waste","ppp",1359884.22
 2039,"Agriculture","bau",989360.85
-2039,"Agriculture","ppp",884989.66
+2039,"Agriculture","ppp",794174.24
 2039,"Building Fuel","bau",14782293.82
 2039,"Building Fuel","ppp",9851514.27
 2039,"Electricity","bau",990251.74
@@ -338,12 +338,12 @@
 2039,"Industrial Processes","ppp",4440025.88
 2039,"Natural Systems","bau",-1736573.28
 2039,"Natural Systems","ppp",-1807992.69
-2039,"Transportation","bau",14336793.08
-2039,"Transportation","ppp",6133830.17
-2039,"Waste","bau",1976913.13
-2039,"Waste","ppp",1331882.73
+2039,"Transportation","bau",14366069.36
+2039,"Transportation","ppp",5230743.57
+2039,"Waste","bau",1976913.14
+2039,"Waste","ppp",1331882.74
 2040,"Agriculture","bau",986302.29
-2040,"Agriculture","ppp",872987.06
+2040,"Agriculture","ppp",784474.76
 2040,"Building Fuel","bau",14847625.88
 2040,"Building Fuel","ppp",9417209.44
 2040,"Electricity","bau",477877.85
@@ -352,13 +352,13 @@
 2040,"Industrial Processes","ppp",4238929.64
 2040,"Natural Systems","bau",-1736573.28
 2040,"Natural Systems","ppp",-1815159.69
-2040,"Transportation","bau",14074402.48
-2040,"Transportation","ppp",5713554.35
+2040,"Transportation","bau",14102920.62
+2040,"Transportation","ppp",4762506.53
 2040,"Waste","bau",1987383.89
-2040,"Waste","ppp",1303881.26
+2040,"Waste","ppp",1303881.27
 2041,"Agriculture","bau",983243.74
-2041,"Agriculture","ppp",861382.53
-2041,"Building Fuel","bau",14952488.07
+2041,"Agriculture","ppp",768153.93
+2041,"Building Fuel","bau",14952488.08
 2041,"Building Fuel","ppp",8919703.32
 2041,"Electricity","bau",459069.47
 2041,"Electricity","ppp",498604.5
@@ -366,13 +366,13 @@
 2041,"Industrial Processes","ppp",4112508.6
 2041,"Natural Systems","bau",-1736573.28
 2041,"Natural Systems","ppp",-1822104.35
-2041,"Transportation","bau",13811241.86
-2041,"Transportation","ppp",5467094.01
-2041,"Waste","bau",2001741.71
-2041,"Waste","ppp",1280112.46
+2041,"Transportation","bau",13839001.86
+2041,"Transportation","ppp",4364122.76
+2041,"Waste","bau",2001741.72
+2041,"Waste","ppp",1280112.47
 2042,"Agriculture","bau",980185.18
-2042,"Agriculture","ppp",849843.58
-2042,"Building Fuel","bau",15057350.27
+2042,"Agriculture","ppp",752060.6
+2042,"Building Fuel","bau",15057350.28
 2042,"Building Fuel","ppp",8423477.83
 2042,"Electricity","bau",368746.07
 2042,"Electricity","ppp",393930.27
@@ -380,12 +380,12 @@
 2042,"Industrial Processes","ppp",3986087.57
 2042,"Natural Systems","bau",-1736573.28
 2042,"Natural Systems","ppp",-1828752.86
-2042,"Transportation","bau",13548081.25
-2042,"Transportation","ppp",5220633.68
-2042,"Waste","bau",2016099.54
-2042,"Waste","ppp",1256343.65
+2042,"Transportation","bau",13575083.11
+2042,"Transportation","ppp",3965738.99
+2042,"Waste","bau",2016099.55
+2042,"Waste","ppp",1256343.67
 2043,"Agriculture","bau",977126.63
-2043,"Agriculture","ppp",838369.95
+2043,"Agriculture","ppp",736186.29
 2043,"Building Fuel","bau",15162212.47
 2043,"Building Fuel","ppp",7928535.91
 2043,"Electricity","bau",318899.48
@@ -394,12 +394,12 @@
 2043,"Industrial Processes","ppp",3859666.53
 2043,"Natural Systems","bau",-1736573.28
 2043,"Natural Systems","ppp",-1835044.76
-2043,"Transportation","bau",13284920.63
-2043,"Transportation","ppp",4974173.34
+2043,"Transportation","bau",13311164.36
+2043,"Transportation","ppp",3567355.22
 2043,"Waste","bau",2030457.37
-2043,"Waste","ppp",1232574.85
+2043,"Waste","ppp",1232574.87
 2044,"Agriculture","bau",974068.07
-2044,"Agriculture","ppp",826961.36
+2044,"Agriculture","ppp",720523.09
 2044,"Building Fuel","bau",15267074.67
 2044,"Building Fuel","ppp",7434874.93
 2044,"Electricity","bau",271588.99
@@ -408,12 +408,12 @@
 2044,"Industrial Processes","ppp",3733245.49
 2044,"Natural Systems","bau",-1736573.28
 2044,"Natural Systems","ppp",-1840934.41
-2044,"Transportation","bau",13021760.02
-2044,"Transportation","ppp",4727713
-2044,"Waste","bau",2044815.19
-2044,"Waste","ppp",1208806.05
+2044,"Transportation","bau",13047245.6
+2044,"Transportation","ppp",3168971.46
+2044,"Waste","bau",2044815.2
+2044,"Waste","ppp",1208806.07
 2045,"Agriculture","bau",971009.52
-2045,"Agriculture","ppp",815617.53
+2045,"Agriculture","ppp",705063.56
 2045,"Building Fuel","bau",15371936.87
 2045,"Building Fuel","ppp",6942497.15
 2045,"Electricity","bau",226693.91
@@ -422,13 +422,13 @@
 2045,"Industrial Processes","ppp",3606824.45
 2045,"Natural Systems","bau",-1736573.28
 2045,"Natural Systems","ppp",-1846391.36
-2045,"Transportation","bau",12758599.41
-2045,"Transportation","ppp",4481252.66
-2045,"Waste","bau",2059173.02
-2045,"Waste","ppp",1185037.25
+2045,"Transportation","bau",12783326.85
+2045,"Transportation","ppp",2770587.69
+2045,"Waste","bau",2059173.03
+2045,"Waste","ppp",1185037.27
 2046,"Agriculture","bau",967950.96
-2046,"Agriculture","ppp",804338.21
-2046,"Building Fuel","bau",15476799.06
+2046,"Agriculture","ppp",689800.74
+2046,"Building Fuel","bau",15476799.07
 2046,"Building Fuel","ppp",6588667.89
 2046,"Electricity","bau",185011.3
 2046,"Electricity","ppp",195818.82
@@ -436,13 +436,13 @@
 2046,"Industrial Processes","ppp",3459357.74
 2046,"Natural Systems","bau",-1736573.28
 2046,"Natural Systems","ppp",-1851399.64
-2046,"Transportation","bau",12495599.97
-2046,"Transportation","ppp",4332591.97
+2046,"Transportation","bau",12519569.28
+2046,"Transportation","ppp",2706876.47
 2046,"Waste","bau",2073530.85
-2046,"Waste","ppp",1163910.33
+2046,"Waste","ppp",1163910.34
 2047,"Agriculture","bau",964892.41
-2047,"Agriculture","ppp",793123.13
-2047,"Building Fuel","bau",15581661.26
+2047,"Agriculture","ppp",674728.11
+2047,"Building Fuel","bau",15581661.27
 2047,"Building Fuel","ppp",6236120.05
 2047,"Electricity","bau",145760.51
 2047,"Electricity","ppp",154278.62
@@ -450,12 +450,12 @@
 2047,"Industrial Processes","ppp",3311891.02
 2047,"Natural Systems","bau",-1736573.28
 2047,"Natural Systems","ppp",-1855956.25
-2047,"Transportation","bau",12232600.53
-2047,"Transportation","ppp",4183931.29
-2047,"Waste","bau",2087888.67
-2047,"Waste","ppp",1142783.4
+2047,"Transportation","bau",12255811.7
+2047,"Transportation","ppp",2643165.26
+2047,"Waste","bau",2087888.68
+2047,"Waste","ppp",1142783.42
 2048,"Agriculture","bau",961833.85
-2048,"Agriculture","ppp",781972.02
+2048,"Agriculture","ppp",659839.51
 2048,"Building Fuel","bau",15686523.46
 2048,"Building Fuel","ppp",5884855
 2048,"Electricity","bau",108350.52
@@ -464,12 +464,12 @@
 2048,"Industrial Processes","ppp",3164424.31
 2048,"Natural Systems","bau",-1736573.28
 2048,"Natural Systems","ppp",-1860069.19
-2048,"Transportation","bau",11969601.1
-2048,"Transportation","ppp",4035270.6
-2048,"Waste","bau",2102246.5
-2048,"Waste","ppp",1121656.47
+2048,"Transportation","bau",11992054.12
+2048,"Transportation","ppp",2579454.04
+2048,"Waste","bau",2102246.51
+2048,"Waste","ppp",1121656.49
 2049,"Agriculture","bau",958775.3
-2049,"Agriculture","ppp",770884.64
+2049,"Agriculture","ppp",645129.19
 2049,"Building Fuel","bau",15791385.66
 2049,"Building Fuel","ppp",5534872.59
 2049,"Electricity","bau",72333.94
@@ -478,13 +478,13 @@
 2049,"Industrial Processes","ppp",3016957.59
 2049,"Natural Systems","bau",-1736573.28
 2049,"Natural Systems","ppp",-1863755.15
-2049,"Transportation","bau",11706601.66
-2049,"Transportation","ppp",3886609.91
+2049,"Transportation","bau",11728296.55
+2049,"Transportation","ppp",2515742.82
 2049,"Waste","bau",2116604.33
-2049,"Waste","ppp",1100529.55
+2049,"Waste","ppp",1100529.56
 2050,"Agriculture","bau",955716.74
-2050,"Agriculture","ppp",759860.73
-2050,"Building Fuel","bau",15896247.85
+2050,"Agriculture","ppp",630591.68
+2050,"Building Fuel","bau",15896247.86
 2050,"Building Fuel","ppp",5186171.47
 2050,"Electricity","bau",37372.06
 2050,"Electricity","ppp",41481.4
@@ -492,7 +492,7 @@
 2050,"Industrial Processes","ppp",2869490.87
 2050,"Natural Systems","bau",-1736573.28
 2050,"Natural Systems","ppp",-1867037.32
-2050,"Transportation","bau",11443602.22
-2050,"Transportation","ppp",3737949.22
-2050,"Waste","bau",2130962.15
-2050,"Waste","ppp",1079402.62
+2050,"Transportation","bau",11464538.97
+2050,"Transportation","ppp",2452031.61
+2050,"Waste","bau",2130962.16
+2050,"Waste","ppp",1079402.64
