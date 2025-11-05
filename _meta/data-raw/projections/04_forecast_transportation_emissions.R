@@ -316,7 +316,7 @@ nz2030 / bau2030
 
 # 2050
 
-tr_2050 <- tr_emissions_pathways %>%
+tr_2050 <- tr_pathways_out %>%
   filter(emissions_year == 2050)
 
 bau2050 <- tr_2050 %>%
