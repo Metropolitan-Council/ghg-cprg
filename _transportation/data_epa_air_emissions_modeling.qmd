@@ -23,12 +23,9 @@ aem_years <- epa_onroad_emissions_compile %>%
   unique()
 ```
 
-The EPA and various partner agencies continually work on emissions inventories for various projects. [Air Emissions Modeling Platform](https://www.epa.gov/air-emissions-modeling/emissions-modeling-platforms) data are available for several years, but only years 2021 and 2022 are used in the final inventory. 
+The EPA and various partner agencies continually work on emissions inventories for various projects. [Air Emissions Modeling Platform](https://www.epa.gov/air-emissions-modeling/emissions-modeling-platforms) data are available for several years, but only years `r aem_years$emissions_year %>% listify()` are used in the final inventory.
 
-
-Air Emissions Modeling data are available for several years, but only years `r aem_years$emissions_year %>% listify()` are used in the final inventory.
-
-Both the 2021 and 2022 estimates are based on the 2020 NEI [@usepa2022v2EmissionsModeling2025, @usepa2021EmissionsModeling2024]. 
+Both the 2021 and 2022 estimates are based on the 2020 NEI [@usepa2022v2EmissionsModeling2025, @usepa2021EmissionsModeling2024]. Platform 2022v2, released in September 2025, is the most recent and up to date on-road emissions inventory for our region. 
 
 Air Emissions Modeling SMOKE FF10 data are processed in [epa_air_emissions_modeling_onroad.R](data-raw/epa_air_emissions_modeling_onroad.R). 
 
