@@ -84,7 +84,7 @@ message("Saving residential projections plot to: \n\t ~/imgs/residential_decarbo
 ggplot2::ggsave(
   plot = res_plot,
   filename = paste0(here::here(), "/imgs/residential_decarbonization_pathways.png"), # add your file path here
-  width = 12,
+  width = 14,
   height = 6,
   units = "in",
   dpi = 300,

@@ -346,7 +346,7 @@ message("Saving nonresidential projections plot to: \n\t ~/imgs/nonres_decarboni
 ggplot2::ggsave(
   plot = nonres_plot,
   filename = paste0(here::here(), "/imgs/nonres_decarbonization_pathways.png"), # add your file path here
-  width = 12,
+  width = 14,
   height = 6,
   units = "in",
   dpi = 300,

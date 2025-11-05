@@ -205,7 +205,7 @@ message("Saving waste projections plot to: \n\t ~/imgs/waste_decarbonization_pat
 ggplot2::ggsave(
   plot = waste_plot,
   filename = paste0(here::here(), "/imgs/waste_decarbonization_pathways.png"),
-  width = 12,
+  width = 14,
   height = 6,
   units = "in",
   dpi = 300,

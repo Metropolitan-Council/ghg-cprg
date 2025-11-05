@@ -13,7 +13,7 @@ unique(gcam$subsector_mc)
 
 ### set net-zero by regional analysis
 
-county_emissions <- readRDS(file.path(here::here(), "_meta/data/ppp_baseline_diff.RDS"))
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
 ## net-zero sequestration
 seq_target <- readRDS(file.path(here::here(), "_meta/data/regional_net_zero_target.RDS")) %>%
@@ -283,7 +283,7 @@ message("Saving transportation projections plot to: \n\t ~/imgs/transportation_d
 ggplot2::ggsave(
   plot = tr_plot,
   filename = paste0(here::here(), "/imgs/transportation_decarbonization_pathways.png"), # add your file path here
-  width = 12,
+  width = 14,
   height = 6,
   units = "in",
   dpi = 300,

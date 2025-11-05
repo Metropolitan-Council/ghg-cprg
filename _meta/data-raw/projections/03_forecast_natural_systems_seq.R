@@ -338,7 +338,7 @@ message("Saving natural systems projections plot to: \n\t ~/imgs/ns_decarbonizat
 ggplot2::ggsave(
   plot = scen1_gg,
   filename = paste0(here::here(), "/imgs/ns_decarbonization_pathways.png"), # add your file path here
-  width = 14,
+  width = 15,
   height = 6,
   units = "in",
   dpi = 300,
