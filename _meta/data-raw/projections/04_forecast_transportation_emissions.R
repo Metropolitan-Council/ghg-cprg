@@ -38,23 +38,103 @@ tr_target <- county_emissions %>%
     sum() * # regional wide emissions minus electricity
   seq_target * -1 # emissions goal
 
-# load in transportation bau and ppp for region
+# load in transportation bau for seven county
+
+tr_bau <- read_csv(paste0(here::here(), "/_meta/data-raw/projections/transportation_county_emissions_time_series.csv")) %>%
+  group_by(emissions_year) %>%
+  summarize(value_emissions = sum(emissions_metric_tons_co2e), .groups = "keep") %>%
+  ungroup()
+
+# load in passenger car ppp for region
 
 tr_pathways <- read_rds(paste0(here::here(), "/_meta/data-raw/projections/ppp_baseline_diff.RDS"))
-county_emissions %>% 
-  filter(emissions_year == 2015, sector == "Transportation", source == "On-road",
-         !county_name %in% c("Chisago", "St. Croix", "Pierce", "Sherburne")) %>% 
-  group_by(category) %>% 
-  summarize(sum(value_emissions))
 
+bau_percentage <- tr_bau %>%
+  mutate(perc_2022 = value_emissions / value_emissions[emissions_year == 2022])
 
-tr_scenarios <- gcam %>%
+tr_emissions_collar <- county_emissions %>%
+  filter(
+    sector == "Transportation",
+    category != "Aviation",
+    county_name %in% c(
+      "St. Croix",
+      "Pierce",
+      "Sherburne",
+      "Chisago"
+    )
+  ) %>%
+  filter(emissions_year == 2022) %>%
+  summarize(value_emissions = sum(value_emissions)) %>%
+  ungroup() %>%
+  cross_join(bau_percentage) %>%
+  mutate(value_emissions_collar = value_emissions.x * perc_2022) %>%
+  filter(emissions_year >= 2023) %>%
+  select(emissions_year, value_emissions_collar)
+
+# join seven county with 4 collar counties
+tr_emissions_bau <- bind_rows(
+  county_emissions %>%
+    filter(
+      sector == "Transportation",
+      category != "Aviation"
+    ) %>%
+    group_by(emissions_year) %>%
+    summarize(value_emissions = sum(value_emissions)) %>%
+    mutate(scenario = "bau"),
+  tr_bau %>%
+    left_join(tr_emissions_collar, by = join_by(emissions_year)) %>%
+    mutate(
+      value_emissions = value_emissions + value_emissions_collar,
+      scenario = "bau"
+    ) %>%
+    filter(emissions_year >= 2023) %>%
+    select(emissions_year, value_emissions, scenario)
+)
+
+### insert passenger vehicle reductions from ghg.ccap analysis - LR
+
+passenger_reductions <- tr_pathways %>% 
+  filter(category == "Passenger vehicles") %>% 
+  ungroup() %>% 
+  mutate(proportion_2020 = dir_ghg.scen / dir_ghg.scen[emissions_year == 2020]) %>% 
+  select(emissions_year, subsector_mc = category, proportion_2020)
+
+# update gcam with above proportions
+gcam_updated <- gcam %>%
+  # focus on relevant subsectors
+  filter(
+    sector == "Transportation",
+    scenario %in% c("PPP after Fed RB"),
+    subsector_mc %in% c("Buses", "Passenger vehicles", "Trucks")
+  ) %>%
+  mutate(emissions_year = as.numeric(emissions_year)) %>% 
+  # join in the replacement proportions for passenger vehicles
+  left_join(
+    passenger_reductions %>% 
+      rename(new_proportion_2020 = proportion_2020),
+    by = c("emissions_year", "subsector_mc")
+  ) %>%
+  # update the proportion_of_2020 only for passenger vehicles
+  mutate(
+    proportion_of_2020 = if_else(
+      subsector_mc == "Passenger vehicles" & !is.na(new_proportion_2020),
+      new_proportion_2020,
+      proportion_of_2020
+    ),
+    # recalculate emissions based on updated proportion_of_2020
+    value_emissions = if_else(
+      subsector_mc == "Passenger vehicles",
+      value_2020 * proportion_of_2020,
+      value_emissions
+    )
+  ) %>%
+  select(-new_proportion_2020)
+
+tr_scenarios <- gcam_updated %>%
   filter(
     sector == "Transportation",
     scenario %in% c(
-      "Net-Zero Pathway",
-      "PPP after Fed RB",
-      "CP after Fed RB"
+      "PPP after Fed RB"
     )
   ) %>% # create new on-road category
   filter(subsector_mc %in% c(
@@ -63,9 +143,10 @@ tr_scenarios <- gcam %>%
     "Trucks"
   )) %>%
   group_by(emissions_year, sector, scenario) %>%
-  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
-  ungroup() %>%
-  mutate(value_2020 = value_emissions / value_emissions[emissions_year == 2020])
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>% 
+  ungroup()%>%
+  mutate(value_2020 = value_emissions / value_emissions[emissions_year == 2020]) 
+
 
 
 tr_emissions_proj <- tr_emissions_bau %>%
@@ -107,35 +188,32 @@ tr_emissions_pathways <- interpolate_emissions(bind_rows(
 
 
 ### problems with state's PPP, shifting up
-
-# create a new alternative PPP scenario
-ppp_2025 <-
-  tr_emissions_pathways %>%
-  filter(scenario == "bau", emissions_year == "2025") %>%
-  pull(value_emissions) -
-  tr_emissions_pathways %>%
-  filter(scenario == "ppp", emissions_year == "2025") %>%
-  pull(value_emissions)
-
-# create new scenario
-tr_emissions_pathways <- tr_emissions_pathways %>%
-  mutate(value_emissions = if_else(scenario == "ppp" & emissions_year >= 2025,
-    value_emissions + ppp_2025,
-    value_emissions
-  ))
+# 
+# # create a new alternative PPP scenario
+# ppp_2025 <-
+#   tr_emissions_pathways %>%
+#   filter(scenario == "bau", emissions_year == "2025") %>%
+#   pull(value_emissions) -
+#   tr_emissions_pathways %>%
+#   filter(scenario == "ppp", emissions_year == "2025") %>%
+#   pull(value_emissions)
+# 
+# # create new scenario
+# tr_emissions_pathways <- tr_emissions_pathways %>%
+#   mutate(value_emissions = if_else(scenario == "ppp" & emissions_year >= 2025,
+#     value_emissions + ppp_2025,
+#     value_emissions
+#   ))
 
 # waldo::compare(tr_emissions_pathways, readRDS("_meta/data-raw/projections/tr_pathways.rds"))
-message("Saving transportation projections data to: \n\t _meta/data-raw/projections/tr_pathways.rds")
-saveRDS(
-  tr_emissions_pathways,
-  "_meta/data-raw/projections/tr_pathways.rds"
-)
+
 
 ### graph it!!####
 
 #  base data (2005-2025, identical across scenarios)
 base_data <- tr_emissions_pathways %>%
-  filter(emissions_year <= 2025)
+  filter(emissions_year <= 2025,
+         scenario == "bau")
 
 
 #  diverging scenarios (2026+)
@@ -147,19 +225,45 @@ diverging_data <- tr_emissions_pathways %>%
 
 bau_data <- diverging_data %>% filter(scenario == "bau")
 
-# PPP data - need to merge with net_zero for the lower bound
-ppp_data <- diverging_data %>%
-  filter(scenario == "ppp") %>%
-  select(emissions_year, value_emissions) %>%
-  rename(ppp_emissions = value_emissions)
+#sharp drop in PPP in 2025 due to 2020 weirdness, smoothing while anchoring to 2030 target
 
-# net_zero_for_ppp <- diverging_data %>%
-#   filter(scenario == "nz") %>%
-#   select(emissions_year, value_emissions) %>%
-#   rename(net_zero_emissions = value_emissions)
-#
-# ppp_ribbon_data <- ppp_data %>%
-#   left_join(net_zero_for_ppp, by = "emissions_year")
+smooth_ppp <- tibble(
+  emissions_year = 2025:2030
+) %>%
+  mutate(
+    # Use a cubic interpolation between 2025 and 2030
+    value_emissions = approx(
+      x = c(2025, 2030),
+      y = c( bau_data %>% filter(emissions_year == 2025) %>% pull(value_emissions),
+             diverging_data %>% filter(emissions_year == 2030, scenario == "ppp") %>% pull(value_emissions)),
+      xout = emissions_year,
+      method = "linear" # or "spline" for smoother curve
+    )$y
+  ) %>% 
+  mutate(
+    scenario = "ppp",
+    segment = "diverging"
+  )
+
+diverging_data <- bind_rows(
+  diverging_data %>% filter(scenario == "bau"),
+  smooth_ppp,
+  diverging_data %>% filter(scenario == "ppp",emissions_year >= 2031)
+)
+
+tr_pathways_out <- bind_rows(
+  base_data,
+  diverging_data %>%
+    filter(!(emissions_year == 2025 &
+           scenario == "bau")) %>%
+    select(-segment)
+)
+
+message("Saving transportation projections data to: \n\t _meta/data-raw/projections/tr_pathways.rds")
+saveRDS(
+  tr_emissions_pathways,
+  "_meta/data-raw/projections/tr_pathways.rds"
+)
 
 # Create the plot
 tr_plot <- plot_emissions_pathways(
@@ -189,7 +293,7 @@ ggplot2::ggsave(
 ### numbers for CCAP document
 # sector wide 2030/2050 scenario to BAU comparisons
 
-tr_2030 <- tr_emissions_pathways %>%
+tr_2030 <- tr_pathways_out %>%
   filter(emissions_year == 2030)
 
 bau2030 <- tr_2030 %>%
