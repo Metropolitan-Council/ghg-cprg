@@ -13,9 +13,9 @@ unique(gcam$subsector_mc)
 
 ### set net-zero by regional analysis
 
-county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+county_emissions <- readRDS(file.path(here::here(), "_meta/data/ppp_baseline_diff.RDS"))
 
-## to be updated once we have better sequestration growth potential
+## net-zero sequestration
 seq_target <- readRDS(file.path(here::here(), "_meta/data/regional_net_zero_target.RDS")) %>%
   pull(net_zero_target)
 
@@ -38,54 +38,15 @@ tr_target <- county_emissions %>%
     sum() * # regional wide emissions minus electricity
   seq_target * -1 # emissions goal
 
-# load in transportation bau for seven county
+# load in transportation bau and ppp for region
 
-tr_bau <- read_csv(paste0(here::here(), "/_meta/data-raw/projections/transportation_county_emissions_time_series.csv")) %>%
-  group_by(emissions_year) %>%
-  summarize(value_emissions = sum(emissions_metric_tons_co2e), .groups = "keep") %>%
-  ungroup()
+tr_pathways <- read_rds(paste0(here::here(), "/_meta/data-raw/projections/ppp_baseline_diff.RDS"))
+county_emissions %>% 
+  filter(emissions_year == 2015, sector == "Transportation", source == "On-road",
+         !county_name %in% c("Chisago", "St. Croix", "Pierce", "Sherburne")) %>% 
+  group_by(category) %>% 
+  summarize(sum(value_emissions))
 
-bau_percentage <- tr_bau %>%
-  mutate(perc_2022 = value_emissions / value_emissions[emissions_year == 2022])
-
-tr_emissions_collar <- county_emissions %>%
-  filter(
-    sector == "Transportation",
-    category != "Aviation",
-    county_name %in% c(
-      "St. Croix",
-      "Pierce",
-      "Sherburne",
-      "Chisago"
-    )
-  ) %>%
-  filter(emissions_year == 2022) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
-  ungroup() %>%
-  cross_join(bau_percentage) %>%
-  mutate(value_emissions_collar = value_emissions.x * perc_2022) %>%
-  filter(emissions_year >= 2023) %>%
-  select(emissions_year, value_emissions_collar)
-
-# join seven county with 4 collar counties
-tr_emissions_bau <- bind_rows(
-  county_emissions %>%
-    filter(
-      sector == "Transportation",
-      category != "Aviation"
-    ) %>%
-    group_by(emissions_year) %>%
-    summarize(value_emissions = sum(value_emissions)) %>%
-    mutate(scenario = "bau"),
-  tr_bau %>%
-    left_join(tr_emissions_collar, by = join_by(emissions_year)) %>%
-    mutate(
-      value_emissions = value_emissions + value_emissions_collar,
-      scenario = "bau"
-    ) %>%
-    filter(emissions_year >= 2023) %>%
-    select(emissions_year, value_emissions, scenario)
-)
 
 tr_scenarios <- gcam %>%
   filter(
