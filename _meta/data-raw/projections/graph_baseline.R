@@ -27,8 +27,8 @@ county_emissions <- readRDS("_meta/data/cprg_county_emissions.RDS") %>%
   mutate(sector_alt = factor(sector_alt,
     levels = c(
       "Transportation",
-      "Electricity",
       "Building Fuel",
+      "Electricity",
       "Industrial Processes",
       "Waste",
       "Agriculture",
@@ -114,8 +114,8 @@ emissions_sector <- county_emissions %>%
   summarize(value_emissions = sum(value_emissions, na.rm = TRUE)) %>%
   mutate(sector_alt = factor(sector_alt, levels = c(
     "Transportation",
-    "Electricity",
     "Building Fuel",
+    "Electricity",
     "Industrial Processes",
     "Waste",
     "Agriculture",
