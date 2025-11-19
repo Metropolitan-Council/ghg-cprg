@@ -15,6 +15,7 @@ sector_colors <- list(
   "Transportation" = "#60C8E9",
   "Residential" = "#9467bd",
   "Commercial" = "#DB5755",
+  "Industrial" = "#A42264",
   "Industrial Processes" = "#A42264",
   "Waste" = "#77645A",
   "Agriculture" = "#A5CF4C",
@@ -26,6 +27,7 @@ sector_colors_alt <- list(
   "Electricity" = "#FD8D3C",
   "Transportation" = "#60C8E9",
   "Building Fuel" = "#BA89C2",
+  "Industrial" = "#A42264",
   "Industrial Processes" = "#A42264",
   "Waste" = "#ABB6BE",
   "Agriculture" = "#A5CF4C",
@@ -92,6 +94,8 @@ source_colors <- list(
   # Transportation 1
   "On-road" = "#6F8FAF",
   "Off-road" = "#191970",
+  "MSP airport" = "#9696e8" , 
+  "Reliever airport" = "#d5d5f6",
 
   # Electricity
   "Residential electricity" = "#ffc300",

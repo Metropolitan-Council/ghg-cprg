@@ -336,7 +336,7 @@ nonres_plot <- plot_emissions_pathways(
   target_year = 2050,
   base_cutoff_year = 2022,
   ppp_bau_color = "#8C96C6",
-  y_max = 30e6,  # Optional: set max y value
+  y_max = 30e6, # Optional: set max y value
   title = "Non-residential Building Emissions \n(Millions of CO2-equivalency)"
 )
 

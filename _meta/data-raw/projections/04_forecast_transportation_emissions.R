@@ -6,6 +6,164 @@ source("R/cprg_colors.R")
 source("_meta/data-raw/projections/interpolate_emissions.R")
 source("_meta/data-raw/projections/01_projections_plotter.R")
 
+source("_meta/data-raw/ctu_coctu_index.R")
+
+
+library(ghg.ccap)
+ctu_list <- ghg.ccap::building_data$non_residential %>%
+  ungroup() %>%
+  # filter(
+  #   sp_categories == "commercial_jobs",
+  #   inventory_year == 2021,
+  #   value != 0,
+  #   !geog_name %in% c(
+  #     "Blakeley Twp.",
+  #     "Coates",
+  #     "Douglas Twp.",
+  #     "Fort Snelling",
+  #     "Grey Cloud Island Twp.",
+  #     "Hilltop",
+  #     "Laketown Twp.", # no PLDV in 2040
+  #     "Landfall", # no single-family homes
+  #     "Lilydale", # ditto
+  #     "Rogers"
+  #   )
+  # ) %>%
+  select(geog_name) %>%
+  mutate(ctu_desc = as.character(geog_name)) %>%
+  unique() %>%
+  filter(stringr::str_detect(geog_name, "County", negate = TRUE))
+
+all_bau <- purrr::map(
+  ctu_list$geog_name,
+  (function(x) {
+    cli::cli_alert_info(x)
+    suppressMessages(
+      run_all_modules(
+        .scenario = "bau",
+        .selected_ctu = x,
+        pass_tb = ghg.ccap::transportation_data$passenger,
+        freight_tb = ghg.ccap::transportation_data$freight,
+        .factor_values = ghg.ccap::factor_values,
+        .enviro_factors = ghg.ccap::enviro_factors,
+        .elast = ghg.ccap::elast,
+        .elast_5d = ghg.ccap::elast_5d,
+        .fuel_economy = ghg.ccap::fuel_economy,
+        tb = ghg.ccap::land_use_data,
+        non_res_tb = ghg.ccap::building_data$non_residential,
+        res_tb = ghg.ccap::building_data$residential,
+        res_tb_bau = ghg.ccap::building_data$residential,
+        non_res_tb_bau = ghg.ccap::building_data$non_residential,
+        run_land_use = FALSE,
+        run_non_residential = FALSE
+      )
+    )
+  })
+)
+
+# essential functions
+
+summarize_emiss <- function(x) {
+  bau_mode_year <- x$transp$passenger_all %>%
+    dplyr::bind_rows(x$transp$freight_all) %>%
+    dplyr::filter(!mode %in% c(
+      "MM", "RI",
+      "RU", "FR",
+      "WAT", "AIR"
+    )) %>%
+    dplyr::left_join(
+      ghg.ccap::transportation_index$modes %>%
+        dplyr::select(mode_abbrev, mode_description_1, sector, category),
+      by = c("mode" = "mode_abbrev")
+    ) %>%
+    dplyr::mutate(emissions_year = as.numeric(year)) %>%
+    dplyr::group_by(emissions_year, type, scenario, geog_name, geog_id, category, sector) %>%
+    dplyr::summarize(
+      dir_ghg = sum(dir_ghg, na.rm = T),
+      vmt = sum(vmt, na.rm = T),
+      .groups = "keep"
+    ) %>%
+    left_join(ctu_coctu_index, by = c(
+      "geog_id" = "gnis",
+      "geog_name" = "ctu_name"
+    ))
+}
+
+summarize_county <- function(x) {
+  x %>%
+    group_by(county_name, emissions_year, scenario, type, sector, category) %>%
+    dplyr::summarize(
+      dir_ghg = sum(dir_ghg, na.rm = T),
+      vmt = sum(vmt, na.rm = T),
+      n_ctus = length(unique(geog_id)),
+      .groups = "keep"
+    )
+}
+
+summarize_region <- function(x) {
+  x %>%
+    group_by(emissions_year, scenario, type, sector, category) %>%
+    dplyr::summarize(
+      dir_ghg = sum(dir_ghg, na.rm = T),
+      vmt = sum(vmt, na.rm = T),
+      n_ctus = length(unique(geog_id)),
+      .groups = "keep"
+    )
+}
+
+
+bau_mode_year <- purrr::map_dfr(
+  all_bau,
+  summarize_emiss
+)
+
+bau_mode_year %>%
+  summarize_region()
+
+bau_mode_year %>%
+  summarize_county()
+
+
+
+# start modeling reductions
+
+ev <- purrr::map(
+  ctu_list$geog_name,
+  (function(x) {
+    cli::cli_alert_info(x)
+    suppressMessages(
+      run_all_modules(
+        .scenario = "bau",
+        .selected_ctu = x,
+        pass_tb = ghg.ccap::transportation_data$passenger,
+        freight_tb = ghg.ccap::transportation_data$freight,
+        .factor_values = ghg.ccap::factor_values,
+        .enviro_factors = ghg.ccap::enviro_factors,
+        .elast = ghg.ccap::elast,
+        .elast_5d = ghg.ccap::elast_5d,
+        .fuel_economy = ghg.ccap::fuel_economy,
+        tb = ghg.ccap::land_use_data,
+        non_res_tb = ghg.ccap::building_data$non_residential,
+        res_tb = ghg.ccap::building_data$residential,
+        res_tb_bau = ghg.ccap::building_data$residential,
+        non_res_tb_bau = ghg.ccap::building_data$non_residential,
+        run_land_use = FALSE,
+        run_non_residential = FALSE,
+        .bev_pct_sales = 0.75,
+      )
+    )
+  })
+)
+
+ev_mode_year <- purrr::map_dfr(
+  ev,
+  summarize_emiss
+)
+
+
+
+
+
 ## load state gcam modeling
 
 gcam <- read_rds("_meta/data/gcam/mpca_subsector_gcam.RDS")
@@ -93,10 +251,10 @@ tr_emissions_bau <- bind_rows(
 
 ### insert passenger vehicle reductions from ghg.ccap analysis - LR
 
-passenger_reductions <- tr_pathways %>% 
-  filter(category == "Passenger vehicles") %>% 
-  ungroup() %>% 
-  mutate(proportion_2020 = dir_ghg.scen / dir_ghg.scen[emissions_year == 2020]) %>% 
+passenger_reductions <- tr_pathways %>%
+  filter(category == "Passenger vehicles") %>%
+  ungroup() %>%
+  mutate(proportion_2020 = dir_ghg.scen / dir_ghg.scen[emissions_year == 2020]) %>%
   select(emissions_year, subsector_mc = category, proportion_2020)
 
 # update gcam with above proportions
@@ -107,10 +265,10 @@ gcam_updated <- gcam %>%
     scenario %in% c("PPP after Fed RB"),
     subsector_mc %in% c("Buses", "Passenger vehicles", "Trucks")
   ) %>%
-  mutate(emissions_year = as.numeric(emissions_year)) %>% 
+  mutate(emissions_year = as.numeric(emissions_year)) %>%
   # join in the replacement proportions for passenger vehicles
   left_join(
-    passenger_reductions %>% 
+    passenger_reductions %>%
       rename(new_proportion_2020 = proportion_2020),
     by = c("emissions_year", "subsector_mc")
   ) %>%
@@ -143,9 +301,9 @@ tr_scenarios <- gcam_updated %>%
     "Trucks"
   )) %>%
   group_by(emissions_year, sector, scenario) %>%
-  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>% 
-  ungroup()%>%
-  mutate(value_2020 = value_emissions / value_emissions[emissions_year == 2020]) 
+  summarize(value_emissions = sum(value_emissions), .groups = "keep") %>%
+  ungroup() %>%
+  mutate(value_2020 = value_emissions / value_emissions[emissions_year == 2020])
 
 
 
@@ -188,7 +346,7 @@ tr_emissions_pathways <- interpolate_emissions(bind_rows(
 
 
 ### problems with state's PPP, shifting up
-# 
+#
 # # create a new alternative PPP scenario
 # ppp_2025 <-
 #   tr_emissions_pathways %>%
@@ -197,7 +355,7 @@ tr_emissions_pathways <- interpolate_emissions(bind_rows(
 #   tr_emissions_pathways %>%
 #   filter(scenario == "ppp", emissions_year == "2025") %>%
 #   pull(value_emissions)
-# 
+#
 # # create new scenario
 # tr_emissions_pathways <- tr_emissions_pathways %>%
 #   mutate(value_emissions = if_else(scenario == "ppp" & emissions_year >= 2025,
@@ -212,8 +370,10 @@ tr_emissions_pathways <- interpolate_emissions(bind_rows(
 
 #  base data (2005-2025, identical across scenarios)
 base_data <- tr_emissions_pathways %>%
-  filter(emissions_year <= 2025,
-         scenario == "bau")
+  filter(
+    emissions_year <= 2025,
+    scenario == "bau"
+  )
 
 
 #  diverging scenarios (2026+)
@@ -225,7 +385,7 @@ diverging_data <- tr_emissions_pathways %>%
 
 bau_data <- diverging_data %>% filter(scenario == "bau")
 
-#sharp drop in PPP in 2025 due to 2020 weirdness, smoothing while anchoring to 2030 target
+# sharp drop in PPP in 2025 due to 2020 weirdness, smoothing while anchoring to 2030 target
 
 smooth_ppp <- tibble(
   emissions_year = 2025:2030
@@ -234,12 +394,14 @@ smooth_ppp <- tibble(
     # Use a cubic interpolation between 2025 and 2030
     value_emissions = approx(
       x = c(2025, 2030),
-      y = c( bau_data %>% filter(emissions_year == 2025) %>% pull(value_emissions),
-             diverging_data %>% filter(emissions_year == 2030, scenario == "ppp") %>% pull(value_emissions)),
+      y = c(
+        bau_data %>% filter(emissions_year == 2025) %>% pull(value_emissions),
+        diverging_data %>% filter(emissions_year == 2030, scenario == "ppp") %>% pull(value_emissions)
+      ),
       xout = emissions_year,
       method = "linear" # or "spline" for smoother curve
     )$y
-  ) %>% 
+  ) %>%
   mutate(
     scenario = "ppp",
     segment = "diverging"
@@ -248,14 +410,14 @@ smooth_ppp <- tibble(
 diverging_data <- bind_rows(
   diverging_data %>% filter(scenario == "bau"),
   smooth_ppp,
-  diverging_data %>% filter(scenario == "ppp",emissions_year >= 2031)
+  diverging_data %>% filter(scenario == "ppp", emissions_year >= 2031)
 )
 
 tr_pathways_out <- bind_rows(
   base_data,
   diverging_data %>%
     filter(!(emissions_year == 2025 &
-           scenario == "bau")) %>%
+      scenario == "bau")) %>%
     select(-segment)
 )
 
@@ -273,7 +435,7 @@ tr_plot <- plot_emissions_pathways(
   target_year = 2050,
   base_cutoff_year = 2022,
   ppp_bau_color = "#60C8E9",
-  y_max = 20e6,  # Optional: set max y value
+  y_max = 20e6, # Optional: set max y value
   title = "On-road Transportation Emissions \n(Millions of CO2-equivalency)"
 )
 

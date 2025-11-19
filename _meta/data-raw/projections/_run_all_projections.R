@@ -14,7 +14,7 @@ source("_meta/data-raw/projections/02_compile_regional_housing.R") # compile hou
 source("_meta/data-raw/projections/03_forecast_natural_systems_seq.R")
 
 # residential emissions ----
-#source("_meta/data-raw/projections/03_compile_residential_emissions.R") # slow
+# source("_meta/data-raw/projections/03_compile_residential_emissions.R") # slow
 
 source("_meta/data-raw/projections/04_forecast_residential_emissions.R")
 
