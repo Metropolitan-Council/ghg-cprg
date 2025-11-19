@@ -9,7 +9,8 @@
 # Dependencies: final ccap scopes, QCEW, Projections, OEWS, priority occupation data...
 
 # ---- Setup ----
-library(tidyverse)
+source("R/_load_pkgs.R")
+# library(tidyverse)
 library(readxl)
 library(writexl)
 library(fuzzyjoin)
