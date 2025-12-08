@@ -94,7 +94,7 @@ source_colors <- list(
   # Transportation 1
   "On-road" = "#6F8FAF",
   "Off-road" = "#191970",
-  "MSP airport" = "#9696e8" , 
+  "MSP airport" = "#9696e8",
   "Reliever airport" = "#d5d5f6",
 
   # Electricity

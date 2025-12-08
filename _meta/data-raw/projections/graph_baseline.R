@@ -661,12 +661,15 @@ gg_county_ns
 
 #### summary stats #####
 
-#decrease from 2005-2022
+# decrease from 2005-2022
 
 (county_emissions %>% filter(emissions_year == 2022) %>% pull(value_emissions) %>% sum() -
-   county_emissions %>% filter(emissions_year == 2005) %>% pull(value_emissions) %>% sum()) /
-  county_emissions %>% filter(emissions_year == 2005) %>% pull(value_emissions) %>% sum()
-  
+  county_emissions %>% filter(emissions_year == 2005) %>% pull(value_emissions) %>% sum()) /
+  county_emissions %>%
+    filter(emissions_year == 2005) %>%
+    pull(value_emissions) %>%
+    sum()
+
 county_emissions %>%
   filter(
     sector_alt == "Transportation",
@@ -756,7 +759,7 @@ county_emissions %>%
 
 county_emissions %>%
   filter(
-    #sector != "Natural Systems",
+    # sector != "Natural Systems",
     category_alt != "Freshwater",
     emissions_year %in% c(2022)
   ) %>%
@@ -774,5 +777,3 @@ county_emissions %>%
     emissions_2022 = value_emissions[emissions_year == 2022],
     pct_of_2005 = (emissions_2022 / emissions_2005) * 100
   )
-
-

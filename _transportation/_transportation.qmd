@@ -146,11 +146,16 @@ fig_transportation_county_emissions <- county_emissions %>%
     emissions_year == transportation_max_year,
     sector == "Transportation",
   ) %>%
-  mutate(rounded_tons = round_emissions_metric_tons_co2e(value_emissions),
-         source = factor(source,
-                         levels = c("On-road",
-                                    "MSP airport",
-                                    "Reliever airport"))) %>%
+  mutate(
+    rounded_tons = round_emissions_metric_tons_co2e(value_emissions),
+    source = factor(source,
+      levels = c(
+        "On-road",
+        "MSP airport",
+        "Reliever airport"
+      )
+    )
+  ) %>%
   plot_ly(
     type = "bar",
     source = "fig-transportation-county-emissions",
