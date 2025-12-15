@@ -16,9 +16,10 @@ source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
 
 source("_meta/data-raw/projections/01_projections_plotter.R")
+source("_meta/data-raw/projections/01_ns_projection_funs.R")
 
 
-remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
+# remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
 
 
 
@@ -137,13 +138,13 @@ natural_systems_data$regional$null_projections <- regional_projections_2022 %>%
 
 
 
-mod_bau <- ghg.ccap::run_scenario_natural_systems(
+mod_bau <- run_scenario_natural_systems(
   .selected_ctu = "Regional",
   tb_inv = natural_systems_data$regional$inventory,
   tb_future = natural_systems_data$regional$null_projections,
-  tb_seq = natural_systems_data$land_cover_carbon,
-  .enviro_factors = ghg.ccap::enviro_factors,
+  tb_seq = natural_systems_data$land_cover_carbon
 )
+
 
 
 pct_increase_in_wetland_area_11co <- readRDS("_meta/data-raw/projections/pct_increase_in_wetland_area_11co.RDS")
@@ -162,7 +163,6 @@ mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
   tb_inv = natural_systems_data$regional$inventory,
   tb_future = natural_systems_data$regional$null_projections,
   tb_seq = natural_systems_data$land_cover_carbon,
-  .enviro_factors = ghg.ccap::enviro_factors,
 
   # user inputs here!
   .urban_tree_start = 2025,
@@ -420,6 +420,9 @@ regional_ns_forecast <- rbind(
 #
 # write_rds(regional_ns_forecast,
 #           "_meta/data/regional_ns_forecast.RDS")
+
+
+
 
 ### numbers for CCAP document
 # sector wide 2030/2050 scenario to BAU comparisons
