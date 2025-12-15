@@ -1,22 +1,21 @@
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
 
-remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
 
-
+lc_county <- readRDS("./_nature/data/nlcd_county_landcover_allyrs.rds") 
 
 # New values as of Oct 31, 2025 -------------------------------------------
 current_wetlands_9co <- lc_county %>%
   filter(inventory_year == 2022) %>%
   # filter for the 9 Minnesota counties only
-  filter(!(geog_name %in% c("St. Croix County", "Pierce County"))) %>%
+  filter(!(county_name %in% c("St. Croix", "Pierce"))) %>%
   filter(land_cover_type == "Wetland") %>%
   summarize(actual_wetland_area_km2 = sum(area))
 
 current_wetlands_wi <- lc_county %>%
   filter(inventory_year == 2022) %>%
   # filter for the 9 Minnesota counties only
-  filter(geog_name %in% c("St. Croix County", "Pierce County")) %>%
+  filter(county_name %in% c("St. Croix", "Pierce")) %>%
   filter(land_cover_type == "Wetland") %>%
   summarize(actual_wetland_area_km2 = sum(area))
 
