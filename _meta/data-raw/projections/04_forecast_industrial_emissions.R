@@ -3,6 +3,7 @@
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
 source("_meta/data-raw/projections/interpolate_emissions.R")
+source("_meta/data-raw/projections/01_projections_plotter.R")
 
 ## load state gcam modeling
 
@@ -152,109 +153,34 @@ ppp_data <- diverging_data %>%
 #
 # ppp_ribbon_data <- ppp_data %>%
 #   left_join(net_zero_for_ppp, by = "emissions_year")
+### graph it####
 
 # Create the plot
-emissions_gg <- ggplot() +
-  # Base fill (2005-2025, gray)
-  geom_ribbon(
-    data = base_data,
-    aes(x = emissions_year, ymin = 0, ymax = value_emissions),
-    fill = "gray80", alpha = 0.7
-  ) +
+ind_plot <- plot_emissions_pathways(
+  base_data = base_data,
+  diverging_data = diverging_data,
+  target_value = ind_target,
+  target_year = 2050,
+  base_cutoff_year = 2022,
+  ppp_bau_color = "#A42264",
+  y_max = 6e6, # Optional: set max y value
+  title = "Industrial Emissions \n(Millions of CO2-equivalency)"
+)
 
-  # Net zero fill (#36454F)
-  # geom_ribbon(data = net_zero_data,
-  #             aes(x = emissions_year, ymin = 0, ymax = value_emissions),
-  #             fill = "#36454F", alpha = 0.3) +
+ind_plot
 
-  # PPP fill (from net_zero to ppp)
-  geom_ribbon(
-    data = ppp_data,
-    aes(x = emissions_year, ymin = 0, ymax = ppp_emissions),
-    fill = "#708090", alpha = 0.5
-  ) +
-
-  # Base line (2005-2025)
-  geom_line(
-    data = base_data,
-    aes(x = emissions_year, y = value_emissions),
-    color = "black", linewidth = 1
-  ) +
-
-  # Diverging scenario lines
-  geom_line(
-    data = diverging_data %>% filter(scenario == "bau"),
-    aes(x = emissions_year, y = value_emissions, color = "Business as usual"),
-    linetype = "dashed", linewidth = 1
-  ) +
-  geom_line(
-    data = diverging_data %>% filter(scenario == "ppp"),
-    aes(x = emissions_year, y = value_emissions, color = "Potential policy pathways"),
-    linewidth = 1
-  ) +
-  geom_point(
-    data = data.frame(emissions_year = 2050, value_emissions = ind_target),
-    aes(x = emissions_year, y = value_emissions),
-    shape = "*", # asterisk
-    size = 12, # make larger or smaller
-    stroke = 1.5, # line thickness of the asterisk
-    color = "black"
-  ) +
-  geom_segment(aes(x = 2025, xend = 2025, y = 0, yend = base_data %>% filter(emissions_year == 2025) %>% pull(value_emissions)),
-    color = "black", linetype = "solid", linewidth = 0.8
-  ) +
-  # annotate("text", x = 2025, y = max(your_data$value_emissions) * 0.9,
-  #          label = "Historical | Projected", angle = 90, hjust = 1, size = 3.5) +
-
-  # Manual color scale with correct order
-  scale_color_manual(
-    values = c(
-      "Business as usual" = "black",
-      # "Net zero" = "#36454F",
-      "Potential policy pathways" = "#708090"
-    ),
-    breaks = c("Business as usual", "Potential policy pathways", "Net zero") # Force legend order
-  ) +
-
-  # Manual legend guide to show line types
-  guides(
-    color = guide_legend(
-      title = "Scenarios",
-      override.aes = list(
-        linetype = c("dashed", "solid"),
-        color = c("black", "#36454F")
-      )
-    )
-  ) +
-  labs(
-    x = "Year",
-    y = "",
-    title = "Industrial Process Emissions \n(Millions of CO2-equivalency)"
-  ) +
-  scale_y_continuous(labels = label_number(scale = 1e-6)) + # convert to millions
-  theme_minimal() +
-  theme(
-    panel.grid.minor = element_blank(),
-    legend.position = "bottom",
-    plot.title = element_text(size = 18),
-    axis.text = element_text(size = 14),
-    legend.text = element_text(size = 18),
-    legend.key.width = unit(1.2, "cm")
-  ) +
-  xlim(2005, 2050)
-
-print(emissions_gg)
 
 message("Saving industrial projections plot to: \n\t ~/imgs/industrial_decarbonization_pathways.png")
 ggplot2::ggsave(
-  plot = emissions_gg,
-  filename = paste0(here::here(), "/imgs/industrial_decarbonization_pathways.png"), # add your file path here
-  width = 12,
+  plot = ind_plot,
+  filename = paste0(here::here(), "/imgs/industrial_decarbonization_pathways.png"),
+  width = 14,
   height = 6,
   units = "in",
   dpi = 300,
   bg = "white"
 )
+
 
 ### numbers for CCAP document
 # sector wide 2030/2050 scenario to BAU comparisons

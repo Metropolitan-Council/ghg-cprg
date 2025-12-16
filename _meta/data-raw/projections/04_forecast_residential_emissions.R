@@ -1,6 +1,7 @@
 #### plot residential pathways graphics
 
 source("R/_load_pkgs.R")
+source("_meta/data-raw/projections/01_projections_plotter.R")
 
 residential_pathways <- readRDS("_meta/data-raw/projections/residential_pathways.RDS")
 
@@ -64,103 +65,26 @@ ppp_data <- diverging_data %>%
 # ppp_ribbon_data <- ppp_data %>%
 #   left_join(net_zero_for_ppp, by = "inventory_year")
 
-# Create the plot
-emissions_gg <- ggplot() +
-  # Base fill (2005-2025, gray)
-  geom_ribbon(
-    data = base_data,
-    aes(x = inventory_year, ymin = 0, ymax = total_emissions),
-    fill = "gray80", alpha = 0.7
-  ) +
+# graph it ####
 
-  # # Net zero fill (maroon)
-  # geom_ribbon(data = net_zero_data,
-  #             aes(x = inventory_year, ymin = 0, ymax = total_emissions),
-  #             fill = "maroon", alpha = 0.3) +
+res_plot <- plot_emissions_pathways(
+  base_data = base_data,
+  diverging_data = diverging_data,
+  target_value = res_target,
+  target_year = 2050,
+  base_cutoff_year = 2022,
+  ppp_bau_color = "#8856A7",
+  y_max = 20e6, # Optional: set max y value
+  title = "Residential Building Emissions \n(Millions of CO2-equivalency)"
+)
 
-  # PPP fill (from net_zero to ppp)
-  geom_ribbon(
-    data = ppp_data,
-    aes(x = inventory_year, ymin = 0, ymax = ppp_emissions),
-    fill = "#9467bd", alpha = 0.5
-  ) +
-
-  # Base line (2005-2025)
-  geom_line(
-    data = base_data,
-    aes(x = inventory_year, y = total_emissions),
-    color = "black", linewidth = 1
-  ) +
-
-  # Diverging scenario lines
-  geom_line(
-    data = diverging_data %>% filter(scenario == "bau"),
-    aes(x = inventory_year, y = total_emissions, color = "Business as usual"),
-    linetype = "dashed", linewidth = 1
-  ) +
-  geom_line(
-    data = diverging_data %>% filter(scenario == "ppp"),
-    aes(x = inventory_year, y = total_emissions, color = "Potential policy pathways"),
-    linewidth = 1
-  ) +
-  geom_point(
-    data = data.frame(emissions_year = 2050, value_emissions = res_target),
-    aes(x = emissions_year, y = value_emissions),
-    shape = "*", # asterisk
-    size = 12, # make larger or smaller
-    stroke = 1.5, # line thickness of the asterisk
-    color = "black"
-  ) +
-  geom_segment(aes(x = 2025, xend = 2025, y = 0, yend = base_data %>% filter(inventory_year == 2025) %>% pull(total_emissions)),
-    color = "black", linetype = "solid", linewidth = 0.8
-  ) +
-  # annotate("text", x = 2025, y = max(your_data$total_emissions) * 0.9,
-  #          label = "Historical | Projected", angle = 90, hjust = 1, size = 3.5) +
-
-  # Manual color scale with correct order
-  scale_color_manual(
-    values = c(
-      "Business as usual" = "black",
-      # "Net zero" = "maroon",
-      "Potential policy pathways" = "#9467bd"
-    ),
-    breaks = c("Business as usual", "Potential policy pathways", "Net zero") # Force legend order
-  ) +
-
-  # Manual legend guide to show line types
-  guides(
-    color = guide_legend(
-      title = "Scenarios",
-      override.aes = list(
-        linetype = c("dashed", "solid"),
-        color = c("black", "#9467bd")
-      )
-    )
-  ) +
-  labs(
-    x = "Year",
-    y = "",
-    title = "Residential Building Emissions \n(Millions of CO2-equivalency)"
-  ) +
-  scale_y_continuous(labels = label_number(scale = 1e-6)) + # convert to millions
-  theme_minimal() +
-  theme(
-    panel.grid.minor = element_blank(),
-    legend.position = "bottom",
-    plot.title = element_text(size = 18),
-    axis.text = element_text(size = 14),
-    legend.text = element_text(size = 18),
-    legend.key.width = unit(1.2, "cm")
-  ) +
-  xlim(2005, 2050)
-
-print(emissions_gg)
+print(res_plot)
 
 message("Saving residential projections plot to: \n\t ~/imgs/residential_decarbonization_pathways.png")
 ggplot2::ggsave(
-  plot = emissions_gg,
+  plot = res_plot,
   filename = paste0(here::here(), "/imgs/residential_decarbonization_pathways.png"), # add your file path here
-  width = 12,
+  width = 14,
   height = 6,
   units = "in",
   dpi = 300,

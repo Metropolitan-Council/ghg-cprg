@@ -11,7 +11,7 @@ source("R/global_warming_potential.R")
 epa_onroad_emissions_compile_meta <- readRDS("_transportation/data/epa_onroad_emissions_compile_meta.RDS")
 
 
-# annualization factor castigliegoCarbonFreeBoston2019
+# annualization factor porterCarbonFreeBoston2019
 annualization_factor <- 340
 
 ctu_vmt_forecast <- readRDS("_transportation/data-raw/metc_travel_model/ctu_vmt_forecast.RDS") %>%

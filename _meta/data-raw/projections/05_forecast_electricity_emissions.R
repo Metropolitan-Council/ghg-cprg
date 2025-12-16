@@ -2,6 +2,7 @@
 
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
+source("_meta/data-raw/projections/01_projections_plotter.R")
 
 residential_elec <- readRDS("_meta/data-raw/projections/residential_pathways.RDS") %>%
   filter(scenario == "bau") %>%
@@ -43,96 +44,83 @@ ppp_data <- diverging_data %>%
   select(inventory_year, value_emissions) %>%
   rename(ppp_emissions = value_emissions)
 
-# Create the plot
+# Calculate text position for BAU annotation
+text_bau <- diverging_data %>%
+  filter(inventory_year == 2050, scenario == "bau") %>%
+  pull(value_emissions)
+
 emissions_gg <- ggplot() +
-  # Base fill (2005-2025, gray)
+  # Gray fill for historical data (2005-2025)
   geom_ribbon(
     data = base_data,
     aes(x = inventory_year, ymin = 0, ymax = value_emissions),
     fill = "gray80", alpha = 0.7
   ) +
 
-  # # Net zero fill (maroon)
-  # geom_ribbon(data = net_zero_data,
-  #             aes(x = inventory_year, ymin = 0, ymax = total_emissions),
-  #             fill = "maroon", alpha = 0.3) +
-
-  # PPP fill (from net_zero to ppp)
+  # Gray fill below BAU line for projections
   geom_ribbon(
-    data = ppp_data,
-    aes(x = inventory_year, ymin = 0, ymax = ppp_emissions),
-    fill = "#ecb81c", alpha = 0.5
+    data = diverging_data %>% filter(scenario == "bau"),
+    aes(x = inventory_year, ymin = 0, ymax = value_emissions),
+    fill = "gray80", alpha = 0.7
   ) +
 
-  # Base line (2005-2025)
+  # Base line (historical, dashed)
   geom_line(
     data = base_data,
     aes(x = inventory_year, y = value_emissions),
-    color = "black", linewidth = 1
+    color = "black", linewidth = 1, linetype = "dashed"
   ) +
 
-  # Diverging scenario lines
+  # BAU line (dashed)
   geom_line(
     data = diverging_data %>% filter(scenario == "bau"),
-    aes(x = inventory_year, y = value_emissions, color = "Business as usual"),
-    linetype = "dashed", linewidth = 1
+    aes(x = inventory_year, y = value_emissions),
+    color = "black", linewidth = 1, linetype = "dashed"
   ) +
 
-  # geom_line(data = diverging_data %>% filter(scenario == "ppp"),
-  #           aes(x = inventory_year, y = total_emissions, color = "Potential policy pathways"),
-  #           size = 1) +
-
-  # geom_point(
-  #   data = data.frame(emissions_year = 2050, value_emissions = res_target),
-  #   aes(x = emissions_year, y = value_emissions),
-  #   shape = "*",    # asterisk
-  #   size = 12,     # make larger or smaller
-  #   stroke = 1.5, # line thickness of the asterisk
-  #   color = "black"
-  # ) +
-  #
-  geom_segment(aes(x = 2025, xend = 2025, y = 0, yend = base_data %>% filter(inventory_year == 2025) %>% pull(value_emissions)),
-    color = "black", linetype = "solid", linewidth = 0.8
-  ) +
-  # annotate("text", x = 2025, y = max(your_data$total_emissions) * 0.9,
-  #          label = "Historical | Projected", angle = 90, hjust = 1, size = 3.5) +
-
-  # Manual color scale with correct order
-  scale_color_manual(
-    values = c(
-      # "Business as usual" = "black",
-      # "Net zero" = "maroon",
-      "Business as usual" = "black"
-    ),
-    breaks = c("Business as usual") # Force legend order
-  ) +
-
-  # Manual legend guide to show line types
-  guides(
-    color = guide_legend(
-      title = "Scenarios",
-      override.aes = list(
-        linetype = c("dashed"),
-        color = c("black")
-      )
-    )
-  ) +
+  # Axis lines
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+  geom_vline(xintercept = 2005, color = "black", linewidth = 0.5) +
   labs(
-    x = "Year",
+    x = "",
     y = "",
-    title = "Electricity Emissions \n(Millions of CO2-equivalency)"
+    title = "Electricity Emissions"
   ) +
-  scale_y_continuous(labels = label_number(scale = 1e-6)) + # convert to millions
+  scale_y_continuous(labels = label_number(scale = 1e-6, suffix = "M")) +
+  scale_x_continuous(
+    limits = c(2005, 2059),
+    breaks = seq(2010, 2059, by = 10)
+  ) +
   theme_minimal() +
   theme(
     panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
     legend.position = "bottom",
     plot.title = element_text(size = 18),
-    axis.text = element_text(size = 14),
+    axis.text = element_text(size = 14, color = "black"),
     legend.text = element_text(size = 18),
-    legend.key.width = unit(1.2, "cm")
+    legend.key.width = unit(1.2, "cm"),
+    legend.box = "vertical",
+    plot.margin = ggplot2::margin(5.5, 5.5, 30, 5.5, "pt")
   ) +
-  xlim(2005, 2050)
+
+  # Add text annotation for BAU
+  annotate("text",
+    x = 2050.5, y = text_bau + 500000,
+    label = "Business-as-usual",
+    size = 5, hjust = 0, vjust = 0.5, fontface = "bold"
+  ) +
+
+  # Add "Inventory" and "Projections" annotations below x-axis
+  annotation_custom(
+    grob = grid::textGrob("Inventory", gp = grid::gpar(fontsize = 14), vjust = 3),
+    xmin = 2010, xmax = 2010, ymin = -Inf, ymax = -Inf
+  ) +
+  annotation_custom(
+    grob = grid::textGrob("Projections", gp = grid::gpar(fontsize = 14), vjust = 3),
+    xmin = 2030, xmax = 2030, ymin = -Inf, ymax = -Inf
+  ) +
+  coord_cartesian(clip = "off")
 
 print(emissions_gg)
 

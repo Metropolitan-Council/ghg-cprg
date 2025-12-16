@@ -11,25 +11,27 @@ cprg_colors <- list(
 
 # sector colors
 sector_colors <- list(
-  "Electricity" = "#ecb81c",
-  "Transportation" = "#191970",
+  "Electricity" = "#FD8D3C",
+  "Transportation" = "#60C8E9",
   "Residential" = "#9467bd",
   "Commercial" = "#DB5755",
-  "Industrial" = "slategray",
-  "Waste" = "#D47E30",
-  "Agriculture" = "#8fb910",
-  "Natural Systems" = "#006f3c"
+  "Industrial" = "#A42264",
+  "Industrial Processes" = "#A42264",
+  "Waste" = "#77645A",
+  "Agriculture" = "#A5CF4C",
+  "Natural Systems" = "#1C9099"
 )
 
 ## with building fuel
 sector_colors_alt <- list(
-  "Electricity" = "#ecb81c",
-  "Transportation" = "#191970",
-  "Building Fuel" = "#DB5755",
-  "Industrial Processes" = "slategray",
-  "Waste" = "#D47E30",
-  "Agriculture" = "#8fb910",
-  "Natural Systems" = "#006f3c"
+  "Electricity" = "#FD8D3C",
+  "Transportation" = "#60C8E9",
+  "Building Fuel" = "#BA89C2",
+  "Industrial" = "#A42264",
+  "Industrial Processes" = "#A42264",
+  "Waste" = "#ABB6BE",
+  "Agriculture" = "#A5CF4C",
+  "Natural Systems" = "#1C9099"
 )
 
 
@@ -38,9 +40,9 @@ category_colors <-
   list(
 
     # Electricity
-    "Residential electricity" = "#FFCE1B",
-    "Commercial electricity" = "#DBA400",
-    "Industrial electricity" = "#B38600",
+    "Residential electricity" = "#E6550D",
+    "Commercial electricity" = "#FDAE6B",
+    "Industrial electricity" = "#FDD0A2",
 
     # Residential
     "Residential natural gas" = "#483248",
@@ -52,35 +54,35 @@ category_colors <-
     "Commercial fuel combustion" = "#DE3163",
 
     # Building Fuel
-    "Residential building fuel" = "#FF9E99",
-    "Commercial building fuel" = "#FF746C",
-    "Industrial building fuel" = "#7A3734",
+    "Residential building fuel" = "#8856A7",
+    "Commercial building fuel" = "#8C96C6",
+    "Industrial building fuel" = "#BFD3E6",
 
     # Industrial
 
 
-    "Industrial natural gas" = "#36454F",
-    "Industrial processes" = "#B2BEB5",
-    "Industrial fuel combustion" = "#818589",
-    "Refinery processes" = "#708090",
+    "Industrial natural gas" = "#980043",
+    "Industrial processes" = "#DF65B0",
+    "Industrial fuel combustion" = "#FA9FB5",
+    "Refinery processes" = "#FEEBE2",
 
     # Transportation
-    "Passenger vehicles" = "#0047AB",
-    "Buses" = "#6F8FAF",
-    "Trucks" = "#6495ED",
-    "Aviation" = "#191970",
+    "Passenger vehicles" = "#D9F0F7",
+    "Buses" = "#191970",
+    "Trucks" = "#3182BD",
+    "Aviation" = "#9ECAE1",
 
     # Waste
-    "Solid waste" = "#CD853F",
-    "Wastewater" = "#8B4513",
+    "Solid waste" = "#77645A",
+    "Wastewater" = "#C7B9AF",
 
     # Agriculture
-    "Cropland" = "#c7e960",
-    "Livestock" = "#8fb910",
+    "Cropland" = "#31A354",
+    "Livestock" = "#ADDD8E",
 
     # Natural systems
-    "Sequestration" = "#006f3c",
-    "Freshwater" = "#416bdf"
+    "Sequestration" = "#CCEBC5",
+    "Freshwater" = "#7BCCC4"
   )
 
 
@@ -92,6 +94,8 @@ source_colors <- list(
   # Transportation 1
   "On-road" = "#6F8FAF",
   "Off-road" = "#191970",
+  "MSP airport" = "#9696e8",
+  "Reliever airport" = "#d5d5f6",
 
   # Electricity
   "Residential electricity" = "#ffc300",

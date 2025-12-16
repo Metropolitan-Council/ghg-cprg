@@ -3,6 +3,8 @@
 
 # setup ----
 source("_meta/data-raw/projections/01_compile_taz_demographic_forecast.R") # compile demographic data
+source("_meta/data-raw/projections/01_projections_plotter.R") # function for plotting
+
 
 source("_meta/data-raw/projections/02_compile_mpca_gcam.R") # compile gcam data
 source("_meta/data-raw/projections/02_compile_mpca_ghg_inventory_2022.R") # compile mpca ghg data for 2022
@@ -12,7 +14,8 @@ source("_meta/data-raw/projections/02_compile_regional_housing.R") # compile hou
 source("_meta/data-raw/projections/03_forecast_natural_systems_seq.R")
 
 # residential emissions ----
-source("_meta/data-raw/projections/03_compile_residential_emissions.R") # slow
+# source("_meta/data-raw/projections/03_compile_residential_emissions.R") # slow
+
 source("_meta/data-raw/projections/04_forecast_residential_emissions.R")
 
 # nonresidential emissions ----
