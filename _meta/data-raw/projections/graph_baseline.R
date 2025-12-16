@@ -381,8 +381,8 @@ plot_county_emissions <- function(
 
   # Reassign all aviation to new "aviation column"
 
-  df <- if (include_airport) {
-    df %>%
+  if (include_airport) {
+    df <- df %>%
       mutate(county_name = if_else(category_alt == "Aviation",
         "Aviation",
         county_name
