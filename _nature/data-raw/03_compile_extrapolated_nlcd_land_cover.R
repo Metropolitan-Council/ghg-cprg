@@ -210,7 +210,10 @@ rc_DevelopedArea_after_county <- actual_proportions_after_county %>%
 
 # Bind your original data to your recomputed data -------------------------
 nlcd_county_before <- rbind(
-  rc_DevelopedArea_before_county,
+  rc_DevelopedArea_before_county %>%
+    mutate(
+      potential_wetland_area = 0
+    ),
   nlcd_county %>%
     filter(inventory_year < tree_start_year) %>%
     filter(!grepl("Developed", land_cover_type)) %>%
@@ -222,7 +225,10 @@ nlcd_county_before <- rbind(
 
 
 nlcd_county_after <- rbind(
-  rc_DevelopedArea_after_county,
+  rc_DevelopedArea_after_county %>%
+    mutate(
+      potential_wetland_area = 0
+    ),
   nlcd_county %>%
     filter(inventory_year > tree_end_year) %>%
     filter(!grepl("Developed", land_cover_type)) %>%
@@ -240,7 +246,8 @@ nlcd_county_rc <- rbind(
     mutate(source = "nlcd"),
   nlcd_county_after
 ) %>%
-  arrange(county_name, inventory_year, land_cover_type)
+  arrange(county_name, inventory_year, land_cover_type) %>%
+  relocate(potential_wetland_area, .after = area)
 
 
 
@@ -260,45 +267,62 @@ nlcd_county_rc <- rbind(
 #   ) %>%
 #   ggplot() +
 #   geom_point(aes(x=areaDeveloped_orig, y=areaDeveloped_rc))
-
-
-nlcd_county_rc %>%
-  ggplot() +
-  theme_minimal() +
-  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
-  geom_point(
-    data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
-    mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
-  ) +
-  geom_point(
-    data = . %>% filter(source == "nlcd"), shape = 21,
-    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
-  ) +
-  facet_wrap(~county_name)
-
-
-nlcd_county_rc %>%
-  filter(county_name %in% "Ramsey") %>%
-  ggplot() +
-  theme_minimal() +
-  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
-  geom_point(
-    data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
-    mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
-  ) +
-  geom_point(
-    data = . %>% filter(source == "nlcd"), shape = 21,
-    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
-  ) +
-  nlcd_county %>%
-  filter(county_name %in% "Ramsey") %>%
-  ggplot() +
-  theme_minimal() +
-  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
-  geom_point(
-    shape = 21,
-    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1.2
-  )
+# 
+# 
+# nlcd_county_rc %>%
+#   ggplot() +
+#   theme_minimal() +
+#   geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+#   geom_point(
+#     data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
+#     mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
+#   ) +
+#   geom_point(
+#     data = . %>% filter(source == "nlcd"), shape = 21,
+#     mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
+#   ) +
+#   facet_wrap(~county_name)
+# 
+# 
+# 
+# nlcd_county_rc %>%
+#   ggplot() +
+#   theme_minimal() +
+#   geom_path(aes(x = inventory_year, y = potential_wetland_area, color = land_cover_type)) +
+#   geom_point(
+#     data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
+#     mapping = aes(x = inventory_year, y = potential_wetland_area, color = land_cover_type), size = 1.2
+#   ) +
+#   geom_point(
+#     data = . %>% filter(source == "nlcd"), shape = 21,
+#     mapping = aes(x = inventory_year, y = potential_wetland_area, color = land_cover_type, fill = land_cover_type), size = 1
+#   ) +
+#   facet_wrap(~county_name)
+# 
+# 
+# nlcd_county_rc %>%
+#   filter(county_name %in% "Ramsey") %>%
+#   ggplot() +
+#   theme_minimal() +
+#   geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+#   geom_point(
+#     data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
+#     mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
+#   ) +
+#   geom_point(
+#     data = . %>% filter(source == "nlcd"), shape = 21,
+#     mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
+#   ) +
+#   
+#   nlcd_county %>%
+#   filter(county_name %in% "Ramsey") %>%
+#   ggplot() +
+#   theme_minimal() +
+#   geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+#   geom_point(
+#     shape = 21,
+#     mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1.2
+#   )
 
 
 
@@ -313,6 +337,7 @@ nlcd_county_meta <-
     "inventory_year", class(nlcd_county_rc$inventory_year), "Year",
     "land_cover_type", class(nlcd_county_rc$land_cover_type), "Land cover type from National Land Cover Database. 'Urban_' indicates a natural area within NLCD designated developed land cover",
     "area", class(nlcd_county_rc$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas",
+    "potential_wetland_area", class(nlcd_county_rc$potential_wetland_area), "Area of potential wetland within the given land cover type in square kilometers",
     "total_area", class(nlcd_county_rc$total_area), "Sum of area from all cover types in square kilometers (by county)",
     "tcc_available", class(nlcd_county_rc$tcc_available), "Indicates whether tree canopy data was available for the current year",
     "source", class(nlcd_county_rc$source), "Indicates whether the area of 'Urban_Tree' or 'Urban_Grassland' is extrapolated or pulled directly from an NLCD layer"
@@ -507,7 +532,10 @@ rc_DevelopedArea_after_ctu <- actual_proportions_after_ctu %>%
 
 # Bind your original data to your recomputed data -------------------------
 nlcd_ctu_before <- rbind(
-  rc_DevelopedArea_before_ctu,
+  rc_DevelopedArea_before_ctu %>%
+    mutate(
+      potential_wetland_area = 0
+    ),
   nlcd_ctu %>%
     filter(inventory_year < tree_start_year) %>%
     filter(!grepl("Developed", land_cover_type)) %>%
@@ -519,7 +547,10 @@ nlcd_ctu_before <- rbind(
 
 
 nlcd_ctu_after <- rbind(
-  rc_DevelopedArea_after_ctu,
+  rc_DevelopedArea_after_ctu %>%
+    mutate(
+      potential_wetland_area = 0
+    ),
   nlcd_ctu %>%
     filter(inventory_year > tree_end_year) %>%
     filter(!grepl("Developed", land_cover_type)) %>%
@@ -537,7 +568,8 @@ nlcd_ctu_rc <- rbind(
     mutate(source = "nlcd"),
   nlcd_ctu_after
 ) %>%
-  arrange(ctu_name, ctu_class, inventory_year, land_cover_type)
+  arrange(ctu_name, ctu_class, inventory_year, land_cover_type)  %>%
+  relocate(potential_wetland_area, .after = area)
 
 # Check your results ------------------------------------------------------
 
@@ -555,54 +587,54 @@ nlcd_ctu_rc <- rbind(
 #   ) %>%
 #   ggplot() +
 #   geom_point(aes(x=areaDeveloped_orig, y=areaDeveloped_rc))
-
-
-nlcd_ctu_rc %>%
-  ggplot() +
-  theme_minimal() +
-  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
-  geom_point(
-    data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
-    mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
-  ) +
-  geom_point(
-    data = . %>% filter(source == "nlcd"), shape = 21,
-    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
-  ) +
-  facet_wrap(~ctu_name)
-
-
-nlcd_ctu_rc %>%
-  filter(ctu_name %in% "Roseville") %>%
-  ggplot() +
-  theme_minimal() +
-  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
-  geom_point(
-    data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
-    mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
-  ) +
-  geom_point(
-    data = . %>% filter(source == "nlcd"), shape = 21,
-    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
-  )
-
-nlcd_ctu %>%
-  filter(ctu_name %in% "Roseville") %>%
-  ggplot() +
-  theme_minimal() +
-  geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
-  geom_point(
-    shape = 21,
-    mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1.2
-  )
-
-
-
-nlcd_ctu_rc %>%
-  filter(county_name == "Dakota") %>%
-  group_by(inventory_year) %>%
-  summarize(total_area = sum(area)) %>%
-  print(n = 22)
+# 
+# 
+# nlcd_ctu_rc %>%
+#   ggplot() +
+#   theme_minimal() +
+#   geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+#   geom_point(
+#     data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
+#     mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
+#   ) +
+#   geom_point(
+#     data = . %>% filter(source == "nlcd"), shape = 21,
+#     mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
+#   ) +
+#   facet_wrap(~ctu_name)
+# 
+# 
+# nlcd_ctu_rc %>%
+#   filter(ctu_name %in% "Roseville") %>%
+#   ggplot() +
+#   theme_minimal() +
+#   geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+#   geom_point(
+#     data = . %>% filter(source == "extrapolated"), shape = 21, fill = "white",
+#     mapping = aes(x = inventory_year, y = area, color = land_cover_type), size = 1.2
+#   ) +
+#   geom_point(
+#     data = . %>% filter(source == "nlcd"), shape = 21,
+#     mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
+#   )
+# 
+# nlcd_ctu %>%
+#   filter(ctu_name %in% "Roseville") %>%
+#   ggplot() +
+#   theme_minimal() +
+#   geom_path(aes(x = inventory_year, y = area, color = land_cover_type)) +
+#   geom_point(
+#     shape = 21,
+#     mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1.2
+#   )
+# 
+# 
+# 
+# nlcd_ctu_rc %>%
+#   filter(county_name == "Dakota") %>%
+#   group_by(inventory_year) %>%
+#   summarize(total_area = sum(area)) %>%
+#   print(n = 22)
 
 
 # Export final data -------------------------------------------------------
@@ -620,6 +652,7 @@ nlcd_ctu_meta <-
     "land_cover_type", class(nlcd_ctu_rc$land_cover_type), "Land cover type from National Land Cover Database. 'Urban_' indicates a natural area within NLCD designated developed land cover",
     "area", class(nlcd_ctu_rc$area), "Area of land cover in square kilometers. 'Urban_Tree' is scaled based on the percentage of tree canopy cover within 'Developed' areas",
     "total_area", class(nlcd_ctu_rc$total_area), "Sum of area from all cover types in square kilometers (by CTU)",
+    "potential_wetland_area", class(nlcd_ctu_rc$potential_wetland_area), "Area of potential wetland within the given land cover type in square kilometers",
     "tcc_available", class(nlcd_ctu_rc$tcc_available), "Indicates whether tree canopy data was available for the current year",
     "source", class(nlcd_ctu_rc$source), "Indicates whether the area of 'Urban_Tree' or 'Urban_Grassland' is extrapolated or pulled directly from an NLCD layer"
   )
