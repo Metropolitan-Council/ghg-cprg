@@ -9,13 +9,20 @@ source("_nature/data-raw/01_compile_land_cover_carbon.R")
 # Compiles methane emissions factors by waterway type from MPCA estimates
 source("_nature/data-raw/01_compile_waterways_carbon.R")
 
+# 01_compile_nlcd_land_cover_by_year.R
+# Compiles NLCD land cover data by year into a single file for faster access
+source("_nature/data-raw/01_compile_nlcd_land_cover_by_year.R")
+
+# 01_compile_restorable_wetlands.R
+# Compiles restorable wetlands data from MN DNR
+source("_nature/data-raw/01_compile_restorable_wetlands.R")
 
 
 # 02 ----------------------------------------------------------------------
-# 02_compile_nlcd_land_cover.R
-# Takes annual NLCD images and estimates land area by land cover type
-# NOTE: this is memory and time-intensive
-source("_nature/data-raw/02_compile_nlcd_land_cover.R")
+# # 02_compile_nlcd_land_cover.R
+# # Takes annual NLCD images and estimates land area by land cover type
+# # NOTE: this is memory and time-intensive
+# source("_nature/data-raw/02_compile_nlcd_land_cover.R")
 
 # 02_compile_nhd_waterways.R
 # Use National Hydrography Dataset to compile waterways for the region
@@ -23,6 +30,11 @@ source("_nature/data-raw/02_compile_nlcd_land_cover.R")
 source("_nature/data-raw/02_compile_nhd_waterways_byCounty.R")
 # Compile NHD waterways by CTU (this is VERY slow)
 source("_nature/data-raw/02_compile_nhd_waterways_byCTU.R")
+
+# 02_reclassify_nlcd_land_cover_by_year.R
+# Reclassifies NLCD land cover data into simplified land cover classes
+source("_nature/data-raw/02_reclassify_nlcd_land_cover_by_year.R")
+
 
 
 # 03 ----------------------------------------------------------------------
