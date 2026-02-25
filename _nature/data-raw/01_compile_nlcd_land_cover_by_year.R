@@ -54,18 +54,18 @@ cprg_ctu_df <- cprg_ctu %>%
 
 
 # inpath_wetlands_raster_all <- paste0(here::here(), "/_nature/data-raw/mn_wetlands/mn_restorable_wetland_index.tif")
-# 
+#
 # wetlands_raster_all <- terra::rast(inpath_wetlands_raster_all) %>%
 #   terra::project(., crs_use, method = "near")
-# 
-# 
-# 
-# 
+#
+#
+#
+#
 # wetlands_raster_cprg <- wetlands_raster_all %>%
 #   terra::crop(., cprg_county) %>%
 #   terra::mask(., cprg_county)
-# 
-# 
+#
+#
 # # reclassify any pixels with value 1, 2, or 3 to NA; 4 and 5 become 1
 # wetlands_raster_cprg <- terra::classify(
 #   wetlands_raster_cprg,
@@ -81,11 +81,11 @@ cprg_ctu_df <- cprg_ctu %>%
 #     byrow = TRUE
 #   )
 # )
-# 
-# 
+#
+#
 # # # plot
 # # terra::plot(wetlands_raster_cprg, col = c("lightblue", "blue"), legend = FALSE)
-# 
+#
 # # save object for later plotting
 # saveRDS(wetlands_raster_cprg, "./_nature/data/mn_wetlands_msa.rds")
 
@@ -265,7 +265,6 @@ lapply(start_year:end_year, function(year) {
       terra::crop(., cprg_county) %>%
       terra::mask(., cprg_county)
     # terra::plot(nlcd_isDsc)
-    
   } else {
     # Move to the next year if the land cover type layer is missing
     message(paste0("\nSTOP! No land cover layers for ", year, ".\nMoving to next year..."))
@@ -296,11 +295,11 @@ lapply(start_year:end_year, function(year) {
   }
   pctBar(20, "Determining pixel-wise area estimates")
 
-  
-  
+
+
   ## NEW! Re-sample wetland grid to match NLCD
   wetlands_resampled <- resample(wetlands_raster_cprg, nlcd_lc, method = "near")
-  
+
 
   # Mask the cell size of nlcd_lc_mask with cprg_county (this will be used to calculate area)
   nlcd_lc_area <- terra::mask(cellSize(nlcd_lc, unit = "km"), cprg_county)
@@ -316,16 +315,16 @@ lapply(start_year:end_year, function(year) {
   pctBar(40, "Extracting land cover values (this can take awhile)")
 
 
-  
-  
+
+
   # Next we'll build a dataframe containing rowwise information
   # at the raster pixel scale using terra::extract()
   # Extract values for land cover and area
   nlcd_lc_values <- terra::extract(nlcd_lc, cprg_county)
-  
+
   ## NEW! Extract wetlands values
   wetlands_values <- terra::extract(wetlands_resampled, cprg_county)
-  
+
   area_values <- terra::extract(nlcd_lc_area, cprg_county)
   pctBar(50, "Extracting geographic boundary values (this can take awhile)")
 
@@ -392,9 +391,9 @@ lapply(start_year:end_year, function(year) {
         ".RDS"
       )
     )
-    
-    
-    
+
+
+
     pctBar(100, "Done! Moving to next year...")
   } else {
     # ...if tree data NOT available -------------------------------------------
@@ -434,9 +433,9 @@ lapply(start_year:end_year, function(year) {
         ".RDS"
       )
     )
-    
-   
-    
+
+
+
     pctBar(100, "Done! Moving to next year...")
   }
 })
@@ -457,8 +456,8 @@ message("Finished!")
 #     county_id, county_name, state_name,
 #     inventory_year, land_cover_type, area, total_area, tcc_available
 #   )
-# 
-# 
+#
+#
 # nlcd_ctu <- nlcd_ctu %>%
 #   as_tibble() %>%
 #   left_join(cprg_county_df, by = join_by(county_name, state_name)) %>%
@@ -476,13 +475,13 @@ message("Finished!")
 #     county_id, ctu_id, ctu_name, ctu_class, county_name, state_name,
 #     inventory_year, land_cover_type, area, total_area, tcc_available
 #   )
-# 
-# 
-# 
+#
+#
+#
 # # User chooses whether to overwrite the rds files
 # if (overwrite_RDS) {
 #   message("Exporting RDS files...")
-# 
+#
 #   saveRDS(nlcd_county, paste0("./_nature/data-raw/nlcd_county_landcover_allyrs_tmp.rds"))
 #   saveRDS(nlcd_ctu, paste0("./_nature/data-raw/nlcd_ctu_landcover_allyrs_tmp.rds"))
 # }

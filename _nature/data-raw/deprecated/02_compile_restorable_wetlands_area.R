@@ -24,7 +24,7 @@ current_wetlands_wi <- lc_county %>%
 
 
 # Define the input path
-inpath_wetlands_high_priority <- 
+inpath_wetlands_high_priority <-
   paste0(here::here(), "/_nature/data-raw/restorable_wetlands_gdb/RestorableWetlands_CCAP.gdb")
 
 wetlands_high_priority <- sf::st_read(inpath_wetlands_high_priority, layer = "RestorableWetlands_CCAP") %>%
@@ -34,14 +34,14 @@ wetlands_high_priority <- wetlands_high_priority %>% sf::st_make_valid()
 
 wetlands_tibble <- wetlands_high_priority %>%
   sf::st_drop_geometry() %>%
-  as_tibble() 
+  as_tibble()
 
 
 restorable_wetlands_9co <- wetlands_tibble %>%
   mutate(
-    # convert acres to km2 
+    # convert acres to km2
     area_km2 = ACRES * 0.00404686
-  ) %>% 
+  ) %>%
   summarize(
     restorable_wetland_area_km2 = sum(area_km2, na.rm = TRUE)
   )
@@ -55,18 +55,15 @@ current_wetlands_wi
 restorable_wetlands_9co
 
 
-pct_increase_in_wetland_area <- 
-  (restorable_wetlands_9co$restorable_wetland_area_km2 / current_wetlands_9co$actual_wetland_area_km2) * 100 
+pct_increase_in_wetland_area <-
+  (restorable_wetlands_9co$restorable_wetland_area_km2 / current_wetlands_9co$actual_wetland_area_km2) * 100
 ## 34% increase in wetland area for the 9-county region, what is that overall for the 11 county region?
 
-pct_increase_in_wetland_area_11co <- 
-  (restorable_wetlands_9co$restorable_wetland_area_km2 / 
-     (current_wetlands_9co$actual_wetland_area_km2 + current_wetlands_wi$actual_wetland_area_km2)) * 100
+pct_increase_in_wetland_area_11co <-
+  (restorable_wetlands_9co$restorable_wetland_area_km2 /
+    (current_wetlands_9co$actual_wetland_area_km2 + current_wetlands_wi$actual_wetland_area_km2)) * 100
 
 saveRDS(
   pct_increase_in_wetland_area_11co,
   "_meta/data-raw/projections/pct_increase_in_wetland_area_11co.RDS"
 )
-
-
-

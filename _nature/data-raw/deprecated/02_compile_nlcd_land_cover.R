@@ -45,19 +45,19 @@ cprg_ctu_df <- cprg_ctu %>%
 
 
 # Define the input path
-inpath_wetlands_high_priority <- 
+inpath_wetlands_high_priority <-
   paste0(here::here(), "/_nature/data-raw/restorable_wetlands_gdb/RestorableWetlands_CCAP.gdb")
 
 wetlands_high_priority <- st_read(inpath_wetlands_high_priority, layer = "RestorableWetlands_CCAP") %>%
-    sf::st_transform(., crs_use)
+  sf::st_transform(., crs_use)
 
 # apply terra::vect() to the wetlands layer to convert to terra object
-wetlands_vec <- terra::vect(wetlands_high_priority) 
+wetlands_vec <- terra::vect(wetlands_high_priority)
 wetlands_vec$label <- "restorableWetland"
 
 wetlands_tibble <- wetlands_high_priority %>%
   sf::st_drop_geometry() %>%
-  as_tibble() 
+  as_tibble()
 
 # wetlands_high_priority <- wetlands_high_priority %>% sf::st_make_valid() %>%
 #   terra::vect(.)
@@ -65,9 +65,9 @@ wetlands_tibble <- wetlands_high_priority %>%
 
 restorable_wetlands_km2 <- wetlands_tibble %>%
   mutate(
-    # convert acres to km2 
+    # convert acres to km2
     area_km2 = ACRES * 0.00404686
-  ) %>% 
+  ) %>%
   summarize(
     total_area_km2 = sum(area_km2, na.rm = TRUE)
   )
@@ -235,7 +235,7 @@ nlcd_lc_test <- nlcd_lc_test %>%
   terra::mask(., cprg_county)
 # terra::plot(nlcd_lc_test)
 
-restorable_wetlands_raster <- 
+restorable_wetlands_raster <-
   terra::rasterize(
     wetlands_vec,
     nlcd_lc,
@@ -333,8 +333,8 @@ lapply(start_year:end_year, function(year) {
   pctBar(40, "Extracting land cover values (this can take awhile)")
 
 
-  
-  
+
+
   # Next we'll build a dataframe containing rowwise information
   # at the raster pixel scale using terra::extract()
   # Extract values for land cover and area
