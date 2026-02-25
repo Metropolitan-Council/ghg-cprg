@@ -1069,8 +1069,7 @@ vmt_interp <- vmt_ctu_county %>%
       )
   ) %>%
   bind_rows(
-    # for our CTUs without 2014 data to go off of
-    # we will assign 2016 VMT to 2015
+    # bind all remaining years for CTUs without 2014 data
     vmt_ctu_county %>%
       inner_join(short_ctu, by = join_by(ctu_name, ctu_name_full, ctu_class, ctu_name_full_county, county_name)) %>%
       mutate(
