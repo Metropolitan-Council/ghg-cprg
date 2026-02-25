@@ -319,7 +319,7 @@ fig_modeled_marginal_vmt <-
       ctu_name_full_county, "<br>",
       inventory_year, "<br>",
       scales::comma(final_city_vmt, accuracy = 1), " VMT", "<br>",
-      scales::percent(ctu_proportion_of_marginal), " of county marginal VMT"
+      scales::percent(ctu_proportion_of_marginal, accuracy = 0.1), " of county marginal VMT"
       # scales::percent(county_pct, accuracy = 0.1), " of VMT accounted for in city estimates", "<br>",
     )
   ) %>%
