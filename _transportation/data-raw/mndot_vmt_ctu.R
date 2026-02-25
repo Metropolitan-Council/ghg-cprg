@@ -971,6 +971,32 @@ vmt_city_raw %>%
 
 # interpolate 2015 data -----
 
+white_bear_township <- vmt_city_raw %>%
+  filter(
+    correct_county_name == "Ramsey",
+    ctu_name == "Nonmunicipal",
+    year >= 2006
+  ) %>%
+  group_by(
+    year, correct_county_name, ctu_name, ctu_name_full,
+    ctu_class, cprg_area, ctu_name_full_county
+  ) %>%
+  summarize(
+    daily_vmt = sum(daily_vmt, na.rm = TRUE),
+    annual_vmt = sum(annual_vmt, na.rm = TRUE),
+    centerline_miles = sum(centerline_miles, na.rm = TRUE),
+    .groups = "keep"
+  ) %>%
+  # use correct county names for final dataset
+  mutate(county_name = correct_county_name) %>%
+  mutate(
+    ctu_name = "White Bear",
+    ctu_class = "TOWNSHIP",
+    ctu_name_full = "White Bear, TOWNSHIP",
+    ctu_name_full_county = "White Bear, TOWNSHIP, Ramsey"
+  )
+
+
 vmt_ctu_county <- vmt_city_raw %>%
   filter(
     # ctu_name_full_county %in% reliable_ctu$ctu_name_full_county,
@@ -988,7 +1014,8 @@ vmt_ctu_county <- vmt_city_raw %>%
     .groups = "keep"
   ) %>%
   # use correct county names for final dataset
-  mutate(county_name = correct_county_name)
+  mutate(county_name = correct_county_name) %>%
+  bind_rows(white_bear_township)
 
 # find our county/CTUs with fewer than 9 years of data
 # meaning that they only started reporting in 2016
