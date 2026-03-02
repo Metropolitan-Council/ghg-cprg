@@ -61,11 +61,8 @@ wetlands_raster_cprg <- terra::classify(
 )
 
 
-# # plot 
+# # plot
 # terra::plot(wetlands_raster_cprg, col = c("lightblue", "blue"), legend = FALSE)
 
 # save object for later plotting
 saveRDS(wetlands_raster_cprg, "./_nature/data/mn_wetlands_msa.rds")
-
-
-

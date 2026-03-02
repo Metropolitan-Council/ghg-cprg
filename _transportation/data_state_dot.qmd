@@ -123,8 +123,10 @@ City VMT is available only for cities, townships, unorganized areas (CTUs) in th
 These data were compiled from MnDOT city and route system reports available on their [website](https://www.dot.state.mn.us/roadway/data/data-products.html). Reports were downloaded and aggregated at the CTU level by summing VMT up for all route systems. Processing code can be found in [mndot_vmt_ctu.R](data-raw/mndot_vmt_ctu.R). 
 Due to limitations in data consistency, the MnDOT CTU dataset was subsetted to only include CTUs with reliable data. Reliable CTUs are defined as such:
 
-- CTU has a complete time series from 2014-2023 with no missing years. 2015 data were interpolated in the same manner as the county VMT data. 
-- CTU has sampled data on local route systems (including Municipal State Aid Streets) during any year from 2017-2023. Read more about route system designations in [mndot_route_system.R](data-raw/mndot_route_system.R).
+- CTU has a complete time series from 2014-`r max(mndot_ctu_summary$vmt_year)` with no missing years. 2015 data were interpolated in the same manner as the county VMT data. 
+- CTU has sampled data on local route systems (including Municipal State Aid Streets) during any year from 2017-`r max(mndot_ctu_summary$vmt_year)`. Read more about route system designations in [mndot_route_system.R](data-raw/mndot_route_system.R).
+
+Based on collaboration with regional partners and MnDOT communications, we assigned all non-municipal route system miles for Ramsey County to White Bear Township starting in 2006.
 
 Only `r unique(mndot_vmt_ctu$ctu_name) %>% length()` cities were considered reliable for analysis. All other CTUs were modeled. See @sec-gap-fill-ctu-vmt for more information.
 

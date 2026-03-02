@@ -267,8 +267,8 @@ nlcd_county_rc <- rbind(
 #   ) %>%
 #   ggplot() +
 #   geom_point(aes(x=areaDeveloped_orig, y=areaDeveloped_rc))
-# 
-# 
+#
+#
 # nlcd_county_rc %>%
 #   ggplot() +
 #   theme_minimal() +
@@ -282,9 +282,9 @@ nlcd_county_rc <- rbind(
 #     mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
 #   ) +
 #   facet_wrap(~county_name)
-# 
-# 
-# 
+#
+#
+#
 # nlcd_county_rc %>%
 #   ggplot() +
 #   theme_minimal() +
@@ -298,8 +298,8 @@ nlcd_county_rc <- rbind(
 #     mapping = aes(x = inventory_year, y = potential_wetland_area, color = land_cover_type, fill = land_cover_type), size = 1
 #   ) +
 #   facet_wrap(~county_name)
-# 
-# 
+#
+#
 # nlcd_county_rc %>%
 #   filter(county_name %in% "Ramsey") %>%
 #   ggplot() +
@@ -313,7 +313,7 @@ nlcd_county_rc <- rbind(
 #     data = . %>% filter(source == "nlcd"), shape = 21,
 #     mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
 #   ) +
-#   
+#
 #   nlcd_county %>%
 #   filter(county_name %in% "Ramsey") %>%
 #   ggplot() +
@@ -568,7 +568,7 @@ nlcd_ctu_rc <- rbind(
     mutate(source = "nlcd"),
   nlcd_ctu_after
 ) %>%
-  arrange(ctu_name, ctu_class, inventory_year, land_cover_type)  %>%
+  arrange(ctu_name, ctu_class, inventory_year, land_cover_type) %>%
   relocate(potential_wetland_area, .after = area)
 
 # Check your results ------------------------------------------------------
@@ -587,8 +587,8 @@ nlcd_ctu_rc <- rbind(
 #   ) %>%
 #   ggplot() +
 #   geom_point(aes(x=areaDeveloped_orig, y=areaDeveloped_rc))
-# 
-# 
+#
+#
 # nlcd_ctu_rc %>%
 #   ggplot() +
 #   theme_minimal() +
@@ -602,8 +602,8 @@ nlcd_ctu_rc <- rbind(
 #     mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
 #   ) +
 #   facet_wrap(~ctu_name)
-# 
-# 
+#
+#
 # nlcd_ctu_rc %>%
 #   filter(ctu_name %in% "Roseville") %>%
 #   ggplot() +
@@ -617,7 +617,7 @@ nlcd_ctu_rc <- rbind(
 #     data = . %>% filter(source == "nlcd"), shape = 21,
 #     mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1
 #   )
-# 
+#
 # nlcd_ctu %>%
 #   filter(ctu_name %in% "Roseville") %>%
 #   ggplot() +
@@ -627,9 +627,9 @@ nlcd_ctu_rc <- rbind(
 #     shape = 21,
 #     mapping = aes(x = inventory_year, y = area, color = land_cover_type, fill = land_cover_type), size = 1.2
 #   )
-# 
-# 
-# 
+#
+#
+#
 # nlcd_ctu_rc %>%
 #   filter(county_name == "Dakota") %>%
 #   group_by(inventory_year) %>%

@@ -1,7 +1,7 @@
 testthat::test_that("state DOT VMT", {
   mndot_vmt_ctu <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu.RDS"))
 
-  testthat::expect_equal(nrow(mndot_vmt_ctu), 3575)
+  testthat::expect_equal(nrow(mndot_vmt_ctu), 3594)
 
   # ensure we have all available years
   testthat::expect_equal(
@@ -53,7 +53,7 @@ testthat::test_that("state DOT VMT", {
           "Saint Paul", "Savage", "Scandia", "Shakopee", "Shoreview", "Shorewood",
           "South Saint Paul", "Spring Lake Park", "Spring Park", "Stillwater",
           "Sunfish Lake", "Tonka Bay", "Vadnais Heights", "Vermillion",
-          "Victoria", "Waconia", "Watertown", "Wayzata", "West Saint Paul",
+          "Victoria", "Waconia", "Watertown", "Wayzata", "West Saint Paul", "White Bear",
           "White Bear Lake", "Willernie", "Woodbury", "Woodland", "Credit River",
           "Empire"
         ))

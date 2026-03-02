@@ -37,22 +37,22 @@ urban_tree_planting <- function(df_hist,
   if (!is.numeric(.urban_tree_time) || .urban_tree_time < 5 || .urban_tree_time > 30) {
     stop(".urban_tree_time must be between 5 and 30 years.")
   }
-  
+
   # Total Developed area in 2022
   # Want to determine how much developed area is available for tree planting based on
   # the degree of imperviousness (low, medium and high) where low is 20-49% impervious,
   # medium is 50-79% impervious and high is 80-100% impervious.
-  
+
   # Plantable fractions per developed type
   plantable_fraction <- c(
     Developed_Low = 0.30, # 30% plantable area, 70% impervious
     Developed_Med = 0.15, # 15% plantable area, 85% impervious
     Developed_High = 0.05 #  5% plantable area, 95% impervious
   )
-  
+
   # Get last year of inventory
   inventory_end <- df_hist %>% filter(inventory_year == max(inventory_year))
-  
+
   # Calculate plantable area from each class
   developed_vals <- c(
     Developed_Low  = inventory_end$Developed_Low * plantable_fraction["Developed_Low"],
@@ -60,13 +60,13 @@ urban_tree_planting <- function(df_hist,
     Developed_High = inventory_end$Developed_High * plantable_fraction["Developed_High"]
   )
   total_plantable <- sum(developed_vals)
-  
+
   area_to_convert <- (.urban_tree_area_perc / 100) * total_plantable
-  
+
   proportions <- developed_vals / total_plantable
-  
+
   future_years <- sort(unique(df_null$inventory_year))
-  
+
   # Early return if area_to_convert is zero
   if (area_to_convert == 0) {
     return(tibble(
@@ -78,8 +78,8 @@ urban_tree_planting <- function(df_hist,
       delta_total = rep(0, length(future_years))
     ))
   }
-  
-  
+
+
   # Logistic deltas for each developed class
   deltas <- lapply(names(proportions), function(class_name) {
     sapply(future_years, function(year) {
@@ -98,27 +98,27 @@ urban_tree_planting <- function(df_hist,
       }
     })
   })
-  
+
   # Adjusting the names of deltas to remove class name repetition
   names(deltas) <- c("delta_Developed_Low", "delta_Developed_Med", "delta_Developed_High")
-  
+
   # Convert list to matrix to allow rowSums
   deltas_matrix <- do.call(cbind, deltas)
-  
+
   # Urban_Tree gain is sum of absolute reductions
   delta_Urban_Tree <- rowSums(-deltas_matrix)
-  
+
   # Assemble output tibble
   result <- tibble(
     inventory_year = future_years,
     delta_Urban_Tree = delta_Urban_Tree
   )
-  
+
   # Add deltas for each developed class to result
   for (name in names(deltas)) {
     result[[name]] <- deltas[[name]]
   }
-  
+
   # create mergeable data frame with df_null for new output
   result_out <- result %>%
     pivot_longer(
@@ -148,8 +148,8 @@ urban_tree_planting <- function(df_hist,
       names_from = land_cover,
       values_from = value
     )
-  
-  
+
+
   return(result_out)
 }
 
@@ -161,24 +161,22 @@ forest_restoration <- function(df_hist,
                                .restoration_time,
                                .grassland_area_perc,
                                .bare_area_perc,
-                               .cropland_area_perc)  {
- 
-
+                               .cropland_area_perc) {
   future_years <- sort(unique(df_null$inventory_year))
-  
-  
+
+
   # Calculate total area available for restoration
   current_total <- filter(df_hist, inventory_year == max(inventory_year)) %>% pull(TOTAL)
   current_cropland <- filter(df_hist, inventory_year == max(inventory_year)) %>% pull(Cropland)
   current_bare <- filter(df_hist, inventory_year == max(inventory_year)) %>% pull(Bare)
   current_grassland <- filter(df_hist, inventory_year == max(inventory_year)) %>% pull(Grassland)
   current_forest <- filter(df_hist, inventory_year == max(inventory_year)) %>% pull(Tree)
-  
+
   new_cropland <- current_cropland * .cropland_area_perc / 100
   new_bare <- current_bare * .bare_area_perc / 100
   new_grassland <- current_grassland * .grassland_area_perc / 100
-  
-  
+
+
   Cropland <- sapply(future_years, function(year) {
     if (year < .restoration_start) {
       current_cropland
@@ -194,9 +192,9 @@ forest_restoration <- function(df_hist,
       max(current_cropland - total_reduction, current_cropland - new_cropland)
     }
   })
-  
-  
-  
+
+
+
   Grassland <- sapply(future_years, function(year) {
     if (year < .restoration_start) {
       current_grassland
@@ -212,8 +210,8 @@ forest_restoration <- function(df_hist,
       max(current_grassland - total_reduction, current_grassland - new_grassland)
     }
   })
-  
-  
+
+
   Bare <- sapply(future_years, function(year) {
     if (year < .restoration_start) {
       current_bare
@@ -229,9 +227,9 @@ forest_restoration <- function(df_hist,
       max(current_bare - total_reduction, current_bare - new_bare)
     }
   })
-  
-  
-  
+
+
+
   result <- tibble(
     inventory_year = future_years,
     delta_Cropland = Cropland - df_null$Cropland,
@@ -240,8 +238,8 @@ forest_restoration <- function(df_hist,
     delta_Tree = -(Cropland - df_null$Cropland) - (Bare - df_null$Bare) - (Grassland - df_null$Grassland),
     # delta_total = delta_Cropland + delta_Grassland + delta_Bare + delta_Tree
   )
-  
-  
+
+
   land_cover_colnames <- c(
     "Bare",
     "Cropland",
@@ -253,11 +251,11 @@ forest_restoration <- function(df_hist,
     "Urban_Grassland",
     "Urban_Tree",
     "Water",
-    "Wetland","TOTAL"
+    "Wetland", "TOTAL"
   )
-  
-  
-  
+
+
+
   result_out <- result %>%
     pivot_longer(
       cols = starts_with("delta_"),
@@ -267,7 +265,6 @@ forest_restoration <- function(df_hist,
     mutate(
       land_cover = sub("delta_", "", land_cover) # Remove "delta_" prefix
     ) %>%
-    
     right_join(
       df_null %>%
         pivot_longer(
@@ -279,7 +276,7 @@ forest_restoration <- function(df_hist,
     ) %>%
     mutate(
       new_value = if_else(!is.na(delta), value + delta, value)
-    )  %>%
+    ) %>%
     select(-value, -delta) %>%
     rename(value = new_value) %>%
     # turn back to wide form
@@ -287,8 +284,8 @@ forest_restoration <- function(df_hist,
       names_from = land_cover,
       values_from = value
     )
-  
-  
+
+
   return(result_out)
 }
 
@@ -297,22 +294,21 @@ wetland_restoration <- function(df_hist,
                                 df_null,
                                 .restoration_start,
                                 .restoration_time,
-                                .wetland_area_perc)  {
-  
+                                .wetland_area_perc) {
   future_years <- sort(unique(df_null$inventory_year))
-  
-  
+
+
   # Calculate total area available for restoration
   current_total <- filter(df_hist, inventory_year == max(inventory_year)) %>% pull(TOTAL)
   current_wetland <- filter(df_hist, inventory_year == max(inventory_year)) %>% pull(Wetland)
-  
+
   new_wetland <- current_wetland * .wetland_area_perc / 100
-  
+
   # at this point we know that wetlands need to increase by the specified amount, but
   # we need to decrease other land covers to make room for it. The problem is how to do that
   # in a way that makes sense.
-  
-  
+
+
   Wetland <- sapply(future_years, function(year) {
     if (year < .restoration_start) {
       current_wetland
@@ -328,15 +324,15 @@ wetland_restoration <- function(df_hist,
       min(current_wetland + total_gain, current_wetland + new_wetland)
     }
   })
-  
-  
+
+
   result <- tibble(
     inventory_year = future_years,
     delta_Wetland = Wetland - df_null$Wetland
   )
-  
-  
-  
+
+
+
   land_cover_colnames <- c(
     "Bare",
     "Cropland",
@@ -348,11 +344,11 @@ wetland_restoration <- function(df_hist,
     "Urban_Grassland",
     "Urban_Tree",
     "Water",
-    "Wetland","TOTAL"
+    "Wetland", "TOTAL"
   )
-  
-  
-  
+
+
+
   result_out <- result %>%
     pivot_longer(
       cols = starts_with("delta_"),
@@ -362,7 +358,6 @@ wetland_restoration <- function(df_hist,
     mutate(
       land_cover = sub("delta_", "", land_cover) # Remove "delta_" prefix
     ) %>%
-    
     right_join(
       df_null %>%
         pivot_longer(
@@ -374,7 +369,7 @@ wetland_restoration <- function(df_hist,
     ) %>%
     mutate(
       new_value = if_else(!is.na(delta), value + delta, value)
-    )  %>%
+    ) %>%
     select(-value, -delta) %>%
     rename(value = new_value) %>%
     # turn back to wide form
@@ -385,9 +380,9 @@ wetland_restoration <- function(df_hist,
     mutate(
       newTotal = rowSums(across(all_of(land_cover_colnames[-length(land_cover_colnames)])))
     )
-  
-  
-  
+
+
+
   return(result_out)
 }
 
@@ -413,7 +408,7 @@ run_scenario_natural_systems <- function(tb_inv = natural_systems_data$ctu_lc_in
                                          .wetland_area_perc = 0,
                                          detail = FALSE) {
   # -------------------------------------------------------------------------
-  
+
   if (.selected_ctu == "all") {
     df_hist <- filter(tb_inv, geog_level == "CITY")
     df_null <- filter(tb_future, geog_level == "CITY")
@@ -424,7 +419,7 @@ run_scenario_natural_systems <- function(tb_inv = natural_systems_data$ctu_lc_in
     df_hist <- filter_ctu(tb_inv, .selected_ctu = .selected_ctu)
     df_null <- filter_ctu(tb_future, .selected_ctu = .selected_ctu)
   }
-  
+
 
   tb01 <- if (.urban_tree_area_perc == 0) {
     df_null
@@ -438,8 +433,8 @@ run_scenario_natural_systems <- function(tb_inv = natural_systems_data$ctu_lc_in
       .urban_tree_area_perc = .urban_tree_area_perc
     )
   }
-  
-  
+
+
   tb02 <- if (.grassland_area_perc == 0 & .bare_area_perc == 0 & .cropland_area_perc == 0) {
     tb01
   } else {
@@ -454,8 +449,8 @@ run_scenario_natural_systems <- function(tb_inv = natural_systems_data$ctu_lc_in
       .cropland_area_perc = .cropland_area_perc
     )
   }
-  
-  
+
+
   # here we want a module that will maximize the restoration potential of wetlands
   tb03 <- if (.wetland_area_perc == 0) {
     tb02
@@ -469,9 +464,9 @@ run_scenario_natural_systems <- function(tb_inv = natural_systems_data$ctu_lc_in
       .wetland_area_perc = .wetland_area_perc
     ) %>% dplyr::select(-newTotal)
   }
-  
-  
-  
+
+
+
   # -------------------------------------------------------------------------
   # store carbon sequestration function output into variable
   carbon_sequestration_out <- rbind(df_hist, tb03) %>%
@@ -491,9 +486,9 @@ run_scenario_natural_systems <- function(tb_inv = natural_systems_data$ctu_lc_in
       value_emissions = area * seq_mtco2e_sqkm,
       value_stock_potential = area * stock_mtco2e_sqkm
     )
-  
-  
-  
+
+
+
   # -------------------------------------------------------------------------
   return(carbon_sequestration_out)
 }

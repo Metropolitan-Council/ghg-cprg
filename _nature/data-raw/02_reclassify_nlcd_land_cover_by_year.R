@@ -138,12 +138,12 @@ lapply(start_year:end_year, function(year) {
   pctBar(0, paste0("Loading NLCD land cover dataset for ", year))
 
   lc_df <- readRDS(nlcd_files_all[get_year(nlcd_files_all) %in% year])
-  
+
 
   # if there is no data in the tree canopy cover column...
   if (sum(!is.na(lc_df$tree_canopy_cover)) == 0) {
     tcc_available <- FALSE
-    
+
     lc_rc <- lc_df %>%
       mutate(
         land_cover_type = case_when(
@@ -167,18 +167,18 @@ lapply(start_year:end_year, function(year) {
         isWetland = if_else(grepl("Wetland", land_cover_type), TRUE, FALSE),
         isDeveloped = if_else(grepl("Developed", land_cover_type), TRUE, FALSE),
         isWater = if_else(grepl("Water", land_cover_type), TRUE, FALSE),
-        futureWetEligible = 
-          # cannot be a wetland, developed, or water currently
+        futureWetEligible =
+        # cannot be a wetland, developed, or water currently
           !isWetland & !isDeveloped & !isWater &
-          # must be classified as restorable in the land cover carbon dataset
-          (!is.na(wetlands_restorable) & wetlands_restorable == 1) 
+            # must be classified as restorable in the land cover carbon dataset
+            (!is.na(wetlands_restorable) & wetlands_restorable == 1)
       )
-    
 
 
-    
+
+
     pctBar(90, "Tidying final data")
-    
+
     # Summarize the area of each land cover type by county
     lc_county <- lc_rc %>%
       # remove any rows with NA land cover type or county name
@@ -192,7 +192,7 @@ lapply(start_year:end_year, function(year) {
       mutate(year = year, .before = everything()) %>%
       left_join(cprg_county_df, by = join_by(county_name, state_name)) %>%
       mutate(tcc_available = .env$tcc_available)
-    
+
     # add potential wetland area
     lc_county <- lc_rc %>%
       filter(!is.na(land_cover_type) & !is.na(county_name)) %>%
@@ -204,7 +204,7 @@ lapply(start_year:end_year, function(year) {
       arrange(county_name, land_cover_type) %>%
       mutate(potential_wetland_area = if_else(is.na(potential_wetland_area), 0, potential_wetland_area)) %>%
       dplyr::relocate(year, geoid, county_name, state_name, land_cover_type, area, total_county_area, potential_wetland_area, tcc_available)
-    
+
     # Summarize the area of each land cover type by ctu
     lc_ctu <- lc_rc %>%
       filter(!is.na(land_cover_type) & !is.na(ctu_name)) %>%
@@ -216,7 +216,7 @@ lapply(start_year:end_year, function(year) {
       mutate(year = year, .before = everything()) %>%
       left_join(cprg_ctu_df, by = join_by(ctu_name, ctu_class, county_name, state_name)) %>%
       mutate(tcc_available = .env$tcc_available)
-    
+
     # add potential wetland area
     lc_ctu <- lc_rc %>%
       filter(!is.na(land_cover_type) & !is.na(ctu_name)) %>%
@@ -226,12 +226,14 @@ lapply(start_year:end_year, function(year) {
       right_join(lc_ctu, by = join_by(ctu_name, ctu_class, county_name, state_name, land_cover_type)) %>%
       arrange(ctu_name, land_cover_type) %>%
       mutate(potential_wetland_area = if_else(is.na(potential_wetland_area), 0, potential_wetland_area)) %>%
-      dplyr::relocate(year, gnis, geoid_wis, ctu_name, ctu_class, county_name, 
-                      state_name, land_cover_type, area, total_ctu_area, 
-                      potential_wetland_area, tcc_available)
-    
-    
-    
+      dplyr::relocate(
+        year, gnis, geoid_wis, ctu_name, ctu_class, county_name,
+        state_name, land_cover_type, area, total_ctu_area,
+        potential_wetland_area, tcc_available
+      )
+
+
+
     # Add the results for the current year to the results dataframe
     nlcd_county <<- rbind(
       nlcd_county,
@@ -242,24 +244,23 @@ lapply(start_year:end_year, function(year) {
           potential_wetland_area, total_county_area, tcc_available
         )
     )
-    
+
     nlcd_ctu <<- rbind(
       nlcd_ctu,
       lc_ctu %>%
         dplyr::select(
           gnis, geoid_wis, ctu_name, ctu_class,
           county_name, state_name,
-          year, land_cover_type, area, 
+          year, land_cover_type, area,
           potential_wetland_area, total_ctu_area, tcc_available
         )
     )
-    
+
     system(paste0("say 'Finished ", year, "'"))
     pctBar(100, "Done! Moving to next year...")
-    
   } else { # if there is data in the tree column
     tcc_available <- TRUE
-    
+
     lc_rc <- lc_df %>%
       mutate(
         land_cover_type = case_when(
@@ -282,18 +283,16 @@ lapply(start_year:end_year, function(year) {
           grepl("Emergent Herbaceous Wetlands", nlcd_cover_class) ~ "Wetland",
           .default = "CHECK"
         ),
-        
         isWetland = if_else(grepl("Wetland", land_cover_type), TRUE, FALSE),
         # check if it matches "Developed" or "Urban"
         isDeveloped = if_else(grepl("Developed|Urban", land_cover_type), TRUE, FALSE),
         # isDeveloped = if_else(grepl("Developed", land_cover_type), TRUE, FALSE),
         isWater = if_else(grepl("Water", land_cover_type), TRUE, FALSE),
-        futureWetEligible = 
-          # cannot be a wetland, developed, or water currently
+        futureWetEligible =
+        # cannot be a wetland, developed, or water currently
           !isWetland & !isDeveloped & !isWater &
-          # must be classified as restorable in the land cover carbon dataset
-          (!is.na(wetlands_restorable) & wetlands_restorable == 1),
-        
+            # must be classified as restorable in the land cover carbon dataset
+            (!is.na(wetlands_restorable) & wetlands_restorable == 1),
       ) %>%
       mutate(
         # Here we correct the area based on the tree canopy cover
@@ -303,8 +302,8 @@ lapply(start_year:end_year, function(year) {
         # let's make a new column that accounts for the residual area (we'll call this Urban_Grass)
         area_residual = area - area_corrected
       )
-    
-    
+
+
     # Below we're going to take the residual area of Developed,Open Space
     # after applying tree_canopy percentage
     # Here we'll call this Urban_Grassland and then use rowbind to add this back
@@ -321,8 +320,8 @@ lapply(start_year:end_year, function(year) {
         area_residual = NA,
         area = NA
       )
-    
-    
+
+
     # We still need to account for a little bit of area that gets missed due to filtering
     # In this case, we want the area of land after taking into account tree canopy area,
     # but in this case, the residual is Developed (not Urban_Grassland)
@@ -338,14 +337,14 @@ lapply(start_year:end_year, function(year) {
         area_residual = NA,
         area = NA
       )
-    
-    
-    
+
+
+
     # Bind the residual grassland area to the main dataframe
     lc_rc_final <- rbind(lc_rc, lc_rc_residual_grassland, lc_rc_residual_impervious)
-    
+
     pctBar(90, "Tidying final data")
-    
+
     # Summarize the area of each land cover type by county
     lc_county <- lc_rc_final %>%
       filter(!is.na(land_cover_type) & !is.na(county_name)) %>%
@@ -357,7 +356,7 @@ lapply(start_year:end_year, function(year) {
       mutate(year = year, .before = everything()) %>%
       left_join(cprg_county_df, by = join_by(county_name, state_name)) %>%
       mutate(tcc_available = .env$tcc_available)
-    
+
     # add potential wetland area
     lc_county <- lc_rc_final %>%
       filter(!is.na(land_cover_type) & !is.na(county_name)) %>%
@@ -369,9 +368,9 @@ lapply(start_year:end_year, function(year) {
       arrange(county_name, land_cover_type) %>%
       mutate(potential_wetland_area = if_else(is.na(potential_wetland_area), 0, potential_wetland_area)) %>%
       dplyr::relocate(year, geoid, county_name, state_name, land_cover_type, area, total_county_area, potential_wetland_area, tcc_available)
-    
-  
-    
+
+
+
     # Summarize the area of each land cover type by ctu
     lc_ctu <- lc_rc_final %>%
       filter(!is.na(land_cover_type) & !is.na(ctu_name)) %>%
@@ -383,8 +382,8 @@ lapply(start_year:end_year, function(year) {
       mutate(year = year, .before = everything()) %>%
       left_join(cprg_ctu_df, by = join_by(ctu_name, ctu_class, county_name, state_name)) %>%
       mutate(tcc_available = .env$tcc_available)
-    
- 
+
+
     # add potential wetland area
     lc_ctu <- lc_rc_final %>%
       filter(!is.na(land_cover_type) & !is.na(ctu_name)) %>%
@@ -394,12 +393,14 @@ lapply(start_year:end_year, function(year) {
       right_join(lc_ctu, by = join_by(ctu_name, ctu_class, county_name, state_name, land_cover_type)) %>%
       arrange(ctu_name, land_cover_type) %>%
       mutate(potential_wetland_area = if_else(is.na(potential_wetland_area), 0, potential_wetland_area)) %>%
-      dplyr::relocate(year, gnis, geoid_wis, ctu_name, ctu_class, county_name, 
-                      state_name, land_cover_type, area, total_ctu_area, 
-                      potential_wetland_area, tcc_available)
-    
+      dplyr::relocate(
+        year, gnis, geoid_wis, ctu_name, ctu_class, county_name,
+        state_name, land_cover_type, area, total_ctu_area,
+        potential_wetland_area, tcc_available
+      )
 
-    
+
+
     # Add the results for the current year to the results dataframe
     nlcd_county <<- rbind(
       nlcd_county,
@@ -410,23 +411,21 @@ lapply(start_year:end_year, function(year) {
           potential_wetland_area, total_county_area, tcc_available
         )
     )
-    
+
     nlcd_ctu <<- rbind(
       nlcd_ctu,
       lc_ctu %>%
         dplyr::select(
           gnis, geoid_wis, ctu_name, ctu_class,
           county_name, state_name,
-          year, land_cover_type, area, 
+          year, land_cover_type, area,
           potential_wetland_area, total_ctu_area, tcc_available
         )
     )
-    
+
     system(paste0("say 'Finished ", year, "'"))
     pctBar(100, "Done! Moving to next year...")
   }
-  
-  
 })
 
 message("Finished!")
@@ -440,7 +439,7 @@ nlcd_county <- nlcd_county %>%
   ) %>%
   dplyr::select(
     county_id, county_name, state_name,
-    inventory_year, land_cover_type, area, total_area, 
+    inventory_year, land_cover_type, area, total_area,
     potential_wetland_area, tcc_available
   )
 

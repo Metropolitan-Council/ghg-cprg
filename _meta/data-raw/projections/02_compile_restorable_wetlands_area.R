@@ -2,7 +2,7 @@ source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
 
 
-lc_county <- readRDS("./_nature/data/nlcd_county_landcover_allyrs.rds") 
+lc_county <- readRDS("./_nature/data/nlcd_county_landcover_allyrs.rds")
 
 # New values as of Oct 31, 2025 -------------------------------------------
 current_wetlands_9co <- lc_county %>%
