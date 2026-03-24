@@ -80,5 +80,4 @@ testthat::test_that("state DOT VMT", {
 
 
   testthat::expect_gte(nrow(mndot_vmt_ctu), 3000)
-
 })
