@@ -99,15 +99,16 @@ if (nrow(negative_marginal) > 0) {
   print(negative_marginal %>%
     select(county_name, inventory_year, county_daily_vmt, sum_daily_vmt, marginal_vmt, pct_over) %>%
     arrange(desc(abs(marginal_vmt))))
-  
+
   # Identify which COCTUs will be affected
   affected_coctus <- df %>%
     filter(is.na(daily_vmt)) %>%
     inner_join(negative_marginal %>% select(county_name, geoid, inventory_year),
-              by = c("county_name", "geoid", "inventory_year")) %>%
+      by = c("county_name", "geoid", "inventory_year")
+    ) %>%
     select(coctu_id_gnis, ctu_name_full_county, county_name, inventory_year) %>%
     distinct()
-  
+
   cli::cli_alert_warning("{nrow(affected_coctus)} COCTUs will receive negative scale factors:")
   print(affected_coctus %>% head(20))
 } else {
@@ -523,7 +524,7 @@ if (nrow(negative_scale) > 0) {
   print(negative_scale %>%
     select(county_name, inventory_year, n_cities, county_marginal_vmt, sum_pred_vmt, scale) %>%
     arrange(scale))
-  
+
   cli::cli_text("")
   cli::cli_alert_info("Formula: scale = county_marginal_vmt / sum_pred_vmt")
   cli::cli_alert_info("When county_marginal_vmt < 0, scale becomes negative")
@@ -570,7 +571,7 @@ negative_final <- pred_df_na_bench %>%
 if (nrow(negative_final) > 0) {
   cli::cli_alert_danger("FOUND {nrow(negative_final)} COCTUs with NEGATIVE VMT!")
   cli::cli_text("")
-  
+
   # Show summary by county
   coctu_summary <- negative_final %>%
     group_by(county_name) %>%
@@ -581,27 +582,33 @@ if (nrow(negative_final) > 0) {
       .groups = "drop"
     ) %>%
     arrange(min_vmt)
-  
+
   cli::cli_alert_info("Affected counties:")
   print(coctu_summary)
-  
+
   cli::cli_text("")
   cli::cli_alert_info("COCTUs with most negative VMT:")
   print(negative_final %>%
-    select(coctu_id_gnis, ctu_name_full_county, county_name, inventory_year, 
-           pred_vmt, scale, pred_vmt_bench, final_city_vmt) %>%
+    select(
+      coctu_id_gnis, ctu_name_full_county, county_name, inventory_year,
+      pred_vmt, scale, pred_vmt_bench, final_city_vmt
+    ) %>%
     arrange(final_city_vmt) %>%
     head(30))
-  
+
   # Trace back to show the problem chain
   cli::cli_text("")
   cli::cli_alert_info("Root cause chain for these COCTUs:")
   cli::cli_ul(c(
-    paste0("Negative county marginal_vmt in ", 
-           nrow(negative_scale), " county-years"),
+    paste0(
+      "Negative county marginal_vmt in ",
+      nrow(negative_scale), " county-years"
+    ),
     "→ Creates negative scale factors",
-    paste0("→ Multiplied by positive pred_vmt = negative final_city_vmt for ", 
-           n_distinct(negative_final$coctu_id_gnis), " unique COCTUs")
+    paste0(
+      "→ Multiplied by positive pred_vmt = negative final_city_vmt for ",
+      n_distinct(negative_final$coctu_id_gnis), " unique COCTUs"
+    )
   ))
 } else {
   cli::cli_alert_success("All {nrow(pred_df_na_bench)} COCTUs have non-negative VMT")
@@ -768,10 +775,10 @@ negative_final_output <- mndot_vmt_ctu_gap_filled %>%
 if (nrow(negative_final_output) > 0) {
   cli::cli_alert_danger("CRITICAL: {nrow(negative_final_output)} COCTU-years with negative VMT in final output")
   cli::cli_text("")
-  
+
   # Group by COCTU to show full time series for affected units
   cli::cli_alert_info("Unique COCTUs affected: {n_distinct(negative_final_output$coctu_id_gnis)}")
-  
+
   affected_coctu_list <- negative_final_output %>%
     group_by(coctu_id_gnis, ctu_name_full_county) %>%
     summarize(
@@ -781,14 +788,16 @@ if (nrow(negative_final_output) > 0) {
       .groups = "drop"
     ) %>%
     arrange(min_vmt)
-  
+
   print(affected_coctu_list)
-  
+
   cli::cli_text("")
   cli::cli_alert_info("Detailed COCTU-year records (worst cases):")
   print(negative_final_output %>%
-    select(coctu_id_gnis, ctu_name_full_county, inventory_year, 
-           county_ctu_scaling_factor, final_city_vmt, final_vmt_source) %>%
+    select(
+      coctu_id_gnis, ctu_name_full_county, inventory_year,
+      county_ctu_scaling_factor, final_city_vmt, final_vmt_source
+    ) %>%
     arrange(final_city_vmt) %>%
     head(30))
 } else {
@@ -822,16 +831,16 @@ if (nrow(negative_marginal) > 0) {
     "Spatial misalignment between CTU and county boundaries",
     "Different reporting methodologies between CTU and county data"
   ))
-  
+
   cli::cli_text("")
   cli::cli_alert_info("Counties with negative marginal VMT:")
-  
+
   negative_summary <- negative_marginal %>%
     mutate(
       pct_over = (abs(marginal_vmt) / county_daily_vmt) * 100
     ) %>%
     arrange(desc(abs(marginal_vmt)))
-  
+
   print(negative_summary %>%
     select(county_name, inventory_year, county_daily_vmt, sum_daily_vmt, marginal_vmt, pct_over) %>%
     mutate(across(where(is.numeric), ~ round(., 2))))
@@ -851,12 +860,12 @@ if (nrow(negative_final) > 0) {
   cli::cli_alert_info("Formula: final_city_vmt = pred_vmt * scale")
   cli::cli_text("")
   cli::cli_alert_info("COCTUs with negative VMT (sample):")
-  
+
   negative_detail <- negative_final %>%
     arrange(final_city_vmt) %>%
     head(20) %>%
     select(ctu_name_full_county, county_name, inventory_year, pred_vmt, scale, final_city_vmt)
-  
+
   print(negative_detail %>%
     mutate(across(where(is.numeric), ~ round(., 2))))
 }

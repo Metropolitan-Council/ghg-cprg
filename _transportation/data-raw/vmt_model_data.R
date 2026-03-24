@@ -263,7 +263,7 @@ if (nrow(problematic_counties) > 0) {
   print(problematic_counties %>%
     select(county_name, inventory_year, n_coctus, county_daily_vmt, sum_coctu_vmt, vmt_diff, pct_diff) %>%
     arrange(vmt_diff))
-  
+
   # Show which COCTUs will be affected
   affected_coctus <- ctu_pop_jobs_vmt %>%
     filter(is.na(daily_vmt)) %>%
@@ -273,7 +273,7 @@ if (nrow(problematic_counties) > 0) {
     ) %>%
     select(coctu_id_gnis, ctu_name_full_county, county_name, inventory_year) %>%
     distinct()
-  
+
   cli::cli_text("")
   cli::cli_alert_warning("COCTUs that will receive NEGATIVE VMT in gap fill model:")
   cli::cli_alert_info("These COCTUs are missing VMT data and will be modeled using the negative county marginal VMT")
@@ -307,8 +307,10 @@ cli::cli_text("")
 cli::cli_alert_info("Check 3: Summary statistics for input data")
 cli::cli_ul(c(
   paste0("Total COCTUs: ", n_distinct(ctu_pop_jobs_vmt$coctu_id_gnis)),
-  paste0("COCTUs with complete VMT (2010-2022): ", 
-         nrow(incomplete_coctus %>% filter(n_years_missing == 0)) + (193 - nrow(incomplete_coctus))),
+  paste0(
+    "COCTUs with complete VMT (2010-2022): ",
+    nrow(incomplete_coctus %>% filter(n_years_missing == 0)) + (193 - nrow(incomplete_coctus))
+  ),
   paste0("COCTUs needing gap fill: ", nrow(incomplete_coctus)),
   paste0("County-years with negative marginal VMT: ", nrow(problematic_counties))
 ))
@@ -318,7 +320,7 @@ testthat::test_that("County VMT should be >= sum of COCTU VMT", {
     nrow(problematic_counties),
     0,
     info = paste0(
-      "Found ", nrow(problematic_counties), 
+      "Found ", nrow(problematic_counties),
       " county-year combinations where sum(COCTU VMT) > County VMT. ",
       "This will cause negative VMT in gap fill model. ",
       "Affected: ", paste(unique(problematic_counties$county_name), collapse = ", ")
