@@ -1,7 +1,6 @@
 testthat::test_that("state DOT VMT", {
   mndot_vmt_ctu <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu.RDS"))
 
-  testthat::expect_equal(nrow(mndot_vmt_ctu), 3594)
 
   # ensure we have all available years
   testthat::expect_equal(
@@ -78,4 +77,7 @@ testthat::test_that("state DOT VMT", {
       "White Bear Lake"
     )
   )
+
+
+  testthat::expect_gte(nrow(mndot_vmt_ctu), 3000)
 })

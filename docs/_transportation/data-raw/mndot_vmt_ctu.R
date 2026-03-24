@@ -975,7 +975,7 @@ white_bear_township <- vmt_city_raw %>%
   filter(
     correct_county_name == "Ramsey",
     ctu_name == "Nonmunicipal",
-    year >= 2006
+    year >= 2017
   ) %>%
   group_by(
     year, correct_county_name, ctu_name, ctu_name_full,

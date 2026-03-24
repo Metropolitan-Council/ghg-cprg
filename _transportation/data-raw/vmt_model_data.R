@@ -228,6 +228,105 @@ testthat::expect_equal(
     pluck("imagine_designation") %>% unique(), "Suburban"
 )
 
+# DATA QUALITY CHECKPOINT: Check for county-level VMT inconsistencies -----
+cli::cli_h1("Data Quality Checks for VMT Model Data")
+
+# Check 1: Compare sum of COCTU VMT to county VMT for years with data
+cli::cli_alert_info("Check 1: Comparing sum of COCTU VMT to county VMT")
+
+vmt_consistency_check <- ctu_pop_jobs_vmt %>%
+  filter(
+    !is.na(daily_vmt),
+    !is.na(county_daily_vmt),
+    inventory_year <= 2022
+  ) %>%
+  group_by(county_name, geoid, inventory_year, county_daily_vmt) %>%
+  summarize(
+    n_coctus = n(),
+    sum_coctu_vmt = sum(daily_vmt, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    vmt_diff = county_daily_vmt - sum_coctu_vmt,
+    pct_diff = (vmt_diff / county_daily_vmt) * 100,
+    issue = vmt_diff < 0
+  )
+
+problematic_counties <- vmt_consistency_check %>%
+  filter(issue == TRUE)
+
+if (nrow(problematic_counties) > 0) {
+  cli::cli_alert_warning("FOUND {nrow(problematic_counties)} county-year combinations where sum(COCTU VMT) > County VMT")
+  cli::cli_text("")
+  cli::cli_alert_info("This will cause negative marginal VMT and negative final COCTU values!")
+  cli::cli_text("")
+  print(problematic_counties %>%
+    select(county_name, inventory_year, n_coctus, county_daily_vmt, sum_coctu_vmt, vmt_diff, pct_diff) %>%
+    arrange(vmt_diff))
+
+  # Show which COCTUs will be affected
+  affected_coctus <- ctu_pop_jobs_vmt %>%
+    filter(is.na(daily_vmt)) %>%
+    inner_join(
+      problematic_counties %>% select(county_name, geoid, inventory_year),
+      by = c("county_name", "geoid", "inventory_year")
+    ) %>%
+    select(coctu_id_gnis, ctu_name_full_county, county_name, inventory_year) %>%
+    distinct()
+
+  cli::cli_text("")
+  cli::cli_alert_warning("COCTUs that will receive NEGATIVE VMT in gap fill model:")
+  cli::cli_alert_info("These COCTUs are missing VMT data and will be modeled using the negative county marginal VMT")
+  print(affected_coctus %>% arrange(county_name, ctu_name_full_county, inventory_year))
+} else {
+  cli::cli_alert_success("All county VMT totals are >= sum of COCTU VMT")
+}
+
+# Check 2: Identify COCTUs with incomplete time series
+cli::cli_text("")
+cli::cli_alert_info("Check 2: COCTUs with incomplete VMT time series (2010-2022)")
+
+incomplete_coctus <- ctu_pop_jobs_vmt %>%
+  filter(inventory_year <= 2022, inventory_year >= 2010) %>%
+  group_by(coctu_id_gnis, ctu_name_full_county) %>%
+  summarize(
+    n_years_total = n(),
+    n_years_with_vmt = sum(!is.na(daily_vmt)),
+    n_years_missing = sum(is.na(daily_vmt)),
+    pct_complete = (n_years_with_vmt / n_years_total) * 100,
+    .groups = "drop"
+  ) %>%
+  filter(n_years_missing > 0) %>%
+  arrange(desc(n_years_missing))
+
+cli::cli_alert_info("Found {nrow(incomplete_coctus)} COCTUs with incomplete data")
+cli::cli_alert_info("These will be modeled using the gap fill approach")
+cli::cli_text("")
+
+# Check 3: Summary statistics
+cli::cli_alert_info("Check 3: Summary statistics for input data")
+cli::cli_ul(c(
+  paste0("Total COCTUs: ", n_distinct(ctu_pop_jobs_vmt$coctu_id_gnis)),
+  paste0(
+    "COCTUs with complete VMT (2010-2022): ",
+    nrow(incomplete_coctus %>% filter(n_years_missing == 0)) + (193 - nrow(incomplete_coctus))
+  ),
+  paste0("COCTUs needing gap fill: ", nrow(incomplete_coctus)),
+  paste0("County-years with negative marginal VMT: ", nrow(problematic_counties))
+))
+
+testthat::test_that("County VMT should be >= sum of COCTU VMT", {
+  testthat::expect_equal(
+    nrow(problematic_counties),
+    0,
+    info = paste0(
+      "Found ", nrow(problematic_counties),
+      " county-year combinations where sum(COCTU VMT) > County VMT. ",
+      "This will cause negative VMT in gap fill model. ",
+      "Affected: ", paste(unique(problematic_counties$county_name), collapse = ", ")
+    )
+  )
+})
 
 saveRDS(ctu_pop_jobs_vmt, "_transportation/data/vmt_model_data.RDS")
 
