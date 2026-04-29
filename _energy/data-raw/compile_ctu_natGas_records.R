@@ -136,16 +136,25 @@ centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>
 
 # function: sequentially load data while keeping NAs
 merge_ng_data <- function(base_df, new_data) {
-  base_df %>%
-    left_join(new_data %>% rename(inventory_year = emissions_year),
-      by = c("ctu_name", "inventory_year", "utility")
+  new_data_renamed <- new_data %>% rename(inventory_year = emissions_year)
+  
+  # rows already in base -- update NAs with new values
+  updated <- base_df %>%
+    left_join(new_data_renamed,
+              by = c("ctu_name", "inventory_year", "utility")
     ) %>%
     mutate(
       residential_mcf = if_else(!is.na(residential_mcf.y), residential_mcf.y, residential_mcf.x),
-      business_mcf = if_else(!is.na(business_mcf.y), business_mcf.y, business_mcf.x),
-      total_mcf = if_else(!is.na(total_mcf.y), total_mcf.y, total_mcf.x)
+      business_mcf    = if_else(!is.na(business_mcf.y),    business_mcf.y,    business_mcf.x),
+      total_mcf       = if_else(!is.na(total_mcf.y),       total_mcf.y,       total_mcf.x)
     ) %>%
-    select(-ends_with(".x"), -ends_with(".y")) # Remove duplicate columns
+    select(-ends_with(".x"), -ends_with(".y"))
+  
+  # rows in new_data that have no matching utility in the base scaffold
+  novel_rows <- new_data_renamed %>%
+    anti_join(base_df, by = c("ctu_name", "inventory_year", "utility"))
+  
+  bind_rows(updated, novel_rows)
 }
 
 ## load each dataset sequentially (deliberately override previous sql data with our data requests)
@@ -249,6 +258,13 @@ ctu_utility_year <- ctu_utility_year %>%
     by = c("ctu_name", "ctu_class", "inventory_year")
   ) %>%
   bind_rows(., rii_fill)
+
+
+#check 
+ctu_utility_year %>%
+  filter(!is.na(total_mcf), is.na(residential_mcf) | is.na(business_mcf)) %>%
+  count(utility, inventory_year) %>%
+  arrange(desc(n))
 
 ## save output file
 

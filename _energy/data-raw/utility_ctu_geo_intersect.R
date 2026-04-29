@@ -55,6 +55,20 @@ natGasUtils <- readRDS(here("_energy", "data", "MN_fed_natGasUtils.RDS")) %>%
   st_transform(st_crs(cprg_mn_ctu_dissolve)) %>% # CRS transform to UTM 15N
   st_make_valid()
 
+# plot MN
+mn_utils <- natGasUtils[substr(natGasUtils$COUNTYFIPS, 1, 2) == "27", ]
+plot(mn_utils["NAME"])
+
+mn_utils_metro <- st_crop(mn_utils, st_bbox(cprg_mn_ctu_dissolve))
+
+ggplot() +
+  geom_sf(data = mn_utils_metro, aes(fill = NAME), alpha = 0.6) +
+  geom_sf(data = cprg_mn_ctu_dissolve, fill = NA, color = "black", linewidth = 0.5) +
+  theme_minimal() +
+  theme(legend.key.size = unit(0.4, "cm"),
+        #legend.text = element_size(6),
+        legend.title = element_blank())
+
 # Perform spatial join to match each CTU (city/township) with electric utilities
 ctu_ng_utility_mapping <- st_join(
   cprg_mn_ctu_dissolve,
