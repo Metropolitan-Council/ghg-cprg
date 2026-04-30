@@ -12,7 +12,7 @@ mcf_per_therm <- 1 / 10.38
 
 
 # Read CSV, ignoring the first two rows (nested headers) and extraneous notes outside the main data structure
-df_raw <- read_xlsx(here("_energy", "data-raw", "centerpointDataRequest", "2015_2023MetCouncilCommunityNGData_PUBLIC.xlsx"),
+df_raw <- read_xlsx(here("_energy", "data-raw", "centerpointDataRequest", "2015_2023 Met Council Community NG Data_PUBLIC.xlsx"),
   range = "A3:U288",
   col_names = FALSE
 ) %>%
@@ -37,6 +37,7 @@ colnames(df_raw) <- expected_columns
 
 # Pivot to long format
 df_long <- df_raw %>%
+  filter(!(ctu_name == "ROSEMOUNT" & sector != "All")) %>%
   pivot_longer(
     cols = starts_with("20"),
     names_to = c("year", ".value"), # decompose nested column names into a year and value column for 1) Energy and 2) Customers
