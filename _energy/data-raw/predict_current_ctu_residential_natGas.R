@@ -5,7 +5,7 @@
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
-# ── Supporting data ───────────────────────────────────────────────────────────
+# load in supporting data 
 
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
   filter(
@@ -38,7 +38,7 @@ mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS") %>%
 
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
-# ── Utility data: complete city-years only ────────────────────────────────────
+# get complete city-years utility data
 
 ctu_utility_year <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
@@ -50,7 +50,7 @@ ctu_utility_year <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
   ) %>%
   ungroup()
 
-# ── Population splits for multi-county CTUs ───────────────────────────────────
+# population splits for multi-county CTUs
 
 coctu_population <- ctu_population %>%
   distinct(ctu_name, ctu_class, inventory_year, county_name, ctu_population) %>%
@@ -77,7 +77,7 @@ coctu_res_known <- ctu_utility_year %>%
   select(ctu_name, ctu_class, inventory_year, residential_mcf,
          county_name, ctu_population)
 
-# ── Predictor data ────────────────────────────────────────────────────────────
+#predictor data 
 
 mn_parcel_res <- mn_parcel %>%
   filter(mc_classification %in% c("single_family_home", "multifamily_home", "apartment")) %>%
@@ -125,7 +125,7 @@ urbansim_res <- urbansim %>%
     by = c("county_id" = "geoid")
   )
 
-# ── Training dataset ──────────────────────────────────────────────────────────
+# training dataset 
 
 ng_res_train <- coctu_res_known %>%
   left_join(urbansim_res, by = c("ctu_name", "ctu_class", "county_name", "inventory_year")) %>%
@@ -133,7 +133,7 @@ ng_res_train <- coctu_res_known %>%
   left_join(noaa_year, by = "inventory_year") %>%
   filter(!is.na(coctu_id_gnis), residential_mcf != 0)
 
-# ── Train RF on all complete city-years ───────────────────────────────────────
+# train RF on all complete city-years 
 
 set.seed(1029)
 
@@ -337,6 +337,7 @@ coctu_res_out <- bind_rows(
   filter(residential_mcf > 0) %>%
   arrange(ctu_name, ctu_class, county_name, inventory_year)
 
+#sanity check
 stopifnot(
   coctu_res_out %>%
     count(ctu_name, ctu_class, county_name, inventory_year) %>%
