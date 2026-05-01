@@ -138,7 +138,8 @@ natgas_raw <- readRDS(file.path(here::here("_energy", "data", "minnesota_county_
   mutate(total_mcf = if_else(is.na(total_mcf),
     emissions_metric_tons_co2e / natgas_ef_scf$mt_co2e_mcf,
     total_mcf
-  ))
+  )) %>% 
+  filter(year != 2013) #removing because MERC filing in not in Commerce edocket
 
 
 natgas_interpolated <- left_join(
@@ -151,7 +152,7 @@ natgas_interpolated <- left_join(
   by = join_by(year, county_name, sector)
 ) %>%
   mutate(
-    mcf_modeled = na_kalman(total_mcf),
+    mcf_modeled = na_interpolation(total_mcf, option = "linear"),
     data_source = if_else(is.na(total_mcf), "Interpolated", "Utility report")
   ) %>%
   cross_join(natgas_ef_scf) %>%
