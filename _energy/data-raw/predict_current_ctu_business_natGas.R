@@ -1,5 +1,5 @@
 ### Predict CTU business natural gas usage with bias-decay blending ###
-### Trains on all complete city-years, predicts all missing years 2013-2023
+### Trains on all complete city-years, predicts all missing years 2010-2023
 ### Uses bidirectional bias-decay correction anchored at known data boundaries
 
 source("R/_load_pkgs.R")
@@ -157,7 +157,7 @@ rf_busi_model <- randomForest(
 print(rf_busi_model)
 varImpPlot(rf_busi_model, sort = TRUE)
 
-# ── Predict ALL city-years 2013-2023 ─────────────────────────────────────────
+# ── Predict ALL city-years 2010-2023 ─────────────────────────────────────────
 
 full_pred_grid <- cprg_ctu %>%
   st_drop_geometry() %>%
@@ -166,7 +166,7 @@ full_pred_grid <- cprg_ctu %>%
     by = c("gnis" = "ctu_id", "ctu_name", "ctu_class",
            "county_name", "thrive_designation")
   ) %>%
-  filter(inventory_year %in% 2013:2023) %>%
+  filter(inventory_year %in% 2010:2023) %>%
   left_join(mn_parcel_busi %>% select(-ctu_name), by = c("gnis" = "ctu_id")) %>%
   left_join(noaa_year, by = "inventory_year") %>%
   filter(!is.na(coctu_id_gnis)) %>%
@@ -312,18 +312,22 @@ blending_check <- bind_rows(
 ) %>%
   arrange(ctu_name, ctu_class, county_name, inventory_year)
 
-blending_check %>%
-  filter(ctu_name == "Bloomington") %>%
-  ggplot(aes(inventory_year, business_mcf, color = data_source)) +
-  geom_line() + geom_point() +
-  theme_bw() +
-  labs(title = "Rosemount business MCF -- blending check")
+
+## bring back pre-2010 RII data
+known_pre2010 <- coctu_busi_known %>%
+  filter(inventory_year < 2010) %>%
+  left_join(
+    urbansim_busi %>% distinct(ctu_name, ctu_class, county_name, coctu_id_gnis),
+    by = c("ctu_name", "ctu_class", "county_name")
+  ) %>%
+  mutate(data_source = "RII utility data") %>%
+  select(coctu_id_gnis, ctu_name, ctu_class, county_name,
+         inventory_year, business_mcf, data_source)
 
 # ── Combine and save ──────────────────────────────────────────────────────────
 
 coctu_busi_out <- bind_rows(
-  ng_busi_train %>% 
-    filter(inventory_year < 2013)
+  known_pre2010,
   known_with_pred %>%
     select(coctu_id_gnis, ctu_name, ctu_class, county_name,
            inventory_year, business_mcf) %>%
@@ -342,5 +346,13 @@ stopifnot(
     filter(n > 1) %>%
     nrow() == 0
 )
+
+
+coctu_busi_out %>%
+  filter(ctu_name == "Rosemount") %>%
+  ggplot(aes(inventory_year, business_mcf, color = data_source)) +
+  geom_line() + geom_point() +
+  theme_bw() +
+  labs(title = "Business MCF -- blending check")
 
 saveRDS(coctu_busi_out, "_energy/data-raw/predicted_coctu_business_mcf.rds")

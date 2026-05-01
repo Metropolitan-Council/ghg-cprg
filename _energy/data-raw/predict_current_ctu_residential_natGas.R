@@ -1,5 +1,5 @@
 ### Predict CTU residential natural gas usage with bias-decay blending ###
-### Trains on all complete city-years, predicts all missing years 2013-2023
+### Trains on all complete city-years, predicts all missing years 2010-2023
 ### Uses bidirectional bias-decay correction anchored at known data boundaries
 
 source("R/_load_pkgs.R")
@@ -153,7 +153,7 @@ rf_res_model <- randomForest(
 print(rf_res_model)
 varImpPlot(rf_res_model, sort = TRUE)
 
-# ── Predict ALL city-years 2013-2023 ─────────────────────────────────────────
+# ── Predict ALL city-years 2010-2023 ─────────────────────────────────────────
 # Including known years so we can compute anchor residuals
 
 full_pred_grid <- cprg_ctu %>%
@@ -163,7 +163,7 @@ full_pred_grid <- cprg_ctu %>%
     by = c("gnis" = "ctu_id", "ctu_name", "ctu_class",
            "county_name", "thrive_designation")
   ) %>%
-  filter(inventory_year %in% 2013:2023) %>%
+  filter(inventory_year %in% 2010:2023) %>%
   left_join(mn_parcel_res %>% select(-ctu_name), by = c("gnis" = "ctu_id")) %>%
   left_join(noaa_year, by = "inventory_year") %>%
   filter(!is.na(coctu_id_gnis)) %>%
@@ -323,8 +323,20 @@ no_data_cities <- full_pred_grid %>%
   ) %>%
   select(-rf_predicted)
 
+## bring back pre-2010 RII data
+known_pre2010 <- coctu_res_known %>%
+  filter(inventory_year < 2010) %>%
+  left_join(
+    urbansim_res %>% distinct(ctu_name, ctu_class, county_name, coctu_id_gnis),
+    by = c("ctu_name", "ctu_class", "county_name")
+  ) %>%
+  mutate(data_source = "RII utility data") %>%
+  select(coctu_id_gnis, ctu_name, ctu_class, county_name,
+         inventory_year, residential_mcf, data_source)
+
 # add into the final bind_rows alongside the three gap types
 coctu_res_out <- bind_rows(
+  known_pre2010,
   known_with_pred %>%
     select(coctu_id_gnis, ctu_name, ctu_class, county_name,
            inventory_year, residential_mcf) %>%
@@ -344,5 +356,13 @@ stopifnot(
     filter(n > 1) %>%
     nrow() == 0
 )
+
+# check - plot a city of interest
+coctu_res_out %>%
+  filter(ctu_name == "Lake Elmo") %>%
+  ggplot(aes(inventory_year, residential_mcf, color = data_source)) +
+  geom_line() + geom_point() +
+  theme_bw() +
+  labs(title = "Residential MCF -- blending check")
 
 saveRDS(coctu_res_out, "_energy/data-raw/predicted_coctu_residential_mcf.rds")
