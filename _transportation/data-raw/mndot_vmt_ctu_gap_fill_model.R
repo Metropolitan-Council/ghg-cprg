@@ -868,23 +868,23 @@ if (nrow(negative_final) > 0) {
 
   print(negative_detail %>%
     mutate(across(where(is.numeric), ~ round(., 2))))
+
+
+  cli::cli_h2("Solutions")
+  cli::cli_ul(c(
+    "Option 1: Set negative marginal VMT to zero (assumes county VMT is the constraint)",
+    "Option 2: Use positive scaling only (set negative scales to NA or 1)",
+    "Option 3: Investigate data quality issues in affected counties",
+    "Option 4: Use alternative benchmarking approach for problematic counties",
+    "Option 5: Apply floor constraint (final_city_vmt = max(0, pred_vmt_bench))"
+  ))
+
+  cli::cli_text("")
+  cli::cli_alert_info("Recommended approach: Combine options 1 and 5")
+  cli::cli_alert_info("  1. Set negative marginal_vmt to zero during calculation")
+  cli::cli_alert_info("  2. Apply floor constraint to prevent negative final values")
+  cli::cli_text("")
 }
-
-cli::cli_h2("Solutions")
-cli::cli_ul(c(
-  "Option 1: Set negative marginal VMT to zero (assumes county VMT is the constraint)",
-  "Option 2: Use positive scaling only (set negative scales to NA or 1)",
-  "Option 3: Investigate data quality issues in affected counties",
-  "Option 4: Use alternative benchmarking approach for problematic counties",
-  "Option 5: Apply floor constraint (final_city_vmt = max(0, pred_vmt_bench))"
-))
-
-cli::cli_text("")
-cli::cli_alert_info("Recommended approach: Combine options 1 and 5")
-cli::cli_alert_info("  1. Set negative marginal_vmt to zero during calculation")
-cli::cli_alert_info("  2. Apply floor constraint to prevent negative final values")
-cli::cli_text("")
-
 
 saveRDS(mndot_vmt_ctu_gap_filled, "_transportation/data/mndot_vmt_ctu_gap_filled.RDS")
 saveRDS(m, "_transportation/data/vmt_gap_fill_model.RDS")
