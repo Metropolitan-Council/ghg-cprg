@@ -21,7 +21,7 @@ seds <- read.csv("https://www.eia.gov/state/seds/sep_use/total/csv/use_all_btu.c
     year  = as.integer(gsub("X", "", year)),
     mmBtu = billion_btu * 1e3,
     # combine fueloil and kerosene to match ACS pull
-    msn   = if_else(MSN %in% c("DFRCB", "KSRCB"), "fueloil_kero", "propane")
+    msn   = if_else(MSN %in% c("DFRCB", "KSRCB"), "fueloil_other", "propane")
   ) %>%
   filter(year >= 2005) %>%
   group_by(state_abb = State, msn, year) %>%
@@ -66,24 +66,21 @@ rates <- state_hh %>%
     by = c("state_abb", "acs_year" = "year")
   ) %>%
   left_join(
-    seds %>% filter(msn == "fueloil_kero") %>% select(state_abb, year, fueloil_kero_mmBtu_state = mmBtu),
+    seds %>% filter(msn == "fueloil_other") %>% select(state_abb, year, fueloil_other_mmBtu_state = mmBtu),
     by = c("state_abb", "acs_year" = "year")
   ) %>%
   mutate(
     propane_mmBtu_per_hh      = propane_mmBtu_state      / propane_hhE,
-    fueloil_kero_mmBtu_per_hh = fueloil_kero_mmBtu_state / kerosene_hhE
+    fueloil_other_mmBtu_per_hh = fueloil_other_mmBtu_state / kerosene_hhE
   )
 
-#saveRDS(rates, "_energy/data-raw/propane_kerosene_rates.RDS")
-
 # Apply per-household rates to CTU household counts
-
 
 ctu_fuel_hh <- readRDS("_energy/data-raw/propane_kerosene_hh_ctu.RDS")
 
 ctu_fuel_estimates <- ctu_fuel_hh %>%
   left_join(
-    rates %>% select(state_abb, acs_year, propane_mmBtu_per_hh, fueloil_kero_mmBtu_per_hh),
+    rates %>% select(state_abb, acs_year, propane_mmBtu_per_hh, fueloil_other_mmBtu_per_hh),
     by = c("state_abb", "acs_year")
   ) %>%
   mutate(
