@@ -96,4 +96,4 @@ ctu_fuel_hh_extrap <- ctu_fuel_hh %>%
                 imputeTS::na_kalman)) %>%
   ungroup()
 
-saveRDS(ctu_fuel_hh, "_energy/data-raw/propane_kerosene_hh_ctu.RDS")
+saveRDS(ctu_fuel_hh_extrap, "_energy/data-raw/propane_kerosene_hh_ctu.RDS")
