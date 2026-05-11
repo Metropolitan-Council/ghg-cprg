@@ -40,7 +40,10 @@ urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
 # get complete city-years utility data
 
-ctu_utility_year <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
+ctu_utility_year_raw <- read_rds("_energy/data/ctu_utility_mcf.RDS")
+
+
+ctu_utility_year <- ctu_utility_year_raw %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
   filter(!any(is.na(total_mcf))) %>%
   summarize(
@@ -49,6 +52,16 @@ ctu_utility_year <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
     total_mcf       = sum(total_mcf)
   ) %>%
   ungroup()
+
+
+
+
+# for converting natural gas mcf to mmbtu
+mcf_to_mmbtu <- 1.037
+
+# bring in liquid fuels
+propane_fueloil <- readRDS("_energy/data-raw/ctu_propane_fueloil_use.RDS") %>%
+  rename(inventory_year = acs_year)
 
 # population splits for multi-county CTUs
 
@@ -70,12 +83,23 @@ coctu_res_known <- ctu_utility_year %>%
   mutate(
     residential_mcf = if_else(multi_county,
                               residential_mcf * coctu_population_prop,
-                              residential_mcf
-    )
+                              residential_mcf)
   ) %>%
   filter(!is.na(residential_mcf), residential_mcf > 0) %>%
   select(ctu_name, ctu_class, inventory_year, residential_mcf,
-         county_name, ctu_population)
+         county_name, ctu_population) %>%
+  # convert NG to mmBtu and add propane/fuel oil to get total combustion
+  left_join(
+    propane_fueloil %>% select(ctu_name, ctu_class, county_name,
+                               inventory_year, propane_mmBtu, fueloil_other_mmBtu),
+    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
+  ) %>%
+  mutate(
+    ng_mmbtu             = residential_mcf * mcf_to_mmbtu,
+    propane_mmBtu        = replace_na(propane_mmBtu,       0),
+    fueloil_other_mmBtu  = replace_na(fueloil_other_mmBtu, 0),
+    total_res_mmbtu      = ng_mmbtu + propane_mmBtu + fueloil_other_mmBtu
+  )
 
 #predictor data 
 
@@ -129,25 +153,25 @@ urbansim_res <- urbansim %>%
 
 ng_res_train <- coctu_res_known %>%
   left_join(urbansim_res, by = c("ctu_name", "ctu_class", "county_name", "inventory_year")) %>%
-  left_join(mn_parcel_res %>% select(-ctu_name), by = c("ctu_id")) %>%
+  left_join(mn_parcel_res %>% select(-ctu_name), by = "ctu_id") %>%
   left_join(noaa_year, by = "inventory_year") %>%
-  filter(!is.na(coctu_id_gnis), residential_mcf != 0)
+  filter(!is.na(coctu_id_gnis), total_res_mmbtu != 0)
 
 # train RF on all complete city-years 
 
 set.seed(1029)
 
 rf_res_model <- randomForest(
-  residential_mcf ~
+  total_res_mmbtu ~
     thrive_designation +
     total_pop + total_households + total_residential_units +
     single_fam_det_sl_own + single_fam_det_ll_own +
     single_fam_det_rent + single_fam_attached_own +
     single_fam_attached_rent + multi_fam_own + multi_fam_rent +
     heating_degree_days,
-  data      = ng_res_train,
+  data       = ng_res_train,
   importance = TRUE,
-  na.action = na.omit
+  na.action  = na.omit
 )
 
 print(rf_res_model)
@@ -172,6 +196,7 @@ full_pred_grid <- cprg_ctu %>%
 # ── Bias-decay blending ───────────────────────────────────────────────────────
 
 # Known years with their RF predictions and actual values
+
 known_with_pred <- coctu_res_known %>%
   left_join(
     full_pred_grid %>%
@@ -179,8 +204,8 @@ known_with_pred <- coctu_res_known %>%
              inventory_year, rf_predicted),
     by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
   ) %>%
-  mutate(residual = residential_mcf - rf_predicted,
-         percent_deviation = residual/residential_mcf) %>%
+  mutate(residual          = total_res_mmbtu - rf_predicted,
+         percent_deviation = residual / total_res_mmbtu) %>%
   filter(!is.na(rf_predicted))
 
 # For each missing city-year, find the nearest known year before AND after
@@ -229,11 +254,11 @@ blended_predictions <- missing_years %>%
     w_before_norm = w_before / (w_before + w_after),
     w_after_norm  = w_after  / (w_before + w_after),
     correction    = residual_before * w_before_norm + residual_after * w_after_norm,
-    residential_mcf  = rf_predicted + correction,
+    total_res_mmbtu   = rf_predicted + correction,
     data_source   = "Model prediction (bias-decay)"
   ) %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, residential_mcf, data_source)
+         inventory_year, total_res_mmbtu, data_source)
 
 # Edge case: missing years with ONLY a before anchor (trailing gap, no data after)
 trailing_gap <- missing_years %>%
@@ -255,11 +280,11 @@ trailing_gap <- missing_years %>%
   mutate(
     years_from_before = inventory_year - anchor_before_year,
     decay             = 0.5 ^ (years_from_before / half_life),
-    residential_mcf      = rf_predicted + residual_before * decay,
+    total_res_mmbtu       = rf_predicted + residual_before * decay,
     data_source       = "Model prediction (bias-decay trailing)"
   ) %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, residential_mcf, data_source)
+         inventory_year, total_res_mmbtu , data_source)
 
 # Edge case: missing years with ONLY an after anchor (leading gap, no data before)
 leading_gap <- missing_years %>%
@@ -284,17 +309,17 @@ leading_gap <- missing_years %>%
   mutate(
     years_from_after = anchor_after_year - inventory_year,
     decay            = 0.5 ^ (years_from_after / half_life),
-    residential_mcf     = rf_predicted + residual_after * decay,
+    total_res_mmbtu      = rf_predicted + residual_after * decay,
     data_source      = "Model prediction (bias-decay leading)"
   ) %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, residential_mcf, data_source)
+         inventory_year, total_res_mmbtu , data_source)
 
 # ── Diagnostics: verify smooth transitions ────────────────────────────────────
 # Inspect half_life choice -- plot a few cities with gap years
 blending_check <- bind_rows(
   known_with_pred %>%
-    select(ctu_name, ctu_class, county_name, inventory_year, residential_mcf) %>%
+    select(ctu_name, ctu_class, county_name, inventory_year, total_res_mmbtu ) %>%
     mutate(data_source = "Utility report"),
   blended_predictions,
   trailing_gap,
@@ -304,11 +329,11 @@ blending_check <- bind_rows(
 
 # plot a city of interest
 blending_check %>%
-  filter(ctu_name == "Richfield") %>%
-  ggplot(aes(inventory_year, residential_mcf, color = ctu_name)) +
+  filter(ctu_name == "Nowthen") %>%
+  ggplot(aes(inventory_year, total_res_mmbtu , color = ctu_name)) +
   geom_line() + geom_point() +
   theme_bw() +
-  labs(title = "Rosemount residential MCF -- blending check")
+  labs(title = "Residential mmbtu -- blending check")
 
 # cities with NO known years at all -- pure RF, no anchor available
 no_data_cities <- full_pred_grid %>%
@@ -318,7 +343,7 @@ no_data_cities <- full_pred_grid %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
          inventory_year, rf_predicted) %>%
   mutate(
-    residential_mcf = rf_predicted,
+    total_res_mmbtu  = rf_predicted,
     data_source     = "Model prediction (RF only)"
   ) %>%
   select(-rf_predicted)
@@ -332,22 +357,32 @@ known_pre2010 <- coctu_res_known %>%
   ) %>%
   mutate(data_source = "RII utility data") %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, residential_mcf, data_source)
+         inventory_year, total_res_mmbtu , data_source)
 
 # add into the final bind_rows alongside the three gap types
 coctu_res_out <- bind_rows(
   known_pre2010,
   known_with_pred %>%
     select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-           inventory_year, residential_mcf) %>%
+           inventory_year, total_res_mmbtu) %>%
     mutate(data_source = "Utility report"),
   blended_predictions,
   trailing_gap,
   leading_gap,
-  no_data_cities        
+  no_data_cities
 ) %>%
-  filter(residential_mcf > 0) %>%
-  arrange(ctu_name, ctu_class, county_name, inventory_year)
+  filter(total_res_mmbtu > 0) %>%
+  arrange(ctu_name, ctu_class, county_name, inventory_year) %>%
+  left_join(
+    propane_fueloil %>% select(ctu_name, ctu_class, county_name,
+                               inventory_year, propane_mmBtu, fueloil_other_mmBtu),
+    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
+  ) %>%
+  mutate(
+    propane_mmBtu       = replace_na(propane_mmBtu,       0),
+    fueloil_other_mmBtu = replace_na(fueloil_other_mmBtu, 0),
+    ng_mmbtu            = pmax(0, total_res_mmbtu - propane_mmBtu - fueloil_other_mmBtu)
+  )
 
 #sanity check
 stopifnot(
@@ -359,10 +394,10 @@ stopifnot(
 
 # check - plot a city of interest
 coctu_res_out %>%
-  filter(ctu_name == "Lake Elmo") %>%
-  ggplot(aes(inventory_year, residential_mcf, color = data_source)) +
+  filter(ctu_name == "Dahlgren") %>%
+  ggplot(aes(inventory_year, total_res_mmbtu , color = data_source)) +
   geom_line() + geom_point() +
   theme_bw() +
-  labs(title = "Residential MCF -- blending check")
+  labs(title = "Residential mmbtu -- blending check")
 
 saveRDS(coctu_res_out, "_energy/data-raw/predicted_coctu_residential_mcf.rds")
