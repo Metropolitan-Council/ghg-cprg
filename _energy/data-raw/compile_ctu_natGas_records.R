@@ -60,7 +60,7 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
     "Residential",
     "Business"
   )) %>%
-  group_by(ctu_name, emissions_year, utility, sector) %>%
+  group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
   summarise(
     mcf_per_year = sum(therms_per_year * therms_to_mcf, na.rm = TRUE),
     .groups = "drop"
@@ -83,7 +83,7 @@ xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
     sector_mapped == "residential" ~ "Residential",
     TRUE ~ "Business"
   )) %>%
-  group_by(ctu_name, emissions_year, utility, sector) %>%
+  group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
   summarise(mcf_per_year = sum(mcf_delivered, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
     names_from = sector, values_from = mcf_per_year,
@@ -106,7 +106,7 @@ centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>
       TRUE ~ sector # keeps Residential as Residential and All as All
     )
   ) %>%
-  group_by(ctu_name, emissions_year, utility, sector) %>%
+  group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
   summarise(mcf_per_year = sum(mcf_delivered, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
     names_from = sector,
@@ -141,7 +141,7 @@ merge_ng_data <- function(base_df, new_data) {
   # rows already in base -- update NAs with new values
   updated <- base_df %>%
     left_join(new_data_renamed,
-              by = c("ctu_name", "inventory_year", "utility")
+              by = c("ctu_name", "ctu_class", "inventory_year", "utility")
     ) %>%
     mutate(
       residential_mcf = if_else(!is.na(residential_mcf.y), residential_mcf.y, residential_mcf.x),
@@ -152,7 +152,7 @@ merge_ng_data <- function(base_df, new_data) {
   
   # rows in new_data that have no matching utility in the base scaffold
   novel_rows <- new_data_renamed %>%
-    anti_join(base_df, by = c("ctu_name", "inventory_year", "utility"))
+    anti_join(base_df, by = c("ctu_name", "ctu_class", "inventory_year", "utility"))
   
   bind_rows(updated, novel_rows)
 }
@@ -172,15 +172,8 @@ ctu_utility_year <- merge_ng_data(ctu_utility_year, centerpoint)
 ctu_utility_year <- merge_ng_data(ctu_utility_year, xcel)
 
 
-
-# address same-named city/township -- ascribe all observed data to city and null out the township.
+# Address clearly incongruent and poor-data data
 ctu_utility_year <- ctu_utility_year %>%
-  mutate(
-    residential_mcf = if_else(ctu_name == "Belle Plaine" & ctu_class == "TOWNSHIP", NA_real_, residential_mcf),
-    business_mcf = if_else(ctu_name == "Belle Plaine" & ctu_class == "TOWNSHIP", NA_real_, business_mcf),
-    total_mcf = if_else(ctu_name == "Belle Plaine" & ctu_class == "TOWNSHIP", NA_real_, total_mcf),
-  ) %>%
-  # Address clearly incongruent and poor-data data
   mutate(
     residential_mcf = if_else(ctu_name == "Dayton" & inventory_year == 2020, NA_real_, residential_mcf)
   )
@@ -262,7 +255,7 @@ ctu_utility_year <- ctu_utility_year %>%
 
 #check 
 ctu_utility_year %>%
-  filter(!is.na(total_mcf), is.na(residential_mcf) | is.na(business_mcf)) %>%
+  filter(!is.na(total_mcf)) %>%
   count(utility, inventory_year) %>%
   arrange(desc(n))
 
