@@ -5,6 +5,29 @@ source("R/global_warming_potential.R")
 
 # ── Emissions factor ──────────────────────────────────────────────────────────
 
+natgas_ef_scf <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
+  pluck("stationary_combustion") %>%
+  filter(fuel_category == "Natural Gas" & per_unit == "scf") %>%
+  mutate(
+    mt_co2e_mcf = 10^3 * case_when(
+      emission == "g CH4" ~ value * gwp$ch4 %>%
+        units::as_units("gram") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+      emission == "g N2O" ~ value * gwp$n2o %>%
+        units::as_units("gram") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+      emission == "kg CO2" ~ value %>%
+        units::as_units("kilogram") %>%
+        units::set_units("metric_ton") %>%
+        as.numeric(),
+      TRUE ~ 0
+    )
+  ) %>%
+  group_by(fuel_category, Source) %>%
+  summarize(mt_co2e_mcf = sum(mt_co2e_mcf), .groups = "drop")
+
 fuel_ef_mmbtu <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
   pluck("stationary_combustion") %>%
   filter(`Fuel type` %in% c("Natural Gas",
@@ -37,7 +60,10 @@ coctu_busi <- read_rds("_energy/data-raw/predicted_coctu_business_mcf.rds") %>%
   mutate(sector = "Business") %>%
   rename(mcf = business_mcf)
 
-coctu_res <- read_rds("_energy/data-raw/predicted_coctu_residential_mcf.rds") %>%
+coctu_res_mmbtu <- read_rds("_energy/data-raw/predicted_coctu_residential_mmbtu.rds") %>%
+  mutate(sector = "Residential")
+
+coctu_res_ng <- read_rds("_energy/data-raw/predicted_coctu_residential_mcf.rds") %>%
   mutate(sector = "Residential") %>%
   rename(mcf = residential_mcf)
 
@@ -51,6 +77,67 @@ county_mcf <- readRDS(here("_energy", "data", "county_natgas_activity.RDS")) %>%
     county_source = data_source
   ) %>%
   filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
+
+# ── Compare old vs new residential NG estimates ───────────────────────────────
+
+res_comparison <- coctu_res_ng %>%
+  select(coctu_id_gnis, ctu_name, ctu_class, county_name,
+         inventory_year, data_source, mcf_old = mcf) %>%
+  inner_join(
+    coctu_res_mmbtu %>%
+      select(coctu_id_gnis, ctu_name, ctu_class, county_name,
+             inventory_year, ng_mmbtu, propane_mmBtu, fueloil_other_mmBtu),
+    by = c("coctu_id_gnis", "ctu_name", "ctu_class",
+           "county_name", "inventory_year")
+  ) %>%
+  mutate(ng_mmbtu_old = mcf_old * 1.037)
+
+ggplot(res_comparison,
+       aes(x = ng_mmbtu_old, y = ng_mmbtu, color = ctu_class)) +
+  geom_point(size = 1.2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    x     = "Old: residential MCF × 1.037 (mmBtu)",
+    y     = "New: back-calculated ng_mmbtu",
+    color = "Data source",
+    title = "Residential NG estimates — old vs new"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+ggplot(res_comparison,
+       aes(x = ng_mmbtu_old, y = ng_mmbtu, color = ctu_class)) +
+  geom_point(size = 1.2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    x     = "Old: residential MCF × 1.037 (mmBtu)",
+    y     = "New: back-calculated ng_mmbtu",
+    color = "Data source",
+    title = "Residential NG estimates — old vs new"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  ylim(0, 2000000) + xlim(0, 2000000)
+
+ggplot(res_comparison,
+       aes(x = ng_mmbtu_old, y = ng_mmbtu + fueloil_other_mmBtu + propane_mmBtu, color = ctu_class)) +
+  geom_point(size = 1.2) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    x     = "Old: residential MCF × 1.037 (mmBtu)",
+    y     = "New: back-calculated ng_mmbtu",
+    color = "Data source",
+    title = "Residential NG estimates — old vs new"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")+
+  ylim(0, 2000000) + xlim(0, 2000000)
 
 # ── Phase 1: 2014-2023 ───────────────────────────────────────────────────────
 # Real county totals available -- scale combined CTU predictions to match
