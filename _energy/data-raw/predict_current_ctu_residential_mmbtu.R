@@ -13,8 +13,8 @@ cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
     !thrive_designation == "Non-Council Area"
   ) %>%
   mutate(thrive_designation = as.factor(if_else(
-    thrive_designation == "Rural Center",
-    "Rural Residential",
+    thrive_designation == "Rural Center",#insufficient data
+    "Emerging Suburban Edge",
     thrive_designation
   )))
 
