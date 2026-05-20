@@ -115,7 +115,8 @@ ctu_stack_colors <- c(
   "Residential (CTU model)"               = colors$councilBlue,
   "Business (CTU model)"                  = cprg_colors$cprg_green,
   "Industrial combustion"         = cprg_colors$cprg_yellow,
-  "Power plant generation" =  cprg_colors$cprg_da_yellow
+  "Power plant generation" =  cprg_colors$cprg_da_yellow,
+  "Refinery emissions" = cprg_colors$epa_blue
 )
 
 # ── CTU-level NG for maps (aggregate multi-county splits) ─────────────────────
