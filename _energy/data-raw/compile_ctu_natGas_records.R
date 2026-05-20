@@ -56,9 +56,9 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
     units_emissions == "Metric tons CO2",
     !is.na(therms_per_year)
   ) %>% # removes duplicates
-  mutate(sector = if_else(customer_class == "Residential",
-    "Residential",
-    "Business"
+  mutate(sector = case_when(customer_class == "Residential" ~ "Residential",
+                            customer_class == "Total" ~ "Total",
+    TRUE ~ "Business"
   )) %>%
   group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
   summarise(
@@ -69,7 +69,10 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
     names_from = sector, values_from = mcf_per_year,
     names_glue = "{tolower(sector)}_mcf"
   ) %>%
-  mutate(total_mcf = replace_na(business_mcf, 0) + replace_na(residential_mcf, 0))
+  mutate(total_mcf = if_else(is.na(total_mcf),
+                                   replace_na(business_mcf, 0) + replace_na(residential_mcf, 0),
+                                   total_mcf)
+  )
 
 
 ### load and format xcel ng data
