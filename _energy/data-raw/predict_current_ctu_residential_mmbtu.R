@@ -384,7 +384,104 @@ coctu_res_out <- bind_rows(
     ng_mmbtu            = pmax(0, total_res_mmbtu - propane_mmBtu - fueloil_other_mmBtu)
   )
 
-#sanity check
+# ── Partial utility guardrails ────────────────────────────────────────────────
+# Cities excluded from RF training due to missing utility responses may still
+# have partial observations that bound reasonable predictions.
+
+res_guardrails <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
+  group_by(ctu_name, ctu_class, inventory_year) %>%
+  summarize(
+    res_floor_mcf = sum(residential_mcf, na.rm = TRUE),
+    full_total    = sum(total_mcf),          # NA when any utility missing
+    n_na_total    = sum(is.na(total_mcf)),
+    n_na_res      = sum(is.na(residential_mcf)),
+    .groups       = "drop"
+  ) %>%
+  filter(n_na_total > 0 | n_na_res > 0) %>%
+  mutate(
+    res_floor   = res_floor_mcf * mcf_to_mmbtu,
+    apply_floor = res_floor > 0,
+    apply_ceil  = n_na_total == 0 & !is.na(full_total) & full_total > 0
+  ) %>%
+  select(-res_floor_mcf, -n_na_total, -n_na_res)
+
+
+# ── Apply residential floor ───────────────────────────────────────────────────
+
+coctu_res_adj <- coctu_res_out %>%
+  left_join(
+    coctu_population %>%
+      distinct(ctu_name, ctu_class, county_name, inventory_year,
+               coctu_population_prop, multi_county),
+    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
+  ) %>%
+  left_join(
+    res_guardrails %>%
+      select(ctu_name, ctu_class, inventory_year, res_floor, apply_floor),
+    by = c("ctu_name", "ctu_class", "inventory_year")
+  ) %>%
+  mutate(
+    # Proportion floor for multi-county CTUs using population share
+    res_floor_prop  = res_floor * if_else(
+      !is.na(multi_county) & multi_county,
+      coctu_population_prop,
+      1
+    ),
+    # Add propane and fuel oil so floor is on the same basis as total_res_mmbtu
+    res_floor_total = res_floor_prop + propane_mmBtu + fueloil_other_mmBtu,
+    is_modeled      = !data_source %in% c("Utility report", "RII utility data"),
+    floor_hit       = is_modeled        &
+      !is.na(apply_floor) &
+      apply_floor         &
+      total_res_mmbtu < res_floor_total,
+    total_res_mmbtu = if_else(floor_hit, res_floor_total, total_res_mmbtu),
+    # Keep ng_mmbtu consistent: recalculate after any floor adjustment
+    ng_mmbtu        = pmax(0, total_res_mmbtu - propane_mmBtu - fueloil_other_mmBtu),
+    data_source     = if_else(
+      floor_hit,
+      paste0(data_source, " [partial utility floor]"),
+      data_source
+    )
+  ) %>%
+  select(-coctu_population_prop, -multi_county, -res_floor, -apply_floor,
+         -res_floor_prop, -res_floor_total, -is_modeled, -floor_hit)
+
+# ── Propagate floor corrections to remaining RF-only years ────────────────────
+# For cities where some years were floor-adjusted, compute the mean ratio of
+# floor-adjusted total to RF-predicted total across those anchor years.
+# Apply that scaling factor uniformly to all remaining RF-only years so the
+# series is consistent rather than jumping between corrected and uncorrected.
+
+floor_scale <- coctu_res_adj %>%
+  filter(grepl("partial utility floor", data_source)) %>%
+  left_join(
+    full_pred_grid %>%
+      select(coctu_id_gnis, ctu_name, ctu_class, county_name,
+             inventory_year, rf_predicted),
+    by = c("coctu_id_gnis", "ctu_name", "ctu_class", "county_name", "inventory_year")
+  ) %>%
+  mutate(scale = total_res_mmbtu / rf_predicted) %>%
+  group_by(ctu_name, ctu_class, county_name) %>%
+  summarize(mean_scale = mean(scale, na.rm = TRUE), .groups = "drop")
+
+coctu_res_adj_out <- coctu_res_adj %>%
+  left_join(floor_scale, by = c("ctu_name", "ctu_class", "county_name")) %>%
+  mutate(
+    apply_scale     = data_source == "Model prediction (RF only)" & !is.na(mean_scale),
+    total_res_mmbtu = if_else(apply_scale, total_res_mmbtu * mean_scale, total_res_mmbtu),
+    ng_mmbtu        = if_else(apply_scale,
+                              pmax(0, total_res_mmbtu - propane_mmBtu - fueloil_other_mmBtu),
+                              ng_mmbtu),
+    data_source     = if_else(apply_scale,
+                              "Model prediction (RF only) [floor correction propagated]",
+                              data_source)
+  ) %>%
+  select(-mean_scale, -apply_scale)
+
+
+
+# ── Final integrity check and save ────────────────────────────────────────────
+
 stopifnot(
   coctu_res_out %>%
     count(ctu_name, ctu_class, county_name, inventory_year) %>%
@@ -392,12 +489,13 @@ stopifnot(
     nrow() == 0
 )
 
+
 # check - plot a city of interest
-coctu_res_out %>%
-  filter(ctu_name == "Dahlgren") %>%
+coctu_res_adj_out %>%
+  filter(ctu_name == "Prior Lake") %>%
   ggplot(aes(inventory_year, total_res_mmbtu , color = data_source)) +
   geom_line() + geom_point() +
   theme_bw() +
   labs(title = "Residential mmbtu -- blending check")
 
-saveRDS(coctu_res_out, "_energy/data-raw/predicted_coctu_residential_mmbtu.rds")
+saveRDS(coctu_res_adj_out, "_energy/data-raw/predicted_coctu_residential_mmbtu.rds")

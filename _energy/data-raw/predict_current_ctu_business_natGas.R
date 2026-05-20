@@ -40,7 +40,9 @@ urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
 # ── Utility data: complete city-years only ────────────────────────────────────
 
-ctu_utility_year <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
+ctu_utility_mcf <- read_rds("_energy/data/ctu_utility_mcf.RDS")
+
+ctu_utility_year <- ctu_utility_mcf %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
   filter(!any(is.na(total_mcf))) %>%
   summarize(
@@ -340,6 +342,7 @@ coctu_busi_out <- bind_rows(
   filter(business_mcf > 0) %>%
   arrange(ctu_name, ctu_class, county_name, inventory_year)
 
+
 stopifnot(
   coctu_busi_out %>%
     count(ctu_name, ctu_class, county_name, inventory_year) %>%
@@ -347,9 +350,103 @@ stopifnot(
     nrow() == 0
 )
 
+# ── Partial utility guardrails ────────────────────────────────────────────────
+# Cities excluded from RF training due to missing utility responses may still
+# have partial observations that bound reasonable predictions.
+#
+#   business floor — sum of business_mcf from utilities that DID report sector
+#                    splits; prediction cannot be less than observed partial
+#   power plant (pp_mcf) - cities with natural gas powerplant utilities will not 
+#                          have those counted here    
+# Guardrails are applied only to modeled city-years, never to utility-reported data
 
-coctu_busi_out %>%
-  filter(ctu_name == "Rosemount") %>%
+ghgrp_pp_deduction <- read_rds("_industrial/data/fuel_combustion_activity.rds") %>%
+  filter(
+    power_plant        == TRUE,
+    general_fuel_type  == "Natural Gas",
+    !is.na(value_activity)
+  ) %>%
+  mutate(
+    ctu_name       = str_to_title(str_replace_all(city_name, "ST\\.", "Saint")),
+    inventory_year = reporting_year,
+    pp_mcf         = value_activity / 1000
+  ) %>%
+  group_by(ctu_name, inventory_year) %>%
+  summarize(pp_mcf = sum(pp_mcf, na.rm = TRUE), .groups = "drop")
+
+## comparing these to city data and researching reveals only Shakopee's plant is likely included in utility reports
+## Xcel appears to not report natural gas deliveries to their own powerplants
+
+util_guardrails <- ctu_utility_mcf %>%
+  group_by(ctu_name, ctu_class, inventory_year) %>%
+  summarize(
+    busi_floor  = sum(business_mcf, na.rm = TRUE),
+    n_na_total  = sum(is.na(total_mcf)),
+    n_na_busi   = sum(is.na(business_mcf)),
+    .groups     = "drop"
+  ) %>%
+  # Only rows where something is missing — complete city-years are already
+  # handled correctly by the main pipeline and need no guardrails
+  filter(n_na_total > 0 | n_na_busi > 0) %>%
+  mutate(
+    apply_floor = busi_floor > 0
+  ) %>%
+  select(-n_na_total, -n_na_busi) %>%
+  # Shakopee: subtract power plant gas from busi_floor
+  left_join(
+    ghgrp_pp_deduction %>% filter(ctu_name == "Shakopee"),
+    by = c("ctu_name", "inventory_year")
+  ) %>%
+  mutate(
+    pp_mcf      = replace_na(pp_mcf, 0),
+    busi_floor  = pmax(0, busi_floor  - pp_mcf),
+    apply_floor = busi_floor > 0
+  ) %>%
+  select(-pp_mcf)
+
+
+## for cities split between counties
+city_pred_totals <- coctu_busi_out %>%
+  group_by(ctu_name, ctu_class, inventory_year) %>%
+  summarize(city_pred_total = sum(business_mcf, na.rm = TRUE), .groups = "drop")
+
+
+coctu_busi_adj <- coctu_busi_out %>%
+  left_join(city_pred_totals,
+            by = c("ctu_name", "ctu_class", "inventory_year")) %>%
+  left_join(
+    util_guardrails %>%
+      select(ctu_name, ctu_class, inventory_year, busi_floor, apply_floor),
+    by = c("ctu_name", "ctu_class", "inventory_year")
+  ) %>%
+  mutate(
+    is_modeled   = !data_source %in% c("Utility report", "RII utility data"),
+    county_share = if_else(city_pred_total > 0,
+                           business_mcf / city_pred_total,
+                           1),
+    busi_floor   = busi_floor * county_share,
+    floor_hit    = is_modeled        &
+      !is.na(apply_floor) &
+      apply_floor        &
+      business_mcf < busi_floor,
+    business_mcf = if_else(floor_hit, busi_floor, business_mcf),
+    data_source  = if_else(floor_hit,
+                           paste0(data_source, " [partial utility floor]"),
+                           data_source)
+  ) %>%
+  select(-city_pred_total, -county_share, -busi_floor, -apply_floor,
+         -is_modeled, -floor_hit)
+
+stopifnot(
+  coctu_busi_adj %>%
+    count(ctu_name, ctu_class, county_name, inventory_year) %>%
+    filter(n > 1) %>%
+    nrow() == 0
+)
+
+
+coctu_busi_adj %>%
+  filter(ctu_name == "Credit River") %>%
   ggplot(aes(inventory_year, business_mcf, color = data_source)) +
   geom_line() + geom_point() +
   theme_bw() +
