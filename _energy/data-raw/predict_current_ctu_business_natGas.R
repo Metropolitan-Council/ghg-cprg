@@ -42,9 +42,33 @@ urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
 ctu_utility_mcf <- read_rds("_energy/data/ctu_utility_mcf.RDS")
 
-ctu_utility_year <- ctu_utility_mcf %>%
+ctu_utility_year_raw <- ctu_utility_mcf %>%
+  filter(!utility %in% c("ST. CROIX VALLEY NATURAL GAS",
+                         "WISCONSIN GAS CO")) %>%
+  filter(
+    utility %in% c("Minnesota Energy Resources",
+                   "GREATER MINNESOTA GAS INC.",
+                   "Centennial Utilities") |
+      !is.na(total_mcf) | !is.na(residential_mcf) | !is.na(business_mcf)
+  )
+
+ctu_utility_year <- ctu_utility_year_raw %>%
+  mutate(
+    residential_mcf = if_else(
+      !is.na(business_mcf) & is.na(residential_mcf) &
+        !is.na(total_mcf) & total_mcf > 0 &
+        abs(business_mcf - total_mcf) / total_mcf < 0.01,
+      0,
+      residential_mcf
+    )
+  ) %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
-  filter(!any(is.na(total_mcf))) %>%
+  filter(
+    !any(is.na(total_mcf)),
+    total_mcf > 0,
+    (sum(residential_mcf, na.rm = TRUE) + sum(business_mcf, na.rm = TRUE)) /
+      sum(total_mcf) >= 0.95
+  ) %>%
   summarize(
     residential_mcf = sum(residential_mcf, na.rm = TRUE),
     business_mcf    = sum(business_mcf,    na.rm = TRUE),
@@ -452,4 +476,5 @@ coctu_busi_adj %>%
   theme_bw() +
   labs(title = "Business MCF -- blending check")
 
-saveRDS(coctu_busi_out, "_energy/data-raw/predicted_coctu_business_mcf.rds")
+
+saveRDS(coctu_busi_adj, "_energy/data-raw/predicted_coctu_business_mcf.rds")
