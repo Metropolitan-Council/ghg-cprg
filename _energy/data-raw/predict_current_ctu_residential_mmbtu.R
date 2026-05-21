@@ -40,21 +40,42 @@ urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
 # get complete city-years utility data
 
-ctu_utility_year_raw <- read_rds("_energy/data/ctu_utility_mcf.RDS")
-
+ctu_utility_year_raw <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>% 
+  #removing known false NAs
+  filter(# these utilties do not provide gas to MN cities despite GIS analysis
+    !utility %in% c("ST. CROIX VALLEY NATURAL GAS",
+                        "WISCONSIN GAS CO"),
+         # Keep ALL rows for known non-responders — their NA total_mcf rows
+         # are a real signal that blocks their cities from entering training
+         utility %in% c("Minnesota Energy Resources",
+                        "GREATER MINNESOTA GAS INC.",
+                        "Centennial Utilities") |
+  !is.na(total_mcf) | !is.na(residential_mcf) | !is.na(business_mcf))
 
 ctu_utility_year <- ctu_utility_year_raw %>%
+  # Impute business = 0 where a utility confirms all its gas is residential
+  # (residential ≈ total, nothing left over for business)
+  mutate(
+    business_mcf = if_else(
+      !is.na(residential_mcf) & is.na(business_mcf) &
+        !is.na(total_mcf) & total_mcf > 0 &
+        abs(residential_mcf - total_mcf) / total_mcf < 0.01,
+      0,
+      business_mcf
+    )
+  ) %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
   filter(!any(is.na(total_mcf))) %>%
   summarize(
     residential_mcf = sum(residential_mcf, na.rm = TRUE),
     business_mcf    = sum(business_mcf,    na.rm = TRUE),
-    total_mcf       = sum(total_mcf)
+    total_mcf       = sum(total_mcf),
+    .groups         = "drop"
   ) %>%
-  ungroup()
-
-
-
+  filter(
+    total_mcf > 0,
+    (residential_mcf + business_mcf) / total_mcf >= 0.9 # drops edge cases where residential is an unlikely percentage of total, example: Afton has sliver of Xcel in some years which would lead to bad models
+  )
 
 # for converting natural gas mcf to mmbtu
 mcf_to_mmbtu <- 1.037
@@ -329,7 +350,7 @@ blending_check <- bind_rows(
 
 # plot a city of interest
 blending_check %>%
-  filter(ctu_name == "Nowthen") %>%
+  filter(ctu_name == "Afton") %>%
   ggplot(aes(inventory_year, total_res_mmbtu , color = ctu_name)) +
   geom_line() + geom_point() +
   theme_bw() +
@@ -492,10 +513,104 @@ stopifnot(
 
 # check - plot a city of interest
 coctu_res_adj_out %>%
-  filter(ctu_name == "Prior Lake") %>%
+  filter(ctu_name == "Afton") %>%
   ggplot(aes(inventory_year, total_res_mmbtu , color = data_source)) +
   geom_line() + geom_point() +
   theme_bw() +
   labs(title = "Residential mmbtu -- blending check")
+
+old_res <- read_rds("_energy/data-raw/predicted_coctu_residential_mmbtu.rds")
+
+comparison_summary <- bind_rows(
+  old_res %>%
+    group_by(inventory_year) %>%
+    summarize(total_mmbtu = sum(total_res_mmbtu, na.rm = TRUE), .groups = "drop") %>%
+    mutate(version = "old"),
+  coctu_res_adj_out %>%
+    group_by(inventory_year) %>%
+    summarize(total_mmbtu = sum(total_res_mmbtu, na.rm = TRUE), .groups = "drop") %>%
+    mutate(version = "new")
+)
+
+comparison_summary %>%
+  pivot_wider(names_from = version, values_from = total_mmbtu) %>%
+  mutate(pct_change = (new - old) / old * 100) %>%
+  print(n = 30)
+
+# City-level: find the biggest movers
+city_comparison <- old_res %>%
+  group_by(coctu_id_gnis, ctu_name, ctu_class, county_name) %>%
+  summarize(old_avg = mean(total_res_mmbtu, na.rm = TRUE), .groups = "drop") %>%
+  inner_join(
+    coctu_res_adj_out %>%
+      group_by(coctu_id_gnis, ctu_name, ctu_class, county_name) %>%
+      summarize(new_avg = mean(total_res_mmbtu, na.rm = TRUE), .groups = "drop"),
+    by = c("coctu_id_gnis", "ctu_name", "ctu_class", "county_name")
+  ) %>%
+  mutate(
+    abs_change  = new_avg - old_avg,
+    pct_change  = abs_change / old_avg * 100
+  ) %>%
+  arrange(desc(abs(pct_change)))
+
+cat("\n--- Biggest movers (% change) ---\n")
+city_comparison %>%
+  filter(abs(pct_change) > 10) %>%
+  print(n = 30)
+
+# Data source shifts: what changed in how cities are classified?
+cat("\n--- data_source distribution: old ---\n")
+old_res %>% count(data_source, sort = TRUE) %>% print()
+
+cat("\n--- data_source distribution: new ---\n")
+coctu_res_adj_out %>% count(data_source, sort = TRUE) %>% print()
+
+# Cities in old but not new or vice versa
+cat("\n--- In old but not new ---\n")
+anti_join(old_res %>% distinct(coctu_id_gnis, ctu_name, ctu_class, county_name),
+          coctu_res_adj_out %>% distinct(coctu_id_gnis, ctu_name, ctu_class, county_name),
+          by = "coctu_id_gnis") %>% print()
+
+cat("\n--- In new but not old ---\n")
+anti_join(coctu_res_adj_out %>% distinct(coctu_id_gnis, ctu_name, ctu_class, county_name),
+          old_res %>% distinct(coctu_id_gnis, ctu_name, ctu_class, county_name),
+          by = "coctu_id_gnis") %>% print()
+
+Add this block alongside the others:
+  r
+
+# County-level comparison
+county_comparison <- bind_rows(
+  old_res %>%
+    group_by(county_name, inventory_year) %>%
+    summarize(total_mmbtu = sum(total_res_mmbtu, na.rm = TRUE), .groups = "drop") %>%
+    mutate(version = "old"),
+  coctu_res_adj_out %>%
+    group_by(county_name, inventory_year) %>%
+    summarize(total_mmbtu = sum(total_res_mmbtu, na.rm = TRUE), .groups = "drop") %>%
+    mutate(version = "new")
+) %>%
+  pivot_wider(names_from = version, values_from = total_mmbtu) %>%
+  mutate(
+    pct_change = (new - old) / old * 100,
+    abs_change = new - old
+  )
+
+cat("\n--- County comparison: mean % change across years ---\n")
+county_comparison %>%
+  group_by(county_name) %>%
+  summarize(
+    mean_pct_change = mean(pct_change, na.rm = TRUE),
+    mean_abs_change = mean(abs_change, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(mean_pct_change) %>%
+  print()
+
+cat("\n--- County comparison: 2022 snapshot ---\n")
+county_comparison %>%
+  filter(inventory_year == 2022) %>%
+  arrange(pct_change) %>%
+  print()
 
 saveRDS(coctu_res_adj_out, "_energy/data-raw/predicted_coctu_residential_mmbtu.rds")
