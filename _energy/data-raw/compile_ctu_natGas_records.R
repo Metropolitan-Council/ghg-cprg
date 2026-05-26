@@ -169,7 +169,7 @@ anti_join(sql_ng, ctu_utility_year, by = "utility") %>%
 sort(unique(ctu_utility_year$utility))
 
 
-# perform the merges -- sql first to make susre any updated data from utilities is reflected
+# perform the merges -- sql first to make sure any updated data from utilities is reflected
 ctu_utility_year <- merge_ng_data(ctu_utility_year, sql_ng)
 ctu_utility_year <- merge_ng_data(ctu_utility_year, centerpoint)
 ctu_utility_year <- merge_ng_data(ctu_utility_year, xcel)
