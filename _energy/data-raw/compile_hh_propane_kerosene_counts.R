@@ -110,7 +110,7 @@ ctu_fuel_hh_out <- left_join(ctu_fuel_hh_extrap,
   )) %>% 
   select(-thrive_designation)
 
-saveRDS(ctu_fuel_hh_extrap, "_energy/data-raw/propane_kerosene_hh_ctu.RDS")
+saveRDS(ctu_fuel_hh_out, "_energy/data-raw/propane_kerosene_hh_ctu.RDS")
 
 ### repeat for counties
 
