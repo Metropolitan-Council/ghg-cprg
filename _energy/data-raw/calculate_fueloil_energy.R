@@ -90,3 +90,19 @@ ctu_fuel_estimates <- ctu_fuel_hh %>%
   select(ctu_name, ctu_class, county_name, state_abb, acs_year, propane_mmBtu, fueloil_other_mmBtu)
 
 saveRDS(ctu_fuel_estimates, "_energy/data-raw/ctu_propane_fueloil_use.RDS")
+
+# ── County estimates ───────────────────────────────────────────────────────────
+county_fuel_hh <- readRDS("_energy/data-raw/propane_kerosene_hh_county.RDS")
+
+county_fuel_estimates <- county_fuel_hh %>%
+  left_join(
+    rates %>% select(state_abb, acs_year, propane_mmBtu_per_hh, fueloil_other_mmBtu_per_hh),
+    by = c("state_abb", "acs_year")
+  ) %>%
+  mutate(
+    propane_mmBtu       = propane_hhE  * propane_mmBtu_per_hh,
+    fueloil_other_mmBtu = kerosene_hhE * fueloil_other_mmBtu_per_hh
+  ) %>%
+  select(county_name, state_abb, acs_year, propane_mmBtu, fueloil_other_mmBtu)
+
+saveRDS(county_fuel_estimates, "_energy/data-raw/county_propane_fueloil_use.RDS")
