@@ -225,7 +225,7 @@ fig_ctu_county_ng_comparison <- plot_ly(source = "fig-ctu-county-ng-comparison")
   ) %>%
   plotly_layout(
     main_title   = "Natural gas: CTU model + GHGRP vs 7610 county totals",
-    subtitle     = "Minnesota counties, 2021",
+    subtitle     = "Minnesota counties, 2022",
     x_title      = "County",
     y_title      = "Thousand cubic feet (MCF)",
     legend_title = "Source"

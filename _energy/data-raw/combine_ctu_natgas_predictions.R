@@ -78,7 +78,7 @@ scale_lookup <- city_combined %>%
 
 # ── Apply scale to both sectors ───────────────────────────────────────────────
 
-coctu_busi <- coctu_busi %>%
+coctu_busi_scale <- coctu_busi %>%
   left_join(scale_lookup, by = c("ctu_name", "ctu_class", "inventory_year")) %>%
   mutate(
     business_mcf = if_else(!is.na(scale_factor),
@@ -94,7 +94,7 @@ coctu_busi <- coctu_busi %>%
   ) %>%
   select(-scale_factor, -gap_pct)
 
-coctu_res <- coctu_res %>%
+coctu_res_scale<- coctu_res %>%
   left_join(scale_lookup, by = c("ctu_name", "ctu_class", "inventory_year")) %>%
   mutate(
     ng_mmbtu        = if_else(!is.na(scale_factor),
@@ -127,7 +127,7 @@ already_scaled <- scale_lookup %>%
   select(ctu_name, ctu_class, inventory_year) %>%
   mutate(scaled = TRUE)
 
-coctu_busi <- coctu_busi %>%
+coctu_busi_scale <- coctu_busi_scale %>%
   left_join(overshoot_mean_scale, by = c("ctu_name", "ctu_class")) %>%
   left_join(already_scaled, by = c("ctu_name", "ctu_class", "inventory_year")) %>%
   mutate(
@@ -143,7 +143,7 @@ coctu_busi <- coctu_busi %>%
   ) %>%
   select(-mean_overshoot_scale, -scaled, -apply_prop)
 
-coctu_res <- coctu_res %>%
+coctu_res_scale <- coctu_res_scale %>%
   left_join(overshoot_mean_scale, by = c("ctu_name", "ctu_class")) %>%
   left_join(already_scaled, by = c("ctu_name", "ctu_class", "inventory_year")) %>%
   mutate(
@@ -176,7 +176,7 @@ cat(sprintf("Overshoot corrections applied: %d city-years\n",
 # ── Bind into combined dataframe ─────────────────────────────────────────────
 
 ctu_ng_combined <- bind_rows(
-  coctu_res %>%
+  coctu_res_scale %>%
     transmute(
       coctu_id_gnis, ctu_name, ctu_class, county_name, inventory_year,
       sector              = "Residential",
@@ -186,7 +186,7 @@ ctu_ng_combined <- bind_rows(
       total_res_mmbtu     = total_res_mmbtu,
       data_source
     ),
-  coctu_busi %>%
+  coctu_busi_scale %>%
     transmute(
       coctu_id_gnis, ctu_name, ctu_class, county_name, inventory_year,
       sector              = "Business",
@@ -274,9 +274,9 @@ print(spikes %>%
         select(ctu_name, ctu_class, county_name, inventory_year,
                total_ng_mmbtu, ng_per_hdd, yoy_pct_change,
                source_residential, source_business) %>%
-        head(30))
+        head(30), n = 50)
 
-spike_cities <- c("Norwood Young America", "Centerville", "Hampton", "Camden")
+spike_cities <- c("Centerville", "Minnetrista", "Rosemount", "Minneapolis")
 
 ctu_ng_combined %>%
   filter(ctu_name %in% spike_cities) %>%
@@ -321,8 +321,9 @@ ctu_ng_combined %>%
   theme(legend.position = "bottom",
         legend.box      = "vertical")
 
+### May 2026 - Many of the remaining spikes seem like city-township confusion or
+### non-issues. The remaining we have questions out to Centerpoint or are unlikely to resolve.
+
 # ── Save ──────────────────────────────────────────────────────────────────────
 
 saveRDS(ctu_ng_combined,  "_energy/data-raw/ctu_ng_combined.rds")
-saveRDS(spike_check,      "_energy/data-raw/ctu_ng_spike_check.rds")
-saveRDS(spikes,           "_energy/data-raw/ctu_ng_spikes_flagged.rds")

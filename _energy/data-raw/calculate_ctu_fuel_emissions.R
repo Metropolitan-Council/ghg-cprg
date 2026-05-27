@@ -57,29 +57,26 @@ fuel_ef_mmbtu <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
 
 # ── Load data ─────────────────────────────────────────────────────────────────
 
-coctu_busi <- read_rds("_energy/data-raw/predicted_coctu_business_mcf.rds") %>%
-  mutate(sector = "Business") %>%
-  rename(mcf = business_mcf)
+coctu_fuel <- read_rds("_energy/data-raw/ctu_ng_combined.rds")
 
-coctu_res_mmbtu <- read_rds("_energy/data-raw/predicted_coctu_residential_mmbtu.rds") %>%
-  mutate(sector = "Residential")
-
-coctu_res_ng <- coctu_res_mmbtu %>%
+coctu_res_ng <- coctu_fuel %>%
+  filter(sector == "Residential") %>% 
   mutate(
-    mcf    = ng_mmbtu / 1.037,
-    sector = "Residential"
+    mcf    = ng_mmbtu / 1.037
   ) %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
          inventory_year, sector, mcf, data_source)
 
-coctu_res_liquid <- coctu_res_mmbtu %>%
+coctu_res_liquid <- coctu_fuel %>%
+  filter(sector == "Residential") %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
          inventory_year, data_source,
-         propane_mmBtu, fueloil_other_mmBtu) %>%
-  mutate(sector = "Residential")
+         propane_mmbtu, fueloil_other_mmbtu)
 
 # Combined natural gas data
-coctu_ng <- bind_rows(coctu_busi, coctu_res_ng)
+coctu_ng <- coctu_fuel %>% 
+  mutate(mcf = ng_mmbtu / 1.037) %>% 
+  select(-c(propane_mmbtu, fueloil_other_mmbtu, total_res_mmbtu))
 
 #county data
 
@@ -211,20 +208,20 @@ fueloil_ef <- fuel_ef_mmbtu %>%
 ctu_liquid_emissions <- coctu_liquid_full %>%
   mutate(category = "Building Energy") %>%
   pivot_longer(
-    cols      = c(propane_mmBtu, fueloil_other_mmBtu),
+    cols      = c(propane_mmbtu, fueloil_other_mmbtu),
     names_to  = "source",
-    values_to = "mmBtu"
+    values_to = "mmbtu"
   ) %>%
   mutate(
     source          = case_when(
-      source == "propane_mmBtu"       ~ "Propane",
-      source == "fueloil_other_mmBtu" ~ "Fuel Oil & Other"
+      source == "propane_mmbtu"       ~ "Propane",
+      source == "fueloil_other_mmbtu" ~ "Fuel Oil & Other"
     ),
     ef              = case_when(
       source == "Propane"          ~ propane_ef,
       source == "Fuel Oil & Other" ~ fueloil_ef
     ),
-    value_emissions = round(mmBtu * ef, digits = 2),
+    value_emissions = round(mmbtu * ef, digits = 2),
     units_emissions = "Metric tons CO2e"
   ) %>%
   select(-ef)
@@ -233,5 +230,4 @@ ctu_liquid_emissions <- coctu_liquid_full %>%
 
 saveRDS(ctu_ng_emissions,     "_energy/data/_ctu_natgas_emissions.RDS")
 saveRDS(ctu_liquid_emissions, "_energy/data/_ctu_liquid_emissions.RDS")
-saveRDS(county_comparison,    "_energy/data/_county_natgas_diagnostic.RDS")
 
