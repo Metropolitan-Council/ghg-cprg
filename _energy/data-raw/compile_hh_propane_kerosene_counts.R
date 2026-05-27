@@ -96,4 +96,71 @@ ctu_fuel_hh_extrap <- ctu_fuel_hh %>%
                 imputeTS::na_kalman)) %>%
   ungroup()
 
+numeric_cols <- c("propane_hhE", "propane_hhM", "kerosene_hhE", "kerosene_hhM")
+
+## set urban to suburban counties to zero as this is likely an ACS sampling artifact
+ctu_fuel_hh_out <- left_join(ctu_fuel_hh_extrap,
+                             cprg_ctu %>% 
+                               st_drop_geometry() %>% 
+                               distinct(ctu_name, ctu_class, thrive_designation),
+                             by = c("ctu_name", "ctu_class")) %>% 
+  mutate(across(
+    all_of(numeric_cols),
+    ~ if_else(thrive_designation %in% c("Urban", "Suburban", "Urban Center"), 0, .x)
+  )) %>% 
+  select(-thrive_designation)
+
 saveRDS(ctu_fuel_hh_extrap, "_energy/data-raw/propane_kerosene_hh_ctu.RDS")
+
+### repeat for counties
+
+get_heating_county <- function(state, counties, yr) {
+  tidycensus::get_acs(
+    geography = "county",
+    variables = c(propane_hh  = "B25040_003",
+                  kerosene_hh = "B25040_005"),
+    state     = state,
+    county    = counties,
+    year      = yr,
+    output    = "wide"
+  ) %>%
+    mutate(
+      county_name = stringr::str_remove(NAME, " County,.*$"),
+      state_abb   = state
+    ) %>%
+    select(county_name, state_abb, propane_hhE, propane_hhM, kerosene_hhE, kerosene_hhM)
+}
+
+county_fuel_list <- vector("list", length(acs_years))
+
+for (i in seq_along(acs_years)) {
+  yr <- acs_years[[i]]
+  message("\n── Year ", yr, " ──────────────────────────────────")
+  
+  tryCatch({
+
+    
+    county_fuel_list[[i]] <- dplyr::bind_rows(
+      get_heating_county("MN", mn_counties, yr),
+      get_heating_county("WI", wi_counties, yr)
+    ) %>%
+      mutate(acs_year = yr)
+    
+  }, error = function(e) {
+    message("  Skipping year ", yr, ": ", conditionMessage(e))
+  })
+}
+
+county_fuel_hh <- dplyr::bind_rows(purrr::compact(county_fuel_list))
+
+county_fuel_hh_extrap <- county_fuel_hh %>%
+  tidyr::complete(
+    tidyr::nesting(county_name, state_abb),
+    acs_year = 2005:max(acs_year)
+  ) %>%
+  arrange(county_name, state_abb, acs_year) %>%
+  group_by(county_name, state_abb) %>%
+  mutate(across(all_of(numeric_cols), imputeTS::na_kalman)) %>%
+  ungroup()
+
+saveRDS(county_fuel_hh_extrap, "_energy/data-raw/propane_kerosene_hh_county.RDS")
