@@ -50,31 +50,49 @@ ctu_utility_year_raw <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
          utility %in% c("Minnesota Energy Resources",
                         "GREATER MINNESOTA GAS INC.",
                         "Centennial Utilities") |
-  !is.na(total_mcf) | !is.na(residential_mcf) | !is.na(business_mcf))
+  !is.na(total_mcf) | !is.na(residential_mcf) | !is.na(business_mcf)) %>% 
+  filter(!(ctu_name == "Afton" & inventory_year <=2018)) #excising weird Afton Xcel years
+
+# remove cities suspected to have non-responsive utilities, except RII years
+nonresponder_city_years <- ctu_utility_year_raw %>%
+  filter(utility %in% c("Minnesota Energy Resources",
+                        "GREATER MINNESOTA GAS INC.",
+                        "Centennial Utilities")) %>%
+  distinct(ctu_name, ctu_class, inventory_year) %>%
+  anti_join(
+    ctu_utility_year_raw %>%
+      filter(utility == "Regional Indicators Initiative") %>%
+      distinct(ctu_name, ctu_class, inventory_year),
+    by = c("ctu_name", "ctu_class", "inventory_year")
+  )
 
 ctu_utility_year <- ctu_utility_year_raw %>%
-  # Impute business = 0 where a utility confirms all its gas is residential
-  # (residential ≈ total, nothing left over for business)
+  # Exclude cities where a non-responding utility operates —
+  # we can't trust the total without their data
+  anti_join(nonresponder_city_years, by = c("ctu_name", "ctu_class", "inventory_year")) %>%
+  # that's the field we need; business NA is fine (imputed below)
+  filter(!is.na(residential_mcf)) %>%
+  # Impute business = 0 where residential ≈ total (all gas is residential)
   mutate(
     business_mcf = if_else(
-      !is.na(residential_mcf) & is.na(business_mcf) &
-        !is.na(total_mcf) & total_mcf > 0 &
+      is.na(business_mcf) & !is.na(total_mcf) & total_mcf > 0 &
         abs(residential_mcf - total_mcf) / total_mcf < 0.01,
       0,
       business_mcf
     )
   ) %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
-  filter(!any(is.na(total_mcf))) %>%
   summarize(
     residential_mcf = sum(residential_mcf, na.rm = TRUE),
     business_mcf    = sum(business_mcf,    na.rm = TRUE),
-    total_mcf       = sum(total_mcf),
+    total_mcf       = sum(total_mcf,       na.rm = TRUE),
     .groups         = "drop"
   ) %>%
   filter(
-    total_mcf > 0,
-    (residential_mcf + business_mcf) / total_mcf >= 0.9 # drops edge cases where residential is an unlikely percentage of total, example: Afton has sliver of Xcel in some years which would lead to bad models
+    residential_mcf > 0,
+    # Drop edge cases where residential is a suspiciously small slice
+    # of a known total (e.g. Afton's Xcel fringe inflating the denominator)
+    total_mcf == 0 | (residential_mcf + business_mcf) / total_mcf >= 0.9
   )
 
 # for converting natural gas mcf to mmbtu
@@ -401,7 +419,7 @@ stopifnot(
 
 # check - plot a city of interest
 coctu_res_adj_out %>%
-  filter(ctu_name == "East Bethel") %>%
+  filter(ctu_name == "Rosemount" & ctu_class == "CITY") %>%
   ggplot(aes(inventory_year, total_res_mmbtu , color = data_source)) +
   geom_line() + geom_point() +
   theme_bw() +

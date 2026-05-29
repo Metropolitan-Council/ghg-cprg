@@ -276,7 +276,7 @@ print(spikes %>%
                source_residential, source_business) %>%
         head(30), n = 50)
 
-spike_cities <- c("Centerville", "Minnetrista", "Rosemount", "Minneapolis")
+spike_cities <- c("Centerville", "Afton", "Rosemount", "Minneapolis")
 
 ctu_ng_combined %>%
   filter(ctu_name %in% spike_cities) %>%

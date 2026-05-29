@@ -262,6 +262,78 @@ ctu_utility_year %>%
   count(utility, inventory_year) %>%
   arrange(desc(n))
 
+# removal of powerplant data when suspected
+
+fuel_combustion_activity <- read_rds("_industrial/data/fuel_combustion_activity.RDS")
+
+### check: flag city-years where power plant gas consumption may inflate business_mcf
+
+# conversion factor
+scf_to_mcf <- 1 / 1000
+
+# summarize GHGRP power plant NG consumption by city and year
+powerplant_ng <- fuel_combustion_activity %>%
+  filter(
+    power_plant == TRUE,
+    general_fuel_type == "Natural Gas",
+    units_activity == "scf"
+  ) %>%
+  group_by(city_name, county_name, reporting_year) %>%
+  summarise(
+    powerplant_mcf = sum(value_activity * scf_to_mcf, na.rm = TRUE),
+    facilities = paste(unique(facility_name), collapse = "; "),
+    .groups = "drop"
+  )
+
+# join against city business totals -- fuzzy-ish match on city name
+powerplant_check <- ctu_utility_year %>%
+  filter(!is.na(business_mcf)) %>%
+  group_by(ctu_name, ctu_class, inventory_year) %>%
+  summarise(
+    business_mcf = sum(business_mcf, na.rm = TRUE),
+    total_mcf    = sum(total_mcf, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    powerplant_ng,
+    by = c("ctu_name" = "city_name", "inventory_year" = "reporting_year")
+  ) %>%
+  filter(!is.na(powerplant_mcf)) %>%
+  mutate(
+    powerplant_share = powerplant_mcf / business_mcf,
+    business_mcf_adj = business_mcf - powerplant_mcf,
+    total_mcf_adj    = total_mcf    - powerplant_mcf
+  ) %>%
+  arrange(desc(powerplant_share))
+
+# print flagged city-years for review
+powerplant_check %>%
+  select(
+    ctu_name, inventory_year, facilities,
+    business_mcf, powerplant_mcf, powerplant_share,
+    business_mcf_adj, total_mcf_adj
+  ) %>%
+  print(n = 80)
+
+# it seems like only Minneapolis in 2021-2023 has this data added
+
+powerplant_adjustments <- powerplant_check %>%
+  filter(
+    ctu_name == "Minneapolis" & inventory_year %in% 2021:2023
+  ) %>%
+  select(ctu_name, ctu_class, inventory_year, powerplant_mcf)
+
+ctu_utility_year <- ctu_utility_year %>%
+  left_join(
+    powerplant_adjustments,
+    by = c("ctu_name", "ctu_class", "inventory_year")
+  ) %>%
+  mutate(
+    business_mcf = if_else(!is.na(powerplant_mcf), business_mcf - powerplant_mcf, business_mcf),
+    total_mcf    = if_else(!is.na(powerplant_mcf), total_mcf    - powerplant_mcf, total_mcf)
+  ) %>%
+  select(-powerplant_mcf)
+
 ## save output file
 
 saveRDS(
