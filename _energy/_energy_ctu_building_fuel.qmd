@@ -8,13 +8,10 @@ source(file.path(here::here(), "R/_plotting_helpers.R"))
 
 # ── Data ──────────────────────────────────────────────────────────────────────
 
-ctu_ng_res <- readRDS(file.path(
-  here::here(), "_energy/data-raw/predicted_coctu_residential_mcf.rds"
+ctu_ng <- readRDS(file.path(
+  here::here(), "_energy/data-raw/ctu_ng_combined.rds"
 ))
 
-ctu_ng_busi <- readRDS(file.path(
-  here::here(), "_energy/data-raw/predicted_coctu_business_mcf.rds"
-))
 
 county_ng <- readRDS(here("_energy", "data", "county_natgas_activity.RDS")) %>%
   select(
@@ -50,14 +47,9 @@ mcf_to_mmbtu <- 1.020
 target_year <- 2022
 
 # ── CTU NG aggregated to county for comparison chart ─────────────────────────
-ctu_county_ng <- bind_rows(
-  ctu_ng_res %>%
+ctu_county_ng <- ctu_ng %>%
     filter(inventory_year == target_year) %>%
-    transmute(county_name, mcf = residential_mcf, category = "Residential (CTU model)"),
-  ctu_ng_busi %>%
-    filter(inventory_year == target_year) %>%
-    transmute(county_name, mcf = business_mcf, category = "Business (CTU model)")
-) %>%
+    transmute(county_name, mcf = ng_mmbtu / mcf_to_mmbtu, category = paste(sector, "(CTU model)")) %>%
   mutate(county_name = str_to_title(county_name)) %>%
   filter(county_name %in% cprg_ctu$county_name) %>%   # MN counties only
   group_by(county_name, category) %>%
@@ -134,8 +126,8 @@ ctu_ng_total <- bind_rows(
 # ── Propane + fuel oil (most recent ACS year ≤ target_year) ──────────────────
 ctu_propane_yr <- ctu_propane %>%
   filter(inventory_year == max(inventory_year[inventory_year <= target_year])) %>%
-  select(coctu_id_gnis, ctu_name, ctu_class, county_name, source, mmBtu) %>%
-  pivot_wider(names_from = source, values_from = mmBtu) %>%
+  select(coctu_id_gnis, ctu_name, ctu_class, county_name, source, mmbtu) %>%
+  pivot_wider(names_from = source, values_from = mmbtu) %>%
   transmute(
     coctu_id_gnis, ctu_name, ctu_class, county_name,
     propane_mmbtu  = `Propane`,
