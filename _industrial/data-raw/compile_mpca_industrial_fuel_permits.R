@@ -122,6 +122,7 @@ mpca_fuel_formatted <- mpca_fuel %>%
     sector, naics, naics_description
   )
 
+# saveRDS(mpca_fuel_activity, "./_industrial/data/mpca_fuel_activity.rds")
 
 mpca_fuel_emissions_gas <- mpca_fuel_formatted %>%
   left_join(., fuel_emission_factors,
