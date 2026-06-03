@@ -14,7 +14,7 @@ source("R/global_warming_potential.R")
 # CTU natural gas (residential + business)
 
 ctu_ng <- readRDS(file.path(
-  here::here(), "_energy/data-raw/ctu_ng_combined.rds"
+  here::here(), "_energy/data/_ctu_natgas_emissions.rds"
 ))
 
 # county 7610 totals 
@@ -237,6 +237,8 @@ industrial_combustion_full <- expand.grid(
   ) %>%
   ungroup()
 
+
+## examine how emissions change at the breakpoints
 ggplot(industrial_combustion_full,
        aes(x = inventory_year, y = mcf_industrial_combined, col = county_name)) +
   geom_line() +
@@ -245,3 +247,24 @@ ggplot(industrial_combustion_full,
        subtitle = "Dashed lines: GHGRP start (2011), MPCA start (2016)",
        y = "mcf", x = NULL)
 
+
+# start carving sector chunks out of 7610 reporting
+#   county utility total (7610)
+#     - residential  (CTU model-derived)
+#     - power plants (GHGRP subpart D, backcasted to 2005)
+#     - industrial combustion (GHGRP subpart C, non-powerplant)
+#     - industrial natural gas (MPCA flagged)
+#     = commercial remainder
+
+county_res <- ctu_ng %>% 
+  filter(sector == "Residential",
+         source == "Natural Gas") %>% 
+  group_by(county_name, inventory_year, sector, category, source, data_source, factor_source) %>% 
+  summarize(mcf = sum(mcf)) %>% 
+  ungroup()
+
+county_commercial <- county_mcf %>% 
+  left_join(county_res,
+            by = c("county_name",
+                   "inventory_year")
+  )
