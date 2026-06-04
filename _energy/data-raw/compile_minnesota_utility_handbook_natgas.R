@@ -10,14 +10,12 @@
 #   - Table 13/14: Company-level deliveries for 2006 and 2012
 #   - Existing utility report county-level data (2014+)
 
-# source("R/_load_pkgs.R")
-# source("_energy/data-raw/_energy_emissions_factors.R")
+source("R/_load_pkgs.R")
+source("_energy/data-raw/_energy_emissions_factors.R")
 
-library(tidyverse)
 
-# =============================================================================
-# 1. STATEWIDE ANNUAL TOTALS (Table 12) — units are 1,000 MCF
-# =============================================================================
+# STATEWIDE ANNUAL TOTALS (Table 12) — units are 1,000 MCF
+
 mn_statewide_gas <- tribble(
   ~year, ~residential, ~commercial, ~industrial, ~electric_gen, ~transport_customers, ~company_use, ~unaccounted_for, ~total,
   2005,  128883, 92825,  34629,  7122,  62576,  168,  2752,  328956,
@@ -33,10 +31,9 @@ mn_statewide_gas <- tribble(
   mutate(across(residential:total, ~ .x * 1000))
 
 
-# =============================================================================
-# 2. COMPANY-LEVEL TOTALS for metro-relevant utilities
-#    Only need companies serving study area counties
-# =============================================================================
+
+# COMPANY-LEVEL TOTALS for metro-relevant utilities
+
 
 # --- 2006 company data (Table 13) ---
 company_detail_2006 <- tribble(
@@ -70,177 +67,173 @@ company_totals_2006 <- company_detail_2006 %>% select(utility_handbook, mcf_tota
 company_totals_2012 <- company_detail_2012 %>% select(utility_handbook, mcf_total = total)
 
 
-# =============================================================================
-# 3. BUILD COUNTY SHARES FROM EARLIEST UTILITY REPORTS
-#    Uses your existing processed utility report data
-# =============================================================================
+## use 2006 and 2012 to benchmark how much each utility contributes to state total,
+## then use to fill all years
+
+company_props <- company_detail_all %>% 
+  mutate(utility_name = if_else(
+    grepl("MN Energy", utility_handbook),
+    "MN Energy Resources",
+    utility_handbook
+  )) %>% 
+  group_by(utility_name, year) %>% 
+  summarize(total_mcf = sum(total)) %>% 
+  left_join(mn_statewide_gas,
+            by = "year") %>% 
+  mutate(utility_prop = total_mcf / total) %>% 
+  select(utility_name, year, utility_prop) %>% 
+  ungroup() %>%
+  # Expand to all years 2005-2012 per utility
+  complete(utility_name, year = 2005:2012) %>%
+  # Interpolate and extrapolate
+  group_by(utility_name) %>%
+  arrange(year) %>%
+  mutate(
+    utility_prop = approx(
+      x = year[!is.na(utility_prop)],
+      y = utility_prop[!is.na(utility_prop)],
+      xout = year,
+      rule = 2  # extrapolate using nearest value for 2005
+    )$y
+  ) %>%
+  ungroup()
+
+utility_ests_early <- company_props %>% 
+  left_join(mn_statewide_gas,                  
+            by = "year") %>% 
+  mutate(utility_mcf = total * utility_prop) %>% 
+  select(utility_name, utility_mcf, year)
+
+# 3. BUILD COUNTY SHARES FROM 7610 UTILITY REPORTS
 
 # TODO: Update path to match your project structure
-# processed_mn_gasUtil_activityData <- read_rds(here("_energy", "data", "minnesota_gasUtils_ActivityAndEmissions.RDS"))
+utility_county_proportions <- read_rds(here("_energy", "data", "county_natgas_7610_activity.RDS"))
+
+
+
+# Select which year's proportions to use for back-estimation
+get_county_shares <- function(proportions_data, crosswalk, method = c("earliest", "average")) {
+  method <- match.arg(method)
+  
+  shares <- proportions_data %>%
+    left_join(crosswalk, by = "utility")
+  
+  if (method == "earliest") {
+    # Use the earliest year available per utility
+    shares <- shares %>%
+      group_by(utility) %>%
+      filter(year == min(year)) %>%
+      ungroup()
+  } else {
+    # Average proportions across all available years
+    shares <- shares %>%
+      group_by(utility, utility_handbook, county) %>%
+      summarise(
+        county_proportion = mean(county_proportion, na.rm = TRUE),
+        .groups = "drop"
+      )
+  }
+  
+  shares %>%
+    select(utility, utility_handbook, county, county_proportion)
+}
+
+county_shares_avg <- utility_county_proportions %>%
+  group_by(utility, county) %>%
+  summarise(
+    county_proportion = mean(county_proportion, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+county_share_early <- utility_county_proportions %>%
+  group_by(utility) %>%
+  filter(year == min(year)) %>%
+  ungroup()
+
+# QA: check which years are available per utility
+utility_county_proportions %>%
+  distinct(utility, year) %>%
+  arrange(utility, year) %>%
+  print(n = Inf)
+
+
+# distribute utility total estimates to counties 2005-2012
 
 # --- Mapping from utility folder names to handbook company names ---
-# UPDATE these to match the actual folder names in your mn_ng_utility_reporting_state directory
 utility_name_crosswalk <- tribble(
-  ~utility,              ~utility_handbook,
-  # "centerpoint_energy",  "CenterPoint Energy",
-  # "xcel_energy",         "Xcel Energy",
-  # "centennial_utils",    "Centennial Utilities",
-  # ---- fill in actual folder names ----
+  ~utility,              ~utility_name,
+  "CENTERPOINT ENERGY",  "CenterPoint Energy",
+  "NORTHERN STATES POWER CO",         "Xcel Energy",
+  "CIRCLE PINES UTILITY CO. (CENTENNIAL)", "Centennial Utilities",
+  "GREATER MINNESOTA GAS INC", "Greater MN Gas",
+  "MINNESOTA ENERGY RESOURCES",    "MN Energy Resources"
 )
 
-# Calculate county share of each utility's total from earliest utility report year
-# This is the key assumption: within-utility county distribution is stable over time
-calc_county_shares <- function(utility_data, anchor_year = 2014) {
-  utility_data %>%
-    filter(year == anchor_year) %>%
-    group_by(utility) %>%
-    mutate(
-      utility_total = sum(mcf_delivered, na.rm = TRUE),
-      county_share  = mcf_delivered / utility_total
-    ) %>%
-    ungroup() %>%
-    select(utility, county, county_share)
-}
+utility_county_crosswalk <- utility_ests_early %>% 
+  left_join(utility_name_crosswalk,
+            by = join_by(utility_name)) %>% 
+  left_join(county_shares_avg,
+            by = join_by(utility)) %>% 
+  ungroup() %>% 
+  mutate(mcf_delivered = utility_mcf * county_proportion) %>% 
+  select(-c(utility_mcf, utility, county_proportion))
 
-# county_shares_2014 <- calc_county_shares(processed_mn_gasUtil_activityData, anchor_year = 2014)
+## rebind with 7610 and check for completeness
+## MER did not report in 2013 so this is known gap
 
-
-# =============================================================================
-# 4. BACK-ESTIMATE COUNTY-LEVEL DELIVERIES FOR HANDBOOK YEARS (2006, 2012)
-# =============================================================================
-
-back_estimate_counties <- function(company_totals, county_shares, crosswalk, year_label) {
-  county_shares %>%
-    left_join(crosswalk, by = "utility") %>%
-    left_join(company_totals, by = "utility_handbook") %>%
-    mutate(
-      mcf_estimated = mcf_total * county_share,
-      year = year_label,
-      county_source = paste0("Handbook ", year_label, " + utility shares")
-    ) %>%
-    group_by(county, year, county_source) %>%
-    summarise(
-      total_mcf = sum(mcf_estimated, na.rm = TRUE),
-      .groups = "drop"
-    )
-}
-
-# county_est_2006 <- back_estimate_counties(company_totals_2006, county_shares_2014, utility_name_crosswalk, 2006)
-# county_est_2012 <- back_estimate_counties(company_totals_2012, county_shares_2014, utility_name_crosswalk, 2012)
-
-
-# =============================================================================
-# 5. INTERPOLATE REMAINING GAPS, SCALED BY STATEWIDE ANNUAL TOTALS
-#
-#    For years between anchor points (e.g., 2007-2011, 2013), interpolate
-#    county-level MCF and then scale by the ratio of that year's statewide
-#    total to the interpolation baseline, so year-to-year weather variation
-#    (and other macro shifts) is reflected.
-# =============================================================================
-
-interpolate_with_scaling <- function(county_anchors, statewide_totals) {
-  # county_anchors: df with columns county, year, total_mcf (for anchor years only)
-  # statewide_totals: df with columns year, total
+utility_natgas_activity <- rbind(utility_county_proportions %>% 
+                                   left_join(utility_name_crosswalk) %>% 
+                                   select(utility_name, county, year, mcf_delivered),
+                                 utility_county_crosswalk)
   
-  counties <- unique(county_anchors$county)
-  all_years <- min(county_anchors$year):max(county_anchors$year)
-  
-  map_dfr(counties, function(cty) {
-    anchors <- county_anchors %>% filter(county == cty) %>% arrange(year)
-    
-    # Linear interpolation of county MCF across all years
-    interp <- approx(
-      x = anchors$year,
-      y = anchors$total_mcf,
-      xout = all_years,
-      rule = 2  # clamp at boundaries
-    )
-    
-    tibble(county = cty, year = interp$x, total_mcf_interp = interp$y)
-  }) %>%
-    # Join statewide totals
-    left_join(statewide_totals %>% select(year, state_total = total), by = "year") %>%
-    # Build a reference statewide curve from the same interpolation approach
-    # (interpolating between anchor-year state totals)
-    group_by(county) %>%
-    mutate(
-      # For each county, get the statewide total at its anchor years
-      # and interpolate to build expected state total
-      # Then scale = actual_state / expected_state
-    ) %>%
-    ungroup()
-  
-  # NOTE: Simpler approach — just use the statewide total ratio directly:
-  # For each year, scaling_factor = statewide_total[year] / statewide_total[nearest_anchor_year]
-  # Then: total_mcf_scaled = total_mcf_interp * scaling_factor
-  # This adds weather-driven variation on top of the structural interpolation
-}
+# validation across two reporting formats
 
+# By county
+utility_natgas_activity %>%
+  group_by(county, year) %>%
+  summarise(mcf = sum(mcf_delivered, na.rm = TRUE), .groups = "drop") %>%
+  ggplot(aes(x = year, y = mcf / 1e6, color = county)) +
+  geom_line() +
+  geom_vline(xintercept = 2012.5, linetype = "dashed", color = "red") +
+  annotate("text", x = 2012.5, y = Inf, label = "Handbook → 7610", 
+           vjust = 1.5, hjust = 0.5, color = "red", size = 3) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Natural Gas Deliveries by County", x = NULL, y = "MCF (millions)") +
+  theme_minimal()
 
-# =============================================================================
-# 6. COMBINE ALL YEARS INTO FINAL COUNTY-LEVEL TIMESERIES
-# =============================================================================
+# By utility
+utility_natgas_activity %>%
+  group_by(utility_name, year) %>%
+  summarise(mcf = sum(mcf_delivered, na.rm = TRUE), .groups = "drop") %>%
+  ggplot(aes(x = year, y = mcf / 1e6, color = utility_name)) +
+  geom_line() +
+  geom_point(size = 1) +
+  geom_vline(xintercept = 2012.5, linetype = "dashed", color = "red") +
+  annotate("text", x = 2012.5, y = Inf, label = "Handbook → 7610",
+           vjust = 1.5, hjust = 0.5, color = "red", size = 3) +
+  scale_y_log10(labels = scales::comma) +
+  labs(title = "Natural Gas Deliveries by Utility", x = NULL, y = "MCF (millions, log scale)") +
+  theme_minimal()
 
-# Anchor years with actual/estimated county data:
-#   2006 — from handbook company totals × 2014 county shares
-#   2012 — from handbook company totals × 2014 county shares
-#   2014+ — from actual utility reports (existing data)
-#
-# Interpolated years:
-#   2005 — scale 2006 county estimates by statewide 2005/2006 ratio
-#   2007-2011 — interpolate between 2006 and 2012, scaled by statewide totals
-#   2013 — interpolate between 2012 and 2014, scaled by statewide totals
+# There are two gaps: one in MER for 2013 and looks like Centennial is completely blank from 2013 to 2019.
 
-# combine_all <- bind_rows(
-#   county_est_2006,
-#   county_est_2012,
-#   # 2014+ actuals from existing pipeline:
-#   MNcounty_level_gas_emissions %>% filter(year >= 2014) %>% select(county = county_name, year, total_mcf)
-# )
+utility_natgas_activity <- utility_natgas_activity %>%
+  complete(utility_name, county, year = min(year):max(year)) %>%
+  group_by(utility_name, county) %>%
+  arrange(year) %>%
+  mutate(
+    mcf_delivered = if (sum(!is.na(mcf_delivered)) >= 2) {
+      approx(
+        x = year[!is.na(mcf_delivered)],
+        y = mcf_delivered[!is.na(mcf_delivered)],
+        xout = year,
+        rule = 1
+      )$y
+    } else {
+      mcf_delivered
+    }
+  ) %>%
+  ungroup() %>%
+  # Drop rows that were never real (e.g. Centennial-Carver)
+  filter(!is.na(mcf_delivered))
 
-# For 2005: simple ratio scaling from 2006
-# county_est_2005 <- county_est_2006 %>%
-#   mutate(
-#     year = 2005,
-#     total_mcf = total_mcf * (mn_statewide_gas %>% filter(year == 2005) %>% pull(total)) /
-#                              (mn_statewide_gas %>% filter(year == 2006) %>% pull(total)),
-#     county_source = "Scaled from 2006 handbook estimate"
-#   )
-
-
-# =============================================================================
-# 7. QA CHECKS
-# =============================================================================
-
-# Verify handbook totals match Table 12
-# company_totals_2006 %>% summarise(sum(mcf_total))  # should ≈ 316,804,334 (full table)
-# company_totals_2012 %>% summarise(sum(mcf_total))  # should ≈ 347,734,296 (full table)
-# Note: we only include metro-serving utilities, so these will be < statewide total.
-# The county shares approach handles this because we're distributing each company's
-# total to its own service-area counties.
-
-# Compare 2012 back-estimate vs 2014 actuals for reasonableness
-# county_est_2012 %>%
-#   left_join(
-#     MNcounty_level_gas_emissions %>% filter(year == 2014) %>%
-#       select(county = county_name, mcf_2014 = total_mcf),
-#     by = "county"
-#   ) %>%
-#   mutate(pct_diff = (total_mcf - mcf_2014) / mcf_2014 * 100)
-
-# Compare old pop-downscaled 2005 Anoka estimate vs new approach
-# Old: ~22,978,654 MCF (pop-proportional)
-# New should be meaningfully lower if Anoka's share of CenterPoint/Xcel
-# deliveries is smaller than its share of state population
-
-cat("
-=== NEXT STEPS ===
-1. Fill in utility_name_crosswalk with actual folder names from your utility reports
-2. Uncomment the processing sections and run
-3. Verify 2006 and 2012 company totals against the handbook tables
-4. Check whether MERC-PNG or MERC-NMU serve any study area counties
-   (if so, add them to company_totals and crosswalk)
-5. Compare the new Anoka 2005 estimate against the old pop-downscaled value
-6. Decide whether to anchor interpolation to 2006+2012+2014 (three points)
-   or just 2006+2014 (two points, ignoring 2012 as redundant)
-")

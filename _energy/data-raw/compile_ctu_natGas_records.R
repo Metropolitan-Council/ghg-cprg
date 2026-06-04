@@ -19,7 +19,7 @@ ctu_county_unique <- ctu_population %>%
   distinct(geoid, ctuid, ctu_name, ctu_class, county_name)
 
 # county activity and emissions data
-county_mcf <- readRDS(here("_energy", "data", "minnesota_county_GasEmissions.RDS"))
+county_mcf <- readRDS(here("_energy", "data", "county_natgas_activitiy_emissions.RDS"))
 
 ## create storage frame of unique city and utility combos with all years
 ctu_utility_year <- readRDS("_energy/data/ctu_ng_utility_intersect.RDS") %>%

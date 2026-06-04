@@ -104,62 +104,53 @@ utility_county_proportions %>%
   print(n = Inf)
 
 # Save the county proportions object for use in handbook back-estimation
-write_rds(utility_county_proportions, here("_energy", "data", "mn_gas_utility_county_proportions.RDS"))
-
-# PROCESS UTILITY REPORT DATA (county rows only, excluding GRAND TOTAL)
-
-processed_mn_gasUtil_activityData <- combined_MNgasUtil_activityData %>%
-  # Remove grand total rows — those are only needed for proportion calculations above
-  filter(county != "GRAND TOTAL (Calculated)") %>%
-  # Remove utility-county records with no data
-  filter(!is.na(mcf_delivered)) %>%
-  mutate(
-    CO2_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF %>%
-      units::as_units("pound") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric(),
-    CH4_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF %>%
-      units::as_units("pound") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric(),
-    N2O_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF %>%
-      units::as_units("pound") %>%
-      units::set_units("metric_ton") %>%
-      as.numeric(),
-    CO2e_emissions_mt = CO2_emissions_mt + CH4_emissions_mt + N2O_emissions_mt
-  )
-
-# Aggregate data by county, add identifiers for state and sector
-MNcounty_level_gas_emissions <- processed_mn_gasUtil_activityData %>%
-  group_by(county, year) %>%
-  summarise(
-    total_mcf = sum(mcf_delivered, na.rm = TRUE),
-    total_CO2_emissions_mt = sum(CO2_emissions_mt, na.rm = TRUE),
-    total_CH4_emissions_mt = sum(CH4_emissions_mt, na.rm = TRUE),
-    total_N2O_emissions_mt = sum(N2O_emissions_mt, na.rm = TRUE),
-    emissions_metric_tons_co2e = sum(
-      CO2_emissions_mt +
-        (CH4_emissions_mt * gwp$ch4) +
-        (N2O_emissions_mt * gwp$n2o),
-      na.rm = TRUE
-    )
-  ) %>%
-  mutate(
-    state = "MN",
-    sector = "Natural gas",
-    year = as.numeric(year)
-  ) %>%
-  rename(
-    county_name = county
-  )
+write_rds(utility_county_proportions, here("_energy", "data", "county_natgas_7610_activity.RDS"))
 
 
-# =============================================================================
-# SAVE OUTPUTS
-# =============================================================================
+# move emissions work to full script when ready
+# processed_mn_gasUtil_activityData <- combined_MNgasUtil_activityData %>%
+#   # Remove grand total rows — those are only needed for proportion calculations above
+#   filter(county != "GRAND TOTAL (Calculated)") %>%
+#   # Remove utility-county records with no data
+#   filter(!is.na(mcf_delivered)) %>%
+#   mutate(
+#     CO2_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF %>%
+#       units::as_units("pound") %>%
+#       units::set_units("metric_ton") %>%
+#       as.numeric(),
+#     CH4_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF %>%
+#       units::as_units("pound") %>%
+#       units::set_units("metric_ton") %>%
+#       as.numeric(),
+#     N2O_emissions_mt = mcf_delivered * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF %>%
+#       units::as_units("pound") %>%
+#       units::set_units("metric_ton") %>%
+#       as.numeric(),
+#     CO2e_emissions_mt = CO2_emissions_mt + CH4_emissions_mt + N2O_emissions_mt
+#   )
+# 
+# # Aggregate data by county, add identifiers for state and sector
+# MNcounty_level_gas_emissions <- processed_mn_gasUtil_activityData %>%
+#   group_by(county, year) %>%
+#   summarise(
+#     total_mcf = sum(mcf_delivered, na.rm = TRUE),
+#     total_CO2_emissions_mt = sum(CO2_emissions_mt, na.rm = TRUE),
+#     total_CH4_emissions_mt = sum(CH4_emissions_mt, na.rm = TRUE),
+#     total_N2O_emissions_mt = sum(N2O_emissions_mt, na.rm = TRUE),
+#     emissions_metric_tons_co2e = sum(
+#       CO2_emissions_mt +
+#         (CH4_emissions_mt * gwp$ch4) +
+#         (N2O_emissions_mt * gwp$n2o),
+#       na.rm = TRUE
+#     )
+#   ) %>%
+#   mutate(
+#     state = "MN",
+#     sector = "Natural gas",
+#     year = as.numeric(year)
+#   ) %>%
+#   rename(
+#     county_name = county
+#   )
 
-# Utility-level activity and emissions (county detail, no totals)
-write_rds(processed_mn_gasUtil_activityData, here("_energy", "data", "county_natgas_activitiy_emissions.RDS"))
 
-# County-level aggregated emissions (from utility reports only — no downscaled years)
-write_rds(MNcounty_level_gas_emissions, here("_energy", "data", "county_natgas_emissions_by_gas.RDS"))
