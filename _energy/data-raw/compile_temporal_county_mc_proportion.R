@@ -18,13 +18,7 @@ ctu_ng <- readRDS(file.path(
 ))
 
 # county 7610 totals 
-county_mcf <- readRDS("_energy/data/county_natgas_activity.RDS") %>%
-  select(
-    inventory_year = year,
-    county_name,
-    mcf_county    = activity,
-    county_source = data_source
-  )
+county_mcf <- readRDS("_energy/data/county_natgas_activity.RDS")
 
 ## ghgrp - industrial combustion
 
@@ -48,24 +42,24 @@ powerplant_natgas_measured <- subpart_c_emissions %>%
     facility_names = paste(sort(unique(facility_name)), collapse = "; "),
     .groups = "drop"
   ) %>%
-  rename(inventory_year = reporting_year)
+  rename(emissions_year = reporting_year)
 
 # Backcast to 2005–2010 via Kalman smoothing
 all_pp_counties <- unique(powerplant_natgas_measured$county_name)
 
 powerplant_natgas <- expand.grid(
-  inventory_year = 2005:2023,
+  emissions_year = 2005:2023,
   county_name    = all_pp_counties,
   stringsAsFactors = FALSE
 ) %>%
-  left_join(powerplant_natgas_measured, by = c("inventory_year", "county_name")) %>%
+  left_join(powerplant_natgas_measured, by = c("emissions_year", "county_name")) %>%
   group_by(county_name) %>%
-  arrange(inventory_year) %>%
+  arrange(emissions_year) %>%
   mutate(
     mcf_powerplant = na_kalman(mcf_powerplant),
     pp_data_type   = case_when(
       !is.na(mcf_powerplant) ~ "measured",
-      inventory_year < 2011  ~ "backcasted",
+      emissions_year < 2011  ~ "backcasted",
       TRUE                   ~ "interpolated"
     )
   ) %>%
@@ -91,7 +85,7 @@ ghgrp_county_combustion <- ghgrp_industrial_combustion %>%
     n_facilities         = n_distinct(facility_name),
     .groups = "drop"
   ) %>%
-  rename(inventory_year = reporting_year)
+  rename(emissions_year = reporting_year)
 
 # ── MPCA industrial natural gas ───────────────────────────────────────────────
 mpca_industrial <- readRDS("_industrial/data/mpca_fuel_activity.RDS") %>%
@@ -100,7 +94,8 @@ mpca_industrial <- readRDS("_industrial/data/mpca_fuel_activity.RDS") %>%
     sector       == "Industrial",
     fuel_type == "Natural Gas",
     !county_name %in% c("Sherburne","Chisago")
-  ) 
+  ) %>% 
+  rename(emissions_year = inventory_year)
 
 mpca_facilities <- mpca_industrial %>% 
   distinct(ctu_name, source_name)
@@ -160,7 +155,7 @@ mpca_ghgrp_overlap <- c(
 
 mpca_county <- mpca_industrial %>%
   filter(!source_name %in% mpca_ghgrp_overlap) %>%
-  group_by(county_name, inventory_year) %>%
+  group_by(county_name, emissions_year) %>%
   summarize(
     mcf_mpca_industrial = sum(value_activity / 1000, na.rm = TRUE),
     .groups = "drop"
@@ -179,17 +174,17 @@ all_industrial_counties <- union(
 
 #1
 mpca_county_backcasted <- expand.grid(
-  inventory_year = 2011:2023,
+  emissions_year = 2011:2023,
   county_name    = all_industrial_counties,
   stringsAsFactors = FALSE
 ) %>%
-  left_join(mpca_county, by = c("inventory_year", "county_name")) %>%
+  left_join(mpca_county, by = c("emissions_year", "county_name")) %>%
   group_by(county_name) %>%
-  arrange(inventory_year) %>%
+  arrange(emissions_year) %>%
   mutate(
     mcf_mpca_industrial = na_kalman(mcf_mpca_industrial),
     mpca_data_type = case_when(
-      inventory_year >= 2016 ~ "measured",
+      emissions_year >= 2016 ~ "measured",
       TRUE                   ~ "backcasted"
     )
   ) %>%
@@ -197,17 +192,17 @@ mpca_county_backcasted <- expand.grid(
 
 #2
 industrial_combined_2011_2023 <- expand.grid(
-  inventory_year = 2011:2023,
+  emissions_year = 2011:2023,
   county_name    = all_industrial_counties,
   stringsAsFactors = FALSE
 ) %>%
   left_join(
-    ghgrp_county_combustion %>% select(inventory_year, county_name, mcf_ghgrp_industrial),
-    by = c("inventory_year", "county_name")
+    ghgrp_county_combustion %>% select(emissions_year, county_name, mcf_ghgrp_industrial),
+    by = c("emissions_year", "county_name")
   ) %>%
   left_join(
-    mpca_county_backcasted %>% select(inventory_year, county_name, mcf_mpca_industrial),
-    by = c("inventory_year", "county_name")
+    mpca_county_backcasted %>% select(emissions_year, county_name, mcf_mpca_industrial),
+    by = c("emissions_year", "county_name")
   ) %>%
   mutate(
     mcf_ghgrp_industrial = replace_na(mcf_ghgrp_industrial, 0),
@@ -217,21 +212,21 @@ industrial_combined_2011_2023 <- expand.grid(
 
 #3
 industrial_combustion_full <- expand.grid(
-  inventory_year = 2005:2023,
+  emissions_year = 2005:2023,
   county_name    = all_industrial_counties,
   stringsAsFactors = FALSE
 ) %>%
   left_join(
     industrial_combined_2011_2023 %>%
-      select(inventory_year, county_name, mcf_industrial_combined),
-    by = c("inventory_year", "county_name")
+      select(emissions_year, county_name, mcf_industrial_combined),
+    by = c("emissions_year", "county_name")
   ) %>%
   group_by(county_name) %>%
-  arrange(inventory_year) %>%
+  arrange(emissions_year) %>%
   mutate(
     mcf_industrial_combined = na_kalman(mcf_industrial_combined),
     data_type = case_when(
-      inventory_year >= 2011 ~ "measured/modeled",
+      emissions_year >= 2011 ~ "measured/modeled",
       TRUE                   ~ "backcasted"
     )
   ) %>%
@@ -240,7 +235,7 @@ industrial_combustion_full <- expand.grid(
 
 ## examine how emissions change at the breakpoints
 ggplot(industrial_combustion_full,
-       aes(x = inventory_year, y = mcf_industrial_combined, col = county_name)) +
+       aes(x = emissions_year, y = mcf_industrial_combined, col = county_name)) +
   geom_line() +
   geom_vline(xintercept = c(2011, 2016), linetype = "dashed", alpha = 0.4) +
   labs(title = "Industrial natural gas: combined GHGRP + MPCA with backcast",
@@ -259,12 +254,42 @@ ggplot(industrial_combustion_full,
 county_res <- ctu_ng %>% 
   filter(sector == "Residential",
          source == "Natural Gas") %>% 
-  group_by(county_name, inventory_year, sector, category, source, data_source, factor_source) %>% 
+  group_by(county_name, emissions_year, sector, category, source) %>% 
   summarize(mcf = sum(mcf)) %>% 
   ungroup()
 
 county_commercial <- county_mcf %>% 
+  filter(!county_name %in% c("Chisago", "Sherburne")) %>% 
   left_join(county_res,
             by = c("county_name",
-                   "inventory_year")
+                   "emissions_year")
+  ) %>% 
+  left_join(industrial_combustion_full) %>% 
+  left_join(powerplant_natgas) %>% 
+  mutate(
+    mcf_industrial_combined = replace_na(mcf_industrial_combined, 0),
+    mcf_powerplant = replace_na(mcf_powerplant, 0),
+    mcf_comm = mcf_delivered - (mcf + mcf_powerplant + mcf_industrial_combined),
+    sector = "Commercial"
   )
+  
+county_commercial %>%
+  group_by(county_name, emissions_year) %>%
+  summarise(
+    Residential = sum(mcf),
+    Industrial = first(mcf_industrial_combined),
+    Commercial = first(mcf_comm),
+    Powerplant = first(mcf_powerplant),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(Residential:Powerplant, names_to = "sector", values_to = "mcf") %>%
+  ggplot(aes(x = emissions_year, y = mcf / 1e6, color = sector)) +
+  geom_line() +
+  geom_point(size = 1) +
+  facet_wrap(~county_name, scales = "free_y") +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Natural Gas Deliveries by Sector", x = NULL, y = "MCF (millions)", color = "Sector") +
+  theme_minimal()
+
+write_csv(county_commercial,
+          "C:/Users/WilfahPA/Documents/county_commercial.csv")
