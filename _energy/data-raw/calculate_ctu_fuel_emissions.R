@@ -65,51 +65,52 @@ coctu_res_ng <- coctu_fuel %>%
     mcf    = ng_mmbtu / 1.037
   ) %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, sector, mcf, data_source)
+         emissions_year = inventory_year, sector, mcf, data_source)
 
 coctu_res_liquid <- coctu_fuel %>%
   filter(sector == "Residential") %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, data_source,
+         emissions_year = inventory_year, data_source,
          propane_mmbtu, fueloil_other_mmbtu)
 
 # Combined natural gas data
 coctu_ng <- coctu_fuel %>% 
   mutate(mcf = ng_mmbtu / 1.037) %>% 
-  select(-c(propane_mmbtu, fueloil_other_mmbtu, total_res_mmbtu))
+  select(-c(propane_mmbtu, fueloil_other_mmbtu, total_res_mmbtu)) %>% 
+  rename(emissions_year = inventory_year)
+         
 
 #county data
 
 county_mcf <- readRDS(here("_energy", "data", "county_natgas_activity.RDS")) %>%
   select(
-    inventory_year = year,
+    emissions_year,
     county_name,
-    mcf_county    = activity,
-    county_source = data_source
+    mcf_county    = mcf_delivered
   ) %>%
   filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
 
 #compare ctu aggregation to county data
 
 county_comparison <- coctu_ng %>%
-  filter(inventory_year >= 2010) %>%
-  group_by(county_name, inventory_year) %>%
+  filter(emissions_year >= 2010) %>%
+  group_by(county_name, emissions_year) %>%
   summarize(mcf_ctu_sum = sum(mcf, na.rm = TRUE), .groups = "drop") %>%
-  left_join(county_mcf, by = c("county_name", "inventory_year")) %>%
+  left_join(county_mcf, by = c("county_name", "emissions_year")) %>%
   mutate(
     scale_factor = mcf_county / mcf_ctu_sum,
     gap_mcf      = mcf_county - mcf_ctu_sum
   )
 
 coctu_2010_2023 <- coctu_ng %>%
-  filter(inventory_year %in% 2010:2023)
+  filter(emissions_year %in% 2010:2023)
 
 
 # stretching back to 2005 based on county data, keeping early RII data
 
 ctu_early_props <- coctu_ng %>%
-  filter(inventory_year %in% 2010:2013) %>%
-  group_by(county_name, inventory_year) %>%
+  filter(emissions_year %in% 2010:2013) %>%
+  group_by(county_name, emissions_year) %>%
   mutate(county_total = sum(mcf, na.rm = TRUE)) %>%
   ungroup() %>%
   mutate(ctu_prop = mcf / county_total) %>%
@@ -118,31 +119,26 @@ ctu_early_props <- coctu_ng %>%
 
 # Pull RII data already embedded in prediction files
 rii_2005_2009 <- coctu_ng %>%
-  filter(inventory_year %in% 2005:2009,
+  filter(emissions_year %in% 2005:2009,
          data_source == "RII utility data")
 
 # County-proportional allocation only for CTU-years without RII coverage
 coctu_2005_2009 <- county_mcf %>%
-  filter(inventory_year %in% 2005:2009) %>%
+  filter(emissions_year %in% 2005:2009) %>%
   left_join(ctu_early_props,
             by           = "county_name",
             relationship = "many-to-many") %>%
   mutate(
     mcf = mcf_county * mean_ctu_prop,
-    data_source = case_when(
-      county_source == "Utility report" ~
-        "County proportion (CTU-informed, utility anchor)",
-      TRUE ~
-        "County proportion (CTU-informed, interpolated)"
-    )
+    data_source = "County proportion"
   ) %>%
   filter(!is.na(mcf), mcf > 0) %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, sector, mcf, data_source) %>%
+         emissions_year, sector, mcf, data_source) %>%
   # Don't overwrite CTU-years we already have from RII
   anti_join(rii_2005_2009,
             by = c("coctu_id_gnis", "ctu_name", "ctu_class",
-                   "county_name", "sector", "inventory_year"))
+                   "county_name", "sector", "emissions_year"))
 
 coctu_2005_2009 <- bind_rows(rii_2005_2009, coctu_2005_2009)
 
@@ -152,18 +148,18 @@ ctu_ng_full <- bind_rows(
   coctu_2010_2023
 ) %>%
   group_by(coctu_id_gnis, ctu_name, ctu_class, county_name,
-           sector, inventory_year, data_source) %>%
+           sector, emissions_year, data_source) %>%
   summarize(mcf = sum(mcf), .groups = "drop") %>%
   mutate(
     category = "Building Energy",
     source   = "Natural Gas"
   ) %>%
-  arrange(ctu_name, ctu_class, county_name, sector, inventory_year)
+  arrange(ctu_name, ctu_class, county_name, sector, emissions_year)
 
 stopifnot(
   "Duplicate CTU-sector-year rows found" =
     ctu_ng_full %>%
-    count(coctu_id_gnis, ctu_name, ctu_class, county_name, sector, inventory_year) %>%
+    count(coctu_id_gnis, ctu_name, ctu_class, county_name, sector, emissions_year) %>%
     filter(n > 1) %>%
     nrow() == 0
 )
@@ -171,16 +167,16 @@ stopifnot(
 ## cast backwards for liquid fuels by holding constant
 
 liquid_2005_2009 <- coctu_res_liquid %>%
-  filter(inventory_year == 2010) %>%
-  select(-inventory_year) %>%
-  crossing(inventory_year = 2005:2009) %>%
+  filter(emissions_year == 2010) %>%
+  select(-emissions_year) %>%
+  crossing(emissions_year = 2005:2009) %>%
   mutate(data_source = "Flat carry (2010 anchor)")
 
 coctu_liquid_full <- bind_rows(
-  coctu_res_liquid %>% filter(inventory_year %in% 2010:2023),
+  coctu_res_liquid %>% filter(emissions_year %in% 2010:2023),
   liquid_2005_2009
 ) %>%
-  arrange(ctu_name, ctu_class, county_name, inventory_year)
+  arrange(ctu_name, ctu_class, county_name, emissions_year)
 
 
 # Convert natural gas to emissions
