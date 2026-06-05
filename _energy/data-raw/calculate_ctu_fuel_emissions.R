@@ -108,39 +108,42 @@ coctu_2010_2023 <- coctu_ng %>%
 
 # stretching back to 2005 based on county data, keeping early RII data
 
-ctu_early_props <- coctu_ng %>%
-  filter(emissions_year %in% 2010:2013) %>%
-  group_by(county_name, emissions_year) %>%
-  mutate(county_total = sum(mcf, na.rm = TRUE)) %>%
-  ungroup() %>%
-  mutate(ctu_prop = mcf / county_total) %>%
+# Each CTU's earliest 3 years of data
+ctu_earliest_3 <- coctu_ng %>%
   group_by(coctu_id_gnis, ctu_name, ctu_class, county_name, sector) %>%
-  summarize(mean_ctu_prop = mean(ctu_prop, na.rm = TRUE), .groups = "drop")
+  arrange(emissions_year) %>%
+  slice_head(n = 3) %>%
+  ungroup()
 
-# Pull RII data already embedded in prediction files
-rii_2005_2009 <- coctu_ng %>%
-  filter(emissions_year %in% 2005:2009,
-         data_source == "RII utility data")
+# Sector sums as proportion of county_mcf totals (not CTU sums)
+ctu_sector_props <- ctu_earliest_3 %>%
+  group_by(coctu_id_gnis,ctu_name, county_name, emissions_year, sector) %>%
+  summarize(sector_mcf = sum(mcf, na.rm = TRUE), .groups = "drop") %>%
+  left_join(county_mcf, by = c("county_name", "emissions_year")) %>%
+  mutate(sector_prop = sector_mcf / mcf_county) %>%
+  group_by(coctu_id_gnis,ctu_name, county_name, sector) %>%
+  summarize(mean_sector_prop = mean(sector_prop, na.rm = TRUE), .groups = "drop")
 
-# County-proportional allocation only for CTU-years without RII coverage
-coctu_2005_2009 <- county_mcf %>%
-  filter(emissions_year %in% 2005:2009) %>%
-  left_join(ctu_early_props,
-            by           = "county_name",
-            relationship = "many-to-many") %>%
+# Existing 2005-2009 actuals (RII, utility data)
+existing_2005_2009 <- coctu_ng %>%
+  filter(emissions_year %in% 2005:2009)
+
+# Grid: all CTUs × 2005-2009, with county_mcf and proportions
+coctu_2005_2009_filled <- ctu_sector_props %>%
+  crossing(emissions_year = 2005:2009) %>%
+  left_join(county_mcf, by = c("county_name", "emissions_year")) %>%
   mutate(
-    mcf = mcf_county * mean_ctu_prop,
-    data_source = "County proportion"
+    mcf = mcf_county * mean_sector_prop,
+    data_source = "County proportion (sector-anchored)"
   ) %>%
   filter(!is.na(mcf), mcf > 0) %>%
-  select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         emissions_year, sector, mcf, data_source) %>%
-  # Don't overwrite CTU-years we already have from RII
-  anti_join(rii_2005_2009,
-            by = c("coctu_id_gnis", "ctu_name", "ctu_class",
-                   "county_name", "sector", "emissions_year"))
+  # Keep only CTU-years without existing actuals
+  anti_join(existing_2005_2009,
+            by = c("coctu_id_gnis", "county_name", "sector", "emissions_year")) %>%
+  select(coctu_id_gnis, ctu_name, county_name,
+         emissions_year, sector, mcf, data_source)
 
-coctu_2005_2009 <- bind_rows(rii_2005_2009, coctu_2005_2009)
+coctu_2005_2009 <- bind_rows(existing_2005_2009, coctu_2005_2009_filled)
 
 
 ctu_ng_full <- bind_rows(
@@ -155,6 +158,20 @@ ctu_ng_full <- bind_rows(
     source   = "Natural Gas"
   ) %>%
   arrange(ctu_name, ctu_class, county_name, sector, emissions_year)
+
+ctu_ng_full %>% 
+  group_by(county_name, sector, emissions_year) %>%
+  summarise(
+    mcf = sum(mcf),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = emissions_year, y = mcf / 1e6, color = sector)) +
+  geom_line() +
+  geom_point(size = 1) +
+  facet_wrap(~county_name, scales = "free_y") +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Natural Gas Deliveries by Sector", x = NULL, y = "MCF (millions)", color = "Sector") +
+  theme_minimal()
 
 stopifnot(
   "Duplicate CTU-sector-year rows found" =
