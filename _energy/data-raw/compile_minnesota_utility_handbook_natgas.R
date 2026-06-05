@@ -176,23 +176,27 @@ utility_county_crosswalk <- utility_ests_early %>%
             by = join_by(utility)) %>% 
   ungroup() %>% 
   mutate(mcf_delivered = utility_mcf * county_proportion) %>% 
-  select(-c(utility_mcf, utility, county_proportion))
+  select(-c(utility_mcf, utility, county_proportion)) %>% 
+  mutate(data_source = "MN utility handbook")
 
 ## rebind with 7610 and check for completeness
 ## MER did not report in 2013 so this is known gap
 
 utility_natgas_activity <- rbind(utility_county_proportions %>% 
                                    left_join(utility_name_crosswalk) %>% 
-                                   select(utility_name, county, year, mcf_delivered),
-                                 utility_county_crosswalk)
+                                   select(utility_name, county, year, mcf_delivered) %>% 
+                                   mutate(data_source = "MN 7610 utility reporting"),
+                                 utility_county_crosswalk) %>% 
+  rename(county_name = county,
+         emissions_year = year)
   
 # validation across two reporting formats
 
 # By county
 utility_natgas_activity %>%
-  group_by(county, year) %>%
+  group_by(county_name, emissions_year) %>%
   summarise(mcf = sum(mcf_delivered, na.rm = TRUE), .groups = "drop") %>%
-  ggplot(aes(x = year, y = mcf / 1e6, color = county)) +
+  ggplot(aes(x = emissions_year, y = mcf / 1e6, color = county_name)) +
   geom_line() +
   geom_vline(xintercept = 2012.5, linetype = "dashed", color = "red") +
   annotate("text", x = 2012.5, y = Inf, label = "Handbook → 7610", 
@@ -203,9 +207,9 @@ utility_natgas_activity %>%
 
 # By utility
 utility_natgas_activity %>%
-  group_by(utility_name, year) %>%
+  group_by(utility_name, emissions_year) %>%
   summarise(mcf = sum(mcf_delivered, na.rm = TRUE), .groups = "drop") %>%
-  ggplot(aes(x = year, y = mcf / 1e6, color = utility_name)) +
+  ggplot(aes(x = emissions_year, y = mcf / 1e6, color = utility_name)) +
   geom_line() +
   geom_point(size = 1) +
   geom_vline(xintercept = 2012.5, linetype = "dashed", color = "red") +
@@ -218,15 +222,15 @@ utility_natgas_activity %>%
 # There are two gaps: one in MER for 2013 and looks like Centennial is completely blank from 2013 to 2019.
 
 utility_natgas_activity <- utility_natgas_activity %>%
-  complete(utility_name, county, year = min(year):max(year)) %>%
-  group_by(utility_name, county) %>%
-  arrange(year) %>%
+  complete(utility_name, county_name, emissions_year = min(emissions_year):max(emissions_year)) %>%
+  group_by(utility_name, county_name) %>%
+  arrange(emissions_year) %>%
   mutate(
     mcf_delivered = if (sum(!is.na(mcf_delivered)) >= 2) {
       approx(
-        x = year[!is.na(mcf_delivered)],
+        x = emissions_year[!is.na(mcf_delivered)],
         y = mcf_delivered[!is.na(mcf_delivered)],
-        xout = year,
+        xout = emissions_year,
         rule = 1
       )$y
     } else {
@@ -235,5 +239,66 @@ utility_natgas_activity <- utility_natgas_activity %>%
   ) %>%
   ungroup() %>%
   # Drop rows that were never real (e.g. Centennial-Carver)
-  filter(!is.na(mcf_delivered))
+  filter(!is.na(mcf_delivered)) %>% 
+  mutate(data_source = if_else(
+    is.na(data_source),
+    "Interpolated",
+    data_source
+  ))
+
+write_rds(utility_natgas_activity, here("_energy", "data", "utility_county_natgas_activity.RDS"))
+
+county_natgas_activity <- utility_natgas_activity %>% 
+  group_by(county_name, emissions_year) %>% 
+  summarize(mcf_delivered = sum(mcf_delivered), .groups = "drop")
+  
+
+write_rds(county_natgas_activity, here("_energy", "data", "county_natgas_activity.RDS"))
+
+# county_emissions_by_gas <- utility_natgas_activity %>%
+#   group_by(county, year) %>% 
+#   summarize(mcf = sum(mcf_delivered)) %>% 
+#   ungroup() %>% 
+#   mutate(
+#     CO2_emissions_mt = mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF %>%
+#       units::as_units("pound") %>%
+#       units::set_units("metric_ton") %>%
+#       as.numeric(),
+#     CH4_emissions_mt = mcf * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF %>%
+#       units::as_units("pound") %>%
+#       units::set_units("metric_ton") %>%
+#       as.numeric(),
+#     N2O_emissions_mt = mcf * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF %>%
+#       units::as_units("pound") %>%
+#       units::set_units("metric_ton") %>%
+#       as.numeric(),
+#     CO2e_emissions_mt = CO2_emissions_mt + CH4_emissions_mt + N2O_emissions_mt
+#   ) %>% 
+#   rename(county_name = county,
+#          emissions_year = year)
+# 
+# # Aggregate data by county, add identifiers for state and sector
+# n <- processed_mn_gasUtil_activityData %>%
+#   group_by(county, year) %>%
+#   summarise(
+#     total_mcf = sum(mcf_delivered, na.rm = TRUE),
+#     total_CO2_emissions_mt = sum(CO2_emissions_mt, na.rm = TRUE),
+#     total_CH4_emissions_mt = sum(CH4_emissions_mt, na.rm = TRUE),
+#     total_N2O_emissions_mt = sum(N2O_emissions_mt, na.rm = TRUE),
+#     emissions_metric_tons_co2e = sum(
+#       CO2_emissions_mt +
+#         (CH4_emissions_mt * gwp$ch4) +
+#         (N2O_emissions_mt * gwp$n2o),
+#       na.rm = TRUE
+#     )
+#   ) %>%
+#   mutate(
+#     state = "MN",
+#     sector = "Natural gas",
+#     year = as.numeric(year)
+#   ) %>%
+#   rename(
+#     county_name = county
+#   )
+
 
