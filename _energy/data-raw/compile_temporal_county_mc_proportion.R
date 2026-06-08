@@ -57,6 +57,9 @@ powerplant_natgas <- expand.grid(
   arrange(emissions_year) %>%
   mutate(
     mcf_powerplant = na_kalman(mcf_powerplant),
+    # Fill facility info from measured years (constant per county)
+    facility_names = first(na.omit(facility_names)),
+    n_facilities   = first(na.omit(n_facilities)),
     pp_data_type   = case_when(
       !is.na(mcf_powerplant) ~ "measured",
       emissions_year < 2011  ~ "backcasted",
@@ -265,15 +268,19 @@ county_commercial <- county_mcf %>%
                    "emissions_year")
   ) %>% 
   left_join(industrial_combustion_full) %>% 
-  left_join(powerplant_natgas) %>% 
+  left_join(powerplant_natgas)%>% 
   mutate(
     mcf_industrial_combined = replace_na(mcf_industrial_combined, 0),
     mcf_powerplant = replace_na(mcf_powerplant, 0),
-    mcf_comm = mcf_delivered - (mcf + mcf_powerplant + mcf_industrial_combined),
+    mcf_comm = case_when(
+      county_name %in% c("Dakota","Scott") ~ mcf_delivered - (mcf + mcf_industrial_combined), # strong evidence the two power plants aren't on local utility pipelines
+      county_name %in% c("Washington") & emissions_year <= 2017 ~ mcf_delivered - (mcf + mcf_industrial_combined), #strong evidence Cottage Grove Cogen doesn't get reported until 2018 when MER takes over contract
+      TRUE ~ mcf_delivered - (mcf + mcf_powerplant + mcf_industrial_combined) # all other powerplants appear to be in 7610 reporting
+      ),
     sector = "Commercial"
   )
   
-county_commercial %>%
+county_mcf_activity <- county_commercial %>%
   group_by(county_name, emissions_year) %>%
   summarise(
     Residential = sum(mcf),
@@ -282,8 +289,13 @@ county_commercial %>%
     Powerplant = first(mcf_powerplant),
     .groups = "drop"
   ) %>%
-  pivot_longer(Residential:Powerplant, names_to = "sector", values_to = "mcf") %>%
-  ggplot(aes(x = emissions_year, y = mcf / 1e6, color = sector)) +
+  pivot_longer(Residential:Powerplant, names_to = "sector", values_to = "value_activity") %>% 
+  mutate(category = "Building fuel",
+         source = "Natural gas",
+         unit_activity = "MCF delivered")
+
+county_mcf_activity %>%
+  ggplot(aes(x = emissions_year, y = value_activity / 1e6, color = sector)) +
   geom_line() +
   geom_point(size = 1) +
   facet_wrap(~county_name, scales = "free_y") +
@@ -291,5 +303,45 @@ county_commercial %>%
   labs(title = "Natural Gas Deliveries by Sector", x = NULL, y = "MCF (millions)", color = "Sector") +
   theme_minimal()
 
-write_csv(county_commercial,
-          "C:/Users/WilfahPA/Documents/county_commercial.csv")
+
+write_rds(county_mcf_activity, here("_energy", "data", "county_natgas_activity_by_sector.RDS"))
+
+### convert to emissions
+
+source("_energy/data-raw/_energy_emissions_factors.R")
+
+county_emissions_by_gas <- county_mcf_activity %>%
+  group_by(county_name, emissions_year, sector, category, source) %>%
+  summarize(mcf = sum(value_activity)) %>%
+  ungroup() %>%
+  mutate(
+    CO2_emissions_mt = mcf * epa_emissionsHub_naturalGas_factor_lbsCO2_perMCF %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    CH4_emissions_mt = mcf * epa_emissionsHub_naturalGas_factor_lbsCH4_perMCF %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    N2O_emissions_mt = mcf * epa_emissionsHub_naturalGas_factor_lbsN2O_perMCF %>%
+      units::as_units("pound") %>%
+      units::set_units("metric_ton") %>%
+      as.numeric(),
+    CO2e_emissions_mt = CO2_emissions_mt + CH4_emissions_mt + N2O_emissions_mt
+  )
+
+write_rds(county_emissions_by_gas, here("_energy", "data", "county_natgas_emissions_by_gas.RDS"))
+
+write_rds(county_emissions_by_gas %>% 
+            select(county_name, emissions_year, sector, category, source, value_emissions = CO2e_emissions_mt) %>% 
+            mutate(unit_emissions = "Metric tons CO2e",
+                   data_source = case_when(
+                     sector == "Residential" ~ "Met Council modeling",
+                     sector == "Commercial" & emissions_year >= 2013 ~ "7610 reporting residual",
+                     sector == "Commercial" & emissions_year < 2013 ~ "MN utility handbook residual",
+                     sector %in% c("Industrial", "Powerplant") & emissions_year >= 2011 ~ "EPA and MPCA reporting",
+                     sector %in% c("Industrial", "Powerplant") & emissions_year < 2011 ~ "EPA and MPCA extrapolation",
+                   ),
+                   factor_source = "Federal Register EPA; 40 CFR Part 98"),
+             here("_energy", "data", "county_natgas_emissions_by_sector.RDS"))
+
