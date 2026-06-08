@@ -136,6 +136,10 @@ ggplot(electric_interpolated, aes(x = year, y = activity, col = county_name)) +
   geom_line()
 
 natgas_raw <- readRDS(file.path(here::here("_energy", "data", "county_natgas_activitiy_emissions.RDS"))) %>%
+  rename(county_name = county) %>% 
+  group_by(county_name, year) %>% 
+  summarize(total_mcf = sum(mcf_delivered)) %>% 
+  ungroup() 
   bind_rows(readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS"))) %>%
   mutate(total_mcf = if_else(is.na(total_mcf),
     emissions_metric_tons_co2e / natgas_ef_scf$mt_co2e_mcf,
