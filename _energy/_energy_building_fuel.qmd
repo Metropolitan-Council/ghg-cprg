@@ -1,0 +1,332 @@
+# Building Energy {#sec-building-energy}
+```{r include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+# ── Geography filter ──────────────────────────────────────────────────────────
+seven_county <- c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington")
+
+# ── County-level natural gas by sector ────────────────────────────────────────
+county_ng <- readRDS(file.path(
+  here::here(), "_energy/data/county_natgas_emissions_by_sector.RDS"
+)) %>%
+  filter(county_name %in% seven_county)
+
+county_ng_sector <- county_ng %>% 
+  filter(sector != "Powerplant")
+
+county_ng_pp <- county_ng %>% 
+  filter(sector == "Powerplant")
+
+# ── County-level propane and fuel oil emissions ───────────────────────────────
+county_liquid <- readRDS(file.path(
+  here::here(), "_energy/data/county_propane_fueloil_activity_emissions.RDS"
+)) %>%
+  filter(county_name %in% seven_county)
+
+# ── CTU-level natural gas emissions ───────────────────────────────────────────
+ctu_ng <- readRDS(file.path(
+  here::here(), "_energy/data/_ctu_natgas_emissions.RDS"
+)) %>%
+  filter(county_name %in% seven_county)
+
+# ── CTU-level liquid fuel emissions ───────────────────────────────────────────
+ctu_liquid <- readRDS(file.path(
+  here::here(), "_energy/data/_ctu_liquid_emissions.RDS"
+)) %>%
+  filter(county_name %in% seven_county)
+
+# ── CTU geometry and population ───────────────────────────────────────────────
+cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS")) %>%
+  filter(county_name %in% seven_county) %>%
+  mutate(geometry = st_make_valid(geometry))
+
+ctu_population <- readRDS(file.path(here::here(), "_meta/data/ctu_population.RDS"))
+
+# ── Conversion constants ──────────────────────────────────────────────────────
+mcf_to_mmbtu <- 1.020
+
+# ── Summary statistics ────────────────────────────────────────────────────────
+target_year <- 2022
+
+# Total building energy emissions in target year
+# Natural gas sectors
+ng_2022 <- county_ng_sector %>%
+  filter(emissions_year == target_year) %>%
+  pull(value_emissions) %>%
+  sum(na.rm = TRUE)
+
+ng_2005 <- county_ng_sector %>%
+  filter(emissions_year == 2005) %>%
+  pull(value_emissions) %>%
+  sum(na.rm = TRUE)
+
+# Liquid fuel total
+liquid_2022 <- county_liquid %>%
+  filter(emissions_year == target_year) %>%
+  pull(value_emissions) %>%
+  sum(na.rm = TRUE)
+
+building_energy_2022 <- ng_2022 + liquid_2022
+
+# Residential share
+res_ng_2022 <- county_ng_sector %>%
+  filter(emissions_year == target_year, sector == "Residential") %>%
+  pull(value_emissions) %>%
+  sum(na.rm = TRUE)
+
+res_share <- (res_ng_2022 + liquid_2022) / building_energy_2022
+
+hookaddcap()
+```
+
+## Introduction
+
+Building energy emissions encompass the combustion of natural gas, propane, and fuel oil for space heating, water heating, cooking, and other end uses in residential, commercial, and industrial buildings. Natural gas is the dominant fuel, delivered through the distribution networks of utilities operating under Minnesota Public Utilities Commission oversight. Propane and fuel oil serve communities beyond the reach of the gas distribution network, particularly in the region's rural areas.
+
+This section presents emissions from all stationary fuel combustion within buildings. Electricity consumption, though a major component of building energy use, is treated separately in the [Electricity](#sec-electricity) section because its emissions derive from the generation mix rather than on-site combustion. Natural gas consumed for electric power generation at power plants is also treated separately; although power plant gas appears in utility delivery totals, those emissions are attributed to the electricity sector to avoid double counting.
+
+
+## Results
+
+### `r target_year` county and subsector breakdown
+
+Building energy accounted for an estimated `r scales::comma(round(building_energy_2022), accuracy = 1)` metric tons CO~2~e across the seven-county metro in `r target_year`. Residential natural gas and liquid fuels account for approximately `r round(100 * res_share)`% of total building energy emissions.
+
+```{r fig-be-county-sector-emissions}
+#| fig-cap: "2022 county building energy emissions by sector"
+#| out-width: "95%"
+#| fig.height: 4
+#| fig.width: 10
+
+# Combine NG sectors and liquid fuels for the stacked bar
+county_be_2022 <- bind_rows(
+  county_ng_sector %>%
+    filter(emissions_year == target_year) %>%
+    transmute(county_name, sector, value_emissions),
+  county_liquid %>%
+    filter(emissions_year == target_year) %>%
+    group_by(county_name) %>%
+    summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
+    mutate(sector = "Propane & fuel oil")
+)
+
+# Order sectors for stacking
+county_be_2022 <- county_be_2022 %>%
+  mutate(sector = factor(sector, levels = c(
+    "Residential", "Commercial", "Industrial", "Power plant", "Propane & fuel oil"
+  )))
+
+be_sector_colors <- c(
+  "Residential"          = colors$councilBlue,
+  "Commercial"           = cprg_colors$cprg_green,
+  "Industrial"           = cprg_colors$cprg_yellow,
+  "Power plant"          = cprg_colors$cprg_da_yellow,
+  "Propane & fuel oil"   = cprg_colors$epa_blue
+)
+
+fig_be_county_sector <- plot_ly(
+  type = "bar",
+  source = "fig-be-county-sector-emissions",
+  data = county_be_2022,
+  y = ~ reorder(county_name, value_emissions),
+  x = ~value_emissions,
+  color = ~sector,
+  colors = be_sector_colors,
+  hovertemplate = ~ paste0(
+    county_name, " County<br>",
+    sector, "<br>",
+    round(value_emissions / 1000, digits = 1), " thousand metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = paste(target_year, "county building energy emissions by sector"),
+    x_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = ""
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(traceorder = "reversed"),
+    hoverlabel = list(font = list(color = "black"))
+  )
+
+fig_be_county_sector
+```
+
+
+### Baseline emissions
+
+```{r fig-be-baseline-emissions}
+#| fig-cap: "Building energy emissions over time"
+#| out-width: "95%"
+#| fig.height: 4
+#| fig.width: 8
+
+# Temporal stacked area — natural gas sectors + liquid fuels
+ng_temporal <- county_ng_sector %>%
+  filter(emissions_year <= target_year) %>%
+  group_by(emissions_year, sector) %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") 
+
+liquid_temporal <- county_liquid %>%
+  filter(emissions_year <= target_year) %>%
+  group_by(emissions_year) %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
+  mutate(sector = "Propane & fuel oil")
+
+be_temporal <- bind_rows(ng_temporal, liquid_temporal) %>%
+  mutate(sector = factor(sector, levels = c(
+    "Residential", "Commercial", "Industrial","Propane & fuel oil"
+  )))
+
+fig_be_baseline <- plot_ly(
+  source = "fig-be-baseline-emissions",
+  data = be_temporal,
+  x = ~emissions_year,
+  y = ~value_emissions,
+  color = ~sector,
+  colors = be_sector_colors,
+  type = "scatter",
+  mode = "lines",
+  stackgroup = "one",
+  hovertemplate = ~ paste0(
+    "Year: %{x}<br>",
+    "Sector: %{text}<br>",
+    "Emissions: %{y:,.0f} metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  ),
+  text = ~sector
+) %>%
+  plotly_layout(
+    main_title = "Building Energy Emissions Over Time",
+    x_title = "Year",
+    y_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = "Seven-county metro area"
+  ) %>%
+  layout(
+    hovermode = "x unified",
+    hoverlabel = list(font = list(color = "black"))
+  )
+
+fig_be_baseline
+```
+
+
+### CTU per-capita energy intensity
+
+Total residential heating fuel consumption per person (mmBtu per capita, combining natural gas, propane, and fuel oil) varies substantially across the region. Higher per-capita values typically reflect lower-density housing, older building stock, and greater reliance on propane or fuel oil. This metric helps identify communities where demand-side efficiency programs may have the greatest impact.
+
+```{r fig-ctu-mmbtu-per-cap-map}
+#| fig-cap: "Residential heating fuel per capita (mmBtu), by CTU"
+#| out-width: "95%"
+#| out-height: "500px"
+
+# ── Aggregate CTU-level NG to mmBtu ──────────────────────────────────────────
+ctu_ng_yr <- ctu_ng %>%
+  filter(emissions_year == target_year,
+         sector == "Residential") %>%
+  group_by(ctu_name, ctu_class) %>%
+  summarize(value_emissions_ng = sum(value_emissions, na.rm = TRUE), .groups = "drop")
+
+# ── Propane + fuel oil ────────────────────────────────────────────────────────
+ctu_liquid_yr <- ctu_liquid %>%
+  filter(emissions_year == max(emissions_year[emissions_year <= target_year])) %>%
+  group_by(ctu_name, ctu_class) %>%
+   summarize(value_emissions_fo = sum(value_emissions, na.rm = TRUE), .groups = "drop")
+
+# ── Join with geometry and population ─────────────────────────────────────────
+ctu_map_data <- cprg_ctu %>%
+  st_drop_geometry() %>%
+  distinct(ctu_name, ctu_class, gnis) %>%
+  left_join(ctu_ng_yr, by = c("ctu_name", "ctu_class")) %>%
+  left_join(ctu_liquid_yr, by = c("ctu_name", "ctu_class")) %>%
+  left_join(
+    ctu_population %>%
+      filter(inventory_year == target_year) %>%
+      group_by(ctu_name, ctu_class) %>% 
+      summarize(ctu_population = sum(ctu_population), .groups = "drop"),
+    by = c("ctu_name", "ctu_class")
+  ) %>%
+  mutate(
+    total_emissions   = value_emissions_ng + value_emissions_fo,
+    emissions_per_cap = if_else(
+      ctu_population > 0 & total_emissions > 0,
+      total_emissions / ctu_population,
+      NA_real_
+    )
+  ) %>%
+  right_join(cprg_ctu %>% select(gnis, geometry), by = "gnis") %>%
+  st_as_sf() %>% 
+  filter(!ctu_name == "Fort Snelling")
+
+epc_range <- range(ctu_map_data$emissions_per_cap, na.rm = TRUE)
+
+emissions_cap_pal <- colorNumeric(
+  palette  = "Blues",
+  domain   = sqrt(epc_range),
+  na.color = "transparent"
+)
+
+# Legend breakpoints in original units
+legend_vals <- pretty(epc_range, n = 5)
+legend_vals <- legend_vals[legend_vals >= 0 & legend_vals <= epc_range[2]]
+
+fig_ctu_emissions_per_cap_map <- leaflet(
+  data    = ctu_map_data %>% filter(!is.na(emissions_per_cap)),
+  options = leafletOptions(zoomSnap = 0.5)
+) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(
+    fillColor    = ~ emissions_cap_pal(sqrt(emissions_per_cap)),
+    fillOpacity  = 0.8,
+    color        = "white",
+    weight       = 0.5,
+    smoothFactor = 0.5,
+    label = ~ paste0(
+      ctu_name, " (", ctu_class, ")<br>",
+      "Total CO2e/capita: ", round(emissions_per_cap, 1), "<br>",
+      "Population: ", scales::comma(ctu_population, accuracy = 1), "<br>",
+      "Total CO2e: ", scales::comma(round(total_emissions), accuracy = 1)
+    ) %>% lapply(htmltools::HTML),
+    labelOptions = labelOptions(
+      style     = list("font-size" = "12px"),
+      direction = "auto"
+    )
+  ) %>%
+  addLegend(
+    position = "bottomright",
+    title    = "CO<sub>2</sub>e<br>per capita",
+    colors   = emissions_cap_pal(sqrt(legend_vals)),
+    labels   = round(legend_vals, 1),
+    opacity  = 0.8
+  )
+
+fig_ctu_emissions_per_cap_map
+```
+
+
+## Summary
+
+Natural gas is the dominant source of building energy emissions in the seven-county metro, with residential consumption accounting for the largest share. The commercial sector is estimated as the residual of county utility deliveries after subtracting residential, industrial, and power plant gas — an approach that is transparent about uncertainty but may include some smaller industrial users. Propane and fuel oil are a small share of regional totals but account for nearly all heating energy in townships beyond the gas distribution network. Per-capita energy intensity is highest in lower-density communities with older housing stock, suggesting that building retrofit and weatherization programs targeted at these areas could yield outsized emissions reductions.
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>%
+  stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```

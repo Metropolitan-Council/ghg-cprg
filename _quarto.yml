@@ -42,7 +42,7 @@ book:
 
     - part: "Building Energy"
       chapters:
-       - _energy/_energy_natural_gas_emissions.qmd
+       - _energy/_energy_building_fuel.qmd
        - _energy/data_natural_gas.qmd
        - _energy/data_propane_kerosene.qmd
 
