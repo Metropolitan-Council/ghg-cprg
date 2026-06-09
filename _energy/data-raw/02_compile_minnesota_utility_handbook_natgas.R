@@ -106,10 +106,7 @@ utility_ests_early <- company_props %>%
 
 # 3. BUILD COUNTY SHARES FROM 7610 UTILITY REPORTS
 
-# TODO: Update path to match your project structure
 utility_county_proportions <- read_rds(here("_energy", "data", "county_natgas_7610_activity.RDS"))
-
-
 
 # Select which year's proportions to use for back-estimation
 get_county_shares <- function(proportions_data, crosswalk, method = c("earliest", "average")) {
@@ -254,6 +251,4 @@ county_natgas_activity <- utility_natgas_activity %>%
   
 
 write_rds(county_natgas_activity, here("_energy", "data", "county_natgas_activity.RDS"))
-
-
 

@@ -63,4 +63,4 @@ county_liquid_emissions <- county_fuel %>%
   rename(emissions_year = acs_year,
          activity = mmbtu)
 
-saveRDS(county_liquid_emissions, "_energy/data/county_propane_fueloil_activity.RDS")
+saveRDS(county_liquid_emissions, "_energy/data/county_propane_fueloil_activity_emissions.RDS")
