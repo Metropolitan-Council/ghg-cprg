@@ -45,7 +45,7 @@ source("_energy/data-raw/01_compile_rii_ctu_elec_natgas.R")
 # Forces propane/kerosene households to 0 for urban-class CTUs.
 # Kalman-extrapolates back to 2005. Saves both CTU and county household files.
 # Outputs: propane_kerosene_hh_ctu.RDS, propane_kerosene_hh_county.RDS
-source("_energy/data-raw/02_compile_propane_kerosene_hh.R")
+source("_energy/data-raw/01_compile_propane_kerosene_hh.R")
 
 
 # 02 — DATA COMPILATION -------------------------------------------------------
@@ -70,6 +70,7 @@ source("_energy/data-raw/02_compile_minnesota_utility_handbook_natgas.R")
 # 02_calculate_fueloil_energy.R
 # Downloads EIA SEDS residential consumption (HLRCB, DFRCB, KSRCB) for MN/WI.
 # Disaggregates state totals to CTU and county using ACS household shares.
+# pulls ACS data, requiring API
 # Outputs: ctu_propane_fueloil_use.RDS, county_propane_fueloil_use.RDS
 # (propane_mmBtu, fueloil_other_mmBtu)
 source("_energy/data-raw/02_calculate_fueloil_energy.R")
