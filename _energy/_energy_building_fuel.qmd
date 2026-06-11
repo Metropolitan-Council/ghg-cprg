@@ -79,7 +79,15 @@ liquid_2022 <- county_liquid %>%
   pull(value_emissions) %>%
   sum(na.rm = TRUE)
 
+liquid_2005 <- county_liquid %>%
+  filter(emissions_year == 2005) %>%
+  pull(value_emissions) %>%
+  sum(na.rm = TRUE)
+
 building_energy_2022 <- ng_2022 + liquid_2022
+
+building_energy_2005 <- ng_2005 + liquid_2005
+
 
 # Residential share
 res_ng_2022 <- county_ng_sector %>%
@@ -126,12 +134,12 @@ county_be_2022 <- bind_rows(
 # Order sectors for stacking
 county_be_2022 <- county_be_2022 %>%
   mutate(sector = factor(sector, levels = c(
-    "Residential", "Commercial", "Industrial", "Power plant", "Propane & fuel oil"
+    "Residential", "Business", "Industrial", "Power plant", "Propane & fuel oil"
   )))
 
 be_sector_colors <- c(
   "Residential"          = colors$councilBlue,
-  "Commercial"           = cprg_colors$cprg_green,
+  "Business"           = cprg_colors$cprg_green,
   "Industrial"           = cprg_colors$cprg_yellow,
   "Power plant"          = cprg_colors$cprg_da_yellow,
   "Propane & fuel oil"   = cprg_colors$epa_blue
@@ -189,7 +197,7 @@ liquid_temporal <- county_liquid %>%
 
 be_temporal <- bind_rows(ng_temporal, liquid_temporal) %>%
   mutate(sector = factor(sector, levels = c(
-    "Residential", "Commercial", "Industrial","Propane & fuel oil"
+    "Residential", "Business", "Industrial","Propane & fuel oil"
   )))
 
 fig_be_baseline <- plot_ly(
@@ -227,7 +235,7 @@ fig_be_baseline
 
 ### CTU per-capita energy intensity
 
-Total residential heating fuel consumption per person (mmBtu per capita, combining natural gas, propane, and fuel oil) varies substantially across the region. Higher per-capita values typically reflect lower-density housing, older building stock, and greater reliance on propane or fuel oil. This metric helps identify communities where demand-side efficiency programs may have the greatest impact.
+Total residential heating fuel emissions per person (CO2e per capita, combining natural gas, propane, and fuel oil) varies substantially across the region. Higher per-capita values typically reflect lower-density housing, older building stock, and greater reliance on propane or fuel oil. This metric helps identify communities where demand-side efficiency programs and electrification may have the greatest impact.
 
 ```{r fig-ctu-mmbtu-per-cap-map}
 #| fig-cap: "Residential heating fuel per capita (mmBtu), by CTU"
@@ -320,7 +328,7 @@ fig_ctu_emissions_per_cap_map
 
 ## Summary
 
-Natural gas is the dominant source of building energy emissions in the seven-county metro, with residential consumption accounting for the largest share. The commercial sector is estimated as the residual of county utility deliveries after subtracting residential, industrial, and power plant gas — an approach that is transparent about uncertainty but may include some smaller industrial users. Propane and fuel oil are a small share of regional totals but account for nearly all heating energy in townships beyond the gas distribution network. Per-capita energy intensity is highest in lower-density communities with older housing stock, suggesting that building retrofit and weatherization programs targeted at these areas could yield outsized emissions reductions.
+Natural gas is the dominant source of building energy emissions in the seven-county metro, with residential consumption accounting for the largest share. The commercial sector is estimated as the residual of county utility deliveries after subtracting residential, industrial, and power plant gas — an approach that likely includes some smaller industrial users. Propane and fuel oil are a small share of regional totals but account for large shares of heating energy in rural cities and townships beyond the gas distribution network. Per-capita energy intensity is highest in lower-density communities with older housing stock, suggesting that building retrofit and electrification programs targeted at these areas could yield outsized emissions reductions and reduction of energy cost burdens.
 
 
 ```{r echo=FALSE}

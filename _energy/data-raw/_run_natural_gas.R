@@ -116,12 +116,23 @@ source("_energy/data-raw/04_combine_ctu_natgas_predictions.R")
 source("_energy/data-raw/05_calculate_ctu_fuel_emissions.R")
 
 # 05_compile_temporal_county_mc_proportion.R
-# Split county 7610 reports into four sectors/components: residential, commercial, industrial, powerplant
-# Residential is summed total of ctu residential analysis
-# industrial is summed total of non-powerplant/refinery natural gas combustion form _industrial GHGRP analysis
-# powerplants are removed from 7610 on case-by-case basis as several are clearly off local utility pipeline. Uncertainty remains here
-# commercial is residual of 7610 minus the above. There is certainly some small industrial included here and this should be revisited
-# Outputs: county_natgas_emissions_by_sector.RDS
+# Decompose county 7610 natural gas totals into five sector components:
+#   Residential  — summed CTU-level residential from RF model
+#   Business     — summed CTU-level non-residential from RF model
+#   Industrial   — non-powerplant/refinery combustion from GHGRP Subpart C + MPCA
+#   Powerplant   — GHGRP Subpart D, subtracted from 7610 (except Cottage Grove
+#                  Cogen pre-2018, which wasn't in MER's 7610 filings)
+#   Refinery     — Washington County only; residual attributed to Marathon SPP
+#
+# Residual adjustment:
+#   Post-2013 (real 7610 data): year-specific residual redistributed to
+#     residential and business, with negative residuals first reducing business
+#     by up to the industrial amount to correct for RF/GHGRP overlap.
+#   Pre-2013 (utility handbook estimates): stable 2013-2015 benchmark ratio
+#     applied to avoid propagating estimation artifacts.
+#
+# Outputs: county_natgas_activity_by_sector.RDS
+#          county_natgas_emissions_by_sector.RDS
 source("_energy/data-raw/05_compile_temporal_county_mc_proportion.R")
 
 # 05_calculate_county_fueloil_emissions.R
