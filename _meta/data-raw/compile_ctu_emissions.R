@@ -85,8 +85,7 @@ natural_gas_emissions <- readRDS("_energy/data/_ctu_natgas_emissions.RDS") %>%
     geog_level = "ctu",
     source = "Natural gas",
     category = str_to_sentence(paste(sector, "building fuel")),
-    sector_alt = "Building fuel",
-    emissions_year = inventory_year
+    sector_alt = "Building fuel"
   ) %>%
   select(names(transportation_emissions))
 
@@ -100,8 +99,7 @@ fuel_oil_emissions <- readRDS("_energy/data/_ctu_liquid_emissions.RDS") %>%
     source = "Propane and fuel oil",
     sector = "Residential",
     category = str_to_sentence(paste(sector, "building fuel")),
-    sector_alt = "Building fuel",
-    emissions_year = inventory_year
+    sector_alt = "Building fuel"
   ) %>%
   select(names(transportation_emissions))
 
