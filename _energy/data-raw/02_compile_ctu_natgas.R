@@ -53,8 +53,9 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
     units_emissions == "Metric tons CO2",
     !is.na(therms_per_year)
   ) %>% # removes duplicates
-  mutate(sector = case_when(customer_class == "Residential" ~ "Residential",
-                            customer_class == "Total" ~ "Total",
+  mutate(sector = case_when(
+    customer_class == "Residential" ~ "Residential",
+    customer_class == "Total" ~ "Total",
     TRUE ~ "Business"
   )) %>%
   group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
@@ -67,9 +68,9 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
     names_glue = "{tolower(sector)}_mcf"
   ) %>%
   mutate(total_mcf = if_else(is.na(total_mcf),
-                                   replace_na(business_mcf, 0) + replace_na(residential_mcf, 0),
-                                   total_mcf)
-  )
+    replace_na(business_mcf, 0) + replace_na(residential_mcf, 0),
+    total_mcf
+  ))
 
 
 ### load and format xcel ng data
@@ -137,23 +138,23 @@ centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>
 # function: sequentially load data while keeping NAs
 merge_ng_data <- function(base_df, new_data) {
   new_data_renamed <- new_data %>% rename(inventory_year = emissions_year)
-  
+
   # rows already in base -- update NAs with new values
   updated <- base_df %>%
     left_join(new_data_renamed,
-              by = c("ctu_name", "ctu_class", "inventory_year", "utility")
+      by = c("ctu_name", "ctu_class", "inventory_year", "utility")
     ) %>%
     mutate(
       residential_mcf = if_else(!is.na(residential_mcf.y), residential_mcf.y, residential_mcf.x),
-      business_mcf    = if_else(!is.na(business_mcf.y),    business_mcf.y,    business_mcf.x),
-      total_mcf       = if_else(!is.na(total_mcf.y),       total_mcf.y,       total_mcf.x)
+      business_mcf    = if_else(!is.na(business_mcf.y), business_mcf.y, business_mcf.x),
+      total_mcf       = if_else(!is.na(total_mcf.y), total_mcf.y, total_mcf.x)
     ) %>%
     select(-ends_with(".x"), -ends_with(".y"))
-  
+
   # rows in new_data that have no matching utility in the base scaffold
   novel_rows <- new_data_renamed %>%
     anti_join(base_df, by = c("ctu_name", "ctu_class", "inventory_year", "utility"))
-  
+
   bind_rows(updated, novel_rows)
 }
 
@@ -253,7 +254,7 @@ ctu_utility_year <- ctu_utility_year %>%
   bind_rows(., rii_fill)
 
 
-#check 
+# check
 ctu_utility_year %>%
   filter(!is.na(total_mcf)) %>%
   count(utility, inventory_year) %>%
@@ -288,7 +289,7 @@ powerplant_check <- ctu_utility_year %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
   summarise(
     business_mcf = sum(business_mcf, na.rm = TRUE),
-    total_mcf    = sum(total_mcf, na.rm = TRUE),
+    total_mcf = sum(total_mcf, na.rm = TRUE),
     .groups = "drop"
   ) %>%
   left_join(
@@ -299,7 +300,7 @@ powerplant_check <- ctu_utility_year %>%
   mutate(
     powerplant_share = powerplant_mcf / business_mcf,
     business_mcf_adj = business_mcf - powerplant_mcf,
-    total_mcf_adj    = total_mcf    - powerplant_mcf
+    total_mcf_adj    = total_mcf - powerplant_mcf
   ) %>%
   arrange(desc(powerplant_share))
 
@@ -327,7 +328,7 @@ ctu_utility_year <- ctu_utility_year %>%
   ) %>%
   mutate(
     business_mcf = if_else(!is.na(powerplant_mcf), business_mcf - powerplant_mcf, business_mcf),
-    total_mcf    = if_else(!is.na(powerplant_mcf), total_mcf    - powerplant_mcf, total_mcf)
+    total_mcf    = if_else(!is.na(powerplant_mcf), total_mcf - powerplant_mcf, total_mcf)
   ) %>%
   select(-powerplant_mcf)
 

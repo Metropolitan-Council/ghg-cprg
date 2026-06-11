@@ -65,9 +65,11 @@ ggplot() +
   geom_sf(data = mn_utils_metro, aes(fill = NAME), alpha = 0.6) +
   geom_sf(data = cprg_mn_ctu_dissolve, fill = NA, color = "black", linewidth = 0.5) +
   theme_minimal() +
-  theme(legend.key.size = unit(0.4, "cm"),
-        #legend.text = element_size(6),
-        legend.title = element_blank())
+  theme(
+    legend.key.size = unit(0.4, "cm"),
+    # legend.text = element_size(6),
+    legend.title = element_blank()
+  )
 
 # Perform spatial join to match each CTU (city/township) with electric utilities
 ctu_ng_utility_mapping <- st_join(

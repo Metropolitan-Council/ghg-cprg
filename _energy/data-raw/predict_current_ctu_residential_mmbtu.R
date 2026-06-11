@@ -5,7 +5,7 @@
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
-# load in supporting data 
+# load in supporting data
 
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
   filter(
@@ -13,7 +13,7 @@ cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
     !thrive_designation == "Non-Council Area"
   ) %>%
   mutate(thrive_designation = as.factor(if_else(
-    thrive_designation == "Rural Center",#insufficient data
+    thrive_designation == "Rural Center", # insufficient data
     "Emerging Suburban Edge",
     thrive_designation
   )))
@@ -40,24 +40,31 @@ urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
 # get complete city-years utility data
 
-ctu_utility_year_raw <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>% 
-  #removing known false NAs
-  filter(# these utilties do not provide gas to MN cities despite GIS analysis
-    !utility %in% c("ST. CROIX VALLEY NATURAL GAS",
-                        "WISCONSIN GAS CO"),
-         # Keep ALL rows for known non-responders — their NA total_mcf rows
-         # are a real signal that blocks their cities from entering training
-         utility %in% c("Minnesota Energy Resources",
-                        "GREATER MINNESOTA GAS INC.",
-                        "Centennial Utilities") |
-  !is.na(total_mcf) | !is.na(residential_mcf) | !is.na(business_mcf)) %>% 
-  filter(!(ctu_name == "Afton" & inventory_year <=2018)) #excising weird Afton Xcel years
+ctu_utility_year_raw <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
+  # removing known false NAs
+  filter( # these utilties do not provide gas to MN cities despite GIS analysis
+    !utility %in% c(
+      "ST. CROIX VALLEY NATURAL GAS",
+      "WISCONSIN GAS CO"
+    ),
+    # Keep ALL rows for known non-responders — their NA total_mcf rows
+    # are a real signal that blocks their cities from entering training
+    utility %in% c(
+      "Minnesota Energy Resources",
+      "GREATER MINNESOTA GAS INC.",
+      "Centennial Utilities"
+    ) |
+      !is.na(total_mcf) | !is.na(residential_mcf) | !is.na(business_mcf)
+  ) %>%
+  filter(!(ctu_name == "Afton" & inventory_year <= 2018)) # excising weird Afton Xcel years
 
 # remove cities suspected to have non-responsive utilities, except RII years
 nonresponder_city_years <- ctu_utility_year_raw %>%
-  filter(utility %in% c("Minnesota Energy Resources",
-                        "GREATER MINNESOTA GAS INC.",
-                        "Centennial Utilities")) %>%
+  filter(utility %in% c(
+    "Minnesota Energy Resources",
+    "GREATER MINNESOTA GAS INC.",
+    "Centennial Utilities"
+  )) %>%
   distinct(ctu_name, ctu_class, inventory_year) %>%
   anti_join(
     ctu_utility_year_raw %>%
@@ -84,8 +91,8 @@ ctu_utility_year <- ctu_utility_year_raw %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
   summarize(
     residential_mcf = sum(residential_mcf, na.rm = TRUE),
-    business_mcf    = sum(business_mcf,    na.rm = TRUE),
-    total_mcf       = sum(total_mcf,       na.rm = TRUE),
+    business_mcf    = sum(business_mcf, na.rm = TRUE),
+    total_mcf       = sum(total_mcf, na.rm = TRUE),
     .groups         = "drop"
   ) %>%
   filter(
@@ -116,31 +123,36 @@ coctu_population <- ctu_population %>%
 
 coctu_res_known <- ctu_utility_year %>%
   full_join(coctu_population,
-            by      = c("ctu_name", "ctu_class", "inventory_year"),
-            relationship = "many-to-many"
+    by = c("ctu_name", "ctu_class", "inventory_year"),
+    relationship = "many-to-many"
   ) %>%
   mutate(
     residential_mcf = if_else(multi_county,
-                              residential_mcf * coctu_population_prop,
-                              residential_mcf)
+      residential_mcf * coctu_population_prop,
+      residential_mcf
+    )
   ) %>%
   filter(!is.na(residential_mcf), residential_mcf > 0) %>%
-  select(ctu_name, ctu_class, inventory_year, residential_mcf,
-         county_name, ctu_population) %>%
+  select(
+    ctu_name, ctu_class, inventory_year, residential_mcf,
+    county_name, ctu_population
+  ) %>%
   # convert NG to mmBtu and add propane/fuel oil to get total combustion
   left_join(
-    propane_fueloil %>% select(ctu_name, ctu_class, county_name,
-                               inventory_year, propane_mmBtu, fueloil_other_mmBtu),
+    propane_fueloil %>% select(
+      ctu_name, ctu_class, county_name,
+      inventory_year, propane_mmBtu, fueloil_other_mmBtu
+    ),
     by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
   ) %>%
   mutate(
     ng_mmbtu             = residential_mcf * mcf_to_mmbtu,
-    propane_mmBtu        = replace_na(propane_mmBtu,       0),
+    propane_mmBtu        = replace_na(propane_mmBtu, 0),
     fueloil_other_mmBtu  = replace_na(fueloil_other_mmBtu, 0),
     total_res_mmbtu      = ng_mmbtu + propane_mmBtu + fueloil_other_mmBtu
   )
 
-#predictor data 
+# predictor data
 
 mn_parcel_res <- mn_parcel %>%
   filter(mc_classification %in% c("single_family_home", "multifamily_home", "apartment")) %>%
@@ -167,7 +179,8 @@ urbansim_res <- urbansim %>%
   complete(inventory_year = full_seq(c(2005, 2025), 1)) %>%
   arrange(coctu_id_gnis, ctu_id, variable, inventory_year) %>%
   mutate(value = approx(inventory_year, value, inventory_year,
-                        method = "linear", rule = 2)$y) %>%
+    method = "linear", rule = 2
+  )$y) %>%
   ungroup() %>%
   pivot_wider(
     id_cols     = c(coctu_id_gnis, ctu_id, inventory_year),
@@ -188,7 +201,7 @@ urbansim_res <- urbansim %>%
     by = c("county_id" = "geoid")
   )
 
-# training dataset 
+# training dataset
 
 ng_res_train <- coctu_res_known %>%
   left_join(urbansim_res, by = c("ctu_name", "ctu_class", "county_name", "inventory_year")) %>%
@@ -196,7 +209,7 @@ ng_res_train <- coctu_res_known %>%
   left_join(noaa_year, by = "inventory_year") %>%
   filter(!is.na(coctu_id_gnis), total_res_mmbtu != 0)
 
-# train RF on all complete city-years 
+# train RF on all complete city-years
 
 set.seed(1029)
 
@@ -208,9 +221,9 @@ rf_res_model <- randomForest(
     single_fam_det_rent + single_fam_attached_own +
     single_fam_attached_rent + multi_fam_own + multi_fam_rent +
     heating_degree_days,
-  data       = ng_res_train,
+  data = ng_res_train,
   importance = TRUE,
-  na.action  = na.omit
+  na.action = na.omit
 )
 
 print(rf_res_model)
@@ -223,8 +236,10 @@ full_pred_grid <- cprg_ctu %>%
   st_drop_geometry() %>%
   left_join(
     urbansim_res,
-    by = c("gnis" = "ctu_id", "ctu_name", "ctu_class",
-           "county_name", "thrive_designation")
+    by = c(
+      "gnis" = "ctu_id", "ctu_name", "ctu_class",
+      "county_name", "thrive_designation"
+    )
   ) %>%
   filter(inventory_year %in% 2010:2023) %>%
   left_join(mn_parcel_res %>% select(-ctu_name), by = c("gnis" = "ctu_id")) %>%
@@ -241,8 +256,10 @@ full_pred_grid <- cprg_ctu %>%
 known_with_pred <- coctu_res_known %>%
   left_join(
     full_pred_grid %>%
-      select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-             inventory_year, rf_predicted),
+      select(
+        coctu_id_gnis, ctu_name, ctu_class, county_name,
+        inventory_year, rf_predicted
+      ),
     by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
   ) %>%
   filter(!is.na(rf_predicted))
@@ -254,20 +271,27 @@ city_rf_scale <- known_with_pred %>%
 
 missing_years_out <- full_pred_grid %>%
   anti_join(coctu_res_known,
-            by = c("ctu_name", "ctu_class", "county_name", "inventory_year")) %>%
-  select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, rf_predicted) %>%
+    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
+  ) %>%
+  select(
+    coctu_id_gnis, ctu_name, ctu_class, county_name,
+    inventory_year, rf_predicted
+  ) %>%
   left_join(city_rf_scale, by = c("ctu_name", "ctu_class", "county_name")) %>%
   mutate(
     total_res_mmbtu = if_else(!is.na(mean_scale),
-                              rf_predicted * mean_scale,
-                              rf_predicted),
-    data_source     = if_else(!is.na(mean_scale),
-                              "Model prediction (RF scaled)",
-                              "Model prediction (RF only)")
+      rf_predicted * mean_scale,
+      rf_predicted
+    ),
+    data_source = if_else(!is.na(mean_scale),
+      "Model prediction (RF scaled)",
+      "Model prediction (RF only)"
+    )
   ) %>%
-  select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, total_res_mmbtu, data_source)
+  select(
+    coctu_id_gnis, ctu_name, ctu_class, county_name,
+    inventory_year, total_res_mmbtu, data_source
+  )
 
 
 ## bring back pre-2010 RII data
@@ -278,27 +302,33 @@ known_pre2010 <- coctu_res_known %>%
     by = c("ctu_name", "ctu_class", "county_name")
   ) %>%
   mutate(data_source = "RII utility data") %>%
-  select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, total_res_mmbtu , data_source)
+  select(
+    coctu_id_gnis, ctu_name, ctu_class, county_name,
+    inventory_year, total_res_mmbtu, data_source
+  )
 
 # add into the final bind_rows alongside the three gap types
 coctu_res_out <- bind_rows(
   known_pre2010,
   known_with_pred %>%
-    select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-           inventory_year, total_res_mmbtu) %>%
+    select(
+      coctu_id_gnis, ctu_name, ctu_class, county_name,
+      inventory_year, total_res_mmbtu
+    ) %>%
     mutate(data_source = "Utility report"),
   missing_years_out
 ) %>%
   filter(total_res_mmbtu > 0) %>%
   arrange(ctu_name, ctu_class, county_name, inventory_year) %>%
   left_join(
-    propane_fueloil %>% select(ctu_name, ctu_class, county_name,
-                               inventory_year, propane_mmBtu, fueloil_other_mmBtu),
+    propane_fueloil %>% select(
+      ctu_name, ctu_class, county_name,
+      inventory_year, propane_mmBtu, fueloil_other_mmBtu
+    ),
     by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
   ) %>%
   mutate(
-    propane_mmBtu       = replace_na(propane_mmBtu,       0),
+    propane_mmBtu       = replace_na(propane_mmBtu, 0),
     fueloil_other_mmBtu = replace_na(fueloil_other_mmBtu, 0),
     ng_mmbtu            = pmax(0, total_res_mmbtu - propane_mmBtu - fueloil_other_mmBtu)
   )
@@ -319,7 +349,7 @@ res_guardrails <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
   summarize(
     res_floor_mcf = sum(residential_mcf, na.rm = TRUE),
-    full_total    = sum(total_mcf),          # NA when any utility missing
+    full_total    = sum(total_mcf), # NA when any utility missing
     n_na_total    = sum(is.na(total_mcf)),
     n_na_res      = sum(is.na(residential_mcf)),
     .groups       = "drop"
@@ -338,8 +368,10 @@ res_guardrails <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
 coctu_res_adj <- coctu_res_out %>%
   left_join(
     coctu_population %>%
-      distinct(ctu_name, ctu_class, county_name, inventory_year,
-               coctu_population_prop, multi_county),
+      distinct(
+        ctu_name, ctu_class, county_name, inventory_year,
+        coctu_population_prop, multi_county
+      ),
     by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
   ) %>%
   left_join(
@@ -349,29 +381,31 @@ coctu_res_adj <- coctu_res_out %>%
   ) %>%
   mutate(
     # Proportion floor for multi-county CTUs using population share
-    res_floor_prop  = res_floor * if_else(
+    res_floor_prop = res_floor * if_else(
       !is.na(multi_county) & multi_county,
       coctu_population_prop,
       1
     ),
     # Add propane and fuel oil so floor is on the same basis as total_res_mmbtu
     res_floor_total = res_floor_prop + propane_mmBtu + fueloil_other_mmBtu,
-    is_modeled      = !data_source %in% c("Utility report", "RII utility data"),
-    floor_hit       = is_modeled        &
+    is_modeled = !data_source %in% c("Utility report", "RII utility data"),
+    floor_hit = is_modeled &
       !is.na(apply_floor) &
-      apply_floor         &
+      apply_floor &
       total_res_mmbtu < res_floor_total,
     total_res_mmbtu = if_else(floor_hit, res_floor_total, total_res_mmbtu),
     # Keep ng_mmbtu consistent: recalculate after any floor adjustment
-    ng_mmbtu        = pmax(0, total_res_mmbtu - propane_mmBtu - fueloil_other_mmBtu),
-    data_source     = if_else(
+    ng_mmbtu = pmax(0, total_res_mmbtu - propane_mmBtu - fueloil_other_mmBtu),
+    data_source = if_else(
       floor_hit,
       paste0(data_source, " [partial utility floor]"),
       data_source
     )
   ) %>%
-  select(-coctu_population_prop, -multi_county, -res_floor, -apply_floor,
-         -res_floor_prop, -res_floor_total, -is_modeled, -floor_hit)
+  select(
+    -coctu_population_prop, -multi_county, -res_floor, -apply_floor,
+    -res_floor_prop, -res_floor_total, -is_modeled, -floor_hit
+  )
 
 # ── Propagate floor corrections to remaining RF-only years ────────────────────
 # For cities where some years were floor-adjusted, compute the mean ratio of
@@ -383,8 +417,10 @@ floor_scale <- coctu_res_adj %>%
   filter(grepl("partial utility floor", data_source)) %>%
   left_join(
     full_pred_grid %>%
-      select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-             inventory_year, rf_predicted),
+      select(
+        coctu_id_gnis, ctu_name, ctu_class, county_name,
+        inventory_year, rf_predicted
+      ),
     by = c("coctu_id_gnis", "ctu_name", "ctu_class", "county_name", "inventory_year")
   ) %>%
   mutate(scale = total_res_mmbtu / rf_predicted) %>%
@@ -394,14 +430,16 @@ floor_scale <- coctu_res_adj %>%
 coctu_res_adj_out <- coctu_res_adj %>%
   left_join(floor_scale, by = c("ctu_name", "ctu_class", "county_name")) %>%
   mutate(
-    apply_scale     = data_source == "Model prediction (RF only)" & !is.na(mean_scale),
+    apply_scale = data_source == "Model prediction (RF only)" & !is.na(mean_scale),
     total_res_mmbtu = if_else(apply_scale, total_res_mmbtu * mean_scale, total_res_mmbtu),
-    ng_mmbtu        = if_else(apply_scale,
-                              pmax(0, total_res_mmbtu - propane_mmBtu - fueloil_other_mmBtu),
-                              ng_mmbtu),
-    data_source     = if_else(apply_scale,
-                              "Model prediction (RF only) [floor correction propagated]",
-                              data_source)
+    ng_mmbtu = if_else(apply_scale,
+      pmax(0, total_res_mmbtu - propane_mmBtu - fueloil_other_mmBtu),
+      ng_mmbtu
+    ),
+    data_source = if_else(apply_scale,
+      "Model prediction (RF only) [floor correction propagated]",
+      data_source
+    )
   ) %>%
   select(-mean_scale, -apply_scale)
 
@@ -420,8 +458,9 @@ stopifnot(
 # check - plot a city of interest
 coctu_res_adj_out %>%
   filter(ctu_name == "Rosemount" & ctu_class == "CITY") %>%
-  ggplot(aes(inventory_year, total_res_mmbtu , color = data_source)) +
-  geom_line() + geom_point() +
+  ggplot(aes(inventory_year, total_res_mmbtu, color = data_source)) +
+  geom_line() +
+  geom_point() +
   theme_bw() +
   labs(title = "Residential mmbtu -- blending check")
 

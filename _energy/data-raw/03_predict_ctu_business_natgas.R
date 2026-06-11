@@ -13,7 +13,7 @@ cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
     !thrive_designation == "Non-Council Area"
   ) %>%
   mutate(thrive_designation = as.factor(if_else(
-    thrive_designation == "Rural Center", #insufficient data
+    thrive_designation == "Rural Center", # insufficient data
     "Emerging Suburban Edge",
     thrive_designation
   )))
@@ -43,12 +43,16 @@ urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 ctu_utility_mcf <- read_rds("_energy/data/ctu_utility_mcf.RDS")
 
 ctu_utility_year_raw <- ctu_utility_mcf %>%
-  filter(!utility %in% c("ST. CROIX VALLEY NATURAL GAS",
-                         "WISCONSIN GAS CO")) %>%
+  filter(!utility %in% c(
+    "ST. CROIX VALLEY NATURAL GAS",
+    "WISCONSIN GAS CO"
+  )) %>%
   filter(
-    utility %in% c("Minnesota Energy Resources",
-                   "GREATER MINNESOTA GAS INC.",
-                   "Centennial Utilities") |
+    utility %in% c(
+      "Minnesota Energy Resources",
+      "GREATER MINNESOTA GAS INC.",
+      "Centennial Utilities"
+    ) |
       !is.na(total_mcf) | !is.na(residential_mcf) | !is.na(business_mcf)
   )
 
@@ -71,7 +75,7 @@ ctu_utility_year <- ctu_utility_year_raw %>%
   ) %>%
   summarize(
     residential_mcf = sum(residential_mcf, na.rm = TRUE),
-    business_mcf    = sum(business_mcf,    na.rm = TRUE),
+    business_mcf    = sum(business_mcf, na.rm = TRUE),
     total_mcf       = sum(total_mcf)
   ) %>%
   ungroup()
@@ -94,7 +98,8 @@ urbansim_busi <- urbansim %>%
   complete(inventory_year = full_seq(c(2005, 2025), 1)) %>%
   arrange(coctu_id_gnis, ctu_id, variable, inventory_year) %>%
   mutate(value = approx(inventory_year, value, inventory_year,
-                        method = "linear", rule = 2)$y) %>%
+    method = "linear", rule = 2
+  )$y) %>%
   ungroup() %>%
   pivot_wider(
     id_cols     = c(coctu_id_gnis, ctu_id, inventory_year),
@@ -127,13 +132,13 @@ coctu_jobs <- urbansim_busi %>%
 
 coctu_busi_known <- ctu_utility_year %>%
   full_join(coctu_jobs,
-            by      = c("ctu_name", "ctu_class", "inventory_year"),
-            relationship = "many-to-many"
+    by = c("ctu_name", "ctu_class", "inventory_year"),
+    relationship = "many-to-many"
   ) %>%
   mutate(
     business_mcf = if_else(multi_county,
-                           business_mcf * coctu_jobs_prop,
-                           business_mcf
+      business_mcf * coctu_jobs_prop,
+      business_mcf
     )
   ) %>%
   filter(!is.na(business_mcf), business_mcf > 0) %>%
@@ -175,9 +180,9 @@ rf_busi_model <- randomForest(
     jobs_sector_4 + jobs_sector_5 + jobs_sector_6 +
     jobs_sector_7 + jobs_sector_8 + jobs_sector_9 + jobs_sector_10 +
     heating_degree_days,
-  data       = ng_busi_train,
+  data = ng_busi_train,
   importance = TRUE,
-  na.action  = na.omit
+  na.action = na.omit
 )
 
 print(rf_busi_model)
@@ -189,8 +194,10 @@ full_pred_grid <- cprg_ctu %>%
   st_drop_geometry() %>%
   left_join(
     urbansim_busi,
-    by = c("gnis" = "ctu_id", "ctu_name", "ctu_class",
-           "county_name", "thrive_designation")
+    by = c(
+      "gnis" = "ctu_id", "ctu_name", "ctu_class",
+      "county_name", "thrive_designation"
+    )
   ) %>%
   filter(inventory_year %in% 2010:2023) %>%
   left_join(mn_parcel_busi %>% select(-ctu_name), by = c("gnis" = "ctu_id")) %>%
@@ -207,8 +214,10 @@ full_pred_grid <- cprg_ctu %>%
 known_with_pred <- coctu_busi_known %>%
   left_join(
     full_pred_grid %>%
-      select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-             inventory_year, rf_predicted),
+      select(
+        coctu_id_gnis, ctu_name, ctu_class, county_name,
+        inventory_year, rf_predicted
+      ),
     by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
   ) %>%
   filter(!is.na(rf_predicted))
@@ -220,20 +229,27 @@ city_rf_scale <- known_with_pred %>%
 
 missing_years_out <- full_pred_grid %>%
   anti_join(coctu_busi_known,
-            by = c("ctu_name", "ctu_class", "county_name", "inventory_year")) %>%
-  select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, rf_predicted) %>%
+    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
+  ) %>%
+  select(
+    coctu_id_gnis, ctu_name, ctu_class, county_name,
+    inventory_year, rf_predicted
+  ) %>%
   left_join(city_rf_scale, by = c("ctu_name", "ctu_class", "county_name")) %>%
   mutate(
     business_mcf = if_else(!is.na(mean_scale),
-                           rf_predicted * mean_scale,
-                           rf_predicted),
-    data_source  = if_else(!is.na(mean_scale),
-                           "Model prediction (RF scaled)",
-                           "Model prediction (RF only)")
+      rf_predicted * mean_scale,
+      rf_predicted
+    ),
+    data_source = if_else(!is.na(mean_scale),
+      "Model prediction (RF scaled)",
+      "Model prediction (RF only)"
+    )
   ) %>%
-  select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, business_mcf, data_source)
+  select(
+    coctu_id_gnis, ctu_name, ctu_class, county_name,
+    inventory_year, business_mcf, data_source
+  )
 
 # ── Pre-2010 RII data ─────────────────────────────────────────────────────────
 
@@ -244,16 +260,20 @@ known_pre2010 <- coctu_busi_known %>%
     by = c("ctu_name", "ctu_class", "county_name")
   ) %>%
   mutate(data_source = "RII utility data") %>%
-  select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, business_mcf, data_source)
+  select(
+    coctu_id_gnis, ctu_name, ctu_class, county_name,
+    inventory_year, business_mcf, data_source
+  )
 
 # ── Combine ───────────────────────────────────────────────────────────────────
 
 coctu_busi_out <- bind_rows(
   known_pre2010,
   known_with_pred %>%
-    select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-           inventory_year, business_mcf) %>%
+    select(
+      coctu_id_gnis, ctu_name, ctu_class, county_name,
+      inventory_year, business_mcf
+    ) %>%
     mutate(data_source = "Utility report"),
   missing_years_out
 ) %>%
@@ -274,14 +294,14 @@ stopifnot(
 #
 #   business floor — sum of business_mcf from utilities that DID report sector
 #                    splits; prediction cannot be less than observed partial
-#   power plant (pp_mcf) - cities with natural gas powerplant utilities will not 
-#                          have those counted here    
+#   power plant (pp_mcf) - cities with natural gas powerplant utilities will not
+#                          have those counted here
 # Guardrails are applied only to modeled city-years, never to utility-reported data
 
 ghgrp_pp_deduction <- read_rds("_industrial/data/fuel_combustion_activity.rds") %>%
   filter(
-    power_plant        == TRUE,
-    general_fuel_type  == "Natural Gas",
+    power_plant == TRUE,
+    general_fuel_type == "Natural Gas",
     !is.na(value_activity)
   ) %>%
   mutate(
@@ -317,7 +337,7 @@ util_guardrails <- ctu_utility_mcf %>%
   ) %>%
   mutate(
     pp_mcf      = replace_na(pp_mcf, 0),
-    busi_floor  = pmax(0, busi_floor  - pp_mcf),
+    busi_floor  = pmax(0, busi_floor - pp_mcf),
     apply_floor = busi_floor > 0
   ) %>%
   select(-pp_mcf)
@@ -331,29 +351,34 @@ city_pred_totals <- coctu_busi_out %>%
 
 coctu_busi_adj <- coctu_busi_out %>%
   left_join(city_pred_totals,
-            by = c("ctu_name", "ctu_class", "inventory_year")) %>%
+    by = c("ctu_name", "ctu_class", "inventory_year")
+  ) %>%
   left_join(
     util_guardrails %>%
       select(ctu_name, ctu_class, inventory_year, busi_floor, apply_floor),
     by = c("ctu_name", "ctu_class", "inventory_year")
   ) %>%
   mutate(
-    is_modeled   = !data_source %in% c("Utility report", "RII utility data"),
+    is_modeled = !data_source %in% c("Utility report", "RII utility data"),
     county_share = if_else(city_pred_total > 0,
-                           business_mcf / city_pred_total,
-                           1),
-    busi_floor   = busi_floor * county_share,
-    floor_hit    = is_modeled        &
+      business_mcf / city_pred_total,
+      1
+    ),
+    busi_floor = busi_floor * county_share,
+    floor_hit = is_modeled &
       !is.na(apply_floor) &
-      apply_floor        &
+      apply_floor &
       business_mcf < busi_floor,
     business_mcf = if_else(floor_hit, busi_floor, business_mcf),
-    data_source  = if_else(floor_hit,
-                           paste0(data_source, " [partial utility floor]"),
-                           data_source)
+    data_source = if_else(floor_hit,
+      paste0(data_source, " [partial utility floor]"),
+      data_source
+    )
   ) %>%
-  select(-city_pred_total, -county_share, -busi_floor, -apply_floor,
-         -is_modeled, -floor_hit)
+  select(
+    -city_pred_total, -county_share, -busi_floor, -apply_floor,
+    -is_modeled, -floor_hit
+  )
 
 stopifnot(
   coctu_busi_adj %>%
@@ -366,7 +391,8 @@ stopifnot(
 coctu_busi_adj %>%
   filter(ctu_name == "Rosemount") %>%
   ggplot(aes(inventory_year, business_mcf, color = data_source)) +
-  geom_line() + geom_point() +
+  geom_line() +
+  geom_point() +
   theme_bw() +
   labs(title = "Business MCF -- blending check")
 

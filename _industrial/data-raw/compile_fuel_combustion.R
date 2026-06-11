@@ -133,7 +133,7 @@ ggplot(ind_fuel_activity, aes(x = unit_ch4, y = unit_n2o)) +
 # new exception with powerplants - something is wrong with coal fired data. Removing for now as no
 # need to account for it.
 
-ind_fuel_activity <- ind_fuel_activity %>% 
+ind_fuel_activity <- ind_fuel_activity %>%
   filter(!(grepl("D", industry_type_subparts) & general_fuel_type == "Coal"))
 
 
@@ -212,18 +212,19 @@ ind_fuel_activity_out <- ind_fuel_activity %>%
     value_activity = avg_activity
   ) %>%
   ### add flag for likely doublecounts - will filter from emissions
-  mutate(doublecount = if_else(
-    general_fuel_type == "Natural Gas" &
-      !grepl("Y", industry_type_subparts),
-    "Yes", "No"
-  ),
-  power_plant = if_else(
-    grepl("D", industry_type_subparts),
-    TRUE, FALSE
+  mutate(
+    doublecount = if_else(
+      general_fuel_type == "Natural Gas" &
+        !grepl("Y", industry_type_subparts),
+      "Yes", "No"
+    ),
+    power_plant = if_else(
+      grepl("D", industry_type_subparts),
+      TRUE, FALSE
     )
   )
 
-  
+
 
 ind_fuel_activity_meta <-
   tibble::tribble(
@@ -240,7 +241,7 @@ ind_fuel_activity_meta <-
     "value_activity", class(ind_fuel_activity_out$value_activity), "Numerical value of activity data",
     "units_activity", class(ind_fuel_activity_out$units_activity), "Units of activity data",
     "doublecount", class(ind_fuel_activity_out$doublecount), "Whether activity is likely to be double counted in utility analysis",
-    "power_plant",           class(ind_fuel_activity_out$power_plant),    "Whether facility is an electric generating unit (subpart D); excluded from emissions outputs"
+    "power_plant", class(ind_fuel_activity_out$power_plant), "Whether facility is an electric generating unit (subpart D); excluded from emissions outputs"
   )
 
 saveRDS(ind_fuel_activity_out, "./_industrial/data/fuel_combustion_activity.rds")

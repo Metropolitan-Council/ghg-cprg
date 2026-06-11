@@ -44,7 +44,7 @@ county_mcf <- readRDS(here("_energy", "data", "county_natgas_activity.RDS")) %>%
   select(
     inventory_year = year,
     county_name,
-    mcf_county    = activity,
+    mcf_county = activity,
     county_source = data_source
   ) %>%
   filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
@@ -75,7 +75,7 @@ coctu_phase1 <- coctu_mcf %>%
     by = c("county_name", "inventory_year")
   ) %>%
   mutate(
-    mcf         = mcf * scale_factor,
+    mcf = mcf * scale_factor,
     data_source = if_else(
       data_source == "Utility report",
       "Utility report (county-scaled)",
@@ -99,7 +99,7 @@ county_anchors <- county_mcf %>%
   filter(inventory_year %in% c(2010, 2014)) %>%
   select(county_name, inventory_year, mcf_county) %>%
   pivot_wider(
-    names_from  = inventory_year,
+    names_from = inventory_year,
     values_from = mcf_county,
     names_prefix = "mcf_"
   ) %>%
@@ -109,22 +109,22 @@ county_anchors <- county_mcf %>%
 ctu_shape_anchors <- ctu_shape_2010_2013 %>%
   filter(inventory_year %in% c(2010, 2013)) %>%
   pivot_wider(
-    names_from  = inventory_year,
+    names_from = inventory_year,
     values_from = mcf_ctu_sum,
     names_prefix = "shape_"
   ) %>%
   rename(shape_start = shape_2010, shape_end = shape_2013)
 
 ctu_shape_anchored <- ctu_shape_2010_2013 %>%
-  left_join(county_anchors,     by = "county_name") %>%
-  left_join(ctu_shape_anchors,  by = "county_name") %>%
+  left_join(county_anchors, by = "county_name") %>%
+  left_join(ctu_shape_anchors, by = "county_name") %>%
   mutate(
     t = (inventory_year - 2010) / (2014 - 2010),
     # linearly morph scale factor from start to end anchor
     # applied to the CTU shape so trajectory is preserved
     mcf_county_shaped = mcf_ctu_sum * (
       (1 - t) * (mcf_anchor_start / shape_start) +
-        t  * (mcf_anchor_end   / shape_end)
+        t * (mcf_anchor_end / shape_end)
     )
   ) %>%
   select(county_name, inventory_year, mcf_county_shaped)
@@ -136,7 +136,7 @@ coctu_phase2 <- coctu_mcf %>%
   group_by(county_name, inventory_year) %>%
   mutate(
     ctu_prop = mcf / sum(mcf, na.rm = TRUE),
-    mcf      = mcf_county_shaped * ctu_prop,
+    mcf = mcf_county_shaped * ctu_prop,
     data_source = paste0(data_source, " (county-shaped)")
   ) %>%
   ungroup() %>%
@@ -159,8 +159,8 @@ ctu_early_props <- coctu_mcf %>%
 coctu_phase3 <- county_mcf %>%
   filter(inventory_year %in% 2005:2009) %>%
   left_join(ctu_early_props,
-            by      = "county_name",
-            relationship = "many-to-many"
+    by = "county_name",
+    relationship = "many-to-many"
   ) %>%
   mutate(
     mcf = mcf_county * mean_ctu_prop,
@@ -172,8 +172,10 @@ coctu_phase3 <- county_mcf %>%
     )
   ) %>%
   filter(!is.na(mcf), mcf > 0) %>%
-  select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         inventory_year, sector, mcf, data_source)
+  select(
+    coctu_id_gnis, ctu_name, ctu_class, county_name,
+    inventory_year, sector, mcf, data_source
+  )
 
 # ── Combine all phases ────────────────────────────────────────────────────────
 
@@ -182,8 +184,10 @@ ctu_full <- bind_rows(
   coctu_phase2,
   coctu_phase3
 ) %>%
-  group_by(coctu_id_gnis, ctu_name, ctu_class, county_name,
-           sector, inventory_year, data_source) %>%
+  group_by(
+    coctu_id_gnis, ctu_name, ctu_class, county_name,
+    sector, inventory_year, data_source
+  ) %>%
   summarize(mcf = sum(mcf), .groups = "drop") %>%
   mutate(
     category = "Building Energy",
@@ -195,8 +199,10 @@ ctu_full <- bind_rows(
 stopifnot(
   # no duplicate ctu-sector-year rows
   ctu_full %>%
-    count(coctu_id_gnis, ctu_name, ctu_class, county_name,
-          sector, inventory_year) %>%
+    count(
+      coctu_id_gnis, ctu_name, ctu_class, county_name,
+      sector, inventory_year
+    ) %>%
     filter(n > 1) %>%
     nrow() == 0
 )

@@ -14,11 +14,11 @@ natgas_ef_scf <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
         units::as_units("kilogram") %>%
         units::set_units("metric_ton") %>%
         as.numeric(),
-      emission == "g CH4"  ~ (value * gwp$ch4) %>%
+      emission == "g CH4" ~ (value * gwp$ch4) %>%
         units::as_units("gram") %>%
         units::set_units("metric_ton") %>%
         as.numeric(),
-      emission == "g N2O"  ~ (value * gwp$n2o) %>%
+      emission == "g N2O" ~ (value * gwp$n2o) %>%
         units::as_units("gram") %>%
         units::set_units("metric_ton") %>%
         as.numeric(),
@@ -31,27 +31,29 @@ natgas_ef_scf <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
 
 fuel_ef_mmbtu <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
   pluck("stationary_combustion") %>%
-  filter(`Fuel type` %in% c("Natural Gas",
-                            "Kerosene",
-                            "Propane") & 
-           per_unit == "mmBtu") %>%
+  filter(`Fuel type` %in% c(
+    "Natural Gas",
+    "Kerosene",
+    "Propane"
+  ) &
+    per_unit == "mmBtu") %>%
   mutate(
     mt_co2e_mmbtu = case_when(
       emission == "kg CO2" ~ value %>%
         units::as_units("kilogram") %>%
         units::set_units("metric_ton") %>%
         as.numeric(),
-      emission == "g CH4"  ~ (value * gwp$ch4) %>%
+      emission == "g CH4" ~ (value * gwp$ch4) %>%
         units::as_units("gram") %>%
         units::set_units("metric_ton") %>%
         as.numeric(),
-      emission == "g N2O"  ~ (value * gwp$n2o) %>%
+      emission == "g N2O" ~ (value * gwp$n2o) %>%
         units::as_units("gram") %>%
         units::set_units("metric_ton") %>%
         as.numeric(),
       TRUE ~ 0
     )
-    )%>%
+  ) %>%
   group_by(fuel_category, `Fuel type`) %>%
   summarize(mt_co2e_mmbtu = sum(mt_co2e_mmbtu), .groups = "drop")
 
@@ -60,37 +62,39 @@ fuel_ef_mmbtu <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
 coctu_fuel <- read_rds("_energy/data-raw/ctu_ng_combined.rds")
 
 coctu_res_ng <- coctu_fuel %>%
-  filter(sector == "Residential") %>% 
+  filter(sector == "Residential") %>%
   mutate(
-    mcf    = ng_mmbtu / 1.037
+    mcf = ng_mmbtu / 1.037
   ) %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         emissions_year = inventory_year, sector, mcf, data_source)
+    emissions_year = inventory_year, sector, mcf, data_source
+  )
 
 coctu_res_liquid <- coctu_fuel %>%
   filter(sector == "Residential") %>%
   select(coctu_id_gnis, ctu_name, ctu_class, county_name,
-         emissions_year = inventory_year, data_source,
-         propane_mmbtu, fueloil_other_mmbtu)
+    emissions_year = inventory_year, data_source,
+    propane_mmbtu, fueloil_other_mmbtu
+  )
 
 # Combined natural gas data
-coctu_ng <- coctu_fuel %>% 
-  mutate(mcf = ng_mmbtu / 1.037) %>% 
-  select(-c(propane_mmbtu, fueloil_other_mmbtu, total_res_mmbtu)) %>% 
+coctu_ng <- coctu_fuel %>%
+  mutate(mcf = ng_mmbtu / 1.037) %>%
+  select(-c(propane_mmbtu, fueloil_other_mmbtu, total_res_mmbtu)) %>%
   rename(emissions_year = inventory_year)
-         
 
-#county data
+
+# county data
 
 county_mcf <- readRDS(here("_energy", "data", "county_natgas_activity.RDS")) %>%
   select(
     emissions_year,
     county_name,
-    mcf_county    = mcf_delivered
+    mcf_county = mcf_delivered
   ) %>%
   filter(!county_name %in% c("Chisago", "Sherburne", "St. Croix", "Pierce"))
 
-#compare ctu aggregation to county data
+# compare ctu aggregation to county data
 
 county_comparison <- coctu_ng %>%
   filter(emissions_year >= 2010) %>%
@@ -117,11 +121,11 @@ ctu_earliest_3 <- coctu_ng %>%
 
 # Sector sums as proportion of county_mcf totals (not CTU sums)
 ctu_sector_props <- ctu_earliest_3 %>%
-  group_by(coctu_id_gnis,ctu_name, county_name, emissions_year, sector) %>%
+  group_by(coctu_id_gnis, ctu_name, county_name, emissions_year, sector) %>%
   summarize(sector_mcf = sum(mcf, na.rm = TRUE), .groups = "drop") %>%
   left_join(county_mcf, by = c("county_name", "emissions_year")) %>%
   mutate(sector_prop = sector_mcf / mcf_county) %>%
-  group_by(coctu_id_gnis,ctu_name, county_name, sector) %>%
+  group_by(coctu_id_gnis, ctu_name, county_name, sector) %>%
   summarize(mean_sector_prop = mean(sector_prop, na.rm = TRUE), .groups = "drop")
 
 # Existing 2005-2009 actuals (RII, utility data)
@@ -139,9 +143,12 @@ coctu_2005_2009_filled <- ctu_sector_props %>%
   filter(!is.na(mcf), mcf > 0) %>%
   # Keep only CTU-years without existing actuals
   anti_join(existing_2005_2009,
-            by = c("coctu_id_gnis", "county_name", "sector", "emissions_year")) %>%
-  select(coctu_id_gnis, ctu_name, county_name,
-         emissions_year, sector, mcf, data_source)
+    by = c("coctu_id_gnis", "county_name", "sector", "emissions_year")
+  ) %>%
+  select(
+    coctu_id_gnis, ctu_name, county_name,
+    emissions_year, sector, mcf, data_source
+  )
 
 coctu_2005_2009 <- bind_rows(existing_2005_2009, coctu_2005_2009_filled)
 
@@ -150,8 +157,10 @@ ctu_ng_full <- bind_rows(
   coctu_2005_2009,
   coctu_2010_2023
 ) %>%
-  group_by(coctu_id_gnis, ctu_name, ctu_class, county_name,
-           sector, emissions_year, data_source) %>%
+  group_by(
+    coctu_id_gnis, ctu_name, ctu_class, county_name,
+    sector, emissions_year, data_source
+  ) %>%
   summarize(mcf = sum(mcf), .groups = "drop") %>%
   mutate(
     category = "Building Energy",
@@ -159,7 +168,7 @@ ctu_ng_full <- bind_rows(
   ) %>%
   arrange(ctu_name, ctu_class, county_name, sector, emissions_year)
 
-ctu_ng_full %>% 
+ctu_ng_full %>%
   group_by(county_name, sector, emissions_year) %>%
   summarise(
     mcf = sum(mcf),
@@ -176,9 +185,9 @@ ctu_ng_full %>%
 stopifnot(
   "Duplicate CTU-sector-year rows found" =
     ctu_ng_full %>%
-    count(coctu_id_gnis, ctu_name, ctu_class, county_name, sector, emissions_year) %>%
-    filter(n > 1) %>%
-    nrow() == 0
+      count(coctu_id_gnis, ctu_name, ctu_class, county_name, sector, emissions_year) %>%
+      filter(n > 1) %>%
+      nrow() == 0
 )
 
 ## cast backwards for liquid fuels by holding constant
@@ -226,12 +235,12 @@ ctu_liquid_emissions <- coctu_liquid_full %>%
     values_to = "mmbtu"
   ) %>%
   mutate(
-    source          = case_when(
-      source == "propane_mmbtu"       ~ "Propane",
+    source = case_when(
+      source == "propane_mmbtu" ~ "Propane",
       source == "fueloil_other_mmbtu" ~ "Fuel Oil & Other"
     ),
-    ef              = case_when(
-      source == "Propane"          ~ propane_ef,
+    ef = case_when(
+      source == "Propane" ~ propane_ef,
       source == "Fuel Oil & Other" ~ fueloil_ef
     ),
     value_emissions = round(mmbtu * ef, digits = 2),
@@ -241,6 +250,5 @@ ctu_liquid_emissions <- coctu_liquid_full %>%
 
 # ── Save ──────────────────────────────────────────────────────────────────────
 
-saveRDS(ctu_ng_emissions,     "_energy/data/_ctu_natgas_emissions.RDS")
+saveRDS(ctu_ng_emissions, "_energy/data/_ctu_natgas_emissions.RDS")
 saveRDS(ctu_liquid_emissions, "_energy/data/_ctu_liquid_emissions.RDS")
-

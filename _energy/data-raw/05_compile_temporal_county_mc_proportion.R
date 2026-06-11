@@ -17,7 +17,7 @@ ctu_ng <- readRDS(file.path(
   here::here(), "_energy/data/_ctu_natgas_emissions.rds"
 ))
 
-# county 7610 totals 
+# county 7610 totals
 county_mcf <- readRDS("_energy/data/county_natgas_activity.RDS")
 
 ## ghgrp - industrial combustion
@@ -31,14 +31,14 @@ subpart_c_emissions <- readRDS(file.path(
 # Power plant gas by county-year
 powerplant_natgas_measured <- subpart_c_emissions %>%
   filter(
-    power_plant       == TRUE,
+    power_plant == TRUE,
     general_fuel_type == "Natural Gas",
-    facility_name     != "Minnesota River Station" # only three very inconsistent years of reporting
+    facility_name != "Minnesota River Station" # only three very inconsistent years of reporting
   ) %>%
   group_by(county_name, reporting_year) %>%
   summarize(
     mcf_powerplant = sum(value_activity / 1000, na.rm = TRUE),
-    n_facilities   = n_distinct(facility_name),
+    n_facilities = n_distinct(facility_name),
     facility_names = paste(sort(unique(facility_name)), collapse = "; "),
     .groups = "drop"
   ) %>%
@@ -49,7 +49,7 @@ all_pp_counties <- unique(powerplant_natgas_measured$county_name)
 
 powerplant_natgas <- expand.grid(
   emissions_year = 2005:2023,
-  county_name    = all_pp_counties,
+  county_name = all_pp_counties,
   stringsAsFactors = FALSE
 ) %>%
   left_join(powerplant_natgas_measured, by = c("emissions_year", "county_name")) %>%
@@ -59,11 +59,11 @@ powerplant_natgas <- expand.grid(
     mcf_powerplant = na_kalman(mcf_powerplant),
     # Fill facility info from measured years (constant per county)
     facility_names = first(na.omit(facility_names)),
-    n_facilities   = first(na.omit(n_facilities)),
-    pp_data_type   = case_when(
+    n_facilities = first(na.omit(n_facilities)),
+    pp_data_type = case_when(
       !is.na(mcf_powerplant) ~ "measured",
-      emissions_year < 2011  ~ "backcasted",
-      TRUE                   ~ "interpolated"
+      emissions_year < 2011 ~ "backcasted",
+      TRUE ~ "interpolated"
     )
   ) %>%
   ungroup()
@@ -73,19 +73,21 @@ ghgrp_industrial_combustion <- subpart_c_emissions %>%
   filter(
     general_fuel_type == "Natural Gas",
     power_plant == FALSE,
-    !county_name %in% c("Sherburne","Chisago")
-  ) 
+    !county_name %in% c("Sherburne", "Chisago")
+  )
 
-ghgrp_facilities <- ghgrp_industrial_combustion %>% 
+ghgrp_facilities <- ghgrp_industrial_combustion %>%
   distinct(city_name, facility_name)
 
 ghgrp_county_combustion <- ghgrp_industrial_combustion %>%
-  filter(!facility_name %in% c("Flint Hills Resources Pine Bend Refinery",
-                                "St. Paul Park Refining Company, LLC")) %>% 
+  filter(!facility_name %in% c(
+    "Flint Hills Resources Pine Bend Refinery",
+    "St. Paul Park Refining Company, LLC"
+  )) %>%
   group_by(county_name, reporting_year) %>%
   summarize(
     mcf_ghgrp_industrial = sum(value_activity / 1000, na.rm = TRUE),
-    n_facilities         = n_distinct(facility_name),
+    n_facilities = n_distinct(facility_name),
     .groups = "drop"
   ) %>%
   rename(emissions_year = reporting_year)
@@ -94,13 +96,13 @@ ghgrp_county_combustion <- ghgrp_industrial_combustion %>%
 mpca_industrial <- readRDS("_industrial/data/mpca_fuel_activity.RDS") %>%
   mutate(ctu_name = str_replace_all(ctu_name, "St.", "Saint")) %>%
   filter(
-    sector       == "Industrial",
+    sector == "Industrial",
     fuel_type == "Natural Gas",
-    !county_name %in% c("Sherburne","Chisago")
-  ) %>% 
+    !county_name %in% c("Sherburne", "Chisago")
+  ) %>%
   rename(emissions_year = inventory_year)
 
-mpca_facilities <- mpca_industrial %>% 
+mpca_facilities <- mpca_industrial %>%
   distinct(ctu_name, source_name)
 
 # Facilities present in GHGRP are excluded from MPCA to avoid double-counting.
@@ -172,10 +174,10 @@ all_industrial_counties <- union(
   unique(mpca_county$county_name)
 )
 
-#1
+# 1
 mpca_county_backcasted <- expand.grid(
   emissions_year = 2011:2023,
-  county_name    = all_industrial_counties,
+  county_name = all_industrial_counties,
   stringsAsFactors = FALSE
 ) %>%
   left_join(mpca_county, by = c("emissions_year", "county_name")) %>%
@@ -185,15 +187,15 @@ mpca_county_backcasted <- expand.grid(
     mcf_mpca_industrial = na_kalman(mcf_mpca_industrial),
     mpca_data_type = case_when(
       emissions_year >= 2016 ~ "measured",
-      TRUE                   ~ "backcasted"
+      TRUE ~ "backcasted"
     )
   ) %>%
   ungroup()
 
-#2
+# 2
 industrial_combined_2011_2023 <- expand.grid(
   emissions_year = 2011:2023,
-  county_name    = all_industrial_counties,
+  county_name = all_industrial_counties,
   stringsAsFactors = FALSE
 ) %>%
   left_join(
@@ -206,14 +208,14 @@ industrial_combined_2011_2023 <- expand.grid(
   ) %>%
   mutate(
     mcf_ghgrp_industrial = replace_na(mcf_ghgrp_industrial, 0),
-    mcf_mpca_industrial  = replace_na(mcf_mpca_industrial, 0),
+    mcf_mpca_industrial = replace_na(mcf_mpca_industrial, 0),
     mcf_industrial_combined = mcf_ghgrp_industrial + mcf_mpca_industrial
   )
 
-#3
+# 3
 industrial_combustion_full <- expand.grid(
   emissions_year = 2005:2023,
-  county_name    = all_industrial_counties,
+  county_name = all_industrial_counties,
   stringsAsFactors = FALSE
 ) %>%
   left_join(
@@ -227,44 +229,52 @@ industrial_combustion_full <- expand.grid(
     mcf_industrial_combined = na_kalman(mcf_industrial_combined),
     data_type = case_when(
       emissions_year >= 2011 ~ "measured/modeled",
-      TRUE                   ~ "backcasted"
+      TRUE ~ "backcasted"
     )
   ) %>%
   ungroup()
 
 
 ## examine how emissions change at the breakpoints
-ggplot(industrial_combustion_full,
-       aes(x = emissions_year, y = mcf_industrial_combined, col = county_name)) +
+ggplot(
+  industrial_combustion_full,
+  aes(x = emissions_year, y = mcf_industrial_combined, col = county_name)
+) +
   geom_line() +
   geom_vline(xintercept = c(2011, 2016), linetype = "dashed", alpha = 0.4) +
-  labs(title = "Industrial natural gas: combined GHGRP + MPCA with backcast",
-       subtitle = "Dashed lines: GHGRP start (2011), MPCA start (2016)",
-       y = "mcf", x = NULL)
+  labs(
+    title = "Industrial natural gas: combined GHGRP + MPCA with backcast",
+    subtitle = "Dashed lines: GHGRP start (2011), MPCA start (2016)",
+    y = "mcf", x = NULL
+  )
 
 
 
 # ── Sector aggregation from CTU model ────────────────────────────────────────
 
-county_res <- ctu_ng %>% 
-  filter(sector == "Residential",
-         source == "Natural Gas") %>% 
-  group_by(county_name, emissions_year, sector, category, source) %>% 
+county_res <- ctu_ng %>%
+  filter(
+    sector == "Residential",
+    source == "Natural Gas"
+  ) %>%
+  group_by(county_name, emissions_year, sector, category, source) %>%
   summarize(mcf = sum(mcf), .groups = "drop")
 
 county_business_rf <- ctu_ng %>%
-  filter(sector == "Business",
-         source == "Natural Gas") %>%
+  filter(
+    sector == "Business",
+    source == "Natural Gas"
+  ) %>%
   group_by(county_name, emissions_year) %>%
   summarize(mcf_business_rf = sum(mcf, na.rm = TRUE), .groups = "drop")
 
 # ── Build wide county table with all sectors + residual ──────────────────────
 
-county_wide <- county_mcf %>% 
-  filter(!county_name %in% c("Chisago", "Sherburne")) %>% 
-  left_join(county_res, by = c("county_name", "emissions_year")) %>% 
-  left_join(industrial_combustion_full) %>% 
-  left_join(powerplant_natgas) %>% 
+county_wide <- county_mcf %>%
+  filter(!county_name %in% c("Chisago", "Sherburne")) %>%
+  left_join(county_res, by = c("county_name", "emissions_year")) %>%
+  left_join(industrial_combustion_full) %>%
+  left_join(powerplant_natgas) %>%
   mutate(
     mcf_industrial_combined = replace_na(mcf_industrial_combined, 0),
     mcf_powerplant = replace_na(mcf_powerplant, 0)
@@ -288,20 +298,26 @@ county_wide <- county_mcf %>%
 
 # (a) Residual diagnostic with bold residual line
 p_residual_diagnostic <- county_wide %>%
-  filter(emissions_year >= 2013) %>% 
+  filter(emissions_year >= 2013) %>%
   pivot_longer(Residential:Residual, names_to = "sector", values_to = "mcf") %>%
-  ggplot(aes(x = emissions_year, y = mcf / 1e6, color = sector,
-             linewidth = sector)) +
+  ggplot(aes(
+    x = emissions_year, y = mcf / 1e6, color = sector,
+    linewidth = sector
+  )) +
   geom_line() +
   geom_point(size = 1) +
   geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.3) +
-  scale_linewidth_manual(values = c("Residual" = 1.2, "Residential" = 0.5,
-                                    "Business" = 0.5, "Industrial" = 0.5,
-                                    "Powerplant" = 0.5), guide = "none") +
+  scale_linewidth_manual(values = c(
+    "Residual" = 1.2, "Residential" = 0.5,
+    "Business" = 0.5, "Industrial" = 0.5,
+    "Powerplant" = 0.5
+  ), guide = "none") +
   facet_wrap(~county_name, scales = "free_y") +
   scale_y_continuous(labels = scales::comma) +
-  labs(title = "Natural Gas: All Sectors + Residual vs 7610 Total (pre-adjustment)",
-       x = NULL, y = "MCF (millions)", color = "Sector") +
+  labs(
+    title = "Natural Gas: All Sectors + Residual vs 7610 Total (pre-adjustment)",
+    x = NULL, y = "MCF (millions)", color = "Sector"
+  ) +
   theme_minimal()
 p_residual_diagnostic
 
@@ -309,7 +325,8 @@ p_residual_diagnostic
 county_wide %>%
   filter(emissions_year == 2022) %>%
   pivot_longer(c(Residential, Business, Industrial, Powerplant),
-               names_to = "sector", values_to = "mcf") %>%
+    names_to = "sector", values_to = "mcf"
+  ) %>%
   ggplot(aes(x = county_name)) +
   geom_col(aes(y = mcf / 1e6, fill = sector)) +
   geom_point(aes(y = mcf_delivered / 1e6), size = 3, shape = 95, stroke = 3) +
@@ -321,9 +338,11 @@ county_wide %>%
     "Powerplant"  = "#4DAF4A"
   )) +
   scale_y_continuous(labels = scales::comma) +
-  labs(title = "2022 Natural Gas: Sector Breakdown vs 7610 Total",
-       subtitle = "Black marks = 7610 county total",
-       x = NULL, y = "MCF (millions)", fill = "Sector") +
+  labs(
+    title = "2022 Natural Gas: Sector Breakdown vs 7610 Total",
+    subtitle = "Black marks = 7610 county total",
+    x = NULL, y = "MCF (millions)", fill = "Sector"
+  ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
@@ -331,8 +350,10 @@ county_wide %>%
 
 # 2013-2015 benchmark: average residual as % of (res + business)
 residual_benchmark <- county_wide %>%
-  filter(emissions_year %in% 2013:2015,
-         county_name != "Washington") %>%
+  filter(
+    emissions_year %in% 2013:2015,
+    county_name != "Washington"
+  ) %>%
   group_by(county_name) %>%
   summarize(
     mean_residual_pct = mean(Residual / (Residential + Business), na.rm = TRUE),
@@ -344,8 +365,9 @@ county_adjusted <- county_wide %>%
   mutate(
     # Washington: residual becomes Refinery
     Refinery = if_else(county_name == "Washington",
-                       mcf_delivered - (Residential + Business + Industrial + Powerplant),
-                       0),
+      mcf_delivered - (Residential + Business + Industrial + Powerplant),
+      0
+    ),
     # Determine year-specific or benchmark residual
     effective_residual = case_when(
       county_name == "Washington" ~ 0,
@@ -358,7 +380,7 @@ county_adjusted <- county_wide %>%
       TRUE ~ 0
     ),
     Business = Business - industrial_overlap,
-    remaining_residual = effective_residual + industrial_overlap,  # closer to zero or positive
+    remaining_residual = effective_residual + industrial_overlap, # closer to zero or positive
     # Distribute whatever remains proportionally across res and business
     adj_factor = if_else(
       county_name == "Washington" | (Residential + Business) == 0,
@@ -368,18 +390,22 @@ county_adjusted <- county_wide %>%
     Residential = Residential * adj_factor,
     Business = Business * adj_factor
   ) %>%
-  select(-mean_residual_pct, -adj_factor, -effective_residual, 
-         -industrial_overlap, -remaining_residual)
+  select(
+    -mean_residual_pct, -adj_factor, -effective_residual,
+    -industrial_overlap, -remaining_residual
+  )
 
 # ── Final output ─────────────────────────────────────────────────────────────
 
 county_mcf_activity <- county_adjusted %>%
   select(county_name, emissions_year, Residential, Business, Industrial, Powerplant, Refinery) %>%
   pivot_longer(Residential:Refinery, names_to = "sector", values_to = "value_activity") %>%
-  filter(value_activity != 0 | sector != "Refinery") %>%  # drop zero-Refinery rows for non-Washington
-  mutate(category = "Building fuel",
-         source = "Natural gas",
-         unit_activity = "MCF delivered")
+  filter(value_activity != 0 | sector != "Refinery") %>% # drop zero-Refinery rows for non-Washington
+  mutate(
+    category = "Building fuel",
+    source = "Natural gas",
+    unit_activity = "MCF delivered"
+  )
 
 county_mcf_activity %>%
   ggplot(aes(x = emissions_year, y = value_activity / 1e6, color = sector)) +
@@ -387,8 +413,10 @@ county_mcf_activity %>%
   geom_point(size = 1) +
   facet_wrap(~county_name, scales = "free_y") +
   scale_y_continuous(labels = scales::comma) +
-  labs(title = "Natural Gas Deliveries by Sector (adjusted)",
-       x = NULL, y = "MCF (millions)", color = "Sector") +
+  labs(
+    title = "Natural Gas Deliveries by Sector (adjusted)",
+    x = NULL, y = "MCF (millions)", color = "Sector"
+  ) +
   theme_minimal()
 
 write_rds(county_mcf_activity, here("_energy", "data", "county_natgas_activity_by_sector.RDS"))
@@ -419,18 +447,21 @@ county_emissions_by_gas <- county_mcf_activity %>%
 
 write_rds(county_emissions_by_gas, here("_energy", "data", "county_natgas_emissions_by_gas.RDS"))
 
-county_emissions_out <- county_emissions_by_gas %>% 
-  select(county_name, emissions_year, sector, category, source, value_emissions = CO2e_emissions_mt) %>% 
-  mutate(unit_emissions = "Metric tons CO2e",
-         data_source = case_when(
-           sector == "Residential" ~ "Met Council modeling",
-           sector == "Business" ~ "Met Council modeling",
-           sector == "Refinery" ~ "Unaccounted for Washington County natural gas",
-           sector %in% c("Industrial", "Powerplant") & emissions_year >= 2011 ~ "EPA and MPCA reporting",
-           sector %in% c("Industrial", "Powerplant") & emissions_year < 2011 ~ "EPA and MPCA extrapolation",
-         ),
-         factor_source = "Federal Register EPA; 40 CFR Part 98")
+county_emissions_out <- county_emissions_by_gas %>%
+  select(county_name, emissions_year, sector, category, source, value_emissions = CO2e_emissions_mt) %>%
+  mutate(
+    unit_emissions = "Metric tons CO2e",
+    data_source = case_when(
+      sector == "Residential" ~ "Met Council modeling",
+      sector == "Business" ~ "Met Council modeling",
+      sector == "Refinery" ~ "Unaccounted for Washington County natural gas",
+      sector %in% c("Industrial", "Powerplant") & emissions_year >= 2011 ~ "EPA and MPCA reporting",
+      sector %in% c("Industrial", "Powerplant") & emissions_year < 2011 ~ "EPA and MPCA extrapolation",
+    ),
+    factor_source = "Federal Register EPA; 40 CFR Part 98"
+  )
 
-write_rds(county_emissions_out,
-             here("_energy", "data", "county_natgas_emissions_by_sector.RDS"))
-
+write_rds(
+  county_emissions_out,
+  here("_energy", "data", "county_natgas_emissions_by_sector.RDS")
+)

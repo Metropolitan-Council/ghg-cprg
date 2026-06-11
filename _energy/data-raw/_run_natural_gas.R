@@ -29,7 +29,7 @@ source("_energy/data-raw/01_compile_xcel_ctu.R")
 # REQUIRES DATA ON MIRRORED TEAMS FOLDER.
 source("_energy/data-raw/01_compile_centerpoint_natgas.R")
 
-#01_compile_sql_utility_records.R
+# 01_compile_sql_utility_records.R
 # Reads CTU-level electricity and natural gas data from previous Met Council inventory.
 # Reads in data on MS SQL server.
 source("_energy/data-raw/01_compile_sql_utility_records.R")

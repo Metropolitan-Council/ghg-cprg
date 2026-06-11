@@ -113,13 +113,16 @@ electric_emissions <- readRDS("_energy/data/electric_natgas_nrel_proportioned_ex
 ## natural gas ----
 
 natural_gas_emissions <- readRDS("_energy/data/county_natgas_emissions_by_sector.RDS") %>%
-  filter(source == "Natural gas",
-         sector != "Powerplant",
-         sector != "Refinery") %>%
+  filter(
+    source == "Natural gas",
+    sector != "Powerplant",
+    sector != "Refinery"
+  ) %>%
   mutate(
     sector = if_else(sector == "Business",
-                     "Commercial",
-                     sector),
+      "Commercial",
+      sector
+    ),
     geog_level = "county",
     source = paste(sector, "natural gas")
   ) %>%
@@ -138,7 +141,7 @@ propane_kerosene_emissions <- readRDS("_energy/data/county_propane_fueloil_activ
     data_source = "EIA SEDS; ACS",
     factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
-  rename(unit_emissions = units_emissions) %>% 
+  rename(unit_emissions = units_emissions) %>%
   select(names(transportation_emissions))
 
 # agriculture ----

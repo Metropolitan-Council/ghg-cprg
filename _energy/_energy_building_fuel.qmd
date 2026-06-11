@@ -24,10 +24,10 @@ county_ng <- readRDS(file.path(
 )) %>%
   filter(county_name %in% seven_county)
 
-county_ng_sector <- county_ng %>% 
+county_ng_sector <- county_ng %>%
   filter(sector != "Powerplant")
 
-county_ng_pp <- county_ng %>% 
+county_ng_pp <- county_ng %>%
   filter(sector == "Powerplant")
 
 # ── County-level propane and fuel oil emissions ───────────────────────────────
@@ -138,11 +138,11 @@ county_be_2022 <- county_be_2022 %>%
   )))
 
 be_sector_colors <- c(
-  "Residential"          = colors$councilBlue,
-  "Business"           = cprg_colors$cprg_green,
-  "Industrial"           = cprg_colors$cprg_yellow,
-  "Power plant"          = cprg_colors$cprg_da_yellow,
-  "Propane & fuel oil"   = cprg_colors$epa_blue
+  "Residential" = colors$councilBlue,
+  "Business" = cprg_colors$cprg_green,
+  "Industrial" = cprg_colors$cprg_yellow,
+  "Power plant" = cprg_colors$cprg_da_yellow,
+  "Propane & fuel oil" = cprg_colors$epa_blue
 )
 
 fig_be_county_sector <- plot_ly(
@@ -187,7 +187,7 @@ fig_be_county_sector
 ng_temporal <- county_ng_sector %>%
   filter(emissions_year <= target_year) %>%
   group_by(emissions_year, sector) %>%
-  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") 
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop")
 
 liquid_temporal <- county_liquid %>%
   filter(emissions_year <= target_year) %>%
@@ -197,7 +197,7 @@ liquid_temporal <- county_liquid %>%
 
 be_temporal <- bind_rows(ng_temporal, liquid_temporal) %>%
   mutate(sector = factor(sector, levels = c(
-    "Residential", "Business", "Industrial","Propane & fuel oil"
+    "Residential", "Business", "Industrial", "Propane & fuel oil"
   )))
 
 fig_be_baseline <- plot_ly(
@@ -244,8 +244,10 @@ Total residential heating fuel emissions per person (CO2e per capita, combining 
 
 # ── Aggregate CTU-level NG to mmBtu ──────────────────────────────────────────
 ctu_ng_yr <- ctu_ng %>%
-  filter(emissions_year == target_year,
-         sector == "Residential") %>%
+  filter(
+    emissions_year == target_year,
+    sector == "Residential"
+  ) %>%
   group_by(ctu_name, ctu_class) %>%
   summarize(value_emissions_ng = sum(value_emissions, na.rm = TRUE), .groups = "drop")
 
@@ -253,7 +255,7 @@ ctu_ng_yr <- ctu_ng %>%
 ctu_liquid_yr <- ctu_liquid %>%
   filter(emissions_year == max(emissions_year[emissions_year <= target_year])) %>%
   group_by(ctu_name, ctu_class) %>%
-   summarize(value_emissions_fo = sum(value_emissions, na.rm = TRUE), .groups = "drop")
+  summarize(value_emissions_fo = sum(value_emissions, na.rm = TRUE), .groups = "drop")
 
 # ── Join with geometry and population ─────────────────────────────────────────
 ctu_map_data <- cprg_ctu %>%
@@ -264,12 +266,12 @@ ctu_map_data <- cprg_ctu %>%
   left_join(
     ctu_population %>%
       filter(inventory_year == target_year) %>%
-      group_by(ctu_name, ctu_class) %>% 
+      group_by(ctu_name, ctu_class) %>%
       summarize(ctu_population = sum(ctu_population), .groups = "drop"),
     by = c("ctu_name", "ctu_class")
   ) %>%
   mutate(
-    total_emissions   = value_emissions_ng + value_emissions_fo,
+    total_emissions = value_emissions_ng + value_emissions_fo,
     emissions_per_cap = if_else(
       ctu_population > 0 & total_emissions > 0,
       total_emissions / ctu_population,
@@ -277,7 +279,7 @@ ctu_map_data <- cprg_ctu %>%
     )
   ) %>%
   right_join(cprg_ctu %>% select(gnis, geometry), by = "gnis") %>%
-  st_as_sf() %>% 
+  st_as_sf() %>%
   filter(!ctu_name == "Fort Snelling")
 
 epc_range <- range(ctu_map_data$emissions_per_cap, na.rm = TRUE)
@@ -298,10 +300,10 @@ fig_ctu_emissions_per_cap_map <- leaflet(
 ) %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   addPolygons(
-    fillColor    = ~ emissions_cap_pal(sqrt(emissions_per_cap)),
-    fillOpacity  = 0.8,
-    color        = "white",
-    weight       = 0.5,
+    fillColor = ~ emissions_cap_pal(sqrt(emissions_per_cap)),
+    fillOpacity = 0.8,
+    color = "white",
+    weight = 0.5,
     smoothFactor = 0.5,
     label = ~ paste0(
       ctu_name, " (", ctu_class, ")<br>",

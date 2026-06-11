@@ -105,5 +105,3 @@ utility_county_proportions %>%
 
 # Save the county proportions object for use in handbook back-estimation
 write_rds(utility_county_proportions, here("_energy", "data", "county_natgas_7610_activity.RDS"))
-
-

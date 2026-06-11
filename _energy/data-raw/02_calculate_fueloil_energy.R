@@ -10,7 +10,7 @@ source("R/_load_pkgs.R")
 seds <- read.csv("https://www.eia.gov/state/seds/sep_use/total/csv/use_all_btu.csv") %>%
   filter(
     State %in% c("MN", "WI"),
-    MSN %in% c("HLRCB","DFRCB", "KSRCB")
+    MSN %in% c("HLRCB", "DFRCB", "KSRCB")
   ) %>%
   pivot_longer(
     cols = matches("^X?[0-9]{4}$"),
@@ -70,7 +70,7 @@ rates <- state_hh %>%
     by = c("state_abb", "acs_year" = "year")
   ) %>%
   mutate(
-    propane_mmBtu_per_hh      = propane_mmBtu_state      / propane_hhE,
+    propane_mmBtu_per_hh = propane_mmBtu_state / propane_hhE,
     fueloil_other_mmBtu_per_hh = fueloil_other_mmBtu_state / kerosene_hhE
   )
 
@@ -84,9 +84,9 @@ ctu_fuel_estimates <- ctu_fuel_hh %>%
     by = c("state_abb", "acs_year")
   ) %>%
   mutate(
-    propane_mmBtu  = propane_hhE  * propane_mmBtu_per_hh,
+    propane_mmBtu = propane_hhE * propane_mmBtu_per_hh,
     fueloil_other_mmBtu = kerosene_hhE * fueloil_other_mmBtu_per_hh
-  ) %>% 
+  ) %>%
   select(ctu_name, ctu_class, county_name, state_abb, acs_year, propane_mmBtu, fueloil_other_mmBtu)
 
 saveRDS(ctu_fuel_estimates, "_energy/data-raw/ctu_propane_fueloil_use.RDS")
@@ -100,7 +100,7 @@ county_fuel_estimates <- county_fuel_hh %>%
     by = c("state_abb", "acs_year")
   ) %>%
   mutate(
-    propane_mmBtu       = propane_hhE  * propane_mmBtu_per_hh,
+    propane_mmBtu       = propane_hhE * propane_mmBtu_per_hh,
     fueloil_other_mmBtu = kerosene_hhE * fueloil_other_mmBtu_per_hh
   ) %>%
   select(county_name, state_abb, acs_year, propane_mmBtu, fueloil_other_mmBtu)
