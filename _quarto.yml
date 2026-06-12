@@ -43,8 +43,7 @@ book:
     - part: "Building Energy"
       chapters:
        - _energy/_energy_building_fuel.qmd
-       - _energy/data_natural_gas.qmd
-       - _energy/data_propane_kerosene.qmd
+       - _energy/data_building_fuel.qmd
 
 
     - part: "Industrial"
