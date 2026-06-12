@@ -111,7 +111,7 @@ category_order <- county_emissions %>%
 county_emissions_2022 <- county_emissions %>%
   filter(emissions_year == 2022) %>%
   mutate(category = if_else(category %in% c(
-    "Building Fuel",
+    "Building fuel",
     "Electricity"
   ),
   source, category
