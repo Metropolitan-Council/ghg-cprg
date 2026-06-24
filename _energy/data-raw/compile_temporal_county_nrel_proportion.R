@@ -136,11 +136,14 @@ ggplot(electric_interpolated, aes(x = year, y = activity, col = county_name)) +
   geom_line()
 
 natgas_raw <- readRDS(file.path(here::here("_energy", "data", "county_natgas_activity.RDS"))) %>%
-bind_rows(readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>% 
-            rename(emissions_year = year)) %>%
+  as_tibble() %>%
+  bind_rows(
+    readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>% 
+      rename(emissions_year = year)
+  ) %>%
   mutate(mcf_delivered = if_else(is.na(mcf_delivered),
-    emissions_metric_tons_co2e / natgas_ef_scf$mt_co2e_mcf,
-    mcf_delivered
+                                 emissions_metric_tons_co2e / natgas_ef_scf$mt_co2e_mcf,
+                                 mcf_delivered
   ),
   sector = "Natural gas") # removing because MERC filing in not in Commerce edocket
 
@@ -180,7 +183,7 @@ ggplot(natgas_interpolated, aes(x = emissions_year, y = value_emissions, col = c
 
 ## write intermediary activity data files
 
-saveRDS(natgas_interpolated, "_energy/data/county_natgas_activity.RDS")
+saveRDS(natgas_interpolated, "_energy/data/county_natgas_activity_nrel.RDS")
 saveRDS(electric_interpolated, "_energy/data/county_elec_activity.RDS")
 
 # waldo::compare(natgas_interpolated, readRDS("_energy/data/county_natgas_activity.RDS"))
