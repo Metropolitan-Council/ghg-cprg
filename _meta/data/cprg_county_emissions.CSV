@@ -1738,11 +1738,105 @@
 2022,"county","55109","St. Croix","Transportation","Trucks","On-road",37460.09,"Metric tons CO2e","Air Emissions Modeling","MOVES5",93752,"ACS 5-Year Estimates, Table DP05",0.4
 2022,"county","55109","St. Croix","Transportation","Trucks","On-road",415644.15,"Metric tons CO2e","Air Emissions Modeling","MOVES5",93752,"ACS 5-Year Estimates, Table DP05",4.43
 2022,"county","55109","St. Croix","Transportation","Trucks","On-road",976.2,"Metric tons CO2e","Air Emissions Modeling","MOVES5",93752,"ACS 5-Year Estimates, Table DP05",0.01
+2023,"county","27003","Anoka","Transportation","Passenger vehicles","On-road",1076352.26,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27003","Anoka","Transportation","Passenger vehicles","On-road",22674.72,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27003","Anoka","Transportation","Passenger vehicles","On-road",3722.78,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27003","Anoka","Transportation","Buses","On-road",5275.39,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27003","Anoka","Transportation","Buses","On-road",26405.52,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27003","Anoka","Transportation","Buses","On-road",1979.56,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27003","Anoka","Transportation","Trucks","On-road",99688.42,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27003","Anoka","Transportation","Trucks","On-road",311494.8,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27003","Anoka","Transportation","Trucks","On-road",3450.16,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27019","Carver","Transportation","Passenger vehicles","On-road",314865.06,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27019","Carver","Transportation","Passenger vehicles","On-road",6276.7,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27019","Carver","Transportation","Passenger vehicles","On-road",1045.14,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27019","Carver","Transportation","Buses","On-road",2438.57,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27019","Carver","Transportation","Buses","On-road",7563.31,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27019","Carver","Transportation","Trucks","On-road",23385.43,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27019","Carver","Transportation","Trucks","On-road",97201.81,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27019","Carver","Transportation","Trucks","On-road",444.67,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27025","Chisago","Transportation","Passenger vehicles","On-road",240930.3,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27025","Chisago","Transportation","Passenger vehicles","On-road",11125.71,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27025","Chisago","Transportation","Passenger vehicles","On-road",1039.8,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27025","Chisago","Transportation","Buses","On-road",2196.72,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27025","Chisago","Transportation","Buses","On-road",7053.5,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27025","Chisago","Transportation","Trucks","On-road",16955.35,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27025","Chisago","Transportation","Trucks","On-road",154070.58,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27025","Chisago","Transportation","Trucks","On-road",545.52,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27037","Dakota","Transportation","Passenger vehicles","On-road",1336799.66,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27037","Dakota","Transportation","Passenger vehicles","On-road",18727.66,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27037","Dakota","Transportation","Passenger vehicles","On-road",3923.7,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27037","Dakota","Transportation","Buses","On-road",7597.56,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27037","Dakota","Transportation","Buses","On-road",35700.4,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27037","Dakota","Transportation","Trucks","On-road",160498.72,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27037","Dakota","Transportation","Trucks","On-road",433715.68,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27037","Dakota","Transportation","Trucks","On-road",4222.89,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27053","Hennepin","Transportation","Passenger vehicles","On-road",3713062.22,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27053","Hennepin","Transportation","Passenger vehicles","On-road",36321.22,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27053","Hennepin","Transportation","Passenger vehicles","On-road",9314.34,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27053","Hennepin","Transportation","Buses","On-road",27392.83,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27053","Hennepin","Transportation","Buses","On-road",83080.34,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27053","Hennepin","Transportation","Buses","On-road",2603.06,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27053","Hennepin","Transportation","Trucks","On-road",431178.21,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27053","Hennepin","Transportation","Trucks","On-road",1117341.21,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27053","Hennepin","Transportation","Trucks","On-road",8459.92,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27123","Ramsey","Transportation","Passenger vehicles","On-road",1556057.7,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27123","Ramsey","Transportation","Passenger vehicles","On-road",13796.93,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27123","Ramsey","Transportation","Passenger vehicles","On-road",3882.7,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27123","Ramsey","Transportation","Buses","On-road",5581.3,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27123","Ramsey","Transportation","Buses","On-road",37995.88,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27123","Ramsey","Transportation","Buses","On-road",3561.05,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27123","Ramsey","Transportation","Trucks","On-road",185156.82,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27123","Ramsey","Transportation","Trucks","On-road",502494.98,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27123","Ramsey","Transportation","Trucks","On-road",3044.46,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27139","Scott","Transportation","Passenger vehicles","On-road",486400.34,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27139","Scott","Transportation","Passenger vehicles","On-road",10988.19,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27139","Scott","Transportation","Passenger vehicles","On-road",1542.38,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27139","Scott","Transportation","Buses","On-road",5323.41,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27139","Scott","Transportation","Buses","On-road",10154.3,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27139","Scott","Transportation","Trucks","On-road",41801.75,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27139","Scott","Transportation","Trucks","On-road",182864.42,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27139","Scott","Transportation","Trucks","On-road",794.69,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27141","Sherburne","Transportation","Passenger vehicles","On-road",311674.5,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27141","Sherburne","Transportation","Passenger vehicles","On-road",13351.82,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27141","Sherburne","Transportation","Passenger vehicles","On-road",1269.47,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27141","Sherburne","Transportation","Buses","On-road",526.3,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27141","Sherburne","Transportation","Buses","On-road",10375.68,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27141","Sherburne","Transportation","Buses","On-road",0.9,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27141","Sherburne","Transportation","Trucks","On-road",22327.22,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27141","Sherburne","Transportation","Trucks","On-road",104793.72,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27141","Sherburne","Transportation","Trucks","On-road",414.26,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27163","Washington","Transportation","Passenger vehicles","On-road",837351.42,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27163","Washington","Transportation","Passenger vehicles","On-road",14752.69,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27163","Washington","Transportation","Passenger vehicles","On-road",2532.63,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27163","Washington","Transportation","Buses","On-road",1634.55,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27163","Washington","Transportation","Buses","On-road",23317.26,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27163","Washington","Transportation","Trucks","On-road",60112.04,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27163","Washington","Transportation","Trucks","On-road",261047.79,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","27163","Washington","Transportation","Trucks","On-road",1079.46,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55093","Pierce","Transportation","Passenger vehicles","On-road",127651.98,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55093","Pierce","Transportation","Passenger vehicles","On-road",1211.74,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55093","Pierce","Transportation","Passenger vehicles","On-road",491.22,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55093","Pierce","Transportation","Buses","On-road",2166.23,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55093","Pierce","Transportation","Buses","On-road",1661.81,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55093","Pierce","Transportation","Buses","On-road",3.78,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55093","Pierce","Transportation","Trucks","On-road",15507.51,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55093","Pierce","Transportation","Trucks","On-road",44323.91,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55093","Pierce","Transportation","Trucks","On-road",323.35,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55109","St. Croix","Transportation","Passenger vehicles","On-road",370098.75,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55109","St. Croix","Transportation","Passenger vehicles","On-road",3506.24,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55109","St. Croix","Transportation","Passenger vehicles","On-road",1407.32,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55109","St. Croix","Transportation","Buses","On-road",8732.41,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55109","St. Croix","Transportation","Buses","On-road",6535.35,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55109","St. Croix","Transportation","Buses","On-road",15.15,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55109","St. Croix","Transportation","Trucks","On-road",53602.05,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55109","St. Croix","Transportation","Trucks","On-road",498028.63,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
+2023,"county","55109","St. Croix","Transportation","Trucks","On-road",3902.81,"Metric tons CO2e","National Emissions Inventory","MOVES3",NA,NA,NA
 2005,"county",NA,"MSP Airport","Transportation","Aviation","MSP airport",4153081.45,"Metric tons CO2e","Metropolitan Airport Commission: fuel dispersement reporting","Metropolitan Airport Commission: fuel dispersement reporting",NA,NA,NA
-2006,"county",NA,"MSP Airport","Transportation","Aviation","MSP airport",3695398.45,"Metric tons CO2e","MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2006,"county",NA,"MSP Airport","Transportation","Aviation","MSP airport",3695398.46,"Metric tons CO2e","MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
 2007,"county",NA,"MSP Airport","Transportation","Aviation","MSP airport",3774843.78,"Metric tons CO2e","MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
 2008,"county",NA,"MSP Airport","Transportation","Aviation","MSP airport",3479777.08,"Metric tons CO2e","MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
-2009,"county",NA,"MSP Airport","Transportation","Aviation","MSP airport",3360553.25,"Metric tons CO2e","MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
+2009,"county",NA,"MSP Airport","Transportation","Aviation","MSP airport",3360553.26,"Metric tons CO2e","MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
 2010,"county",NA,"MSP Airport","Transportation","Aviation","MSP airport",3008424.08,"Metric tons CO2e","MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
 2011,"county",NA,"MSP Airport","Transportation","Aviation","MSP airport",3081819.22,"Metric tons CO2e","MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA
 2012,"county",NA,"MSP Airport","Transportation","Aviation","MSP airport",3142570.22,"Metric tons CO2e","MPCA state aviation emission proportional analysis","MPCA state aviation emission proportional analysis",NA,NA,NA

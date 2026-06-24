@@ -41,6 +41,7 @@ read_smoke_ff10 <- function(file_location,
     colClasses = "character",
     col.names = column_names[[1]]
   ) %>%
+    janitor::clean_names() %>% 
     # only include counties in MN and WI
     dplyr::filter(
       region_cd %in% c(

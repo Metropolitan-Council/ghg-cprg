@@ -9,6 +9,7 @@ tictoc::tic("NEI SMOKE flat file proccessing")
 # check that we have all the necessary files -----
 if (any(purrr::map(
   c(
+    "_transportation/data-raw/epa/nei/2023NEI/SmokeFlatFile_ONROAD_20260420.csv",
     "_transportation/data-raw/epa/nei/2020NEI/SmokeFlatFile_ONROAD_20230330.csv",
     "_transportation/data-raw/epa/nei/2017NEI/home/callen05/tmp/2017NEI_onroad_SMOKE_MOVES_NEIstyle_09mar2020_FIPS_27.csv",
     "_transportation/data-raw/epa/nei/2017NEI/home/callen05/tmp/2017NEI_onroad_SMOKE_MOVES_NEIstyle_09mar2020_FIPS_55.csv",
@@ -43,6 +44,8 @@ plan(strategy = future::multisession, workers = 10)
 # for easier access, we will compile all options
 furrr::future_map(
   c(
+    # 2023 NEI has flat file on main webpage
+    "_transportation/data-raw/epa/nei/2023NEI/SmokeFlatFile_ONROAD_20260420.csv",
     # 2020 NEI has a flat file directly on the main webpage
     "_transportation/data-raw/epa/nei/2020NEI/SmokeFlatFile_ONROAD_20230330.csv",
 
@@ -79,6 +82,9 @@ furrr::future_map(
 # read back in, combine, and save -----
 purrr::map(
   c(
+    # 2023
+    "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/SmokeFlatFile_ONROAD_20260420.RDS",
+    
     # 2020
     "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/SmokeFlatFile_ONROAD_20230330.RDS",
 

@@ -185,7 +185,7 @@ epa_equates_summary <- epa_equates %>%
 epa_emissions_combine <- bind_rows(
   epa_nei_onroad_summary %>%
     # only use NEI for 2020
-    filter(calc_year == "2020") %>%
+    filter(calc_year %in% c("2020", "2023")) %>%
     # add identifying columns
     mutate(
       data_source = "National Emissions Inventory",
@@ -366,6 +366,39 @@ epa_emissions_summary_alt_mode_truck %>%
   )
 
 
+
+epa_emissions_summary_alt_mode_truck %>%
+  # filter(county_name == "Hennepin") %>%
+  group_by(emissions_year, alt_mode_truck) %>%
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
+  group_by(alt_mode_truck) %>% 
+  plot_ly(
+    x = ~emissions_year,
+    y = ~emissions_metric_tons_co2e,
+    color = ~alt_mode_truck
+  ) %>%
+  add_markers(
+    marker = list(
+      size = 10,
+      opacity = 0.7
+    ),
+    legendgroup = ~alt_mode_truck
+  ) %>%
+  add_lines(
+    marker = list(
+      size = 3,
+      opacity = 0.7
+    ),
+    legendgroup = ~alt_mode_truck,
+    showlegend = FALSE
+  ) %>%
+  plotly_layout(
+    main_title = "Region total by vehicle type",
+    legend_title = "Vehicle type",
+    x_title = "Year",
+    y_title = "Metric tons CO<sub>2</sub>e"
+  )
+
 # create indices of known data available by year -----
 
 epa_onroad_emissions_year_scc_index <- epa_emissions_combine %>%
@@ -521,4 +554,4 @@ epa_onroad_source_set <-
 saveRDS(epa_onroad_source_set, "_transportation/data/epa_onroad_source_set.RDS")
 
 # clean up the environment to help with space
-rm(list = ls())
+# rm(list = ls())
