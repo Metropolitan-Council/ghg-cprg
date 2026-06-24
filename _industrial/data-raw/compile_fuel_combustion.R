@@ -250,7 +250,8 @@ saveRDS(ind_fuel_activity_meta, "./_industrial/data/fuel_combustion_activity_met
 ## fuel combustion by gas output
 
 ind_fuel_gas_emissions_out <- ind_fuel_emissions %>%
-  filter(!grepl("co2e", units_emissions)) %>%
+  filter(!grepl("co2e", units_emissions),
+         !grepl("D", industry_type_subparts)) %>%
   select(facility_id,
     facility_name,
     industry_type_subparts,
@@ -323,7 +324,8 @@ ind_fuel_co2e_emissions_out_doublecount <- ind_fuel_emissions %>%
 ind_fuel_co2e_emissions_out <- ind_fuel_emissions %>%
   filter(
     grepl("co2e", units_emissions),
-    !values_emissions == 0
+    !values_emissions == 0,
+    !grepl("D", industry_type_subparts)
   ) %>%
   group_by(
     facility_id,
