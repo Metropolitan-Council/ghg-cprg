@@ -370,8 +370,8 @@ epa_emissions_summary_alt_mode_truck %>%
 epa_emissions_summary_alt_mode_truck %>%
   # filter(county_name == "Hennepin") %>%
   group_by(emissions_year, alt_mode_truck) %>%
-  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>% 
-  group_by(alt_mode_truck) %>% 
+  summarize(emissions_metric_tons_co2e = sum(emissions_metric_tons_co2e)) %>%
+  group_by(alt_mode_truck) %>%
   plot_ly(
     x = ~emissions_year,
     y = ~emissions_metric_tons_co2e,

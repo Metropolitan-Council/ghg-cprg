@@ -84,7 +84,7 @@ purrr::map(
   c(
     # 2023
     "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/SmokeFlatFile_ONROAD_20260420.RDS",
-    
+
     # 2020
     "_transportation/data-raw/epa/nei/SmokeFlatFile_MN_WI/SmokeFlatFile_ONROAD_20230330.RDS",
 
