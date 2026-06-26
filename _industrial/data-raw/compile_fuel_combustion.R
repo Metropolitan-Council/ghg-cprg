@@ -22,10 +22,9 @@ ind_unit_data <-
   clean_names() %>%
   filter(
     state %in% c("MN", "WI"),
-    # remove power plants and municipal waste (double-counting)
-    !grepl("D", industry_type_subparts),
-    !grepl("HH", industry_type_subparts),
-    !industry_type_sectors == "Power Plants"
+    #  municipal waste (double-counting)
+    # !grepl("D", industry_type_subparts), # current process will account for power generation from natural gas combustion
+    !grepl("HH", industry_type_subparts)
   ) %>%
   mutate(city_name = str_to_title(gsub("ST.", "Saint", city, ignore.case = TRUE))) %>%
   inner_join(., cprg_ctu %>% select(state_abb, city_name, county_name) %>%
@@ -40,10 +39,9 @@ ind_fuel_data <- read_excel(file.path(here::here(), "_industrial/data-raw/emissi
   clean_names() %>%
   filter(
     state %in% c("MN", "WI"),
-    # remove power plants and municipal waste (doublecounting)
-    !grepl("D", industry_type_subparts),
-    !grepl("HH", industry_type_subparts),
-    !industry_type_sectors == "Power Plants"
+    #  municipal waste (doublecounting)
+    # !grepl("D", industry_type_subparts),
+    !grepl("HH", industry_type_subparts)
   ) %>%
   mutate(city_name = str_to_title(gsub("ST.", "Saint", city, ignore.case = TRUE))) %>%
   inner_join(., cprg_ctu %>% select(state_abb, city_name, county_name) %>%
@@ -132,6 +130,12 @@ ggplot(ind_fuel_activity, aes(x = unit_ch4, y = unit_n2o)) +
   geom_abline(slope = 1, linetype = "dashed", color = "Red") +
   facet_wrap(~per_unit, scales = "free")
 # looks good overall, very little disagreement, will take average unit btw gas calcs
+# new exception with powerplants - something is wrong with coal fired data. Removing for now as no
+# need to account for it.
+
+ind_fuel_activity <- ind_fuel_activity %>%
+  filter(!(grepl("D", industry_type_subparts) & general_fuel_type == "Coal"))
+
 
 # arrange to back-calculate activity to all gas emissions (i.e. include co2)
 unit_to_mt <- industrial_hub %>%
@@ -188,7 +192,7 @@ ind_fuel_emissions %>%
   filter(industry_type_subparts == "C") %>%
   filter(grepl("co2e", units_emissions)) %>%
   group_by(reporting_year) %>%
-  summarize(mt_co2e = sum(values_emissions))
+  summarize(mt_co2e = sum(values_emissions, na.rm = TRUE))
 
 ### save three forms of this data: activity, emissions by gas MT,
 # emissions by gas MT co2e
@@ -208,11 +212,19 @@ ind_fuel_activity_out <- ind_fuel_activity %>%
     value_activity = avg_activity
   ) %>%
   ### add flag for likely doublecounts - will filter from emissions
-  mutate(doublecount = if_else(
-    general_fuel_type == "Natural Gas" &
-      !grepl("Y", industry_type_subparts),
-    "Yes", "No"
-  ))
+  mutate(
+    doublecount = if_else(
+      general_fuel_type == "Natural Gas" &
+        !grepl("Y", industry_type_subparts),
+      "Yes", "No"
+    ),
+    power_plant = if_else(
+      grepl("D", industry_type_subparts),
+      TRUE, FALSE
+    )
+  )
+
+
 
 ind_fuel_activity_meta <-
   tibble::tribble(
@@ -228,7 +240,8 @@ ind_fuel_activity_meta <-
     "specific_fuel_type", class(ind_fuel_activity_out$specific_fuel_type), "Specific type of fuel combusted",
     "value_activity", class(ind_fuel_activity_out$value_activity), "Numerical value of activity data",
     "units_activity", class(ind_fuel_activity_out$units_activity), "Units of activity data",
-    "doublecount", class(ind_fuel_activity_out$doublecount), "Whether activity is likely to be double counted in utility analysis"
+    "doublecount", class(ind_fuel_activity_out$doublecount), "Whether activity is likely to be double counted in utility analysis",
+    "power_plant", class(ind_fuel_activity_out$power_plant), "Whether facility is an electric generating unit (subpart D); excluded from emissions outputs"
   )
 
 saveRDS(ind_fuel_activity_out, "./_industrial/data/fuel_combustion_activity.rds")
@@ -237,7 +250,8 @@ saveRDS(ind_fuel_activity_meta, "./_industrial/data/fuel_combustion_activity_met
 ## fuel combustion by gas output
 
 ind_fuel_gas_emissions_out <- ind_fuel_emissions %>%
-  filter(!grepl("co2e", units_emissions)) %>%
+  filter(!grepl("co2e", units_emissions),
+         !grepl("D", industry_type_subparts)) %>%
   select(facility_id,
     facility_name,
     industry_type_subparts,
@@ -310,7 +324,8 @@ ind_fuel_co2e_emissions_out_doublecount <- ind_fuel_emissions %>%
 ind_fuel_co2e_emissions_out <- ind_fuel_emissions %>%
   filter(
     grepl("co2e", units_emissions),
-    !values_emissions == 0
+    !values_emissions == 0,
+    !grepl("D", industry_type_subparts)
   ) %>%
   group_by(
     facility_id,

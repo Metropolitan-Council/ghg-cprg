@@ -95,11 +95,10 @@ solid_waste <- readRDS("_waste/data/final_solid_waste_allyrs.RDS") %>%
 
 
 # energy -----
-electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_proportioned_expanded.RDS")
 
 ## electricity ----
 
-electric_emissions <- electric_natgas_nrel_proportioned %>%
+electric_emissions <- readRDS("_energy/data/electric_natgas_nrel_proportioned_expanded.RDS") %>%
   filter(source == "Electricity") %>%
   mutate(
     emissions_year = year,
@@ -113,11 +112,17 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
 
 ## natural gas ----
 
-natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
-  filter(source == "Natural gas") %>%
+natural_gas_emissions <- readRDS("_energy/data/county_natgas_emissions_by_sector.RDS") %>%
+  filter(
+    source == "Natural gas",
+    sector != "Powerplant",
+    sector != "Refinery"
+  ) %>%
   mutate(
-    emissions_year = year,
-    sector = str_to_title(sector),
+    sector = if_else(sector == "Business",
+      "Commercial",
+      sector
+    ),
     geog_level = "county",
     source = paste(sector, "natural gas")
   ) %>%
@@ -127,20 +132,16 @@ natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
 
 ## propane and kerosene ----
 
-propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
+propane_kerosene_emissions <- readRDS("_energy/data/county_propane_fueloil_activity_emissions.RDS") %>%
+  group_by() %>%
   mutate(
-    emissions_year = 2021,
-    sector = "Residential",
     geog_level = "county",
-    county_name = NAME,
-    category = "Building Fuel",
+    category = "Building fuel",
     source = "Residential liquid fuel",
-    data_source = "EIA RECS (2020)",
-    factor_source = "EPA GHG Emission Factors Hub (2021)",
-    value_emissions = emissions_metric_tons_co2e,
-    unit_emissions = "Metric tons CO2e"
+    data_source = "EIA SEDS; ACS",
+    factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
-  ungroup() %>%
+  rename(unit_emissions = units_emissions) %>%
   select(names(transportation_emissions))
 
 # agriculture ----
@@ -242,7 +243,7 @@ emissions_all <- bind_rows(
       category,
       c(
         "Electricity",
-        "Building Fuel",
+        "Building fuel",
         "Passenger vehicles",
         "Buses",
         "Trucks",

@@ -18,9 +18,6 @@ ctu_county_unique <- ctu_population %>%
   ungroup() %>%
   distinct(geoid, ctuid, ctu_name, ctu_class, county_name)
 
-# county activity and emissions data
-county_mcf <- readRDS(here("_energy", "data", "minnesota_county_GasEmissions.RDS"))
-
 ## create storage frame of unique city and utility combos with all years
 ctu_utility_year <- readRDS("_energy/data/ctu_ng_utility_intersect.RDS") %>%
   cross_join(data.frame(inventory_year = c(2007:2023))) %>%
@@ -56,11 +53,12 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
     units_emissions == "Metric tons CO2",
     !is.na(therms_per_year)
   ) %>% # removes duplicates
-  mutate(sector = if_else(customer_class == "Residential",
-    "Residential",
-    "Business"
+  mutate(sector = case_when(
+    customer_class == "Residential" ~ "Residential",
+    customer_class == "Total" ~ "Total",
+    TRUE ~ "Business"
   )) %>%
-  group_by(ctu_name, emissions_year, utility, sector) %>%
+  group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
   summarise(
     mcf_per_year = sum(therms_per_year * therms_to_mcf, na.rm = TRUE),
     .groups = "drop"
@@ -69,7 +67,10 @@ sql_ng <- readRDS("_energy/data/ctu_ng_emissions_2015_2018.rds") %>%
     names_from = sector, values_from = mcf_per_year,
     names_glue = "{tolower(sector)}_mcf"
   ) %>%
-  mutate(total_mcf = replace_na(business_mcf, 0) + replace_na(residential_mcf, 0))
+  mutate(total_mcf = if_else(is.na(total_mcf),
+    replace_na(business_mcf, 0) + replace_na(residential_mcf, 0),
+    total_mcf
+  ))
 
 
 ### load and format xcel ng data
@@ -83,7 +84,7 @@ xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
     sector_mapped == "residential" ~ "Residential",
     TRUE ~ "Business"
   )) %>%
-  group_by(ctu_name, emissions_year, utility, sector) %>%
+  group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
   summarise(mcf_per_year = sum(mcf_delivered, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
     names_from = sector, values_from = mcf_per_year,
@@ -106,7 +107,7 @@ centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>
       TRUE ~ sector # keeps Residential as Residential and All as All
     )
   ) %>%
-  group_by(ctu_name, emissions_year, utility, sector) %>%
+  group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
   summarise(mcf_per_year = sum(mcf_delivered, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
     names_from = sector,
@@ -136,16 +137,25 @@ centerpoint <- readRDS("_energy/data/centerpoint_activityData_2015_2023.rds") %>
 
 # function: sequentially load data while keeping NAs
 merge_ng_data <- function(base_df, new_data) {
-  base_df %>%
-    left_join(new_data %>% rename(inventory_year = emissions_year),
-      by = c("ctu_name", "inventory_year", "utility")
+  new_data_renamed <- new_data %>% rename(inventory_year = emissions_year)
+
+  # rows already in base -- update NAs with new values
+  updated <- base_df %>%
+    left_join(new_data_renamed,
+      by = c("ctu_name", "ctu_class", "inventory_year", "utility")
     ) %>%
     mutate(
       residential_mcf = if_else(!is.na(residential_mcf.y), residential_mcf.y, residential_mcf.x),
-      business_mcf = if_else(!is.na(business_mcf.y), business_mcf.y, business_mcf.x),
-      total_mcf = if_else(!is.na(total_mcf.y), total_mcf.y, total_mcf.x)
+      business_mcf    = if_else(!is.na(business_mcf.y), business_mcf.y, business_mcf.x),
+      total_mcf       = if_else(!is.na(total_mcf.y), total_mcf.y, total_mcf.x)
     ) %>%
-    select(-ends_with(".x"), -ends_with(".y")) # Remove duplicate columns
+    select(-ends_with(".x"), -ends_with(".y"))
+
+  # rows in new_data that have no matching utility in the base scaffold
+  novel_rows <- new_data_renamed %>%
+    anti_join(base_df, by = c("ctu_name", "ctu_class", "inventory_year", "utility"))
+
+  bind_rows(updated, novel_rows)
 }
 
 ## load each dataset sequentially (deliberately override previous sql data with our data requests)
@@ -157,21 +167,14 @@ anti_join(sql_ng, ctu_utility_year, by = "utility") %>%
 sort(unique(ctu_utility_year$utility))
 
 
-# perform the merges -- sql first to make susre any updated data from utilities is reflected
+# perform the merges -- sql first to make sure any updated data from utilities is reflected
 ctu_utility_year <- merge_ng_data(ctu_utility_year, sql_ng)
 ctu_utility_year <- merge_ng_data(ctu_utility_year, centerpoint)
 ctu_utility_year <- merge_ng_data(ctu_utility_year, xcel)
 
 
-
-# address same-named city/township -- ascribe all observed data to city and null out the township.
+# Address clearly incongruent and poor-data data
 ctu_utility_year <- ctu_utility_year %>%
-  mutate(
-    residential_mcf = if_else(ctu_name == "Belle Plaine" & ctu_class == "TOWNSHIP", NA_real_, residential_mcf),
-    business_mcf = if_else(ctu_name == "Belle Plaine" & ctu_class == "TOWNSHIP", NA_real_, business_mcf),
-    total_mcf = if_else(ctu_name == "Belle Plaine" & ctu_class == "TOWNSHIP", NA_real_, total_mcf),
-  ) %>%
-  # Address clearly incongruent and poor-data data
   mutate(
     residential_mcf = if_else(ctu_name == "Dayton" & inventory_year == 2020, NA_real_, residential_mcf)
   )
@@ -249,6 +252,85 @@ ctu_utility_year <- ctu_utility_year %>%
     by = c("ctu_name", "ctu_class", "inventory_year")
   ) %>%
   bind_rows(., rii_fill)
+
+
+# check
+ctu_utility_year %>%
+  filter(!is.na(total_mcf)) %>%
+  count(utility, inventory_year) %>%
+  arrange(desc(n))
+
+# removal of powerplant data when suspected
+
+fuel_combustion_activity <- read_rds("_industrial/data/fuel_combustion_activity.RDS")
+
+### check: flag city-years where power plant gas consumption may inflate business_mcf
+
+# conversion factor
+scf_to_mcf <- 1 / 1000
+
+# summarize GHGRP power plant NG consumption by city and year
+powerplant_ng <- fuel_combustion_activity %>%
+  filter(
+    power_plant == TRUE,
+    general_fuel_type == "Natural Gas",
+    units_activity == "scf"
+  ) %>%
+  group_by(city_name, county_name, reporting_year) %>%
+  summarise(
+    powerplant_mcf = sum(value_activity * scf_to_mcf, na.rm = TRUE),
+    facilities = paste(unique(facility_name), collapse = "; "),
+    .groups = "drop"
+  )
+
+# join against city business totals -- fuzzy-ish match on city name
+powerplant_check <- ctu_utility_year %>%
+  filter(!is.na(business_mcf)) %>%
+  group_by(ctu_name, ctu_class, inventory_year) %>%
+  summarise(
+    business_mcf = sum(business_mcf, na.rm = TRUE),
+    total_mcf = sum(total_mcf, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  left_join(
+    powerplant_ng,
+    by = c("ctu_name" = "city_name", "inventory_year" = "reporting_year")
+  ) %>%
+  filter(!is.na(powerplant_mcf)) %>%
+  mutate(
+    powerplant_share = powerplant_mcf / business_mcf,
+    business_mcf_adj = business_mcf - powerplant_mcf,
+    total_mcf_adj    = total_mcf - powerplant_mcf
+  ) %>%
+  arrange(desc(powerplant_share))
+
+# print flagged city-years for review
+powerplant_check %>%
+  select(
+    ctu_name, inventory_year, facilities,
+    business_mcf, powerplant_mcf, powerplant_share,
+    business_mcf_adj, total_mcf_adj
+  ) %>%
+  print(n = 80)
+
+# it seems like only Minneapolis in 2021-2023 has this data added
+
+powerplant_adjustments <- powerplant_check %>%
+  filter(
+    ctu_name == "Minneapolis" & inventory_year %in% 2021:2023
+  ) %>%
+  select(ctu_name, ctu_class, inventory_year, powerplant_mcf)
+
+ctu_utility_year <- ctu_utility_year %>%
+  left_join(
+    powerplant_adjustments,
+    by = c("ctu_name", "ctu_class", "inventory_year")
+  ) %>%
+  mutate(
+    business_mcf = if_else(!is.na(powerplant_mcf), business_mcf - powerplant_mcf, business_mcf),
+    total_mcf    = if_else(!is.na(powerplant_mcf), total_mcf - powerplant_mcf, total_mcf)
+  ) %>%
+  select(-powerplant_mcf)
 
 ## save output file
 
