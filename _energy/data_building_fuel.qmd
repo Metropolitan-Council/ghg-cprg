@@ -1,0 +1,532 @@
+# Methods and data sources
+```{r include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "H",
+  out.width = "100%",
+  dpi = 300
+)
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+source(file.path(here::here(), "R/_quarto_helpers.R"))
+source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
+source(file.path(here::here(), "R/_plotting_helpers.R"))
+
+# ── Geography filter ──────────────────────────────────────────────────────────
+seven_county <- c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington")
+
+# ── Conversion constants ──────────────────────────────────────────────────────
+mcf_to_mmbtu <- 1.020
+target_year <- 2022
+```
+
+Building energy emissions are estimated separately for natural gas and liquid stationary fuels (propane and fuel oil). Natural gas methodology is described first because it involves the most complex data integration, followed by the simpler propane and fuel oil approach. All emission factors are sourced from the EPA GHG Emission Factor Hub.
+
+# Natural gas
+
+## County-level estimates
+
+### Source data
+
+County-level natural gas deliveries are derived from two primary sources, both of the highest quality rank (@tbl-quality-rank):
+
+1. **MN PUC 7610 filings.** Under Minnesota Administrative Rules Chapter 7610 [@mndocCHAPTER7610ENERGY2005], all natural gas utilities authorized to do business in Minnesota must file annual reports of county-level energy deliveries in thousand cubic feet (MCF). These filings provide measured utility-by-county-by-year data from 2013 onward for five utilities supplying natural gas to region.
+
+2. **MN Utility Data Handbook.** For years prior to 2013, company-level statewide deliveries from the Minnesota Utility Data Handbook (Tables 12, 13, and 14, covering 2006 and 2012) are allocated to counties using the proportional share of each utility's deliveries observed in the earliest available 7610 filings. Gap years (2007–2011 and 2013) are interpolated using statewide sector scaling from Table 12, and 2005 is linearly extrapolated from 2006 using statewide sector ratios.
+
+### Sector decomposition
+
+County natural gas totals from 7610 filings represent all gas delivered within each county, including gas consumed by power plants, large industrial facilities, and commercial buildings. To partition this total into sectors, we apply the following decomposition:
+
+$$
+\text{County total (7610)} = \text{Residential} + \text{Power plant} + \text{Industrial} + \text{Non-residential} + \text{Residual}
+$$
+
+Each component is estimated independently, and the residual captures the gap
+between the county total and the sum of estimated sectors:
+
+- **Residential**: the sum of CTU-level residential natural gas from the CTU
+  model (described below), aggregated to county.
+- **Business**: the sum of CTU-level non-residential natural gas from the random
+  forest prediction model, aggregated to county.
+- **Power plant**: gas consumed by electric generating units, identified from EPA
+  GHGRP Subpart C records. Power plant gas is subtracted from the 7610 total, as
+  plant operators (primarily Xcel Energy) report these volumes in their utility
+  filings. An exception is Cottage Grove Cogeneration in Washington County, which
+  appears in Minnesota Energy Resources' 7610 filings only from 2018 onward,
+  following a contract restructuring that moved its volumes from a
+  FERC-jurisdictional arrangement onto state-regulated distribution tariffs.
+  GHGRP data (available from 2011 on) is backcasted to 2005 via Kalman smoothing.
+- **Industrial**: non-power-plant industrial combustion identified from GHGRP
+  Subpart C records and MPCA industrial inventory data, with GHGRP-MPCA overlap
+  removed to avoid double-counting. Two large in-boundary refineries (Flint
+  Hills Pine Bend in Dakota County and Marathon St. Paul Park in Washington
+  County) are excluded from this decomposition; their emissions are recorded in a
+  separate industrial sector analysis.
+
+**Residual adjustment.** After subtracting the four components above, a residual
+remains for each county-year. For Washington County, this residual is attributed
+to the Marathon St. Paul Park refinery, whose natural gas consumption flows
+through the 7610 totals but is not captured in the sector estimates above (GHGRP
+reports only partial bespoke natural gas consumption for this facility). For all other
+counties, the residual is redistributed to residential and business. Where the
+residual is negative---indicating likely overlap between the RF business
+predictions and GHGRP/MPCA industrial records---the adjustment first reduces
+business by up to the industrial amount before distributing any remainder
+proportionally across residential and business. For years prior to 2013, when
+county totals are derived from utility handbook estimates rather than direct 7610
+reporting, the adjustment uses a stable residual share benchmarked from
+2013--2015 to avoid propagating year-specific artifacts from the estimation
+methodology.
+
+### Emissions calculation
+
+County emissions are calculated by applying EPA emission factors to MCF delivered:
+
+$$
+\text{Emissions}_{\text{county,sector}} = \text{MCF delivered} \times \text{Emission Factor (MT CO}_2\text{e / MCF)}
+$$
+
+Emission factors include CO~2~, CH~4~, and N~2~O components, converted to CO~2~e using IPCC AR5 100-year global warming potentials.
+
+## CTU-level estimates
+
+### Source data
+
+CTU-level (city, township, and unorganized territory) natural gas data comes from three sources:
+
+1. **Direct utility records.** Xcel Energy community energy reports (2015–2023) and CenterPoint Energy CTU-level data provide residential and business MCF by CTU. For CenterPoint, same-named city/township pairs are disaggregated using population-based splits.
+2. **Prior Met Council SQL records.** Historical CTU-level natural gas data from earlier Met Council inventory work, accessed from an internal SQL server.
+3. **Regional Indicators Initiative (RII) records.** CTU-level data compiled from earlier regional reporting curated by the Regional Indicators Initiative.
+
+These sources are prioritized in the compilation step: recent direct utility records take precedence over prior Met Council requests and RII data.
+
+### Random forest model
+
+For CTUs and years lacking direct utility data, residential and business natural gas consumption are predicted separately using random forest models. The models are trained on CTUs with known utility data (approximately 2010–2023) and use the following features for prediction:
+
+- UrbanSim housing unit or job projections
+- NOAA heating degree days
+- Metropolitan Council thrive designation (community classification)
+- Parcel-derived building stock characteristics (2021)
+
+For CTUs with at least some years of known data, the random forest prediction is scaled to the observed data. CTUs with no utility data in any year receive pure random forest predictions. The models are limited to 2010 onward by UrbanSim data availability.
+
+### Pre-2010 backcast
+
+For years prior to 2010, CTU natural gas is estimated by applying each CTU's earliest three years of sector proportions to the county-level MCF totals derived from the handbook backfill. This step preserves pre-2010 RII data where applicable.
+
+# Propane and fuel oil {#sec-propane-methods}
+
+Propane and fuel oil emissions are estimated for the residential sector only, using a state-total disaggregation approach rather than per-household rates.
+
+## Source data
+
+1. **EIA State Energy Data System (SEDS).** Annual state-level residential consumption of propane (HLRCB), distillate fuel oil (DFRCB), and kerosene (KSRCB) in billion BTU. SEDS provides complete coverage of total residential consumption for all fuel types and years.
+
+2. **American Community Survey (ACS), Table B25040.** Estimated number of households using each fuel type at the CTU and county scale. ACS data is available annually from 2009 and is Kalman-extrapolated back to 2005. Households using propane or kerosene in urban-class CTUs are forced to zero prior to extrapolation.
+
+## Methodology
+
+Each CTU's share of state residential fuel consumption is calculated as:
+
+$$
+\text{CTU consumption} = \text{SEDS state total} \times \frac{\text{ACS fuel HH in CTU}}{\text{ACS fuel HH in state}}
+$$
+
+This treats the ACS as a spatial disaggregation weight rather than a direct intensity input. The approach captures total residential propane use (including water heating, cooking, and appliances), which is appropriate because propane households are unlikely to also have a natural gas connection.
+
+Fuel oil and kerosene are combined into a single "Fuel Oil & Other" category to match the ACS B25040 response category. County-level estimates follow the same methodology, substituting county household shares for CTU shares.
+
+## Emissions calculation
+
+SEDS consumption in billion BTU is converted to mmBtu and combined with EPA emission factors to produce CO~2~e estimates, following the same factor structure as natural gas.
+
+
+# Validation
+
+```{r validation-data, include=FALSE}
+# ── CTU combined NG data ──────────────────────────────────────────────────────
+ctu_ng <- readRDS(file.path(here::here(), "_energy/data-raw/ctu_ng_combined.rds"))
+
+# ── County 7610 totals ────────────────────────────────────────────────────────
+county_ng <- readRDS(file.path(here::here(), "_energy/data/county_natgas_activity.RDS")) %>%
+  rename(
+    mcf_county = mcf_delivered,
+  ) %>%
+  filter(county_name %in% seven_county)
+
+# ── GHGRP point sources ──────────────────────────────────────────────────────
+ghgrp_fuel <- readRDS(file.path(
+  here::here(), "_industrial/data/fuel_combustion_activity.rds"
+))
+
+# ── CTU liquid fuels ──────────────────────────────────────────────────────────
+ctu_liquid <- readRDS(file.path(
+  here::here(), "_energy/data/_ctu_liquid_emissions.RDS"
+)) %>%
+  filter(county_name %in% seven_county)
+
+# ── CTU geometry and population ───────────────────────────────────────────────
+cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS")) %>%
+  filter(county_name %in% seven_county) %>%
+  mutate(geometry = st_make_valid(geometry))
+
+ctu_population <- readRDS(file.path(here::here(), "_meta/data/ctu_population.RDS"))
+```
+
+## County totals: CTU model, GHGRP point sources, and 7610 reporting
+
+The chart below places CTU-level modeled natural gas estimates (aggregated to county) alongside large point sources from the EPA Greenhouse Gas Reporting Program (GHGRP) and compares both to county-level utility delivery totals reported under MN Rules Chapter 7610. The 7610 figures represent the most complete accounting of gas delivered within each county. The overshoot between the stacked bars and the 7610 reference marker for Hennepin and Ramsey counties likely means some industrial combustion data from the GHGRP data is captured in our Business sector analysis. The gap between the stacked bars and the 7610 marker in Washinton county likely means the refinery, which has additional natural gas use beyond combustion, is delivered by a local utility, likely Xcel. Dakota County's refinery, however, is clearly not reported in 7610 reporting as evidenced in the bar chart. Refinery emissions are reported in the industrial sector.
+
+```{r fig-county-ng-comparison}
+#| fig-cap: "CTU model and GHGRP point sources compared to 7610 county gas deliveries"
+#| out-width: "95%"
+
+# ── CTU NG aggregated to county ───────────────────────────────────────────────
+ctu_county_ng <- ctu_ng %>%
+  filter(inventory_year == target_year) %>%
+  transmute(
+    county_name,
+    mcf = ng_mmbtu / mcf_to_mmbtu,
+    category = paste(sector, "(CTU model)")
+  ) %>%
+  mutate(county_name = str_to_title(county_name)) %>%
+  filter(county_name %in% seven_county) %>%
+  group_by(county_name, category) %>%
+  summarize(mcf = sum(mcf, na.rm = TRUE), .groups = "drop")
+
+# ── GHGRP point sources ──────────────────────────────────────────────────────
+ghgrp_county_ng <- ghgrp_fuel %>%
+  filter(
+    general_fuel_type == "Natural Gas",
+    reporting_year    == target_year,
+    !is.na(county_name)
+  ) %>%
+  mutate(
+    county_name = str_to_title(county_name),
+    category = case_when(
+      power_plant == TRUE                            ~ "Power plant generation",
+      doublecount == "Yes" & power_plant == FALSE     ~ "Industrial combustion",
+      doublecount == "No"  & power_plant == FALSE     ~ "Refinery emissions"
+    ),
+    mcf = value_activity / 1000
+  ) %>%
+  filter(county_name %in% seven_county) %>%
+  group_by(county_name, category) %>%
+  summarize(mcf = sum(mcf, na.rm = TRUE), .groups = "drop")
+
+# ── Combined for chart ────────────────────────────────────────────────────────
+ctu_ghgrp_long <- bind_rows(ctu_county_ng, ghgrp_county_ng) %>%
+  left_join(county_ng %>% filter(emissions_year == target_year), by = "county_name") %>%
+  mutate(category = factor(category, levels = c(
+    "Residential (CTU model)",
+    "Business (CTU model)",
+    "Industrial combustion",
+    "Power plant generation",
+    "Refinery emissions"
+  )))
+
+ctu_stack_colors <- c(
+  "Residential (CTU model)"  = colors$councilBlue,
+  "Business (CTU model)"     = cprg_colors$cprg_green,
+  "Industrial combustion"    = cprg_colors$cprg_yellow,
+  "Power plant generation"   = cprg_colors$cprg_da_yellow,
+  "Refinery emissions"       = cprg_colors$epa_blue
+)
+
+ref_line_data <- county_ng %>%
+  filter(emissions_year == target_year, county_name %in% ctu_ghgrp_long$county_name)
+
+fig_county_ng_comparison <- plot_ly(source = "fig-county-ng-comparison") %>%
+  add_bars(
+    data          = ctu_ghgrp_long,
+    x             = ~ reorder(county_name, -mcf_county),
+    y             = ~mcf,
+    color         = ~category,
+    colors        = ctu_stack_colors,
+    hovertemplate = ~ paste0(
+      county_name, " County<br>",
+      category, "<br>",
+      scales::comma(round(mcf / 1000), accuracy = 1), " thousand MCF<br>",
+      "<extra></extra>"
+    )
+  ) %>%
+  add_markers(
+    data          = ref_line_data,
+    x             = ~ reorder(county_name, mcf_county),
+    y             = ~mcf_county,
+    marker        = list(
+      symbol = "line-ew",
+      size   = 16,
+      line   = list(color = "black", width = 3),
+      color  = "black"
+    ),
+    name          = "County total (7610)",
+    hovertemplate = ~ paste0(
+      county_name, " County<br>",
+      "7610 reported: ", scales::comma(round(mcf_county / 1000), accuracy = 1),
+      " thousand MCF<br><extra></extra>"
+    )
+  ) %>%
+  plotly_layout(
+    main_title   = paste("Natural gas: CTU model + GHGRP vs 7610 county totals,", target_year),
+    subtitle     = "",
+    x_title      = "County",
+    y_title      = "Thousand cubic feet (MCF)",
+    legend_title = "Source"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend  = list(traceorder = "normal")
+  )
+
+fig_county_ng_comparison
+```
+
+```{r fig-county-ng-temporal}
+#| fig-cap: "CTU model and GHGRP point sources compared to 7610 county gas deliveries, 2013–2022"
+#| out-width: "95%"
+#| fig.height: 8
+#| fig.width: 10
+
+year_range <- 2013:2022
+
+# ── CTU NG aggregated to county, all years ────────────────────────────────────
+ctu_county_ng_temporal <- ctu_ng %>%
+  filter(inventory_year %in% year_range) %>%
+  transmute(
+    inventory_year,
+    county_name = str_to_title(county_name),
+    mcf = ng_mmbtu / mcf_to_mmbtu,
+    category = paste(sector, "(CTU model)")
+  ) %>%
+  filter(county_name %in% seven_county) %>%
+  group_by(inventory_year, county_name, category) %>%
+  summarize(mcf = sum(mcf, na.rm = TRUE), .groups = "drop")
+
+# ── GHGRP point sources, all years ───────────────────────────────────────────
+ghgrp_county_ng_temporal <- ghgrp_fuel %>%
+  filter(
+    general_fuel_type == "Natural Gas",
+    reporting_year %in% year_range,
+    !is.na(county_name)
+  ) %>%
+  mutate(
+    county_name = str_to_title(county_name),
+    category = case_when(
+      power_plant == TRUE                         ~ "Power plant generation",
+      doublecount == "Yes" & power_plant == FALSE  ~ "Industrial combustion",
+      doublecount == "No"  & power_plant == FALSE  ~ "Refinery emissions"
+    ),
+    mcf = value_activity / 1000
+  ) %>%
+  filter(county_name %in% seven_county) %>%
+  group_by(inventory_year = reporting_year, county_name, category) %>%
+  summarize(mcf = sum(mcf, na.rm = TRUE), .groups = "drop")
+
+# ── Combined components ───────────────────────────────────────────────────────
+components_temporal <- bind_rows(ctu_county_ng_temporal, ghgrp_county_ng_temporal) %>%
+  mutate(category = factor(category, levels = c(
+    "Residential (CTU model)",
+    "Business (CTU model)",
+    "Industrial combustion",
+    "Power plant generation",
+    "Refinery emissions"
+  )))
+
+# ── 7610 county reference line ────────────────────────────────────────────────
+county_ng_temporal <- county_ng %>%
+  filter(emissions_year %in% year_range, county_name %in% seven_county)
+
+# ── Build per-county subplots ─────────────────────────────────────────────────
+counties_ordered <- county_ng_temporal %>%
+  filter(emissions_year == max(year_range)) %>%
+  arrange(desc(mcf_county)) %>%
+  pull(county_name)
+
+fig_list <- lapply(seq_along(counties_ordered), function(i) {
+  cty <- counties_ordered[i]
+
+  p <- plot_ly() %>%
+    # Stacked area for components
+    add_trace(
+      data = components_temporal %>% filter(county_name == cty),
+      x = ~inventory_year,
+      y = ~mcf,
+      color = ~category,
+      colors = ctu_stack_colors,
+      type = "scatter",
+      mode = "lines",
+      stackgroup = "one",
+      showlegend = (i == 1),
+      hovertemplate = paste0(
+        cty, " County<br>",
+        "%{text}<br>",
+        "%{y:,.0f} MCF<br>",
+        "<extra></extra>"
+      ),
+      text = ~category
+    ) %>%
+    # 7610 total as black line
+    add_trace(
+      data = county_ng_temporal %>% filter(county_name == cty),
+      x = ~emissions_year,
+      y = ~mcf_county,
+      type = "scatter",
+      mode = "lines+markers",
+      line = list(color = "black", width = 2),
+      marker = list(color = "black", size = 4),
+      name = "County total (7610)",
+      showlegend = (i == 1),
+      hovertemplate = paste0(
+        cty, " County<br>",
+        "7610 reported: %{y:,.0f} MCF<br>",
+        "<extra></extra>"
+      )
+    ) %>%
+    layout(
+      annotations = list(
+        text = cty,
+        xref = "paper", yref = "paper",
+        x = 0.5, y = 1.05,
+        xanchor = "center", yanchor = "bottom",
+        showarrow = FALSE,
+        font = list(size = 12)
+      )
+    )
+
+  p
+})
+
+fig_county_ng_temporal <- subplot(
+  fig_list,
+  nrows      = ceiling(length(counties_ordered) / 2),
+  shareX     = TRUE,
+  shareY     = FALSE,
+  titleY     = TRUE,
+  margin     = 0.06
+) %>%
+  plotly_layout(
+    main_title = "Natural gas: CTU model + GHGRP vs 7610 county totals, 2013–2022",
+    subtitle   = "",
+    y_title    = "MCF"
+  ) %>%
+  layout(
+    hovermode = "x unified",
+    legend = list(
+      orientation = "h",
+      x = 0.5, xanchor = "center",
+      y = -0.08
+    )
+  )
+
+fig_county_ng_temporal
+```
+
+## Propane and fuel oil dependence
+
+Communities not connected to the natural gas distribution network rely on propane and fuel oil for space heating and appliances. The map below shows propane and fuel oil as a share of each community's total estimated residential heating fuel consumption (natural gas + propane + fuel oil, in mmBtu). Communities with no gas service show proportions near 100%; dense urban areas served by CenterPoint or Xcel show proportions near zero.
+
+```{r fig-liquid-fuel-share-map}
+#| fig-cap: "Propane and fuel oil as a share of residential heating fuel (mmBtu), by CTU"
+#| out-width: "95%"
+#| out-height: "500px"
+
+# ── CTU-level NG ──────────────────────────────────────────────────────────────
+ctu_ng_yr <- ctu_ng %>%
+  filter(inventory_year == target_year) %>%
+  group_by(ctu_name, ctu_class) %>%
+  summarize(ng_mmbtu = sum(ng_mmbtu, na.rm = TRUE), .groups = "drop")
+
+# ── Propane + fuel oil ────────────────────────────────────────────────────────
+ctu_liquid_yr <- ctu_liquid %>%
+  filter(emissions_year == max(emissions_year[emissions_year <= target_year])) %>%
+  group_by(ctu_name, ctu_class) %>%
+  summarize(
+    propane_mmbtu = sum(mmbtu[source == "Propane"], na.rm = TRUE),
+    fueloil_mmbtu = sum(mmbtu[source == "Fuel Oil & Other"], na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# ── Map dataset ───────────────────────────────────────────────────────────────
+ctu_liquid_map <- cprg_ctu %>%
+  st_drop_geometry() %>%
+  select(ctu_name, ctu_class, gnis) %>%
+  left_join(ctu_ng_yr, by = c("ctu_name", "ctu_class")) %>%
+  left_join(ctu_liquid_yr, by = c("ctu_name", "ctu_class")) %>%
+  mutate(
+    ng_mmbtu      = replace_na(ng_mmbtu, 0),
+    propane_mmbtu = replace_na(propane_mmbtu, 0),
+    fueloil_mmbtu = replace_na(fueloil_mmbtu, 0),
+    total_mmbtu   = ng_mmbtu + propane_mmbtu + fueloil_mmbtu,
+    liquid_fuel_pct = if_else(
+      total_mmbtu > 0,
+      (propane_mmbtu + fueloil_mmbtu) / total_mmbtu * 100,
+      NA_real_
+    )
+  ) %>%
+  right_join(cprg_ctu %>% select(gnis, geometry), by = "gnis") %>%
+  st_as_sf()
+
+liquid_pal <- colorNumeric(
+  palette  = "YlOrRd",
+  domain   = ctu_liquid_map$liquid_fuel_pct,
+  na.color = "transparent"
+)
+
+fig_liquid_fuel_share <- leaflet(
+  data    = ctu_liquid_map %>% filter(!is.na(liquid_fuel_pct)),
+  options = leafletOptions(zoomSnap = 0.5)
+) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(
+    fillColor    = ~ liquid_pal(liquid_fuel_pct),
+    fillOpacity  = 0.8,
+    color        = "white",
+    weight       = 0.5,
+    smoothFactor = 0.5,
+    label = ~ paste0(
+      ctu_name, " (", ctu_class, ")<br>",
+      "Liquid fuel share: ", round(liquid_fuel_pct, 1), "%<br>",
+      "Propane: ", scales::comma(round(propane_mmbtu / 1000), accuracy = 1), " thousand mmBtu<br>",
+      "Fuel oil: ", scales::comma(round(fueloil_mmbtu / 1000), accuracy = 1), " thousand mmBtu"
+    ) %>% lapply(htmltools::HTML),
+    labelOptions = labelOptions(
+      style     = list("font-size" = "12px"),
+      direction = "auto"
+    )
+  ) %>%
+  addLegend(
+    pal      = liquid_pal,
+    values   = ~ liquid_fuel_pct,
+    title    = "Liquid fuel<br>share (%)",
+    position = "bottomright",
+    labFormat = labelFormat(suffix = "%")
+  )
+
+fig_liquid_fuel_share
+```
+
+
+## Assumptions and limitations
+
+**County sector decomposition.** The commercial sector is a residual after subtracting residential, power plant, and industrial gas from 7610 county totals. Some mid-size industrial users below the GHGRP threshold are likely included in the commercial estimate. Revisiting this with more granular MPCA industrial data could improve the split.
+
+**Power plant classification.** The distinction between distribution-served and NNG-served power plants relies on historical research into pipeline laterals and town border station construction. Blue Lake (Scott County) remains uncertain; we treat it as NNG-served but this may warrant revisiting as new information becomes available.
+
+**CTU random forest model.** The RF model is limited to 2010 onward by UrbanSim data availability. Pre-2010 CTU estimates use proportional allocation from county totals, which does not capture CTU-level variation as well as the RF approach. The bias-decay correction assumes that the relationship between utility-reported data and RF predictions remains stable over time.
+
+**Propane and fuel oil.** The SEDS disaggregation approach assumes that per-household propane or fuel oil consumption is uniform across all households using that fuel within the state. It does not capture local variation in building efficiency, climate, or usage intensity. Fuel oil estimates are held constant at 2010 levels for years prior to 2010 due to limited ACS coverage. Only residential propane and fuel oil are included; commercial propane is not estimated at the CTU level due to insufficient data for defensible spatial allocation.
+
+
+```{r echo=FALSE}
+caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
+caption_index <- as.character(as.numeric(caption_index) + 1) %>%
+  stringr::str_pad(width = 2, side = "left", pad = "0")
+saveCap(paste0("cap-", caption_index))
+saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
+```

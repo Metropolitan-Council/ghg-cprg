@@ -12,7 +12,7 @@ mcf_per_therm <- 1 / 10.38
 
 
 # Read CSV, ignoring the first two rows (nested headers) and extraneous notes outside the main data structure
-df_raw <- read_xlsx(here("_energy", "data-raw", "centerpointDataRequest", "2015_2023MetCouncilCommunityNGData_PUBLIC.xlsx"),
+df_raw <- read_xlsx(here("_energy", "data-raw", "centerpointDataRequest", "2015_2023 Met Council Community NG Data_PUBLIC.xlsx"),
   range = "A3:U288",
   col_names = FALSE
 ) %>%
@@ -37,6 +37,7 @@ colnames(df_raw) <- expected_columns
 
 # Pivot to long format
 df_long <- df_raw %>%
+  filter(!(ctu_name == "ROSEMOUNT" & sector != "All")) %>%
   pivot_longer(
     cols = starts_with("20"),
     names_to = c("year", ".value"), # decompose nested column names into a year and value column for 1) Energy and 2) Customers
@@ -60,7 +61,8 @@ df_long <- df_raw %>%
 
 # ctu and county reference, incl. population -- necessary for disaggregation to COCTU
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
-cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
+cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS") %>%
+  filter(county_name %in% c("Anoka", "Dakota", "Carver", "Washington", "Hennepin", "Scott", "Ramsey"))
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   filter(inventory_year > 2014) %>%
   left_join(cprg_county %>% select(geoid, county_name, state_abb), by = "geoid") %>%
@@ -87,11 +89,49 @@ ctu_total_population <- ctu_population %>%
   ) %>%
   ungroup()
 
+# Identify CTU names that map to multiple classes in cprg_ctu
+ambiguous_names <- cprg_ctu %>%
+  st_drop_geometry() %>%
+  distinct(ctu_name, ctu_class) %>%
+  group_by(ctu_name) %>%
+  filter(n() > 1) %>%
+  pull(ctu_name)
+
+unambiguous_class <- cprg_ctu %>%
+  st_drop_geometry() %>%
+  distinct(ctu_name, ctu_class) %>%
+  group_by(ctu_name) %>%
+  filter(n() == 1) %>%
+  ungroup()
+
+
+message("Ambiguous CTU names: ", paste(unique(ambiguous_names), collapse = ", "))
+
+# Population-based class proportions for ambiguous CTUs by year
+ambiguous_pop_split <- ctu_total_population %>%
+  filter(ctu_name %in% ambiguous_names, same_named) %>%
+  distinct(ctu_name, ctu_class, year, ctu_population, total_population_across_all_units) %>%
+  mutate(class_pop_prop = ctu_population / total_population_across_all_units)
+
+# Expand ambiguous rows in df_long to one row per class, weighted by population
+df_long <- bind_rows(
+  df_long %>%
+    left_join(unambiguous_class, by = "ctu_name") %>%
+    filter(!ctu_name %in% ambiguous_names),
+  df_long %>%
+    filter(ctu_name %in% ambiguous_names) %>%
+    left_join(ambiguous_pop_split, by = c("ctu_name", "year")) %>%
+    mutate(
+      mcf_delivered = mcf_delivered * class_pop_prop,
+      Customers     = Customers * class_pop_prop
+    ) %>%
+    select(-ctu_population, -total_population_across_all_units, -class_pop_prop)
+)
 
 centerpoint_activityData_2015_2023 <- df_long %>%
   # Join city_total_population back to main dataset
   full_join(ctu_total_population,
-    by = c("ctu_name", "year"),
+    by = c("ctu_name", "ctu_class", "year"),
     relationship = "many-to-many"
   ) %>%
   # Calculate proportions and disaggregated values
@@ -124,6 +164,9 @@ centerpoint_activityData_2015_2023 <- df_long %>%
     utility = "CenterPoint",
     mcf_delivered = coalesce(disagg_mcf_delivered, mcf_delivered)
   ) %>%
-  select(1:3, 5:7, 16:17) # exclude interstitial calculation columns
+  select(
+    sector, ctu_name, ctu_class, year, county_name,
+    customer_count, mcf_delivered, source, utility
+  ) # exclude interstitial calculation columns
 
 write_rds(centerpoint_activityData_2015_2023, here("_energy", "data", "centerpoint_activityData_2015_2023.RDS"))

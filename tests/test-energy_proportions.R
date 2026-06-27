@@ -27,7 +27,7 @@ testthat::test_that("Sectored, expanded energy data is as expected", {
 
   # test that the sector proportions total up to 1, as expected
   electric_natgas_nrel_proportioned_expanded %>%
-    group_by(county_name, year, source) %>%
+    group_by(county_name, emissions_year, source) %>%
     summarize(sector_proportion = round(sum(sector_proportion)), .groups = "keep") %>%
     filter(sector_proportion != 1) %>%
     nrow() %>%
