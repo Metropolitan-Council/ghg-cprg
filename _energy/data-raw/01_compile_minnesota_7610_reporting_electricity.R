@@ -22,10 +22,7 @@
 
 source("R/_load_pkgs.R")
 
-# --- scope definition --------------------------------------------------------
-
 scope_counties <- c(
-  
   "Anoka", "Carver", "Dakota", "Hennepin", "Ramsey",
   "Scott", "Washington", "Sherburne", "Chisago"
 )
@@ -35,9 +32,8 @@ dir_mn_electricity_state <- here(
   "_energy", "data-raw", "mn_elec_utility_reporting_state"
 )
 
-# --- name harmonization ------------------------------------------------------
-# Utility names vary across filing years (corporate name changes, inconsistent
-# capitalization, municipal rebrands). This lookup maps all observed variants
+# name harmonization 
+# Utility names vary across filing years . This lookup maps all observed variants
 # to a single canonical name. Add new entries as they surface.
 
 utility_name_lookup <- c(
@@ -63,10 +59,6 @@ harmonize_utility_names <- function(names) {
 # reason. This gets joined to the output so downstream scripts can distinguish
 # "no data filed" from "zero deliveries" from "not yet downloaded."
 #
-# gap_type values:
-#   "not_filed"       — utility did not file a 7610 for this year
-#   "not_downloaded"  — filing exists but hasn't been downloaded yet
-#   "partial"         — filing exists but is incomplete or couldn't be parsed
 
 known_gaps <- tribble(
   ~utility_name,                  ~emissions_year, ~gap_type,     ~notes,
@@ -78,26 +70,27 @@ known_gaps <- tribble(
   "Great River Energy",           2019L,           "not_filed",   "No 7610 filing found on MN Commerce eFiling",
   "Great River Energy",           2020L,           "not_filed",   "No 7610 filing found on MN Commerce eFiling",
   # Elk River Municipal — sporadic 7610 filing history
-  "Elk River Municipal Utilities", 2013L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "Elk River Municipal Utilities", 2014L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "Elk River Municipal Utilities", 2020L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "Elk River Municipal Utilities", 2022L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "Elk River Municipal Utilities", 2023L,          "not_downloaded", "Check MN Commerce for filing availability",
+  "Elk River Municipal Utilities", 2013L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "Elk River Municipal Utilities", 2014L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "Elk River Municipal Utilities", 2020L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "Elk River Municipal Utilities", 2022L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "Elk River Municipal Utilities", 2023L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
   # Shakopee Public Utilities — missing early years
-  "Shakopee Public Utilities",     2013L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "Shakopee Public Utilities",     2014L,          "not_downloaded", "Check MN Commerce for filing availability",
+  "Shakopee Public Utilities",     2013L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "Shakopee Public Utilities",     2014L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
   # Princeton Public Utilities — missing early years
-  "Princeton Public Utilities",    2013L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "Princeton Public Utilities",    2014L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "Princeton Public Utilities",    2015L,          "not_downloaded", "Check MN Commerce for filing availability",
+  "Princeton Public Utilities",    2013L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "Princeton Public Utilities",    2014L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "Princeton Public Utilities",    2015L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
   # City of North Branch — only sporadic filings
-  "City of North Branch",          2014L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "City of North Branch",          2015L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "City of North Branch",          2016L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "City of North Branch",          2017L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "City of North Branch",          2018L,          "not_downloaded", "Check MN Commerce for filing availability",
-  "City of North Branch",          2020L,          "not_downloaded", "Check MN Commerce for filing availability"
+  "City of North Branch",          2014L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "City of North Branch",          2015L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "City of North Branch",          2016L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "City of North Branch",          2017L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "City of North Branch",          2018L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "City of North Branch",          2020L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling"
 )
+
 
 # --- file discovery -----------------------------------------------------------
 # Walk the directory tree and collect all xlsx paths with their parent folders.
@@ -445,6 +438,125 @@ if (nrow(unresolved) > 0) {
     print(gap_magnitude)
   }
 }
+
+# --- diagnostic plots ---------------------------------------------------------
+
+# GRE gap years to shade on plots
+gre_gap_years <- known_gaps %>%
+  filter(utility_name == "Great River Energy") %>%
+  pull(emissions_year)
+
+# Counties affected by GRE gaps (those where GRE reports in non-gap years)
+gre_counties <- elec_7610 %>%
+  filter(utility_name == "Great River Energy") %>%
+  distinct(county_name) %>%
+  pull()
+
+# Build county-year totals split by GRE vs non-GRE
+county_year_by_gre <- elec_7610 %>%
+  mutate(
+    source_group = if_else(utility_name == "Great River Energy", "GRE", "Other utilities")
+  ) %>%
+  group_by(emissions_year, county_name, source_group) %>%
+  summarise(mwh = sum(value_activity), .groups = "drop")
+
+# Also compute full county totals for the line
+county_year_total <- elec_7610 %>%
+  group_by(emissions_year, county_name) %>%
+  summarise(total_mwh = sum(value_activity), .groups = "drop") %>%
+  mutate(gre_affected = county_name %in% gre_counties)
+
+# Shade rectangles for GRE gap years
+gap_shading <- tibble(
+  xmin = gre_gap_years - 0.4,
+  xmax = gre_gap_years + 0.4
+)
+
+# Plot 1: County totals over time, faceted by size tier
+# Large counties on top, small counties on bottom, GRE gap years shaded
+county_year_total <- county_year_total %>%
+  mutate(
+    size_tier = if_else(
+      county_name %in% c("Hennepin", "Ramsey", "Dakota", "Anoka", "Washington"),
+      "Large counties", "Small counties"
+    ),
+    size_tier = factor(size_tier, levels = c("Large counties", "Small counties"))
+  )
+
+p_totals <- ggplot(county_year_total, aes(x = emissions_year, y = total_mwh / 1e6)) +
+  geom_rect(
+    data = gap_shading,
+    aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
+    inherit.aes = FALSE,
+    fill = "steelblue", alpha = 0.08
+  ) +
+  geom_line(aes(color = county_name, linetype = gre_affected), linewidth = 0.8) +
+  geom_point(aes(color = county_name, shape = gre_affected), size = 1.5) +
+  facet_wrap(~size_tier, ncol = 1, scales = "free_y") +
+  scale_x_continuous(breaks = year_range) +
+  scale_y_continuous(labels = function(x) paste0(x, "M")) +
+  scale_linetype_manual(
+    values = c("FALSE" = "solid", "TRUE" = "dashed"),
+    labels = c("FALSE" = "No GRE exposure", "TRUE" = "GRE-affected"),
+    name = NULL
+  ) +
+  scale_shape_manual(
+    values = c("FALSE" = 16, "TRUE" = 17),
+    labels = c("FALSE" = "No GRE exposure", "TRUE" = "GRE-affected"),
+    name = NULL
+  ) +
+  labs(
+    title = "County electricity totals (7610 filings)",
+    subtitle = "Shaded bands = GRE gap years (not filed). Dashed lines = counties with GRE exposure.",
+    x = NULL, y = "MWh delivered",
+    color = "County"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    legend.position = "bottom",
+    legend.box = "vertical",
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(face = "bold", hjust = 0),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+print(p_totals)
+
+# Plot 2: Stacked area for GRE-affected counties showing GRE vs other
+p_stacked <- ggplot(
+  county_year_by_gre %>% filter(county_name %in% gre_counties),
+  aes(x = emissions_year, y = mwh / 1e6, fill = source_group)
+) +
+  geom_area(alpha = 0.7, position = "stack") +
+  geom_rect(
+    data = gap_shading,
+    aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
+    inherit.aes = FALSE,
+    fill = "red", alpha = 0.06
+  ) +
+  facet_wrap(~county_name, ncol = 2, scales = "free_y") +
+  scale_x_continuous(breaks = year_range) +
+  scale_y_continuous(labels = function(x) paste0(x, "M")) +
+  scale_fill_manual(
+    values = c("GRE" = "steelblue", "Other utilities" = "gray70"),
+    name = NULL
+  ) +
+  labs(
+    title = "GRE contribution to county electricity totals",
+    subtitle = "Shaded bands = years GRE did not file a 7610. GRE load disappears entirely.",
+    x = NULL, y = "MWh delivered"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(face = "bold", hjust = 0),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+print(p_stacked)
+
+
 
 # --- save outputs -------------------------------------------------------------
 
