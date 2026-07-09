@@ -117,7 +117,8 @@ wi_natural_gas_emissions <- readRDS("_energy/data/electric_natgas_nrel_proportio
   mutate(
     sector = str_to_title(sector),
     geog_level = "county",
-    category = paste(sector, "natural gas")
+    category = "Building fuel",
+    source = paste(sector, "natural gas")
   ) %>%
   ungroup() %>%
   select(names(transportation_emissions))
