@@ -101,7 +101,6 @@ solid_waste <- readRDS("_waste/data/final_solid_waste_allyrs.RDS") %>%
 electric_emissions <- readRDS("_energy/data/electric_natgas_nrel_proportioned_expanded.RDS") %>%
   filter(source == "Electricity") %>%
   mutate(
-    emissions_year = year,
     sector = str_to_title(sector),
     geog_level = "county",
     source = paste(sector, "electricity")
@@ -111,6 +110,17 @@ electric_emissions <- readRDS("_energy/data/electric_natgas_nrel_proportioned_ex
 
 
 ## natural gas ----
+
+wi_natural_gas_emissions <- readRDS("_energy/data/electric_natgas_nrel_proportioned_expanded.RDS") %>%
+  filter(source == "Natural gas",
+         county_name %in% c("St. Croix", "Pierce"))%>%
+  mutate(
+    sector = str_to_title(sector),
+    geog_level = "county",
+    source = paste(sector, "building fuel")
+  ) %>%
+  ungroup() %>%
+  select(names(transportation_emissions))
 
 natural_gas_emissions <- readRDS("_energy/data/county_natgas_emissions_by_sector.RDS") %>%
   filter(
@@ -127,7 +137,9 @@ natural_gas_emissions <- readRDS("_energy/data/county_natgas_emissions_by_sector
     source = paste(sector, "natural gas")
   ) %>%
   ungroup() %>%
-  select(names(transportation_emissions))
+  select(names(transportation_emissions)) %>% 
+  bind_rows(wi_natural_gas_emissions)
+  
 
 
 ## propane and kerosene ----
