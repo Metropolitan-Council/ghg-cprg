@@ -63,19 +63,18 @@ dir.create(dir_eia_861, showWarnings = FALSE, recursive = TRUE)
 # --- name harmonization for EIA 861 names -----------------------------------
 # EIA utility names don't always match 7610 names. Map to canonical names.
 
+
 eia_name_lookup <- c(
+  # --- Great River Energy and member co-ops ---
   "Great River Energy"               = "Great River Energy",
-  "Northern States Power Co"         = "Xcel Energy",
-  "Northern States Power Company"    = "Xcel Energy",
-  "Xcel Energy Inc"                  = "Xcel Energy",
-  "Xcel Energy"                      = "Xcel Energy",
-  "Connexus Energy"                  = "Connexus Energy",
   "Dakota Electric Assn"             = "Great River Energy",
   "Dakota Elec Assn"                 = "Great River Energy",
+  "Dakota Electric Association"      = "Great River Energy",
   "Wright-Hennepin Coop Elec Assn"   = "Great River Energy",
   "Wright-Hennepin Cooperative"      = "Great River Energy",
   "Minnesota Valley Elec Coop"       = "Great River Energy",
   "Minnesota Valley Electric Coop"   = "Great River Energy",
+  "Minnesota Valley Coop L&P Assn"   = "Great River Energy",
   "McLeod Cooperative Power Assn"    = "Great River Energy",
   "McLeod Coop Power Assn"          = "Great River Energy",
   "McLeod Cooperative Power"         = "Great River Energy",
@@ -84,16 +83,35 @@ eia_name_lookup <- c(
   "Goodhue County Coop Elec Assn"    = "Great River Energy",
   "Goodhue County Coop Electric"     = "Great River Energy",
   "Goodhue County Cooperative"       = "Great River Energy",
+  
+  # --- Xcel Energy / Northern States Power ---
+  "Northern States Power Co - Minnesota" = "Xcel Energy",
+  "Northern States Power Co"         = "Xcel Energy",
+  "Northern States Power Company"    = "Xcel Energy",
+  "Xcel Energy Inc"                  = "Xcel Energy",
+  "Xcel Energy"                      = "Xcel Energy",
+  
+  # --- Connexus Energy (was Anoka Electric Coop pre-2008) ---
+  "Connexus Energy"                  = "Connexus Energy",
+  "Anoka Electric Coop"              = "Connexus Energy",
+  
+  # --- Municipal utilities ---
   "City of Shakopee"                 = "Shakopee Public Utilities",
   "Shakopee Public Utilities Comm"   = "Shakopee Public Utilities",
   "Elk River Muni Utilities"         = "Elk River Municipal Utilities",
   "Elk River Municipal Utilities"    = "Elk River Municipal Utilities",
+  "City of Elk River"                = "Elk River Municipal Utilities",
   "City of Chaska"                   = "City of Chaska",
+  "City of Chaska - (MN)"            = "City of Chaska",
   "Princeton Public Utils Comm"      = "Princeton Public Utilities",
   "Princeton Public Utilities"       = "Princeton Public Utilities",
   "City of North Branch"             = "City of North Branch",
-  "North Branch Water & Light"       = "City of North Branch"
+  "North Branch Water & Light"       = "City of North Branch",
+  "North Branch Water & Light Comm"  = "City of North Branch",
+  "City of Anoka"                    = "City of Anoka"
 )
+
+
 
 harmonize_eia_names <- function(names) {
   idx <- match(names, names(eia_name_lookup))
@@ -151,7 +169,6 @@ parse_eia_861_sales <- function(zip_file, year) {
   
   # List files in zip, find the sales file
   zip_contents <- unzip(zip_file, list = TRUE)$Name
-  
   # Pattern varies: "Sales_Ult_Cust_2020.xlsx", "sales_ult_cust_2013.xlsx",
   # older years may be .xls or .csv
   sales_file <- grep("sales_ult_cust|Sales_Ult_Cust|sales_ult", zip_contents,
@@ -353,25 +370,50 @@ message(sprintf(
 ))
 
 # ═════════════════════════════════════════════════════════════════════════════
-# PART 2: Compute county allocation proportions from 7610 data
+# PART 2: Compute county allocation proportions from 7610 + EIA 861
 # ═════════════════════════════════════════════════════════════════════════════
-# For each utility, compute each county's share of the utility's total MN
-# deliveries in years where 7610 data exists. These proportions are used to
-# allocate EIA 861 state totals down to counties.
+# For each utility, compute each scope county's share of the utility's
+# STATEWIDE MN total. The 7610 data only contains our 9 scope counties,
+# so we use the EIA 861 statewide total as the denominator to get true
+# statewide proportions (not proportions of the 9-county subtotal).
 
 county_proportions <- elec_7610 %>%
-  group_by(utility_name, emissions_year) %>%
-  mutate(
-    utility_year_total = sum(value_activity, na.rm = TRUE),
-    county_proportion  = if_else(
-      utility_year_total > 0,
-      value_activity / utility_year_total,
-      0
-    )
+  select(utility_name, emissions_year, county_name, county_code,
+         value_activity) %>%
+  left_join(
+    eia_861 %>% select(utility_name, emissions_year, state_total = total),
+    by = c("utility_name", "emissions_year")
   ) %>%
-  ungroup() %>%
+  filter(!is.na(state_total), state_total > 0) %>%
+  mutate(
+    county_proportion = value_activity / state_total
+  ) %>%
   select(utility_name, emissions_year, county_name, county_code,
          county_proportion)
+
+# QA: check that per-utility proportions sum to something reasonable
+# (should be well under 1.0 — our 9 counties are a subset of the state)
+proportion_check <- county_proportions %>%
+  group_by(utility_name, emissions_year) %>%
+  summarise(proportion_sum = sum(county_proportion), .groups = "drop")
+
+message("\nScope-county share of statewide total by utility:")
+proportion_check %>%
+  group_by(utility_name) %>%
+  summarise(
+    avg_share = mean(proportion_sum),
+    min_share = min(proportion_sum),
+    max_share = max(proportion_sum),
+    .groups = "drop"
+  ) %>%
+  print()
+
+# Flag if any utility's scope share exceeds 1.0 (would indicate a mismatch)
+over_one <- proportion_check %>% filter(proportion_sum > 1.0)
+if (nrow(over_one) > 0) {
+  warning("Some utility-years have scope proportions > 1.0 — name mismatch likely:")
+  print(over_one)
+}
 
 # For backcasting, compute a stable average proportion using the earliest
 # N years of available data per utility. For gap-filling within the 7610
@@ -387,45 +429,73 @@ earliest_proportions <- county_proportions %>%
     .groups = "drop"
   )
 
-# ═════════════════════════════════════════════════════════════════════════════
-# PART 3: Gap-fill missing 7610 years within the 7610 filing range
-# ═════════════════════════════════════════════════════════════════════════════
 
-# Identify which utility-years need gap-filling
+# ═════════════════════════════════════════════════════════════════════════════
+# PARTS 3+4: Fill all missing utility-years (gap-fill + backcast combined)
+# ═════════════════════════════════════════════════════════════════════════════
+# For each utility, build a complete 2005–latest grid and fill every missing
+# year using EIA 861 state totals × nearest available county proportions.
+# No distinction between "gap-fill" and "backcast" — same method either way.
+
+# --- suspect data override ----------------------------------------------------
+# Some 7610 filings have implausible values (e.g., GRE 2022-2023 where member
+# co-ops appear to have started filing independently, causing the GRE filing
+# to drop 40-95%). Remove these from the observed data so the fill logic
+# replaces them with EIA 861 estimates instead.
+
+suspect_filings <- tribble(
+  ~utility_name,        ~emissions_year, ~reason,
+  "Great River Energy", 2022L,           "GRE 7610 filing appears to exclude some member co-op load (down ~40%)",
+  "Great River Energy", 2023L,           "GRE 7610 filing appears to exclude most member co-op load (down ~95%)"
+)
+
+n_suspect <- elec_7610 %>%
+  semi_join(suspect_filings, by = c("utility_name", "emissions_year")) %>%
+  nrow()
+
+if (n_suspect > 0) {
+  message(sprintf(
+    "\nRemoving %d rows from %d suspect utility-year filings (will replace with EIA 861):",
+    n_suspect, nrow(suspect_filings)
+  ))
+  print(suspect_filings)
+  
+  elec_7610 <- elec_7610 %>%
+    anti_join(suspect_filings, by = c("utility_name", "emissions_year"))
+  
+  # Also recompute county proportions without the suspect years
+  county_proportions <- county_proportions %>%
+    anti_join(suspect_filings, by = c("utility_name", "emissions_year"))
+}
+
 observed_utility_years <- elec_7610 %>%
   distinct(utility_name, emissions_year)
 
-# For each utility, determine the full year range it *should* cover
-# (from its first 7610 filing to the latest year)
-utility_ranges <- elec_7610 %>%
-  group_by(utility_name) %>%
-  summarise(
-    first_year = min(emissions_year),
-    last_year  = max(emissions_year),
-    .groups = "drop"
-  )
+# Build the complete grid: every utility × every year in full_year_range
+all_utilities <- unique(elec_7610$utility_name)
 
-# Build the complete grid of utility-years that should exist
-expected_utility_years <- utility_ranges %>%
-  rowwise() %>%
-  mutate(emissions_year = list(first_year:last_year)) %>%
-  unnest(emissions_year) %>%
-  select(utility_name, emissions_year)
+complete_grid <- expand_grid(
+  utility_name   = all_utilities,
+  emissions_year = full_year_range
+)
 
-# Find the gaps
-gaps_to_fill <- expected_utility_years %>%
+# Find all missing utility-years
+missing_utility_years <- complete_grid %>%
   anti_join(observed_utility_years, by = c("utility_name", "emissions_year")) %>%
-  # Only fill gaps for utilities we have EIA 861 data for
+  # Only fill where we have EIA 861 data
   semi_join(eia_861, by = c("utility_name", "emissions_year"))
 
-message(sprintf("\n%d utility-year gaps to fill within 7610 range", nrow(gaps_to_fill)))
+message(sprintf(
+  "\n%d utility-year combinations to fill across %d utilities",
+  nrow(missing_utility_years), n_distinct(missing_utility_years$utility_name)
+))
 
-# For each gap, find the nearest year's county proportions and apply to
-# the EIA 861 state total
-gapfill_records <- list()
+# For each missing utility-year, find the nearest year with county proportions
+# and allocate the EIA 861 state total to counties
+fill_records <- list()
 
-for (i in seq_len(nrow(gaps_to_fill))) {
-  gap <- gaps_to_fill[i, ]
+for (i in seq_len(nrow(missing_utility_years))) {
+  gap <- missing_utility_years[i, ]
   
   # Get EIA 861 state total for this utility-year
   eia_total <- eia_861 %>%
@@ -450,79 +520,41 @@ for (i in seq_len(nrow(gaps_to_fill))) {
     filter(utility_name == gap$utility_name,
            emissions_year == nearest_year)
   
+  # Tag provenance: backcast if before first 7610, gap-fill if within range
+  first_7610 <- min(
+    (observed_utility_years %>%
+       filter(utility_name == gap$utility_name))$emissions_year
+  )
+  
+  source_tag <- if_else(
+    gap$emissions_year < first_7610,
+    "eia_861_backcast",
+    "eia_861_gapfill"
+  )
+  
   # Allocate the EIA 861 total to counties
   filled <- props %>%
     mutate(
       emissions_year = gap$emissions_year,
       value_activity = eia_total * county_proportion,
       unit_activity  = "mwh",
-      data_source    = "eia_861_gapfill"
+      data_source    = source_tag
     ) %>%
     select(emissions_year, county_name, county_code, utility_name,
            value_activity, unit_activity, data_source) %>%
     filter(value_activity > 0)
   
-  gapfill_records[[i]] <- filled
+  fill_records[[i]] <- filled
 }
 
-gapfilled <- bind_rows(gapfill_records)
-message(sprintf("Gap-filled %d county-utility-year rows", nrow(gapfilled)))
+filled_data <- bind_rows(fill_records)
 
-# ═════════════════════════════════════════════════════════════════════════════
-# PART 4: Backcast to 2005 for all utilities
-# ═════════════════════════════════════════════════════════════════════════════
-# For years before each utility's first 7610 filing, use EIA 861 state totals
-# with the earliest available county proportions (averaged over first 3 years
-# of 7610 data).
-
-backcast_years <- backcast_start:(min(elec_7610$emissions_year) - 1L)
-
-# Also backcast for utilities that started filing 7610s after 2013
-# (e.g., GRE started 2016, Princeton started 2016, etc.)
-
-backcast_records <- list()
-bc_idx <- 0
-
-for (util in unique(earliest_proportions$utility_name)) {
-  util_first_7610 <- utility_ranges %>%
-    filter(utility_name == util) %>%
-    pull(first_year)
-  
-  # Backcast years: from 2005 to the year before first 7610 filing
-  util_backcast_years <- full_year_range[
-    full_year_range < util_first_7610
-  ]
-  
-  if (length(util_backcast_years) == 0) next
-  
-  util_props <- earliest_proportions %>%
-    filter(utility_name == util)
-  
-  for (yr in util_backcast_years) {
-    eia_total <- eia_861 %>%
-      filter(utility_name == util, emissions_year == yr) %>%
-      pull(total)
-    
-    if (length(eia_total) == 0 || is.na(eia_total)) next
-    
-    bc_idx <- bc_idx + 1
-    backcast_records[[bc_idx]] <- util_props %>%
-      mutate(
-        emissions_year = yr,
-        value_activity = eia_total * avg_proportion,
-        unit_activity  = "mwh",
-        data_source    = "eia_861_backcast",
-        utility_name   = util
-      ) %>%
-      select(emissions_year, county_name, county_code, utility_name,
-             value_activity, unit_activity, data_source) %>%
-      filter(value_activity > 0)
-  }
-}
-
-backcast <- bind_rows(backcast_records)
-message(sprintf("Backcast %d county-utility-year rows to %d",
-                nrow(backcast), backcast_start))
+message(sprintf(
+  "Filled %d county-utility-year rows (%d backcast, %d gap-fill)",
+  nrow(filled_data),
+  sum(filled_data$data_source == "eia_861_backcast"),
+  sum(filled_data$data_source == "eia_861_gapfill")
+))
 
 # ═════════════════════════════════════════════════════════════════════════════
 # PART 5: Combine everything
@@ -535,8 +567,7 @@ elec_7610_slim <- elec_7610 %>%
 
 county_elec_activity <- bind_rows(
   elec_7610_slim,
-  gapfilled,
-  backcast
+  filled_data
 ) %>%
   arrange(county_name, utility_name, emissions_year)
 
@@ -721,3 +752,4 @@ message("\nProvenance breakdown:")
 county_elec_activity %>%
   count(data_source) %>%
   print()
+
