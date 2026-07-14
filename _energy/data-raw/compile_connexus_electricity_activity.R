@@ -9,7 +9,7 @@ city_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Connex
     ctu_name = str_to_title(City),
     ctu_class = "CITY",
     mwh_delivered = case_when(
-      Consumption == "REDACTED" ~ 0,
+      Consumption == "REDACTED" ~ NA_real_,
       grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption), # checks if only numeric values are present
       TRUE ~ NA_real_
     ) * 1e-3
@@ -31,7 +31,7 @@ township_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Co
     ctu_name = str_to_title(Township),
     ctu_class = "TOWNSHIP",
     mwh_delivered = case_when(
-      Consumption == "REDACTED" ~ 0,
+      Consumption == "REDACTED" ~ NA_real_,
       grepl("^-?\\d*(\\.\\d+)?$", Consumption) ~ as.numeric(Consumption), # checks if only numeric values are present
       TRUE ~ NA_real_
     ) * 1e-3
@@ -80,14 +80,24 @@ county_raw <- read_xlsx(here("_energy", "data-raw", "connexusDataRequest", "Conn
 
 city_township_connexus <- rbind(city_raw, township_raw)
 
-connexus_activityData_2014_2023 <- city_township_connexus %>%
+# --- YoY spike/dip check at ctu_name + ctu_class level ---
+ctu_yoy <- city_township_connexus %>%
+  group_by(ctu_name, ctu_class, year) %>%
+  summarise(total_mwh = sum(mwh_delivered, na.rm = TRUE), .groups = "drop") %>%
+  arrange(ctu_name, ctu_class, year) %>%
+  group_by(ctu_name, ctu_class) %>%
   mutate(
-    mwh_delivered = case_when(
-      mwh_delivered == "REDACTED" ~ as.numeric(0),
-      TRUE ~ mwh_delivered
-    )
+    prev_mwh = lag(total_mwh),
+    pct_change = (total_mwh - prev_mwh) / prev_mwh * 100
   ) %>%
-  filter(year != 2024)
+  ungroup()
+
+flagged <- ctu_yoy %>%
+  filter(abs(pct_change) >= 20) %>%
+  arrange(ctu_name, ctu_class, year)
+
+flagged %>% print(n = Inf)
+
 
 
 # ctu and county reference, incl. population -- necessary for disaggregation to COCTU
@@ -110,7 +120,7 @@ city_total_population <- ctu_population %>%
   ungroup()
 
 
-connexus_activityData_2014_2023 <- connexus_activityData_2014_2023 %>%
+connexus_activity <- city_township_connexus %>%
   # Join city_total_population back to main dataset
   full_join(city_total_population,
     by = c("ctu_name", "ctu_class", "year"),
@@ -134,8 +144,16 @@ connexus_activityData_2014_2023 <- connexus_activityData_2014_2023 %>%
   mutate(
     source = "Electricity",
     utility = "Connexus Energy"
-  ) %>%
-  select(1:7, 12:13)
+  )  %>%
+  select(ctu_name, 
+         ctu_class,
+         county_name,
+         emissions_year = year,
+         sector,
+         mwh_delivered,
+         source,
+         utility)
 
-write_rds(connexus_activityData_2014_2023, here("_energy", "data", "connexus_activityData_2014_2023.RDS"))
-write_rds(county_raw, here("_energy", "data", "connexus_county_activityData_2014_2023.RDS"))
+
+write_rds(connexus_activity, here("_energy", "data", "connexus_electric_activity.RDS"))
+write_rds(county_raw, here("_energy", "data", "connexus_electric_county_activity.RDS"))
