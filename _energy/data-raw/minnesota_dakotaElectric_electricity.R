@@ -26,6 +26,25 @@ city_raw <- read_xlsx(here("_energy", "data-raw", "dakotaElectricDataRequest", "
   # Dakota's 2018 data is faulty -- starts in March
   filter(!inventory_year == 2018)
 
+# --- YoY spike/dip check at ctu_name + ctu_class level ---
+ctu_yoy <- city_raw %>%
+  group_by(ctu_name, ctu_class, inventory_year) %>%
+  summarise(total_mwh = sum(mwh_delivered, na.rm = TRUE), .groups = "drop") %>%
+  arrange(ctu_name, ctu_class, inventory_year) %>%
+  group_by(ctu_name, ctu_class) %>%
+  mutate(
+    prev_mwh = lag(total_mwh),
+    pct_change = (total_mwh - prev_mwh) / prev_mwh * 100
+  ) %>%
+  ungroup()
+
+flagged <- ctu_yoy %>%
+  filter(abs(pct_change) >= 10) %>%
+  arrange(ctu_name, ctu_class, inventory_year)
+
+flagged %>% print(n = Inf)
+# Inver Grove Heights had substantial commercial growth 2021-2023 which appears legitimate
+
 
 # code should be added to meta at some point -- COCTU disaggregation is happening in a lot of places
 # ctu and county reference, incl. population -- necessary for disaggregation to COCTU
@@ -48,7 +67,7 @@ city_total_population <- ctu_population %>%
 
 
 
-dakotaElectric_activityData_2019_2024 <- city_raw %>%
+dakota_electric_activity <- city_raw %>%
   # Join city_total_population back to main dataset
   left_join(city_total_population,
     by = c("ctu_name", "ctu_class", "inventory_year"),
@@ -73,6 +92,13 @@ dakotaElectric_activityData_2019_2024 <- city_raw %>%
     source = "Electricity",
     utility = "Dakota Electric Association"
   ) %>%
-  select(1:7, 12:13)
+  select(ctu_name, 
+         ctu_class,
+         county_name,
+         emissions_year = inventory_year,
+         sector,
+         mwh_delivered,
+         source,
+         utility)
 
-write_rds(dakotaElectric_activityData_2019_2024, here("_energy", "data", "dakotaElectric_activityData_2019_2024.RDS"))
+write_rds(dakota_electric_activity, here("_energy", "data", "dakota_electric_activity.RDS"))
