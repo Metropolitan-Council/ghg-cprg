@@ -19,7 +19,7 @@ ctu_county_unique <- ctu_population %>%
   distinct(geoid, ctuid, ctu_name, ctu_class, county_name)
 
 # county activity data
-county_mwh <- readRDS("_energy/data/minnesota_county_elec_ActivityAndEmissions.rds")
+county_mwh <- readRDS("_energy/data/county_elec_activity.rds")
 
 ## create storage frame of unique city and utility combos with all years
 ctu_utility_year <- readRDS("_energy/data/ctu_elec_utility_intersect.RDS") %>%
@@ -79,7 +79,7 @@ connexus <- readRDS("_energy/data/connexus_activityData_2014_2023.rds") %>%
 
 
 ### load and format Dakota electric data
-dakota <- readRDS("_energy/data/dakotaElectric_activityData_2019_2024.rds") %>%
+dakota <- readRDS("_energy/data/dakota_electric_activity.RDS") %>%
   filter(!is.na(mwh_delivered)) %>%
   rename(emissions_year = inventory_year) %>%
   mutate(sector = case_when(
