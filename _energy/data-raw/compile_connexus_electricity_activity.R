@@ -97,7 +97,7 @@ flagged <- ctu_yoy %>%
   arrange(ctu_name, ctu_class, year)
 
 flagged %>% print(n = Inf)
-
+# main concern is Centerville rapid increase, likely explained by Amazon delivery center
 
 
 # ctu and county reference, incl. population -- necessary for disaggregation to COCTU

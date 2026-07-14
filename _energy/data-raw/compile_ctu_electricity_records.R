@@ -57,16 +57,16 @@ sql_elec <- readRDS("_energy/data/ctu_electricity_emissions_2015_2018.rds") %>%
     names_from = sector, values_from = mwh_per_year,
     names_glue = "{tolower(sector)}_mwh"
   ) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
+  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh))
 
 ## load and format connexus data
-connexus <- readRDS("_energy/data/connexus_activityData_2014_2023.rds") %>%
+connexus <- readRDS("_energy/data/connexus_electric_activity.RDS") %>%
   filter(!is.na(mwh_delivered)) %>%
-  rename(emissions_year = year) %>%
   # mutate(mwh_delivered = mwh_delivered * 10e-4) %>%  # kwh listed instead of mwh
   mutate(sector = case_when(
     sector == "Residential" ~ "Residential",
-    sector == "Residential/Commercial/Industrial" ~ "Total",
+    sector == "Residential/Commercial/Industrial" ~ "Residential/Commercial/Industrial",
     TRUE ~ "Business"
   )) %>%
   group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
@@ -75,24 +75,34 @@ connexus <- readRDS("_energy/data/connexus_activityData_2014_2023.rds") %>%
     names_from = sector, values_from = mwh_per_year,
     names_glue = "{tolower(sector)}_mwh"
   ) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
+  mutate(
+    # preserve combined-category total if no sector breakdown exists
+    total_mwh = case_when(
+      !is.na(business_mwh) | !is.na(residential_mwh) ~
+        rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+      !is.na(`residential/commercial/industrial_mwh`) ~
+        `residential/commercial/industrial_mwh`,
+      TRUE ~ NA_real_
+    )
+  ) %>%
+  select(-any_of("residential/commercial/industrial_mwh"))
 
 
 ### load and format Dakota electric data
 dakota <- readRDS("_energy/data/dakota_electric_activity.RDS") %>%
   filter(!is.na(mwh_delivered)) %>%
-  rename(emissions_year = inventory_year) %>%
   mutate(sector = case_when(
     sector == "Residential" ~ "Residential",
     TRUE ~ "Business" # includes "Commercial/Industrial", "Commercial", "Dakota Electric Operations", and "Irrigation Services"
   )) %>%
-  group_by(ctu_name, emissions_year, utility, sector) %>%
+  group_by(ctu_name, ctu_class, emissions_year, utility, sector) %>%
   summarise(mwh_per_year = sum(mwh_delivered, na.rm = TRUE), .groups = "drop") %>%
   pivot_wider(
     names_from = sector, values_from = mwh_per_year,
     names_glue = "{tolower(sector)}_mwh"
   ) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
+  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh))
 
 ### load and format xcel data
 xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
@@ -111,7 +121,8 @@ xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
     names_from = sector, values_from = mwh_per_year,
     names_glue = "{tolower(sector)}_mwh"
   ) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
+  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh))
 
 
 # load in municipal utility data
@@ -128,7 +139,8 @@ munis <- readRDS("_energy/data/MNelecMunis_activityData_2014_2023.rds") %>%
     names_from = sector, values_from = mwh_per_year,
     names_glue = "{tolower(sector)}_mwh"
   ) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
+  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh))
 
 # function: sequentially load data while keeping NAs
 merge_electricity_data <- function(base_df, new_data) {
@@ -227,7 +239,8 @@ rii_wide <- rii %>%
     names_from = sector_use, values_from = mwh_delivered,
     names_glue = "{tolower(sector_use)}_mwh"
   ) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0))
+  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh))
 
 # id cities with NO utility data
 
@@ -244,7 +257,8 @@ rii_fill <- empty_city_years %>%
     by = c("ctu_name", "ctu_class", "inventory_year")
   ) %>%
   select(ctu_name, ctu_class, inventory_year, utility, business_mwh, residential_mwh, total_mwh) %>%
-  mutate(total_mwh = replace_na(business_mwh, 0) + replace_na(residential_mwh, 0)) %>%
+  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh)) %>%
   filter(!(is.na(business_mwh) | is.na(residential_mwh)))
 
 ctu_utility_year <- ctu_utility_year %>%
@@ -252,6 +266,54 @@ ctu_utility_year <- ctu_utility_year %>%
     by = c("ctu_name", "ctu_class", "inventory_year")
   ) %>%
   bind_rows(., rii_fill)
+
+
+# --- Compiled-level YoY QC (post-merge, pre-RII) ---
+# Only compare city-years where ALL utilities reported
+ctu_complete_years <- ctu_utility_year %>%
+  group_by(ctu_name, ctu_class, inventory_year) %>%
+  filter(!any(is.na(total_mwh))) %>%
+  summarise(total_mwh = sum(total_mwh, na.rm = TRUE), .groups = "drop")
+
+ctu_compiled_yoy <- ctu_complete_years %>%
+  filter(total_mwh > 0) %>%
+  arrange(ctu_name, ctu_class, inventory_year) %>%
+  group_by(ctu_name, ctu_class) %>%
+  mutate(
+    prev_mwh = lag(total_mwh),
+    prev_year = lag(inventory_year),
+    pct_change = (total_mwh - prev_mwh) / prev_mwh * 100
+  ) %>%
+  ungroup()
+
+compiled_flags <- ctu_compiled_yoy %>%
+  filter(abs(pct_change) >= 20,
+         inventory_year - prev_year == 1) %>%
+  arrange(ctu_name, ctu_class, inventory_year)
+
+compiled_flags %>% print(n = Inf)
+
+## Xcel 2022 reporting change?
+
+xcel_2022_jump <- ctu_utility_year %>%
+  filter(utility == "Xcel Energy",
+         inventory_year %in% c(2021, 2022)) %>%
+  select(ctu_name, ctu_class, inventory_year, residential_mwh, business_mwh) %>%
+  pivot_wider(names_from = inventory_year, 
+              values_from = c(residential_mwh, business_mwh)) %>%
+  mutate(
+    res_pct = (residential_mwh_2022 - residential_mwh_2021) / residential_mwh_2021 * 100,
+    biz_pct = (business_mwh_2022 - business_mwh_2021) / business_mwh_2021 * 100
+  ) %>%
+  filter(biz_pct >= 20, abs(res_pct) < 10)
+
+xcel_2022_jump %>% print(n = Inf)
+
+ctu_utility_year %>%
+  filter(utility == "Xcel Energy", inventory_year %in% 2019:2023) %>%
+  group_by(inventory_year) %>%
+  summarise(total_res = sum(residential_mwh, na.rm = TRUE),
+            total_biz = sum(business_mwh, na.rm = TRUE))
 
 ## save output file
 
