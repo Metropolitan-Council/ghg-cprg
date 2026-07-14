@@ -314,6 +314,9 @@ ctu_utility_year %>%
   group_by(inventory_year) %>%
   summarise(total_res = sum(residential_mwh, na.rm = TRUE),
             total_biz = sum(business_mwh, na.rm = TRUE))
+# unclear if this is systemic change, reallocations, or just normal noise.
+# assuming the latter for now.
+
 
 ## save output file
 
