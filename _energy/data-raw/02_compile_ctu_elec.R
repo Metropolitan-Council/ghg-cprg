@@ -190,6 +190,35 @@ munis <- munis %>%
 
 ctu_utility_year <- merge_electricity_data(ctu_utility_year, munis)
 
+# ── Interpolate Dakota Electric 2018 gap ──────────────────────────────────────
+# Dakota Electric's 2018 filing is faulty (starts March). SQL server has 2017;
+# data request has 2019+. Interpolate 2018 from those anchors at the utility level.
+
+dea_2018_anchors <- ctu_utility_year %>%
+  filter(
+    utility == "Dakota Electric Association",
+    inventory_year %in% c(2017, 2019),
+    !is.na(total_mwh)
+  )
+
+dea_2018_interp <- dea_2018_anchors %>%
+  group_by(ctu_name, ctu_class, utility) %>%
+  filter(n() == 2) %>%
+  summarize(
+    inventory_year  = 2018,
+    residential_mwh = mean(residential_mwh),
+    business_mwh    = mean(business_mwh),
+    total_mwh       = mean(total_mwh),
+    .groups         = "drop"
+  )
+
+# Replace the NA 2018 rows with interpolated values
+ctu_utility_year <- ctu_utility_year %>%
+  anti_join(dea_2018_interp,
+            by = c("ctu_name", "ctu_class", "utility", "inventory_year")
+  ) %>%
+  bind_rows(dea_2018_interp)
+
 
 ### compare to rii totals and supplement where possible
 
