@@ -1,11 +1,11 @@
-### Predict CTU residential natural gas usage with bias-decay blending ###
+### Predict CTU residential natural gas usage with mean RF scale correction ###
 ### Trains on all complete city-years, predicts all missing years 2010-2023
-### Uses bidirectional bias-decay correction anchored at known data boundaries
+### Per-city mean ratio correction matching business methodology
 
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
-# load in supporting data
+# ── Supporting data ───────────────────────────────────────────────────────────
 
 cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
   filter(
@@ -14,7 +14,7 @@ cprg_ctu <- read_rds("_meta/data/cprg_ctu.RDS") %>%
   ) %>%
   mutate(thrive_designation = as.factor(if_else(
     thrive_designation == "Rural Center",
-    "Rural Residential",
+    "Emerging Suburban Edge",
     thrive_designation
   )))
 
@@ -38,7 +38,7 @@ mn_parcel <- readRDS("_meta/data/ctu_parcel_data_2021.RDS") %>%
 
 urbansim <- readRDS("_meta/data/urbansim_data.RDS")
 
-# get complete city-years utility data
+# ── Utility data: complete city-years only ────────────────────────────────────
 
 ctu_utility_year <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
@@ -50,7 +50,7 @@ ctu_utility_year <- read_rds("_energy/data/ctu_utility_mcf.RDS") %>%
   ) %>%
   ungroup()
 
-# population splits for multi-county CTUs
+# ── Population splits for multi-county CTUs ───────────────────────────────────
 
 coctu_population <- ctu_population %>%
   distinct(ctu_name, ctu_class, inventory_year, county_name, ctu_population) %>%
@@ -64,13 +64,13 @@ coctu_population <- ctu_population %>%
 
 coctu_res_known <- ctu_utility_year %>%
   full_join(coctu_population,
-    by = c("ctu_name", "ctu_class", "inventory_year"),
-    relationship = "many-to-many"
+            by = c("ctu_name", "ctu_class", "inventory_year"),
+            relationship = "many-to-many"
   ) %>%
   mutate(
     residential_mcf = if_else(multi_county,
-      residential_mcf * coctu_population_prop,
-      residential_mcf
+                              residential_mcf * coctu_population_prop,
+                              residential_mcf
     )
   ) %>%
   filter(!is.na(residential_mcf), residential_mcf > 0) %>%
@@ -79,7 +79,7 @@ coctu_res_known <- ctu_utility_year %>%
     county_name, ctu_population
   )
 
-# predictor data
+# ── Predictor data ────────────────────────────────────────────────────────────
 
 mn_parcel_res <- mn_parcel %>%
   filter(mc_classification %in% c("single_family_home", "multifamily_home", "apartment")) %>%
@@ -106,7 +106,7 @@ urbansim_res <- urbansim %>%
   complete(inventory_year = full_seq(c(2005, 2025), 1)) %>%
   arrange(coctu_id_gnis, ctu_id, variable, inventory_year) %>%
   mutate(value = approx(inventory_year, value, inventory_year,
-    method = "linear", rule = 2
+                        method = "linear", rule = 2
   )$y) %>%
   ungroup() %>%
   pivot_wider(
@@ -128,7 +128,7 @@ urbansim_res <- urbansim %>%
     by = c("county_id" = "geoid")
   )
 
-# training dataset
+# ── Training dataset ─────────────────────────────────────────────────────────
 
 ng_res_train <- coctu_res_known %>%
   left_join(urbansim_res, by = c("ctu_name", "ctu_class", "county_name", "inventory_year")) %>%
@@ -136,7 +136,7 @@ ng_res_train <- coctu_res_known %>%
   left_join(noaa_year, by = "inventory_year") %>%
   filter(!is.na(coctu_id_gnis), residential_mcf != 0)
 
-# train RF on all complete city-years
+# ── Train RF on all complete city-years ───────────────────────────────────────
 
 set.seed(1029)
 
@@ -157,7 +157,6 @@ print(rf_res_model)
 varImpPlot(rf_res_model, sort = TRUE)
 
 # ── Predict ALL city-years 2010-2023 ─────────────────────────────────────────
-# Including known years so we can compute anchor residuals
 
 full_pred_grid <- cprg_ctu %>%
   st_drop_geometry() %>%
@@ -174,9 +173,12 @@ full_pred_grid <- cprg_ctu %>%
   filter(!is.na(coctu_id_gnis)) %>%
   mutate(rf_predicted = predict(rf_res_model, .))
 
-# ── Bias-decay blending ───────────────────────────────────────────────────────
+# ── Mean RF scale correction ─────────────────────────────────────────────────
+# For cities with utility-reported anchor years, compute the mean ratio of
+# actual to RF-predicted. Apply this scalar to all model-predicted years so
+# the full series reflects the city's systematic deviation from the RF baseline.
+# Cities with no anchor years get raw RF predictions.
 
-# Known years with their RF predictions and actual values
 known_with_pred <- coctu_res_known %>%
   left_join(
     full_pred_grid %>%
@@ -186,168 +188,39 @@ known_with_pred <- coctu_res_known %>%
       ),
     by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
   ) %>%
-  mutate(
-    residual = residential_mcf - rf_predicted,
-    percent_deviation = residual / residential_mcf
-  ) %>%
   filter(!is.na(rf_predicted))
 
-# For each missing city-year, find the nearest known year before AND after
-missing_years <- full_pred_grid %>%
+city_rf_scale <- known_with_pred %>%
+  mutate(scale = residential_mcf / rf_predicted) %>%
+  group_by(ctu_name, ctu_class, county_name) %>%
+  summarize(mean_scale = mean(scale, na.rm = TRUE), .groups = "drop")
+
+missing_years_out <- full_pred_grid %>%
   anti_join(coctu_res_known,
-    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
+            by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
   ) %>%
   select(
     coctu_id_gnis, ctu_name, ctu_class, county_name,
     inventory_year, rf_predicted
-  )
-
-half_life <- 5 # residual halves every 5 years -- tune per diagnostics below
-
-blended_predictions <- missing_years %>%
-  left_join(
-    # last known year before each missing year
-    known_with_pred %>%
-      select(ctu_name, ctu_class, county_name,
-        anchor_before_year = inventory_year,
-        residual_before    = residual
-      ),
-    by = c("ctu_name", "ctu_class", "county_name"),
-    relationship = "many-to-many"
   ) %>%
-  filter(anchor_before_year < inventory_year) %>%
-  group_by(coctu_id_gnis, ctu_name, ctu_class, county_name, inventory_year) %>%
-  slice_max(anchor_before_year, n = 1) %>%
-  ungroup() %>%
-  left_join(
-    # first known year after each missing year
-    known_with_pred %>%
-      select(ctu_name, ctu_class, county_name,
-        anchor_after_year = inventory_year,
-        residual_after    = residual
-      ),
-    by = c("ctu_name", "ctu_class", "county_name"),
-    relationship = "many-to-many"
-  ) %>%
-  filter(anchor_after_year > inventory_year) %>%
-  group_by(coctu_id_gnis, ctu_name, ctu_class, county_name, inventory_year) %>%
-  slice_min(anchor_after_year, n = 1) %>%
-  ungroup() %>%
+  left_join(city_rf_scale, by = c("ctu_name", "ctu_class", "county_name")) %>%
   mutate(
-    years_from_before = inventory_year - anchor_before_year,
-    years_from_after = anchor_after_year - inventory_year,
-    w_before = 0.5^(years_from_before / half_life),
-    w_after = 0.5^(years_from_after / half_life),
-    # normalize so weights sum to 1 -- handles both gap interior and edge cases
-    w_before_norm = w_before / (w_before + w_after),
-    w_after_norm = w_after / (w_before + w_after),
-    correction = residual_before * w_before_norm + residual_after * w_after_norm,
-    residential_mcf = rf_predicted + correction,
-    data_source = "Model prediction (bias-decay)"
+    residential_mcf = if_else(!is.na(mean_scale),
+                              rf_predicted * mean_scale,
+                              rf_predicted
+    ),
+    data_source = if_else(!is.na(mean_scale),
+                          "Model prediction (RF scaled)",
+                          "Model prediction (RF only)"
+    )
   ) %>%
   select(
     coctu_id_gnis, ctu_name, ctu_class, county_name,
     inventory_year, residential_mcf, data_source
   )
 
-# Edge case: missing years with ONLY a before anchor (trailing gap, no data after)
-trailing_gap <- missing_years %>%
-  anti_join(blended_predictions,
-    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
-  ) %>%
-  left_join(
-    known_with_pred %>%
-      select(ctu_name, ctu_class, county_name,
-        anchor_before_year = inventory_year,
-        residual_before    = residual
-      ),
-    by = c("ctu_name", "ctu_class", "county_name"),
-    relationship = "many-to-many"
-  ) %>%
-  filter(anchor_before_year < inventory_year) %>%
-  group_by(coctu_id_gnis, ctu_name, ctu_class, county_name, inventory_year) %>%
-  slice_max(anchor_before_year, n = 1) %>%
-  ungroup() %>%
-  mutate(
-    years_from_before = inventory_year - anchor_before_year,
-    decay = 0.5^(years_from_before / half_life),
-    residential_mcf = rf_predicted + residual_before * decay,
-    data_source = "Model prediction (bias-decay trailing)"
-  ) %>%
-  select(
-    coctu_id_gnis, ctu_name, ctu_class, county_name,
-    inventory_year, residential_mcf, data_source
-  )
+# ── Pre-2010 RII data ────────────────────────────────────────────────────────
 
-# Edge case: missing years with ONLY an after anchor (leading gap, no data before)
-leading_gap <- missing_years %>%
-  anti_join(blended_predictions,
-    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
-  ) %>%
-  anti_join(trailing_gap,
-    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
-  ) %>%
-  left_join(
-    known_with_pred %>%
-      select(ctu_name, ctu_class, county_name,
-        anchor_after_year = inventory_year,
-        residual_after    = residual
-      ),
-    by = c("ctu_name", "ctu_class", "county_name"),
-    relationship = "many-to-many"
-  ) %>%
-  filter(anchor_after_year > inventory_year) %>%
-  group_by(coctu_id_gnis, ctu_name, ctu_class, county_name, inventory_year) %>%
-  slice_min(anchor_after_year, n = 1) %>%
-  ungroup() %>%
-  mutate(
-    years_from_after = anchor_after_year - inventory_year,
-    decay = 0.5^(years_from_after / half_life),
-    residential_mcf = rf_predicted + residual_after * decay,
-    data_source = "Model prediction (bias-decay leading)"
-  ) %>%
-  select(
-    coctu_id_gnis, ctu_name, ctu_class, county_name,
-    inventory_year, residential_mcf, data_source
-  )
-
-# ── Diagnostics: verify smooth transitions ────────────────────────────────────
-# Inspect half_life choice -- plot a few cities with gap years
-blending_check <- bind_rows(
-  known_with_pred %>%
-    select(ctu_name, ctu_class, county_name, inventory_year, residential_mcf) %>%
-    mutate(data_source = "Utility report"),
-  blended_predictions,
-  trailing_gap,
-  leading_gap
-) %>%
-  arrange(ctu_name, ctu_class, county_name, inventory_year)
-
-# plot a city of interest
-blending_check %>%
-  filter(ctu_name == "Richfield") %>%
-  ggplot(aes(inventory_year, residential_mcf, color = ctu_name)) +
-  geom_line() +
-  geom_point() +
-  theme_bw() +
-  labs(title = "Rosemount residential MCF -- blending check")
-
-# cities with NO known years at all -- pure RF, no anchor available
-no_data_cities <- full_pred_grid %>%
-  anti_join(coctu_res_known,
-    by = c("ctu_name", "ctu_class", "county_name") # note: no inventory_year
-  ) %>% # excludes entire city, not just year
-  select(
-    coctu_id_gnis, ctu_name, ctu_class, county_name,
-    inventory_year, rf_predicted
-  ) %>%
-  mutate(
-    residential_mcf = rf_predicted,
-    data_source     = "Model prediction (RF only)"
-  ) %>%
-  select(-rf_predicted)
-
-## bring back pre-2010 RII data
 known_pre2010 <- coctu_res_known %>%
   filter(inventory_year < 2010) %>%
   left_join(
@@ -360,7 +233,8 @@ known_pre2010 <- coctu_res_known %>%
     inventory_year, residential_mcf, data_source
   )
 
-# add into the final bind_rows alongside the three gap types
+# ── Combine ───────────────────────────────────────────────────────────────────
+
 coctu_res_out <- bind_rows(
   known_pre2010,
   known_with_pred %>%
@@ -369,15 +243,11 @@ coctu_res_out <- bind_rows(
       inventory_year, residential_mcf
     ) %>%
     mutate(data_source = "Utility report"),
-  blended_predictions,
-  trailing_gap,
-  leading_gap,
-  no_data_cities
+  missing_years_out
 ) %>%
   filter(residential_mcf > 0) %>%
   arrange(ctu_name, ctu_class, county_name, inventory_year)
 
-# sanity check
 stopifnot(
   coctu_res_out %>%
     count(ctu_name, ctu_class, county_name, inventory_year) %>%
@@ -385,13 +255,22 @@ stopifnot(
     nrow() == 0
 )
 
-# check - plot a city of interest
+# ── Diagnostic plots ─────────────────────────────────────────────────────────
+
 coctu_res_out %>%
-  filter(ctu_name == "Lake Elmo") %>%
+  filter(ctu_name == "Saint Paul") %>%
   ggplot(aes(inventory_year, residential_mcf, color = data_source)) +
   geom_line() +
   geom_point() +
   theme_bw() +
-  labs(title = "Residential MCF -- blending check")
+  labs(title = "Residential MCF -- scale correction check")
+
+coctu_res_out %>%
+  filter(ctu_name == "South Saint Paul") %>%
+  ggplot(aes(inventory_year, residential_mcf, color = data_source)) +
+  geom_line() +
+  geom_point() +
+  theme_bw() +
+  labs(title = "Lake Elmo residential MCF -- scale correction check")
 
 saveRDS(coctu_res_out, "_energy/data-raw/predicted_coctu_residential_mcf.rds")
