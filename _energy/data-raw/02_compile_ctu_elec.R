@@ -197,9 +197,54 @@ munis <- munis %>%
 
 ctu_utility_year <- merge_electricity_data(ctu_utility_year, munis)
 
+# ── Dakota Electric SQL-era data quality check ────────────────────────────────
+# The SQL server data (2015-2017) for some Dakota Electric cities is drastically
+# understated compared to the direct data request (2019+). This appears to be a
+# like a problem with SQL server DEA for these cities, not real growth.
+# Identify affected cities via YoY check and null out pre-break years so they
+# fall through to RF modeling instead of anchoring to bad data.
+
+dea_yoy <- ctu_utility_year %>%
+  filter(utility == "Dakota Electric Association", !is.na(total_mwh)) %>%
+  arrange(ctu_name, ctu_class, inventory_year) %>%
+  group_by(ctu_name, ctu_class) %>%
+  mutate(
+    prev_mwh   = lag(total_mwh),
+    yoy_pct    = (total_mwh - prev_mwh) / prev_mwh * 100,
+    break_year = min(inventory_year[yoy_pct > 100], na.rm = TRUE),
+    has_break  = any(yoy_pct > 100, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+dea_bad_years <- dea_yoy %>%
+  filter(has_break, inventory_year < break_year) %>%
+  select(ctu_name, ctu_class, utility, inventory_year)
+
+cat("=== Dakota Electric pre-break years nulled out ===\n")
+dea_bad_years %>%
+  group_by(ctu_name, ctu_class) %>%
+  summarize(
+    years_dropped = paste(inventory_year, collapse = ", "),
+    .groups = "drop"
+  ) %>%
+  print(n = Inf)
+
+ctu_utility_year <- ctu_utility_year %>%
+  left_join(
+    dea_bad_years %>% mutate(drop = TRUE),
+    by = c("ctu_name", "ctu_class", "utility", "inventory_year")
+  ) %>%
+  mutate(across(
+    c(residential_mwh, business_mwh, total_mwh),
+    ~ if_else(!is.na(drop), NA_real_, .)
+  )) %>%
+  select(-drop)
+
 # ── Interpolate Dakota Electric 2018 gap ──────────────────────────────────────
-# Dakota Electric's 2018 filing is faulty (starts March). SQL server has 2017;
-# data request has 2019+. Interpolate 2018 from those anchors at the utility level.
+# Dakota Electric's 2018 filing is faulty (starts March). Interpolate from
+# 2017 and 2019 anchors — but only where BOTH anchors survived the quality
+# check above. Cities where 2017 was nulled out get no interpolation; their
+# 2018 stays NA and falls through to RF modeling.
 
 dea_2018_anchors <- ctu_utility_year %>%
   filter(
@@ -218,6 +263,9 @@ dea_2018_interp <- dea_2018_anchors %>%
     total_mwh       = mean(total_mwh),
     .groups         = "drop"
   )
+
+cat("\n=== Dakota Electric 2018 interpolated (clean anchors only) ===\n")
+cat(sprintf("%d cities interpolated\n", nrow(dea_2018_interp)))
 
 # Replace the NA 2018 rows with interpolated values
 ctu_utility_year <- ctu_utility_year %>%
@@ -377,6 +425,33 @@ cat(sprintf(
   nrow(phantoms) * n_distinct(ctu_utility_year$inventory_year)
 ))
 
+
+# ── De minimis utility filter ─────────────────────────────────────────────────
+# Small fringe service from a second utility (e.g. Xcel's 3 MWh in Chaska vs
+# City of Chaska Electric's 350K) shouldn't block a city-year from being
+# marked complete when the fringe utility has NAs. Identify utility × city
+# combos where the utility never exceeds 1% of the city total, and remove them.
+
+de_minimis_threshold <- 0.05
+
+util_shares <- ctu_utility_year %>%
+  filter(!is.na(total_mwh)) %>%
+  group_by(ctu_name, ctu_class, inventory_year) %>%
+  mutate(city_total = sum(total_mwh, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(city_total > 0) %>%
+  mutate(share = total_mwh / city_total) %>%
+  group_by(ctu_name, ctu_class, utility) %>%
+  summarize(max_share = max(share, na.rm = TRUE), .groups = "drop") %>%
+  filter(max_share < de_minimis_threshold)
+
+cat("=== De minimis utility × city combos removed ===\n")
+util_shares %>%
+  arrange(ctu_name, utility) %>%
+  print(n = Inf)
+
+ctu_utility_year <- ctu_utility_year %>%
+  anti_join(util_shares, by = c("ctu_name", "ctu_class", "utility"))
 
 ## save output file
 
