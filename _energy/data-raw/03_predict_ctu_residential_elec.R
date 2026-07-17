@@ -44,10 +44,7 @@ ctu_utility_mwh <- read_rds("_energy/data/ctu_utility_mwh.RDS")
 
 # Row-level filtering: drop all-NA rows before grouping so a single phantom
 # utility doesn't poison a city-year (the Saint Paul / CenterPoint pattern).
-# Also exclude Champlin: Connexus is primary provider but not in the data,
-# so Xcel-only years understate and Connexus-only years (2019+) are fringe only.
 ctu_utility_year <- ctu_utility_mwh %>%
-  filter(ctu_name != "Champlin") %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
   filter(!any(is.na(total_mwh)), total_mwh > 0) %>%
   summarize(
@@ -100,6 +97,8 @@ mn_parcel_res <- mn_parcel %>%
   na_replace() %>%
   ungroup()
 
+
+
 residential_vars <- c(
   "total_pop", "total_households", "total_residential_units",
   "manufactured_homes", "single_fam_det_sl_own", "single_fam_det_ll_own",
@@ -135,6 +134,19 @@ urbansim_res <- urbansim %>%
     by = c("county_id" = "geoid")
   )
 
+# Recode manufactured homes for Landfall so it doesn't fall out of model
+
+urbansim_res <- urbansim_res %>%
+  mutate(
+    single_fam_det_sl_own = if_else(
+      ctu_name == "Landfall",
+      single_fam_det_sl_own + manufactured_homes,
+      single_fam_det_sl_own
+    )
+  )
+
+
+
 # ── Training dataset ─────────────────────────────────────────────────────────
 
 elec_res_train <- coctu_res_known %>%
@@ -142,6 +154,16 @@ elec_res_train <- coctu_res_known %>%
   left_join(mn_parcel_res %>% select(-ctu_name), by = c("ctu_id")) %>%
   left_join(noaa_year, by = "inventory_year") %>%
   filter(!is.na(coctu_id_gnis), residential_mwh != 0)
+
+# ── Impute regional means for cities missing parcel data ──────────────────────
+parcel_cols <- names(mn_parcel_res) %>%
+  str_subset("^(mean_year_|total_emv_)")
+
+elec_res_train <- elec_res_train %>%
+  mutate(across(
+    all_of(parcel_cols),
+    ~ if_else(is.na(.), mean(., na.rm = TRUE), .)
+  ))
 
 # ── Check thrive_designation factor levels ────────────────────────────────────
 
@@ -183,7 +205,11 @@ full_pred_grid <- cprg_ctu %>%
     )
   ) %>%
   filter(inventory_year %in% 2010:2023) %>%
-  left_join(mn_parcel_res %>% select(-ctu_name), by = c("gnis" = "ctu_id")) %>%
+  left_join(mn_parcel_res %>% select(-ctu_name), by = c("gnis" = "ctu_id"))%>%
+  mutate(across(
+    all_of(parcel_cols),
+    ~ if_else(is.na(.), mean(., na.rm = TRUE), .)
+  )) %>%
   left_join(noaa_year, by = "inventory_year") %>%
   filter(!is.na(coctu_id_gnis)) %>%
   mutate(rf_predicted = predict(rf_res_model, .))
@@ -373,7 +399,7 @@ coctu_res_adj_out %>%
   labs(title = "Rosemount residential MWh -- scale correction check")
 
 coctu_res_adj_out %>%
-  filter(ctu_name == "Dayton") %>%
+  filter(ctu_name == "Landfall") %>%
   ggplot(aes(inventory_year, residential_mwh, color = data_source)) +
   geom_line() +
   geom_point() +
@@ -381,7 +407,7 @@ coctu_res_adj_out %>%
   labs(title = "Dayton residential MWh -- scale correction check")
 
 coctu_res_adj_out %>%
-  filter(ctu_name == "Maple Grove") %>%
+  filter(ctu_name == "Columbus") %>%
   ggplot(aes(inventory_year, residential_mwh, color = data_source)) +
   geom_line() +
   geom_point() +
@@ -395,5 +421,32 @@ coctu_res_adj_out %>%
   geom_point() +
   theme_bw() +
   labs(title = "Saint Paul residential MWh -- scale correction check")
+
+# ── Per-capita diagnostic ─────────────────────────────────────────────────────
+
+res_per_capita <- coctu_res_adj_out %>%
+  filter(inventory_year == 2022) %>%
+  left_join(
+    ctu_population %>%
+      filter(inventory_year == 2022) %>%
+      distinct(ctu_name, ctu_class, county_name, ctu_population),
+    by = c("ctu_name", "ctu_class", "county_name")
+  ) %>%
+  filter(!is.na(ctu_population), ctu_population > 0) %>%
+  mutate(mwh_per_capita = residential_mwh / ctu_population) %>%
+  select(ctu_name, ctu_class, county_name, ctu_population,
+         residential_mwh, mwh_per_capita, data_source) %>%
+  arrange(desc(mwh_per_capita))
+
+cat("=== Residential MWh per capita, 2022 ===\n")
+cat(sprintf("Median: %.1f  Mean: %.1f\n",
+            median(res_per_capita$mwh_per_capita),
+            mean(res_per_capita$mwh_per_capita)))
+
+cat("\n--- Top 20 (possible over-prediction) ---\n")
+res_per_capita %>% head(20) %>% print(n = 20, width = Inf)
+
+cat("\n--- Bottom 20 (possible under-reporting) ---\n")
+res_per_capita %>% tail(20) %>% print(n = 20, width = Inf)
 
 saveRDS(coctu_res_adj_out, "_energy/data-raw/predicted_coctu_residential_mwh.rds")

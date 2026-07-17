@@ -15,9 +15,9 @@ coctu_res  <- read_rds("_energy/data-raw/predicted_coctu_residential_mwh.rds")
 
 ctu_utility_mwh <- read_rds("_energy/data/ctu_utility_mwh.RDS")
 
+
 util_totals <- ctu_utility_mwh %>%
-  filter(!is.na(total_mwh) | !is.na(residential_mwh) | !is.na(business_mwh),
-         ctu_name != "Champlin") %>%
+  filter(ctu_name != "Champlin") %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
   filter(!any(is.na(total_mwh))) %>%
   summarize(
@@ -28,7 +28,6 @@ util_totals <- ctu_utility_mwh %>%
   ) %>%
   filter(
     full_total > 0,
-    # Exclude years where one sector ≈ total — implies the other wasn't reported
     !(abs(res_sum - full_total) / full_total < 0.01),
     !(abs(busi_sum - full_total) / full_total < 0.01)
   )
@@ -252,7 +251,7 @@ print(spikes %>%
         ) %>%
         head(30), n = 50)
 
-spike_cities <- c("Dayton", "Maple Grove", "Landfall", "Credit River")
+spike_cities <- c("Elko New Market", "Landfall", "Miesville", "Cottage Grove", "Columbus", "Oakdale")
 
 ctu_elec_combined %>%
   filter(ctu_name %in% spike_cities) %>%

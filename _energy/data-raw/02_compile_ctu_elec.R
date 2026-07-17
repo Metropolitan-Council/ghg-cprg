@@ -453,6 +453,47 @@ util_shares %>%
 ctu_utility_year <- ctu_utility_year %>%
   anti_join(util_shares, by = c("ctu_name", "ctu_class", "utility"))
 
+#### removing known partials or incomplete data
+
+# ── MVEC-served cities: exclude from utility data ─────────────────────────────
+# Minnesota Valley Electric Cooperative didn't provide data. These cities have
+# only Xcel or other fringe utility data, understating actual consumption.
+# Source: https://econdev.mvec.net/our-communities
+# Chaska excluded — City of Chaska Electric covers bulk of load.
+mvec_metro_cities <- c(
+  # Scott County cities
+  "Belle Plaine", "Credit River", "Elko New Market", "Jordan",
+  "Prior Lake", "Savage", "Shakopee",
+  # Scott County townships
+  "Belle Plaine",  # township shares name with city, ctu_class distinguishes
+  "Helena", "Sand Creek", "Spring Lake", "Saint Lawrence",
+  # Carver County cities
+  "Carver", "Chanhassen", "Cologne", "Mayer",
+  "Norwood Young America", "Victoria", "Waconia",
+  # Carver County townships
+  "Benton", "Camden", "Dahlgren", "Hollywood",
+  "Laketown", "San Francisco", "Waconia",  # township
+  "Watertown", "Young America"
+)
+
+ctu_utility_year <- ctu_utility_year %>%
+  filter(!ctu_name %in% c("Champlin",
+                          "Columbus",
+                          "Bethel",# Connexus has 3x as many residential premises listed as there are residents, excluding.
+                          "Nowthen", # conversely Connexus seems to underestimate residence here (and mwh as a result)
+                          "Oak Grove",
+                          mvec_metro_cities))%>% 
+  mutate(
+    residential_mwh = if_else(
+      ctu_name == "Oakdale" & inventory_year == 2022,
+      NA_real_, residential_mwh
+    ),
+    total_mwh = if_else(
+      ctu_name == "Oakdale" & inventory_year == 2022,
+      NA_real_, total_mwh
+    )
+  )
+
 ## save output file
 
 saveRDS(
