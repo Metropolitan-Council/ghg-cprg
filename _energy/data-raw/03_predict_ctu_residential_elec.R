@@ -47,23 +47,15 @@ ctu_utility_mwh <- read_rds("_energy/data/ctu_utility_mwh.RDS")
 # Also exclude Champlin: Connexus is primary provider but not in the data,
 # so Xcel-only years understate and Connexus-only years (2019+) are fringe only.
 ctu_utility_year <- ctu_utility_mwh %>%
-  filter(
-    !is.na(total_mwh) | !is.na(residential_mwh) | !is.na(business_mwh),
-    !(ctu_name == "Champlin")
-  ) %>%
-  filter(!is.na(residential_mwh)) %>%
+  filter(ctu_name != "Champlin") %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
-  filter(
-    !any(is.na(total_mwh)),
-    total_mwh > 0
-  ) %>%
+  filter(!any(is.na(total_mwh)), total_mwh > 0) %>%
   summarize(
     residential_mwh = sum(residential_mwh, na.rm = TRUE),
     business_mwh    = sum(business_mwh, na.rm = TRUE),
     total_mwh       = sum(total_mwh),
     .groups         = "drop"
-  ) %>%
-  filter(residential_mwh > 0)
+  )
 
 # ── Population splits for multi-county CTUs ───────────────────────────────────
 
@@ -381,19 +373,27 @@ coctu_res_adj_out %>%
   labs(title = "Rosemount residential MWh -- scale correction check")
 
 coctu_res_adj_out %>%
-  filter(ctu_name == "Lake Elmo") %>%
+  filter(ctu_name == "Dayton") %>%
   ggplot(aes(inventory_year, residential_mwh, color = data_source)) +
   geom_line() +
   geom_point() +
   theme_bw() +
-  labs(title = "Lake Elmo residential MWh -- scale correction check")
+  labs(title = "Dayton residential MWh -- scale correction check")
 
 coctu_res_adj_out %>%
-  filter(ctu_name == "Minneapolis") %>%
+  filter(ctu_name == "Maple Grove") %>%
   ggplot(aes(inventory_year, residential_mwh, color = data_source)) +
   geom_line() +
   geom_point() +
   theme_bw() +
-  labs(title = "Minneapolis residential MWh -- scale correction check")
+  labs(title = "Dayton residential MWh -- scale correction check")
+
+coctu_res_adj_out %>%
+  filter(ctu_name == "Saint Paul") %>%
+  ggplot(aes(inventory_year, residential_mwh, color = data_source)) +
+  geom_line() +
+  geom_point() +
+  theme_bw() +
+  labs(title = "Saint Paul residential MWh -- scale correction check")
 
 saveRDS(coctu_res_adj_out, "_energy/data-raw/predicted_coctu_residential_mwh.rds")

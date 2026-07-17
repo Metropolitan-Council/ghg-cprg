@@ -60,6 +60,13 @@ sql_elec <- readRDS("_energy/data/ctu_electricity_emissions_2015_2018.rds") %>%
   mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
          total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh))
 
+# correct Elk River data
+
+sql_elec <- sql_elec %>%
+  mutate(across(c(residential_mwh, business_mwh, total_mwh),
+                ~ if_else(utility == "Elk River Municipal Utilities", . / 1000, .)
+  ))
+
 ## load and format connexus data
 connexus <- readRDS("_energy/data/connexus_electric_activity.RDS") %>%
   filter(!is.na(mwh_delivered)) %>%
@@ -345,6 +352,30 @@ ctu_utility_year %>%
             total_biz = sum(business_mwh, na.rm = TRUE))
 # unclear if this is systemic change, reallocations, or just normal noise.
 # assuming the latter for now.
+
+# ── Remove phantom utility rows ──────────────────────────────────────────────
+# The spatial intersection scaffold assigns utilities to cities they don't
+# actually serve. Drop any utility × city combo that never reported data —
+# these are scaffold artifacts, not real service relationships.
+# This ensures downstream completeness checks (e.g. !any(is.na(total_mwh)))
+# only fire against utilities that genuinely serve each city.
+
+phantoms <- ctu_utility_year %>%
+  group_by(ctu_name, ctu_class, utility) %>%
+  summarize(ever_reported = any(!is.na(total_mwh)), .groups = "drop") %>%
+  filter(!ever_reported)
+
+cat("=== Phantom utility rows removed ===\n")
+phantoms %>% arrange(ctu_name, utility) %>% print(n = Inf)
+
+ctu_utility_year <- ctu_utility_year %>%
+  anti_join(phantoms, by = c("ctu_name", "ctu_class", "utility"))
+
+cat(sprintf(
+  "Removed %d phantom utility × city combos (%d rows)\n",
+  nrow(phantoms),
+  nrow(phantoms) * n_distinct(ctu_utility_year$inventory_year)
+))
 
 
 ## save output file

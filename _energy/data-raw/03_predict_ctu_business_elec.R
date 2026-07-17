@@ -48,12 +48,9 @@ ctu_utility_mwh <- read_rds("_energy/data/ctu_utility_mwh.RDS") %>%
 # If electricity has nonresponder utilities analogous to MER/Greater MN Gas,
 # add them to the keep-list below.
 ctu_utility_year <- ctu_utility_mwh %>%
-  filter(!is.na(total_mwh) | !is.na(residential_mwh) | !is.na(business_mwh)) %>%
+  filter(ctu_name != "Champlin") %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
-  filter(
-    !any(is.na(total_mwh)),
-    total_mwh > 0
-  ) %>%
+  filter(!any(is.na(total_mwh)), total_mwh > 0) %>%
   summarize(
     residential_mwh = sum(residential_mwh, na.rm = TRUE),
     business_mwh    = sum(business_mwh, na.rm = TRUE),
@@ -337,12 +334,12 @@ stopifnot(
 # ── Diagnostic plots ─────────────────────────────────────────────────────────
 
 coctu_busi_adj %>%
-  filter(ctu_name == "Rosemount") %>%
+  filter(ctu_name == "Dayton") %>%
   ggplot(aes(inventory_year, business_mwh, color = data_source)) +
   geom_line() +
   geom_point() +
   theme_bw() +
-  labs(title = "Rosemount business MWh -- scale correction check")
+  labs(title = "Dayton business MWh -- scale correction check")
 
 coctu_busi_adj %>%
   filter(ctu_name == "Hollywood") %>%
