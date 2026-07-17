@@ -251,7 +251,7 @@ print(spikes %>%
         ) %>%
         head(30), n = 50)
 
-spike_cities <- c("Elko New Market", "Landfall", "Miesville", "Cottage Grove", "Columbus", "Oakdale")
+spike_cities <- c("Bayport", "Lauderdale", "Falcon Heights", "Cottage Grove", "Hilltop", "Newport")
 
 ctu_elec_combined %>%
   filter(ctu_name %in% spike_cities) %>%
