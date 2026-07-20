@@ -483,16 +483,25 @@ ctu_utility_year <- ctu_utility_year %>%
                           "Nowthen", # conversely Connexus seems to underestimate residence here (and mwh as a result)
                           "Oak Grove",
                           mvec_metro_cities))%>% 
-  mutate(
-    residential_mwh = if_else(
-      ctu_name == "Oakdale" & inventory_year == 2022,
-      NA_real_, residential_mwh
-    ),
-    total_mwh = if_else(
-      ctu_name == "Oakdale" & inventory_year == 2022,
-      NA_real_, total_mwh
-    )
-  )
+  mutate( # fix clear individual reporting errors
+        # Oakdale 2022: residential clearly erroneous (3.75 MWh vs ~77K typical)
+        across(c(residential_mwh, total_mwh),
+               ~ if_else(ctu_name == "Oakdale" & inventory_year == 2022, NA_real_, .)
+        ),
+        # Mendota 2016: business reporting error (67 MWh vs ~400 typical)
+        across(c(business_mwh, total_mwh),
+               ~ if_else(ctu_name == "Mendota" & inventory_year == 2016, NA_real_, .)
+        ),
+        # Bayport: Stillwater prison distorts business data via privacy redactions
+        across(c(business_mwh, total_mwh),
+               ~ if_else(ctu_name == "Bayport", NA_real_, .)
+        ),
+        # Rogers 2015-2017: Wright-Hennepin reported separately then rolled into
+        # Xcel 2018+, making 2015-2017 incomplete
+        across(c(residential_mwh, business_mwh, total_mwh),
+               ~ if_else(ctu_name == "Rogers" & inventory_year %in% 2015:2017, NA_real_, .)
+        )
+      )
 
 ## save output file
 

@@ -249,9 +249,16 @@ print(spikes %>%
           total_mwh, yoy_pct_change,
           source_residential, source_business
         ) %>%
-        head(30), n = 50)
+        head(30), n = 60)
 
-spike_cities <- c("Bayport", "Lauderdale", "Falcon Heights", "Cottage Grove", "Hilltop", "Newport")
+spike_cities <- c("Bayport",
+                  "Pine Springs",
+                  "Hastings",
+                  "Rogers",
+                  "Mendota")
+
+# spike_cities <- c("Lauderdale", "Falcon Heights", "Cottage Grove", 
+#                   "Newport", "Maplewood")
 
 ctu_elec_combined %>%
   filter(ctu_name %in% spike_cities) %>%
@@ -299,6 +306,14 @@ ctu_elec_combined %>%
     legend.position = "bottom",
     legend.box = "vertical"
   )
+
+ctu_utility_mwh %>% 
+  filter(ctu_name %in% spike_cities) %>% 
+  print(n = 200)
+
+ctu_utility_mwh %>% 
+  filter(ctu_name %in% spike_cities) %>% 
+  print(n = 200)
 
 # ── Save ──────────────────────────────────────────────────────────────────────
 
