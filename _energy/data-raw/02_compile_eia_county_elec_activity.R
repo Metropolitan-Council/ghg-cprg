@@ -565,7 +565,7 @@ elec_7610_slim <- elec_7610 %>%
   select(emissions_year, county_name, county_code, utility_name,
          value_activity, unit_activity, data_source)
 
-county_elec_activity <- bind_rows(
+utility_elec_activity <- bind_rows(
   elec_7610_slim,
   filled_data
 ) %>%
@@ -573,7 +573,7 @@ county_elec_activity <- bind_rows(
 
 # --- check for duplicates ----------------------------------------------------
 
-dupes <- county_elec_activity %>%
+dupes <- utility_elec_activity %>%
   group_by(emissions_year, county_name, utility_name) %>%
   filter(n() > 1)
 
@@ -584,7 +584,7 @@ if (nrow(dupes) > 0) {
 
 # --- summary ------------------------------------------------------------------
 
-provenance_summary <- county_elec_activity %>%
+provenance_summary <- utility_elec_activity %>%
   group_by(data_source) %>%
   summarise(
     n_rows    = n(),
@@ -602,7 +602,7 @@ print(provenance_summary)
 # --- Plot 1: County totals over time, colored by provenance ------------------
 # Show how much of each county-year comes from observed vs filled vs backcast
 
-county_year_provenance <- county_elec_activity %>%
+county_year_provenance <- utility_elec_activity %>%
   mutate(
     source_label = case_when(
       data_source == "mn_7610"              ~ "7610 observed",
@@ -656,7 +656,7 @@ print(p_provenance)
 # Compare the full time series (with backcast) against a smooth trend.
 # Major discontinuities at the 7610/backcast boundary = suspicious.
 
-county_year_total <- county_elec_activity %>%
+county_year_total <- utility_elec_activity %>%
   group_by(emissions_year, county_name) %>%
   summarise(total_mwh = sum(value_activity, na.rm = TRUE), .groups = "drop") %>%
   mutate(
@@ -734,6 +734,12 @@ print(p_eia_check)
 # PART 7: Save
 # ═════════════════════════════════════════════════════════════════════════════
 
+write_rds(utility_elec_activity, here("_energy", "data", "utility_county_elec_activity.RDS"))
+
+county_elec_activity <- utility_elec_activity %>%
+  group_by(county_name, emissions_year, unit_activity) %>%
+  summarize(value_activity = sum(value_activity), .groups = "drop")
+
 write_rds(
   county_elec_activity,
   here("_energy", "data", "county_elec_activity.rds")
@@ -741,15 +747,15 @@ write_rds(
 
 message(sprintf(
   "\nSaved county_elec_activity.rds: %d rows, %d utilities, %d counties, years %d-%d",
-  nrow(county_elec_activity),
-  n_distinct(county_elec_activity$utility_name),
-  n_distinct(county_elec_activity$county_name),
-  min(county_elec_activity$emissions_year),
-  max(county_elec_activity$emissions_year)
+  nrow(utility_elec_activity),
+  n_distinct(utility_elec_activity$utility_name),
+  n_distinct(utility_elec_activity$county_name),
+  min(utility_elec_activity$emissions_year),
+  max(utility_elec_activity$emissions_year)
 ))
 
 message("\nProvenance breakdown:")
-county_elec_activity %>%
+utility_elec_activity %>%
   count(data_source) %>%
   print()
 
