@@ -1,6 +1,5 @@
-# Electricity
-
-```{r  include=FALSE}
+# Electricity {#sec-electricity}
+```{r include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
@@ -10,125 +9,71 @@ knitr::opts_chunk$set(
   dpi = 300
 )
 
-
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
-
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
+source(file.path(here::here(), "R/_leaflet_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
 
-county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+# ── Geography filter ──────────────────────────────────────────────────────────
+seven_county <- c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington")
 
-county_emissions_summary <- county_emissions %>%
-  group_by(sector, category, source, data_source, factor_source) %>%
-  summarize(
-    value_emissions = sum(value_emissions),
-    .groups = "keep"
+# ── Target year (single point of update) ─────────────────────────────────────
+target_year <- 2022
+
+# ── County-level electricity by sector ────────────────────────────────────────
+county_elec <- readRDS(file.path(
+  here::here(), "_energy/data/county_elec_emissions_by_sector.RDS"
+)) %>%
+  filter(county_name %in% seven_county)
+
+# ── CTU-level electricity emissions ──────────────────────────────────────────
+ctu_elec <- readRDS(file.path(
+  here::here(), "_meta/data/ctu_emissions.RDS"
+)) %>%
+  filter(
+    sector_alt == "Electricity"
   )
 
-mn_emissions <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS"))
-wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
-  rename(county = county_name)
+# ── CTU geometry and population ──────────────────────────────────────────────
+cprg_ctu <- readRDS(file.path(here::here(), "_meta/data/cprg_ctu.RDS")) %>%
+  filter(county_name %in% seven_county) %>%
+  mutate(geometry = st_make_valid(geometry))
 
-elecEmissions_all <- county_emissions %>%
-  filter(category == "Electricity") %>%
-  group_by(county_name, emissions_year) %>%
-  summarise(
-    value_emissions = sum(value_emissions),
-    .groups = "rowwise"
-  )
+ctu_population <- readRDS(file.path(here::here(), "_meta/data/ctu_population.RDS"))
 
+# ── Summary statistics ───────────────────────────────────────────────────────
+elec_2022 <- county_elec %>%
+  filter(emissions_year == target_year) %>%
+  pull(value_emissions) %>%
+  sum(na.rm = TRUE)
 
-
-
-eiaQA_all <- bind_rows(
-  read_rds(
-    file.path(
-      here::here(),
-      "_energy/data/minnesota_QA_versusEIAStateProfile.RDS"
-    )
-  ),
-  read_rds(
-    file.path(
-      here::here(),
-      "_energy/data/wisconsin_QA_versusEIAStateProfile.RDS"
-    )
-  )
-)
-
-EIAvMETC_tons <- eiaQA_all %>%
-  mutate(
-    downscaled_EIA_total_CO2e_emissions_tons = downscaled_EIA_total_CO2e_emissions_lbs / 2000,
-    OURS_total_CO2e_emissions_tons = OURS_total_CO2e_emissions_lbs / 2000
-  ) %>%
-  pivot_longer(
-    cols = c("downscaled_EIA_total_CO2e_emissions_tons", "OURS_total_CO2e_emissions_tons"),
-    names_to = "inventory_source",
-    values_to = "value_emissions"
-  ) %>%
-  mutate(
-    inventory_source = recode(inventory_source,
-      downscaled_EIA_total_CO2e_emissions_tons = "EIA",
-      OURS_total_CO2e_emissions_tons = "Metropolitan Council"
-    )
-  )
-
-nrelQA <- read_rds(
-  file.path(
-    here::here(),
-    "_energy/data-raw/nrel_slope/nrel_emissions.RDS"
-  )
-) %>%
-  filter(source == "Electricity" && year == 2021) %>%
-  group_by(county_name) %>%
-  summarise(total_value_emissions = sum(co2e))
-
-nrel_metc_electricity_comp <- nrelQA %>%
-  left_join(
-    elecEmissions_all %>% select(county_name,
-      MetC = value_emissions
-    ),
-    by = "county_name"
-  ) %>%
-  pivot_longer(
-    cols = c("total_value_emissions", "MetC"),
-    names_to = "inventory_source",
-    values_to = "value_emissions"
-  ) %>%
-  mutate(
-    inventory_source = recode(inventory_source,
-      total_value_emissions =
-        "NREL SLOPE",
-      MetC =
-        "Metropolitan Council"
-    )
-  )
-
-electricity_2005 <- elecEmissions_all %>%
+elec_2005 <- county_elec %>%
   filter(emissions_year == 2005) %>%
   pull(value_emissions) %>%
-  sum()
+  sum(na.rm = TRUE)
 
-electricity_2021 <- elecEmissions_all %>%
-  filter(emissions_year == 2021) %>%
+res_elec_2022 <- county_elec %>%
+  filter(emissions_year == target_year, sector == "Residential") %>%
   pull(value_emissions) %>%
-  sum()
+  sum(na.rm = TRUE)
+
+res_share <- res_elec_2022 / elec_2022
 
 hookaddcap()
 ```
 
 ## Introduction
 
-Emissions from the electricity generation sector have declined by `r scales::percent((electricity_2005 - electricity_2021) / electricity_2005, accuracy = 0.1)` in the region since 2005, largely as a result of transitions in the grid towards energy sources such as wind and solar [@mpcaClimateChangeTrends2023]. In 2023, Minnesota Governor Walz signed a bill mandating a statewide carbon-free electricity standard by 2040. The law "establishes a standard for utilities to supply Minnesota customers with electricity generated or procured from carbon-free resources, beginning at an amount equal to 80% of retail sales for public utility customers in Minnesota in 2030 and increasing every 5 years to reach 100% for all electric utilities by 2040. The bill also requires that, by 2035, an amount equal to at least 55% of an electric utility’s total retail electric sales to customers in Minnesota must be generated or procured from eligible energy technologies." Wisconsin has not adopted a similar carbon-free electricity standard, but a Wisconsin DNR report noted both the economic gains from such to the renewable energy economy in the state, as well as the opportunities for decarbonization [@holtWisconsinCleanEnergy2019].
-
+Electricity emissions are driven by the fuel mix used for power generation rather than by on-site combustion. The Twin Cities metro falls within the Midwest Reliability Organization West (MROW) subregion of EPA's Emissions & Generation Resource Integrated Database (eGRID), which provides the emissions factors used to convert electricity deliveries into CO~2~e. The MROW grid mix is shown in @tbl-elec-mrow-proportions.
 
 ```{r tbl-elec-mrow-proportions}
-#| tbl-cap: "Grid Mix for MROW subregion of 2021 eGRID"
+#| tbl-cap: "Grid Mix for MROW subregion of 2022 eGRID"
 #| out-width: "95%"
 
 eGRID_mix <- data.frame(
-  "Energy Source" = c("Coal", "Oil", "Gas", "Other Fossil", "Nuclear", "Hydro", "Biomass", "Wind", "Solar", "Geothermal", "Other", "Unknown/Purchased Fuel"),
-  Percentage = c("39.6%", "0.2%", "10.6%", "0.10%", "8.6%", "4.4%", "0.8%", "34.6%", "0.9%", "0.0%", "0.2%", "N/A")
+  "Energy Source" = c("Coal", "Oil", "Gas", "Other Fossil", "Nuclear", "Hydro", "Biomass", "Wind", "Solar", "Geothermal", "Other"),
+  Percentage = c("38.0%", "0.1%", "8.3%", "0.1%", "8.1%", "3.9%", "0.7%", "39.8%", "1.0%", "0.0%", "0.1%")
 )
 
 (eGRID_mix) %>%
@@ -141,172 +86,202 @@ eGRID_mix <- data.frame(
   gt::as_raw_html()
 ```
 
-### Results
-### 2021 county and subsector breakdown
+Emissions from electricity consumption have declined substantially since 2005, largely as a result of coal-to-wind transitions in the MROW grid. In 2023, Minnesota passed a bill mandating a carbon-free electricity standard by 2040, requiring 80% carbon-free retail sales by 2030 and 100% by 2040 for all electric utilities. This section presents emissions attributed to electricity delivered to residential, commercial, and industrial end users across the seven-county metro. Natural gas consumed at power plants for electricity generation is treated separately in the [Building Energy](#sec-building-energy) section's sector decomposition to avoid double counting.
 
-```{r fig-energy-electricity-sector-emissions}
-#| fig-cap: "2021 electricity emissions by sector"
+
+## Results
+
+### `r target_year` county and subsector breakdown
+
+Electricity accounted for an estimated `r scales::comma(round(elec_2022), accuracy = 1)` metric tons CO~2~e across the seven-county metro in `r target_year`. Residential electricity accounts for approximately `r round(100 * res_share)`% of total electricity emissions.
+
+```{r fig-elec-county-sector-emissions}
+#| fig-cap: "County electricity emissions by sector"
 #| out-width: "95%"
+#| fig.height: 4
+#| fig.width: 10
 
+county_elec_yr <- county_elec %>%
+  filter(emissions_year == target_year) %>%
+  mutate(sector = factor(sector, levels = c(
+    "Residential", "Commercial", "Industrial"
+  )))
 
-fig_energy_electricity_sector_emissions <-
-  plot_ly(
-    type = "bar",
-    source = "fig-energy-electricity-sector-emissions",
-    data = county_emissions %>%
-      filter(
-        emissions_year == 2021,
-        category == "Electricity"
-      ),
-    y = ~ reorder(county_name, value_emissions),
-    x = ~value_emissions,
-    color = ~source,
-    colors = unlist(category_colors),
-    hovertemplate = ~ paste0(
-      county_name, " County", "<br>",
-      source, ", ", category, "<br>",
-      round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
-      "<extra></extra>"
-    )
-  ) %>%
+elec_sector_colors <- c(
+  "Residential" = colors$councilBlue,
+  "Commercial" = cprg_colors$cprg_green,
+  "Industrial" = cprg_colors$cprg_yellow
+)
+
+fig_elec_county_sector <- plot_ly(
+  type = "bar",
+  source = "fig-elec-county-sector-emissions",
+  data = county_elec_yr,
+  y = ~ reorder(county_name, value_emissions),
+  x = ~value_emissions,
+  color = ~sector,
+  colors = elec_sector_colors,
+  hovertemplate = ~ paste0(
+    county_name, " County<br>",
+    sector, "<br>",
+    round(value_emissions / 1000, digits = 1), " thousand metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  )
+) %>%
   plotly_layout(
-    main_title = "2021 electricity emissions by sector",
-    subtitle = "",
-    y_title = "County",
+    main_title = paste(target_year, "county electricity emissions by sector"),
     x_title = "Metric tons CO<sub>2</sub>e",
-    legend_title = "Energy sector"
+    subtitle = ""
   ) %>%
   layout(
     barmode = "stack",
-    legend = list(
-      traceorder = "reversed"
-    )
+    legend = list(traceorder = "reversed"),
+    hoverlabel = list(font = list(color = "black"))
   )
-fig_energy_electricity_sector_emissions
+
+fig_elec_county_sector
 ```
 
-```{r fig-electricity-baseline-emissions}
-#| fig-cap: "Baseline electricity emissions"
-#| out-width: "95%"
-#| fig.height: 4  # Set height in inches
-#| fig.width: 8   # Set width in inches
 
-fig_electricity_baseline <- plot_ly(
-  source = "fig-electricity-baseline-emissions",
-  data = county_emissions %>%
-    filter(category == "Electricity") %>%
-    group_by(emissions_year, source) %>%
-    summarise(value_emissions = sum(value_emissions)),
+### Baseline emissions
+
+```{r fig-elec-baseline-emissions}
+#| fig-cap: "Electricity emissions over time"
+#| out-width: "95%"
+#| fig.height: 4
+#| fig.width: 8
+
+elec_temporal <- county_elec %>%
+  filter(emissions_year <= target_year) %>%
+  group_by(emissions_year, sector) %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
+  mutate(sector = factor(sector, levels = c(
+    "Residential", "Commercial", "Industrial"
+  )))
+
+fig_elec_baseline <- plot_ly(
+  source = "fig-elec-baseline-emissions",
+  data = elec_temporal,
   x = ~emissions_year,
   y = ~value_emissions,
-  color = ~source, #
-  colors = unlist(category_colors), # Directly map the colors to categories
+  color = ~sector,
+  colors = elec_sector_colors,
   type = "scatter",
-  mode = "lines", # No points or lines, just fill
-  stackgroup = "one", # Fill to the next y value (stacking)
-  hoverinfo = "x+y+name", # Ensure hover displays x, y, and category name
+  mode = "lines",
+  stackgroup = "one",
   hovertemplate = ~ paste0(
     "Year: %{x}<br>",
-    "Category: %{text}<br>",
-    "Emissions: %{y:.2f} metric tons CO<sub>2</sub>e<br>",
+    "Sector: %{text}<br>",
+    "Emissions: %{y:,.0f} metric tons CO<sub>2</sub>e<br>",
     "<extra></extra>"
   ),
-  text = ~source # Pass category to hovertext
+  text = ~sector
 ) %>%
   plotly_layout(
     main_title = "Electricity Emissions Over Time",
     x_title = "Year",
-    y_title = "Million metric tons CO<sub>2</sub>e",
-    subtitle = ""
+    y_title = "Metric tons CO<sub>2</sub>e",
+    subtitle = "Seven-county metro area"
   ) %>%
   layout(
-    hovermode = "x unified", # Combine all hovertext under one hover
-    hoverlabel = list(
-      font = list(
-        color = "black" # Set hovertext color to black
-      )
-    )
+    hovermode = "x unified",
+    hoverlabel = list(font = list(color = "black"))
   )
 
-fig_electricity_baseline
+fig_elec_baseline
 ```
 
-```{r fig-ctu-ag-emissions}
-#| fig-cap: "2021 city level electricity emissions"
+
+### CTU per-capita electricity emissions
+
+Per-capita electricity emissions vary across the region, reflecting differences in housing density, building stock, commercial and industrial activity, and the extent to which a community's electricity demand is dominated by residential versus non-residential load.
+
+```{r fig-ctu-elec-per-cap-map}
+#| fig-cap: "Electricity emissions per capita (metric tons CO2e), by CTU"
 #| out-width: "95%"
 #| out-height: "500px"
 
-# load the county boundaries layer
+ctu_elec_yr <- ctu_elec %>%
+  filter(emissions_year == target_year) %>%
+  group_by(geog_name, ctu_class) %>%
+  summarize(value_emissions_elec = sum(value_emissions, na.rm = TRUE), .groups = "drop")
 
-### load emissions and downscaling var (proportion of county ag land)
-ctu_elec_emissions <- readRDS(file.path(here::here(), "./_energy/data/_ctu_electricity_emissions.rds"))
-
-electricity_emissions_2021 <- ctu_elec_emissions %>%
-  filter(inventory_year == 2021) %>%
-  group_by(ctu_name, ctu_class) %>%
-  summarize(mt_co2e = sum(value_emissions, na.rm = TRUE))
-
-### map CTU scale electricity emissions
-
-cprg_ctu <- readRDS(here("_meta", "data", "cprg_ctu.RDS")) %>%
-  mutate(geometry = st_make_valid(geometry))
-
-
-ctu_elec_map <- left_join(cprg_ctu,
-  electricity_emissions_2021,
-  by = c("ctu_name", "ctu_class")
-) %>%
-  filter(
-    !county_name %in% c(
-      "St. Croix",
-      "Pierce",
-      "Sherburne",
-      "Chisago"
-    ),
-    !is.na(county_name)
+ctu_map_data <- cprg_ctu %>%
+  st_drop_geometry() %>%
+  distinct(ctu_name, ctu_class, gnis) %>%
+  left_join(ctu_elec_yr, by = c("ctu_name" = "geog_name", "ctu_class")) %>%
+  left_join(
+    ctu_population %>%
+      filter(inventory_year == target_year) %>%
+      group_by(ctu_name, ctu_class) %>%
+      summarize(ctu_population = sum(ctu_population), .groups = "drop"),
+    by = c("ctu_name", "ctu_class")
   ) %>%
-  select(ctu_name, geometry, mt_co2e) %>%
-  replace(is.na(.), 0)
+  mutate(
+    emissions_per_cap = if_else(
+      ctu_population > 0 & value_emissions_elec > 0,
+      value_emissions_elec / ctu_population,
+      NA_real_
+    )
+  ) %>%
+  right_join(cprg_ctu %>% select(gnis, geometry), by = "gnis") %>%
+  st_as_sf() %>%
+  filter(!ctu_name == "Fort Snelling")
 
+epc_range <- range(ctu_map_data$emissions_per_cap, na.rm = TRUE)
 
-# Define color palette based on the plasma scale from viridis
-pal <- colorNumeric(palette = "plasma", domain = ctu_elec_map$mt_co2e)
+emissions_cap_pal <- colorNumeric(
+  palette  = "Blues",
+  domain   = sqrt(epc_range),
+  na.color = "transparent"
+)
 
-# Create the leaflet map
-map_ctu_elec <- leaflet(ctu_elec_map) %>%
-  addTiles() %>% # Add default OpenStreetMap tiles
+legend_vals <- pretty(epc_range, n = 5)
+legend_vals <- legend_vals[legend_vals >= 0 & legend_vals <= epc_range[2]]
+
+fig_ctu_elec_per_cap_map <- leaflet(
+  data    = ctu_map_data %>% filter(!is.na(emissions_per_cap)),
+  options = leafletOptions(zoomSnap = 0.5)
+) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
   addPolygons(
-    fillColor = ~ pal(mt_co2e),
-    color = "black", # Border color
-    weight = 1,
-    fillOpacity = 0.9, # Transparency of the fill color
-    popup = ~ paste(ctu_name, " electricity emissions:", round(mt_co2e, 2)), # Popup with details
-    label = ~ paste(ctu_name, " emissions:", round(mt_co2e, 2)), # Hover text
-    highlightOptions = highlightOptions(
-      weight = 3,
-      color = "blue",
-      bringToFront = TRUE
+    fillColor = ~ emissions_cap_pal(sqrt(emissions_per_cap)),
+    fillOpacity = 0.8,
+    color = "white",
+    weight = 0.5,
+    smoothFactor = 0.5,
+    label = ~ paste0(
+      ctu_name, " (", ctu_class, ")<br>",
+      "CO2e/capita: ", round(emissions_per_cap, 1), "<br>",
+      "Population: ", scales::comma(ctu_population, accuracy = 1), "<br>",
+      "Total CO2e: ", scales::comma(round(value_emissions_elec), accuracy = 1)
+    ) %>% lapply(htmltools::HTML),
+    labelOptions = labelOptions(
+      style     = list("font-size" = "12px"),
+      direction = "auto"
     )
   ) %>%
   addLegend(
-    pal = pal,
-    values = ~mt_co2e,
-    title = "CTU Electricity Emissions",
-    opacity = 0.7
+    position = "bottomright",
+    title    = "CO<sub>2</sub>e<br>per capita",
+    colors   = emissions_cap_pal(sqrt(legend_vals)),
+    labels   = round(legend_vals, 1),
+    opacity  = 0.8
   )
 
-
-map_ctu_elec
+fig_ctu_elec_per_cap_map
 ```
 
 
-```
+## Summary
+
+Electricity is a major source of greenhouse gas emissions in the seven-county metro, but one that is declining as the MROW grid transitions from coal to wind and solar. The 2040 carbon-free electricity standard will accelerate this trend. Sector decomposition shows that residential electricity accounts for the largest share of emissions, with the non-residential remainder split into commercial and industrial using NREL SLOPE modeled ratios. At the CTU level, per-capita emissions are highest in communities with large commercial or industrial electricity loads relative to population. As building electrification increases — shifting heating and transportation loads onto the grid — continued grid decarbonization will be critical for realizing net emissions reductions.
+
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
-caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+caption_index <- as.character(as.numeric(caption_index) + 1) %>%
+  stringr::str_pad(width = 2, side = "left", pad = "0")
 saveCap(paste0("cap-", caption_index))
 saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
-
-{{< pagebreak >}}
