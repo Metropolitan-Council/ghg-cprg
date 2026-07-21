@@ -72,8 +72,7 @@ electric_emissions <- readRDS("_energy/data/_ctu_electricity_emissions.RDS") %>%
     geog_level = "ctu",
     source = "Building energy",
     category = str_to_sentence(paste(sector, category)),
-    sector_alt = "Electricity",
-    emissions_year = inventory_year
+    sector_alt = "Electricity"
   ) %>%
   select(names(transportation_emissions))
 
