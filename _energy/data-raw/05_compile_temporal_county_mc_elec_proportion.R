@@ -139,8 +139,8 @@ county_mwh_activity <- county_wide %>%
   select(county_name, emissions_year, Residential, Commercial, Industrial) %>%
   pivot_longer(Residential:Industrial, names_to = "sector", values_to = "value_activity") %>%
   mutate(
-    category      = "Building Energy",
-    source        = "Electricity",
+    category      = "Electricity",
+    source        = paste(sector, "electricity"),
     unit_activity = "MWh"
   )
 
@@ -150,7 +150,7 @@ county_elec_emissions <- county_mwh_activity %>%
   left_join(egrid_temporal, by = "emissions_year") %>%
   mutate(
     value_emissions = round(value_activity * mt_co2e_mwh, digits = 2),
-    units_emissions = "Metric tons CO2e",
+    unit_emissions = "Metric tons CO2e",
     factor_source   = Source,
     data_source = case_when(
       sector == "Residential" ~ "Met Council CTU modeling",
