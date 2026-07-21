@@ -1,6 +1,5 @@
 # Methods and data sources
-
-```{r  include=FALSE}
+```{r include=FALSE}
 knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
@@ -10,215 +9,466 @@ knitr::opts_chunk$set(
   dpi = 300
 )
 
-
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
-```
-
-```{r, include=FALSE}
 source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/_load_pkgs.R"))
 source(file.path(here::here(), "R/_leaflet_helpers.R"))
 source(file.path(here::here(), "R/_plotting_helpers.R"))
-hookaddcap()
 
-county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
+# ── Geography filter ──────────────────────────────────────────────────────────
+seven_county <- c("Anoka", "Carver", "Dakota", "Hennepin", "Ramsey", "Scott", "Washington")
 
-county_emissions_summary <- county_emissions %>%
-  group_by(sector, category, source, data_source, factor_source) %>%
-  summarize(
-    value_emissions = sum(value_emissions),
-    .groups = "keep"
-  )
-
-mn_emissions <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS"))
-wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
-  rename(county = county_name)
-
-elecEmissions_all <- county_emissions %>%
-  filter(category == "Electricity") %>%
-  group_by(county_name, emissions_year) %>%
-  summarise(
-    value_emissions = sum(value_emissions),
-    .groups = "rowwise"
-  )
-
-eiaQA_all <- bind_rows(
-  read_rds(
-    file.path(
-      here::here(),
-      "_energy/data/minnesota_QA_versusEIAStateProfile.RDS"
-    )
-  ),
-  read_rds(
-    file.path(
-      here::here(),
-      "_energy/data/wisconsin_QA_versusEIAStateProfile.RDS"
-    )
-  )
-)
-
-EIAvMETC_tons <- eiaQA_all %>%
-  mutate(
-    downscaled_EIA_total_CO2e_emissions_tons = downscaled_EIA_total_CO2e_emissions_lbs / 2000,
-    OURS_total_CO2e_emissions_tons = OURS_total_CO2e_emissions_lbs / 2000
-  ) %>%
-  pivot_longer(
-    cols = c("downscaled_EIA_total_CO2e_emissions_tons", "OURS_total_CO2e_emissions_tons"),
-    names_to = "inventory_source",
-    values_to = "value_emissions"
-  ) %>%
-  mutate(
-    inventory_source = recode(inventory_source,
-      downscaled_EIA_total_CO2e_emissions_tons = "EIA",
-      OURS_total_CO2e_emissions_tons = "Metropolitan Council"
-    )
-  )
-
-nrelQA <- read_rds(
-  file.path(
-    here::here(),
-    "_energy/data-raw/nrel_slope/nrel_emissions.RDS"
-  )
-) %>%
-  filter(source == "Electricity" && year == 2021) %>%
-  group_by(county_name) %>%
-  summarise(total_value_emissions = sum(co2e))
-
-nrel_metc_electricity_comp <- nrelQA %>%
-  left_join(
-    elecEmissions_all %>% select(county_name,
-      MetC = value_emissions
-    ),
-    by = "county_name"
-  ) %>%
-  pivot_longer(
-    cols = c("total_value_emissions", "MetC"),
-    names_to = "inventory_source",
-    values_to = "value_emissions"
-  ) %>%
-  mutate(
-    inventory_source = recode(inventory_source,
-      total_value_emissions =
-        "NREL SLOPE",
-      MetC =
-        "Metropolitan Council"
-    )
-  )
-
-electricity_2005 <- elecEmissions_all %>%
-  filter(emissions_year == 2005) %>%
-  pull(value_emissions) %>%
-  sum()
-
-electricity_2021 <- elecEmissions_all %>%
-  filter(emissions_year == 2021) %>%
-  pull(value_emissions) %>%
-  sum()
-
-hookaddcap()
+# ── Target year (single point of update) ─────────────────────────────────────
+target_year <- 2022
 ```
 
-## Methods
-
-The general workflow for quantifying electricity emissions is to identify all of the electric utilities that operate within our study area, collect any reporting they provide to the states of Minnesota and Wisconsin about the amount of energy delivered to all their customers (with reference to federal reporting sources where state-level reporting gaps exist), and apply EPA-provided emissions factors to the reported activity/energy deliveries to calculate estimated emissions. Methodologies for allocating utility activity reports to counties varies across MN and WI and are further described in the following section. Most inputs we use in the construction of our electricity emissions data set are of the highest quality rank (@tbl-quality-rank), as they are either direct government-created data (e.g., emissions factors) or data reported to state/federal authorities (e.g., regulatory filings). However, for two Minnesota electric utilities – Elk River Municipal Utilities [@elkrivermunicipalutilities2021AnnualFinancial2022] and New Prague Utilities Commission [@newpragueutilitiescommissionAgendaPacket242022] – where regulatory filing data could not be sourced to quantify electricity deliveries, we referred to financial reporting documents published by the utilities.
-
-Total regional emissions (Emissions~r~) represents the sum of all recorded energy deliveries by utility *i* within county *j*, where *i* refers to each of the electric utilities operating across our region, and *j* refers to the eleven counties included in this inventory. Our regional total therefore represents an aggregation of electricity deliveries for all distinct utility-county records.
-
-$$Emissions_r = \Sigma (mWhDelivered_iCounty_j \times {Emissions Factor}) $$
-
-Our inventory takes a "demand-side" approach to emissions quantification and seeks to aggregate all reported delivery of energy to ALL customers served by utilities (meaning all customer types, inclusive of residential, commercial, industrial, and government accounts). This means that energy loss and use experienced by utilities in the process of energy generation and transmission, and delivery and resale to utilities operating outside of our study area, are *not* directly reflected in the numbers attributed to counties. The U.S. Energy Information Administration (EIA) estimates that annual electricity transmission and distribution (T&D) losses averaged about 5% of the electricity transmitted and distributed in the United States in 2018 through 2022. [@u.s.energyinformationadministrationHowMuchElectricity2023]
-
-While our primary data collection does not include a breakout of electricity deliveries by sector, we do leverage year 2021 NREL SLOPE forecasts of electricity consumption (built from a base year of 2016 observed data) by sector (residential, commercial, industrial) at the county level to calculate modeled proportions of consumption by sector, which we then apply to our aggregate numbers to calculate estimated emissions *by sector* [@maSectorSpecificMethodologiesSubnatonal2019, @nrelSLOPEStateLocal2017].
-
-### Identifying utilities in scope
-
-To identify the electric utilities that operate within our 11-county study area, we referred to maps and geospatial datasets capturing utility service areas in Minnesota and Wisconsin. To identify Wisconsin electric utilities, we downloaded the Electric Service Territory map maintained by the Wisconsin Public Service Commission [@wisconsinpublicservicecommissionElectricServiceTerritories2024]. To identify Minnesota electric utilities, we downloaded the Electric Service Territory map maintained by the Minnesota Public Utilities Commission and the Minnesota IT Geospatial Information Office[@minnesotaitgeospatialinformationofficeElectricUtilityService2023].
-
-### Collecting and aggregating activity data from utilities
-
-#### County-level activity data
-
-After identifying which utilities operate within our study area within each state, we collect reporting submitted by these utilities to the relevant state and federal authorities and use a variety of approaches, depending on data availability, to allocate utility activity/energy deliveries to specific counties. For the state of Minnesota, we collected reports provided by all in-scope utilities for years 2014-2023. For year 2021, additional manual data collection efforts were completed to guarantee a complete data set, since reports for all in-scope utilities were unfortunately not available for all years. As needed, data for other county-years could be finalized in a similar fashion.
-
-##### Minnesota
-
-All electric utilities authorized to do business in Minnesota are required to file an annual data report pursuant to MN Rules Chapter 7610. The Minnesota Public Utilities Commission makes these reports searchable through an [eFiling Site](https://www.edockets.state.mn.us/EFiling/edockets/searchDocuments.do?method=eDocketsResult&docketYear=22&docketNumber=19), and downloadable as Excel workbooks [@mndocCHAPTER7610ENERGY2005]. For each utility identified in [distinct_electricity_util_type_MN.RDS](data/distinct_electricity_util_type_MN.RDS) (a data product of [minnesota_electricUtilities.R](data-raw/minnesota_electricUtilities.R), a script that looks for intersections between electric utility service areas and our Minnesota counties), we downloaded the relevant 2021 annual reports from this site (see note about Great River Energy in the previous section for caveats), except for North Branch Municipal Water and Light, which did not submit a 2021 report (we used their 2022 report as a substitution). Elk River Municipal Utilities and New Prague Utilities Commission did not file reports for 2021 or 2022, and so we used financial reports to identify their total electricity delivered; both utilities operated within only one county in our study area, which meant no estimation/allocation was necessary.
-
-We wrote code to extract the county-level data reported in the report section titled "ITS DELIVERIES TO ULTIMATE CONSUMERS BY COUNTY FOR THE LAST CALENDAR YEAR" on the relevant annual data report Excel workbooks compiled into a folder directory, and created a table with three columns: `county`, `utility`, and `mWh_delivered` (megawatt-hours). By compiling this data for all utilities found to operate within our study area, aggregating all electricity deliveries at the county level becomes possible.
-
-##### Wisconsin
-
-All municipal and investor-owned utilities authorized to do business in Wisconsin are required to file an annual report with financial and operational information pursuant to Wis. Stat. § 196.07. The Public Services Commission of Wisconsin makes these reports searchable through an [E-Services Portal](https://apps.psc.wi.gov/ARS/annualReports/default.aspx), and downloadable as either PDFs or Excel workbooks, with options to export only specific portions of the reports as spreadsheets [@publicservicecommwisconsinAnnualReportsView2022]. For each utility identified in [distinct_electricity_util_type_WI.RDS](data/distinct_electricity_util_type_WI.RDS) (a data product of [wisconsin_electricUtilities.R](_energy/data-raw/wisconsin_electricUtilities.R), a script that looks for intersections between electric utility service areas and our Wisconsin counties), we downloaded the relevant 2021 annual reports from this site.
-
-A similar process was followed for the four Wisconsin cooperative utilities for which we referenced federal regulatory filings data to populate our dataset of electricity deliveries.
-
-Because of the small amount of data, and the different data structures of the reports for municipally-, cooperatively-, and investor-owned utilities in Wisconsin, we hard-coded observed information into data frames rather than extracting data through a web scraper or document analyzer (see [processed_wi_electricUtil_activityData.R](data-raw/processed_wi_electricUtil_activityData.R)).
-
-#### City-level activity data (seven-county metro in MN only)
-
-No regulatory requirements in Minnesota or Wisconsin directly require utilities make city-level reports on electrical or natural gas usage data activity publicly available in a manner similar MN Rules Chapter 7610's requirement for public county-level reporting. In alignment with *climate planning statute*, the Met Council is leading an effort to collect this information on behalf of cities and townships in the seven-county region as a constituent part of the greenhouse gas inventories being developed by the Council to support communities in their own local climate planning as required by state statute and Imagine 2050 minimum requirements. This data collection effort entails 1) direct processing of real, city-sector level data provided by utilities in our region, as well as 2) a series of modeling efforts geared towards addressing missingness in our city/township dataset, as well as disaggregation of coarser numbers provided by utilities (e.g., combined data for commercial/industrial sectors) into residential, commercial, and industrial numbers.
-
-##### Processing utility-provided data
-
-Xcel, the largest electric utility in our region, publishes Community Energy Reports [@xcelEnergyCommunityEnergyReports] that document energy deliveries to specific communities in their service area. We gathered this data for years 2015-2022 and compiled it into the final .RDS file [xcel_activityData_NREL_2015_2022_process.RDS](data/xcel_activityData_NREL_2015_2022_process.RDS).
-
-[minnesota_xcelCommunityReports_electricity.R](_energy/data-raw/minnesota_xcelCommunityReports_electricity.R) includes all data processing steps necessary to process the nearly 1000 files (one for each city-year combination) made available on the Community Energy Reports site. The function `get_files` identifies and extracts relevant info (e.g., city name) from all data files, while `process_file` reads detailed electricity consumption data from sections titled “Standard Community Report” in each Excel workbook. Key metrics, such as kilowatt-hours delivered (`kWh_delivered`) and utility-reported carbon emissions (`util_reported_co2e`), are then transformed into aggregated datasets (`Xcel_activityData_2015_2023`) at the utility-year-county level.
-
-Ambiguities in sector classifications, particularly the "Business" category, are addressed through proportional disaggregation using NREL-modeled emissions proportions. This process incorporates additional datasets, such as `nrel_slope_city_emission_proportions.RDS`, to allocate energy and emissions between commercial and industrial sectors. Geographic integration (i.e., disaggregating CTUs with footprint in multiple counties) is achieved using `cprg_ctu` and `ctu_population`, enabling population-based allocation of activity/utility-reported emissions to constituent COCTU units.
-
-Final outputs of [minnesota_xcelCommunityReports_electricity.R](_energy/data-raw/minnesota_xcelCommunityReports_electricity.R) include clean, joined datasets (`xcel_activityData_NREL_2015_2022_process.RDS`) and visualizations that compare utility-reported sector proportions to modeled values. *More to say here before modeling missingness section?*
-
-#### Modeling missingness
-
-Content to come
-
-#### Emissions factors
-
-To transform electricity deliveries (recorded in mWh) into emissions in metric tons CO~2~e, we referenced Emissions & Generation Resource Integrated Database (eGRID) summary data for the MROW subregion (Midwest Reliability Organization - West) [@usepaEGRIDEmissionsGeneration2021].
-
-This dataset provides estimates in lbs/mWh for CO~2~, CH~4~, N~2~O, and CO~2~e emissions based on MROW's sub-regional electricity generation grid mix; converting this factor to metric tons per mWh and multiplying the county-level mWh estimates yields an estimate for CO~2~e. To generate this sub-regional estimate, eGRID first calculates estimated emissions at the plant level, and assigns plants to regions. By using an emissions factor that is localized, our inventory accounts for the specific grid mix in our study area (see the grid mix linked to the eGRID MROW emissions factor used in this inventory below). Per the eGRID technical guide, "the subregions were defined to limit the import and export of electricity in order to establish an aggregated area where the determined emission rates most accurately matched the generation and emissions from the plants within that subregion."
+Electricity emissions are estimated by collecting reported electricity deliveries from all utilities operating within our study area and applying EPA eGRID emissions factors to convert megawatt-hours delivered into metric tons CO~2~e. The inventory takes a demand-side approach: it accounts for electricity delivered to end-use customers (residential, commercial, and industrial) and does not include transmission and distribution losses or electricity resold to utilities outside the study area. All emission factors are sourced from the EPA eGRID database for the MROW subregion.
 
 
+# County-level estimates
 
-## Utility Activity Data
+## Source data
+
+County-level electricity deliveries are derived from state regulatory filings in Minnesota and a combination of state and federal filings in Wisconsin, both of the highest quality rank (@tbl-quality-rank).
 
 ### Minnesota
 
-Under Minnesota Administrative Rules Chapter 7610 [@mndocCHAPTER7610ENERGY2005], utilities are required to file an annual data report that supports the identification of "emerging energy trends based on supply and demand, conservation and public health and safety factors, and to determine the level of statewide and service area needs" [@minnesotadepartmentofcommerceAnnualReportingForms2022]. This includes a report of county-level energy deliveries (reported in megawatt-hours, commonly written as mWh). Because the information is structured in this manner, electricity emissions at the county-level can be estimated as a direct function of energy deliveries to counties reported by utilities.
+Under Minnesota Administrative Rules Chapter 7610 [@mndocCHAPTER7610ENERGY2005], all electric utilities authorized to do business in Minnesota must file annual reports of county-level energy deliveries in megawatt-hours (MWh). These filings provide the primary source of measured utility-by-county-by-year electricity data.
 
-One utility operating within our study area, Great River Energy (GRE), is a non-profit wholesale electric power cooperative which provides wholesale power and delivery services to 28 Minnesota-based electric cooperatives, which collectively own GRE and provide retail electric service. They are the primary supplier of energy (\>99%) to the cooperative utilities operating in our study area. Though most electricity suppliers having relationships with Minnesota electric utilities do not file these annual data reports, GRE does, given their unique hybrid wholesale/transmission structure and cooperative ownership model. As a result, while we keep only GRE's reporting in our data collection for county-level electricity deliveries, we exclude reporting from these subsidiary retail electric cooperatives, in order to avoid double counting electric deliveries. We use GRE's reported deliveries to our 9 Minnesota study area counties as a full substitution for the deliveries of these utilities, which may represent a marginal undercount given that marginal-to-negligible amounts of energy delivered by these retail cooperatives came from other other sources, per their annual reports.
+The ingestion pipeline parses county-level delivery data from the "ITS DELIVERIES TO ULTIMATE CONSUMERS BY COUNTY" section of each utility's annual report workbook using anchor-based detection (locating the COUNTY/MWH header row programmatically rather than relying on fixed cell positions). Utility names are harmonized through a lookup table to resolve inconsistencies across filing years (e.g., "Northern States Power Company" and "Xcel Energy" map to the same entity).
+
+**Great River Energy and member cooperatives.** Great River Energy (GRE) is a wholesale power cooperative that supplies electricity to 28 member cooperatives. Because GRE's 7610 filing reports all member co-op retail deliveries combined, the individual member cooperatives' filings are excluded to avoid double counting. In Anoka County, where both GRE and Connexus Energy (a GRE member) file independently, GRE's filing is dropped for that county. GRE did not file 7610 reports for 2013–2015, and their 2022–2023 filings were flagged as suspect (implausibly low, likely due to member cooperatives beginning to file independently); these years are filled from EIA 861 data as described below.
+
+**Gap-filling and backcast.** For utility-county-years where 7610 filings are missing (including GRE's gap years and all years prior to the earliest available filing), deliveries are estimated using EIA Form 861 data. The EIA 861 annual report provides statewide electricity sales by utility; county-level estimates are derived by applying each utility's county delivery proportions from the nearest available 7610 filing to the EIA 861 statewide total. Gap-fill and backcast use the same method — a unified fill loop covers all missing years from 2005 through the latest available filing year for each utility.
 
 ### Wisconsin
 
-Under Wis. Stat. § 196.07, investor- and municipally-owned electric utilities operating within the state of Wisconsin must submit annual reports to the State which include an array of information related to utility finance and operations, including key figures leveraged in our data collection, such as total energy deliveries made (in units of *kWh*) and total number of customer accounts within each county [@wisconsinstatelegChapter196Regulation2024].
+Wisconsin's two study area counties (St. Croix and Pierce) are served by seven electric utilities. Under Wis. Stat. § 196.07, investor-owned and municipally-owned utilities must submit annual reports to the Public Service Commission that include total energy deliveries and county-level customer counts. For the four cooperative utilities that do not file state reports, we rely on EIA Form 861 data.
 
-Of the seven in-scope electric utilities, only three (the investor- and municipally-owned utilities) were required to make these reports to the State in 2021 (four of the in-scope electric utilities are cooperative utilities); state data was leveraged in this case. For the four utilities (all cooperative utilities) not making these reports, we relied upon the detailed data files provided by the EIA, recording the responses of utilities to the Annual Electric Power Energy Report (Form EIA-861), which records retail sales by utilities and power marketers [@eia861]. Two utilities (Dunn Energy Cooperative and Polk-Burnett Electric Cooperative) filled the long version of the form (filled by larger entities), and two (St. Croix Electric Cooperative and Pierce-Pepin Electric Cooperative Services) filled the short form (filled by smaller entities). For our purposes, both the long and short form provided suitable activity information (total energy delivered, total customers) to allocate energy deliveries to counties in concert with Census population data, in the process outlined below.
+Because Wisconsin utilities do not report deliveries at the county level, county allocations are estimated. For utilities that report county-level customer counts, county deliveries are estimated by multiplying statewide deliveries by the proportion of the utility's customers in each county:
 
-Because Wisconsin utilities do not report energy deliveries at the county level, it was necessary to estimate energy deliveries by a given utility *i* within a particular county *j.* For those three utilities who reported county-level customer counts and total customer counts to the state, we estimated mWh delivered by utility *i* in county *j* by multiplying their total statewide energy deliveries (as reported to the relevant state authorities) by the proportion of their customers residing in each of our two study area counties.
+$$
+\text{MWh}_{i,j} = \text{MWh}_i \times \frac{\text{Customers}_{i,j}}{\text{Customers}_{i,\text{total}}}
+$$
 
-$$mWhDelivered_iCounty_j =  (mWhEnergyDeliveries_i \times {ProportionOfTotalUtilityCustomers_j}) $$
+For cooperative utilities without county-level customer data, county deliveries are allocated by population share within each utility's service area, determined by spatially joining Census block centroids to utility service area polygons.
 
-Note: This approach implicitly assumes that customer accounts across counties within the operations of a given utility have the same average per-account demand for energy, when this is influenced by land-use mix and relative magnitude/scale of residential and commercial/industrial utility accounts within a given county.
 
-To calculate the estimated energy delivered by utility *i* in county *j* for the four cooperatively-owned utilities that did not report county-level customer counts (i.e., did not report to the State), we used population figures to estimate/allocate reported electricity deliveries to counties. We took the actual total energy delivered by utility *i* across Wisconsin (as reported to the relevant federal authorities) and multiplied this by the proportion of total population within each utility's entire service area residing within county *j* at the 2020 decennial Census.
+## Sector decomposition
 
-$$mWhDelivered_iCounty_j =  (mWhDelivered_i \times {ProportionOfTotalUtilityPopulation_j}) $$
+County-level electricity totals from 7610 filings and Wisconsin filings represent aggregate deliveries to all customer classes. To partition these totals into residential, commercial, and industrial sectors, we apply the following decomposition:
 
-The factor *ProportionOfTotalUtilityPopulation*~j~ was calculated by spatially joining Census block centroids containing population data to 1) polygons representing the entirety of our in-scope utilities' service areas (including areas outside of St. Croix and Pierce counties) and 2) polygons representing only the portions of these utilities' service areas within a) St. Croix county and b) Pierce County. These utility-county service areas are calculated separately, to facilitate an informed allocation of statewide energy use to each county in turn.
+$$
+\text{County total} = \text{Residential} + \text{Non-residential remainder}
+$$
 
-## Correlation with related data
+$$
+\text{Non-residential remainder} = \text{Commercial} + \text{Industrial}
+$$
 
-We would expect counties with higher population to have higher emissions.
+Each component is estimated as follows:
+
+- **Residential**: the sum of CTU-level residential electricity from the random forest prediction model (described below), aggregated to county.
+- **Commercial and Industrial**: the non-residential remainder (county total minus aggregated CTU residential) is split into commercial and industrial using NREL SLOPE modeled ratios. NREL SLOPE provides county-level forecasts of electricity consumption by sector [@maSectorSpecificMethodologiesSubnatonal2019; @nrelSLOPEStateLocal2017]; the commercial-to-industrial ratio from NREL is averaged across available years and applied to the non-residential remainder.
+
+This approach parallels the natural gas sector decomposition but is simpler: electricity does not require separate power plant, industrial combustion, or refinery subtractions because those categories are not present in the delivery totals (power plant self-consumption is not reported as a retail delivery, and large industrial loads are already included in the aggregate).
+
+
+## NREL SLOPE sector comparison
+
+The chart below compares NREL SLOPE modeled sector proportions with our final sector allocation for the seven-county metro. NREL SLOPE's commercial and industrial split is used to decompose our non-residential remainder, so the ratio between those two sectors is identical by construction. The key difference is in the residential share: our CTU-level random forest model may produce a different residential total than NREL's modeled forecast, which shifts the absolute magnitude of the commercial and industrial estimates.
+
+```{r include=FALSE}
+# ── Load data for NREL comparison ────────────────────────────────────────────
+
+county_elec_sector <- readRDS(file.path(
+  here::here(), "_energy/data/county_elec_emissions_by_sector.RDS"
+)) %>%
+  filter(
+    county_name %in% seven_county,
+    emissions_year == target_year
+  )
+
+nrel_emissions <- readRDS(file.path(
+  here::here(), "_energy/data-raw/nrel_slope/nrel_emissions.RDS"
+)) %>%
+  filter(
+    source == "Electricity",
+    county_name %in% seven_county
+  )
+
+# Use the closest available NREL year to target_year
+nrel_target <- nrel_emissions %>%
+  filter(year == max(year[year <= target_year])) %>%
+  group_by(county_name, sector) %>%
+  summarize(nrel_co2e = sum(co2e, na.rm = TRUE), .groups = "drop") %>%
+  mutate(inventory_source = "NREL SLOPE")
+
+metc_target <- county_elec_sector %>%
+  group_by(county_name, sector) %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
+  mutate(inventory_source = "Metropolitan Council")
+```
+
+```{r fig-nrel-sector-comparison}
+#| fig-cap: "Electricity sector breakdown: Metropolitan Council vs. NREL SLOPE"
+#| out-width: "95%"
+#| fig.height: 5
+#| fig.width: 10
+
+# ── Combine for side-by-side chart ───────────────────────────────────────────
+nrel_for_chart <- nrel_target %>%
+  transmute(
+    county_name,
+    sector,
+    inventory_source,
+    value_emissions = nrel_co2e
+  )
+
+metc_for_chart <- metc_target %>%
+  select(county_name, sector, inventory_source, value_emissions)
+
+sector_comparison <- bind_rows(metc_for_chart, nrel_for_chart) %>%
+  mutate(
+    sector = factor(sector, levels = c("Residential", "Commercial", "Industrial")),
+    inventory_source = factor(inventory_source, levels = c(
+      "Metropolitan Council", "NREL SLOPE"
+    ))
+  )
+
+comparison_colors <- c(
+  "Metropolitan Council" = colors$councilBlue,
+  "NREL SLOPE" = cprg_colors$cprg_green
+)
+
+fig_nrel_sector <- plot_ly(
+  data = sector_comparison,
+  x = ~ reorder(county_name, -value_emissions),
+  y = ~value_emissions,
+  color = ~inventory_source,
+  colors = comparison_colors,
+  type = "bar",
+  hovertemplate = ~ paste0(
+    county_name, " County<br>",
+    inventory_source, " — ", sector, "<br>",
+    scales::comma(round(value_emissions), accuracy = 1),
+    " metric tons CO<sub>2</sub>e<br>",
+    "<extra></extra>"
+  )
+) %>%
+  plotly_layout(
+    main_title = paste(
+      "Electricity Sector Breakdown:",
+      "Metropolitan Council vs. NREL SLOPE,",
+      target_year
+    ),
+    y_title = "Metric tons CO<sub>2</sub>e",
+    x_title = "County",
+    legend_title = "Source"
+  ) %>%
+  layout(
+    barmode = "group",
+    hovermode = "closest",
+    legend = list(traceorder = "normal")
+  )
+
+fig_nrel_sector
+```
+
+<!-- TODO: Add commentary on differences between NREL SLOPE and Met Council
+     sector breakouts. Key things to address:
+     - Overall magnitude differences (NREL is a forecast from 2016 base year
+       vs. our utility-reported deliveries for the actual target year)
+     - Residential share comparison
+     - Counties where C/I split diverges most
+     - Any structural explanations (e.g., large industrial loads that NREL
+       may over- or under-estimate relative to actual deliveries)
+-->
+
+
+## Emissions calculation
+
+County emissions are calculated by applying eGRID MROW subregion emissions factors to MWh delivered:
+
+$$
+\text{Emissions}_{\text{county,sector}} = \text{MWh delivered} \times \text{Emission Factor (MT CO}_2\text{e / MWh)}
+$$
+
+The eGRID emissions factor is subregion-specific, reflecting the generation mix in the Midwest Reliability Organization West region. It includes CO~2~, CH~4~, and N~2~O components, converted to CO~2~e using IPCC AR5 100-year global warming potentials. Importantly, the eGRID factor changes annually as the grid mix evolves — coal retirements and wind additions reduce the factor over time, which drives much of the observed decline in electricity emissions since 2005.
+
+This inventory uses a location-based accounting approach per the GPC protocol: emissions are attributed based on the average grid mix of the subregion where electricity is consumed, without adjusting for renewable energy certificates (RECs) or other market-based instruments.
+
+
+# CTU-level estimates
+
+## Source data
+
+CTU-level (city, township, and unorganized territory) electricity data comes from multiple utility sources, compiled and prioritized in the following order:
+
+1. **Xcel Energy community energy reports.** Xcel publishes annual Community Energy Reports documenting electricity deliveries to specific communities in their service area (2015–2023). These provide residential and business MWh by CTU for cities served by Xcel. Because Xcel reports a combined "Business" category rather than separate commercial and industrial figures, NREL SLOPE modeled ratios are used to disaggregate the non-residential component at the county level.
+2. **Dakota Electric Association.** Direct data request from Dakota Electric for CTU-level residential and business deliveries, covering communities in Dakota and Scott counties within their service area. An interpolation step addresses a 2018 data gap using 2017 and 2019 anchor values.
+3. **Connexus Energy.** CTU-level data from Connexus covering communities in Anoka County. A quality control step identifies and addresses CTU-level allocation anomalies (e.g., over-reported or under-reported deliveries for specific cities) by nulling suspect city-years so they fall through to modeled estimates.
+4. **Municipal utilities.** Where available, data from municipal electric utilities (e.g., City of Chaska Electric, Princeton Public Utilities, Shakopee Public Utilities, North Branch) compiled from 7610 filings.
+5. **Prior Met Council SQL records and RII data.** Historical CTU-level electricity data from earlier Met Council inventory work and the Regional Indicators Initiative. These are used as fallback sources and have lower priority than direct utility records.
+
+A data quality pipeline identifies and addresses anomalies before modeling, including year-over-year spike detection for utility data with structural breaks (particularly SQL-era data from Dakota Electric, where pre-2019 CTU allocations differ substantially from direct data request values), de minimis utility filtering, and unit conversion corrections.
+
+
+## Random forest model
+
+For CTUs and years lacking direct utility data, residential and business electricity consumption are predicted separately using random forest models. The models follow the same methodology used for natural gas CTU predictions and are trained on CTUs with known utility data (approximately 2010–2023). Features include:
+
+- UrbanSim housing unit or job projections
+- NOAA heating degree days
+- Metropolitan Council thrive designation (community classification)
+- Parcel-derived building stock characteristics (2021)
+
+For CTUs with at least some years of known data, a mean-scale correction is applied: the ratio between the mean observed utility value and the mean predicted value across all available years is used to multiplicatively adjust all predicted years. This approach anchors predictions to the observed level for each CTU while allowing the random forest to capture temporal trends. CTUs with no utility data in any year receive pure random forest predictions. Cities where the primary utility provider never supplied CTU-level data (e.g., Champlin, Columbus) are excluded from the model and receive county-proportional estimates.
+
+The models are limited to 2010 onward by UrbanSim data availability.
+
+
+## Pre-2010 backcast
+
+For years prior to 2010, CTU electricity consumption is estimated by applying each CTU's earliest three years of sector proportions to the county-level MWh totals. This approach parallels the natural gas backcast and preserves the relative distribution of electricity across CTUs within each county while anchoring to the county-level totals from the 7610/EIA pipeline.
+
+
+# Validation
+
+```{r validation-data, include=FALSE}
+# ── County-level activity data ───────────────────────────────────────────────
+county_elec_activity <- readRDS(file.path(
+  here::here(), "_energy/data/county_elec_activity.RDS"
+)) %>%
+  filter(county_name %in% seven_county)
+
+# ── 7610 direct filings ─────────────────────────────────────────────────────
+county_7610 <- readRDS(file.path(
+  here::here(), "_energy/data/county_elec_7610.RDS"
+)) %>%
+  filter(county_name %in% seven_county)
+
+# ── CTU-level combined electricity ───────────────────────────────────────────
+ctu_elec_combined <- readRDS(file.path(
+  here::here(), "_energy/data/ctu_elec_combined.RDS"
+)) %>%
+  filter(county_name %in% seven_county)
+```
+
+## County totals: CTU model vs. county activity
+
+The chart below compares CTU-level modeled electricity (aggregated to county) against county-level delivery totals from 7610 filings and EIA 861 gap-fills. Because electricity does not require the subtractive sector decomposition used for natural gas (no power plant or refinery volumes to remove), the CTU residential plus business total should approximate the county total.
+
+```{r fig-county-elec-comparison}
+#| fig-cap: "CTU model aggregated to county vs. county activity totals"
+#| out-width: "95%"
+#| fig.height: 4
+#| fig.width: 10
+
+# ── CTU aggregated to county ────────────────────────────────────────────────
+ctu_county_elec <- ctu_elec_combined %>%
+  filter(inventory_year == target_year) %>%
+  transmute(
+    county_name,
+    mwh = elec_mwh,
+    category = paste(sector, "(CTU model)")
+  ) %>%
+  group_by(county_name, category) %>%
+  summarize(mwh = sum(mwh, na.rm = TRUE), .groups = "drop")
+
+# ── County reference totals ─────────────────────────────────────────────────
+county_ref <- county_elec_activity %>%
+  filter(emissions_year == target_year)
+
+ctu_stack_colors <- c(
+  "Residential (CTU model)" = colors$councilBlue,
+  "Business (CTU model)" = cprg_colors$cprg_green
+)
+
+fig_county_elec_comparison <- plot_ly(source = "fig-county-elec-comparison") %>%
+  add_bars(
+    data = ctu_county_elec,
+    x = ~ reorder(county_name, -mwh),
+    y = ~mwh,
+    color = ~category,
+    colors = ctu_stack_colors,
+    hovertemplate = ~ paste0(
+      county_name, " County<br>",
+      category, "<br>",
+      scales::comma(round(mwh), accuracy = 1), " MWh<br>",
+      "<extra></extra>"
+    )
+  ) %>%
+  add_markers(
+    data = county_ref,
+    x = ~ reorder(county_name, -value_activity),
+    y = ~value_activity,
+    marker = list(
+      symbol = "line-ew",
+      size = 16,
+      line = list(color = "black", width = 3),
+      color = "black"
+    ),
+    name = "County total (7610/EIA)",
+    hovertemplate = ~ paste0(
+      county_name, " County<br>",
+      "County total: ", scales::comma(round(value_activity), accuracy = 1),
+      " MWh<br><extra></extra>"
+    )
+  ) %>%
+  plotly_layout(
+    main_title = paste("Electricity: CTU model vs. county totals,", target_year),
+    subtitle = "",
+    x_title = "County",
+    y_title = "Megawatt-hours (MWh)",
+    legend_title = "Source"
+  ) %>%
+  layout(
+    barmode = "stack",
+    legend = list(traceorder = "normal")
+  )
+
+fig_county_elec_comparison
+```
+
+
+```{r fig-county-elec-temporal}
+#| fig-cap: "CTU model vs. county activity totals, 2013–2022"
+#| out-width: "95%"
+#| fig.height: 8
+#| fig.width: 10
+
+year_range <- 2013:target_year
+
+# ── CTU aggregated to county, all years ─────────────────────────────────────
+ctu_county_elec_temporal <- ctu_elec_combined %>%
+  filter(inventory_year %in% year_range) %>%
+  transmute(
+    inventory_year,
+    county_name,
+    mwh = elec_mwh,
+    category = paste(sector, "(CTU model)")
+  ) %>%
+  group_by(inventory_year, county_name, category) %>%
+  summarize(mwh = sum(mwh, na.rm = TRUE), .groups = "drop") %>%
+  mutate(category = factor(category, levels = c(
+    "Residential (CTU model)",
+    "Business (CTU model)"
+  )))
+
+# ── County reference line ───────────────────────────────────────────────────
+county_elec_temporal <- county_elec_activity %>%
+  filter(emissions_year %in% year_range)
+
+# ── Build per-county subplots ───────────────────────────────────────────────
+counties_ordered <- county_elec_temporal %>%
+  filter(emissions_year == max(year_range)) %>%
+  arrange(desc(value_activity)) %>%
+  pull(county_name)
+
+fig_list <- lapply(seq_along(counties_ordered), function(i) {
+  cty <- counties_ordered[i]
+
+  p <- plot_ly() %>%
+    add_trace(
+      data = ctu_county_elec_temporal %>% filter(county_name == cty),
+      x = ~inventory_year,
+      y = ~mwh,
+      color = ~category,
+      colors = ctu_stack_colors,
+      type = "scatter",
+      mode = "lines",
+      stackgroup = "one",
+      showlegend = (i == 1),
+      hovertemplate = paste0(
+        cty, " County<br>",
+        "%{text}<br>",
+        "%{y:,.0f} MWh<br>",
+        "<extra></extra>"
+      ),
+      text = ~category
+    ) %>%
+    add_trace(
+      data = county_elec_temporal %>% filter(county_name == cty),
+      x = ~emissions_year,
+      y = ~value_activity,
+      type = "scatter",
+      mode = "lines+markers",
+      line = list(color = "black", width = 2),
+      marker = list(color = "black", size = 4),
+      name = "County total (7610/EIA)",
+      showlegend = (i == 1),
+      hovertemplate = paste0(
+        cty, " County<br>",
+        "County total: %{y:,.0f} MWh<br>",
+        "<extra></extra>"
+      )
+    ) %>%
+    layout(
+      annotations = list(
+        text = cty,
+        xref = "paper", yref = "paper",
+        x = 0.5, y = 1.05,
+        xanchor = "center", yanchor = "bottom",
+        showarrow = FALSE,
+        font = list(size = 12)
+      )
+    )
+
+  p
+})
+
+fig_county_elec_temporal <- subplot(
+  fig_list,
+  nrows = ceiling(length(counties_ordered) / 2),
+  shareX = TRUE,
+  shareY = FALSE,
+  titleY = TRUE,
+  margin = 0.06
+) %>%
+  plotly_layout(
+    main_title = paste("Electricity: CTU model vs. county totals,", paste(range(year_range), collapse = "–")),
+    subtitle = "",
+    y_title = "MWh"
+  ) %>%
+  layout(
+    hovermode = "x unified",
+    legend = list(
+      orientation = "h",
+      x = 0.5, xanchor = "center",
+      y = -0.08
+    )
+  )
+
+fig_county_elec_temporal
+```
+
+
+## Correlation with population
+
+We would expect counties with higher population to have higher electricity emissions.
 
 ```{r fig-electricity-emissions-population}
 #| fig-cap: "County population and electricity emissions"
 #| out-width: "95%"
+
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_population.RDS"))
 
-emissions_population <- left_join(elecEmissions_all, cprg_population,
-  by = c("county_name")
-) %>%
-  filter(emissions_year == 2021)
+county_elec_emissions_yr <- readRDS(file.path(
+  here::here(), "_meta/data/cprg_county_emissions.RDS"
+)) %>%
+  filter(
+    category == "Electricity",
+    emissions_year == target_year
+  ) %>%
+  group_by(county_name) %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop")
+
+emissions_population <- left_join(
+  county_elec_emissions_yr,
+  cprg_population,
+  by = "county_name"
+)
 
 fig_electricity_emissions_population <- plot_ly(
   data = emissions_population,
@@ -243,8 +493,8 @@ fig_electricity_emissions_population <- plot_ly(
   )
 ) %>%
   plotly_layout(
-    main_title = "County population and emissions",
-    subtitle = "2021 ACS 5-year population estimates",
+    main_title = "County population and electricity emissions",
+    subtitle = paste(target_year, "ACS 5-year population estimates"),
     x_title = "Total population",
     y_title = "Metric tons CO<sub>2</sub>e"
   )
@@ -252,131 +502,26 @@ fig_electricity_emissions_population <- plot_ly(
 fig_electricity_emissions_population
 ```
 
-## Comparison with federal inventories
 
-```{r region-total-electricity}
-region_total_electricity <- county_emissions %>%
-  ungroup() %>%
-  filter(
-    source == "Electricity",
-    emissions_year == 2021
-  ) %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
-  magrittr::extract2("value_emissions")
+## Assumptions and limitations
 
-eia_total_electricity <- eiaQA_all$downscaled_EIA_total_CO2e_emissions_lbs %>%
-  sum() %>%
-  units::as_units("pound") %>%
-  units::set_units("ton") %>%
-  as.numeric()
-```
+**Demand-side accounting.** This inventory counts electricity delivered to end-use customers. It does not include transmission and distribution losses (estimated at approximately 5% nationally by EIA) or electricity generated within the region and exported. This is consistent with GPC protocol for community-scale inventories.
 
+**Location-based emissions factors.** Using the eGRID MROW subregion factor assigns the same emissions rate to all electricity consumed in the region, regardless of whether a specific utility has a cleaner or dirtier generation portfolio. A market-based approach (adjusting for RECs and utility-specific generation) would yield different county-level estimates, particularly for utilities with significant renewable procurement.
 
-<!-- CURRENTLY NOT WORKING -->
-<!-- ##### Energy Information Administration (EIA) -->
+**Sector decomposition.** The commercial-industrial split relies on NREL SLOPE modeled ratios rather than direct utility reporting by sector. While Xcel community reports provide a combined "Business" category, no utility in the region reports separate commercial and industrial deliveries at the county or CTU level. The NREL ratios are derived from a 2016 base year forecast and may not perfectly reflect the actual commercial-industrial mix in any given year.
 
-<!-- We compared our county-level emissions figures to emissions estimates derived from the EIA's State Electricity Profiles, which were generated by down-scaling EIA's Minnesota and Wisconsin state-level numbers for total electricity retail sales. We achieved this by applying the proportions of each state's population residing in each of our study area counties to generate county-level emissions estimates. Our inventory quantified `r scales::comma(region_total_electricity, accuracy = 1)` metric tons of electricity in our study area relative to `r scales::comma(eia_total_electricity, accuracy = 1)` metric tons based on the aforementioned downscaled statewide retail numbers. -->
+**CTU random forest model.** As with natural gas, the RF model is limited to 2010 onward by UrbanSim data availability. Pre-2010 CTU estimates use proportional allocation from county totals. The mean-scale correction assumes that the ratio between observed and predicted values is stable over time; for communities with rapid growth or structural changes in electricity demand, this assumption may introduce bias. A systematic shift in Xcel's application of the 15/15 privacy rule between 2021 and 2022 affects the business electricity data for approximately 15 cities; this is under investigation and may be revised pending utility response.
 
+**Wisconsin county allocation.** Wisconsin county-level estimates rely on customer count or population proportions to allocate utility-wide deliveries to individual counties. This implicitly assumes uniform per-account or per-capita demand within each utility's service area, which may not hold where residential and commercial/industrial mixes differ across counties.
 
-<!-- ```{r fig-eia-qa-natural-gas-plot, include = FALSE} -->
-<!-- #| fig-cap: "Metropolitan Council emissions inventory vs. downscaled EIA State Electricity Profiles" -->
-<!-- #| out-width: "95%" -->
+**GRE member cooperative reporting.** The inventory uses GRE's consolidated filing as a substitute for individual member cooperative filings. This may represent a marginal undercount for cooperatives that source small amounts of electricity from non-GRE suppliers. For 2022–2023, GRE's own 7610 filings appeared suspect (likely due to member cooperatives beginning to file independently) and were replaced with EIA 861 estimates.
 
-<!-- # Create the plotly graph -->
-<!-- fig_eia_qa_electricity_plot <- plot_ly( -->
-<!--   data = EIAvMETC_tons, -->
-<!--   x = ~ reorder(county_name, -value_emissions), -->
-<!--   y = ~value_emissions, -->
-<!--   source = "fig-eia-qa-natural-gas-plot", -->
-<!--   color = ~inventory_source, -->
-<!--   type = "bar", -->
-<!--   colors = c( -->
-<!--     "EIA" = cprg_colors$cprg_da_yellow, -->
-<!--     "Metropolitan Council" = colors$councilBlue -->
-<!--   ), -->
-<!--   hovertemplate = ~ paste0( -->
-<!--     county_name, "<br>", -->
-<!--     inventory_source, "<br>", -->
-<!--     round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>", -->
-<!--     "<extra></extra>" -->
-<!--   ) -->
-<!-- ) %>% -->
-<!--   plotly_layout( -->
-<!--     main_title = "Electricity Emissions Inventory QA<br><sub>Comparison between Metropolitan Council and EIA State Electricity Profiles</sub>", -->
-<!--     y_title = "Metric tons CO<sub>2</sub>e", -->
-<!--     x_title = "County", -->
-<!--     legend_title = "Inventory source" -->
-<!--   ) %>% -->
-<!--   layout( -->
-<!--     barmode = "group", -->
-<!--     hovermode = "closest", -->
-<!--     legend = list( -->
-<!--       traceorder = "normal" -->
-<!--     ) -->
-<!--   ) -->
-
-<!-- # Show the plot -->
-<!-- fig_eia_qa_electricity_plot -->
-<!-- ``` -->
-
-
-### NREL SLOPE
-
-```{r fig-nrel-qa-electricity}
-#| fig-cap: "Metropolitan Council emissions inventory v. NREL SLOPE modeled emissions"
-#| out-width: "95%"
-
-nrel_total_electrcity <- nrel_metc_electricity_comp %>%
-  filter(inventory_source == "NREL SLOPE") %>%
-  summarize(value_emissions = sum(value_emissions)) %>%
-  extract2("value_emissions")
-
-# Create the plotly graph
-fig_nrel_qa_electricity <- plot_ly(
-  data = nrel_metc_electricity_comp %>%
-    filter(emissions_year == 2021),
-  x = ~ reorder(county_name, -value_emissions),
-  y = ~value_emissions,
-  source = "fig-nrel-qa-electricity",
-  color = ~inventory_source,
-  type = "bar",
-  colors = c(
-    "NREL SLOPE" = cprg_colors$cprg_green,
-    "Metropolitan Council" = colors$councilBlue
-  ),
-  hovertemplate = ~ paste0(
-    county_name, "<br>",
-    inventory_source, "<br>",
-    round(value_emissions / 1000000, digits = 2), " million metric tons CO<sub>2</sub>e", "<br>",
-    "<extra></extra>"
-  )
-) %>%
-  plotly_layout(
-    main_title = "Electricity Emissions Inventory QA<br><sub>Comparison between Metropolitan Council and NREL SLOPE</sub>",
-    y_title = "Metric tons CO<sub>2</sub>e",
-    x_title = "County",
-    legend_title = "Inventory source",
-  ) %>%
-  layout(
-    barmode = "group",
-    hovermode = "closest",
-    legend = list(
-      traceorder = "normal"
-    )
-  )
-
-# Show the plot
-fig_nrel_qa_electricity
-```
-
-
-The NREL SLOPE (State and Local Planning for Energy) Platform provides yearly forecasted emissions tied to the user of electricity up to 2050 based on 2016 reported data at the county level. In comparing these figures to our own inventory, we observed that, where we estimated `r scales::comma(region_total_electricity, accuracy = 1)` metric tons of emissions linked to electricity deliveries in our study area in the year 2021, NREL SLOPE forecasted `r scales::comma(nrel_total_electrcity, accuracy = 1)`metrics tons in our study area.
 
 ```{r echo=FALSE}
 caption_index <- readRDS(file.path(here::here(), "caption_index.RDS"))
-caption_index <- as.character(as.numeric(caption_index) + 1) %>% stringr::str_pad(width = 2, side = "left", pad = "0")
+caption_index <- as.character(as.numeric(caption_index) + 1) %>%
+  stringr::str_pad(width = 2, side = "left", pad = "0")
 saveCap(paste0("cap-", caption_index))
 saveRDS(caption_index, file.path(here::here(), "caption_index.RDS"))
 ```
-
-{{< pagebreak >}}

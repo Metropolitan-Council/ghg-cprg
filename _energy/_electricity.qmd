@@ -275,7 +275,7 @@ fig_ctu_elec_per_cap_map
 
 ## Summary
 
-Electricity is a major source of greenhouse gas emissions in the seven-county metro, but one that is declining as the MROW grid transitions from coal to wind and solar. The 2040 carbon-free electricity standard will accelerate this trend. Sector decomposition shows that residential electricity accounts for the largest share of emissions, with the non-residential remainder split into commercial and industrial using NREL SLOPE modeled ratios. At the CTU level, per-capita emissions are highest in communities with large commercial or industrial electricity loads relative to population. As building electrification increases — shifting heating and transportation loads onto the grid — continued grid decarbonization will be critical for realizing net emissions reductions.
+Electricity is a major source of greenhouse gas emissions in the seven-county metro, but one that is declining as the MROW grid transitions from coal to wind and solar. The 2040 carbon-free electricity standard will accelerate this trend. Sector decomposition shows that residential electricity accounts for the largest share of emissions, with the non-residential remainder split into commercial and industrial using NREL SLOPE modeled ratios. At the CTU level, per-capita emissions are uneven across the region, spiking in communities with large commercial or industrial electricity loads relative to population. As building electrification increases — shifting heating and transportation loads onto the grid — continued grid decarbonization will be critical for realizing net emissions reductions.
 
 
 ```{r echo=FALSE}
