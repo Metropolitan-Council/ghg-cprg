@@ -92,13 +92,14 @@ dakota_electric_activity <- city_raw %>%
     source = "Electricity",
     utility = "Dakota Electric Association"
   ) %>%
-  select(ctu_name, 
-         ctu_class,
-         county_name,
-         emissions_year = inventory_year,
-         sector,
-         mwh_delivered,
-         source,
-         utility)
+  select(ctu_name,
+    ctu_class,
+    county_name,
+    emissions_year = inventory_year,
+    sector,
+    mwh_delivered,
+    source,
+    utility
+  )
 
 write_rds(dakota_electric_activity, here("_energy", "data", "dakota_electric_activity.RDS"))

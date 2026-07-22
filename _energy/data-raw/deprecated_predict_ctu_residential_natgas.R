@@ -64,13 +64,13 @@ coctu_population <- ctu_population %>%
 
 coctu_res_known <- ctu_utility_year %>%
   full_join(coctu_population,
-            by = c("ctu_name", "ctu_class", "inventory_year"),
-            relationship = "many-to-many"
+    by = c("ctu_name", "ctu_class", "inventory_year"),
+    relationship = "many-to-many"
   ) %>%
   mutate(
     residential_mcf = if_else(multi_county,
-                              residential_mcf * coctu_population_prop,
-                              residential_mcf
+      residential_mcf * coctu_population_prop,
+      residential_mcf
     )
   ) %>%
   filter(!is.na(residential_mcf), residential_mcf > 0) %>%
@@ -106,7 +106,7 @@ urbansim_res <- urbansim %>%
   complete(inventory_year = full_seq(c(2005, 2025), 1)) %>%
   arrange(coctu_id_gnis, ctu_id, variable, inventory_year) %>%
   mutate(value = approx(inventory_year, value, inventory_year,
-                        method = "linear", rule = 2
+    method = "linear", rule = 2
   )$y) %>%
   ungroup() %>%
   pivot_wider(
@@ -197,7 +197,7 @@ city_rf_scale <- known_with_pred %>%
 
 missing_years_out <- full_pred_grid %>%
   anti_join(coctu_res_known,
-            by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
+    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
   ) %>%
   select(
     coctu_id_gnis, ctu_name, ctu_class, county_name,
@@ -206,12 +206,12 @@ missing_years_out <- full_pred_grid %>%
   left_join(city_rf_scale, by = c("ctu_name", "ctu_class", "county_name")) %>%
   mutate(
     residential_mcf = if_else(!is.na(mean_scale),
-                              rf_predicted * mean_scale,
-                              rf_predicted
+      rf_predicted * mean_scale,
+      rf_predicted
     ),
     data_source = if_else(!is.na(mean_scale),
-                          "Model prediction (RF scaled)",
-                          "Model prediction (RF only)"
+      "Model prediction (RF scaled)",
+      "Model prediction (RF only)"
     )
   ) %>%
   select(

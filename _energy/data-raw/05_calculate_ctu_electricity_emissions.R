@@ -90,7 +90,7 @@ coctu_2005_2009_filled <- ctu_sector_props %>%
   filter(!is.na(mwh), mwh > 0) %>%
   # Keep only CTU-years without existing actuals
   anti_join(existing_2005_2009,
-            by = c("coctu_id_gnis", "county_name", "sector", "emissions_year")
+    by = c("coctu_id_gnis", "county_name", "sector", "emissions_year")
   ) %>%
   select(
     coctu_id_gnis, ctu_name, county_name,
@@ -135,9 +135,9 @@ ctu_elec_full %>%
 stopifnot(
   "Duplicate CTU-sector-year rows found" =
     ctu_elec_full %>%
-    count(coctu_id_gnis, ctu_name, ctu_class, county_name, sector, emissions_year) %>%
-    filter(n > 1) %>%
-    nrow() == 0
+      count(coctu_id_gnis, ctu_name, ctu_class, county_name, sector, emissions_year) %>%
+      filter(n > 1) %>%
+      nrow() == 0
 )
 
 # ── Convert to emissions ──────────────────────────────────────────────────────

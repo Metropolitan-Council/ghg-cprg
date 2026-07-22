@@ -57,14 +57,17 @@ sql_elec <- readRDS("_energy/data/ctu_electricity_emissions_2015_2018.rds") %>%
     names_from = sector, values_from = mwh_per_year,
     names_glue = "{tolower(sector)}_mwh"
   ) %>%
-  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
-         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh))
+  mutate(
+    total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+    total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh)
+  )
 
 # correct Elk River data
 
 sql_elec <- sql_elec %>%
-  mutate(across(c(residential_mwh, business_mwh, total_mwh),
-                ~ if_else(utility == "Elk River Municipal Utilities", . / 1000, .)
+  mutate(across(
+    c(residential_mwh, business_mwh, total_mwh),
+    ~ if_else(utility == "Elk River Municipal Utilities", . / 1000, .)
   ))
 
 ## load and format connexus data
@@ -108,8 +111,10 @@ dakota <- readRDS("_energy/data/dakota_electric_activity.RDS") %>%
     names_from = sector, values_from = mwh_per_year,
     names_glue = "{tolower(sector)}_mwh"
   ) %>%
-  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
-         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh))
+  mutate(
+    total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+    total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh)
+  )
 
 ### load and format xcel data
 xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
@@ -128,8 +133,10 @@ xcel <- readRDS("_energy/data/Xcel_elecNG_activityData_2015_2023.rds") %>%
     names_from = sector, values_from = mwh_per_year,
     names_glue = "{tolower(sector)}_mwh"
   ) %>%
-  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
-         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh))
+  mutate(
+    total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+    total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh)
+  )
 
 
 # load in municipal utility data
@@ -146,8 +153,10 @@ munis <- readRDS("_energy/data/MNelecMunis_activityData_2014_2023.rds") %>%
     names_from = sector, values_from = mwh_per_year,
     names_glue = "{tolower(sector)}_mwh"
   ) %>%
-  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
-         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh))
+  mutate(
+    total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+    total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh)
+  )
 
 # function: sequentially load data while keeping NAs
 merge_electricity_data <- function(base_df, new_data) {
@@ -270,7 +279,7 @@ cat(sprintf("%d cities interpolated\n", nrow(dea_2018_interp)))
 # Replace the NA 2018 rows with interpolated values
 ctu_utility_year <- ctu_utility_year %>%
   anti_join(dea_2018_interp,
-            by = c("ctu_name", "ctu_class", "utility", "inventory_year")
+    by = c("ctu_name", "ctu_class", "utility", "inventory_year")
   ) %>%
   bind_rows(dea_2018_interp)
 
@@ -323,8 +332,10 @@ rii_wide <- rii %>%
     names_from = sector_use, values_from = mwh_delivered,
     names_glue = "{tolower(sector_use)}_mwh"
   ) %>%
-  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
-         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh))
+  mutate(
+    total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+    total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh)
+  )
 
 # id cities with NO utility data
 
@@ -341,8 +352,10 @@ rii_fill <- empty_city_years %>%
     by = c("ctu_name", "ctu_class", "inventory_year")
   ) %>%
   select(ctu_name, ctu_class, inventory_year, utility, business_mwh, residential_mwh, total_mwh) %>%
-  mutate(total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
-         total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh)) %>%
+  mutate(
+    total_mwh = rowSums(across(c(business_mwh, residential_mwh)), na.rm = TRUE),
+    total_mwh = if_else(is.na(business_mwh) & is.na(residential_mwh), NA_real_, total_mwh)
+  ) %>%
   filter(!(is.na(business_mwh) | is.na(residential_mwh)))
 
 ctu_utility_year <- ctu_utility_year %>%
@@ -371,8 +384,10 @@ ctu_compiled_yoy <- ctu_complete_years %>%
   ungroup()
 
 compiled_flags <- ctu_compiled_yoy %>%
-  filter(abs(pct_change) >= 20,
-         inventory_year - prev_year == 1) %>%
+  filter(
+    abs(pct_change) >= 20,
+    inventory_year - prev_year == 1
+  ) %>%
   arrange(ctu_name, ctu_class, inventory_year)
 
 compiled_flags %>% print(n = Inf)
@@ -380,11 +395,15 @@ compiled_flags %>% print(n = Inf)
 ## Xcel 2022 reporting change?
 
 xcel_2022_jump <- ctu_utility_year %>%
-  filter(utility == "Xcel Energy",
-         inventory_year %in% c(2021, 2022)) %>%
+  filter(
+    utility == "Xcel Energy",
+    inventory_year %in% c(2021, 2022)
+  ) %>%
   select(ctu_name, ctu_class, inventory_year, residential_mwh, business_mwh) %>%
-  pivot_wider(names_from = inventory_year, 
-              values_from = c(residential_mwh, business_mwh)) %>%
+  pivot_wider(
+    names_from = inventory_year,
+    values_from = c(residential_mwh, business_mwh)
+  ) %>%
   mutate(
     res_pct = (residential_mwh_2022 - residential_mwh_2021) / residential_mwh_2021 * 100,
     biz_pct = (business_mwh_2022 - business_mwh_2021) / business_mwh_2021 * 100
@@ -396,8 +415,10 @@ xcel_2022_jump %>% print(n = Inf)
 ctu_utility_year %>%
   filter(utility == "Xcel Energy", inventory_year %in% 2019:2023) %>%
   group_by(inventory_year) %>%
-  summarise(total_res = sum(residential_mwh, na.rm = TRUE),
-            total_biz = sum(business_mwh, na.rm = TRUE))
+  summarise(
+    total_res = sum(residential_mwh, na.rm = TRUE),
+    total_biz = sum(business_mwh, na.rm = TRUE)
+  )
 # unclear if this is systemic change, reallocations, or just normal noise.
 # assuming the latter for now.
 
@@ -414,7 +435,9 @@ phantoms <- ctu_utility_year %>%
   filter(!ever_reported)
 
 cat("=== Phantom utility rows removed ===\n")
-phantoms %>% arrange(ctu_name, utility) %>% print(n = Inf)
+phantoms %>%
+  arrange(ctu_name, utility) %>%
+  print(n = Inf)
 
 ctu_utility_year <- ctu_utility_year %>%
   anti_join(phantoms, by = c("ctu_name", "ctu_class", "utility"))
@@ -465,43 +488,49 @@ mvec_metro_cities <- c(
   "Belle Plaine", "Credit River", "Elko New Market", "Jordan",
   "Prior Lake", "Savage", "Shakopee",
   # Scott County townships
-  "Belle Plaine",  # township shares name with city, ctu_class distinguishes
+  "Belle Plaine", # township shares name with city, ctu_class distinguishes
   "Helena", "Sand Creek", "Spring Lake", "Saint Lawrence",
   # Carver County cities
   "Carver", "Chanhassen", "Cologne", "Mayer",
   "Norwood Young America", "Victoria", "Waconia",
   # Carver County townships
   "Benton", "Camden", "Dahlgren", "Hollywood",
-  "Laketown", "San Francisco", "Waconia",  # township
+  "Laketown", "San Francisco", "Waconia", # township
   "Watertown", "Young America"
 )
 
 ctu_utility_year <- ctu_utility_year %>%
-  filter(!ctu_name %in% c("Champlin",
-                          "Columbus",
-                          "Bethel",# Connexus has 3x as many residential premises listed as there are residents, excluding.
-                          "Nowthen", # conversely Connexus seems to underestimate residence here (and mwh as a result)
-                          "Oak Grove",
-                          mvec_metro_cities))%>% 
+  filter(!ctu_name %in% c(
+    "Champlin",
+    "Columbus",
+    "Bethel", # Connexus has 3x as many residential premises listed as there are residents, excluding.
+    "Nowthen", # conversely Connexus seems to underestimate residence here (and mwh as a result)
+    "Oak Grove",
+    mvec_metro_cities
+  )) %>%
   mutate( # fix clear individual reporting errors
-        # Oakdale 2022: residential clearly erroneous (3.75 MWh vs ~77K typical)
-        across(c(residential_mwh, total_mwh),
-               ~ if_else(ctu_name == "Oakdale" & inventory_year == 2022, NA_real_, .)
-        ),
-        # Mendota 2016: business reporting error (67 MWh vs ~400 typical)
-        across(c(business_mwh, total_mwh),
-               ~ if_else(ctu_name == "Mendota" & inventory_year == 2016, NA_real_, .)
-        ),
-        # Bayport: Stillwater prison distorts business data via privacy redactions
-        across(c(business_mwh, total_mwh),
-               ~ if_else(ctu_name == "Bayport", NA_real_, .)
-        ),
-        # Rogers 2015-2017: Wright-Hennepin reported separately then rolled into
-        # Xcel 2018+, making 2015-2017 incomplete
-        across(c(residential_mwh, business_mwh, total_mwh),
-               ~ if_else(ctu_name == "Rogers" & inventory_year %in% 2015:2017, NA_real_, .)
-        )
-      )
+    # Oakdale 2022: residential clearly erroneous (3.75 MWh vs ~77K typical)
+    across(
+      c(residential_mwh, total_mwh),
+      ~ if_else(ctu_name == "Oakdale" & inventory_year == 2022, NA_real_, .)
+    ),
+    # Mendota 2016: business reporting error (67 MWh vs ~400 typical)
+    across(
+      c(business_mwh, total_mwh),
+      ~ if_else(ctu_name == "Mendota" & inventory_year == 2016, NA_real_, .)
+    ),
+    # Bayport: Stillwater prison distorts business data via privacy redactions
+    across(
+      c(business_mwh, total_mwh),
+      ~ if_else(ctu_name == "Bayport", NA_real_, .)
+    ),
+    # Rogers 2015-2017: Wright-Hennepin reported separately then rolled into
+    # Xcel 2018+, making 2015-2017 incomplete
+    across(
+      c(residential_mwh, business_mwh, total_mwh),
+      ~ if_else(ctu_name == "Rogers" & inventory_year %in% 2015:2017, NA_real_, .)
+    )
+  )
 
 ## save output file
 

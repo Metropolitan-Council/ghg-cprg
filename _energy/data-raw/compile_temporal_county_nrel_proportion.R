@@ -130,14 +130,16 @@ ggplot(electric_interpolated, aes(x = emissions_year, y = activity, col = county
 natgas_raw <- readRDS(file.path(here::here("_energy", "data", "county_natgas_activity.RDS"))) %>%
   as_tibble() %>%
   bind_rows(
-    readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>% 
+    readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>%
       rename(emissions_year = year)
   ) %>%
-  mutate(mcf_delivered = if_else(is.na(mcf_delivered),
-                                 emissions_metric_tons_co2e / natgas_ef_scf$mt_co2e_mcf,
-                                 mcf_delivered
-  ),
-  sector = "Natural gas") # removing because MERC filing in not in Commerce edocket
+  mutate(
+    mcf_delivered = if_else(is.na(mcf_delivered),
+      emissions_metric_tons_co2e / natgas_ef_scf$mt_co2e_mcf,
+      mcf_delivered
+    ),
+    sector = "Natural gas"
+  ) # removing because MERC filing in not in Commerce edocket
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -181,14 +183,14 @@ natgas_interpolated <- left_join(
     activity_type = "mcf delivered"
   ) %>%
   select(emissions_year,
-         county_name,
-         sector,
-         activity = mcf_modeled,
-         activity_type,
-         data_source,
-         factor_source = Source,
-         value_emissions,
-         unit_emissions
+    county_name,
+    sector,
+    activity = mcf_modeled,
+    activity_type,
+    data_source,
+    factor_source = Source,
+    value_emissions,
+    unit_emissions
   )
 
 ggplot(natgas_interpolated, aes(x = emissions_year, y = value_emissions, col = county_name)) +
@@ -227,21 +229,21 @@ average_proportions <- nrel_proportions %>%
 
 nrel_proportions_expanded <- nrel_proportions %>%
   bind_rows(average_proportions %>%
-              expand(county_name, source, sector_raw, emissions_year = 2005:2016) %>%
-              left_join(average_proportions, by = join_by(county_name, source, sector_raw)) %>%
-              rename(sector_proportion = mean_prop))
+    expand(county_name, source, sector_raw, emissions_year = 2005:2016) %>%
+    left_join(average_proportions, by = join_by(county_name, source, sector_raw)) %>%
+    rename(sector_proportion = mean_prop))
 
 electric_natgas_nrel_proportioned <- bind_rows(
   electric_interpolated,
   natgas_interpolated
 ) %>%
   select(county_name,
-         source = sector, emissions_year, value_emissions, unit_emissions,
-         data_source, factor_source
+    source = sector, emissions_year, value_emissions, unit_emissions,
+    data_source, factor_source
   ) %>%
   mutate(source = str_to_sentence(source)) %>%
   left_join(nrel_proportions_expanded,
-            by = c("county_name", "source" = "source", "emissions_year")
+    by = c("county_name", "source" = "source", "emissions_year")
   ) %>%
   mutate(
     value_emissions = round(sector_proportion * value_emissions, digits = 2)
@@ -268,11 +270,11 @@ saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_pr
 # relative to Carver County totals. Including it would introduce a
 # poorly-constrained backcast with no methodological benefit.
 # ════════════════════════════════════════════════════════════════════
-# 
+#
 # natgas_mcf_per_scf <- 1 / 1000 # 1 mcf = 1000 scf
-# 
+#
 # fuel_combustion_activity <- readRDS("_industrial/data/fuel_combustion_activity.RDS")
-# 
+#
 # # ── 1. Measured power plant gas by county-year (GHGRP 2011–2023) ─────────────
 # powerplant_natgas_measured <- fuel_combustion_activity %>%
 #   filter(
@@ -290,15 +292,15 @@ saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_pr
 #     .groups = "drop"
 #   ) %>%
 #   rename(year = reporting_year)
-# 
+#
 # # ── 2. Backcast to 2005–2010 via Kalman smoothing ────────────────────────────
 # # NAs in 2005–2010 are extrapolated backward from the 2011 anchor.
 # # Large baseload plants (Black Dog, Riverside, High Bridge, Allen King,
 # # Blue Lake, Elk River) were operating continuously before GHGRP, so a
 # # flat backward extrapolation is reasonable.
-# 
+#
 # all_pp_counties <- unique(powerplant_natgas_measured$county_name)
-# 
+#
 # powerplant_natgas_full <- expand.grid(
 #   year = 2005:2023,
 #   county_name = all_pp_counties,
@@ -316,7 +318,7 @@ saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_pr
 #     )
 #   ) %>%
 #   ungroup()
-# 
+#
 # # ── 3. Convert to emissions and save for documentation/validation ─────────────
 # powerplant_natgas_county <- powerplant_natgas_full %>%
 #   cross_join(natgas_ef_scf %>% select(factor_source = Source, mt_co2e_mcf)) %>%
@@ -335,9 +337,9 @@ saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_pr
 #     n_facilities,
 #     facility_names
 #   )
-# 
+#
 # # saveRDS(powerplant_natgas_county, "_energy/data/county_powerplant_natgas.RDS")
-# 
+#
 # # ── 4. Subtract from the Industrial sector slice only ────────────────────────
 # electric_natgas_pp_adjusted <- electric_natgas_nrel_proportioned %>%
 #   left_join(
@@ -350,14 +352,14 @@ saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_pr
 #   ) %>%
 #   mutate(
 #     value_emissions_powerplant = replace_na(value_emissions_powerplant, 0),
-# 
+#
 #     # only touch the Industrial natural gas row
 #     value_emissions_adjusted = if_else(
 #       sector == "industrial" & source == "Natural gas",
 #       value_emissions - value_emissions_powerplant,
 #       value_emissions
 #     ),
-# 
+#
 #     # sanity checks against the industrial slice, not the county total
 #     pct_removed = if_else(
 #       sector == "industrial" & source == "Natural gas" & value_emissions > 0,
@@ -373,7 +375,7 @@ saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_pr
 #         pct_removed > 0.50 ~ "MODERATE: powerplant 50–90% of industrial gas",
 #       TRUE ~ "ok"
 #     ),
-# 
+#
 #     # floor at zero
 #     value_emissions_final = pmax(value_emissions_adjusted, 0),
 #     data_source = if_else(
@@ -383,7 +385,7 @@ saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_pr
 #       data_source
 #     )
 #   )
-# 
+#
 # # ── 5. Print and save sanity flag report ─────────────────────────────────────
 # pp_flags <- electric_natgas_pp_adjusted %>%
 #   filter(sanity_flag != "ok") %>%
@@ -393,7 +395,7 @@ saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_pr
 #     pct_removed, sanity_flag
 #   ) %>%
 #   arrange(county_name, year)
-# 
+#
 # if (nrow(pp_flags) > 0) {
 #   message(glue::glue(
 #     "\n⚠  Power plant subtraction flags: {nrow(pp_flags)} county-years",
@@ -403,9 +405,9 @@ saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_pr
 # } else {
 #   message("✓ No power plant subtraction sanity flags.")
 # }
-# 
+#
 # saveRDS(pp_flags, "_energy/data/powerplant_natgas_subtraction_flags.RDS")
-# 
+#
 # # Diagnostic plot: industrial natural gas before and after subtraction
 # electric_natgas_pp_adjusted %>%
 #   filter(sector == "Industrial", source == "Natural gas") %>%
@@ -418,7 +420,7 @@ saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_pr
 #     title = "Industrial natural gas: before and after power plant subtraction",
 #     y = "MT CO2e", x = NULL, col = NULL
 #   )
-# 
+#
 # # ── 6. Final tidy output ──────────────────────────────────────────────────────
 # electric_natgas_nrel_proportioned_final <- electric_natgas_pp_adjusted %>%
 #   select(
@@ -428,7 +430,7 @@ saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_pr
 #     data_source,
 #     factor_source
 #   )
-# 
+#
 # saveRDS(
 #   electric_natgas_nrel_proportioned_final,
 #   "_energy/data/electric_natgas_nrel_proportioned_expanded.RDS"

@@ -144,15 +144,16 @@ connexus_activity <- city_township_connexus %>%
   mutate(
     source = "Electricity",
     utility = "Connexus Energy"
-  )  %>%
-  select(ctu_name, 
-         ctu_class,
-         county_name,
-         emissions_year = year,
-         sector,
-         mwh_delivered,
-         source,
-         utility)
+  ) %>%
+  select(ctu_name,
+    ctu_class,
+    county_name,
+    emissions_year = year,
+    sector,
+    mwh_delivered,
+    source,
+    utility
+  )
 
 
 write_rds(connexus_activity, here("_energy", "data", "connexus_electric_activity.RDS"))

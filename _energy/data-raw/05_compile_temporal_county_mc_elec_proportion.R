@@ -77,7 +77,7 @@ county_res <- ctu_elec %>%
 county_wide <- county_mwh %>%
   left_join(county_res, by = c("county_name", "emissions_year")) %>%
   mutate(
-    Residential    = replace_na(Residential, 0),
+    Residential = replace_na(Residential, 0),
     non_residential = mwh_county - Residential,
     # Guard against negative remainder (CTU residential > county total)
     non_residential = pmax(non_residential, 0)
@@ -151,7 +151,7 @@ county_elec_emissions <- county_mwh_activity %>%
   mutate(
     value_emissions = round(value_activity * mt_co2e_mwh, digits = 2),
     unit_emissions = "Metric tons CO2e",
-    factor_source   = Source,
+    factor_source = Source,
     data_source = case_when(
       sector == "Residential" ~ "Met Council CTU modeling",
       sector %in% c("Commercial", "Industrial") ~

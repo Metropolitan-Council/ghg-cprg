@@ -68,13 +68,13 @@ coctu_population <- ctu_population %>%
 
 coctu_res_known <- ctu_utility_year %>%
   full_join(coctu_population,
-            by = c("ctu_name", "ctu_class", "inventory_year"),
-            relationship = "many-to-many"
+    by = c("ctu_name", "ctu_class", "inventory_year"),
+    relationship = "many-to-many"
   ) %>%
   mutate(
     residential_mwh = if_else(multi_county,
-                              residential_mwh * coctu_population_prop,
-                              residential_mwh
+      residential_mwh * coctu_population_prop,
+      residential_mwh
     )
   ) %>%
   filter(!is.na(residential_mwh), residential_mwh > 0) %>%
@@ -112,7 +112,7 @@ urbansim_res <- urbansim %>%
   complete(inventory_year = full_seq(c(2005, 2025), 1)) %>%
   arrange(coctu_id_gnis, ctu_id, variable, inventory_year) %>%
   mutate(value = approx(inventory_year, value, inventory_year,
-                        method = "linear", rule = 2
+    method = "linear", rule = 2
   )$y) %>%
   ungroup() %>%
   pivot_wider(
@@ -205,7 +205,7 @@ full_pred_grid <- cprg_ctu %>%
     )
   ) %>%
   filter(inventory_year %in% 2010:2023) %>%
-  left_join(mn_parcel_res %>% select(-ctu_name), by = c("gnis" = "ctu_id"))%>%
+  left_join(mn_parcel_res %>% select(-ctu_name), by = c("gnis" = "ctu_id")) %>%
   mutate(across(
     all_of(parcel_cols),
     ~ if_else(is.na(.), mean(., na.rm = TRUE), .)
@@ -234,7 +234,7 @@ city_rf_scale <- known_with_pred %>%
 
 missing_years_out <- full_pred_grid %>%
   anti_join(coctu_res_known,
-            by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
+    by = c("ctu_name", "ctu_class", "county_name", "inventory_year")
   ) %>%
   select(
     coctu_id_gnis, ctu_name, ctu_class, county_name,
@@ -243,12 +243,12 @@ missing_years_out <- full_pred_grid %>%
   left_join(city_rf_scale, by = c("ctu_name", "ctu_class", "county_name")) %>%
   mutate(
     residential_mwh = if_else(!is.na(mean_scale),
-                              rf_predicted * mean_scale,
-                              rf_predicted
+      rf_predicted * mean_scale,
+      rf_predicted
     ),
     data_source = if_else(!is.na(mean_scale),
-                          "Model prediction (RF scaled)",
-                          "Model prediction (RF only)"
+      "Model prediction (RF scaled)",
+      "Model prediction (RF only)"
     )
   ) %>%
   select(
@@ -331,12 +331,12 @@ coctu_res_adj <- coctu_res_out %>%
       1
     ),
     is_modeled = !data_source %in% c("Utility report", "RII utility data"),
-    floor_hit  = is_modeled &
+    floor_hit = is_modeled &
       !is.na(apply_floor) &
       apply_floor &
       residential_mwh < res_floor_prop,
     residential_mwh = if_else(floor_hit, res_floor_prop, residential_mwh),
-    data_source     = if_else(
+    data_source = if_else(
       floor_hit,
       paste0(data_source, " [partial utility floor]"),
       data_source
@@ -370,11 +370,11 @@ floor_scale <- coctu_res_adj %>%
 coctu_res_adj_out <- coctu_res_adj %>%
   left_join(floor_scale, by = c("ctu_name", "ctu_class", "county_name")) %>%
   mutate(
-    apply_scale     = data_source == "Model prediction (RF only)" & !is.na(mean_scale),
+    apply_scale = data_source == "Model prediction (RF only)" & !is.na(mean_scale),
     residential_mwh = if_else(apply_scale, residential_mwh * mean_scale, residential_mwh),
-    data_source     = if_else(apply_scale,
-                              "Model prediction (RF only) [floor correction propagated]",
-                              data_source
+    data_source = if_else(apply_scale,
+      "Model prediction (RF only) [floor correction propagated]",
+      data_source
     )
   ) %>%
   select(-mean_scale, -apply_scale)
@@ -434,19 +434,27 @@ res_per_capita <- coctu_res_adj_out %>%
   ) %>%
   filter(!is.na(ctu_population), ctu_population > 0) %>%
   mutate(mwh_per_capita = residential_mwh / ctu_population) %>%
-  select(ctu_name, ctu_class, county_name, ctu_population,
-         residential_mwh, mwh_per_capita, data_source) %>%
+  select(
+    ctu_name, ctu_class, county_name, ctu_population,
+    residential_mwh, mwh_per_capita, data_source
+  ) %>%
   arrange(desc(mwh_per_capita))
 
 cat("=== Residential MWh per capita, 2022 ===\n")
-cat(sprintf("Median: %.1f  Mean: %.1f\n",
-            median(res_per_capita$mwh_per_capita),
-            mean(res_per_capita$mwh_per_capita)))
+cat(sprintf(
+  "Median: %.1f  Mean: %.1f\n",
+  median(res_per_capita$mwh_per_capita),
+  mean(res_per_capita$mwh_per_capita)
+))
 
 cat("\n--- Top 20 (possible over-prediction) ---\n")
-res_per_capita %>% head(20) %>% print(n = 20, width = Inf)
+res_per_capita %>%
+  head(20) %>%
+  print(n = 20, width = Inf)
 
 cat("\n--- Bottom 20 (possible under-reporting) ---\n")
-res_per_capita %>% tail(20) %>% print(n = 20, width = Inf)
+res_per_capita %>%
+  tail(20) %>%
+  print(n = 20, width = Inf)
 
 saveRDS(coctu_res_adj_out, "_energy/data-raw/predicted_coctu_residential_mwh.rds")

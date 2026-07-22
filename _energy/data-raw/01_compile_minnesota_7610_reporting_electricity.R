@@ -32,21 +32,21 @@ dir_mn_electricity_state <- here(
   "_energy", "data-raw", "mn_elec_utility_reporting_state"
 )
 
-# name harmonization 
+# name harmonization
 # Utility names vary across filing years . This lookup maps all observed variants
 # to a single canonical name. Add new entries as they surface.
 
 utility_name_lookup <- c(
   # Xcel filed as Northern States Power through 2013
   "Northern States Power Company" = "Xcel Energy",
-  "Northern States Power"         = "Xcel Energy",
-  
+  "Northern States Power" = "Xcel Energy",
+
   # Chaska capitalization inconsistency in 2020 filing
-  "CITY OF CHASKA"                = "City of Chaska",
-  
+  "CITY OF CHASKA" = "City of Chaska",
+
   # North Branch has appeared under three names
   "North Branch Municipal Water & Light" = "City of North Branch",
-  "North Branch Water & Light"           = "City of North Branch"
+  "North Branch Water & Light" = "City of North Branch"
 )
 
 harmonize_utility_names <- function(names) {
@@ -61,34 +61,34 @@ harmonize_utility_names <- function(names) {
 #
 
 known_gaps <- tribble(
-  ~utility_name,                  ~emissions_year, ~gap_type,     ~notes,
+  ~utility_name, ~emissions_year, ~gap_type, ~notes,
   # GRE did not file 7610s before 2016 or for 2019-2020
-  
-  "Great River Energy",           2013L,           "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "Great River Energy",           2014L,           "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "Great River Energy",           2015L,           "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "Great River Energy",           2019L,           "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "Great River Energy",           2020L,           "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+
+  "Great River Energy", 2013L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "Great River Energy", 2014L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "Great River Energy", 2015L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "Great River Energy", 2019L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "Great River Energy", 2020L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
   # Elk River Municipal — sporadic 7610 filing history
-  "Elk River Municipal Utilities", 2013L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "Elk River Municipal Utilities", 2014L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "Elk River Municipal Utilities", 2020L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "Elk River Municipal Utilities", 2022L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "Elk River Municipal Utilities", 2023L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "Elk River Municipal Utilities", 2013L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "Elk River Municipal Utilities", 2014L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "Elk River Municipal Utilities", 2020L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "Elk River Municipal Utilities", 2022L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "Elk River Municipal Utilities", 2023L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
   # Shakopee Public Utilities — missing early years
-  "Shakopee Public Utilities",     2013L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "Shakopee Public Utilities",     2014L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "Shakopee Public Utilities", 2013L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "Shakopee Public Utilities", 2014L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
   # Princeton Public Utilities — missing early years
-  "Princeton Public Utilities",    2013L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "Princeton Public Utilities",    2014L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "Princeton Public Utilities",    2015L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
+  "Princeton Public Utilities", 2013L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "Princeton Public Utilities", 2014L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "Princeton Public Utilities", 2015L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
   # City of North Branch — only sporadic filings
-  "City of North Branch",          2014L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "City of North Branch",          2015L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "City of North Branch",          2016L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "City of North Branch",          2017L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "City of North Branch",          2018L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling",
-  "City of North Branch",          2020L,          "not_filed",   "No 7610 filing found on MN Commerce eFiling"
+  "City of North Branch", 2014L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "City of North Branch", 2015L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "City of North Branch", 2016L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "City of North Branch", 2017L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "City of North Branch", 2018L, "not_filed", "No 7610 filing found on MN Commerce eFiling",
+  "City of North Branch", 2020L, "not_filed", "No 7610 filing found on MN Commerce eFiling"
 )
 
 
@@ -99,15 +99,15 @@ known_gaps <- tribble(
 
 discover_files <- function(root_dir) {
   utility_folders <- list.dirs(root_dir, recursive = FALSE)
-  
+
   file_list <- list()
-  
+
   for (utility_folder in utility_folders) {
     year_folders <- list.dirs(utility_folder, recursive = FALSE)
-    
+
     for (year_folder in year_folders) {
       xlsx_files <- list.files(year_folder, pattern = "\\.xlsx$", full.names = TRUE)
-      
+
       for (f in xlsx_files) {
         file_list <- append(file_list, list(list(
           file_path = f,
@@ -117,7 +117,7 @@ discover_files <- function(root_dir) {
       }
     }
   }
-  
+
   file_list
 }
 
@@ -130,21 +130,21 @@ read_registration <- function(file_path) {
     read_excel(file_path, sheet = "Registration", range = "A5:C9", col_names = FALSE),
     error = function(e) NULL
   )
-  
+
   if (is.null(reg)) {
     warning("No Registration sheet found in: ", file_path)
     return(list(entity_id = NA, emissions_year = NA, utility_name = NA))
   }
-  
+
   # C5 = entity ID, C6 = report year, C9 = utility name
   # The range A5:C9 gives us rows 5-9, so indices are:
   # row 1 (A5) -> entity_id in col 3
   # row 2 (A6) -> report year in col 3
   # row 5 (A9) -> utility name in col 3
   list(
-    entity_id   = as.integer(reg[[3]][1]),
+    entity_id = as.integer(reg[[3]][1]),
     emissions_year = as.integer(reg[[3]][2]),
-    utility_name   = as.character(reg[[3]][5])
+    utility_name = as.character(reg[[3]][5])
   )
 }
 
@@ -158,28 +158,28 @@ parse_county_data <- function(file_path) {
     read_excel(file_path, sheet = "ElectricityByCounty", col_names = FALSE),
     error = function(e) NULL
   )
-  
+
   if (is.null(raw)) {
     warning("No ElectricityByCounty sheet in: ", file_path)
     return(tibble())
   }
-  
+
   # Find header row: column A contains "COUNTY" and column C contains "MWH"
   header_row <- which(
     toupper(as.character(raw[[1]])) == "COUNTY" &
       grepl("MWH", toupper(as.character(raw[[3]])))
   )
-  
+
   if (length(header_row) == 0) {
     warning("Could not find header anchor in: ", file_path)
     return(tibble())
   }
-  
+
   header_row <- header_row[1]
   # Data starts 2 rows below the header (header = "COUNTY", subheader = "CODE",
   # first data row follows)
   data_start <- header_row + 2
-  
+
   # --- Left panel: columns A (code), B (name), C (MWh) ---
   left_panel <- tibble(
     county_code    = as.integer(raw[[1]][data_start:nrow(raw)]),
@@ -188,7 +188,7 @@ parse_county_data <- function(file_path) {
   ) %>%
     # Stop at first NA county_code (end of the 1-45 block)
     filter(!is.na(county_code))
-  
+
   # --- Right panel: columns E (code), F (name), G (MWh) ---
   right_panel <- tibble(
     county_code    = as.integer(raw[[5]][data_start:nrow(raw)]),
@@ -198,23 +198,23 @@ parse_county_data <- function(file_path) {
     # Stop at first NA county_code -- this filters out WI rows like
     # "Burnett, Douglass, Washburn, WI" (no integer code) and GRAND TOTAL
     filter(!is.na(county_code))
-  
+
   combined <- bind_rows(left_panel, right_panel)
-  
+
   # Treat NA mwh as zero (utility doesn't operate in that county)
   combined <- combined %>%
     mutate(value_activity = replace_na(value_activity, 0))
-  
+
   # --- Grand total validation ---
   # Look for "GRAND TOTAL" in column F to grab the entered total
   grand_total_row <- which(
     grepl("GRAND TOTAL.*Entered", as.character(raw[[6]]), ignore.case = TRUE)
   )
-  
+
   if (length(grand_total_row) > 0) {
     entered_total <- as.numeric(raw[[7]][grand_total_row[1]])
-    parsed_total  <- sum(combined$value_activity, na.rm = TRUE)
-    
+    parsed_total <- sum(combined$value_activity, na.rm = TRUE)
+
     # Only compare MN counties (the entered total may include WI)
     # So we check against all parsed rows (which already exclude WI via
     # the county_code filter). If the utility has WI operations, there
@@ -228,7 +228,7 @@ parse_county_data <- function(file_path) {
       )
     }
   }
-  
+
   combined
 }
 
@@ -241,22 +241,22 @@ all_records <- list()
 
 for (i in seq_along(file_list)) {
   fi <- file_list[[i]]
-  
+
   # Read metadata from the workbook itself
   meta <- read_registration(fi$file_path)
-  
+
   if (is.na(meta$emissions_year) || is.na(meta$utility_name)) {
     warning(
       "Skipping file (missing Registration metadata): ", fi$file_path
     )
     next
   }
-  
+
   # Parse county data
   county_data <- parse_county_data(fi$file_path)
-  
+
   if (nrow(county_data) == 0) next
-  
+
   # Attach metadata and harmonize utility name
   county_data <- county_data %>%
     mutate(
@@ -266,7 +266,7 @@ for (i in seq_along(file_list)) {
       unit_activity  = "mwh",
       data_source    = "mn_7610"
     )
-  
+
   all_records[[i]] <- county_data
 }
 
@@ -345,11 +345,11 @@ message("\n=== Coverage Summary ===")
 utility_years <- elec_7610 %>%
   group_by(utility_name) %>%
   summarise(
-    n_years   = n_distinct(emissions_year),
-    min_year  = min(emissions_year),
-    max_year  = max(emissions_year),
+    n_years = n_distinct(emissions_year),
+    min_year = min(emissions_year),
+    max_year = max(emissions_year),
     n_counties = n_distinct(county_name),
-    total_mwh  = sum(value_activity),
+    total_mwh = sum(value_activity),
     .groups = "drop"
   ) %>%
   arrange(desc(total_mwh))
@@ -361,7 +361,7 @@ print(utility_years, n = 50)
 county_year_totals <- elec_7610 %>%
   group_by(emissions_year, county_name) %>%
   summarise(
-    total_mwh   = sum(value_activity),
+    total_mwh = sum(value_activity),
     n_utilities = n_distinct(utility_name),
     .groups = "drop"
   )
@@ -412,7 +412,7 @@ if (nrow(resolved) > 0) {
 if (nrow(unresolved) > 0) {
   message(sprintf("\n%d known data gaps remain unresolved:", nrow(unresolved)))
   print(unresolved)
-  
+
   # Estimate magnitude of missing data using adjacent years
   gap_magnitude <- unresolved %>%
     filter(gap_type == "not_filed") %>%
@@ -432,7 +432,7 @@ if (nrow(unresolved) > 0) {
       affected_counties = paste(county_name, collapse = ", "),
       .groups = "drop"
     )
-  
+
   if (nrow(gap_magnitude) > 0) {
     message("\nEstimated missing load from unfiled utilities (based on avg of filed years):")
     print(gap_magnitude)

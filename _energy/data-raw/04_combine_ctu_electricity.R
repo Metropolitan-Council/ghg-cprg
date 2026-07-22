@@ -6,7 +6,7 @@ source("R/_load_pkgs.R")
 # ── Load predictions ──────────────────────────────────────────────────────────
 
 coctu_busi <- read_rds("_energy/data-raw/predicted_coctu_business_mwh.rds")
-coctu_res  <- read_rds("_energy/data-raw/predicted_coctu_residential_mwh.rds")
+coctu_res <- read_rds("_energy/data-raw/predicted_coctu_residential_mwh.rds")
 
 # ── Utility totals ────────────────────────────────────────────────────────────
 # Only use totals where we have complete utility coverage.
@@ -36,10 +36,10 @@ util_totals <- ctu_utility_mwh %>%
 
 city_combined <- bind_rows(
   coctu_res %>% transmute(ctu_name, ctu_class, inventory_year,
-                          mwh = residential_mwh
+    mwh = residential_mwh
   ),
   coctu_busi %>% transmute(ctu_name, ctu_class, inventory_year,
-                           mwh = business_mwh
+    mwh = business_mwh
   )
 ) %>%
   group_by(ctu_name, ctu_class, inventory_year) %>%
@@ -68,16 +68,16 @@ coctu_busi_scale <- coctu_busi %>%
   left_join(scale_lookup, by = c("ctu_name", "ctu_class", "inventory_year")) %>%
   mutate(
     business_mwh = if_else(!is.na(scale_factor),
-                           business_mwh * scale_factor,
-                           business_mwh
+      business_mwh * scale_factor,
+      business_mwh
     ),
     data_source = if_else(!is.na(scale_factor),
-                          paste0(data_source, if_else(
-                            scale_factor > 1,
-                            " [scaled up to utility total]",
-                            " [scaled down to utility total]"
-                          )),
-                          data_source
+      paste0(data_source, if_else(
+        scale_factor > 1,
+        " [scaled up to utility total]",
+        " [scaled down to utility total]"
+      )),
+      data_source
     )
   ) %>%
   select(-scale_factor, -gap_pct)
@@ -86,16 +86,16 @@ coctu_res_scale <- coctu_res %>%
   left_join(scale_lookup, by = c("ctu_name", "ctu_class", "inventory_year")) %>%
   mutate(
     residential_mwh = if_else(!is.na(scale_factor),
-                              residential_mwh * scale_factor,
-                              residential_mwh
+      residential_mwh * scale_factor,
+      residential_mwh
     ),
     data_source = if_else(!is.na(scale_factor),
-                          paste0(data_source, if_else(
-                            scale_factor > 1,
-                            " [scaled up to utility total]",
-                            " [scaled down to utility total]"
-                          )),
-                          data_source
+      paste0(data_source, if_else(
+        scale_factor > 1,
+        " [scaled up to utility total]",
+        " [scaled down to utility total]"
+      )),
+      data_source
     )
   ) %>%
   select(-scale_factor, -gap_pct)
@@ -122,12 +122,12 @@ coctu_busi_scale <- coctu_busi_scale %>%
     apply_prop = grepl("Model prediction", data_source) &
       !scaled & !is.na(mean_overshoot_scale),
     business_mwh = if_else(apply_prop,
-                           business_mwh * mean_overshoot_scale,
-                           business_mwh
+      business_mwh * mean_overshoot_scale,
+      business_mwh
     ),
     data_source = if_else(apply_prop,
-                          paste0(data_source, " [overshoot correction propagated]"),
-                          data_source
+      paste0(data_source, " [overshoot correction propagated]"),
+      data_source
     )
   ) %>%
   select(-mean_overshoot_scale, -scaled, -apply_prop)
@@ -140,12 +140,12 @@ coctu_res_scale <- coctu_res_scale %>%
     apply_prop = grepl("Model prediction", data_source) &
       !scaled & !is.na(mean_overshoot_scale),
     residential_mwh = if_else(apply_prop,
-                              residential_mwh * mean_overshoot_scale,
-                              residential_mwh
+      residential_mwh * mean_overshoot_scale,
+      residential_mwh
     ),
     data_source = if_else(apply_prop,
-                          paste0(data_source, " [overshoot correction propagated]"),
-                          data_source
+      paste0(data_source, " [overshoot correction propagated]"),
+      data_source
     )
   ) %>%
   select(-mean_overshoot_scale, -scaled, -apply_prop)
@@ -196,7 +196,7 @@ stopifnot(
 )
 
 # ── Year-over-year spike check ────────────────────────────────────────────────
-# Raw YoY percent change in total electricity. 
+# Raw YoY percent change in total electricity.
 
 spike_check <- ctu_elec_combined %>%
   group_by(coctu_id_gnis, ctu_name, ctu_class, county_name, inventory_year) %>%
@@ -215,7 +215,7 @@ spike_check <- ctu_elec_combined %>%
         inventory_year, sector, data_source
       ) %>%
       pivot_wider(
-        names_from  = sector,
+        names_from = sector,
         values_from = data_source,
         names_prefix = "source_"
       ) %>%
@@ -226,8 +226,8 @@ spike_check <- ctu_elec_combined %>%
 # Distribution to help calibrate threshold
 cat("YoY change distribution (all city-years):\n")
 print(quantile(spike_check$yoy_pct_change,
-               probs = c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99),
-               na.rm = TRUE
+  probs = c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99),
+  na.rm = TRUE
 ))
 
 spike_threshold <- 30
@@ -244,20 +244,22 @@ cat(sprintf(
 ))
 
 print(spikes %>%
-        select(
-          ctu_name, ctu_class, county_name, inventory_year,
-          total_mwh, yoy_pct_change,
-          source_residential, source_business
-        ) %>%
-        head(30), n = 60)
+  select(
+    ctu_name, ctu_class, county_name, inventory_year,
+    total_mwh, yoy_pct_change,
+    source_residential, source_business
+  ) %>%
+  head(30), n = 60)
 
-spike_cities <- c("Bayport",
-                  "Pine Springs",
-                  "Hastings",
-                  "Rogers",
-                  "Mendota")
+spike_cities <- c(
+  "Bayport",
+  "Pine Springs",
+  "Hastings",
+  "Rogers",
+  "Mendota"
+)
 
-# spike_cities <- c("Lauderdale", "Falcon Heights", "Cottage Grove", 
+# spike_cities <- c("Lauderdale", "Falcon Heights", "Cottage Grove",
 #                   "Newport", "Maplewood")
 
 ctu_elec_combined %>%
@@ -276,8 +278,8 @@ ctu_elec_combined %>%
     )
   ) %>%
   ggplot(aes(inventory_year, mwh,
-             color = source_type,
-             linetype = sector
+    color = source_type,
+    linetype = sector
   )) +
   geom_line(linewidth = 0.8) +
   geom_point(size = 1.8) +
@@ -307,12 +309,12 @@ ctu_elec_combined %>%
     legend.box = "vertical"
   )
 
-ctu_utility_mwh %>% 
-  filter(ctu_name %in% spike_cities) %>% 
+ctu_utility_mwh %>%
+  filter(ctu_name %in% spike_cities) %>%
   print(n = 200)
 
-ctu_utility_mwh %>% 
-  filter(ctu_name %in% spike_cities) %>% 
+ctu_utility_mwh %>%
+  filter(ctu_name %in% spike_cities) %>%
   print(n = 200)
 
 # ── Save ──────────────────────────────────────────────────────────────────────

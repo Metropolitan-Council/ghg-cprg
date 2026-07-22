@@ -66,49 +66,49 @@ dir.create(dir_eia_861, showWarnings = FALSE, recursive = TRUE)
 
 eia_name_lookup <- c(
   # --- Great River Energy and member co-ops ---
-  "Great River Energy"               = "Great River Energy",
-  "Dakota Electric Assn"             = "Great River Energy",
-  "Dakota Elec Assn"                 = "Great River Energy",
-  "Dakota Electric Association"      = "Great River Energy",
-  "Wright-Hennepin Coop Elec Assn"   = "Great River Energy",
-  "Wright-Hennepin Cooperative"      = "Great River Energy",
-  "Minnesota Valley Elec Coop"       = "Great River Energy",
-  "Minnesota Valley Electric Coop"   = "Great River Energy",
-  "Minnesota Valley Coop L&P Assn"   = "Great River Energy",
-  "McLeod Cooperative Power Assn"    = "Great River Energy",
-  "McLeod Coop Power Assn"          = "Great River Energy",
-  "McLeod Cooperative Power"         = "Great River Energy",
-  "East Central Energy"              = "Great River Energy",
-  "East Central Elec Assn"           = "Great River Energy",
-  "Goodhue County Coop Elec Assn"    = "Great River Energy",
-  "Goodhue County Coop Electric"     = "Great River Energy",
-  "Goodhue County Cooperative"       = "Great River Energy",
-  
+  "Great River Energy" = "Great River Energy",
+  "Dakota Electric Assn" = "Great River Energy",
+  "Dakota Elec Assn" = "Great River Energy",
+  "Dakota Electric Association" = "Great River Energy",
+  "Wright-Hennepin Coop Elec Assn" = "Great River Energy",
+  "Wright-Hennepin Cooperative" = "Great River Energy",
+  "Minnesota Valley Elec Coop" = "Great River Energy",
+  "Minnesota Valley Electric Coop" = "Great River Energy",
+  "Minnesota Valley Coop L&P Assn" = "Great River Energy",
+  "McLeod Cooperative Power Assn" = "Great River Energy",
+  "McLeod Coop Power Assn" = "Great River Energy",
+  "McLeod Cooperative Power" = "Great River Energy",
+  "East Central Energy" = "Great River Energy",
+  "East Central Elec Assn" = "Great River Energy",
+  "Goodhue County Coop Elec Assn" = "Great River Energy",
+  "Goodhue County Coop Electric" = "Great River Energy",
+  "Goodhue County Cooperative" = "Great River Energy",
+
   # --- Xcel Energy / Northern States Power ---
   "Northern States Power Co - Minnesota" = "Xcel Energy",
-  "Northern States Power Co"         = "Xcel Energy",
-  "Northern States Power Company"    = "Xcel Energy",
-  "Xcel Energy Inc"                  = "Xcel Energy",
-  "Xcel Energy"                      = "Xcel Energy",
-  
+  "Northern States Power Co" = "Xcel Energy",
+  "Northern States Power Company" = "Xcel Energy",
+  "Xcel Energy Inc" = "Xcel Energy",
+  "Xcel Energy" = "Xcel Energy",
+
   # --- Connexus Energy (was Anoka Electric Coop pre-2008) ---
-  "Connexus Energy"                  = "Connexus Energy",
-  "Anoka Electric Coop"              = "Connexus Energy",
-  
+  "Connexus Energy" = "Connexus Energy",
+  "Anoka Electric Coop" = "Connexus Energy",
+
   # --- Municipal utilities ---
-  "City of Shakopee"                 = "Shakopee Public Utilities",
-  "Shakopee Public Utilities Comm"   = "Shakopee Public Utilities",
-  "Elk River Muni Utilities"         = "Elk River Municipal Utilities",
-  "Elk River Municipal Utilities"    = "Elk River Municipal Utilities",
-  "City of Elk River"                = "Elk River Municipal Utilities",
-  "City of Chaska"                   = "City of Chaska",
-  "City of Chaska - (MN)"            = "City of Chaska",
-  "Princeton Public Utils Comm"      = "Princeton Public Utilities",
-  "Princeton Public Utilities"       = "Princeton Public Utilities",
-  "City of North Branch"             = "City of North Branch",
-  "North Branch Water & Light"       = "City of North Branch",
-  "North Branch Water & Light Comm"  = "City of North Branch",
-  "City of Anoka"                    = "City of Anoka"
+  "City of Shakopee" = "Shakopee Public Utilities",
+  "Shakopee Public Utilities Comm" = "Shakopee Public Utilities",
+  "Elk River Muni Utilities" = "Elk River Municipal Utilities",
+  "Elk River Municipal Utilities" = "Elk River Municipal Utilities",
+  "City of Elk River" = "Elk River Municipal Utilities",
+  "City of Chaska" = "City of Chaska",
+  "City of Chaska - (MN)" = "City of Chaska",
+  "Princeton Public Utils Comm" = "Princeton Public Utilities",
+  "Princeton Public Utilities" = "Princeton Public Utilities",
+  "City of North Branch" = "City of North Branch",
+  "North Branch Water & Light" = "City of North Branch",
+  "North Branch Water & Light Comm" = "City of North Branch",
+  "City of Anoka" = "City of Anoka"
 )
 
 
@@ -123,16 +123,16 @@ harmonize_eia_names <- function(names) {
 download_eia_861 <- function(years, dest_dir) {
   for (yr in years) {
     zip_file <- file.path(dest_dir, sprintf("f861%d.zip", yr))
-    
+
     if (file.exists(zip_file)) next
-    
+
     # URL pattern varies by year:
     #   2024+  (latest): .../eia861/zip/f861YYYY.zip
     #   2012-2023:       .../eia861/archive/zip/f861YYYY.zip
     #   2005-2011:       .../eia861/archive/zip/861_YYYY.zip (reformatted)
     # The reformatted files (2005-2011) have standardized column names
     # matching the newer files. Prefer those over the originals.
-    
+
     if (yr >= 2024) {
       url <- sprintf(
         "https://www.eia.gov/electricity/data/eia861/zip/f861%d.zip", yr
@@ -147,7 +147,7 @@ download_eia_861 <- function(years, dest_dir) {
         "https://www.eia.gov/electricity/data/eia861/archive/zip/861_%d.zip", yr
       )
     }
-    
+
     message(sprintf("Downloading EIA 861 for %d...", yr))
     tryCatch(
       download.file(url, zip_file, mode = "wb", quiet = TRUE),
@@ -166,43 +166,46 @@ download_eia_861 <- function(years, dest_dir) {
 
 parse_eia_861_sales <- function(zip_file, year) {
   temp_dir <- tempdir()
-  
+
   # List files in zip, find the sales file
   zip_contents <- unzip(zip_file, list = TRUE)$Name
   # Pattern varies: "Sales_Ult_Cust_2020.xlsx", "sales_ult_cust_2013.xlsx",
   # older years may be .xls or .csv
   sales_file <- grep("sales_ult_cust|Sales_Ult_Cust|sales_ult", zip_contents,
-                     value = TRUE, ignore.case = TRUE)
-  
+    value = TRUE, ignore.case = TRUE
+  )
+
   if (length(sales_file) == 0) {
-    warning(sprintf("No Sales_Ult_Cust file found in %s. Contents: %s",
-                    basename(zip_file),
-                    paste(zip_contents, collapse = ", ")))
+    warning(sprintf(
+      "No Sales_Ult_Cust file found in %s. Contents: %s",
+      basename(zip_file),
+      paste(zip_contents, collapse = ", ")
+    ))
     return(tibble())
   }
-  
+
   # Use the first match (xlsx preferred over csv)
   sales_file <- sales_file[1]
   unzip(zip_file, files = sales_file, exdir = temp_dir, overwrite = TRUE)
   extracted_path <- file.path(temp_dir, sales_file)
-  
+
   # --- Detect header row ------------------------------------------------------
   # Some years have multi-row headers or metadata rows above the data.
   # Strategy: read without headers, find the row containing "Utility" or
   # "State" as text, use that as the header row.
-  
+
   if (grepl("\\.xlsx$|\\.xls$", sales_file, ignore.case = TRUE)) {
     # First read a preview to find the header
     preview <- tryCatch(
       read_excel(extracted_path, col_names = FALSE, n_max = 10),
       error = function(e) NULL
     )
-    
+
     if (is.null(preview)) {
       warning(sprintf("Could not read %s for year %d", sales_file, year))
       return(tibble())
     }
-    
+
     # Find the row that looks like column headers (contains "Utility" or "State")
     header_row <- NA
     for (r in seq_len(nrow(preview))) {
@@ -212,14 +215,16 @@ parse_eia_861_sales <- function(zip_file, year) {
         break
       }
     }
-    
+
     skip_n <- if (!is.na(header_row)) header_row - 1 else 0
-    
+
     raw <- tryCatch(
       read_excel(extracted_path, skip = skip_n, guess_max = 10000),
       error = function(e) {
-        warning(sprintf("Failed to read %s for year %d: %s",
-                        sales_file, year, e$message))
+        warning(sprintf(
+          "Failed to read %s for year %d: %s",
+          sales_file, year, e$message
+        ))
         return(NULL)
       }
     )
@@ -229,61 +234,69 @@ parse_eia_861_sales <- function(zip_file, year) {
       error = function(e) NULL
     )
   }
-  
-  if (is.null(raw) || nrow(raw) == 0) return(tibble())
-  
+
+  if (is.null(raw) || nrow(raw) == 0) {
+    return(tibble())
+  }
+
   # Standardize column names: lowercase, strip whitespace/punctuation
   names(raw) <- tolower(trimws(names(raw)))
   # Replace multiple spaces/underscores with single underscore
   names(raw) <- gsub("[\\s._]+", "_", names(raw))
   # Remove trailing underscores
   names(raw) <- gsub("_$", "", names(raw))
-  
+
   # --- Find key columns by pattern matching -----------------------------------
   # EIA 861 files have character encoding issues where 's' is dropped/replaced
   # with '_' in some column names (e.g., "state" → "_tate", "service" →
   # "_ervice"). Column names also vary across years. Match broadly.
   col_names <- names(raw)
-  
+
   find_col <- function(patterns) {
     for (p in patterns) {
       matches <- grep(p, col_names, value = TRUE, ignore.case = TRUE)
-      if (length(matches) > 0) return(matches[1])
+      if (length(matches) > 0) {
+        return(matches[1])
+      }
     }
     NA_character_
   }
-  
-  name_col  <- find_col(c("^utility_name$", "^utility_n", "utility.*name",
-                          "^utility$"))
+
+  name_col <- find_col(c(
+    "^utility_name$", "^utility_n", "utility.*name",
+    "^utility$"
+  ))
   state_col <- find_col(c("^state$", "^_tate$", "tate$", "^st$"))
-  
+
   # Sector MWh columns: the header is a multi-line cell that collapses into
   # positional names like "megawatthour_10", "megawatthour_13", etc.
   # They always appear in order: residential, commercial, industrial,
   # transportation, total. Find all megawatthour columns and assign by position.
   mwh_cols <- grep("megawatthour", col_names, value = TRUE, ignore.case = TRUE)
-  
+
   # Also check for cleanly-named columns (some years may have proper names)
   res_col <- find_col(c("^residential$", "res.*sales", "res.*megawatt", "res.*mwh"))
-  com_col <- find_col(c("^commercial$", "comm.*sales", "com.*sales",
-                        "comm.*megawatt", "com.*mwh"))
+  com_col <- find_col(c(
+    "^commercial$", "comm.*sales", "com.*sales",
+    "comm.*megawatt", "com.*mwh"
+  ))
   ind_col <- find_col(c("^industrial$", "ind.*sales", "ind.*megawatt", "ind.*mwh"))
   tot_col <- find_col(c("^total$", "total.*sales", "total.*megawatt"))
-  
+
   # If named sector columns weren't found, fall back to positional megawatthour
   if (is.na(res_col) && length(mwh_cols) >= 5) {
-    res_col <- mwh_cols[1]  # 1st megawatthour = residential
-    com_col <- mwh_cols[2]  # 2nd = commercial
-    ind_col <- mwh_cols[3]  # 3rd = industrial
+    res_col <- mwh_cols[1] # 1st megawatthour = residential
+    com_col <- mwh_cols[2] # 2nd = commercial
+    ind_col <- mwh_cols[3] # 3rd = industrial
     # mwh_cols[4] = transportation (skip)
-    tot_col <- mwh_cols[5]  # 5th = total
+    tot_col <- mwh_cols[5] # 5th = total
   } else if (is.na(res_col) && length(mwh_cols) >= 3) {
     # Fewer columns — assign what we can, compute total
     res_col <- mwh_cols[1]
     com_col <- mwh_cols[2]
     ind_col <- mwh_cols[3]
   }
-  
+
   if (is.na(name_col) || is.na(state_col)) {
     warning(sprintf(
       "Could not find utility_name or state column for year %d. Columns: %s",
@@ -291,42 +304,45 @@ parse_eia_861_sales <- function(zip_file, year) {
     ))
     return(tibble())
   }
-  
+
   # --- Filter to MN and build output ------------------------------------------
   # Filter first, then build columns — avoids size mismatch errors
   mn_rows <- which(toupper(as.character(raw[[state_col]])) == "MN")
-  
-  if (length(mn_rows) == 0) return(tibble())
-  
+
+  if (length(mn_rows) == 0) {
+    return(tibble())
+  }
+
   raw_mn <- raw[mn_rows, ]
-  
+
   result <- tibble(
     utility_name_raw = as.character(raw_mn[[name_col]]),
     state            = "MN",
     emissions_year   = as.integer(year)
   )
-  
+
   # Safely add sector columns, coercing "." to NA
   safe_numeric <- function(x) suppressWarnings(as.numeric(as.character(x)))
-  
+
   if (!is.na(res_col)) result$residential <- safe_numeric(raw_mn[[res_col]])
-  if (!is.na(com_col)) result$commercial  <- safe_numeric(raw_mn[[com_col]])
-  if (!is.na(ind_col)) result$industrial  <- safe_numeric(raw_mn[[ind_col]])
-  if (!is.na(tot_col)) result$total       <- safe_numeric(raw_mn[[tot_col]])
-  
+  if (!is.na(com_col)) result$commercial <- safe_numeric(raw_mn[[com_col]])
+  if (!is.na(ind_col)) result$industrial <- safe_numeric(raw_mn[[ind_col]])
+  if (!is.na(tot_col)) result$total <- safe_numeric(raw_mn[[tot_col]])
+
   # Compute total if not present but sectors are
   if (!"total" %in% names(result) &&
-      all(c("residential", "commercial", "industrial") %in% names(result))) {
+    all(c("residential", "commercial", "industrial") %in% names(result))) {
     result$total <- rowSums(
-      result[, c("residential", "commercial", "industrial")], na.rm = TRUE
+      result[, c("residential", "commercial", "industrial")],
+      na.rm = TRUE
     )
   }
-  
+
   # Apply name harmonization and drop zero/NA totals
   result <- result %>%
     mutate(utility_name = harmonize_eia_names(utility_name_raw)) %>%
     filter(!is.na(total), total > 0)
-  
+
   message(sprintf("  %d: %d MN utilities parsed", year, nrow(result)))
   result
 }
@@ -338,7 +354,9 @@ download_eia_861(full_year_range, dir_eia_861)
 
 eia_861_raw <- map_dfr(full_year_range, function(yr) {
   zip_file <- file.path(dir_eia_861, sprintf("f861%d.zip", yr))
-  if (!file.exists(zip_file)) return(tibble())
+  if (!file.exists(zip_file)) {
+    return(tibble())
+  }
   parse_eia_861_sales(zip_file, yr)
 })
 
@@ -347,8 +365,10 @@ eia_861_raw <- map_dfr(full_year_range, function(yr) {
 eia_861 <- eia_861_raw %>%
   group_by(utility_name, emissions_year) %>%
   summarise(
-    across(any_of(c("residential", "commercial", "industrial", "total")),
-           ~sum(.x, na.rm = TRUE)),
+    across(
+      any_of(c("residential", "commercial", "industrial", "total")),
+      ~ sum(.x, na.rm = TRUE)
+    ),
     .groups = "drop"
   )
 
@@ -378,8 +398,10 @@ message(sprintf(
 # statewide proportions (not proportions of the 9-county subtotal).
 
 county_proportions <- elec_7610 %>%
-  select(utility_name, emissions_year, county_name, county_code,
-         value_activity) %>%
+  select(
+    utility_name, emissions_year, county_name, county_code,
+    value_activity
+  ) %>%
   left_join(
     eia_861 %>% select(utility_name, emissions_year, state_total = total),
     by = c("utility_name", "emissions_year")
@@ -388,8 +410,10 @@ county_proportions <- elec_7610 %>%
   mutate(
     county_proportion = value_activity / state_total
   ) %>%
-  select(utility_name, emissions_year, county_name, county_code,
-         county_proportion)
+  select(
+    utility_name, emissions_year, county_name, county_code,
+    county_proportion
+  )
 
 # QA: check that per-utility proportions sum to something reasonable
 # (should be well under 1.0 — our 9 counties are a subset of the state)
@@ -425,7 +449,7 @@ earliest_proportions <- county_proportions %>%
   group_by(utility_name, county_name, county_code) %>%
   summarise(
     avg_proportion = mean(county_proportion, na.rm = TRUE),
-    n_years_used   = n(),
+    n_years_used = n(),
     .groups = "drop"
   )
 
@@ -459,10 +483,10 @@ if (n_suspect > 0) {
     n_suspect, nrow(suspect_filings)
   ))
   print(suspect_filings)
-  
+
   elec_7610 <- elec_7610 %>%
     anti_join(suspect_filings, by = c("utility_name", "emissions_year"))
-  
+
   # Also recompute county proportions without the suspect years
   county_proportions <- county_proportions %>%
     anti_join(suspect_filings, by = c("utility_name", "emissions_year"))
@@ -496,42 +520,46 @@ fill_records <- list()
 
 for (i in seq_len(nrow(missing_utility_years))) {
   gap <- missing_utility_years[i, ]
-  
+
   # Get EIA 861 state total for this utility-year
   eia_total <- eia_861 %>%
-    filter(utility_name == gap$utility_name,
-           emissions_year == gap$emissions_year) %>%
+    filter(
+      utility_name == gap$utility_name,
+      emissions_year == gap$emissions_year
+    ) %>%
     pull(total)
-  
+
   if (length(eia_total) == 0 || is.na(eia_total)) next
-  
+
   # Find the nearest year with county proportions
   available_years <- county_proportions %>%
     filter(utility_name == gap$utility_name) %>%
     distinct(emissions_year) %>%
     pull()
-  
+
   if (length(available_years) == 0) next
-  
+
   nearest_year <- available_years[which.min(abs(available_years - gap$emissions_year))]
-  
+
   # Get county proportions from the nearest year
   props <- county_proportions %>%
-    filter(utility_name == gap$utility_name,
-           emissions_year == nearest_year)
-  
+    filter(
+      utility_name == gap$utility_name,
+      emissions_year == nearest_year
+    )
+
   # Tag provenance: backcast if before first 7610, gap-fill if within range
   first_7610 <- min(
     (observed_utility_years %>%
-       filter(utility_name == gap$utility_name))$emissions_year
+      filter(utility_name == gap$utility_name))$emissions_year
   )
-  
+
   source_tag <- if_else(
     gap$emissions_year < first_7610,
     "eia_861_backcast",
     "eia_861_gapfill"
   )
-  
+
   # Allocate the EIA 861 total to counties
   filled <- props %>%
     mutate(
@@ -540,10 +568,12 @@ for (i in seq_len(nrow(missing_utility_years))) {
       unit_activity  = "mwh",
       data_source    = source_tag
     ) %>%
-    select(emissions_year, county_name, county_code, utility_name,
-           value_activity, unit_activity, data_source) %>%
+    select(
+      emissions_year, county_name, county_code, utility_name,
+      value_activity, unit_activity, data_source
+    ) %>%
     filter(value_activity > 0)
-  
+
   fill_records[[i]] <- filled
 }
 
@@ -562,8 +592,10 @@ message(sprintf(
 
 # Strip entity_id from 7610 data before binding (not present in gap/backcast)
 elec_7610_slim <- elec_7610 %>%
-  select(emissions_year, county_name, county_code, utility_name,
-         value_activity, unit_activity, data_source)
+  select(
+    emissions_year, county_name, county_code, utility_name,
+    value_activity, unit_activity, data_source
+  )
 
 utility_elec_activity <- bind_rows(
   elec_7610_slim,
@@ -587,7 +619,7 @@ if (nrow(dupes) > 0) {
 provenance_summary <- utility_elec_activity %>%
   group_by(data_source) %>%
   summarise(
-    n_rows    = n(),
+    n_rows = n(),
     total_mwh = sum(value_activity, na.rm = TRUE),
     .groups = "drop"
   )
@@ -605,17 +637,17 @@ print(provenance_summary)
 county_year_provenance <- utility_elec_activity %>%
   mutate(
     source_label = case_when(
-      data_source == "mn_7610"              ~ "7610 observed",
+      data_source == "mn_7610" ~ "7610 observed",
       data_source == "manual_annual_report" ~ "7610 observed",
-      data_source == "eia_861_gapfill"      ~ "EIA 861 gap-fill",
-      data_source == "eia_861_backcast"     ~ "EIA 861 backcast"
+      data_source == "eia_861_gapfill" ~ "EIA 861 gap-fill",
+      data_source == "eia_861_backcast" ~ "EIA 861 backcast"
     )
   ) %>%
   group_by(emissions_year, county_name, source_label) %>%
   summarise(total_mwh = sum(value_activity, na.rm = TRUE), .groups = "drop") %>%
   mutate(
     source_label = factor(source_label,
-                          levels = c("7610 observed", "EIA 861 gap-fill", "EIA 861 backcast")
+      levels = c("7610 observed", "EIA 861 gap-fill", "EIA 861 backcast")
     ),
     size_tier = if_else(
       county_name %in% c("Hennepin", "Ramsey", "Dakota", "Anoka", "Washington"),
@@ -671,13 +703,17 @@ county_year_total <- utility_elec_activity %>%
 earliest_7610 <- min(elec_7610$emissions_year)
 
 p_trend <- ggplot(county_year_total, aes(x = emissions_year, y = total_mwh / 1e6)) +
-  geom_vline(xintercept = earliest_7610 - 0.5, linetype = "dashed",
-             color = "gray50", linewidth = 0.5) +
+  geom_vline(
+    xintercept = earliest_7610 - 0.5, linetype = "dashed",
+    color = "gray50", linewidth = 0.5
+  ) +
   geom_line(aes(color = county_name), linewidth = 0.8) +
   geom_point(aes(color = county_name), size = 1.5) +
-  annotate("text", x = earliest_7610 - 0.5, y = Inf,
-           label = "← backcast | 7610 →", hjust = 0.5, vjust = 2,
-           size = 3, color = "gray40") +
+  annotate("text",
+    x = earliest_7610 - 0.5, y = Inf,
+    label = "← backcast | 7610 →", hjust = 0.5, vjust = 2,
+    size = 3, color = "gray40"
+  ) +
   facet_wrap(~size_tier, ncol = 1, scales = "free_y") +
   scale_x_continuous(breaks = seq(2005, latest_year, by = 2)) +
   scale_y_continuous(labels = function(x) paste0(x, "M")) +
@@ -709,15 +745,18 @@ eia_vs_7610 <- elec_7610 %>%
   ) %>%
   mutate(
     pct_diff = (mwh_7610 - mwh_eia) / mwh_eia * 100,
-    label    = if_else(abs(pct_diff) > 15,
-                       sprintf("%s %d", utility_name, emissions_year), NA_character_)
+    label = if_else(abs(pct_diff) > 15,
+      sprintf("%s %d", utility_name, emissions_year), NA_character_
+    )
   )
 
 p_eia_check <- ggplot(eia_vs_7610, aes(x = mwh_eia / 1e6, y = mwh_7610 / 1e6)) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
   geom_point(aes(color = utility_name), alpha = 0.7, size = 2) +
-  geom_text(aes(label = label), size = 2.5, hjust = -0.1, vjust = 1.5,
-            na.rm = TRUE) +
+  geom_text(aes(label = label),
+    size = 2.5, hjust = -0.1, vjust = 1.5,
+    na.rm = TRUE
+  ) +
   labs(
     title = "EIA 861 vs 7610: utility-level MWh comparison",
     subtitle = "Points on the dashed line = perfect agreement. Labels = >15% discrepancy.",
@@ -758,4 +797,3 @@ message("\nProvenance breakdown:")
 utility_elec_activity %>%
   count(data_source) %>%
   print()
-

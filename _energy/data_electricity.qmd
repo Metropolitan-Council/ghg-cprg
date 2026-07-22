@@ -130,7 +130,6 @@ nrel_target <- nrel_proportioned %>%
 
 # ── Sector colors (shared across both methods) ──────────────────────────────
 sector_colors <- c(
-
   "Residential" = colors$councilBlue,
   "Commercial"  = cprg_colors$cprg_green,
   "Industrial"  = cprg_colors$cprg_yellow
