@@ -56,75 +56,63 @@ natgas_ef_scf <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
   summarize(mt_co2e_mcf = sum(mt_co2e_mcf), .groups = "keep") %>%
   ungroup()
 
-electric_raw <- readRDS(file.path(here::here("_energy", "data", "minnesota_county_elec_ActivityAndEmissions.RDS"))) %>%
-  # bind_rows(readRDS(file.path(here::here(), "_energy/data/wisconsin_county_ElecEmissions.RDS")) %>%
-  #             rename(county = county_name)) %>%
-  select(year, county, mwh = total_mWh_delivered, sector) %>%
-  # get 2005 MN data
-  bind_rows(readRDS(file.path(here::here(), "_energy/data/minnesota_county_ElecEmissions.RDS")) %>%
-    filter(year == 2005) %>%
-    select(year, county, mwh = total_mWh, sector))
 
-### patch in WI estimates for now with a per capita mwh estimate from 2021
+# ════════════════════════════════════════════════════════════════════
+# ELECTRICITY: COUNTY ACTIVITY
+# MN counties: complete 2005–2023 from new 7610/EIA 861 pipeline
+# WI counties: per-capita estimate anchored to 2021 utility reports
+# ════════════════════════════════════════════════════════════════════
 
-county_pop <- readRDS(file.path(here::here("_meta", "data", "census_county_population.RDS")))
+# ── MN counties from new pipeline (already gap-filled and backcasted) ────────
+electric_mn <- readRDS(here::here("_energy", "data", "county_elec_activity.RDS")) %>%
+  transmute(
+    emissions_year,
+    county_name,
+    mwh = value_activity,
+    data_source = "Utility report (7610/EIA 861)"
+  )
 
-wi_electric <- readRDS(file.path(here::here("_energy", "data", "wisconsin_elecUtils_ActivityAndEmissions.RDS"))) %>%
+# ── WI counties via per-capita estimate from 2021 ───────────────────────────
+county_pop <- readRDS(here::here("_meta", "data", "census_county_population.RDS"))
+
+wi_electric <- readRDS(here::here("_energy", "data", "wisconsin_elecUtils_ActivityAndEmissions.RDS")) %>%
   group_by(county_name) %>%
-  summarize(mwh = sum(coalesced_utilityCounty_mWh)) %>%
-  ungroup() %>%
+  summarize(mwh = sum(coalesced_utilityCounty_mWh), .groups = "drop") %>%
   left_join(
-    county_pop %>%
-      filter(population_year == 2021),
+    county_pop %>% filter(population_year == 2021),
     by = "county_name"
   ) %>%
   mutate(mwh_per_capita = mwh / population) %>%
   select(county_name, mwh_per_capita) %>%
   left_join(
-    county_pop %>%
-      filter(population_year >= 2005),
+    county_pop %>% filter(population_year >= 2005),
     by = "county_name"
   ) %>%
-  mutate(
+  transmute(
+    emissions_year = as.numeric(population_year),
+    county_name,
     mwh = mwh_per_capita * population,
-    sector = "Electricity",
-    year = as.numeric(population_year)
-  ) %>%
-  select(year,
-    county = county_name,
-    mwh,
-    sector
+    data_source = if_else(
+      emissions_year == 2021,
+      "Utility report",
+      "Population based estimate"
+    )
   )
 
-
-electric_interpolated <- left_join(
-  expand.grid(
-    year = 2005:2023,
-    county = unique(electric_raw$county),
-    sector = "Electricity"
-  ),
-  electric_raw,
-  by = join_by(year, county, sector)
-) %>%
-  bind_rows(wi_electric) %>%
+# ── Combine and calculate emissions ─────────────────────────────────────────
+electric_interpolated <- bind_rows(electric_mn, wi_electric) %>%
+  mutate(sector = "Electricity") %>%
+  left_join(egrid_temporal, by = c("emissions_year" = "Year")) %>%
   mutate(
-    mwh_modeled = na_kalman(mwh),
-    data_source = case_when(
-      is.na(mwh) ~ "Interpolated",
-      county %in% c("St. Croix", "Pierce") & year != 2021 ~ "Population based estimate",
-      TRUE ~ "Utility report"
-    )
-  ) %>%
-  left_join(egrid_temporal, by = c("year" = "Year")) %>%
-  mutate(
-    value_emissions = mt_co2e_mwh * mwh_modeled,
+    value_emissions = mt_co2e_mwh * mwh,
     unit_emissions = "Metric tons CO2e",
     activity_type = "mWh delivered"
   ) %>%
-  select(year,
-    county_name = county,
+  select(
+    emissions_year,
+    county_name,
     sector,
-    activity = mwh_modeled,
+    activity = mwh,
     activity_type,
     data_source,
     factor_source = Source,
@@ -132,8 +120,12 @@ electric_interpolated <- left_join(
     unit_emissions
   )
 
-ggplot(electric_interpolated, aes(x = year, y = activity, col = county_name)) +
-  geom_line()
+ggplot(electric_interpolated, aes(x = emissions_year, y = activity, col = county_name)) +
+  geom_line() +
+  labs(title = "County electricity deliveries (MWh)", x = NULL, y = "MWh")
+
+
+
 
 natgas_raw <- readRDS(file.path(here::here("_energy", "data", "county_natgas_activity.RDS"))) %>%
   as_tibble() %>%
@@ -146,6 +138,27 @@ natgas_raw <- readRDS(file.path(here::here("_energy", "data", "county_natgas_act
                                  mcf_delivered
   ),
   sector = "Natural gas") # removing because MERC filing in not in Commerce edocket
+
+
+# ════════════════════════════════════════════════════════════════════
+# NATURAL GAS: COUNTY ACTIVITY
+# (unchanged from previous version)
+# ════════════════════════════════════════════════════════════════════
+
+natgas_raw <- readRDS(file.path(here::here("_energy", "data", "county_natgas_activity.RDS"))) %>%
+  as_tibble() %>%
+  bind_rows(
+    readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>%
+      rename(emissions_year = year)
+  ) %>%
+  mutate(
+    mcf_delivered = if_else(
+      is.na(mcf_delivered),
+      emissions_metric_tons_co2e / natgas_ef_scf$mt_co2e_mcf,
+      mcf_delivered
+    ),
+    sector = "Natural gas"
+  )
 
 
 natgas_interpolated <- left_join(
@@ -168,26 +181,29 @@ natgas_interpolated <- left_join(
     activity_type = "mcf delivered"
   ) %>%
   select(emissions_year,
-    county_name,
-    sector,
-    activity = mcf_modeled,
-    activity_type,
-    data_source,
-    factor_source = Source,
-    value_emissions,
-    unit_emissions
+         county_name,
+         sector,
+         activity = mcf_modeled,
+         activity_type,
+         data_source,
+         factor_source = Source,
+         value_emissions,
+         unit_emissions
   )
 
 ggplot(natgas_interpolated, aes(x = emissions_year, y = value_emissions, col = county_name)) +
-  geom_line()
+  geom_line() +
+  labs(title = "County natural gas emissions", x = NULL, y = "MT CO2e")
+
 
 ## write intermediary activity data files
+# NOTE: county_elec_activity.RDS is now produced by the 01/02 pipeline scripts
+# for MN counties. This version adds WI and is used for NREL proportioning only.
 
 saveRDS(natgas_interpolated, "_energy/data/county_natgas_activity_nrel.RDS")
-saveRDS(electric_interpolated, "_energy/data/county_elec_activity.RDS")
+saveRDS(electric_interpolated, "_energy/data/county_elec_activity_nrel.RDS")
 
-# waldo::compare(natgas_interpolated, readRDS("_energy/data/county_natgas_activity.RDS"))
-# waldo::compare(electric_interpolated, readRDS("_energy/data/county_elec_activity.RDS"))
+
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -207,25 +223,25 @@ nrel_proportions <- nrel_emissions %>%
 
 average_proportions <- nrel_proportions %>%
   group_by(county_name, source, sector_raw) %>%
-  summarize(mean_prop = mean(sector_proportion), .groups = "keep") %>%
-  ungroup()
+  summarize(mean_prop = mean(sector_proportion), .groups = "drop")
 
 nrel_proportions_expanded <- nrel_proportions %>%
   bind_rows(average_proportions %>%
-    expand(county_name, source, sector_raw, emissions_year = 2005:2016) %>%
-    left_join(average_proportions, by = join_by(county_name, source, sector_raw)) %>%
-    rename(sector_proportion = mean_prop))
+              expand(county_name, source, sector_raw, emissions_year = 2005:2016) %>%
+              left_join(average_proportions, by = join_by(county_name, source, sector_raw)) %>%
+              rename(sector_proportion = mean_prop))
 
-electric_natgas_nrel_proportioned <- electric_interpolated %>%
-  rename(emissions_year = year) %>% 
-  bind_rows(natgas_interpolated) %>%
+electric_natgas_nrel_proportioned <- bind_rows(
+  electric_interpolated,
+  natgas_interpolated
+) %>%
   select(county_name,
-    source = sector, emissions_year, value_emissions, unit_emissions,
-    data_source, factor_source
+         source = sector, emissions_year, value_emissions, unit_emissions,
+         data_source, factor_source
   ) %>%
   mutate(source = str_to_sentence(source)) %>%
   left_join(nrel_proportions_expanded,
-    by = c("county_name", "source" = "source", "emissions_year")
+            by = c("county_name", "source" = "source", "emissions_year")
   ) %>%
   mutate(
     value_emissions = round(sector_proportion * value_emissions, digits = 2)
@@ -234,6 +250,7 @@ electric_natgas_nrel_proportioned <- electric_interpolated %>%
   mutate(category = if_else(source == "Electricity", "Electricity", "Building Fuel"))
 
 saveRDS(electric_natgas_nrel_proportioned, "_energy/data/electric_natgas_nrel_proportioned_expanded.RDS")
+
 
 # ════════════════════════════════════════════════════════════════════
 # STEP 2: POWER PLANT NATURAL GAS SUBTRACTION FROM INDUSTRIAL SECTOR
