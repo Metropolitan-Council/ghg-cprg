@@ -76,11 +76,19 @@ This approach parallels the natural gas sector decomposition but is simpler: ele
 
 ## NREL SLOPE sector comparison
 
-The chart below compares NREL SLOPE modeled sector proportions with our final sector allocation for the seven-county metro. NREL SLOPE's commercial and industrial split is used to decompose our non-residential remainder, so the ratio between those two sectors is identical by construction. The key difference is in the residential share: our CTU-level random forest model may produce a different residential total than NREL's modeled forecast, which shifts the absolute magnitude of the commercial and industrial estimates.
+The chart below compares two approaches to sector decomposition for the seven-county metro:
+
+- **CTU model (current method)**: Residential electricity is estimated from CTU-level random forest predictions aggregated to county. The non-residential remainder (county total minus residential) is split into commercial and industrial using NREL SLOPE modeled ratios.
+- **Pure NREL proportioning (prior method)**: All three sector shares (residential, commercial, industrial) are derived from NREL SLOPE modeled proportions applied directly to county utility delivery totals. This remains the production method for the four collar counties (Chisago, Sherburne, St. Croix, Pierce) where CTU-level modeling is not available.
+
+The two methods share the same county-level electricity totals and the same NREL commercial-to-industrial ratio. The difference lies entirely in how residential is estimated: the CTU model anchors residential to utility-reported and modeled CTU data, while pure NREL proportioning applies NREL's forecasted residential share (built from a 2016 base year) to the county total. This difference in residential magnitude cascades into the commercial and industrial estimates, since both are derived from the remaining non-residential balance.
+
+The CTU model demonstrates that the NREL model appears to underestimate residential electricity shares across the region. Furthermore, some uncertainty remains on proportioning between industrial and commercial electricity demand, as Washington and Dakota counties in particular should demonstrate outsized industrial electricity consumption based on large point sources. As it stands, they do appear to have a closer ratio of commercial to industrial. Ultimately, precise industrial point source data is hidden behind privacy laws and a more accurate estimation is unavailable, to the best of our knowledge.
 
 ```{r include=FALSE}
 # ── Load data for NREL comparison ────────────────────────────────────────────
 
+# Current method: CTU residential + NREL C/I split of remainder
 county_elec_sector <- readRDS(file.path(
   here::here(), "_energy/data/county_elec_emissions_by_sector.RDS"
 )) %>%
@@ -89,101 +97,140 @@ county_elec_sector <- readRDS(file.path(
     emissions_year == target_year
   )
 
-nrel_emissions <- readRDS(file.path(
-  here::here(), "_energy/data-raw/nrel_slope/nrel_emissions.RDS"
-)) %>%
-  filter(
-    source == "Electricity",
-    county_name %in% seven_county
-  )
-
-# Use the closest available NREL year to target_year
-nrel_target <- nrel_emissions %>%
-  filter(year == max(year[year <= target_year])) %>%
-  group_by(county_name, sector) %>%
-  summarize(nrel_co2e = sum(co2e, na.rm = TRUE), .groups = "drop") %>%
-  mutate(inventory_source = "NREL SLOPE")
-
 metc_target <- county_elec_sector %>%
   group_by(county_name, sector) %>%
   summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
-  mutate(inventory_source = "Metropolitan Council")
+  mutate(inventory_source = "CTU model")
+
+# Prior method: pure NREL proportioning of county totals
+nrel_proportioned <- readRDS(file.path(
+  here::here(), "_energy/data/electric_natgas_nrel_proportioned_expanded.RDS"
+)) %>%
+  filter(
+    source == "Electricity",
+    county_name %in% seven_county,
+    emissions_year == target_year
+  )
+
+nrel_target <- nrel_proportioned %>%
+  group_by(county_name, sector) %>%
+  summarize(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
+  mutate(
+    # harmonize sector names to title case for comparison
+    sector = str_to_title(sector),
+    inventory_source = "NREL proportioning"
+  )
 ```
 
 ```{r fig-nrel-sector-comparison}
-#| fig-cap: "Electricity sector breakdown: Metropolitan Council vs. NREL SLOPE"
+#| fig-cap: "Electricity sector breakdown: CTU model vs. NREL proportioning"
 #| out-width: "95%"
 #| fig.height: 5
 #| fig.width: 10
 
-# ── Combine for side-by-side chart ───────────────────────────────────────────
-nrel_for_chart <- nrel_target %>%
-  transmute(
-    county_name,
-    sector,
-    inventory_source,
-    value_emissions = nrel_co2e
-  )
+# ── Sector colors (shared across both methods) ──────────────────────────────
+sector_colors <- c(
 
-metc_for_chart <- metc_target %>%
-  select(county_name, sector, inventory_source, value_emissions)
+  "Residential" = colors$councilBlue,
+  "Commercial"  = cprg_colors$cprg_green,
+  "Industrial"  = cprg_colors$cprg_yellow
+)
 
-sector_comparison <- bind_rows(metc_for_chart, nrel_for_chart) %>%
+# ── Combine and order counties by total emissions ───────────────────────────
+sector_comparison <- bind_rows(
+  metc_target %>% select(county_name, sector, inventory_source, value_emissions),
+  nrel_target %>% select(county_name, sector, inventory_source, value_emissions)
+) %>%
   mutate(
     sector = factor(sector, levels = c("Residential", "Commercial", "Industrial")),
     inventory_source = factor(inventory_source, levels = c(
-      "Metropolitan Council", "NREL SLOPE"
+      "CTU model", "NREL proportioning"
     ))
   )
 
-comparison_colors <- c(
-  "Metropolitan Council" = colors$councilBlue,
-  "NREL SLOPE" = cprg_colors$cprg_green
-)
+county_order <- sector_comparison %>%
+  group_by(county_name) %>%
+  summarize(total = sum(value_emissions), .groups = "drop") %>%
+  arrange(desc(total)) %>%
+  pull(county_name)
 
-fig_nrel_sector <- plot_ly(
-  data = sector_comparison,
-  x = ~ reorder(county_name, -value_emissions),
-  y = ~value_emissions,
-  color = ~inventory_source,
-  colors = comparison_colors,
-  type = "bar",
-  hovertemplate = ~ paste0(
-    county_name, " County<br>",
-    inventory_source, " — ", sector, "<br>",
-    scales::comma(round(value_emissions), accuracy = 1),
-    " metric tons CO<sub>2</sub>e<br>",
-    "<extra></extra>"
-  )
-) %>%
+sector_comparison <- sector_comparison %>%
+  mutate(county_name = factor(county_name, levels = county_order))
+
+# ── Build traces: solid fill for CTU model, outline-only for NREL ───────────
+fig_nrel_sector <- plot_ly(source = "fig-nrel-sector-comparison")
+
+for (sec in levels(sector_comparison$sector)) {
+  sec_color <- sector_colors[[sec]]
+
+  # CTU model — solid fill
+  fig_nrel_sector <- fig_nrel_sector %>%
+    add_bars(
+      data = sector_comparison %>%
+        filter(sector == sec, inventory_source == "CTU model"),
+      x = ~county_name,
+      y = ~value_emissions,
+      name = paste(sec, "(CTU model)"),
+      marker = list(
+        color = sec_color,
+        line = list(color = sec_color, width = 1.5)
+      ),
+      legendgroup = sec,
+      hovertemplate = paste0(
+        "%{x} County<br>",
+        sec, " — CTU model<br>",
+        "%{y:,.0f} metric tons CO<sub>2</sub>e<br>",
+        "<extra></extra>"
+      )
+    )
+
+  # NREL proportioning — white fill, colored outline
+  fig_nrel_sector <- fig_nrel_sector %>%
+    add_bars(
+      data = sector_comparison %>%
+        filter(sector == sec, inventory_source == "NREL proportioning"),
+      x = ~county_name,
+      y = ~value_emissions,
+      name = paste(sec, "(NREL)"),
+      marker = list(
+        color = "rgba(255, 255, 255, 0)",
+        line = list(color = sec_color, width = 2)
+      ),
+      legendgroup = sec,
+      hovertemplate = paste0(
+        "%{x} County<br>",
+        sec, " — NREL proportioning<br>",
+        "%{y:,.0f} metric tons CO<sub>2</sub>e<br>",
+        "<extra></extra>"
+      )
+    )
+}
+
+fig_nrel_sector <- fig_nrel_sector %>%
   plotly_layout(
     main_title = paste(
-      "Electricity Sector Breakdown:",
-      "Metropolitan Council vs. NREL SLOPE,",
+      "Electricity Sector Decomposition:",
+      "CTU Model vs. NREL Proportioning,",
       target_year
     ),
     y_title = "Metric tons CO<sub>2</sub>e",
     x_title = "County",
-    legend_title = "Source"
+    legend_title = ""
   ) %>%
   layout(
     barmode = "group",
     hovermode = "closest",
-    legend = list(traceorder = "normal")
+    legend = list(
+      traceorder = "normal",
+      orientation = "h",
+      x = 0.5, xanchor = "center",
+      y = -0.15
+    )
   )
 
 fig_nrel_sector
 ```
 
-<!-- TODO: Add commentary on differences between NREL SLOPE and Met Council
-     sector breakouts. Key things to address:
-     - Overall magnitude differences (NREL is a forecast from 2016 base year
-       vs. our utility-reported deliveries for the actual target year)
-     - Residential share comparison
-     - Counties where C/I split diverges most
-     - Any structural explanations (e.g., large industrial loads that NREL
-       may over- or under-estimate relative to actual deliveries)
--->
 
 
 ## Emissions calculation
@@ -209,14 +256,14 @@ CTU-level (city, township, and unorganized territory) electricity data comes fro
 2. **Dakota Electric Association.** Direct data request from Dakota Electric for CTU-level residential and business deliveries, covering communities in Dakota and Scott counties within their service area. An interpolation step addresses a 2018 data gap using 2017 and 2019 anchor values.
 3. **Connexus Energy.** CTU-level data from Connexus covering communities in Anoka County. A quality control step identifies and addresses CTU-level allocation anomalies (e.g., over-reported or under-reported deliveries for specific cities) by nulling suspect city-years so they fall through to modeled estimates.
 4. **Municipal utilities.** Where available, data from municipal electric utilities (e.g., City of Chaska Electric, Princeton Public Utilities, Shakopee Public Utilities, North Branch) compiled from 7610 filings.
-5. **Prior Met Council SQL records and RII data.** Historical CTU-level electricity data from earlier Met Council inventory work and the Regional Indicators Initiative. These are used as fallback sources and have lower priority than direct utility records.
+5. **Prior Met Council SQL records and RII data.** Historical CTU-level electricity data from earlier Met Council inventory work and the Regional Indicators Initiative. These are used as fallback sources and are overwritten by any recent utility requests from Met Council.
 
-A data quality pipeline identifies and addresses anomalies before modeling, including year-over-year spike detection for utility data with structural breaks (particularly SQL-era data from Dakota Electric, where pre-2019 CTU allocations differ substantially from direct data request values), de minimis utility filtering, and unit conversion corrections.
+A data quality pipeline identifies and addresses anomalies before modeling, including year-over-year spike detection for utility data with structural breaks, de minimis utility filtering, and unit conversion corrections.
 
 
 ## Random forest model
 
-For CTUs and years lacking direct utility data, residential and business electricity consumption are predicted separately using random forest models. The models follow the same methodology used for natural gas CTU predictions and are trained on CTUs with known utility data (approximately 2010–2023). Features include:
+For CTUs and years lacking direct utility data, residential and business electricity consumption are predicted separately using random forest models. The models are trained on CTUs with known utility data (approximately 2010–2023). Predictors include:
 
 - UrbanSim housing unit or job projections
 - NOAA heating degree days
@@ -250,14 +297,14 @@ county_7610 <- readRDS(file.path(
 
 # ── CTU-level combined electricity ───────────────────────────────────────────
 ctu_elec_combined <- readRDS(file.path(
-  here::here(), "_energy/data/ctu_elec_combined.RDS"
+  here::here(), "_energy/data-raw/ctu_elec_combined.RDS"
 )) %>%
   filter(county_name %in% seven_county)
 ```
 
 ## County totals: CTU model vs. county activity
 
-The chart below compares CTU-level modeled electricity (aggregated to county) against county-level delivery totals from 7610 filings and EIA 861 gap-fills. Because electricity does not require the subtractive sector decomposition used for natural gas (no power plant or refinery volumes to remove), the CTU residential plus business total should approximate the county total.
+The chart below compares CTU-level modeled electricity (aggregated to county) against county-level delivery totals from 7610 filings and EIA 861 gap-fills. Similar to observations in natural gas modeling, we see under-estimates in Dakota and Washington counties, where large point source industrial facilities are not reported in CTU data due to privacy laws. The noticeable underestimate in Scott County is less clear, though may also be masked industrial data.
 
 ```{r fig-county-elec-comparison}
 #| fig-cap: "CTU model aggregated to county vs. county activity totals"
@@ -270,7 +317,7 @@ ctu_county_elec <- ctu_elec_combined %>%
   filter(inventory_year == target_year) %>%
   transmute(
     county_name,
-    mwh = elec_mwh,
+    mwh,
     category = paste(sector, "(CTU model)")
   ) %>%
   group_by(county_name, category) %>%
@@ -346,7 +393,7 @@ ctu_county_elec_temporal <- ctu_elec_combined %>%
   transmute(
     inventory_year,
     county_name,
-    mwh = elec_mwh,
+    mwh,
     category = paste(sector, "(CTU model)")
   ) %>%
   group_by(inventory_year, county_name, category) %>%
@@ -509,7 +556,7 @@ fig_electricity_emissions_population
 
 **Location-based emissions factors.** Using the eGRID MROW subregion factor assigns the same emissions rate to all electricity consumed in the region, regardless of whether a specific utility has a cleaner or dirtier generation portfolio. A market-based approach (adjusting for RECs and utility-specific generation) would yield different county-level estimates, particularly for utilities with significant renewable procurement.
 
-**Sector decomposition.** The commercial-industrial split relies on NREL SLOPE modeled ratios rather than direct utility reporting by sector. While Xcel community reports provide a combined "Business" category, no utility in the region reports separate commercial and industrial deliveries at the county or CTU level. The NREL ratios are derived from a 2016 base year forecast and may not perfectly reflect the actual commercial-industrial mix in any given year.
+**Sector decomposition.** The commercial-industrial split relies on NREL SLOPE modeled ratios rather than direct utility reporting by sector. While Xcel community reports provide a combined "Business" category, no utility in the region reports separate commercial and industrial deliveries at the county level. The NREL ratios are derived from a 2016 base year forecast and may not perfectly reflect the actual commercial-industrial mix in any given year.
 
 **CTU random forest model.** As with natural gas, the RF model is limited to 2010 onward by UrbanSim data availability. Pre-2010 CTU estimates use proportional allocation from county totals. The mean-scale correction assumes that the ratio between observed and predicted values is stable over time; for communities with rapid growth or structural changes in electricity demand, this assumption may introduce bias. A systematic shift in Xcel's application of the 15/15 privacy rule between 2021 and 2022 affects the business electricity data for approximately 15 cities; this is under investigation and may be revised pending utility response.
 
