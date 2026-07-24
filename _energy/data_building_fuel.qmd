@@ -203,15 +203,15 @@ ctu_county_ng <- ctu_ng %>%
 ghgrp_county_ng <- ghgrp_fuel %>%
   filter(
     general_fuel_type == "Natural Gas",
-    reporting_year    == target_year,
+    reporting_year == target_year,
     !is.na(county_name)
   ) %>%
   mutate(
     county_name = str_to_title(county_name),
     category = case_when(
-      power_plant == TRUE                            ~ "Power plant generation",
-      doublecount == "Yes" & power_plant == FALSE     ~ "Industrial combustion",
-      doublecount == "No"  & power_plant == FALSE     ~ "Refinery emissions"
+      power_plant == TRUE ~ "Power plant generation",
+      doublecount == "Yes" & power_plant == FALSE ~ "Industrial combustion",
+      doublecount == "No" & power_plant == FALSE ~ "Refinery emissions"
     ),
     mcf = value_activity / 1000
   ) %>%
@@ -243,11 +243,11 @@ ref_line_data <- county_ng %>%
 
 fig_county_ng_comparison <- plot_ly(source = "fig-county-ng-comparison") %>%
   add_bars(
-    data          = ctu_ghgrp_long,
-    x             = ~ reorder(county_name, -mcf_county),
-    y             = ~mcf,
-    color         = ~category,
-    colors        = ctu_stack_colors,
+    data = ctu_ghgrp_long,
+    x = ~ reorder(county_name, -mcf_county),
+    y = ~mcf,
+    color = ~category,
+    colors = ctu_stack_colors,
     hovertemplate = ~ paste0(
       county_name, " County<br>",
       category, "<br>",
@@ -256,16 +256,16 @@ fig_county_ng_comparison <- plot_ly(source = "fig-county-ng-comparison") %>%
     )
   ) %>%
   add_markers(
-    data          = ref_line_data,
-    x             = ~ reorder(county_name, mcf_county),
-    y             = ~mcf_county,
-    marker        = list(
+    data = ref_line_data,
+    x = ~ reorder(county_name, mcf_county),
+    y = ~mcf_county,
+    marker = list(
       symbol = "line-ew",
       size   = 16,
       line   = list(color = "black", width = 3),
       color  = "black"
     ),
-    name          = "County total (7610)",
+    name = "County total (7610)",
     hovertemplate = ~ paste0(
       county_name, " County<br>",
       "7610 reported: ", scales::comma(round(mcf_county / 1000), accuracy = 1),
@@ -318,9 +318,9 @@ ghgrp_county_ng_temporal <- ghgrp_fuel %>%
   mutate(
     county_name = str_to_title(county_name),
     category = case_when(
-      power_plant == TRUE                         ~ "Power plant generation",
-      doublecount == "Yes" & power_plant == FALSE  ~ "Industrial combustion",
-      doublecount == "No"  & power_plant == FALSE  ~ "Refinery emissions"
+      power_plant == TRUE ~ "Power plant generation",
+      doublecount == "Yes" & power_plant == FALSE ~ "Industrial combustion",
+      doublecount == "No" & power_plant == FALSE ~ "Refinery emissions"
     ),
     mcf = value_activity / 1000
   ) %>%
@@ -459,10 +459,10 @@ ctu_liquid_map <- cprg_ctu %>%
   left_join(ctu_ng_yr, by = c("ctu_name", "ctu_class")) %>%
   left_join(ctu_liquid_yr, by = c("ctu_name", "ctu_class")) %>%
   mutate(
-    ng_mmbtu      = replace_na(ng_mmbtu, 0),
+    ng_mmbtu = replace_na(ng_mmbtu, 0),
     propane_mmbtu = replace_na(propane_mmbtu, 0),
     fueloil_mmbtu = replace_na(fueloil_mmbtu, 0),
-    total_mmbtu   = ng_mmbtu + propane_mmbtu + fueloil_mmbtu,
+    total_mmbtu = ng_mmbtu + propane_mmbtu + fueloil_mmbtu,
     liquid_fuel_pct = if_else(
       total_mmbtu > 0,
       (propane_mmbtu + fueloil_mmbtu) / total_mmbtu * 100,
@@ -484,10 +484,10 @@ fig_liquid_fuel_share <- leaflet(
 ) %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   addPolygons(
-    fillColor    = ~ liquid_pal(liquid_fuel_pct),
-    fillOpacity  = 0.8,
-    color        = "white",
-    weight       = 0.5,
+    fillColor = ~ liquid_pal(liquid_fuel_pct),
+    fillOpacity = 0.8,
+    color = "white",
+    weight = 0.5,
     smoothFactor = 0.5,
     label = ~ paste0(
       ctu_name, " (", ctu_class, ")<br>",
@@ -501,9 +501,9 @@ fig_liquid_fuel_share <- leaflet(
     )
   ) %>%
   addLegend(
-    pal      = liquid_pal,
-    values   = ~ liquid_fuel_pct,
-    title    = "Liquid fuel<br>share (%)",
+    pal = liquid_pal,
+    values = ~liquid_fuel_pct,
+    title = "Liquid fuel<br>share (%)",
     position = "bottomright",
     labFormat = labelFormat(suffix = "%")
   )
