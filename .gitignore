@@ -1439,6 +1439,27 @@ _meta/data-raw/projections/WFA/priority_underBA.csv
 _meta/data-raw/projections/WFA/wage_dumbell.csv
 
 **/*.quarto_ipynb
+_energy/data-raw/eia_861/f8612005.zip
+_energy/data-raw/eia_861/f8612006.zip
+_energy/data-raw/eia_861/f8612007.zip
+_energy/data-raw/eia_861/f8612008.zip
+_energy/data-raw/eia_861/f8612009.zip
+_energy/data-raw/eia_861/f8612010.zip
+_energy/data-raw/eia_861/f8612011.zip
+_energy/data-raw/eia_861/f8612012.zip
+_energy/data-raw/eia_861/f8612013.zip
+_energy/data-raw/eia_861/f8612014.zip
+_energy/data-raw/eia_861/f8612015.zip
+_energy/data-raw/eia_861/f8612016.zip
+_energy/data-raw/eia_861/f8612017.zip
+_energy/data-raw/eia_861/f8612018.zip
+_energy/data-raw/eia_861/f8612019.zip
+_energy/data-raw/eia_861/f8612020.zip
+_energy/data-raw/eia_861/f8612021.zip
+_energy/data-raw/eia_861/f8612022.zip
+_energy/data-raw/eia_861/f8612023.zip
+_energy/data-raw/eia_861/f8612024.zip
+_energy/data-raw/eia_861/f8612025.zip
 
 _transportation/data-raw/epa/nei/2023NEI/2023NEI_onroad_activity_final_20251010/
 
