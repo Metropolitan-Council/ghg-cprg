@@ -214,7 +214,10 @@ ctu_ng_emissions <- ctu_ng_full %>%
   mutate(
     fuel_type       = "Natural Gas",
     value_emissions = mcf * mt_co2e_mcf,
-    units_emissions = "Metric tons CO2e"
+    units_emissions = "Metric tons CO2e",
+    ctu_class = if_else(is.na(ctu_class), 
+                        ctu_class[!is.na(ctu_class)][1], 
+                        ctu_class), .by = coctu_id_gnis
   )
 
 # Convert liquid fuels to emissions

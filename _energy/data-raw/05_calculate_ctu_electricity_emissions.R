@@ -151,7 +151,10 @@ ctu_elec_emissions <- ctu_elec_full %>%
   select(-emissions_year.y) %>%
   mutate(
     value_emissions = round(mwh * mt_co2e_mwh, digits = 2),
-    units_emissions = "Metric tons CO2e"
+    units_emissions = "Metric tons CO2e",
+    ctu_class = if_else(is.na(ctu_class), 
+                        ctu_class[!is.na(ctu_class)][1], 
+                        ctu_class), .by = coctu_id_gnis
   )
 
 # ── Save ──────────────────────────────────────────────────────────────────────
