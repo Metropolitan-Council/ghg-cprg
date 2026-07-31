@@ -72,7 +72,10 @@ electric_emissions <- readRDS("_energy/data/_ctu_electricity_emissions.RDS") %>%
     geog_level = "ctu",
     source = "Building energy",
     category = str_to_sentence(paste(sector, category)),
-    sector_alt = "Electricity"
+    sector_alt = "Electricity",
+    ctu_class = if_else(is.na(ctu_class), 
+                        ctu_class[!is.na(ctu_class)][1], 
+                        ctu_class), .by = coctu_id_gnis
   ) %>%
   select(names(transportation_emissions))
 
@@ -84,7 +87,10 @@ natural_gas_emissions <- readRDS("_energy/data/_ctu_natgas_emissions.RDS") %>%
     geog_level = "ctu",
     source = "Natural gas",
     category = str_to_sentence(paste(sector, "building fuel")),
-    sector_alt = "Building fuel"
+    sector_alt = "Building fuel",
+    ctu_class = if_else(is.na(ctu_class), 
+                        ctu_class[!is.na(ctu_class)][1], 
+                        ctu_class), .by = coctu_id_gnis
   ) %>%
   select(names(transportation_emissions))
 
