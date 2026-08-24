@@ -1,5 +1,26 @@
 ### CDP reporting script
 
+nlcd <- nlcd_county_landcover_allyrs %>% filter(inventory_year == 2022, 
+                                                county_name %in% c("Anoka", 
+                                                                   "Carver",
+                                                                   "Dakota",
+                                                                   "Hennepin",
+                                                                   "Scott",
+                                                                   "Ramsey",
+                                                                   "Washington")) %>% 
+  mutate(natural = if_else(land_cover_type %in% c(
+    "Tree", "Grassland", "Wetland"
+  ),
+  "Yes",
+  "No"))
+
+unique(nlcd$land_cover_type)
+
+lc <- nlcd %>% 
+  group_by(natural) %>% 
+  summarize(area = sum(area), .groups = "drop")
+
+
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS")) %>%
   filter(!county_name %in% c(
     "St. Croix",
@@ -30,6 +51,15 @@ county_emissions %>%
 county_emissions %>%
   filter(
     emissions_year == year_use,
+    sector == "Residential",
+    category == "Electricity"
+  ) %>%
+  pull(value_emissions) %>%
+  sum()
+
+county_emissions %>%
+  filter(
+    emissions_year == year_use,
     sector == "Commercial",
     category != "Electricity"
   ) %>%
@@ -39,8 +69,18 @@ county_emissions %>%
 county_emissions %>%
   filter(
     emissions_year == year_use,
+    sector == "Commercial",
+    category == "Electricity"
+  ) %>%
+  pull(value_emissions) %>%
+  sum()
+
+
+county_emissions %>%
+  filter(
+    emissions_year == year_use,
     sector == "Industrial",
-    category == "Building Fuel"
+    !category %in% c("Electricity", "Industrial processes", "Refinery processes")
   ) %>%
   pull(value_emissions) %>%
   sum()
@@ -48,7 +88,16 @@ county_emissions %>%
 county_emissions %>%
   filter(
     emissions_year == year_use,
-    category == "Building Fuel"
+    sector == "Industrial",
+    category == "Electricity"
+  ) %>%
+  pull(value_emissions) %>%
+  sum()
+
+county_emissions %>%
+  filter(
+    emissions_year == year_use,
+    category == "Electricity"
   ) %>%
   pull(value_emissions) %>%
   sum()
@@ -66,7 +115,8 @@ county_emissions %>%
     emissions_year == year_use,
     category == "Aviation"
   ) %>%
-  pull(value_emissions)
+  pull(value_emissions)%>%
+  sum()
 
 county_emissions %>%
   filter(
@@ -103,7 +153,7 @@ county_emissions %>%
 county_emissions %>%
   filter(
     emissions_year == year_use,
-    category == "Industrial processes"
+    category %in% c("Industrial processes", "Refinery processes")
   ) %>%
   pull(value_emissions) %>%
   sum()
