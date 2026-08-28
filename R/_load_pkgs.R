@@ -18,7 +18,6 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(imputeTS, quietly = TRUE))
   suppressMessages(library(ghg.ccap, quietly = TRUE))
   suppressMessages(library(lme4, quietly = TRUE))
-  
 
 
   # Workflow ------
@@ -41,7 +40,7 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(FedData, quietly = TRUE))
   suppressMessages(library(tidyUSDA, quietly = TRUE))
   suppressMessages(library(ggnewscale, quietly = TRUE))
-  
+
 
   # tables -----
   suppressMessages(library(knitr, quietly = TRUE))

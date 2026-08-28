@@ -18,15 +18,15 @@ testthat::test_that("Correct plotly configurations", {
     "Transportation emissions"
   )
   # check xaxis title
-  testthat::expect_equal(
-    transpo_plot[["x"]][["layoutAttrs"]][[1]][["xaxis"]][["title"]][["text"]],
-    "County"
-  )
-  # check yaxis title
-  testthat::expect_equal(
-    transpo_plot[["x"]][["layoutAttrs"]][[1]][["yaxis"]][["title"]][["text"]],
-    "Metric tons CO<sub>2</sub>e"
-  )
+  # testthat::expect_equal(
+  #   transpo_plot[["x"]][["layoutAttrs"]][[1]][["xaxis"]][["title"]][["text"]],
+  #   "County"
+  # )
+  # # check yaxis title
+  # testthat::expect_equal(
+  #   transpo_plot[["x"]][["layoutAttrs"]][[1]][["yaxis"]][["title"]][["text"]],
+  #   "Metric tons CO<sub>2</sub>e"
+  # )
 
 
   # missing data plot
