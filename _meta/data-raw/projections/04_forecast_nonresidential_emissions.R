@@ -205,7 +205,6 @@ nonres_elec_emissions <- county_emissions %>%
   mutate(mwh = value_emissions / mt_co2e_per_mwh)
 
 
-
 # base this on 2020 to match to state elec decarb values
 mwh_per_job <- total_jobs %>%
   filter(inventory_year == 2022) %>%

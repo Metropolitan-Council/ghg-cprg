@@ -9,7 +9,6 @@ nhd_ctu <- readRDS("./_nature/data/nhd_ctu_waterways_allyrs.rds")
 waterways_c <- readRDS("./_nature/data/waterways_emissions_factors.rds")
 
 
-
 # load the county and ctu boundaries layer
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS")
@@ -39,10 +38,6 @@ cprg_ctu_df <- cprg_ctu %>%
   dplyr::select(-c(gnis, geoid_wis))
 
 
-
-
-
-
 # Compute methane emissions for different waterways types by county
 nhd_county_c <- nhd_county %>%
   left_join(., waterways_c, by = join_by(waterway_type)) %>%
@@ -64,7 +59,6 @@ nhd_county_c <- nhd_county %>%
   arrange(inventory_year, county_name, source)
 
 
-
 # Compute methane emissions for different waterways types by CTU
 nhd_ctu_c <- nhd_ctu %>%
   left_join(., waterways_c, by = join_by(waterway_type)) %>%
@@ -84,8 +78,6 @@ nhd_ctu_c <- nhd_ctu %>%
     factor_source, area, value_emissions = mt_ch4, units_emissions, mt_co2e
   ) %>%
   arrange(inventory_year, ctu_name, source)
-
-
 
 
 # nhd_ctu_c %>%
@@ -115,7 +107,6 @@ nhd_county_c_meta <-
   )
 
 
-
 nhd_ctu_c_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
@@ -135,8 +126,6 @@ nhd_ctu_c_meta <-
     "units_emissions", class(nhd_ctu_c$units_emissions), "Units and gas type of emissions",
     "mt_co2e", class(nhd_ctu_c$mt_co2e), "Metric tons of gas in CO2 equivalency"
   )
-
-
 
 
 # User chooses whether to overwrite the rds files

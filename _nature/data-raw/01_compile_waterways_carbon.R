@@ -65,7 +65,6 @@ lbsCH4_per_acre_day_TO_mtCH4_per_km2_year <- function(lbs_CH4_per_day_per_acre) 
 # lbsCH4_per_acre_day_TO_mtCH4_per_km2_year(0.74)
 
 
-
 waterway_types <- c("LakePond", "Reservoir", "SwampMarsh", "StreamRiver", "Lock Chamber", "DamWeir")
 
 
@@ -86,7 +85,6 @@ waterway_emissions_factors <- data.frame(
       waterway_type == "DamWeir" ~ lbsCH4_per_acre_day_TO_mtCH4_per_km2_year(0.74) # use reservoirs estimate, 0.74 lbs CH4 per day per acre
     ))
   )
-
 
 
 waterway_emissions_factors_meta <-

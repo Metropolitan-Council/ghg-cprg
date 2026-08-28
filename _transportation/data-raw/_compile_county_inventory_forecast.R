@@ -37,7 +37,6 @@ county_emissions_hist_forecast <- onroad_emissions_summary %>%
   arrange(county_name, emissions_year)
 
 
-
 co_year_series <- county_emissions_hist_forecast %>%
   ungroup() %>%
   select(geoid, county_name) %>%

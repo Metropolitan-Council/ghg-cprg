@@ -58,7 +58,6 @@ df_long <- df_raw %>%
   select(-Energy)
 
 
-
 # ctu and county reference, incl. population -- necessary for disaggregation to COCTU
 cprg_county <- readRDS("_meta/data/cprg_county.RDS")
 cprg_ctu <- readRDS("_meta/data/cprg_ctu.RDS") %>%

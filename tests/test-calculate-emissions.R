@@ -48,7 +48,6 @@ testthat::test_that("Correct number of calibration zone sets", {
     testthat::expect_equal("Hennepin")
 
 
-
   # expect Pierce county to have the *lowest* VMT
   emiss %>%
     filter(emissions_metric_tons_co2e == min(emissions_metric_tons_co2e)) %>%

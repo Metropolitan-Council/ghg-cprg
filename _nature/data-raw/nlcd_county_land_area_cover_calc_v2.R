@@ -98,7 +98,6 @@ lapply(start_year:end_year, function(year) {
   }
 
 
-
   # Test to see if the current year is in your list of tcc files
   if (year %in% get_year(nlcd_tcc_files)) {
     # Indicate if the tree canopy cover layer was successfully retrieved
@@ -116,8 +115,6 @@ lapply(start_year:end_year, function(year) {
     # Indicate if the tree canopy cover layer was successfully retrieved
     tcc_available <- FALSE
   }
-
-
 
 
   if (tcc_available) {
@@ -176,7 +173,6 @@ lapply(start_year:end_year, function(year) {
     message(paste0("80%  |================____|"))
 
 
-
     lc_rc <- lc_df %>%
       left_join(nlcd.legend %>%
         dplyr::select(ID, Class) %>%
@@ -227,7 +223,6 @@ lapply(start_year:end_year, function(year) {
       mutate(year = year, .before = everything())
 
 
-
     # Add the results for the current year to the results dataframe
     nlcd_county <<- rbind(nlcd_county, data.frame(
       year = lc_county$year,
@@ -237,7 +232,6 @@ lapply(start_year:end_year, function(year) {
       area = lc_county$area,
       stringsAsFactors = FALSE
     ))
-
 
 
     # Add the results for the current year to the results dataframe
@@ -360,7 +354,6 @@ lapply(start_year:end_year, function(year) {
       mutate(year = year, .before = everything())
 
 
-
     # Add the results for the current year to the results dataframe
     nlcd_county <<- rbind(nlcd_county, data.frame(
       year = lc_county$year,
@@ -370,7 +363,6 @@ lapply(start_year:end_year, function(year) {
       area = lc_county$area,
       stringsAsFactors = FALSE
     ))
-
 
 
     # Add the results for the current year to the results dataframe
@@ -415,8 +407,6 @@ nlcd_ctu_meta <-
   )
 
 
-
-
 # User chooses whether to overwrite the rds files
 if (overwrite_RDS) {
   saveRDS(nlcd_county, paste0("./_nature/data/nlcd_county_landcover_", head(sort(unique(nlcd_county$year)), 1), "_", tail(sort(unique(nlcd_county$year)), 1), "_v2.rds"))
@@ -425,8 +415,6 @@ if (overwrite_RDS) {
   saveRDS(nlcd_ctu, paste0("./_nature/data/nlcd_ctu_landcover_", head(sort(unique(nlcd_ctu$year)), 1), "_", tail(sort(unique(nlcd_ctu$year)), 1), "_v2.rds"))
   saveRDS(nlcd_ctu_meta, paste0("./_nature/data/nlcd_ctu_landcover_", head(sort(unique(nlcd_ctu$year)), 1), "_", tail(sort(unique(nlcd_ctu$year)), 1), "_v2_meta.rds"))
 }
-
-
 
 
 # nlcd_county %>% filter(year==2019 & county_name == "Anoka")

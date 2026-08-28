@@ -214,7 +214,6 @@ NHD_byCTU$area <- sf::st_area(NHD_byCTU)
 NHD_byCTU$area_km2 <- NHD_byCTU$area / 1e6
 
 
-
 nhd_ctu <- NHD_byCTU %>%
   sf::st_drop_geometry() %>% # drop geom features
   group_by(FTYPE, ctu_name, ctu_class, county_name, state_name, statefp, state_abb) %>%
@@ -261,9 +260,6 @@ nhd_ctu_meta <-
     "waterway_type", class(nhd_ctu$waterway_type), "Waterway type from National Hydrogaphy Dataset",
     "area", class(nhd_ctu$area), "Area of land cover in square kilometers"
   )
-
-
-
 
 
 # User chooses whether to overwrite the rds files

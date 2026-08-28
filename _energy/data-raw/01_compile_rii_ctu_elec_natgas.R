@@ -121,7 +121,6 @@ df_final <- df_long %>%
   filter(!ctu_name %in% c("Northfield", "Hanover", "New Prague", "Cannon Falls", "Rockford"))
 
 
-
 minnesota_electricity_rii <- df_final %>%
   filter(source == "Electricity") %>%
   mutate(

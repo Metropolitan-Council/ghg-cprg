@@ -333,8 +333,6 @@ epa_emissions_summary_alt_mode_truck %>%
   )
 
 
-
-
 epa_emissions_summary_alt_mode_truck %>%
   filter(county_name == "Hennepin") %>%
   group_by(county_name, alt_mode_truck) %>%
@@ -475,7 +473,6 @@ testthat::expect_equal(
 )
 
 
-
 # names(epa_onroad_emissions_compile)
 epa_onroad_emissions_compile_meta <- tibble::tribble(
   ~"Column", ~"Class", ~"Description",
@@ -494,7 +491,6 @@ saveRDS(epa_onroad_emissions_compile, "_transportation/data/epa_onroad_emissions
   compress = "xz"
 )
 saveRDS(epa_onroad_emissions_compile_meta, "_transportation/data/epa_onroad_emissions_compile_meta.RDS")
-
 
 
 # what is the complete start-to-finish pipeline

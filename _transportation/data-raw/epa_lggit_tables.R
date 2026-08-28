@@ -141,7 +141,6 @@ ch4_by_veh_year <- cbind(year_column, tibble::tribble(
   )
 
 
-
 n2o_veh_year <- cbind(year_column, tibble::tribble(
   ~`Passenger Car | Gasoline`, ~`Light Truck (Vans, Pickup Trucks, SUVs) | Gasoline`, ~`Heavy-Duty Vehicle | Gasoline`, ~`Passenger Car | Diesel`, ~`Light Truck (Vans, Pickup Trucks, SUVs) | Diesel`, ~`Heavy-Duty Vehicle | Diesel`,
   0.0197, 0.0555, 0.0497, 0.0012, 0.0017, 0.0048,

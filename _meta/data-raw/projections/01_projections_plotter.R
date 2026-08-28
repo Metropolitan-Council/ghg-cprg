@@ -1,14 +1,15 @@
 plot_emissions_pathways <- function(
-    base_data,
-    diverging_data,
-    target_value,
-    target_year = 2050,
-    base_cutoff_year = 2025,
-    ppp_bau_color = NULL,
-    y_max = NULL,
-    title = "Emissions Pathways",
-    y_label = "",
-    x_limits = c(2005, 2059)) {
+  base_data,
+  diverging_data,
+  target_value,
+  target_year = 2050,
+  base_cutoff_year = 2025,
+  ppp_bau_color = NULL,
+  y_max = NULL,
+  title = "Emissions Pathways",
+  y_label = "",
+  x_limits = c(2005, 2059)
+) {
   #' Plot emissions pathways with BAU and PPP scenarios
   #'
   #' @param base_data Data frame with columns: emissions_year/inventory_year, value_emissions/total_emissions

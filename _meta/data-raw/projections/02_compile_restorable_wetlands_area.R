@@ -20,8 +20,6 @@ current_wetlands_wi <- lc_county %>%
   summarize(actual_wetland_area_km2 = sum(area))
 
 
-
-
 # Define the input path
 inpath_wetlands_high_priority <-
   paste0(here::here(), "/_nature/data-raw/restorable_wetlands_gdb/RestorableWetlands_CCAP.gdb")
@@ -44,9 +42,6 @@ restorable_wetlands_9co <- wetlands_tibble %>%
   summarize(
     restorable_wetland_area_km2 = sum(area_km2, na.rm = TRUE)
   )
-
-
-
 
 
 current_wetlands_9co
