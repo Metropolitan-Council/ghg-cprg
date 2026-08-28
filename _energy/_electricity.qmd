@@ -245,7 +245,7 @@ fig_ctu_elec_per_cap_map <- leaflet(
   data    = ctu_map_data %>% filter(!is.na(emissions_per_cap)),
   options = leafletOptions(zoomSnap = 0.5)
 ) %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
+  addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
   addPolygons(
     fillColor = ~ emissions_cap_pal(sqrt(emissions_per_cap)),
     fillOpacity = 0.8,
