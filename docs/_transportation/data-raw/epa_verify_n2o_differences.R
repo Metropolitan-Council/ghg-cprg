@@ -53,7 +53,6 @@ epa_nei_n2o <- epa_nei_onroad_summary %>%
 # filter(calc_year %in% c("2020"))
 
 
-
 epa_equates_n2o <- epa_equates_summary %>%
   group_by(calc_year, geoid, county_name, scc6) %>%
   summarize(

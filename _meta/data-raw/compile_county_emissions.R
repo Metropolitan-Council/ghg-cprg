@@ -92,8 +92,6 @@ solid_waste <- readRDS("_waste/data/final_solid_waste_allyrs.RDS") %>%
   select(names(transportation_emissions))
 
 
-
-
 # energy -----
 
 ## electricity ----
@@ -152,7 +150,6 @@ natural_gas_emissions <- readRDS("_energy/data/county_natgas_emissions_by_sector
   ungroup() %>%
   select(names(transportation_emissions)) %>%
   bind_rows(wi_natural_gas_emissions)
-
 
 
 ## propane and kerosene ----
@@ -330,8 +327,6 @@ emissions_all_meta <- tibble::tribble(
 
 
 # waldo::compare(emissions_all, readRDS("_meta/data/cprg_county_emissions.RDS"))
-
-
 
 
 saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")

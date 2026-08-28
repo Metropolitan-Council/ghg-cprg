@@ -20,7 +20,6 @@ mmbtu_to_mwh <- 0.293071
 mmbtu_to_mcf <- 1
 
 
-
 # if file doesn't already exist...
 if (file.exists("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_usual_county.csv") == FALSE) {
   # download from NREL directly
@@ -65,8 +64,6 @@ sector_source_year <- expand.grid(sector = sectors, source = sources, year = yea
 sector_source <- expand.grid(sector = sectors, source = sources)
 
 
-
-
 nrel_slope_cprg_city <- cprg_ctu %>%
   # add 204 rows representing 34 years (2017-2050 inclusive) of NREL data, 3 sectors, and 2 sources (33*3*2=204)
   expand_grid(sector_source_year) %>%
@@ -96,7 +93,6 @@ nrel_slope_cprg_city <- cprg_ctu %>%
   )
 
 
-
 ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
   filter(inventory_year > 2004) %>%
   left_join(cprg_county %>% select(geoid, county_name, state_abb), by = "geoid") %>%
@@ -107,7 +103,6 @@ ctu_population <- readRDS("_meta/data/ctu_population.RDS") %>%
 expanded_ctu_population_sector_source <- ctu_population %>%
   # Cross join with sector-source combinations
   expand_grid(sector_source)
-
 
 
 # Only keep MN core metro cities for city-level analysis
@@ -402,8 +397,6 @@ nrel_emissions_inv_county <- bind_rows(
     sector_raw = sector,
     sector = "Energy"
   )
-
-
 
 
 # find county proportions by year and source

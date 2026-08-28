@@ -482,7 +482,7 @@ fig_liquid_fuel_share <- leaflet(
   data    = ctu_liquid_map %>% filter(!is.na(liquid_fuel_pct)),
   options = leafletOptions(zoomSnap = 0.5)
 ) %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
+  addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
   addPolygons(
     fillColor = ~ liquid_pal(liquid_fuel_pct),
     fillOpacity = 0.8,

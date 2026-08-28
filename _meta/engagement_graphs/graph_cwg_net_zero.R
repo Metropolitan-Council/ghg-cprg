@@ -44,7 +44,6 @@ ggplot(rbind(mpca_2020, mc_2021), aes(x = source_sink, y = value_emissions, fill
   )
 
 
-
 ### subsector downscale
 
 ### match county emissions to mpca projections

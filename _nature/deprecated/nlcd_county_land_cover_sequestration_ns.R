@@ -48,7 +48,6 @@ nlcd_county_c <- nlcd_county %>%
   dplyr::select(-c(seq_mtco2e_sqkm, stock_mtco2e_sqkm))
 
 
-
 nlcd_county_c_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",

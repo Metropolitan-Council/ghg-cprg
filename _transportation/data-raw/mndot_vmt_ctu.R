@@ -379,7 +379,6 @@ city_ccr[["2014"]] <- readxl::read_excel(
   )
 
 
-
 city_ccr[["2016"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/city_route_system/2016_VMT_County_City_Route_System-38670414-v1.XLSX",
   sheet = 2,
@@ -1083,8 +1082,6 @@ vmt_interp <- vmt_ctu_county %>%
   unique()
 
 
-
-
 # complete and save -----
 # review and check that values make sense for all ctus
 # re-assign column values to match original data
@@ -1123,7 +1120,6 @@ saveRDS(vmt_ctu, "_transportation/data/mndot_vmt_ctu.RDS")
 saveRDS(vmt_ctu_meta, "_transportation/data/mndot_vmt_ctu_meta.RDS")
 
 saveRDS(vmt_spatial, "_transportation/data-raw/mndot/mndot_vmt_ctu_spatial.RDS")
-
 
 
 orig_vmt_ctu <- readr::read_rds("https://github.com/Metropolitan-Council/ghg-cprg/raw/refs/heads/main/_transportation/data/mndot_vmt_ctu.RDS")

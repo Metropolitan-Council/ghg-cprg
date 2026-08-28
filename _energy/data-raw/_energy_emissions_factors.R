@@ -39,7 +39,6 @@ if (exists("eGRID_MROW_emissionsFactor_CO2") == FALSE) {
       as.numeric()
 
 
-
   # CH4
   # 0.00103 g CH4 per scf --> 0.00000103 kg per scf ---> 0.00103 kg per mcf
   # 1 kg = 2.20462262 lbs --> 0.00227 lbs CH4 per mcf natural gas in 2021

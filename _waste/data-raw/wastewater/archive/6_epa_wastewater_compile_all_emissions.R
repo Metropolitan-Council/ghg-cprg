@@ -61,7 +61,6 @@ df_final <- df_ww_emissions %>%
   mutate(CO2e = as.numeric(MMT_CO2e) * 10^6)
 
 
-
 df_final %>%
   ggplot() +
   theme_minimal() +

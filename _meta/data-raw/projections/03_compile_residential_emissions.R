@@ -170,7 +170,6 @@ ppp_results <- run_scenario_building(
   filter(scenario == "ppp")
 
 
-
 ### net-zero pathway ####
 
 

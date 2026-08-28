@@ -39,7 +39,6 @@ ww_base_constants <- rbind(
 )
 
 
-
 ww_default_constants <- ww_control[c(
   16, 18:20, 22, 24:26, 29, 31:32,
   34, 36:39, 41, 43:46, 48, 49:52, 54, 56:59
@@ -81,7 +80,6 @@ ww_default_constants <- ww_control[c(
     )
   ) %>%
   select(value, description, short_text)
-
 
 
 ww_constants_formatted <- rbind(ww_base_constants, ww_default_constants)

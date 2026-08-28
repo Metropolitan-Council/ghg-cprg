@@ -98,7 +98,6 @@ vmt_entry <- vmt_emissions_weight %>%
   )
 
 
-
 # get total passenger VMT
 passenger_vmt <- vmt_entry %>%
   filter(`Vehicle Type` == "Passenger Car") %>%
@@ -233,7 +232,6 @@ lggit_kg_emissions_per_mile <- lggit_kg_other_per_mile %>%
     )
   ) %>%
   arrange(`Vehicle Type`)
-
 
 
 # lggit_kg_emissions_per_mile

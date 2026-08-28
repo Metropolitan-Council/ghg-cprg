@@ -118,7 +118,6 @@ econ <- econ_sectors %>%
   unique()
 
 
-
 econ_transportation <- econ %>%
   filter(econ_sector == "Transportation") %>%
   group_by(

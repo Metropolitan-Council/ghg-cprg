@@ -45,7 +45,6 @@ dat_ls[["2014"]] <- readxl::read_excel(
   )
 
 
-
 dat_ls[["2016"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_functional_class/16_cfc.xlsx",
   sheet = 2,
