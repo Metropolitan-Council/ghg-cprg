@@ -53,7 +53,6 @@ parks_cat_raster <- rasterize(parks, wc_outline, field = "Category")
 county_raster <- rasterize(cprg_county, parks_raster, field = "NAME")
 
 
-
 # nicer plot - move to qmd later
 # ggplot() + geom_spatraster(data= wc_factor) +
 #   scale_fill_manual(breaks = code_class_tab$old_lab,
@@ -81,7 +80,6 @@ nlcd_is <- get_nlcd(
 ) %>%
   project(., crs_use) %>%
   resample(., wc_outline)
-
 
 
 # convert all rasters to data.frame

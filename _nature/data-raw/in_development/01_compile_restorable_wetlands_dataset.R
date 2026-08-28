@@ -28,7 +28,6 @@ gdb_files <- list.dirs(inpath,
 )]
 
 
-
 # Define a function to read specific layers from multiple .gdb files
 read_gdb_layers <- function(gdb_path, layer_name) {
   st_read(gdb_path, layer = layer_name)
@@ -85,10 +84,6 @@ restorableWetlands_byCounty <- restorableWetlands_byCounty %>%
     area = sf::st_area(.),
     area_km2 = area / 1e6
   )
-
-
-
-
 
 
 ggplot(cprg_county) +

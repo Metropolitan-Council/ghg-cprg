@@ -48,7 +48,6 @@ ctu_elec_utility_count <- ctu_elecUtil_overlap %>%
   st_drop_geometry()
 
 
-
 # NAT GAS
 # nationwide natural gas utility service areas
 natGasUtils <- readRDS(here("_energy", "data", "MN_fed_natGasUtils.RDS")) %>%

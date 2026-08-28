@@ -229,7 +229,6 @@ industrial_gas <- readRDS("_industrial/data/industrial_emissions_by_gas.RDS") %>
   )
 
 
-
 gas_by_county <- bind_rows(
   transportation_gas,
   aviation_gas,

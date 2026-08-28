@@ -80,8 +80,6 @@ cprg_ctu_df <- cprg_ctu %>%
 #   )
 
 
-
-
 # Set inpath for nlcd raw images
 inpath_nlcd <- "./_nature/data-raw/nlcd_raw_imgs"
 # List all files in the NLCD directory
@@ -218,7 +216,6 @@ lapply(start_year:end_year, function(year) {
     return(NULL)
   }
   pctBar(10, "Loading NLCD tree canopy raster (if available)")
-
 
 
   # Test to see if the current year is in your list of tcc files
@@ -394,7 +391,6 @@ lapply(start_year:end_year, function(year) {
       )
 
 
-
     # Bind the residual grassland area to the main dataframe
     lc_rc_final <- rbind(lc_rc, lc_rc_residual_grassland, lc_rc_residual_impervious)
 
@@ -503,7 +499,6 @@ lapply(start_year:end_year, function(year) {
       )
 
 
-
     pctBar(90, "Tidying final data")
 
     # Summarize the area of each land cover type by county
@@ -529,7 +524,6 @@ lapply(start_year:end_year, function(year) {
       mutate(year = year, .before = everything()) %>%
       left_join(cprg_ctu_df, by = join_by(ctu_name, ctu_class, county_name, state_name)) %>%
       mutate(tcc_available = .env$tcc_available)
-
 
 
     # Add the results for the current year to the results dataframe

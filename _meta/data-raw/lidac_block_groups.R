@@ -9,7 +9,6 @@ source(file.path(here::here(), "R/_quarto_helpers.R"))
 source(file.path(here::here(), "R/plot_county_emissions.R"))
 
 
-
 # LOAD DATA ---------------------------------------------------------------
 # Load in list of LIDACs
 LIDACs <- readr::read_csv("_meta/data-raw/IRA_LIDAC_block_group.csv",
@@ -82,11 +81,6 @@ county_data <- subset(county_data, NAME == "Anoka" |
   NAME == "St. Croix")
 
 
-
-
-
-
-
 # JOIN DATA ---------------------------------------------------------------
 # Get tract geometry (CEJST data use 2010 census geographies)
 MN_tracts <- tigris::tracts(state = "MN", year = "2010")
@@ -125,10 +119,6 @@ LIDAC_polygons$LIDAC <- ifelse(LIDAC_polygons$GEOID_tract == "0", "No", "Yes")
 LIDAC_polygons_dissolved <- LIDAC_polygons %>%
   dplyr::group_by(LIDAC) %>%
   summarize(do_union = TRUE)
-
-
-
-
 
 
 saveRDS(LIDAC_polygons, "_meta/data/lidac_block_groups.RDS")

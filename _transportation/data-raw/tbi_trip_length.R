@@ -112,7 +112,6 @@ tbi_mean_trip_length <- trip21 %>%
   )
 
 
-
 tbi_od_ordered_trip_length <- trip21 %>%
   filter(!od_pair %in% low_od_pairs$od_pair) %>%
   as_survey(

@@ -17,6 +17,8 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(data.table, quietly = TRUE))
   suppressMessages(library(imputeTS, quietly = TRUE))
   suppressMessages(library(ghg.ccap, quietly = TRUE))
+  suppressMessages(library(lme4, quietly = TRUE))
+  
 
 
   # Workflow ------
@@ -25,7 +27,6 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(fs, quietly = TRUE))
   suppressMessages(library(testthat, quietly = TRUE))
   suppressMessages(library(magrittr, quietly = TRUE))
-
 
 
   # Plotting, Mapping ----
@@ -39,6 +40,8 @@ if (exists("load_packages") == FALSE) {
   suppressMessages(library(tidyterra, quietly = TRUE))
   suppressMessages(library(FedData, quietly = TRUE))
   suppressMessages(library(tidyUSDA, quietly = TRUE))
+  suppressMessages(library(ggnewscale, quietly = TRUE))
+  
 
   # tables -----
   suppressMessages(library(knitr, quietly = TRUE))

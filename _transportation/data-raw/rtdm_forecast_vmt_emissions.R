@@ -68,7 +68,6 @@ county_vmt_forecast_meta <- cprg_county_meta %>%
   arrange(match(Column, names(county_vmt_forecast)))
 
 
-
 saveRDS(ctu_vmt_forecast, "_transportation/data/rtdm_forecast_ctu.RDS")
 saveRDS(ctu_forecast_meta, "_transportation/data/rtdm_forecast_ctu_meta.RDS")
 

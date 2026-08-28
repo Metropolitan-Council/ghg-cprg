@@ -14,7 +14,6 @@ if (!dir.exists("_nature/data-raw/nlcd_land_cover_by_year/")) {
 }
 
 
-
 # Goal is to take annual land cover maps from NLCD and derive area estimates
 # for different natural systems (e.g. forests, grasslands, wetlands).
 # We can then aggregate area to different geographic boundaries (CTUs, counties).
@@ -46,11 +45,6 @@ cprg_ctu_df <- cprg_ctu %>%
     geoid_wis = as.numeric(geoid_wis),
     gnis = as.numeric(gnis)
   )
-
-
-
-
-
 
 
 # inpath_wetlands_raster_all <- paste0(here::here(), "/_nature/data-raw/mn_wetlands/mn_restorable_wetland_index.tif")
@@ -88,9 +82,6 @@ cprg_ctu_df <- cprg_ctu %>%
 #
 # # save object for later plotting
 # saveRDS(wetlands_raster_cprg, "./_nature/data/mn_wetlands_msa.rds")
-
-
-
 
 
 # inpath_histosols <- "./_nature/data-raw/shapefiles/"
@@ -132,8 +123,6 @@ cprg_ctu_df <- cprg_ctu %>%
 #   )
 
 
-
-
 # Set inpath for nlcd raw images
 inpath_nlcd <- "./_nature/data-raw/nlcd_raw_imgs"
 # List all files in the NLCD directory
@@ -164,8 +153,6 @@ nlcd.legend <- nlcd.legend %>%
   ))
 
 
-
-
 # Useful funs -------------------------------------------------------------
 # query nlcd file names by year
 get_year <- function(filename) {
@@ -185,7 +172,6 @@ pctBar <- function(percentage, msg = NULL) {
   bar <- paste0("|", strrep("=", filled_length), strrep("_", empty_length), "|")
   message(paste0(sprintf("%3d%%  %s", percentage, bar), " ", msg))
 }
-
 
 
 # Loop thru years ---------------------------------------------------------
@@ -221,7 +207,6 @@ nlcd_ctu <- data.frame(
   total_ctu_area = as.numeric(),
   tcc_available = as.logical()
 )
-
 
 
 # Loop through all years of NLCD data and extract area estimates by land cover type and by county
@@ -273,7 +258,6 @@ lapply(start_year:end_year, function(year) {
   pctBar(10, "Loading NLCD tree canopy raster (if available)")
 
 
-
   # Test to see if the current year is in your list of tcc files
   if (year %in% get_year(nlcd_tcc_files)) {
     # Indicate if the tree canopy cover layer was successfully retrieved
@@ -296,7 +280,6 @@ lapply(start_year:end_year, function(year) {
   pctBar(20, "Determining pixel-wise area estimates")
 
 
-
   ## NEW! Re-sample wetland grid to match NLCD
   wetlands_resampled <- resample(wetlands_raster_cprg, nlcd_lc, method = "near")
 
@@ -313,8 +296,6 @@ lapply(start_year:end_year, function(year) {
   # Rasterize cprg_ctu with nlcd_lc_mask using "ctu_class" field
   ctu_class_raster <- terra::rasterize(cprg_ctu, nlcd_lc, field = "ctu_class")
   pctBar(40, "Extracting land cover values (this can take awhile)")
-
-
 
 
   # Next we'll build a dataframe containing rowwise information
@@ -393,7 +374,6 @@ lapply(start_year:end_year, function(year) {
     )
 
 
-
     pctBar(100, "Done! Moving to next year...")
   } else {
     # ...if tree data NOT available -------------------------------------------
@@ -435,14 +415,11 @@ lapply(start_year:end_year, function(year) {
     )
 
 
-
     pctBar(100, "Done! Moving to next year...")
   }
 })
 
 message("Finished!")
-
-
 
 
 # nlcd_county <- nlcd_county %>%

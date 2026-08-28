@@ -444,7 +444,6 @@ coctu_res_adj_out <- coctu_res_adj %>%
   select(-mean_scale, -apply_scale)
 
 
-
 # ── Final integrity check and save ────────────────────────────────────────────
 
 stopifnot(

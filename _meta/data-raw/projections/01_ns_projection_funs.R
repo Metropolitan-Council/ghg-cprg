@@ -194,7 +194,6 @@ forest_restoration <- function(df_hist,
   })
 
 
-
   Grassland <- sapply(future_years, function(year) {
     if (year < .restoration_start) {
       current_grassland
@@ -229,7 +228,6 @@ forest_restoration <- function(df_hist,
   })
 
 
-
   result <- tibble(
     inventory_year = future_years,
     delta_Cropland = Cropland - df_null$Cropland,
@@ -253,7 +251,6 @@ forest_restoration <- function(df_hist,
     "Water",
     "Wetland", "TOTAL"
   )
-
 
 
   result_out <- result %>%
@@ -332,7 +329,6 @@ wetland_restoration <- function(df_hist,
   )
 
 
-
   land_cover_colnames <- c(
     "Bare",
     "Cropland",
@@ -346,7 +342,6 @@ wetland_restoration <- function(df_hist,
     "Water",
     "Wetland", "TOTAL"
   )
-
 
 
   result_out <- result %>%
@@ -382,10 +377,8 @@ wetland_restoration <- function(df_hist,
     )
 
 
-
   return(result_out)
 }
-
 
 
 #+ run_scenario_natural_systems -----
@@ -466,7 +459,6 @@ run_scenario_natural_systems <- function(tb_inv = natural_systems_data$ctu_lc_in
   }
 
 
-
   # -------------------------------------------------------------------------
   # store carbon sequestration function output into variable
   carbon_sequestration_out <- rbind(df_hist, tb03) %>%
@@ -486,7 +478,6 @@ run_scenario_natural_systems <- function(tb_inv = natural_systems_data$ctu_lc_in
       value_emissions = area * seq_mtco2e_sqkm,
       value_stock_potential = area * stock_mtco2e_sqkm
     )
-
 
 
   # -------------------------------------------------------------------------

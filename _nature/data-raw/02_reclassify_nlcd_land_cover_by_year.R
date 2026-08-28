@@ -128,9 +128,6 @@ nlcd_ctu <- data.frame(
 )
 
 
-
-
-
 # Loop through all years of NLCD data and extract area estimates by land cover type and by county
 lapply(start_year:end_year, function(year) {
   # browser()
@@ -173,8 +170,6 @@ lapply(start_year:end_year, function(year) {
             # must be classified as restorable in the land cover carbon dataset
             (!is.na(wetlands_restorable) & wetlands_restorable == 1)
       )
-
-
 
 
     pctBar(90, "Tidying final data")
@@ -231,7 +226,6 @@ lapply(start_year:end_year, function(year) {
         state_name, land_cover_type, area, total_ctu_area,
         potential_wetland_area, tcc_available
       )
-
 
 
     # Add the results for the current year to the results dataframe
@@ -339,7 +333,6 @@ lapply(start_year:end_year, function(year) {
       )
 
 
-
     # Bind the residual grassland area to the main dataframe
     lc_rc_final <- rbind(lc_rc, lc_rc_residual_grassland, lc_rc_residual_impervious)
 
@@ -370,7 +363,6 @@ lapply(start_year:end_year, function(year) {
       dplyr::relocate(year, geoid, county_name, state_name, land_cover_type, area, total_county_area, potential_wetland_area, tcc_available)
 
 
-
     # Summarize the area of each land cover type by ctu
     lc_ctu <- lc_rc_final %>%
       filter(!is.na(land_cover_type) & !is.na(ctu_name)) %>%
@@ -398,7 +390,6 @@ lapply(start_year:end_year, function(year) {
         state_name, land_cover_type, area, total_ctu_area,
         potential_wetland_area, tcc_available
       )
-
 
 
     # Add the results for the current year to the results dataframe
@@ -462,7 +453,6 @@ nlcd_ctu <- nlcd_ctu %>%
     inventory_year, land_cover_type, area, total_area, potential_wetland_area,
     tcc_available
   )
-
 
 
 # User chooses whether to overwrite the rds files

@@ -4,7 +4,6 @@ source("R/cprg_colors.R")
 remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
 
 
-
 # New values as of Oct 31, 2025 -------------------------------------------
 current_wetlands_9co <- lc_county %>%
   filter(inventory_year == 2022) %>%
@@ -19,8 +18,6 @@ current_wetlands_wi <- lc_county %>%
   filter(geog_name %in% c("St. Croix County", "Pierce County")) %>%
   filter(land_cover_type == "Wetland") %>%
   summarize(actual_wetland_area_km2 = sum(area))
-
-
 
 
 # Define the input path
