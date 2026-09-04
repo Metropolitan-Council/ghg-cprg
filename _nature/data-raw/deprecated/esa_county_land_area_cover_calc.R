@@ -73,7 +73,6 @@ nlcd_is <- get_nlcd(
   resample(., wc_outline)
 
 
-
 # convert all rasters to data.frame
 
 #### convert all rasters to data.frame. These are memory intensive steps for full county area.

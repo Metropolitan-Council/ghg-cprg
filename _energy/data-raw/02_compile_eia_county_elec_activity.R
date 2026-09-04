@@ -112,7 +112,6 @@ eia_name_lookup <- c(
 )
 
 
-
 harmonize_eia_names <- function(names) {
   idx <- match(names, names(eia_name_lookup))
   ifelse(is.na(idx), names, eia_name_lookup[idx])

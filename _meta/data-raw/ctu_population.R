@@ -116,7 +116,6 @@ ctu_estimates_2021 <- readxl::read_xlsx("_meta/data-raw/population/EstimateSerie
   )
 
 
-
 # create index -----
 
 ctu_index <- ctu_estimates_2011 %>%

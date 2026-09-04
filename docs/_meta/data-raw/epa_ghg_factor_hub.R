@@ -194,7 +194,6 @@ stationary_combustion <- bind_rows(
   )
 
 
-
 # Table 2: Mobile Combustion CO2 -----
 # Source:
 # Federal Register EPA; 40 CFR Part 98; e-CFR, (see link below). Table C-1 (as amended at 81 FR 89252, Dec. 9, 2016).

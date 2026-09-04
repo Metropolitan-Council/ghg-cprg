@@ -24,7 +24,6 @@ testthat::test_that("County emissions data is as expected", {
   )
 
 
-
   testthat::expect_equal(
     unique(cprg_county_emissions$emissions_year),
     c(

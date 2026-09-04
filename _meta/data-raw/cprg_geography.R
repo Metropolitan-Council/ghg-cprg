@@ -55,7 +55,6 @@ cprg_county <- bind_rows(mn_counties, wi_counties) %>%
   )
 
 
-
 cprg_county_meta <-
   ctu_population_meta %>%
   filter(Column %in% names(cprg_county)) %>%

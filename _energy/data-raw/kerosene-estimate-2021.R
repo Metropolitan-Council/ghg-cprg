@@ -10,7 +10,6 @@ kerosene_factors <- epa_ghg_factor_hub$stationary_combustion %>%
   )
 
 
-
 kerosene_efficiency_grams <-
   # CO2 emissions per mmBtu of propane used, converted from kg to g
   kerosene_factors %>%

@@ -66,7 +66,6 @@ city_total_population <- ctu_population %>%
   ungroup()
 
 
-
 dakota_electric_activity <- city_raw %>%
   # Join city_total_population back to main dataset
   left_join(city_total_population,

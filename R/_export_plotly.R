@@ -102,7 +102,6 @@ purrr::map(
 )
 
 
-
 # create plots without titles ----
 purrr::map(
   names(pls),

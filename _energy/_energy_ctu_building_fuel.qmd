@@ -249,7 +249,7 @@ fig_ctu_liquid_fuel_map <- leaflet(
   data    = ctu_map_data %>% filter(!is.na(liquid_fuel_pct)),
   options = leafletOptions(zoomSnap = 0.5)
 ) %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
+  addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
   addPolygons(
     fillColor = ~ liquid_pal(liquid_fuel_pct),
     fillOpacity = 0.8,
@@ -296,7 +296,7 @@ fig_ctu_mmbtu_per_cap_map <- leaflet(
   data    = ctu_map_data %>% filter(!is.na(mmbtu_per_cap)),
   options = leafletOptions(zoomSnap = 0.5)
 ) %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
+  addProviderTiles(providers$Esri.WorldGrayCanvas) %>%
   addPolygons(
     fillColor = ~ mmbtu_cap_pal(mmbtu_per_cap),
     fillOpacity = 0.8,

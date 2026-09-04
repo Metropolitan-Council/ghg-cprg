@@ -557,7 +557,6 @@ p_stacked <- ggplot(
 print(p_stacked)
 
 
-
 # --- save outputs -------------------------------------------------------------
 
 write_rds(

@@ -249,7 +249,6 @@ ggplot(
   )
 
 
-
 # ── Sector aggregation from CTU model ────────────────────────────────────────
 
 county_res <- ctu_ng %>%

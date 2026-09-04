@@ -22,7 +22,6 @@ source("_meta/data-raw/projections/01_ns_projection_funs.R")
 # remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
 
 
-
 # Load data
 natural_systems_data <- c()
 
@@ -44,7 +43,6 @@ lc_county <- readr::read_rds(paste0(here::here(), "/_nature/data/", "nlcd_county
 inventory_start_year <- 2005
 inventory_end_year <- 2022
 future_years <- 2023:2050
-
 
 
 natural_systems_data$county$inventory <- lc_county %>%
@@ -119,7 +117,6 @@ regional_projections_2022 <- natural_systems_data$regional$inventory %>%
   pivot_longer(cols = -c(geog_name, geog_id, ctu_class), names_to = "land_cover_type", values_to = "area")
 
 
-
 natural_systems_data$regional$null_projections <- regional_projections_2022 %>%
   tidyr::crossing(inventory_year = future_years) %>%
   pivot_wider(names_from = "land_cover_type", values_from = "area") %>%
@@ -135,16 +132,12 @@ natural_systems_data$regional$null_projections <- regional_projections_2022 %>%
   mutate(across(everything(), ~ tidyr::replace_na(., 0)))
 
 
-
-
-
 mod_bau <- run_scenario_natural_systems(
   .selected_ctu = "Regional",
   tb_inv = natural_systems_data$regional$inventory,
   tb_future = natural_systems_data$regional$null_projections,
   tb_seq = natural_systems_data$land_cover_carbon
 )
-
 
 
 pct_increase_in_wetland_area_11co <- readRDS("_meta/data-raw/projections/pct_increase_in_wetland_area_11co.RDS")
@@ -180,9 +173,6 @@ mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
 )
 
 
-
-
-
 df_netZero <- mod_scen1 %>%
   filter(inventory_year == 2050) %>%
   group_by(geog_name, ctu_class, geog_id, inventory_year) %>%
@@ -195,18 +185,12 @@ df_netZero <- mod_scen1 %>%
 target_seq_for_netZero <- df_netZero %>% pull(net_zero_target)
 
 
-
 # waldo::compare(df_netZero, readRDS("_meta/data/regional_net_zero_target.RDS"))
 message("Saving regional net zero target data to: \n\t _meta/data/regional_net_zero_target.RDS")
 write_rds(
   df_netZero,
   "_meta/data/regional_net_zero_target.RDS"
 )
-
-
-
-
-
 
 
 plot_emissions <- function(bau, scenario, target) {
@@ -355,10 +339,7 @@ ggplot2::ggsave(
 message("Finished natural systems projections")
 
 
-
-
 # Final output and summary ------------------------------------------------
-
 
 
 regional_ns_forecast <- rbind(
@@ -422,8 +403,6 @@ regional_ns_forecast <- rbind(
 #           "_meta/data/regional_ns_forecast.RDS")
 
 
-
-
 ### numbers for CCAP document
 # sector wide 2030/2050 scenario to BAU comparisons
 
@@ -466,18 +445,6 @@ ppp2050
 # nz2050
 ppp2050 / bau2050
 # nz2050 / bau2050
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # # Load data

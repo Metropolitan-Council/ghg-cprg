@@ -31,7 +31,6 @@ mn_statewide_gas <- tribble(
   mutate(across(residential:total, ~ .x * 1000))
 
 
-
 # COMPANY-LEVEL TOTALS for metro-relevant utilities
 
 

@@ -98,7 +98,6 @@ mn_parcel_res <- mn_parcel %>%
   ungroup()
 
 
-
 residential_vars <- c(
   "total_pop", "total_households", "total_residential_units",
   "manufactured_homes", "single_fam_det_sl_own", "single_fam_det_ll_own",
@@ -144,7 +143,6 @@ urbansim_res <- urbansim_res %>%
       single_fam_det_sl_own
     )
   )
-
 
 
 # ── Training dataset ─────────────────────────────────────────────────────────

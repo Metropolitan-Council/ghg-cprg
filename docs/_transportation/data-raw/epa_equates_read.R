@@ -36,7 +36,6 @@ if (any(purrr::map(
 }
 
 
-
 # number of workers should match number of items in the vector
 plan(strategy = future::multisession, workers = 12)
 

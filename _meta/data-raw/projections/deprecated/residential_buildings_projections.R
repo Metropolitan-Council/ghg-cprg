@@ -104,7 +104,6 @@ ind_bau <- county_emissions %>%
   )
 
 
-
 # Apply the interpolation function to your data
 ind_bau_interpolated <- interpolate_emissions(ind_bau)
 

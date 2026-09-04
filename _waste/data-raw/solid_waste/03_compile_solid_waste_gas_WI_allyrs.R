@@ -62,7 +62,6 @@ saveRDS(solid_waste_gas_wi, paste0("_waste/data/solid_waste_gas_WI_allyrs.RDS"))
 saveRDS(solid_waste_gas_wi_meta, paste0("_waste/data/solid_waste_gas_WI_allyrs_meta.RDS"))
 
 
-
 # previous attempt ----
 
 # turns out this is only available economy-wide.

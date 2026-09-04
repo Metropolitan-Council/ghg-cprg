@@ -54,7 +54,6 @@ emissions_per_mile <- rtdm_vmt_time_series %>%
   unique()
 
 
-
 emissions_per_mile_meta <- county_emissions_forecast_meta %>%
   filter(Column %in% names(emissions_per_mile)) %>%
   bind_rows(

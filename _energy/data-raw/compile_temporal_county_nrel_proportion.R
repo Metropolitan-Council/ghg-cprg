@@ -125,8 +125,6 @@ ggplot(electric_interpolated, aes(x = emissions_year, y = activity, col = county
   labs(title = "County electricity deliveries (MWh)", x = NULL, y = "MWh")
 
 
-
-
 natgas_raw <- readRDS(file.path(here::here("_energy", "data", "county_natgas_activity.RDS"))) %>%
   as_tibble() %>%
   bind_rows(
@@ -204,8 +202,6 @@ ggplot(natgas_interpolated, aes(x = emissions_year, y = value_emissions, col = c
 
 saveRDS(natgas_interpolated, "_energy/data/county_natgas_activity_nrel.RDS")
 saveRDS(electric_interpolated, "_energy/data/county_elec_activity_nrel.RDS")
-
-
 
 
 # ════════════════════════════════════════════════════════════════════

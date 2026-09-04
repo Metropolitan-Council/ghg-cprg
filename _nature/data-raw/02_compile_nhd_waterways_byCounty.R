@@ -82,7 +82,6 @@ gdb_files <- list.dirs(inpath_nhd_all,
 )]
 
 
-
 # Define a function to read specific layers from multiple .gdb files
 read_gdb_layers <- function(gdb_path, layer_name) {
   st_read(gdb_path, layer = layer_name) %>%
@@ -103,7 +102,6 @@ NHDArea_combined <- bind_rows(NHDArea_list)
 rm(NHDArea_list)
 
 
-
 # Use lapply to read the "NHDFlowline" layer from all .gdb files
 NHDFlowline_list <- lapply(gdb_files, read_gdb_layers, layer_name = "NHDFlowline")
 # Combine all the data frames into one
@@ -119,7 +117,6 @@ rm(NHDFlowline_list)
 # # # first add an area column to the NHD dataframe, then convert to km2
 # # NHD$area <- sf::st_area(NHD)
 # # NHD$area_km2 <- NHD$area / 1e6
-
 
 
 message("Binding NHD data")
@@ -147,7 +144,6 @@ NHD <- rbind(
   relocate(source, .before = everything())
 
 
-
 # # Merge the two dataframes
 # NHD <- rbind(NHDArea_combined, NHDWaterbody_combined)
 rm(NHDArea_combined, NHDWaterbody_combined, NHDFlowline_combined)
@@ -158,7 +154,6 @@ NHD <- NHD %>% sf::st_transform(4269)
 # st_transform can make things kinda weird with geoms,
 # st_make_valid can help fix that
 NHD <- sf::st_make_valid(NHD)
-
 
 
 # # Now let's compute the area for each type of waterway by county and CTU
@@ -251,8 +246,6 @@ NHDArea_byCounty <- NHD_byCounty %>%
 rm(NHD_byCounty)
 
 
-
-
 message("Computing waterway geometry by county")
 # Now let's compute the area for each type of waterway by county and CTU
 # first add an area column to the NHD dataframe, then convert to km2
@@ -266,9 +259,6 @@ NHDArea_byCounty <- NHDArea_byCounty %>%
     area = sf::st_area(.),
     area_km2 = area / 1e6
   )
-
-
-
 
 
 # Compute area of each waterway type by county
@@ -288,7 +278,6 @@ nhd_county <- NHDArea_byCounty %>%
   crossing(inventory_year = seq(2001, 2022, by = 1)) %>%
   dplyr::select(c("county_name", "state_name", "inventory_year", "waterway_type", "area")) %>%
   arrange(inventory_year, county_name, waterway_type)
-
 
 
 # Export datasets for plotting (Quarto)
@@ -355,12 +344,7 @@ waterway_colors <- c(
 #   )
 
 
-
-
-
 message("Wrapping up")
-
-
 
 
 # browser()

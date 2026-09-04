@@ -192,7 +192,6 @@ sector_comparison
 #        units = "in")
 
 
-
 # ggsave(paste0(wd,"ghg_sector_temporal.png"),
 #        baseline_comparison,
 #        width = 14,

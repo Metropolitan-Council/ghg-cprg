@@ -187,7 +187,6 @@ ggsave(
 )
 
 
-
 ## ---- Wages ----
 wage_dumbell <- onet_scored_OID_occdetails %>%
   filter(soc_code %in% c(priority_underBA$`SOC Code`, priority_overBA$`SOC Code`)) %>%
@@ -307,7 +306,6 @@ ggsave(
   dpi = 300,
   bg = "white"
 )
-
 
 
 ## ---- work context & job quality framing
@@ -550,7 +548,6 @@ cert_details <- CERT_ONET_ASSIGN %>%
   arrange(soccode, CERT_ID, RELATION) %>%
   distinct() %>%
   mutate(onet = soccode %in% all_onet$soc_code)
-
 
 
 ### --- Set focus occupation, make cip dfs & figure ----
@@ -827,7 +824,6 @@ occ_geodata_overBA <- geodata_overBA %>%
   ) %>%
   select(-matches("(_4|_2)$")) %>%
   select(-matches("(_3rd_year|_4th_year)$"))
-
 
 
 edu_programs_priorityoccs_underBA <- occ_geodata_underBA %>%

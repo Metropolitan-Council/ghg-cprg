@@ -54,7 +54,6 @@ lm(total_mcf ~ cooling_degree_days + heating_degree_days,
 ### bring in CTU level data
 
 
-
 ggplot(
   electricity %>% distinct(emissions_year, county_name, county_sql_total_mwh, total_mWh_delivered),
   aes(x = county_sql_total_mwh, y = total_mWh_delivered, col = county_name)
@@ -104,8 +103,6 @@ ggplot(
   xlab("Utility CTU scf reports (aggregated)") +
   ylab("Utility county scf reports") +
   theme_bw()
-
-
 
 
 # predictor data
@@ -306,7 +303,6 @@ county_res_predict <- ctu_res_predict %>%
   )
 
 
-
 nrel_predict_res <- read_rds("_energy/data/electric_natgas_nrel_proportioned.RDS") %>%
   filter(
     source == "Electricity",
@@ -338,8 +334,6 @@ ggplot(electricity_res, aes(x = total_pop, y = mWh_delivered, col = total_househ
   theme_bw()
 
 ### does a linear fit perform better?
-
-
 
 
 # nonresidential processing ####

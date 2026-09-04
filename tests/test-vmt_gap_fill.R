@@ -103,7 +103,6 @@ testthat::test_that("Blaine Ramsey County - never has negative VMT", {
 })
 
 
-
 testthat::test_that("County scaling factors - reasonable values", {
   mndot_vmt_ctu_gap_filled <- readRDS(file.path(here::here(), "_transportation/data/mndot_vmt_ctu_gap_filled.RDS"))
 

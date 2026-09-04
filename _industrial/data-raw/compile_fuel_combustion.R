@@ -225,7 +225,6 @@ ind_fuel_activity_out <- ind_fuel_activity %>%
   )
 
 
-
 ind_fuel_activity_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
