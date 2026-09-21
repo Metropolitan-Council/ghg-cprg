@@ -60,7 +60,9 @@ natgas_ef_scf <- readRDS("_meta/data/epa_ghg_factor_hub.RDS") %>%
 # ════════════════════════════════════════════════════════════════════
 # ELECTRICITY: COUNTY ACTIVITY
 # MN counties: complete 2005–2023 from new 7610/EIA 861 pipeline
-# WI counties: per-capita estimate anchored to 2021 utility reports
+# WI counties: complete 2005–2025 from EIA-861 x PSCW customer-share pipeline
+#   (see 01_compile_wi_utility_customer_counts.R, 02_compile_eia_wi_elec_activity.R,
+#   03_compile_wi_electricity_activity.R)
 # ════════════════════════════════════════════════════════════════════
 
 # ── MN counties from new pipeline (already gap-filled and backcasted) ────────
@@ -72,32 +74,11 @@ electric_mn <- readRDS(here::here("_energy", "data", "county_elec_activity.RDS")
     data_source = "Utility report (7610/EIA 861)"
   )
 
-# ── WI counties via per-capita estimate from 2021 ───────────────────────────
-county_pop <- readRDS(here::here("_meta", "data", "census_county_population.RDS"))
-
-wi_electric <- readRDS(here::here("_energy", "data", "wisconsin_elecUtils_ActivityAndEmissions.RDS")) %>%
-  group_by(county_name) %>%
-  summarize(mwh = sum(coalesced_utilityCounty_mWh), .groups = "drop") %>%
-  left_join(
-    county_pop %>% filter(population_year == 2021),
-    by = "county_name"
-  ) %>%
-  mutate(mwh_per_capita = mwh / population) %>%
-  select(county_name, mwh_per_capita) %>%
-  left_join(
-    county_pop %>% filter(population_year >= 2005),
-    by = "county_name"
-  ) %>%
-  transmute(
-    emissions_year = as.numeric(population_year),
-    county_name,
-    mwh = mwh_per_capita * population,
-    data_source = if_else(
-      emissions_year == 2021,
-      "Utility report",
-      "Population based estimate"
-    )
-  )
+# ── WI counties from new EIA-861 x PSCW customer-share pipeline ─────────────
+# Replaces the previous 2021-anchored per-capita extrapolation. Schema already
+# matches electric_mn (emissions_year, county_name, mwh, data_source), so no
+# further transmutation is needed here.
+wi_electric <- readRDS(here::here("_energy", "data", "WI_county_elec_activity.RDS"))
 
 # ── Combine and calculate emissions ─────────────────────────────────────────
 electric_interpolated <- bind_rows(electric_mn, wi_electric) %>%

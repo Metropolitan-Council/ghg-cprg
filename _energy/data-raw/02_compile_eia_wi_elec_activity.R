@@ -71,6 +71,10 @@ eia_name_lookup_wi <- c(
   "Northern States Power Company-Wisconsin"     = "Northern States Power Company-Wisconsin",
   "Northern States Power Company (WIS)"         = "Northern States Power Company-Wisconsin",
   "Northern States Power Co (Wisconsin)"        = "Northern States Power Company-Wisconsin",
+  # EIA-861 files for most years report NSP-WI under this bare name with no
+  # state qualifier at all (safe to map directly since parsing already
+  # restricts to state == "WI" rows before this harmonization step runs).
+  "Northern States Power Co"                    = "Northern States Power Company-Wisconsin",
 
   # Dunn Energy Cooperative
   "Dunn Energy Cooperative"                     = "Dunn Energy Cooperative",
@@ -82,6 +86,7 @@ eia_name_lookup_wi <- c(
   "Pierce-Pepin Electric Cooperative Services"  = "Pierce-Pepin Electric Cooperative Services",
   "Pierce Pepin Cooperative Services"           = "Pierce-Pepin Electric Cooperative Services",
   "Pierce-Pepin Coop Services Inc"              = "Pierce-Pepin Electric Cooperative Services",
+  "Pierce-Pepin Coop Services"                  = "Pierce-Pepin Electric Cooperative Services",
 
   # Polk-Burnett Electric Cooperative
   "Polk-Burnett Electric Coop"                  = "Polk-Burnett Electric Cooperative",
@@ -108,7 +113,13 @@ eia_name_lookup_wi <- c(
 )
 
 harmonize_eia_names_wi <- function(names) {
-  idx <- match(names, names(eia_name_lookup_wi))
+  # Case- and whitespace-insensitive match: EIA-861 raw names for the same
+  # utility vary in capitalization across years (older "reformatted" 2005-2011
+  # archives in particular are often ALL CAPS), so an exact-match lookup
+  # silently misses years even when the name is otherwise a known variant.
+  normalized <- toupper(trimws(names))
+  lookup_keys <- toupper(trimws(names(eia_name_lookup_wi)))
+  idx <- match(normalized, lookup_keys)
   ifelse(is.na(idx), names, unname(eia_name_lookup_wi[idx]))
 }
 
@@ -445,15 +456,88 @@ coverage <- wi_utility_elec_activity_eia861 %>%
 message("\nCoverage by utility x form:")
 print(coverage)
 
-missing_scope <- setdiff(
-  wi_elec_utils_scope$utility_name,
-  wi_utility_elec_activity_eia861$utility_name
+# --- QA: check for partial (not just total-absence) coverage gaps -----------
+# A utility can pass the total-absence check below (it has *some* matched
+# years) while still silently missing most of its history if the EIA raw
+# name format changed across years in a way the harmonization lookup doesn't
+# capture (this is what happened with NSP-WI's pre-2012 filings). Flag any
+# in-scope utility whose matched-year count is well below the
+# best-covered utility's count.
+
+scope_year_counts <- wi_utility_elec_activity_eia861 %>%
+  count(utility_name, name = "n_years")
+
+max_years <- max(scope_year_counts$n_years, na.rm = TRUE)
+
+partial_gap_utilities <- wi_elec_utils_scope %>%
+  distinct(utility_name) %>%
+  left_join(scope_year_counts, by = "utility_name") %>%
+  mutate(n_years = coalesce(n_years, 0L)) %>%
+  filter(n_years > 0, n_years < max_years * 0.75) %>%
+  pull(utility_name)
+
+if (length(partial_gap_utilities) > 0) {
+  message(sprintf(
+    "\nUtilities with partial-coverage gaps (< 75%% of the best-covered utility's %d years): %s",
+    max_years, paste(partial_gap_utilities, collapse = "; ")
+  ))
+}
+
+missing_scope <- union(
+  setdiff(wi_elec_utils_scope$utility_name, wi_utility_elec_activity_eia861$utility_name),
+  partial_gap_utilities
 )
 if (length(missing_scope) > 0) {
   warning(sprintf(
-    "No EIA-861 records found for in-scope utilities: %s",
+    "In-scope utilities with missing or incomplete EIA-861 coverage: %s",
     paste(missing_scope, collapse = "; ")
   ))
+
+  # --- diagnostic: surface near-matches to help identify the correct raw name --
+  # EIA-861 naming for small co-ops is inconsistent across years (hyphenation,
+  # abbreviations, "Inc"/"Coop" suffixes, occasional filing under a parent
+  # G&T's name). Rather than guess blindly, search all parsed WI raw names
+  # (pre-scope-filter) for the missing utility's distinctive words so the
+  # correct eia_name_lookup_wi entry can be added.
+  generic_utility_words <- c(
+    "company", "co", "corporation", "corp", "cooperative", "coop",
+    "electric", "power", "light", "utility", "utilities", "services",
+    "service", "inc", "incorporated", "llc", "assn", "association",
+    "municipal", "of", "the"
+  )
+
+  message("\n--- Diagnostic: searching all parsed WI utility names for near-matches ---")
+  for (missing_name in missing_scope) {
+    tokens <- str_split(missing_name, "[^A-Za-z]+")[[1]]
+    tokens <- tokens[!tolower(tokens) %in% tolower(generic_utility_words)]
+    tokens <- tokens[nchar(tokens) > 2]
+
+    if (length(tokens) == 0) next
+
+    pattern <- paste(tokens, collapse = "|")
+    candidates <- eia_all_wi %>%
+      filter(str_detect(utility_name_raw, regex(pattern, ignore_case = TRUE))) %>%
+      distinct(utility_name_raw, data_source, emissions_year) %>%
+      arrange(utility_name_raw, emissions_year)
+
+    if (nrow(candidates) > 0) {
+      message(sprintf(
+        "\nNear-matches for '%s' (search tokens: %s):",
+        missing_name, paste(tokens, collapse = ", ")
+      ))
+      print(candidates, n = Inf)
+    } else {
+      message(sprintf(
+        paste0(
+          "\nNo near-matches found for '%s' in any parsed WI EIA-861 year. ",
+          "This utility may not file EIA-861 at all (small co-ops sometimes ",
+          "report only through a parent G&T cooperative), or may not appear ",
+          "in the state == 'WI' filter for its own filings."
+        ),
+        missing_name
+      ))
+    }
+  }
 }
 
 # --- write outputs -----------------------------------------------------------
@@ -463,8 +547,3 @@ write_rds(
   here("_energy", "data", "WI_utility_elec_activity_eia861.RDS")
 )
 
-message(sprintf(
-  "\nWrote %s (%d rows)",
-  file.path("_energy", "data", "WI_utility_elec_activity_eia861.RDS"),
-  nrow(wi_utility_elec_activity_eia861)
-))

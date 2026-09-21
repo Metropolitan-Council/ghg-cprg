@@ -1,6 +1,15 @@
 source("R/_load_pkgs.R")
 source("_energy/data-raw/_energy_emissions_factors.R")
 
+# SUPERSEDED (kept for reference / provenance of the Census-block population
+# shapefiles and the 2021 customer counts): this single-year (2021) estimate
+# has been replaced by the temporal (2005-latest) pipeline in
+# 01_compile_wi_utility_customer_counts.R -> 02_compile_eia_wi_elec_activity.R
+# -> 03_compile_wi_electricity_activity.R, which is now sourced from
+# _run_energy.R instead of this script. The Census-block shapefiles read below
+# are still the input for co-op/River Falls population-based county shares in
+# 03_compile_wi_electricity_activity.R.
+
 # Note about co-op utilities -- electric eco-ops don't report to the state of Wisconsin, and two of four are missing data in/for EIA-861 (The Annual Electric Power Industry Report). For these, we estimate activity based on customer/account numbers reported by the utilities.
 
 # 1) St Croix Electric Cooperative: 11,637 customer accounts on 2021 annual report https://scecnet.net/elm-2022

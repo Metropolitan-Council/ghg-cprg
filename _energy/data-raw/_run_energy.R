@@ -18,7 +18,9 @@ source("_energy/data-raw/minnesota_7610reporting_natGas.R")
 source("_energy/data-raw/wisconsin_natGas_estimate_2005_and_2021.R")
 
 source("_energy/data-raw/minnesota_7610reporting_electricity.R")
-source("_energy/data-raw/wisconsin_elec_estimate_2021.R")
+source("_energy/data-raw/01_compile_wi_utility_customer_counts.R")
+source("_energy/data-raw/02_compile_eia_wi_elec_activity.R")
+source("_energy/data-raw/03_compile_wi_electricity_activity.R")
 
 source("_energy/data-raw/nrel_slope_energy.R")
 
