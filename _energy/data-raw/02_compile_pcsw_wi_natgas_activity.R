@@ -24,11 +24,23 @@
 #   - Wisconsin column is used throughout (excludes any Michigan operations).
 #   - 2005 uses schedule G-23; 2013+ uses G-24. Both have identical column structure.
 #   - 2005 and 2021 gas-only utilities (3670, 5230, 6650) are pulled from the previous
-#     R script (wisconsin_natGas_estimate_2005_and_2021.R) where PDFs were not re-verified.
+#   R script (wisconsin_natGas_estimate_2005_and_2021.R) where PDFs were not re-verified.
 #     The previous script did not track transport gas separately, so those rows show NA
 #     for transport_therms — assume ~0 for 3670 and 5230 based on 2013/2022 pattern; 6650
 #     transport is substantial (near equal to gas sold in later years) and should be
 #     verified from PDF before use.
+#
+# Annual estimates:
+#   gas_sold_therms is linearly interpolated between reported anchor years for
+#   each utility. Transport gas is not interpolated or included in that series.
+#   Anchor observations remain separately identifiable in the annual output.
+#
+# Outputs:
+#   wi_utility_natgas_activity_pcsw.RDS
+#     Reported PSCW anchor-year values, including transport where available.
+#   wi_utility_natgas_activity_pcsw_interpolated.RDS
+#     Annual 2005-2025 utility sales estimates, interpolated from anchors;
+#     transport remains anchor-only and is never added to interpolated sales.
 
 source("R/_load_pkgs.R")
 
@@ -67,12 +79,102 @@ wi_iou_gas_delivered <- tribble(
   mutate(total_delivered_therms = gas_sold_therms + transport_therms)
 
 
-# Quick view
+# Quick view of reported anchor data
 wi_iou_gas_delivered %>%
   arrange(year, utility_id) %>%
   print(n = Inf)
 
+# --- Interpolate non-transport gas sales between PSCW anchors ----------------
+# The four utilities have multiple sales anchors across 2005-2025. Interpolate
+# utility-wide gas sold (therms) linearly; do not interpolate transport gas or
+# combine it with the sales estimate. Keep the observed value, schedule, and
+# transport figure only on the original anchor-year rows for auditability.
+
+interp_start <- 2005L
+interp_end <- 2025L
+
+if (anyDuplicated(wi_iou_gas_delivered[c("utility_id", "year")]) > 0) {
+  stop("PSCW gas anchor table contains duplicate utility-year rows.")
+}
+
+anchor_count_check <- wi_iou_gas_delivered %>%
+  group_by(utility_id, utility_name) %>%
+  summarise(
+    n_anchors = sum(!is.na(gas_sold_therms)),
+    min_anchor_year = min(year[!is.na(gas_sold_therms)]),
+    max_anchor_year = max(year[!is.na(gas_sold_therms)]),
+    .groups = "drop"
+  )
+
+if (any(anchor_count_check$n_anchors < 2)) {
+  stop("Each utility needs at least two gas-sales anchors to interpolate.")
+}
+if (any(anchor_count_check$min_anchor_year > interp_start) ||
+    any(anchor_count_check$max_anchor_year < interp_end)) {
+  stop("PSCW anchors do not bracket the requested 2005-2025 interpolation period for every utility.")
+}
+
+wi_utility_natgas_activity_pcsw_interpolated <- wi_iou_gas_delivered %>%
+  select(
+    utility_id, utility_name, year, gas_sold_therms,
+    transport_therms, source_schedule
+  ) %>%
+  complete(
+    nesting(utility_id, utility_name),
+    year = interp_start:interp_end
+  ) %>%
+  group_by(utility_id, utility_name) %>%
+  arrange(year, .by_group = TRUE) %>%
+  mutate(
+    gas_sold_therms_interpolated = approx(
+      x = year[!is.na(gas_sold_therms)],
+      y = gas_sold_therms[!is.na(gas_sold_therms)],
+      xout = year,
+      method = "linear",
+      rule = 2
+    )$y
+  ) %>%
+  ungroup() %>%
+  mutate(
+    state = "WI",
+    fuel = "Natural gas",
+    unit_activity = "therms",
+    is_anchor_year = !is.na(gas_sold_therms),
+    data_source = if_else(
+      is_anchor_year,
+      "PSCW annual report",
+      "Interpolated between PSCW annual report anchors"
+    )
+  ) %>%
+  select(
+    utility_id, utility_name, state, fuel, year,
+    gas_sold_therms, gas_sold_therms_interpolated,
+    transport_therms, source_schedule, is_anchor_year,
+    unit_activity, data_source
+  ) %>%
+  arrange(utility_id, year)
+
+message(sprintf(
+  "Interpolated non-transport PSCW gas sales: %d utility-year rows (%d-%d)",
+  nrow(wi_utility_natgas_activity_pcsw_interpolated),
+  interp_start, interp_end
+))
+
+wi_utility_natgas_activity_pcsw_interpolated %>%
+  count(utility_name, is_anchor_year) %>%
+  pivot_wider(
+    names_from = is_anchor_year,
+    values_from = n,
+    values_fill = 0L
+  ) %>%
+  print(n = Inf)
+
 write_rds(
   wi_iou_gas_delivered,
-  here("_energy", "data", "wi_utility_elec_activity_pcsw.RDS")
+  here("_energy", "data", "wi_utility_natgas_activity_pcsw.RDS")
+)
+
+write_rds(
+  wi_utility_natgas_activity_pcsw_interpolated,
+  here("_energy", "data", "wi_utility_natgas_activity_pcsw_interpolated.RDS")
 )
