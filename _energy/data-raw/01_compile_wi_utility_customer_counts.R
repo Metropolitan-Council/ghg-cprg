@@ -23,9 +23,9 @@ source("R/_load_pkgs.R")
 wi_iou_customer_counts <- tribble(
   ~utility_id, ~utility_name,                              ~fuel,      ~year, ~county,     ~county_customers, ~utility_total_customers, ~schedule_source,
   # ---- 2022 ----
-  # NSP-WI Electric (E-40 county totals, E-03 line 28 for utility total)
-  4220, "Northern States Power Company - Wisconsin",  "electric",  2022, "Pierce",         7527,   257992, "E-40, E-03",
-  4220, "Northern States Power Company - Wisconsin",  "electric",  2022, "St. Croix",     25080,   257992, "E-40, E-03",
+  # NSP-WI Electric (E-40 county totals & grand total "Total - Customers Served")
+  4220, "Northern States Power Company - Wisconsin",  "electric",  2022, "Pierce",         7527,   267713, "E-40",
+  4220, "Northern States Power Company - Wisconsin",  "electric",  2022, "St. Croix",     25080,   267713, "E-40",
   # NSP-WI Gas (G-26 lines 85, 114, 120)
   4220, "Northern States Power Company - Wisconsin",  "gas",       2022, "Pierce",          105,   114273, "G-26",
   4220, "Northern States Power Company - Wisconsin",  "gas",       2022, "St. Croix",     16272,   114273, "G-26",
@@ -37,13 +37,13 @@ wi_iou_customer_counts <- tribble(
   # Wisconsin Gas (G-26 lines 412, 486, 654)
   6650, "Wisconsin Gas",                              "gas",       2022, "Pierce",         3342,   650532, "G-26",
   6650, "Wisconsin Gas",                              "gas",       2022, "St. Croix",      4334,   650532, "G-26",
-
-
-  # ---- 2021 electric (NSP-WI — E-40, E-03 line 28) ----
-  4220, "Northern States Power Company - Wisconsin",  "electric",  2021, "Pierce",         5659,   256282, "E-40, E-03",
-  4220, "Northern States Power Company - Wisconsin",  "electric",  2021, "St. Croix",     24850,   256282, "E-40, E-03",
-
-  # ---- 2021 (gas only — from existing wisconsin_natGas_estimate_2005_and_2021.R) ----
+  
+  
+  # ---- 2021 electric (NSP-WI — E-40 county totals & grand total "Total - Customers Served") ----
+  4220, "Northern States Power Company - Wisconsin",  "electric",  2021, "Pierce",         7489,   266071, "E-40",
+  4220, "Northern States Power Company - Wisconsin",  "electric",  2021, "St. Croix",     24850,   266071, "E-40",
+  
+  # ---- 2021 (gas — verified against IOU_2021_4220.pdf; other utilities from wisconsin_natGas_estimate_2005_and_2021.R, unverified) ----
   4220, "Northern States Power Company - Wisconsin",  "gas",       2021, "Pierce",          107,   113012, "G-26",
   4220, "Northern States Power Company - Wisconsin",  "gas",       2021, "St. Croix",     15990,   113012, "G-26",
   3670, "Midwest Natural Gas Incorporated",           "gas",       2021, "St. Croix",      5573,    18793, "G-26",
@@ -51,24 +51,24 @@ wi_iou_customer_counts <- tribble(
   5230, "St Croix Valley Natural Gas Company",        "gas",       2021, "St. Croix",      3817,     9227, "G-26",
   6650, "Wisconsin Gas",                              "gas",       2021, "Pierce",         3320,   645576, "G-26",
   6650, "Wisconsin Gas",                              "gas",       2021, "St. Croix",      4252,   645576, "G-26",
-
-  # ---- 2005 (gas only — from existing wisconsin_natGas_estimate_2005_and_2021.R) ----
+  
+  # ---- 2005 (gas — verified against IOU_2005_4220.pdf; other utilities from wisconsin_natGas_estimate_2005_and_2021.R, unverified) ----
   4220, "Northern States Power Company - Wisconsin",  "gas",       2005, "Pierce",            0,    93588, "G-26",
-  4220, "Northern States Power Company - Wisconsin",  "gas",       2005, "St. Croix",     12138,    93588, "G-26",
+  4220, "Northern States Power Company - Wisconsin",  "gas",       2005, "St. Croix",     11878,    93588, "G-26",
   3670, "Midwest Natural Gas Incorporated",           "gas",       2005, "St. Croix",      3516,    13845, "G-26",
   5230, "St Croix Valley Natural Gas Company",        "gas",       2005, "Pierce",         4573,     6939, "G-26",
   5230, "St Croix Valley Natural Gas Company",        "gas",       2005, "St. Croix",      2366,     6939, "G-26",
   6650, "Wisconsin Gas",                              "gas",       2005, "Pierce",         3039,   583336, "G-26",
   6650, "Wisconsin Gas",                              "gas",       2005, "St. Croix",      3453,   583336, "G-26",
-
-  # ---- 2005 electric (NSP-WI — E-40 county totals, Sales of Elec schedule for utility total) ----
-  4220, "Northern States Power Company - Wisconsin",  "electric",  2005, "Pierce",         6740,   249846, "E-40, E-08",
-  4220, "Northern States Power Company - Wisconsin",  "electric",  2005, "St. Croix",     20357,   249846, "E-40, E-08",
-
-  # ---- 2013 electric (NSP-WI — E-40, Sales of Elec schedule) ----
-  4220, "Northern States Power Company - Wisconsin",  "electric",  2013, "Pierce",         6981,   253021, "E-40, E-08",
-  4220, "Northern States Power Company - Wisconsin",  "electric",  2013, "St. Croix",     22174,   253021, "E-40, E-08",
-
+  
+  # ---- 2005 electric (NSP-WI — E-40 county totals & grand total "Total Electric Customers") ----
+  4220, "Northern States Power Company - Wisconsin",  "electric",  2005, "Pierce",         6740,   232690, "E-40",
+  4220, "Northern States Power Company - Wisconsin",  "electric",  2005, "St. Croix",     20357,   232690, "E-40",
+  
+  # ---- 2013 electric (NSP-WI — E-40 county totals & grand total "Total Company:") ----
+  4220, "Northern States Power Company - Wisconsin",  "electric",  2013, "Pierce",         6981,   244628, "E-40",
+  4220, "Northern States Power Company - Wisconsin",  "electric",  2013, "St. Croix",     22174,   244628, "E-40",
+  
   # ---- 2013 gas ----
   # NSP-WI (G-26 p2: Pierce=82, St Croix=13,652; p3: Total Company=103,045)
   4220, "Northern States Power Company - Wisconsin",  "gas",       2013, "Pierce",           82,   103045, "G-26",
@@ -81,11 +81,11 @@ wi_iou_customer_counts <- tribble(
   # Wisconsin Gas (G-26 p7: Pierce=3,143; p8-9: St Croix=3,810; p11: Total=608,529)
   6650, "Wisconsin Gas",                              "gas",       2013, "Pierce",         3143,   608529, "G-26",
   6650, "Wisconsin Gas",                              "gas",       2013, "St. Croix",      3810,   608529, "G-26",
-
-  # ---- 2025 electric (NSP-WI — E-40, E-03 line 28) ----
-  4220, "Northern States Power Company - Wisconsin",  "electric",  2025, "Pierce",         7671,   265061, "E-40, E-03",
-  4220, "Northern States Power Company - Wisconsin",  "electric",  2025, "St. Croix",     25829,   265061, "E-40, E-03",
-
+  
+  # ---- 2025 electric (NSP-WI — E-40 county totals & grand total "Total - Customers Served") ----
+  4220, "Northern States Power Company - Wisconsin",  "electric",  2025, "Pierce",         7671,   274765, "E-40",
+  4220, "Northern States Power Company - Wisconsin",  "electric",  2025, "St. Croix",     25829,   274765, "E-40",
+  
   # ---- 2025 gas ----
   # NSP-WI (G-26 p3: Pierce=108, StCroix=16,866; p4: Total=117,478)
   4220, "Northern States Power Company - Wisconsin",  "gas",       2025, "Pierce",          108,   117478, "G-26",

@@ -5,7 +5,7 @@
 #
 # Wisconsin electric cooperatives and municipals do not report to the state in
 # the same way MN utilities do (via 7610). County-level deliveries are not
-# published for most WI utilities, so EIA-861 is used as the base activity
+# published for  WI utilities, so EIA-861 is used as the base activity
 # source. Downstream scripts allocate these utility x state totals to counties
 # using customer-count / population weights.
 #
@@ -33,7 +33,7 @@ source("R/_load_pkgs.R")
 # --- configuration -----------------------------------------------------------
 
 backcast_start <- 2005L
-latest_year <- as.integer(format(Sys.Date(), "%Y")) - 1L
+latest_year <- 2025
 full_year_range <- backcast_start:latest_year
 state_abb <- "WI"
 
