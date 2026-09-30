@@ -15,10 +15,14 @@ source("_energy/data-raw/wisconsin_electricUtilities.R")
 
 # next, run processing for MN and WI county-level activity data (nat gas, then elec), derived from utility reports to State
 source("_energy/data-raw/minnesota_7610reporting_natGas.R")
-source("_energy/data-raw/wisconsin_natGas_estimate_2005_and_2021.R")
 
 source("_energy/data-raw/minnesota_7610reporting_electricity.R")
+
+# Wisconsin (Pierce, St. Croix): customer shares feed both electricity and gas
 source("_energy/data-raw/01_compile_wi_utility_customer_counts.R")
+source("_energy/data-raw/02_compile_pcsw_wi_natgas_activity.R")
+source("_energy/data-raw/02_compile_eia_wi_natgas_activity.R")
+source("_energy/data-raw/03_compile_wi_natgas_activity.R")
 source("_energy/data-raw/02_compile_eia_wi_elec_activity.R")
 source("_energy/data-raw/03_compile_wi_electricity_activity.R")
 
