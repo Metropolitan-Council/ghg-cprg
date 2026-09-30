@@ -106,40 +106,23 @@ ggplot(electric_interpolated, aes(x = emissions_year, y = activity, col = county
   labs(title = "County electricity deliveries (MWh)", x = NULL, y = "MWh")
 
 
-natgas_raw <- readRDS(file.path(here::here("_energy", "data", "county_natgas_activity.RDS"))) %>%
-  as_tibble() %>%
-  bind_rows(
-    readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>%
-      rename(emissions_year = year)
-  ) %>%
-  mutate(
-    mcf_delivered = if_else(is.na(mcf_delivered),
-      emissions_metric_tons_co2e / natgas_ef_scf$mt_co2e_mcf,
-      mcf_delivered
-    ),
-    sector = "Natural gas"
-  ) # removing because MERC filing in not in Commerce edocket
-
-
 # ════════════════════════════════════════════════════════════════════
 # NATURAL GAS: COUNTY ACTIVITY
-# (unchanged from previous version)
+# MN counties: county_natgas_activity.RDS (utility handbook pipeline)
+# WI counties: complete 2005–2025 from PSCW G-24 x G-26 customer-share
+#   pipeline, incl. SCV transport and EIA weather texture (see
+#   02_compile_pcsw_wi_natgas_activity.R, 02_compile_eia_wi_natgas_activity.R,
+#   03_compile_wi_natgas_activity.R). Replaces the 2005/2021 point estimates
+#   in wisconsin_county_GasEmissions.RDS.
 # ════════════════════════════════════════════════════════════════════
+
+wi_natgas <- readRDS(here::here("_energy", "data", "WI_county_natgas_activity.RDS")) %>%
+  transmute(emissions_year, county_name, mcf_delivered = mcf)
 
 natgas_raw <- readRDS(file.path(here::here("_energy", "data", "county_natgas_activity.RDS"))) %>%
   as_tibble() %>%
-  bind_rows(
-    readRDS(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>%
-      rename(emissions_year = year)
-  ) %>%
-  mutate(
-    mcf_delivered = if_else(
-      is.na(mcf_delivered),
-      emissions_metric_tons_co2e / natgas_ef_scf$mt_co2e_mcf,
-      mcf_delivered
-    ),
-    sector = "Natural gas"
-  )
+  bind_rows(wi_natgas) %>%
+  mutate(sector = "Natural gas")
 
 
 natgas_interpolated <- left_join(
