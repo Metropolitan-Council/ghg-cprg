@@ -173,12 +173,12 @@ wi_iou_county_shares_interpolated %>%
 
 write_rds(
   wi_iou_customer_counts,
-  here("_energy", "data", "WI_iou_customer_counts_anchor_years.RDS")
+  here("_energy", "data", "wi_iou_customer_counts_anchor_years.RDS")
 )
 
 write_rds(
   wi_iou_county_shares_interpolated,
-  here("_energy", "data", "WI_utility_customer_shares_interpolated.RDS")
+  here("_energy", "data", "wi_utility_customer_shares_interpolated.RDS")
 )
 
 

@@ -108,5 +108,5 @@ print(wi_eia_natgas_consumption, n = Inf)
 
 write_rds(
   wi_eia_natgas_consumption,
-  here("_energy", "data", "WI_eia_natgas_consumption_state.RDS")
+  here("_energy", "data", "wi_eia_natgas_consumption_state.RDS")
 )

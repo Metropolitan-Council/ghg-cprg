@@ -268,15 +268,15 @@ wi_county_elec_emissions <- wi_county_elec_activity %>%
 
 write_rds(
   wi_county_elec_activity_detail,
-  here("_energy", "data", "WI_county_elec_activity_detail.RDS")
+  here("_energy", "data", "wi_county_elec_activity_detail.RDS")
 )
 write_rds(
   wi_county_elec_activity,
-  here("_energy", "data", "WI_county_elec_activity.RDS")
+  here("_energy", "data", "wi_county_elec_activity.RDS")
 )
 write_rds(
   wi_county_elec_emissions,
-  here("_energy", "data", "WI_county_elec_emissions.RDS")
+  here("_energy", "data", "wi_county_elec_emissions.RDS")
 )
 
 message(sprintf(

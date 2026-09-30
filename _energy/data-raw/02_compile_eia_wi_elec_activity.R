@@ -544,6 +544,6 @@ if (length(missing_scope) > 0) {
 
 write_rds(
   wi_utility_elec_activity_eia861,
-  here("_energy", "data", "WI_utility_elec_activity_eia861.RDS")
+  here("_energy", "data", "wi_utility_elec_activity_eia861.RDS")
 )
 
