@@ -1,7 +1,7 @@
 # Wisconsin IOU gas delivered by utility × year
 # Source: PSCW Annual Reports, Schedule G-24 "Summary of Gas Account & System Load Statistics"
 # (Schedule G-23 in the 2005 report format)
-# PDF URL pattern: https://apps.psc.wi.gov/PDFfiles/Annual%20Reports/IOU/IOU_{year}_{utility_id}.pdf
+# PDFs can be accessed at https://apps.psc.wi.gov/ARS/annualReports/content/listingIOU.aspx
 #
 # This script stores gas throughput data separated into two categories:
 #   - gas_sold_therms: therms sold to customers (Wisconsin column, "Gas sold (including
@@ -19,28 +19,35 @@
 #     counties (predominantly residential/small-commercial), transport gas is typically
 #     absent or negligible and can be omitted unless a known large industrial customer
 #     exists there.
+#   - EXCEPTION: St Croix Valley Natural Gas (5230). All SCV customers are in Pierce or
+#     St. Croix (G-26), so its transport gas is necessarily delivered in-scope. SCV
+#     transport is zero through 2015 and begins in 2016 (1,149,446 therms), rising
+#     thereafter (~12k t CO2 by 2022, below the GHGRP 25k t threshold). It is carried as
+#     an annual in-scope series (transport_in_scope_therms). Transport for NSP-WI,
+#     Midwest Natural Gas and Wisconsin Gas remains excluded.
 #
 # Data notes:
 #   - Wisconsin column is used throughout (excludes any Michigan operations).
 #   - 2005 uses schedule G-23; 2013+ uses G-24. Both have identical column structure.
 #   - 2005 and 2021 gas-only utilities (3670, 5230, 6650) are pulled from the previous
 #   R script (wisconsin_natGas_estimate_2005_and_2021.R) where PDFs were not re-verified.
-#     The previous script did not track transport gas separately, so those rows show NA
-#     for transport_therms — assume ~0 for 3670 and 5230 based on 2013/2022 pattern; 6650
-#     transport is substantial (near equal to gas sold in later years) and should be
-#     verified from PDF before use.
+#     Transport for 3670 and 6650 in 2021 remains NA (not used downstream).
 #
 # Annual estimates:
 #   gas_sold_therms is linearly interpolated between reported anchor years for
-#   each utility. Transport gas is not interpolated or included in that series.
-#   Anchor observations remain separately identifiable in the annual output.
+#   each utility. Anchor observations remain separately identifiable in the
+#   annual output. Weather texturing of the interpolated years (EIA index) is
+#   applied downstream in 03_compile_wi_natgas_activity.R.
+#   SCV transport is linearly interpolated from its own anchor set (which adds
+#   the 2015 = 0 / 2016 = 1,149,446 onset years) into transport_in_scope_therms;
+#   it is 0 for all other utilities by design.
 #
 # Outputs:
 #   wi_utility_natgas_activity_pcsw.RDS
 #     Reported PSCW anchor-year values, including transport where available.
 #   wi_utility_natgas_activity_pcsw_interpolated.RDS
-#     Annual 2005-2025 utility sales estimates, interpolated from anchors;
-#     transport remains anchor-only and is never added to interpolated sales.
+#     Annual 2005-2025 utility sales estimates, interpolated from anchors,
+#     plus transport_in_scope_therms (SCV only; 0 elsewhere).
 
 source("R/_load_pkgs.R")
 
@@ -48,9 +55,9 @@ wi_iou_gas_delivered <- tribble(
   ~utility_id, ~utility_name,                              ~year, ~gas_sold_therms, ~transport_therms, ~source_schedule,
   # ---- 2005 (schedule G-23) ----
   4220, "Northern States Power Company - Wisconsin",  2005,        138281245,        51531175, "G-23 WI col",
-  3670, "Midwest Natural Gas Incorporated",           2005,         18816267,              NA, "prior R script",
-  5230, "St Croix Valley Natural Gas Company",        2005,          9534249,              NA, "prior R script",
-  6650, "Wisconsin Gas",                              2005,        728522194,              NA, "prior R script",
+  3670, "Midwest Natural Gas Incorporated",           2005,         18816267,               0, "G-23 WI col",
+  5230, "St Croix Valley Natural Gas Company",        2005,          9534249,               0,"G-23 WI col",
+  6650, "Wisconsin Gas",                              2005,        728522194,       537900653, "G-23 WI col",
   
   # ---- 2013 (schedule G-24) ----
   4220, "Northern States Power Company - Wisconsin",  2013,        171384590,        46661850, "G-24 WI col",
@@ -61,7 +68,7 @@ wi_iou_gas_delivered <- tribble(
   # ---- 2021 (schedule G-24) ----
   4220, "Northern States Power Company - Wisconsin",  2021,        171102649,        51506030, "G-24 WI col",
   3670, "Midwest Natural Gas Incorporated",           2021,         23181392,              NA, "prior R script",
-  5230, "St Croix Valley Natural Gas Company",        2021,         11155826,              NA, "prior R script",
+  5230, "St Croix Valley Natural Gas Company",        2021,         11155826,        2111088 , "G-24 WI col",
   6650, "Wisconsin Gas",                              2021,        751394716,              NA, "prior R script",
   
   # ---- 2022 (schedule G-24) ----
@@ -114,6 +121,40 @@ if (any(anchor_count_check$min_anchor_year > interp_start) ||
   stop("PSCW anchors do not bracket the requested 2005-2025 interpolation period for every utility.")
 }
 
+# --- SCV transport: in-scope annual series ------------------------------------
+# SCV (5230) serves only Pierce and St. Croix, so all of its transport gas is
+# in-scope. Anchors = the G-24 values in the table above plus the 2015/2016
+# onset years (from the PSCW filings; transport begins in 2016). Linear between
+# anchors; rule = 2 holds 0 before the 2005 anchor and flat after 2025.
+
+scv_transport_anchors <- wi_iou_gas_delivered %>%
+  filter(utility_id == 5230, !is.na(transport_therms)) %>%
+  select(utility_id, year, transport_therms) %>%
+  bind_rows(tribble(
+    ~utility_id, ~year, ~transport_therms,
+    5230,        2015,  0,
+    5230,        2016,  1149446
+  )) %>%
+  arrange(year)
+
+if (anyDuplicated(scv_transport_anchors$year) > 0) {
+  stop("SCV transport anchors contain duplicate years.")
+}
+
+scv_transport_annual <- tibble(
+  utility_id = 5230,
+  year = interp_start:interp_end
+) %>%
+  mutate(
+    transport_in_scope_therms = approx(
+      x = scv_transport_anchors$year,
+      y = scv_transport_anchors$transport_therms,
+      xout = year,
+      method = "linear",
+      rule = 2
+    )$y
+  )
+
 wi_utility_natgas_activity_pcsw_interpolated <- wi_iou_gas_delivered %>%
   select(
     utility_id, utility_name, year, gas_sold_therms,
@@ -135,7 +176,9 @@ wi_utility_natgas_activity_pcsw_interpolated <- wi_iou_gas_delivered %>%
     )$y
   ) %>%
   ungroup() %>%
+  left_join(scv_transport_annual, by = c("utility_id", "year")) %>%
   mutate(
+    transport_in_scope_therms = coalesce(transport_in_scope_therms, 0),
     state = "WI",
     fuel = "Natural gas",
     unit_activity = "therms",
@@ -149,7 +192,8 @@ wi_utility_natgas_activity_pcsw_interpolated <- wi_iou_gas_delivered %>%
   select(
     utility_id, utility_name, state, fuel, year,
     gas_sold_therms, gas_sold_therms_interpolated,
-    transport_therms, source_schedule, is_anchor_year,
+    transport_therms, transport_in_scope_therms,
+    source_schedule, is_anchor_year,
     unit_activity, data_source
   ) %>%
   arrange(utility_id, year)
