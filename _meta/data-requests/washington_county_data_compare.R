@@ -5,11 +5,6 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 washington_out <- read_rds("_meta/data/cprg_county_emissions.rds") %>% 
   filter(county_name == "Washington", emissions_year <= 2022)
 
-washington_old <- read_csv("C:\\Users\\WilfahPA\\OneDrive - Metropolitan Council\\CPRG\\washington county data\\washington_county_data_request.csv")
-
-write_csv(washington_out,
-          "C:\\Users\\WilfahPA\\OneDrive - Metropolitan Council\\CPRG\\washington county data\\washington_county_data_request_2026.csv")
-
 # Summarize 2022 by sector for each dataset
 sum_out <- washington_out %>%
   filter(emissions_year == 2022) %>%
