@@ -1467,3 +1467,6 @@ _transportation/data-raw/epa/lggit/
 _transportation/data-raw/epa/nei/2023NEI/2023NEI_onroad_activity_final_20251010/
 
 _transportation/data-raw/epa/nei/2023NEI/
+
+# data request outputs
+_meta/data-requests/outputs/
