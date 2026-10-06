@@ -5,6 +5,20 @@ source(file.path(here::here(), "R/_load_pkgs.R"))
 washington_out <- read_rds("_meta/data/cprg_county_emissions.rds") %>% 
   filter(county_name == "Washington", emissions_year <= 2022)
 
+# outputs are git-ignored (_meta/data-requests/outputs/)
+out_dir <- here::here("_meta", "data-requests", "outputs")
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+
+write_csv(washington_out, file.path(out_dir, "washington_county_data_request_2026.csv"))
+
+# previous delivery for comparison; copy it into the outputs folder to run
+# the old-vs-new comparisons below
+washington_old_path <- file.path(out_dir, "washington_county_data_request.csv")
+if (!file.exists(washington_old_path)) {
+  stop("Place the previous Washington delivery at: ", washington_old_path)
+}
+washington_old <- read_csv(washington_old_path)
+
 # Summarize 2022 by sector for each dataset
 sum_out <- washington_out %>%
   filter(emissions_year == 2022) %>%

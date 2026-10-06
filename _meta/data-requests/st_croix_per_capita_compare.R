@@ -81,9 +81,8 @@ economy_wide <- summarise_per_capita(emissions, "Economy-wide")
 
 # --- 2. non-point: no Industrial sector, no heavy-duty trucks ----------------
 
-non_point <- emissions %>%
+non_truck <- emissions %>%
   filter(
-    sector != "Industrial",
     category != "Trucks"
   ) %>%
   bind_rows(light_commercial_trucks) %>%
@@ -92,18 +91,72 @@ non_point <- emissions %>%
 # --- write -----------------------------------------------------------------------
 
 write_csv(economy_wide, file.path(out_dir, "st_croix_comparison_per_capita_economy_wide.csv"))
-write_csv(non_point, file.path(out_dir, "st_croix_comparison_per_capita_non_point.csv"))
+write_csv(non_truck, file.path(out_dir, "st_croix_comparison_per_capita_non_truck.csv"))
+
+# --- category per capita table (single year, four requested counties) ---------
+# Wide table: rows = category, columns = county, values = t CO2e per person
+# (gross; natural systems excluded). Two versions: with all trucks, and with
+# heavy-duty trucks removed (light commercial trucks retained).
+
+table_year <- 2022
+table_counties <- c("St. Croix", "Pierce", "Carver", "Scott")
+
+build_category_table <- function(df) {
+  df %>%
+    filter(
+      emissions_year == table_year,
+      county_name %in% table_counties,
+      sector != "Natural Systems"
+    ) %>%
+    group_by(county_name, sector, category) %>%
+    summarise(value_emissions = sum(value_emissions, na.rm = TRUE), .groups = "drop") %>%
+    left_join(
+      population %>% filter(emissions_year == table_year),
+      by = "county_name"
+    ) %>%
+    mutate(per_capita = value_emissions / county_total_population) %>%
+    select(sector, category, county_name, per_capita) %>%
+    bind_rows(
+      (.) %>%
+        group_by(county_name) %>%
+        summarise(per_capita = sum(per_capita), .groups = "drop") %>%
+        mutate(sector = "Total", category = "Total (gross)")
+    ) %>%
+    mutate(per_capita = round(per_capita, 2)) %>%
+    pivot_wider(names_from = county_name, values_from = per_capita, values_fill = 0) %>%
+    select(sector, category, all_of(table_counties)) %>%
+    arrange(sector == "Total", sector, desc(`St. Croix`))
+}
+
+per_capita_category_table <- build_category_table(emissions)
+
+per_capita_category_table_no_hd_trucks <- emissions %>%
+  filter(category != "Trucks") %>%
+  bind_rows(light_commercial_trucks) %>%
+  build_category_table()
+
+write_csv(
+  per_capita_category_table,
+  file.path(out_dir, paste0("st_croix_per_capita_by_category_", table_year, ".csv"))
+)
+write_csv(
+  per_capita_category_table_no_hd_trucks,
+  file.path(out_dir, paste0("st_croix_per_capita_by_category_no_hd_trucks_", table_year, ".csv"))
+)
+
+per_capita_category_table
+per_capita_category_table_no_hd_trucks
 
 # --- simple plot: the four requested counties -----------------------------------
 
-plot_data <- bind_rows(economy_wide, non_point) %>%
+plot_data <- bind_rows(economy_wide, non_truck) %>%
   filter(
     sector == "Total (gross)",
     county_name %in% c("St. Croix", "Pierce", "Carver", "Scott")
   ) %>%
   mutate(dataset = factor(
     dataset,
-    c("Economy-wide", "Excluding industrial and heavy-duty trucks")
+    c("Economy-wide", "Excluding heavy-duty trucks")
   ))
 
 st_croix_per_capita_plot <- ggplot(
