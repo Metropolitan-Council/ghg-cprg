@@ -86,7 +86,7 @@ non_truck <- emissions %>%
     category != "Trucks"
   ) %>%
   bind_rows(light_commercial_trucks) %>%
-  summarise_per_capita("Excluding industrial and heavy-duty trucks")
+  summarise_per_capita("Excluding heavy-duty trucks")
 
 # --- write -----------------------------------------------------------------------
 
