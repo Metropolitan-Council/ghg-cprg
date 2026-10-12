@@ -82,17 +82,52 @@ usda_survey_formatted <- usda_survey %>%
     grepl("alfalfa", crop_type) ~ Value * ag_constants_vec["MT_ton"], # tons to metric tons
     TRUE ~ Value * value # bushels to metric tons
   )) %>%
-  mutate(
-    # there are three missing alfalfa values in 2013 in Dakota, Carver, and Scott, interpolating
-    metric_tons = zoo::na.approx(metric_tons, na.rm = FALSE),
-  ) %>%
   mutate(county_name = if_else(county_name == "ST CROIX",
     "St. Croix",
     str_to_sentence(county_name)
   )) %>%
+  # bring back geoid from cprg_county
   left_join(., cprg_county %>% select(county_name, geoid)) %>%
   select(inventory_year = year, geoid, county_name, crop_type, metric_tons)
-# bring back geoid from cprg_county
+
+### infill survey gaps ----
+# USDA survey data occasionally drops a county-crop for one or more years
+# (e.g. corn and soybeans in Scott 2018-2019, Dakota and Anoka 2019), or
+# reports a suppressed/NA value (e.g. alfalfa 2013 in Dakota, Carver, Scott).
+# Any missing year that is bounded by reported production on BOTH sides is
+# flagged and linearly interpolated within its county-crop series. Gaps at the
+# start or end of a series are left missing (no extrapolation).
+usda_survey_formatted <- usda_survey_formatted %>%
+  mutate(inventory_year = as.numeric(inventory_year)) %>%
+  # make implicit gaps (dropped rows) explicit
+  complete(
+    nesting(geoid, county_name, crop_type),
+    inventory_year = full_seq(inventory_year, 1)
+  ) %>%
+  group_by(geoid, county_name, crop_type) %>%
+  arrange(inventory_year, .by_group = TRUE) %>%
+  mutate(
+    first_reported = suppressWarnings(min(inventory_year[!is.na(metric_tons)])),
+    last_reported = suppressWarnings(max(inventory_year[!is.na(metric_tons)])),
+    interpolated = is.na(metric_tons) &
+      inventory_year > first_reported &
+      inventory_year < last_reported,
+    metric_tons = if (sum(!is.na(metric_tons)) >= 2) {
+      zoo::na.approx(metric_tons, x = inventory_year, na.rm = FALSE)
+    } else {
+      metric_tons
+    }
+  ) %>%
+  ungroup() %>%
+  # drop unbounded (leading/trailing) gaps
+  filter(!is.na(metric_tons)) %>%
+  select(inventory_year, geoid, county_name, crop_type, metric_tons, interpolated)
+
+# review what was infilled
+usda_survey_formatted %>%
+  filter(interpolated) %>%
+  arrange(county_name, crop_type, inventory_year) %>%
+  print(n = Inf)
 
 # create metadata
 crop_production_meta <-
@@ -102,7 +137,8 @@ crop_production_meta <-
     "geoid", class(usda_survey_formatted$geoid), "County GEOID",
     "county_name", class(usda_survey_formatted$county_name), "County name",
     "crop_type ", class(usda_survey_formatted$crop_type), "Crop type",
-    "metric_tons", class(usda_survey_formatted$metric_tons), "Metric tons of crop produced"
+    "metric_tons", class(usda_survey_formatted$metric_tons), "Metric tons of crop produced",
+    "interpolated", class(usda_survey_formatted$interpolated), "TRUE if value was missing from USDA survey and linearly interpolated from bounding years"
   )
 
 saveRDS(usda_survey_formatted, "./_agriculture/data/county_crop_production.rds")
