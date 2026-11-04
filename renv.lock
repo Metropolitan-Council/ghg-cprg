@@ -2927,59 +2927,6 @@
       "Maintainer": "Brenton M. Wiernik <brenton@wiernik.org>",
       "Repository": "RSPM"
     },
-    "ghg.ccap": {
-      "Package": "ghg.ccap",
-      "Version": "1.0.1",
-      "Source": "unknown",
-      "Type": "Package",
-      "Title": "Greenhouse Gas Strategy Planning for Twin Cities Metropolitan Region",
-      "Date": "2024-03-15",
-      "Authors@R": "c( person(\"Metropolitan Council\", role = \"cph\"), person(\"Liz\", \"Roten\", , \"liz.roten@metc.state.mn.us\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0002-5346-3549\")), person(\"Mauricio\", \"León\", , \"mauricio.leon@metc.state.mn.us\", role = \"ctb\"), person(\"Ellen\", \"Esch\", , \"ellen.esch@metc.state.mn.us\", role = \"ctb\", comment = c(ORCID = \"0000-0002-4253-0910\")), person(\"Laine\", \"McNamara\", , \"laine.mcnamara@metc.state.mn.us\", role = \"ctb\"), person(\"Zoey\", \"Yandell\", , \"zoey.yandell@metc.state.mn.us\", role = \"ctb\") )",
-      "Description": "Tools Metropolitan Council GHG strategy planning.",
-      "License": "MIT + file LICENSE",
-      "BugReports": "https://github.com/Metropolitan-Council/ghg.ccap/issues",
-      "Depends": [
-        "R (>= 3.5)"
-      ],
-      "Imports": [
-        "cli (>= 3.6.1)",
-        "dplyr (>= 1.1.2)",
-        "janitor (>= 2.2.0)",
-        "magrittr (>= 2.0.3)",
-        "mathjaxr (>= 1.6.0)",
-        "purrr (>= 1.0.1)",
-        "rlang (>= 1.1.1)",
-        "stringr (>= 1.5.0)",
-        "tibble (>= 3.2.1)",
-        "tidyr (>= 1.3.0)",
-        "tidyselect (>= 1.2.0)"
-      ],
-      "Suggests": [
-        "councilR (>= 0.2.0)",
-        "curl (>= 4.3.2)",
-        "fs (>= 1.5.2)",
-        "ggplot2 (>= 3.3.5)",
-        "gt (>= 0.4.0)",
-        "knitr (>= 1.34)",
-        "rmarkdown (>= 2.10)",
-        "scales (>= 1.1.1)",
-        "sf (>= 1.0-13)",
-        "testthat (>= 3.1.0)",
-        "wesanderson (>= 0.3.6)"
-      ],
-      "VignetteBuilder": "knitr",
-      "RdMacros": "mathjaxr",
-      "Config/testthat/edition": "3",
-      "Encoding": "UTF-8",
-      "LazyData": "true",
-      "Roxygen": "list(markdown = TRUE)",
-      "RoxygenNote": "7.3.2",
-      "Website": "https://github.com/Metropolitan-Council/ghg.ccap",
-      "Author": "Metropolitan Council [cph], Liz Roten [cre, aut] (ORCID: <https://orcid.org/0000-0002-5346-3549>), Mauricio León [ctb], Ellen Esch [ctb] (ORCID: <https://orcid.org/0000-0002-4253-0910>), Laine McNamara [ctb], Zoey Yandell [ctb]",
-      "Maintainer": "Liz Roten <liz.roten@metc.state.mn.us>",
-      "RemoteType": "unknown",
-      "Remotes": "github::Metropolitan-Council/councilR"
-    },
     "globals": {
       "Package": "globals",
       "Version": "0.19.1",
@@ -7967,6 +7914,40 @@
       "NeedsCompilation": "no",
       "Author": "Yihui Xie [aut, cre, cph] (ORCID: <https://orcid.org/0000-0003-0645-5666>), Posit Software, PBC [cph, fnd], Christophe Dervieux [ctb] (ORCID: <https://orcid.org/0000-0003-4474-2498>), Devon Ryan [ctb] (ORCID: <https://orcid.org/0000-0002-8549-0971>), Ethan Heinzen [ctb], Fernando Cagua [ctb]",
       "Maintainer": "Yihui Xie <xie@yihui.name>",
+      "Repository": "CRAN"
+    },
+    "tweenr": {
+      "Package": "tweenr",
+      "Version": "2.0.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Interpolate Data for Smooth Animations",
+      "Authors@R": "c(person(given = \"Thomas Lin\", family = \"Pedersen\", role = c(\"aut\", \"cre\"), email = \"thomasp85@gmail.com\", comment = c(ORCID = \"0000-0002-5147-4711\")))",
+      "Maintainer": "Thomas Lin Pedersen <thomasp85@gmail.com>",
+      "Description": "In order to create smooth animation between states of data, tweening is necessary. This package provides a range of functions for creating tweened data that can be used as basis for animation. Furthermore  it adds a number of vectorized interpolaters for common R data  types such as numeric, date and colour.",
+      "URL": "https://github.com/thomasp85/tweenr",
+      "BugReports": "https://github.com/thomasp85/tweenr/issues",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "Depends": [
+        "R (>= 3.2.0)"
+      ],
+      "Imports": [
+        "farver",
+        "magrittr",
+        "rlang",
+        "vctrs"
+      ],
+      "LinkingTo": [
+        "cpp11 (>= 0.4.2)"
+      ],
+      "RoxygenNote": "7.2.3",
+      "Suggests": [
+        "testthat",
+        "covr"
+      ],
+      "NeedsCompilation": "yes",
+      "Author": "Thomas Lin Pedersen [aut, cre] (<https://orcid.org/0000-0002-5147-4711>)",
       "Repository": "CRAN"
     },
     "tweenr": {

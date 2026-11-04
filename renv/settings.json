@@ -1,16 +1,21 @@
 {
   "bioconductor.version": null,
   "external.libraries": [],
-  "ignored.packages": ["streetlightR"],
+  "ignored.packages": [
+    "htmltab",
+    "ghg.ccap",
+    "streetlightR"
+  ],
+  "lockfile.sanitize": true,
   "package.dependency.fields": [
     "Imports",
     "Depends",
     "LinkingTo"
   ],
-  "binary.sentinel": "true",
   "ppm.enabled": null,
   "ppm.ignored.urls": [],
   "r.version": null,
+  "snapshot.dev": false,
   "snapshot.type": "implicit",
   "use.cache": true,
   "vcs.ignore.cellar": true,
