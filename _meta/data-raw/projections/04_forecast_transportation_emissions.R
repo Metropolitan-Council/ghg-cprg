@@ -1,5 +1,5 @@
 ### develop transportation emissions targets based on state GCAM models
-### TODO: Liz replace with ghg.ccap runs
+### TODO: Liz replace with ghg.gert runs
 
 source("R/_load_pkgs.R")
 source("R/cprg_colors.R")
@@ -9,8 +9,8 @@ source("_meta/data-raw/projections/01_projections_plotter.R")
 source("_meta/data-raw/ctu_coctu_index.R")
 
 
-library(ghg.ccap)
-ctu_list <- ghg.ccap::building_data$non_residential %>%
+library(ghg.gert)
+ctu_list <- ghg.gert::building_data$non_residential %>%
   ungroup() %>%
   # filter(
   #   sp_categories == "commercial_jobs",
@@ -42,18 +42,18 @@ all_bau <- purrr::map(
       run_all_modules(
         .scenario = "bau",
         .selected_ctu = x,
-        pass_tb = ghg.ccap::transportation_data$passenger,
-        freight_tb = ghg.ccap::transportation_data$freight,
-        .factor_values = ghg.ccap::factor_values,
-        .enviro_factors = ghg.ccap::enviro_factors,
-        .elast = ghg.ccap::elast,
-        .elast_5d = ghg.ccap::elast_5d,
-        .fuel_economy = ghg.ccap::fuel_economy,
-        tb = ghg.ccap::land_use_data,
-        non_res_tb = ghg.ccap::building_data$non_residential,
-        res_tb = ghg.ccap::building_data$residential,
-        res_tb_bau = ghg.ccap::building_data$residential,
-        non_res_tb_bau = ghg.ccap::building_data$non_residential,
+        pass_tb = ghg.gert::transportation_data$passenger,
+        freight_tb = ghg.gert::transportation_data$freight,
+        .factor_values = ghg.gert::factor_values,
+        .enviro_factors = ghg.gert::enviro_factors,
+        .elast = ghg.gert::elast,
+        .elast_5d = ghg.gert::elast_5d,
+        .fuel_economy = ghg.gert::fuel_economy,
+        tb = ghg.gert::land_use_data,
+        non_res_tb = ghg.gert::building_data$non_residential,
+        res_tb = ghg.gert::building_data$residential,
+        res_tb_bau = ghg.gert::building_data$residential,
+        non_res_tb_bau = ghg.gert::building_data$non_residential,
         run_land_use = FALSE,
         run_non_residential = FALSE
       )
@@ -72,7 +72,7 @@ summarize_emiss <- function(x) {
       "WAT", "AIR"
     )) %>%
     dplyr::left_join(
-      ghg.ccap::transportation_index$modes %>%
+      ghg.gert::transportation_index$modes %>%
         dplyr::select(mode_abbrev, mode_description_1, sector, category),
       by = c("mode" = "mode_abbrev")
     ) %>%
@@ -134,18 +134,18 @@ ev <- purrr::map(
       run_all_modules(
         .scenario = "bau",
         .selected_ctu = x,
-        pass_tb = ghg.ccap::transportation_data$passenger,
-        freight_tb = ghg.ccap::transportation_data$freight,
-        .factor_values = ghg.ccap::factor_values,
-        .enviro_factors = ghg.ccap::enviro_factors,
-        .elast = ghg.ccap::elast,
-        .elast_5d = ghg.ccap::elast_5d,
-        .fuel_economy = ghg.ccap::fuel_economy,
-        tb = ghg.ccap::land_use_data,
-        non_res_tb = ghg.ccap::building_data$non_residential,
-        res_tb = ghg.ccap::building_data$residential,
-        res_tb_bau = ghg.ccap::building_data$residential,
-        non_res_tb_bau = ghg.ccap::building_data$non_residential,
+        pass_tb = ghg.gert::transportation_data$passenger,
+        freight_tb = ghg.gert::transportation_data$freight,
+        .factor_values = ghg.gert::factor_values,
+        .enviro_factors = ghg.gert::enviro_factors,
+        .elast = ghg.gert::elast,
+        .elast_5d = ghg.gert::elast_5d,
+        .fuel_economy = ghg.gert::fuel_economy,
+        tb = ghg.gert::land_use_data,
+        non_res_tb = ghg.gert::building_data$non_residential,
+        res_tb = ghg.gert::building_data$residential,
+        res_tb_bau = ghg.gert::building_data$residential,
+        non_res_tb_bau = ghg.gert::building_data$non_residential,
         run_land_use = FALSE,
         run_non_residential = FALSE,
         .bev_pct_sales = 0.75,
@@ -245,7 +245,7 @@ tr_emissions_bau <- bind_rows(
     select(emissions_year, value_emissions, scenario)
 )
 
-### insert passenger vehicle reductions from ghg.ccap analysis - LR
+### insert passenger vehicle reductions from ghg.gert analysis - LR
 
 passenger_reductions <- tr_pathways %>%
   filter(category == "Passenger vehicles") %>%
