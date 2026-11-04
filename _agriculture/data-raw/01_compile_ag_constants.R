@@ -63,7 +63,6 @@ soil_plant_constants <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx"
   )
 
 
-
 soil_animal_constants <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
   sheet = "constants",
   range = "G18:H28"
@@ -110,7 +109,6 @@ crop_mt_bushel <- readxl::read_xlsx("_agriculture/data-raw/ag-module.xlsx",
     value = as.numeric(value),
     description = paste(description, "MT to bushels")
   )
-
 
 
 crop_residue_mass_ratio <- read_xlsx("_agriculture/data-raw/ag-module.xlsx",

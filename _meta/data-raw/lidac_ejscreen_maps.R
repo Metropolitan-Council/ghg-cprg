@@ -29,7 +29,6 @@ LIDAC_polygons_dissolved <- LIDAC_polygons %>%
 ## png, ggnewscale, patchwork, classInt
 
 
-
 # CUSTOM FUNS -------------------------------------------------------------
 mutate_jenks_brks <- function(input, variable, ...) {
   var_string <- deparse(substitute(variable))
@@ -82,8 +81,6 @@ sort_factor_column <- function(data, column_name) {
 palette_no <- "Blues"
 
 
-
-
 # Make some maps! ---------------------------------------------------------
 # plot_template
 plot_template <- ggplot(county_data) +
@@ -100,7 +97,6 @@ plot_template <- ggplot(county_data) +
     xmin = -92.7,  xmax = -92.55
   ) +
   councilR::theme_council_geo()
-
 
 
 # LIDAC boundary map
@@ -134,17 +130,9 @@ mini_map_lidac <- ggplot(county_data) +
 map_lidac <- map_lidac + patchwork::inset_element(mini_map_lidac, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
 
 
-
 if (export.plots) png(paste0(outpath, "map_lidac.png"), width = 7, height = 5.5, units = "in", res = 600)
 invisible(print(map_lidac))
 dev.off()
-
-
-
-
-
-
-
 
 
 # PM2.5.in.the.air..percentile.
@@ -205,8 +193,6 @@ invisible(print(map_PM2.5))
 dev.off()
 
 
-
-
 # Diesel.particulate.matter.exposure..percentile.
 map_diesel <- plot_template +
   geom_sf(
@@ -258,15 +244,12 @@ mini_map_diesel <- ggplot(county_data) +
   councilR::theme_council_geo()
 
 
-
 map_diesel <- map_diesel + patchwork::inset_element(mini_map_diesel, left = 0.7, bottom = 0.5, right = 1.05, top = 1.05)
 
 
 if (export.plots) png(paste0(outpath, "map_diesel.png"), width = 7, height = 5.5, units = "in", res = 600)
 invisible(print(map_diesel))
 dev.off()
-
-
 
 
 # Current.asthma.among.adults.aged.greater.than.or.equal.to.18.years..percentile.
@@ -324,8 +307,6 @@ map_asthma <- map_asthma + patchwork::inset_element(mini_map_asthma, left = 0.7,
 if (export.plots) png(paste0(outpath, "map_asthma.png"), width = 7, height = 5.5, units = "in", res = 600)
 invisible(print(map_asthma))
 dev.off()
-
-
 
 
 # Energy.burden..percentile.
@@ -442,9 +423,6 @@ map_housing.burden <- map_housing.burden + patchwork::inset_element(mini_map_hou
 if (export.plots) png(paste0(outpath, "map_housing.burden.png"), width = 7, height = 5.5, units = "in", res = 600)
 invisible(print(map_housing.burden))
 dev.off()
-
-
-
 
 
 # Share.of.the.tract.s.land.area.that.is.covered.by.impervious.surface.or.cropland.as.a.percent..percentile.

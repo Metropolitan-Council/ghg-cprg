@@ -124,8 +124,6 @@ mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
 # county x utility x countyPopulation x utilityPop x utilityProportionOfCountyPop (contribution to total)
 
 
-
-
 # For city 2005...
 
 
@@ -138,8 +136,6 @@ mn_elecUtils_2005_consumptionBySector <- MN_elecUtils_2005 %>%
 
 
 # based on population in utility service area... aggregate
-
-
 
 
 # farm is residential or maybe 50-50?

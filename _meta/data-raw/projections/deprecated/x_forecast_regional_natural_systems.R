@@ -213,7 +213,6 @@ target_seq_for_netZero <- df_netZero %>% pull(net_zero_target)
 #           "_meta/data/regional_net_zero_target.RDS")
 
 
-
 # Plotting function -------------------------------------------------------
 plot_emissions <- function(bau, scenario, target) {
   # Aggregate helper
@@ -353,12 +352,7 @@ ggplot2::ggsave(
 )
 
 
-
-
-
-
 # Final output and summary ------------------------------------------------
-
 
 
 regional_ns_forecast <- rbind(

@@ -134,7 +134,6 @@ pathways <- bind_rows(
   filter(!(emissions_year <= 2025 & scenario == "ppp"))
 
 
-
 bau_line <- pathways %>%
   filter(
     scenario == "bau",

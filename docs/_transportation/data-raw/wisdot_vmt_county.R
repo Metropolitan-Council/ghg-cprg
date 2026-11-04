@@ -72,7 +72,6 @@ library(tabulapdf)
 #                                      outdir = "_transportation/data-raw/wisdot/vmt_by_county/")
 
 
-
 # combine all tables
 wisconsin_vmt_raw <- purrr::map_dfr(
   list.files("_transportation/data-raw/wisdot/vmt_by_county/",
@@ -138,8 +137,6 @@ wisconsin_vmt <- wisconsin_vmt_raw %>%
       "Pierce"
     ), TRUE, FALSE)
   )
-
-
 
 
 wi_vmt_county <- wisconsin_vmt %>%

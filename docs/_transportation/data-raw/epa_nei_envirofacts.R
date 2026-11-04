@@ -193,7 +193,6 @@ saveRDS(epa_nei_envirofacts, "_transportation/data/epa_nei_envirofacts.RDS")
 saveRDS(epa_nei_envirofacts_meta, "_transportation/data/epa_nei_envirofacts_meta.RDS")
 
 
-
 # create imputed data values -----
 
 epa_nei_envirofacts_full <- epa_nei_envirofacts %>%
@@ -228,7 +227,6 @@ epa_nei_envirofacts_full <- epa_nei_envirofacts %>%
   ))
 
 
-
 # quickly plot original and interpolated values
 epa_nei_envirofacts_full %>%
   group_by(nei_inventory_year, geoid, county_name, county_fips) %>%
@@ -257,7 +255,6 @@ epa_nei_envirofacts_full %>%
   )
 
 
-
 epa_nei_envirofacts_complete <- epa_nei_envirofacts_full %>%
   select(geoid, county_fips, county_name, cprg_area,
     nei_inventory_year, nei_data_source,
@@ -282,10 +279,8 @@ epa_nei_envirofacts_complete_meta <- tibble::tribble(
   unique()
 
 
-
 saveRDS(epa_nei_envirofacts_complete, "_transportation/data/epa_nei_envirofacts_complete.RDS")
 saveRDS(epa_nei_envirofacts_complete_meta, "_transportation/data/epa_nei_envirofacts_complete_meta.RDS")
-
 
 
 # combine state and county to get relative proportions  -----

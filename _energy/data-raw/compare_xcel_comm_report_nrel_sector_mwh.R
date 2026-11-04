@@ -165,8 +165,6 @@ complete_city_NREL_comparison <- xcel_activityData_NREL_2015_2023 %>%
   st_as_sf()
 
 
-
-
 # Assessment and analysis of Xcel data v. NREL data
 
 # Data preparation: Transform data to long format, enrich with sector/metric source, calculate diffs for visualization
@@ -215,7 +213,6 @@ commDesg_diff_agg <- data_city_year_sector_propDiffs %>%
     avgPropDiff = mean(ifelse(is.na(difference), 0, difference), na.rm = TRUE),
     .groups = "drop"
   )
-
 
 
 # #PLOT ONE -- Bar graphs showing Average Proportion Differences by Community Designation and Sector

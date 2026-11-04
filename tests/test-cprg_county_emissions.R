@@ -24,7 +24,6 @@ testthat::test_that("County emissions data is as expected", {
   )
 
 
-
   testthat::expect_equal(
     unique(cprg_county_emissions$emissions_year),
     c(
@@ -33,7 +32,7 @@ testthat::test_that("County emissions data is as expected", {
       # 1990, 1991, 1992,
       # 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
       # 2004,
-      2023
+      2023, 2024
     )
   )
 

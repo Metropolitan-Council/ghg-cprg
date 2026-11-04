@@ -65,7 +65,6 @@ wis_class_meta <- readxl::read_xlsx("_transportation/data-raw/wisdot/class.xlsx"
   ))
 
 
-
 if (file.exists("_transportation/data-raw/wisdot/Traffic_Counts.geojson") == FALSE) {
   cli::cli_abort(c(
     "Required datasets unavailable",

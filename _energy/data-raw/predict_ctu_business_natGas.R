@@ -207,7 +207,6 @@ ctu_busi_predict <- cprg_ctu %>%
   ungroup()
 
 
-
 ctu_busi_predict %>% distinct(ctu_name, ctu_class)
 
 ctu_busi <- left_join(

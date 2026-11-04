@@ -27,7 +27,7 @@ county_emissions_summary <- county_emissions %>%
     value_emissions = sum(value_emissions),
     .groups = "keep"
   )
-mn_emissions <- read_rds(file.path(here::here(), "_energy/data/minnesota_county_GasEmissions.RDS"))
+mn_emissions <- read_rds(file.path(here::here(), "_energy/data/county_natgas_activitiy_emissions.RDS"))
 wi_emissions <- read_rds(file.path(here::here(), "_energy/data/wisconsin_county_GasEmissions.RDS")) %>%
   rename(county = county_name)
 

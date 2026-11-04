@@ -107,7 +107,6 @@ ctu_vmt_forecast <- readRDS("_transportation/data/rtdm_forecast_ctu.RDS") %>%
   select(coctu_id_gnis, geoid, vmt_year, daily_vmt)
 
 
-
 ctu_mndot_forecast_vmt <- mndot_vmt_ctu %>%
   mutate(vmt_source = "MnDOT") %>%
   bind_rows(ctu_vmt_forecast %>%
@@ -156,7 +155,6 @@ county_vmt_forecast <- readRDS("_transportation/data/rtdm_forecast_county.RDS") 
   ) %>%
   select(geoid, vmt_year, county_daily_vmt) %>%
   ungroup()
-
 
 
 county_mndot_vmt_forecast <- county_vmt_forecast %>%

@@ -71,7 +71,6 @@ reference_proportions_start_county <- nlcd_county %>%
   ungroup()
 
 
-
 # Reference proportions from the last year with tree canopy data (2021)
 reference_proportions_end_county <- nlcd_county %>%
   filter(inventory_year == tree_end_year) %>%
@@ -92,8 +91,6 @@ reference_proportions_end_county <- nlcd_county %>%
   ) %>%
   mutate(TOT = sum(propUrbanTree_ref, propUrbanGrass_ref, propLow_ref, propMed_ref, propHigh_ref)) %>%
   ungroup()
-
-
 
 
 # Calculate land cover proportions during non-tree years ------------------
@@ -141,8 +138,6 @@ actual_proportions_after_county <- nlcd_county %>%
   ) %>%
   mutate(TOT = sum(propLow_orig, propMed_orig, propHigh_orig)) %>%
   ungroup()
-
-
 
 
 # Recompute developed area during non-tree years --------------------------
@@ -250,7 +245,6 @@ nlcd_county_rc <- rbind(
   relocate(potential_wetland_area, .after = area)
 
 
-
 # Check your results ------------------------------------------------------
 
 # # check to make sure that the total developed area by year is the same in our original dataset
@@ -325,7 +319,6 @@ nlcd_county_rc <- rbind(
 #   )
 
 
-
 # Export final data -------------------------------------------------------
 # create metadata
 nlcd_county_meta <-
@@ -344,7 +337,6 @@ nlcd_county_meta <-
   )
 
 
-
 # User chooses whether to overwrite the rds files
 if (overwrite_RDS) {
   message("Exporting RDS files...")
@@ -352,17 +344,6 @@ if (overwrite_RDS) {
   saveRDS(nlcd_county_rc, paste0("./_nature/data/nlcd_county_landcover_allyrs.rds"))
   saveRDS(nlcd_county_meta, paste0("./_nature/data/nlcd_county_landcover_allyrs_meta.rds"))
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 # CTU LEVEL DATA -------------------------------------------------------
@@ -390,7 +371,6 @@ reference_proportions_start_ctu <- nlcd_ctu %>%
   ungroup()
 
 
-
 # Reference proportions from the last year with tree canopy data (2021)
 reference_proportions_end_ctu <- nlcd_ctu %>%
   filter(inventory_year == tree_end_year) %>%
@@ -411,8 +391,6 @@ reference_proportions_end_ctu <- nlcd_ctu %>%
   ) %>%
   mutate(TOT = sum(propUrbanTree_ref, propUrbanGrass_ref, propLow_ref, propMed_ref, propHigh_ref)) %>%
   ungroup()
-
-
 
 
 # Calculate land cover proportions during non-tree years ------------------
@@ -460,7 +438,6 @@ actual_proportions_after_ctu <- nlcd_ctu %>%
   ) %>%
   mutate(TOT = sum(propLow_orig, propMed_orig, propHigh_orig)) %>%
   ungroup()
-
 
 
 # Recompute developed area during non-tree years --------------------------
@@ -524,10 +501,6 @@ rc_DevelopedArea_after_ctu <- actual_proportions_after_ctu %>%
     values_to = "area"
   ) %>%
   mutate(total_area = NA, tcc_available = FALSE, source = "extrapolated")
-
-
-
-
 
 
 # Bind your original data to your recomputed data -------------------------
@@ -656,7 +629,6 @@ nlcd_ctu_meta <-
     "tcc_available", class(nlcd_ctu_rc$tcc_available), "Indicates whether tree canopy data was available for the current year",
     "source", class(nlcd_ctu_rc$source), "Indicates whether the area of 'Urban_Tree' or 'Urban_Grassland' is extrapolated or pulled directly from an NLCD layer"
   )
-
 
 
 # User chooses whether to overwrite the rds files

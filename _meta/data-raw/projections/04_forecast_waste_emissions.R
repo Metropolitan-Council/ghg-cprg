@@ -23,8 +23,6 @@ waste_gcam_targets <- waste_scenarios %>%
   filter(emissions_year %in% c(2030, 2050), )
 
 
-
-
 ### set net-zero by regional analysis
 county_emissions <- readRDS(file.path(here::here(), "_meta/data/cprg_county_emissions.RDS"))
 
@@ -34,7 +32,6 @@ seq_target <- readRDS(file.path(here::here(), "_meta/data/regional_net_zero_targ
 
 waste_emissions <- county_emissions %>%
   filter(sector == "Waste")
-
 
 
 ### waste target - based on all waste emissions
@@ -82,7 +79,6 @@ waste_emissions_bau <- total_pop %>%
   rename(emissions_year = inventory_year) %>%
   group_by(emissions_year, scenario) %>%
   summarize(value_emissions = sum(value_emissions), .groups = "keep")
-
 
 
 waste_emissions_proj <- waste_emissions %>%

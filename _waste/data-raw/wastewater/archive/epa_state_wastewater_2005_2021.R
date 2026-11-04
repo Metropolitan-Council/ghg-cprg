@@ -3,7 +3,6 @@ cprg_county <- readRDS(file.path(here::here(), "_meta/data/cprg_county.RDS"))
 cprg_population <- readRDS(file.path(here::here(), "_meta/data/cprg_county_proportions.RDS"))
 
 
-
 # mn epa -----
 # summary page from the
 # State Inventory and Projection Tool

@@ -19,7 +19,6 @@ sf_cprg_county <- st_as_sf(cprg_county)
 st_write(sf_cprg_county, "~/SSURGO Data/cprg_county.shp")
 
 
-
 # define CRS for using with other layers
 crs_use <- terra::crs(cprg_county)
 cprg_ctu <- terra::project(cprg_ctu, crs_use)

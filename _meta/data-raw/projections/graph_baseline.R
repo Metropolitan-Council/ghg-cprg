@@ -124,7 +124,6 @@ emissions_sector <- county_emissions %>%
   ungroup()
 
 
-
 sector_colors_vector <- unlist(sector_colors_alt, use.names = TRUE)
 
 sector_comparison <- ggplot(
@@ -352,21 +351,22 @@ write_csv(gas_type_2022,
 ### graphing function
 
 plot_county_emissions <- function(
-    data,
-    sector_graph,
-    year,
-    county_order,
-    category_colors,
-    category_order = NULL,
-    y_max = NULL,
-    y_min = 0,
-    title = NULL,
-    add_zero_rows = NULL,
-    filename = NULL,
-    width = 14,
-    height = 6,
-    dpi = 300,
-    include_airport = FALSE) {
+  data,
+  sector_graph,
+  year,
+  county_order,
+  category_colors,
+  category_order = NULL,
+  y_max = NULL,
+  y_min = 0,
+  title = NULL,
+  add_zero_rows = NULL,
+  filename = NULL,
+  width = 14,
+  height = 6,
+  dpi = 300,
+  include_airport = FALSE
+) {
   # Filter and summarize
   df <- data %>%
     filter(sector_alt == sector_graph, emissions_year == year) %>%

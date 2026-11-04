@@ -4,30 +4,31 @@ overwrite_rds <- TRUE
 # Let's turn this into a function where the user can input the constants, or use the default values
 # This function will be used in the data-raw script to create the constants data frame
 create_ww_constants <- function(
-    Per_capita_BOD5 = 0.09,
-    Fraction_BOD5_anaerobically_digested = 12.65 / 100,
-    Emission_Factor_CH4_BOD5 = 0.6,
-    Factor_non_consumption_nitrogen = 1.75,
-    Fraction_population_not_on_septic = 83 / 100,
-    Direct_wwtp_emissions = 4.0,
-    Emission_Factor_N2O_N = 0.005,
-    Fraction_nitrogen_in_protein = 16 / 100,
-    Wastewater_Outflow_Fruits_Vegetables = 9.11,
-    COD_Fruits_Vegetables = 5,
-    Fraction_COD_anaerobically_degraded_Fruits_Vegetables = 0 / 100,
-    Emission_factor_CH4_COD_Fruits_Vegetables = 0.25,
-    Wastewater_Outflow_Red_Meat = 5.3,
-    COD_Red_Meat = 4.1,
-    Fraction_COD_anaerobically_degraded_Red_Meat = 33 / 100,
-    Emission_factor_CH4_COD_Red_Meat = 0.25,
-    Wastewater_Outflow_Poultry = 12.5,
-    COD_Poultry = 4.1,
-    Fraction_COD_anaerobically_degraded_Poultry = 25 / 100,
-    Emission_factor_CH4_COD_Poultry = 0.25,
-    Wastewater_Outflow_Pulp_Paper = 39,
-    BOD_Pulp_Paper = 0.3,
-    Fraction_BOD_anaerobically_degraded_Pulp_Paper = 5.2 / 100,
-    Emission_factor_CH4_BOD_Pulp_Paper = 0.6) {
+  Per_capita_BOD5 = 0.09,
+  Fraction_BOD5_anaerobically_digested = 12.65 / 100,
+  Emission_Factor_CH4_BOD5 = 0.6,
+  Factor_non_consumption_nitrogen = 1.75,
+  Fraction_population_not_on_septic = 83 / 100,
+  Direct_wwtp_emissions = 4.0,
+  Emission_Factor_N2O_N = 0.005,
+  Fraction_nitrogen_in_protein = 16 / 100,
+  Wastewater_Outflow_Fruits_Vegetables = 9.11,
+  COD_Fruits_Vegetables = 5,
+  Fraction_COD_anaerobically_degraded_Fruits_Vegetables = 0 / 100,
+  Emission_factor_CH4_COD_Fruits_Vegetables = 0.25,
+  Wastewater_Outflow_Red_Meat = 5.3,
+  COD_Red_Meat = 4.1,
+  Fraction_COD_anaerobically_degraded_Red_Meat = 33 / 100,
+  Emission_factor_CH4_COD_Red_Meat = 0.25,
+  Wastewater_Outflow_Poultry = 12.5,
+  COD_Poultry = 4.1,
+  Fraction_COD_anaerobically_degraded_Poultry = 25 / 100,
+  Emission_factor_CH4_COD_Poultry = 0.25,
+  Wastewater_Outflow_Pulp_Paper = 39,
+  BOD_Pulp_Paper = 0.3,
+  Fraction_BOD_anaerobically_degraded_Pulp_Paper = 5.2 / 100,
+  Emission_factor_CH4_BOD_Pulp_Paper = 0.6
+) {
   base_constants <- data.frame(
     Variable = c(
       "N2O_N_MWR",
@@ -147,7 +148,6 @@ create_ww_constants <- function(
   def_Emission_factor_CH4_BOD_Pulp_Paper <- 0.6
 
 
-
   default_constants <- data.frame(
     Variable = c(
       "Per_capita_BOD5",
@@ -261,9 +261,6 @@ create_ww_constants <- function(
 }
 
 
-
-
-
 ## MINNESOTA DEFAULTS -------------------------------------------------
 # Municipal Wastewater CH4 Emissions
 # Per capita 5-day Biochemical Oxygen Demand (BOD5) (kg/day)
@@ -333,7 +330,6 @@ Fraction_BOD_anaerobically_degraded_Pulp_Paper <- 5.2 / 100
 Emission_factor_CH4_BOD_Pulp_Paper <- 0.6
 
 
-
 epa_wastewater_mn_constants <-
   create_ww_constants(
     Per_capita_BOD5,
@@ -365,9 +361,6 @@ epa_wastewater_mn_constants <-
   mutate(STATE = "MN") %>%
   relocate(STATE, Value, Variable, Description) %>%
   as_tibble()
-
-
-
 
 
 ## WISCONSIN DEFAULTS -------------------------------------------------
@@ -439,7 +432,6 @@ Fraction_BOD_anaerobically_degraded_Pulp_Paper <- 5.2 / 100
 Emission_factor_CH4_BOD_Pulp_Paper <- 0.6
 
 
-
 epa_wastewater_wi_constants <-
   create_ww_constants(
     Per_capita_BOD5,
@@ -471,7 +463,6 @@ epa_wastewater_wi_constants <-
   mutate(STATE = "WI") %>%
   relocate(STATE, Value, Variable, Description) %>%
   as_tibble()
-
 
 
 epa_wastewater_constants <- rbind(epa_wastewater_mn_constants, epa_wastewater_wi_constants)

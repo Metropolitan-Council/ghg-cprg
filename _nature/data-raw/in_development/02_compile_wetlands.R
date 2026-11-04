@@ -25,7 +25,6 @@ crs_use <- terra::crs(cprg_county)
 cprg_ctu <- cprg_ctu %>% terra::project(crs_use)
 
 
-
 cprg_county_tmp <- terra::project(cprg_county, crs_tmp)
 
 
@@ -39,7 +38,6 @@ cprg_county_tmp <- terra::project(cprg_county, crs_tmp)
 # saveRDS(cprg_wetlands, "./_nature/data/wetlands_msa.rds")
 cprg_wetlands <- readRDS("./_nature/data/wetlands_msa.rds")
 # terra::plot(cprg_wetlands)
-
 
 
 # Define the input path
@@ -58,16 +56,7 @@ wetlands_summary <- wetlands_high_priority %>%
   )
 
 
-
-
 terra::plot(wetlands_high_priority, field = "Id")
-
-
-
-
-
-
-
 
 
 # calculate the area of each pixel (raster cells are skewed at higher latitudes)
@@ -78,8 +67,6 @@ area_values <- mask(cellSize(cprg_wetlands, unit = "km"), cprg_county)
 county_raster <- terra::rasterize(cprg_county, cprg_wetlands, field = "county_name")
 ctu_raster <- terra::rasterize(cprg_ctu, cprg_wetlands, field = "ctu_name")
 ctu_class_raster <- terra::rasterize(cprg_ctu, cprg_wetlands, field = "ctu_class")
-
-
 
 
 # Set inpath for nlcd raw images
@@ -173,7 +160,6 @@ nlcd_ctu <- data.frame(
 year <- 2022
 
 
-
 # Loop through all years of NLCD data and extract area estimates by land cover type and by county
 lapply(start_year:end_year, function(year) {
   # browser()
@@ -224,7 +210,6 @@ lapply(start_year:end_year, function(year) {
     return(NULL)
   }
   pctBar(10, "Loading NLCD tree canopy raster (if available)")
-
 
 
   # Test to see if the current year is in your list of tcc files
@@ -405,7 +390,6 @@ lapply(start_year:end_year, function(year) {
       )
 
 
-
     # Bind the residual grassland area to the main dataframe
     lc_rc_final <- rbind(lc_rc, lc_rc_residual_grassland, lc_rc_residual_impervious)
 
@@ -515,7 +499,6 @@ lapply(start_year:end_year, function(year) {
       )
 
 
-
     pctBar(90, "Tidying final data")
 
     # Summarize the area of each land cover type by county
@@ -541,7 +524,6 @@ lapply(start_year:end_year, function(year) {
       mutate(year = year, .before = everything()) %>%
       left_join(cprg_ctu_df, by = join_by(ctu_name, ctu_class, county_name, state_name)) %>%
       mutate(tcc_available = .env$tcc_available)
-
 
 
     # Add the results for the current year to the results dataframe
@@ -604,8 +586,6 @@ nlcd_lc <- nlcd_lc %>%
   # Mask the raster with county boundary
   terra::mask(., cprg_county) %>%
   resample(., cprg_wetlands) # resample nlcd raster to match more granular wetlands raster
-
-
 
 
 terra::plot(nlcd_lc)

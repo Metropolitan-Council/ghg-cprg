@@ -9,13 +9,14 @@ if (exists("metc_bbx") == FALSE) {
 
   council_leaflet <- function() {
     leaflet::leaflet() %>%
-      leaflet::addMapPane(name = "Carto Positron", zIndex = 430) %>%
-      leaflet::addProviderTiles("CartoDB.PositronOnlyLabels",
-        options = leaflet::leafletOptions(pane = "Carto Positron"),
-        group = "Carto Positron"
-      ) %>%
-      leaflet::addProviderTiles("CartoDB.PositronNoLabels",
-        group = "Carto Positron"
+      leaflet::addMapPane(name = "Esri WorldGrayCanvas", zIndex = 430) %>%
+      # leaflet::addProviderTiles(provider = providers$Esri.WorldGrayCanvas
+      #   "CartoDB.PositronOnlyLabels",
+      #   options = leaflet::leafletOptions(pane = "Carto Positron"),
+      #   group = "Carto Positron"
+      # ) %>%
+      leaflet::addProviderTiles("Esri.WorldGrayCanvas",
+        group = "Esri WorldGrayCanvas"
       )
     # %>%
     # leaflet::fitBounds(metc_bbx$lat1, metc_bbx$lon1, metc_bbx$lat2, metc_bbx$lon2)

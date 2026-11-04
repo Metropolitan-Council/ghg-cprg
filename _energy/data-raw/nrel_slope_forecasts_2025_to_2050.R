@@ -12,7 +12,6 @@ unzip("_energy/data-raw/nrel_slope/energy_consumption_expenditure_business_as_us
 )
 
 
-
 nrelSlope_countyForecasts <- read.csv(here(
   "_energy",
   "data-raw",

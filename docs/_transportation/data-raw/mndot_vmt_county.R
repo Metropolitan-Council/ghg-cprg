@@ -349,7 +349,6 @@ county_crs[["2014"]] <- readxl::read_excel(
   )
 
 
-
 county_crs[["2016"]] <- readxl::read_excel(
   "_transportation/data-raw/mndot/county_route_system/2016_VMT_County_Route_System-38670218-v1.XLSX",
   sheet = 2,

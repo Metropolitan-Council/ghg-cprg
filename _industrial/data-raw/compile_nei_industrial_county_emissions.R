@@ -148,7 +148,6 @@ multi_year_industrial_county_ghg %>%
 #### NEC includes electricity generation, which is major double count
 
 
-
 ggplot(
   multi_year_industrial_county_ghg %>%
     group_by(inventory_year, county_name) %>%

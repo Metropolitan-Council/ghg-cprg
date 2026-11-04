@@ -987,7 +987,6 @@ onet_scored_OID_occdetails <- onet_scored_OID %>%
   mutate(list_ccap_sectors = str_replace_all(list_ccap_sectors, "NWL", "Ag & Natural Systems"))
 
 
-
 priority_underBA <- onet_scored_OID_occdetails %>%
   filter(num_of_sectors > 1 & demand_stars >= 4 &
     !(education_requirements == "Bachelor's degree" |

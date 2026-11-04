@@ -71,7 +71,6 @@ calculate_mww_n2o_effluent_emissions <- function(population, year) {
   }
 
 
-
   Fraction_nitrogen_in_protein <- get_epa_wastewater_constant("Fraction_nitrogen_in_protein")
   Factor_non_consumption_nitrogen <- get_epa_wastewater_constant("Factor_non_consumption_nitrogen")
   MT_per_kg <- get_epa_wastewater_constant("MT_per_kg")
@@ -104,7 +103,6 @@ calculate_mww_n2o_effluent_emissions <- function(population, year) {
     value_emissions = emissions_metric_tons_N2O,
     units_emissions = "Metric tons N2O"
   )
-
 
 
   return(df)

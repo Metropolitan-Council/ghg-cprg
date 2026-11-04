@@ -179,7 +179,6 @@ eleven_county_housing_forecast <- bind_rows(
   ungroup()
 
 
-
 ## sum to region and output
 
 regional_housing_forecast <- eleven_county_housing_forecast %>%

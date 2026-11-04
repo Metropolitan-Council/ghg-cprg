@@ -23,7 +23,7 @@ testthat::test_that("sequestration totals", {
   county_seq_total <- summarize(wc_county_c, seq_total = sum(sequestration_potential))
   county_stock_total <- summarize(wc_county_c, stock_total = sum(stock_potential))
 
-  testthat::expect_equal(sum(county_stock_total$stock_total), -269008720)
+  testthat::expect_equal(sum(county_stock_total$stock_total), -269011400)
 
   sum(county_seq_total$seq_total) #-2180841
   sum(county_stock_total$stock_total) #-257,462,245

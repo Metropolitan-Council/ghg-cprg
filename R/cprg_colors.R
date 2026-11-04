@@ -38,7 +38,6 @@ sector_colors_alt <- list(
 # category
 category_colors <-
   list(
-
     # Electricity
     "Residential electricity" = "#E6550D",
     "Commercial electricity" = "#FDAE6B",

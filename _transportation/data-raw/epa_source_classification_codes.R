@@ -32,7 +32,6 @@ if (!dir.exists("_transportation/data-raw/epa/air_emissions_modeling/2022v1/")) 
 }
 
 
-
 scc6_desc <- download_read_table("https://gaftp.epa.gov/Air/emismod/2022/v1/reports/mobile/onroad/2022v1%20onroad%20comparisons%2022-26-32-38%2010aug2024.xlsx",
   exdir = "_transportation/data-raw/epa/air_emissions_modeling/2022v1/",
   col_types = "text",
@@ -242,7 +241,6 @@ scc_complete <-
 #   write.csv("_transportation/data-raw/epa/scc_missing_values.csv")
 
 
-
 scc_complete %>%
   ungroup() %>%
   # filter(fuel_type_detect == "Liquefied petroleum gas (LPG)") %>%
@@ -347,7 +345,6 @@ scc_equates <- readxl::read_xlsx(
         TRUE ~ scc_level_three
       )
   )
-
 
 
 # Combine all SCCs -----

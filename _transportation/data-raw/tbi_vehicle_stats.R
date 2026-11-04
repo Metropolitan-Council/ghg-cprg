@@ -140,7 +140,6 @@ waldo::compare(tbi_vehicle_orig_fuel_age, readRDS("_transportation/data-raw/tbi/
 saveRDS(tbi_vehicle_orig_fuel_age, "_transportation/data-raw/tbi/tbi_vehicle_orig_fuel_age.RDS")
 
 
-
 # median vehicle year by fuel type -----
 tbi_vehicle_fuel_age <- veh21 %>%
   select(hh_id, veh_id, fuel, year, hh_weight) %>%

@@ -5,7 +5,6 @@ testthat::test_that("Calculate VMT", {
   county21_truck <- readRDS(file.path(here::here(), "_transportation/data-raw/analysis_runs/county21_truck_calib_data.RDS"))
 
 
-
   passenger <- calculate_vmt(county21_data, class = "passenger")
   commercial <- calculate_vmt(county21_truck, class = "commercial")
 
@@ -59,7 +58,6 @@ testthat::test_that("Calculate VMT", {
     filter(vmt_total == max(vmt_total)) %>%
     magrittr::extract2("zone") %>%
     testthat::expect_equal("Hennepin")
-
 
 
   # expect Pierce county to have the *lowest* VMT

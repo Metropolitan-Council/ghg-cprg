@@ -56,7 +56,6 @@ dot_vmt_county_proportions <- dot_vmt %>%
   )
 
 
-
 dot_vmt_county_proportions_meta <-
   bind_rows(
     cprg_county_meta,

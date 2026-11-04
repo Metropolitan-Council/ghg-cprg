@@ -19,7 +19,6 @@ testthat::test_that("Compiled and summarized onroad emissions", {
     testthat::expect_equal("Diesel")
 
 
-
   scc_combine %>%
     filter(scc6 == 226500) %>%
     pull(fuel_type) %>%

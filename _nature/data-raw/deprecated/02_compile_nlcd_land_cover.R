@@ -73,17 +73,9 @@ restorable_wetlands_km2 <- wetlands_tibble %>%
   )
 
 
-
-
-
 # Intersect wetlands with cprg_county to determine total acres by county
 wetlands_high_priority_cprg <- sf::st_intersection(wetlands_high_priority, cprg_county_orig) %>%
   sf::st_make_valid()
-
-
-
-
-
 
 
 # inpath_histosols <- "./_nature/data-raw/shapefiles/"
@@ -123,8 +115,6 @@ wetlands_high_priority_cprg <- sf::st_intersection(wetlands_high_priority, cprg_
 #     legend.box.just = "left",
 #     legend.spacing = unit(-0.28, "cm")
 #   )
-
-
 
 
 # Set inpath for nlcd raw images
@@ -246,7 +236,6 @@ terra::plot(restorable_wetlands_raster)
 county_raster <- terra::rasterize(cprg_ctu, nlcd_lc, field = "county_name")
 
 
-
 # Loop through all years of NLCD data and extract area estimates by land cover type and by county
 lapply(start_year:end_year, function(year) {
   # browser()
@@ -296,7 +285,6 @@ lapply(start_year:end_year, function(year) {
   pctBar(10, "Loading NLCD tree canopy raster (if available)")
 
 
-
   # Test to see if the current year is in your list of tcc files
   if (year %in% get_year(nlcd_tcc_files)) {
     # Indicate if the tree canopy cover layer was successfully retrieved
@@ -331,8 +319,6 @@ lapply(start_year:end_year, function(year) {
   # Rasterize cprg_ctu with nlcd_lc_mask using "ctu_class" field
   ctu_class_raster <- terra::rasterize(cprg_ctu, nlcd_lc, field = "ctu_class")
   pctBar(40, "Extracting land cover values (this can take awhile)")
-
-
 
 
   # Next we'll build a dataframe containing rowwise information
@@ -473,7 +459,6 @@ lapply(start_year:end_year, function(year) {
       )
 
 
-
     # Bind the residual grassland area to the main dataframe
     lc_rc_final <- rbind(lc_rc, lc_rc_residual_grassland, lc_rc_residual_impervious)
 
@@ -582,7 +567,6 @@ lapply(start_year:end_year, function(year) {
       )
 
 
-
     pctBar(90, "Tidying final data")
 
     # Summarize the area of each land cover type by county
@@ -608,7 +592,6 @@ lapply(start_year:end_year, function(year) {
       mutate(year = year, .before = everything()) %>%
       left_join(cprg_ctu_df, by = join_by(ctu_name, ctu_class, county_name, state_name)) %>%
       mutate(tcc_available = .env$tcc_available)
-
 
 
     # Add the results for the current year to the results dataframe
@@ -670,7 +653,6 @@ nlcd_ctu <- nlcd_ctu %>%
     county_id, ctu_id, ctu_name, ctu_class, county_name, state_name,
     inventory_year, land_cover_type, area, total_area, tcc_available
   )
-
 
 
 # User chooses whether to overwrite the rds files

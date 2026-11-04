@@ -13,8 +13,6 @@ cprg_county_meta <- readRDS("_meta/data/cprg_county_meta.RDS")
 source("_meta/data-raw/county_geography.R")
 
 
-
-
 # 2001-2009 ----
 # 2001-2009: intercensal year table
 # directly download intercensal data years from census.gov
@@ -32,7 +30,6 @@ if (!file.exists("_meta/data-raw/population/co-est00int-01-27.xls")) {
     mode = "wb"
   )
 }
-
 
 
 county_pop_intercensal1 <- download_read_table(

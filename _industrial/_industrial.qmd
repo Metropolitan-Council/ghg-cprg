@@ -184,7 +184,6 @@ Regional industrial emissions have increased by `r 100*round((ind_emissions_2022
 #| fig.width: 8   # Set width in inches
 
 
-
 fig_ind_baseline <- plot_ly(
   source = "fig-ind-baseline-emissions",
   data = baseline_emissions %>%

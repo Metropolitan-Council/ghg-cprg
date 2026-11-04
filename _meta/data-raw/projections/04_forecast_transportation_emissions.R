@@ -124,7 +124,6 @@ bau_mode_year %>%
   summarize_county()
 
 
-
 # start modeling reductions
 
 ev <- purrr::map(
@@ -159,9 +158,6 @@ ev_mode_year <- purrr::map_dfr(
   ev,
   summarize_emiss
 )
-
-
-
 
 
 ## load state gcam modeling
@@ -306,7 +302,6 @@ tr_scenarios <- gcam_updated %>%
   mutate(value_2020 = value_emissions / value_emissions[emissions_year == 2020])
 
 
-
 tr_emissions_proj <- tr_emissions_bau %>%
   filter(emissions_year == 2020) %>%
   mutate(
@@ -341,8 +336,6 @@ tr_emissions_pathways <- interpolate_emissions(bind_rows(
   tr_emissions_proj %>%
     filter(scenario == "ppp")
 ))
-
-
 
 
 ### problems with state's PPP, shifting up

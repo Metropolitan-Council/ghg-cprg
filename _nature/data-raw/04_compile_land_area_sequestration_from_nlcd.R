@@ -110,8 +110,6 @@ nlcd_ctu_c_meta <-
   )
 
 
-
-
 # User chooses whether to overwrite the rds files
 if (overwrite_RDS) {
   saveRDS(nlcd_county_c, paste0("./_nature/data/nlcd_county_landcover_sequestration_allyrs.rds"))

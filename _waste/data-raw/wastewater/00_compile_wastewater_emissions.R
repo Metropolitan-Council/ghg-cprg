@@ -100,8 +100,6 @@ county_wastewater_emissions <- county_wastewater_emissions %>%
   ungroup()
 
 
-
-
 county_wastewater_emissions_meta <-
   tibble::tribble(
     ~"Column", ~"Class", ~"Description",
@@ -127,7 +125,6 @@ saveRDS(county_wastewater_emissions_meta, "./_waste/data/final_wastewater_allyrs
 #   geom_path(aes(x=inventory_year, y=mt_co2e, color=source)) +
 #   geom_point(aes(x=inventory_year, y=mt_co2e, color=source)) +
 #   facet_wrap(~county_name)
-
 
 
 # CTU-level emissions (7-county only) -------------------------------------
@@ -173,8 +170,6 @@ ctu_wastewater_emissions <- all_ctus %>%
     )
   ) %>%
   as_tibble()
-
-
 
 
 ctu_wastewater_emissions <- ctu_wastewater_emissions %>%

@@ -82,7 +82,6 @@ methane_recovery_counties <- mpca_score %>%
   )
 
 
-
 # methane_recovery_counties <- cprg_county_proportions %>%
 #   rename(Year = year) %>%
 #   filter(Year %in% c(2005, 2021)) %>%

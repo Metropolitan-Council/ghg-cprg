@@ -104,7 +104,6 @@ road_types_agg <- tibble::tribble(
   )
 
 
-
 ## process types
 
 process_types <- tibble::tribble(
@@ -154,7 +153,6 @@ process_types_agg <- tibble::tribble(
   )
 
 
-
 ## combine all
 
 scc_moves_smoke <-
@@ -183,7 +181,6 @@ rm(
   road_types, road_types_agg,
   process_types, process_types_agg
 )
-
 
 
 # process epa equates
@@ -536,7 +533,6 @@ readRDS("_transportation/data/county_vmt_emissions.RDS") %>%
 download.file("https://gaftp.epa.gov/air/nei/2017/doc/supporting_data/onroad/MOVES_Input_DBs.zip",
   destfile = "_transportation/data-raw/epa/nei/2017NEI/MOVES_Input_DBs.zip"
 )
-
 
 
 vmt17 <- data.table::fread("_transportation/data-raw/epa/nei/2017NEI/2017NEI_onroad_activity_final/VMT_2017NEI_final_from_CDBs_month_redist_27mar2020_v3.csv",

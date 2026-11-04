@@ -84,8 +84,6 @@ county21_truck <- create_streetlight_analysis(
 saveRDS(county21_truck, "_transportation/data-raw/analysis_runs/county21_truck.RDS")
 
 
-
-
 county21_truck_calib <- create_streetlight_analysis(
   login_email = login_email,
   analysis_name = "CPRG_County_OD_NP_Truck_Calib_ReClass_2021",

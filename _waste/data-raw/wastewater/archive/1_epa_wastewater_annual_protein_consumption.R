@@ -28,7 +28,6 @@ overwrite_rds <- TRUE
 ## no default data for this percentage."
 
 
-
 # Minnesota Municipal Wastewater N2O Emissions - annual protein consumption
 # Source: EPA State Inventory Tool Wastewater Module
 mn_protein_consumption <-
@@ -54,8 +53,6 @@ mn_protein_consumption <-
       pct_of_biosolids_as_fertilizer = rep(0, 32)
     )
   )
-
-
 
 
 # Minnesota Municipal Wastewater N2O Emissions - annual protein consumption

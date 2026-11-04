@@ -46,7 +46,6 @@ equates_cmas <- readRDS("_transportation/data-raw/epa/air_emissions_modeling/EQU
   filter(!scc6 %in% scc6_remove)
 
 
-
 epa_equates_summary <- epa_equates %>%
   group_by(geoid, county_name, calc_year, poll, scc6) %>%
   summarize(
@@ -75,7 +74,6 @@ epa_equates_summary <- epa_equates %>%
     emissions_metric_tons_co2e, everything()
   ) %>%
   left_join(scc_combine)
-
 
 
 equates_cmas_summary <- equates_cmas %>%
@@ -110,7 +108,6 @@ equates_cmas_summary <- equates_cmas %>%
   ungroup() %>%
   mutate(emissions_year = as.numeric(calc_year)) %>%
   mutate(download_source = "CMAS")
-
 
 
 equates_cmas_summary_vehicle <- equates_cmas_summary %>%
@@ -325,9 +322,6 @@ bind_rows(
     main_title = "Hennepin",
     legend_title = "Vehicle type"
   )
-
-
-
 
 
 # verify identical for FTP and Google Drive -----

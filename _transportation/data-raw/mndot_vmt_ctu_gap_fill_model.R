@@ -254,7 +254,6 @@ plot_ly(
   )
 
 
-
 plot_ly(
   data = pred_df,
   x = ~pred_vmt,
@@ -660,7 +659,6 @@ pred_df_na_bench %>%
     marker = list(size = 9),
     opacity = 0.7
   )
-
 
 
 pred_df_na_bench %>%

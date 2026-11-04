@@ -206,8 +206,6 @@ plot_city_emissions("Mahtomedi",
 )
 
 
-
-
 plot_city_emissions("East Bethel",
   "Rural - High Natural Systems Sequestration",
   file_path = "rural_natural"

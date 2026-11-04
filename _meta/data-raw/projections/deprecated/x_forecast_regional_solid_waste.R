@@ -45,7 +45,6 @@ sw_emissions <- county_emissions %>%
   filter(sector == "Waste" & category != "Wastewater")
 
 
-
 ### sw target - based on solid waste emissions, not electricity
 # asterisk in figure later
 sw_target <- (sw_emissions %>%
@@ -93,7 +92,6 @@ sw_emissions_bau <- total_pop %>%
   summarize(value_emissions = sum(value_emissions))
 
 
-
 sw_emissions_proj <- sw_emissions %>%
   filter(emissions_year == 2020) %>%
   group_by(sector, category) %>%
@@ -120,7 +118,6 @@ sw_emissions_proj <- sw_emissions %>%
   ) %>%
   summarize(value_emissions = sum(value_emissions)) %>%
   ungroup()
-
 
 
 sw_emissions_pathways <- interpolate_emissions(bind_rows(

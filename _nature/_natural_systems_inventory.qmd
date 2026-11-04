@@ -403,7 +403,6 @@ fig_ns_stock_area
 #| out-width: "95%"
 
 
-
 # sequestration_area <- left_join(
 #   county_emissions %>%
 #     filter(category == "Sequestration") %>%

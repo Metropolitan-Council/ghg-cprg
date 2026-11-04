@@ -4,7 +4,6 @@ source("R/_load_pkgs.R")
 overwrite_RDS <- TRUE
 
 
-
 nlcd_county <- readRDS("./_nature/data/nlcd_county_landcover_2001_2021_v2.rds")
 nlcd_ctu <- readRDS("./_nature/data/nlcd_ctu_landcover_2001_2021_v2.rds")
 
@@ -55,12 +54,10 @@ nlcd_county_rc <- nlcd_county %>%
   left_join(cprg_county, by = join_by(county_name))
 
 
-
 # User chooses whether to overwrite the rds files
 if (overwrite_RDS) {
   saveRDS(nlcd_county_rc, paste0("./_nature/data/nlcd_county_landcover_", head(sort(unique(nlcd_county_rc$year)), 1), "_", tail(sort(unique(nlcd_county_rc$year)), 1), "_v2.rds"))
 }
-
 
 
 # Compute C sequestration and stock potential for natural systems sectors
@@ -91,12 +88,6 @@ nlcd_county_c_meta <-
 
 saveRDS(nlcd_county_c, paste0("./_nature/data/nlcd_county_landcover_sequestration_", head(sort(unique(nlcd_county_c$year)), 1), "_", tail(sort(unique(nlcd_county_c$year)), 1), "_v2.rds"))
 saveRDS(nlcd_county_c_meta, paste0("./_nature/data/nlcd_county_landcover_sequestration_", head(sort(unique(nlcd_county_c$year)), 1), "_", tail(sort(unique(nlcd_county_c$year)), 1), "_meta_v2.rds"))
-
-
-
-
-
-
 
 
 nlcd_ctu_rc <- nlcd_ctu %>%
@@ -139,15 +130,10 @@ nlcd_ctu_rc <- nlcd_ctu %>%
   left_join(cprg_ctu, by = join_by(ctu_name, ctu_class, county_name, state_name))
 
 
-
-
-
-
 # User chooses whether to overwrite the rds files
 if (overwrite_RDS) {
   saveRDS(nlcd_ctu_rc, paste0("./_nature/data/nlcd_ctu_landcover_", head(sort(unique(nlcd_ctu_rc$year)), 1), "_", tail(sort(unique(nlcd_ctu_rc$year)), 1), "_v2.rds"))
 }
-
 
 
 # Compute C sequestration and stock potential for natural systems sectors
@@ -180,7 +166,6 @@ nlcd_ctu_c_meta <-
     "stock_potential", class(nlcd_county_c$stock_potential), "Carbon stock potential of county land cover type in metric tons of CO2e",
     "source", class(nlcd_county_c$source), "Data source indicates whether area estimates came directly from NLCD, or whether they were interpolated/extrapolated"
   )
-
 
 
 saveRDS(nlcd_ctu_c, paste0("./_nature/data/nlcd_ctu_landcover_sequestration_", head(sort(unique(nlcd_ctu_c$year)), 1), "_", tail(sort(unique(nlcd_ctu_c$year)), 1), "_v2.rds"))

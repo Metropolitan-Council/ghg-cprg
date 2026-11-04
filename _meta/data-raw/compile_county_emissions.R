@@ -92,17 +92,16 @@ solid_waste <- readRDS("_waste/data/final_solid_waste_allyrs.RDS") %>%
   select(names(transportation_emissions))
 
 
-
-
 # energy -----
-electric_natgas_nrel_proportioned <- readRDS("_energy/data/electric_natgas_nrel_proportioned_expanded.RDS")
 
 ## electricity ----
 
-electric_emissions <- electric_natgas_nrel_proportioned %>%
-  filter(source == "Electricity") %>%
+collar_electric_emissions <- readRDS("_energy/data/electric_natgas_nrel_proportioned_expanded.RDS") %>%
+  filter(
+    source == "Electricity",
+    county_name %in% c("St. Croix", "Pierce", "Chisago", "Sherburne")
+  ) %>%
   mutate(
-    emissions_year = year,
     sector = str_to_title(sector),
     geog_level = "county",
     source = paste(sector, "electricity")
@@ -110,37 +109,61 @@ electric_emissions <- electric_natgas_nrel_proportioned %>%
   ungroup() %>%
   select(names(transportation_emissions))
 
+electric_emissions <- readRDS("_energy/data/county_elec_emissions_by_sector.RDS") %>%
+  mutate(
+    geog_level = "county",
+  ) %>%
+  ungroup() %>%
+  select(names(transportation_emissions)) %>%
+  bind_rows(collar_electric_emissions)
 
 ## natural gas ----
 
-natural_gas_emissions <- electric_natgas_nrel_proportioned %>%
-  filter(source == "Natural gas") %>%
+wi_natural_gas_emissions <- readRDS("_energy/data/electric_natgas_nrel_proportioned_expanded.RDS") %>%
+  filter(
+    source == "Natural gas",
+    county_name %in% c("St. Croix", "Pierce")
+  ) %>%
   mutate(
-    emissions_year = year,
     sector = str_to_title(sector),
     geog_level = "county",
+    category = "Building fuel",
     source = paste(sector, "natural gas")
   ) %>%
   ungroup() %>%
   select(names(transportation_emissions))
 
+natural_gas_emissions <- readRDS("_energy/data/county_natgas_emissions_by_sector.RDS") %>%
+  filter(
+    source == "Natural gas",
+    sector != "Powerplant",
+    sector != "Refinery"
+  ) %>%
+  mutate(
+    sector = if_else(sector == "Business",
+      "Commercial",
+      sector
+    ),
+    geog_level = "county",
+    source = paste(sector, "natural gas")
+  ) %>%
+  ungroup() %>%
+  select(names(transportation_emissions)) %>%
+  bind_rows(wi_natural_gas_emissions)
+
 
 ## propane and kerosene ----
 
-propane_kerosene_emissions <- readRDS("_energy/data/fuel_use.RDS") %>%
+propane_kerosene_emissions <- readRDS("_energy/data/county_propane_fueloil_activity_emissions.RDS") %>%
+  group_by() %>%
   mutate(
-    emissions_year = 2021,
-    sector = "Residential",
     geog_level = "county",
-    county_name = NAME,
-    category = "Building Fuel",
+    category = "Building fuel",
     source = "Residential liquid fuel",
-    data_source = "EIA RECS (2020)",
-    factor_source = "EPA GHG Emission Factors Hub (2021)",
-    value_emissions = emissions_metric_tons_co2e,
-    unit_emissions = "Metric tons CO2e"
+    data_source = "EIA SEDS; ACS",
+    factor_source = "EPA GHG Emission Factors Hub (2021)"
   ) %>%
-  ungroup() %>%
+  rename(unit_emissions = units_emissions) %>%
   select(names(transportation_emissions))
 
 # agriculture ----
@@ -242,7 +265,7 @@ emissions_all <- bind_rows(
       category,
       c(
         "Electricity",
-        "Building Fuel",
+        "Building fuel",
         "Passenger vehicles",
         "Buses",
         "Trucks",
@@ -304,8 +327,6 @@ emissions_all_meta <- tibble::tribble(
 
 
 # waldo::compare(emissions_all, readRDS("_meta/data/cprg_county_emissions.RDS"))
-
-
 
 
 saveRDS(emissions_all, "_meta/data/cprg_county_emissions.RDS")

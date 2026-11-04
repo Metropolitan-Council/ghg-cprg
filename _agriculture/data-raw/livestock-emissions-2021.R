@@ -69,7 +69,6 @@ enteric_agg <- enteric_formatted %>%
 # unique(usda_cattle$short_desc)
 
 
-
 ### merge enteric cattle data with head count survey data
 cow_burps <- left_join(usda_cattle_corrected, enteric_agg,
   by = c("year" = "Year", "livestock_type" = "livestock_type")
@@ -82,8 +81,6 @@ cow_burps <- left_join(usda_cattle_corrected, enteric_agg,
 
 cow_burps_survey <- cow_burps %>%
   dplyr::select(-kg_ch4)
-
-
 
 
 ## merge this with enteric fermentation data by year
@@ -118,7 +115,6 @@ animal_burps <- left_join(
 
 animal_burps_census <- animal_burps %>%
   dplyr::select(-kg_ch4)
-
 
 
 #### manure and lagoons ####
@@ -228,7 +224,6 @@ animal_poops <- left_join(
 #   summarize(CO2e = sum(CO2e))
 
 
-
 ggplot(
   poultry_interpolated %>%
     group_by(year, county_name) %>%
@@ -268,7 +263,6 @@ bird_poops <- left_join(
 livestock_poops <- rows_append(animal_poops, bird_poops)
 
 ### create RDS file for manure
-
 
 
 county_burps <- animal_burps %>%

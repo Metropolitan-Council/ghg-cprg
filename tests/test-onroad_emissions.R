@@ -94,7 +94,6 @@ testthat::test_that("Highest and lowest year of emissions is as expected", {
 })
 
 
-
 testthat::test_that("Time series is as expected", {
   onroad_emissions <- readRDS(file.path(here::here(), "_transportation/data/onroad_emissions.RDS"))
 

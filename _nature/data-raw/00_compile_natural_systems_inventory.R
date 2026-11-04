@@ -36,7 +36,6 @@ source("_nature/data-raw/02_compile_nhd_waterways_byCTU.R")
 source("_nature/data-raw/02_reclassify_nlcd_land_cover_by_year.R")
 
 
-
 # 03 ----------------------------------------------------------------------
 # 03_compile_extrapolated_nlcd_land_cover.R
 # Computes the area of Urban_Tree and Urban_Grassland as a function of

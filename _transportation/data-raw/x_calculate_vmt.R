@@ -30,8 +30,6 @@ calculate_vmt <- function(data_list, class = "passenger") {
   }
 
 
-
-
   # Get origin-destination volume
   od_all <- data_list[od_table][[1]] %>%
     dplyr::select(analysis_name, metric_group,
@@ -92,7 +90,6 @@ calculate_vmt <- function(data_list, class = "passenger") {
       vmt_year,
       vmt_year_half
     )
-
 
 
   # calculate totals for each zone -----

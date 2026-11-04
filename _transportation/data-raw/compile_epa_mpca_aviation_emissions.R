@@ -64,7 +64,6 @@ mpca_aviation <-
   )
 
 
-
 airport_co2 <- air_emis_point_cprg %>%
   filter(
     poll == "CO2",
