@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.35">
+<meta name="generator" content="quarto-1.11.9">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -11,10 +11,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -55,14 +58,15 @@ div.csl-indent {
 <link href="../_waste/_waste.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-225e327b3b74ce3dfc4c9fdba53ae904.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-d67a7d06c866593686193b914016f989.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -101,23 +105,23 @@ div.csl-indent {
 <script src="../site_libs/plotly-main-2.25.2/plotly-latest.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=3.111.0&amp;features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
 
 </head>
-<body class="nav-sidebar docked fullcontent quarto-light"><section id="navigation" class="navigation standalone-navigation">
+<body class="nav-sidebar docked fullcontent quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><section id="navigation" class="navigation standalone-navigation">
   	<link href="style/standalone_header_footer.css" type="text/css" rel="stylesheet">
 </section>
 
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav">
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_waste/_waste.html">Waste and Wastewater</a></li><li class="breadcrumb-item"><a href="../_waste/_data_methods_waste.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Methods and data sources</span></a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_waste/_waste.html">Waste and Wastewater</a></li><li class="breadcrumb-item"><a href="../_waste/_data_methods_waste.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Methods and data sources</span></a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
@@ -128,7 +132,7 @@ div.csl-indent {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto" aria-label="Site">
     <div class="pt-lg-2 mt-2 text-center sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Twin Cities MSA Greenhouse Gas Inventory</a> 
@@ -152,13 +156,10 @@ div.csl-indent {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Transportation</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Transportation</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_transportation/_transportation.html" class="sidebar-item-text sidebar-link">
@@ -181,13 +182,10 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Electricity</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Electricity</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_energy/_electricity.html" class="sidebar-item-text sidebar-link">
@@ -204,13 +202,10 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Building Energy</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Building Energy</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_energy/_energy_building_fuel.html" class="sidebar-item-text sidebar-link">
@@ -227,13 +222,10 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Industrial</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">Industrial</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_industrial/_industrial.html" class="sidebar-item-text sidebar-link">
@@ -250,13 +242,10 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
- <span class="menu-text">Waste and Wastewater</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">Waste and Wastewater</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_waste/_waste.html" class="sidebar-item-text sidebar-link">
@@ -273,13 +262,10 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
- <span class="menu-text">Agriculture</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-6-label">Agriculture</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_agriculture/_agriculture.html" class="sidebar-item-text sidebar-link">
@@ -296,13 +282,10 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
- <span class="menu-text">Natural Systems</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label">Natural Systems</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_nature/_natural_systems_inventory.html" class="sidebar-item-text sidebar-link">
@@ -325,13 +308,10 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
- <span class="menu-text">Appendices</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-8-label">Appendices</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_meta/supplementary_data.html" class="sidebar-item-text sidebar-link">
@@ -400,7 +380,7 @@ div.csl-indent {
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
@@ -438,9 +418,9 @@ div.csl-indent {
 <div class="toc-actions"><ul><li><a href="https://github.com/Metropolitan-Council/ghg-cprg/blob/main/_waste/_data_methods_waste.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content" id="quarto-document-content" tabindex="-1">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_waste/_waste.html">Waste and Wastewater</a></li><li class="breadcrumb-item"><a href="../_waste/_data_methods_waste.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Methods and data sources</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_waste/_waste.html">Waste and Wastewater</a></li><li class="breadcrumb-item"><a href="../_waste/_data_methods_waste.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Methods and data sources</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span id="sec-waste-methods" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Methods and data sources</span></span></h1>
 </div>
@@ -595,8 +575,8 @@ div.csl-indent {
 <div id="fig-emissions-population-solidwaste" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-emissions-population-solidwaste-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-37f0aca209d218a5ccd4" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-37f0aca209d218a5ccd4">{"x":{"visdat":{"15c6327bee6cd":["function () ","plotlyVisDat"]},"cur_data":"15c6327bee6cd","attrs":{"15c6327bee6cd":{"x":{},"y":{},"mode":"markers","hovertemplate":{},"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County population and solid waste emissions","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"2022 ACS 5-year population estimates. Strong positive correlation","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"h"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":""},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-emissions-population-solidwaste","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":[360773,105694,56328,435863,1270283,549377,149568,96295,264818,42204,92495],"y":[168064.01768152017,54240.93555971983,27243.1538495776,233063.19837941474,515899.55960874801,222640.64806529932,59002.904054830433,37709.839534466439,88831.483736974988,15778.541371422043,35064.588869878382],"mode":"markers","hovertemplate":["Anoka County<br>Population: 360,773<br>Emissions: 0.17 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Population: 105,694<br>Emissions: 0.05 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Population: 56,328<br>Emissions: 0.03 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Population: 435,863<br>Emissions: 0.23 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Population: 1,270,283<br>Emissions: 0.52 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Population: 549,377<br>Emissions: 0.22 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Population: 149,568<br>Emissions: 0.06 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Population: 96,295<br>Emissions: 0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Population: 264,818<br>Emissions: 0.09 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Population: 42,204<br>Emissions: 0.02 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Population: 92,495<br>Emissions: 0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-e769379052a582d47889" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-e769379052a582d47889">{"x":{"visdat":{"a7eb1e28cff2":["function () ","plotlyVisDat"]},"cur_data":"a7eb1e28cff2","attrs":{"a7eb1e28cff2":{"x":{},"y":{},"mode":"markers","hovertemplate":{},"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"County population and solid waste emissions","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"2022 ACS 5-year population estimates. Strong positive correlation","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"h"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":""},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"Total population","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":false},"source":"fig-emissions-population-solidwaste","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":[360773,105694,56328,435863,1270283,549377,149568,96295,264818,42204,92495],"y":[168064.01768152017,54240.93555971983,27243.1538495776,233063.19837941474,515899.55960874801,222640.64806529932,59002.904054830433,37709.839534466439,88831.483736974988,15778.541371422043,35064.588869878382],"mode":"markers","hovertemplate":["Anoka County<br>Population: 360,773<br>Emissions: 0.17 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Population: 105,694<br>Emissions: 0.05 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Population: 56,328<br>Emissions: 0.03 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Population: 435,863<br>Emissions: 0.23 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Population: 1,270,283<br>Emissions: 0.52 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Population: 549,377<br>Emissions: 0.22 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Population: 149,568<br>Emissions: 0.06 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Population: 96,295<br>Emissions: 0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Population: 264,818<br>Emissions: 0.09 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Population: 42,204<br>Emissions: 0.02 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Population: 92,495<br>Emissions: 0.04 million metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"marker":{"color":"#0054A4","size":18,"line":{"color":"lightgray","width":2}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-emissions-population-solidwaste-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;14.1: County population and solid waste emissions
@@ -616,8 +596,8 @@ Figure&nbsp;14.1: County population and solid waste emissions
 <div id="fig-federal-inventory-compare" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-federal-inventory-compare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-9da6605d8e1c01599f9c" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-9da6605d8e1c01599f9c">{"x":{"visdat":{"15c636e769578":["function () ","plotlyVisDat"]},"cur_data":"15c636e769578","attrs":{"15c636e769578":{"x":{},"y":{},"hovertemplate":{},"color":{},"colors":["#0054A4","#008144","#faa819"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"Solid waste emissions comparison","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"Met Council estimates compared to US GHG Inventory","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Emissions Source","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":"","type":"category","categoryorder":"array","categoryarray":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-federal-inventory-compare","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington","Pierce","St. Croix"],"y":[130765.26960000001,37929.266700000007,22438.8135,158555.79829999999,441460.74690000003,169126.51689999999,50786.624600000003,26100.055539999998,66822.144700000004,15813.038252719291,34656.122007043668],"hovertemplate":["Anoka County<br>Met Council V1<br>131 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Met Council V1<br>38 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Met Council V1<br>22 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Met Council V1<br>159 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Met Council V1<br>441 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Met Council V1<br>169 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Met Council V1<br>51 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Met Council V1<br>26 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Met Council V1<br>67 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Met Council V1<br>16 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Met Council V1<br>35 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"Met Council V1","marker":{"color":"rgba(0,84,164,1)","line":{"color":"rgba(0,84,164,1)"}},"textfont":{"color":"rgba(0,84,164,1)"},"error_y":{"color":"rgba(0,84,164,1)"},"error_x":{"color":"rgba(0,84,164,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington","Pierce","St. Croix"],"y":[168064.01768152017,54240.93555971983,27243.1538495776,233063.19837941474,515899.55960874801,222640.64806529932,59002.904054830433,37709.839534466439,88831.483736974988,15778.541371422043,35064.588869878382],"hovertemplate":["Anoka County<br>Met Council V2<br>168 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Met Council V2<br>54 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Met Council V2<br>27 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Met Council V2<br>233 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Met Council V2<br>516 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Met Council V2<br>223 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Met Council V2<br>59 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Met Council V2<br>38 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Met Council V2<br>89 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Met Council V2<br>16 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Met Council V2<br>35 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"Met Council V2","marker":{"color":"rgba(0,129,68,1)","line":{"color":"rgba(0,129,68,1)"}},"textfont":{"color":"rgba(0,129,68,1)"},"error_y":{"color":"rgba(0,129,68,1)"},"error_x":{"color":"rgba(0,129,68,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington","Pierce","St. Croix"],"y":[141642.51143988551,41496.352565539157,22114.84613423363,171123.47643455249,498723.78021468362,215690.02671294686,58721.653646588835,37806.22618406525,103969.7721129009,23419.543649669846,51326.667848455414],"hovertemplate":["Anoka County<br>US GHG Inventory<br>142 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>US GHG Inventory<br>41 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>US GHG Inventory<br>22 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>US GHG Inventory<br>171 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>US GHG Inventory<br>499 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>US GHG Inventory<br>216 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>US GHG Inventory<br>59 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>US GHG Inventory<br>38 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>US GHG Inventory<br>104 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>US GHG Inventory<br>23 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>US GHG Inventory<br>51 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"US GHG Inventory","marker":{"color":"rgba(250,168,25,1)","line":{"color":"rgba(250,168,25,1)"}},"textfont":{"color":"rgba(250,168,25,1)"},"error_y":{"color":"rgba(250,168,25,1)"},"error_x":{"color":"rgba(250,168,25,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-74401c204e6a040ca446" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-74401c204e6a040ca446">{"x":{"visdat":{"a7eb7916bf2a":["function () ","plotlyVisDat"]},"cur_data":"a7eb7916bf2a","attrs":{"a7eb7916bf2a":{"x":{},"y":{},"hovertemplate":{},"color":{},"colors":["#0054A4","#008144","#faa819"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"group","title":{"text":"Solid waste emissions comparison","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"Met Council estimates compared to US GHG Inventory","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Emissions Source","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"Metric tons CO<sub>2<\/sub>e","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":"","type":"category","categoryorder":"array","categoryarray":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-federal-inventory-compare","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington","Pierce","St. Croix"],"y":[130765.26960000001,37929.266700000007,22438.8135,158555.79829999999,441460.74690000003,169126.51689999999,50786.624600000003,26100.055539999998,66822.144700000004,15813.038252719291,34656.122007043668],"hovertemplate":["Anoka County<br>Met Council V1<br>131 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Met Council V1<br>38 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Met Council V1<br>22 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Met Council V1<br>159 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Met Council V1<br>441 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Met Council V1<br>169 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Met Council V1<br>51 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Met Council V1<br>26 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Met Council V1<br>67 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Met Council V1<br>16 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Met Council V1<br>35 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"Met Council V1","marker":{"color":"rgba(0,84,164,1)","line":{"color":"rgba(0,84,164,1)"}},"textfont":{"color":"rgba(0,84,164,1)"},"error_y":{"color":"rgba(0,84,164,1)"},"error_x":{"color":"rgba(0,84,164,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington","Pierce","St. Croix"],"y":[168064.01768152017,54240.93555971983,27243.1538495776,233063.19837941474,515899.55960874801,222640.64806529932,59002.904054830433,37709.839534466439,88831.483736974988,15778.541371422043,35064.588869878382],"hovertemplate":["Anoka County<br>Met Council V2<br>168 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>Met Council V2<br>54 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>Met Council V2<br>27 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>Met Council V2<br>233 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>Met Council V2<br>516 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>Met Council V2<br>223 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>Met Council V2<br>59 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>Met Council V2<br>38 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>Met Council V2<br>89 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>Met Council V2<br>16 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>Met Council V2<br>35 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"Met Council V2","marker":{"color":"rgba(0,129,68,1)","line":{"color":"rgba(0,129,68,1)"}},"textfont":{"color":"rgba(0,129,68,1)"},"error_y":{"color":"rgba(0,129,68,1)"},"error_x":{"color":"rgba(0,129,68,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Ramsey","Scott","Sherburne","Washington","Pierce","St. Croix"],"y":[141642.51143988551,41496.352565539157,22114.84613423363,171123.47643455249,498723.78021468362,215690.02671294686,58721.653646588835,37806.22618406525,103969.7721129009,23419.543649669846,51326.667848455414],"hovertemplate":["Anoka County<br>US GHG Inventory<br>142 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Carver County<br>US GHG Inventory<br>41 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Chisago County<br>US GHG Inventory<br>22 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Dakota County<br>US GHG Inventory<br>171 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Hennepin County<br>US GHG Inventory<br>499 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Ramsey County<br>US GHG Inventory<br>216 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Scott County<br>US GHG Inventory<br>59 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Sherburne County<br>US GHG Inventory<br>38 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Washington County<br>US GHG Inventory<br>104 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","Pierce County<br>US GHG Inventory<br>23 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>","St. Croix County<br>US GHG Inventory<br>51 thousand metric tons CO<sub>2<\/sub>e<br><extra><\/extra>"],"type":"bar","name":"US GHG Inventory","marker":{"color":"rgba(250,168,25,1)","line":{"color":"rgba(250,168,25,1)"}},"textfont":{"color":"rgba(250,168,25,1)"},"error_y":{"color":"rgba(250,168,25,1)"},"error_x":{"color":"rgba(250,168,25,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-federal-inventory-compare-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;14.2: Solid waste emissions comparison: US GHG Inventory
@@ -728,11 +708,30 @@ Wisconsin DNR. 2021. <span>“Wisconsin Greenhouse Gas Emissions Inventory Repor
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
         var filterRegex = new RegExp("metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io");
+      const newWindowLabel = "(opens in a new tab)";
+      const newWindowNoteId = "quarto-ext-newwindow-label";
+      // Links reference one hidden label through aria-describedby, so the
+      // announcement never changes their accessible name.
+      var describeNewWindow = (link) => {
+        if (!window.document.getElementById(newWindowNoteId)) {
+          var newWindowNote = window.document.createElement("span");
+          newWindowNote.id = newWindowNoteId;
+          newWindowNote.hidden = true;
+          newWindowNote.textContent = newWindowLabel;
+          window.document.body.appendChild(newWindowNote);
+        }
+        var describedBy = (link.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+        if (!describedBy.includes(newWindowNoteId)) {
+          describedBy.push(newWindowNoteId);
+          link.setAttribute("aria-describedby", describedBy.join(" "));
+        }
+      }
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
       // Inspect non-navigation links and adorn them if external
-     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
       for (var i=0; i<links.length; i++) {
         const link = links[i];
         if (!isInternal(link.href)) {
@@ -746,10 +745,72 @@ Wisconsin DNR. 2021. <span>“Wisconsin Greenhouse Gas Emissions Inventory Repor
             if (link.getAttribute("rel") === null) {
               link.setAttribute("rel", "noopener");
             }
+            describeNewWindow(link);
+          if (!link.classList.contains('no-external-icon')) {
             // default icon
             link.classList.add("external");
+          }
         }
       }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
       const config = {
         allowHTML: true,
@@ -763,6 +824,7 @@ Wisconsin DNR. 2021. <span>“Wisconsin Greenhouse Gas Emissions Inventory Repor
         interactiveBorder: 10,
         theme: 'quarto',
         placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
       };
       if (contentFn) {
         config.content = contentFn;
@@ -925,44 +987,54 @@ Wisconsin DNR. 2021. <span>“Wisconsin Greenhouse Gas Emissions Inventory Repor
           const lineIds = lines.map((line) => {
             return targetCell + "-" + line;
           })
-          let top = null;
-          let height = null;
-          let parent = null;
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
           if (lineIds.length > 0) {
-              //compute the position of the single el (top and bottom and make a div)
-              const el = window.document.getElementById(lineIds[0]);
-              top = el.offsetTop;
-              height = el.offsetHeight;
-              parent = el.parentElement.parentElement;
-            if (lineIds.length > 1) {
-              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-              height = bottom - top;
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
             }
-            if (top !== null && height !== null && parent !== null) {
-              // cook up a div (if necessary) and position it 
-              let div = window.document.getElementById("code-annotation-line-highlight");
-              if (div === null) {
-                div = window.document.createElement("div");
-                div.setAttribute("id", "code-annotation-line-highlight");
-                div.style.position = 'absolute';
-                parent.appendChild(div);
-              }
-              div.style.top = top - 2 + "px";
-              div.style.height = height + 4 + "px";
-              div.style.left = 0;
-              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-              if (gutterDiv === null) {
-                gutterDiv = window.document.createElement("div");
-                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-                gutterDiv.style.position = 'absolute';
-                const codeCell = window.document.getElementById(targetCell);
-                const gutter = codeCell.querySelector('.code-annotation-gutter');
-                gutter.appendChild(gutterDiv);
-              }
-              gutterDiv.style.top = top - 2 + "px";
-              gutterDiv.style.height = height + 4 + "px";
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
             }
+            placeBand(gutterDiv, el, lastEl);
             selectedAnnoteEl = annoteEl;
           }
         };
@@ -1061,7 +1133,10 @@ Wisconsin DNR. 2021. <span>“Wisconsin Greenhouse Gas Emissions Inventory Repor
     }
   });
   </script>
-<nav class="page-navigation">
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
   <div class="nav-page nav-page-previous">
       <a href="../_waste/_waste.html" class="pagination-link" aria-label="Waste and wastewater">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Waste and wastewater</span></span>

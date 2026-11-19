@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.35">
+<meta name="generator" content="quarto-1.11.9">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -11,10 +11,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -35,14 +38,15 @@ ul.task-list li input[type="checkbox"] {
 <link href="../_nature/data_nlcd_cover.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-225e327b3b74ce3dfc4c9fdba53ae904.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-d67a7d06c866593686193b914016f989.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -82,20 +86,20 @@ ul.task-list li input[type="checkbox"] {
 
 
 </head>
-<body class="nav-sidebar docked fullcontent quarto-light"><section id="navigation" class="navigation standalone-navigation">
+<body class="nav-sidebar docked fullcontent quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><section id="navigation" class="navigation standalone-navigation">
   	<link href="style/standalone_header_footer.css" type="text/css" rel="stylesheet">
 </section>
 
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav">
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_nature/_natural_systems_inventory.html">Natural Systems</a></li><li class="breadcrumb-item"><a href="../_nature/data_nhd_waterways.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Waterways data sources</span></a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_nature/_natural_systems_inventory.html">Natural Systems</a></li><li class="breadcrumb-item"><a href="../_nature/data_nhd_waterways.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Waterways data sources</span></a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
@@ -106,7 +110,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto" aria-label="Site">
     <div class="pt-lg-2 mt-2 text-center sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Twin Cities MSA Greenhouse Gas Inventory</a> 
@@ -130,13 +134,10 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Transportation</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Transportation</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_transportation/_transportation.html" class="sidebar-item-text sidebar-link">
@@ -159,13 +160,10 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Electricity</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Electricity</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_energy/_electricity.html" class="sidebar-item-text sidebar-link">
@@ -182,13 +180,10 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Building Energy</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Building Energy</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_energy/_energy_building_fuel.html" class="sidebar-item-text sidebar-link">
@@ -205,13 +200,10 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Industrial</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">Industrial</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_industrial/_industrial.html" class="sidebar-item-text sidebar-link">
@@ -228,13 +220,10 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
- <span class="menu-text">Waste and Wastewater</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">Waste and Wastewater</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_waste/_waste.html" class="sidebar-item-text sidebar-link">
@@ -251,13 +240,10 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
- <span class="menu-text">Agriculture</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-6-label">Agriculture</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_agriculture/_agriculture.html" class="sidebar-item-text sidebar-link">
@@ -274,13 +260,10 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
- <span class="menu-text">Natural Systems</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label">Natural Systems</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_nature/_natural_systems_inventory.html" class="sidebar-item-text sidebar-link">
@@ -303,13 +286,10 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
- <span class="menu-text">Appendices</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-8-label">Appendices</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../_meta/supplementary_data.html" class="sidebar-item-text sidebar-link">
@@ -381,9 +361,9 @@ ul.task-list li input[type="checkbox"] {
         
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content" id="quarto-document-content" tabindex="-1">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_nature/_natural_systems_inventory.html">Natural Systems</a></li><li class="breadcrumb-item"><a href="../_nature/data_nhd_waterways.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Waterways data sources</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../_nature/_natural_systems_inventory.html">Natural Systems</a></li><li class="breadcrumb-item"><a href="../_nature/data_nhd_waterways.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Waterways data sources</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span id="sec-waterways-data-sources" class="quarto-section-identifier"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Waterways data sources</span></span></h1>
 </div>
@@ -409,8 +389,8 @@ ul.task-list li input[type="checkbox"] {
 <div id="fig-nhd-byCounty" class="cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-nhd-byCounty-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-bf77ee5d1d5f4b9d9588" style="width:95%;height:60%;"></div>
-<script type="application/json" data-for="htmlwidget-bf77ee5d1d5f4b9d9588">{"x":{"visdat":{"15e54755b7b54":["function () ","plotlyVisDat"]},"cur_data":"15e54755b7b54","attrs":{"15e54755b7b54":{"x":{},"y":{},"hoverinfo":"text","hovertemplate":{},"color":{},"colors":["steelblue","lightskyblue","maroon3","palegreen3","purple3","darkslategray4","red","goldenrod","darkorchid1","darkslategray","green"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"stack","title":{"text":"Waterway area per county","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"National Hydrography Dataset","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Waterway type","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"area (km2)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"area (km2)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"area (km2)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":"","type":"category","categoryorder":"array","categoryarray":["Hennepin","Washington","Anoka","Chisago","Dakota","Carver","Sherburne","Pierce","Ramsey","Scott","St. Croix"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-nhd-byCounty","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Pierce"],"y":[0.0011433523675964579],"hoverinfo":"text","hovertemplate":"County: Pierce<br>Waterway type: DamWeir<br>Area: 0<extra><\/extra>","type":"bar","name":"DamWeir","marker":{"color":"rgba(82,139,139,1)","line":{"color":"rgba(82,139,139,1)"}},"textfont":{"color":"rgba(82,139,139,1)"},"error_y":{"color":"rgba(82,139,139,1)"},"error_x":{"color":"rgba(82,139,139,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"y":[51.455181377062232,53.999428953045339,65.121199269721487,34.715091994468168,127.76691275936089,35.604507375502841,37.521496557227863,36.278271370822182,37.488477305386645,30.348302351113755,84.499010548994022],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Waterway type: LakePond<br>Area: 51.5<extra><\/extra>","County: Carver<br>Waterway type: LakePond<br>Area: 54<extra><\/extra>","County: Chisago<br>Waterway type: LakePond<br>Area: 65.1<extra><\/extra>","County: Dakota<br>Waterway type: LakePond<br>Area: 34.7<extra><\/extra>","County: Hennepin<br>Waterway type: LakePond<br>Area: 127.8<extra><\/extra>","County: Pierce<br>Waterway type: LakePond<br>Area: 35.6<extra><\/extra>","County: Ramsey<br>Waterway type: LakePond<br>Area: 37.5<extra><\/extra>","County: Scott<br>Waterway type: LakePond<br>Area: 36.3<extra><\/extra>","County: Sherburne<br>Waterway type: LakePond<br>Area: 37.5<extra><\/extra>","County: St. Croix<br>Waterway type: LakePond<br>Area: 30.3<extra><\/extra>","County: Washington<br>Waterway type: LakePond<br>Area: 84.5<extra><\/extra>"],"type":"bar","name":"LakePond","marker":{"color":"rgba(70,130,180,1)","line":{"color":"rgba(70,130,180,1)"}},"textfont":{"color":"rgba(70,130,180,1)"},"error_y":{"color":"rgba(70,130,180,1)"},"error_x":{"color":"rgba(70,130,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Dakota"],"y":[0.013748289966951394],"hoverinfo":"text","hovertemplate":"County: Dakota<br>Waterway type: Lock Chamber<br>Area: 0<extra><\/extra>","type":"bar","name":"Lock Chamber","marker":{"color":"rgba(125,38,205,1)","line":{"color":"rgba(125,38,205,1)"}},"textfont":{"color":"rgba(125,38,205,1)"},"error_y":{"color":"rgba(125,38,205,1)"},"error_x":{"color":"rgba(125,38,205,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix"],"y":[2.7020237157580103,0.081948932092325649,0.16303729703171452,2.6429793219405995,1.0003370513909149,0.033529763964301851,0.045248992834963447,0.36544148874717264,0.26183212228440644,0.11710463837874487],"hoverinfo":["text","text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Waterway type: Reservoir<br>Area: 2.7<extra><\/extra>","County: Carver<br>Waterway type: Reservoir<br>Area: 0.1<extra><\/extra>","County: Chisago<br>Waterway type: Reservoir<br>Area: 0.2<extra><\/extra>","County: Dakota<br>Waterway type: Reservoir<br>Area: 2.6<extra><\/extra>","County: Hennepin<br>Waterway type: Reservoir<br>Area: 1<extra><\/extra>","County: Pierce<br>Waterway type: Reservoir<br>Area: 0<extra><\/extra>","County: Ramsey<br>Waterway type: Reservoir<br>Area: 0<extra><\/extra>","County: Scott<br>Waterway type: Reservoir<br>Area: 0.4<extra><\/extra>","County: Sherburne<br>Waterway type: Reservoir<br>Area: 0.3<extra><\/extra>","County: St. Croix<br>Waterway type: Reservoir<br>Area: 0.1<extra><\/extra>"],"type":"bar","name":"Reservoir","marker":{"color":"rgba(205,41,144,1)","line":{"color":"rgba(205,41,144,1)"}},"textfont":{"color":"rgba(205,41,144,1)"},"error_y":{"color":"rgba(205,41,144,1)"},"error_x":{"color":"rgba(205,41,144,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"y":[6.9373702937353414,2.5231467184893965,5.7719637751668476,16.275743965507118,9.2835905928933098,10.285880372576129,4.9255052929674168,4.4212256484727073,9.8303804682993476,6.682803968259849,14.498127280264821],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Waterway type: StreamRiver<br>Area: 6.9<extra><\/extra>","County: Carver<br>Waterway type: StreamRiver<br>Area: 2.5<extra><\/extra>","County: Chisago<br>Waterway type: StreamRiver<br>Area: 5.8<extra><\/extra>","County: Dakota<br>Waterway type: StreamRiver<br>Area: 16.3<extra><\/extra>","County: Hennepin<br>Waterway type: StreamRiver<br>Area: 9.3<extra><\/extra>","County: Pierce<br>Waterway type: StreamRiver<br>Area: 10.3<extra><\/extra>","County: Ramsey<br>Waterway type: StreamRiver<br>Area: 4.9<extra><\/extra>","County: Scott<br>Waterway type: StreamRiver<br>Area: 4.4<extra><\/extra>","County: Sherburne<br>Waterway type: StreamRiver<br>Area: 9.8<extra><\/extra>","County: St. Croix<br>Waterway type: StreamRiver<br>Area: 6.7<extra><\/extra>","County: Washington<br>Waterway type: StreamRiver<br>Area: 14.5<extra><\/extra>"],"type":"bar","name":"StreamRiver","marker":{"color":"rgba(135,206,250,1)","line":{"color":"rgba(135,206,250,1)"}},"textfont":{"color":"rgba(135,206,250,1)"},"error_y":{"color":"rgba(135,206,250,1)"},"error_x":{"color":"rgba(135,206,250,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne"],"y":[19.260541360204805,2.6032982204932997,9.6222925678180147,1.9159725471619928,0.92109656391997319,0.44572488790112774,0.20915767845188174,2.495080013497819],"hoverinfo":["text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Waterway type: SwampMarsh<br>Area: 19.3<extra><\/extra>","County: Carver<br>Waterway type: SwampMarsh<br>Area: 2.6<extra><\/extra>","County: Dakota<br>Waterway type: SwampMarsh<br>Area: 9.6<extra><\/extra>","County: Hennepin<br>Waterway type: SwampMarsh<br>Area: 1.9<extra><\/extra>","County: Pierce<br>Waterway type: SwampMarsh<br>Area: 0.9<extra><\/extra>","County: Ramsey<br>Waterway type: SwampMarsh<br>Area: 0.4<extra><\/extra>","County: Scott<br>Waterway type: SwampMarsh<br>Area: 0.2<extra><\/extra>","County: Sherburne<br>Waterway type: SwampMarsh<br>Area: 2.5<extra><\/extra>"],"type":"bar","name":"SwampMarsh","marker":{"color":"rgba(124,205,124,1)","line":{"color":"rgba(124,205,124,1)"}},"textfont":{"color":"rgba(124,205,124,1)"},"error_y":{"color":"rgba(124,205,124,1)"},"error_x":{"color":"rgba(124,205,124,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-c41f55f60917c0163f48" style="width:95%;height:60%;"></div>
+<script type="application/json" data-for="htmlwidget-c41f55f60917c0163f48">{"x":{"visdat":{"aad17a1d52b5":["function () ","plotlyVisDat"]},"cur_data":"aad17a1d52b5","attrs":{"aad17a1d52b5":{"x":{},"y":{},"hoverinfo":"text","hovertemplate":{},"color":{},"colors":["steelblue","lightskyblue","maroon3","palegreen3","purple3","darkslategray4","red","goldenrod","darkorchid1","darkslategray","green"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":50,"l":50,"t":80,"r":50,"pad":0.5},"barmode":"stack","title":{"text":"Waterway area per county","font":{"family":"Arial Narrow","size":24},"align":"left","x":0,"y":1.1499999999999999,"xref":"paper","yref":"paper"},"annotations":[{"text":"National Hydrography Dataset","font":{"family":"Arial Narrow","size":16},"align":"left","x":0,"y":1.0800000000000001,"xref":"paper","yref":"paper","showarrow":false}],"legend":{"title":{"text":"Waterway type","font":{"family":"Arial Narrow","size":20}},"font":{"family":"Arial Narrow","size":14},"orientation":"v"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","tickfont":{"family":"Arial Narrow","size":16}},"yaxis2":{"title":{"text":"area (km2)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis3":{"title":{"text":"area (km2)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"yaxis4":{"title":{"text":"area (km2)","font":{"family":"Arial Narrow","size":20}},"tickfont":{"family":"Arial Narrow","size":16}},"xaxis":{"domain":[0,1],"automargin":true,"tickfont":{"family":"Arial Narrow","size":16},"title":"","type":"category","categoryorder":"array","categoryarray":["Hennepin","Washington","Anoka","Chisago","Dakota","Carver","Sherburne","Pierce","Ramsey","Scott","St. Croix"]},"xaxis2":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis3":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"xaxis4":{"tickfont":{"family":"Arial Narrow","size":16},"title":{"text":"County","font":{"family":"Arial Narrow","size":24}}},"hovermode":"closest","hoverdistance":"10","hoverlabel":{"font":{"size":18,"family":"Arial Narrow","color":"#FFFFFF"},"stroke":["#666666","#666666","#666666","#666666"],"padding":{"l":5,"r":5,"b":5,"t":5}},"showlegend":true},"source":"fig-nhd-byCounty","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displaylogo":false,"modeBarButtonsToRemove":["drawopenpath","lasso","editInChartStudio","sendDataToCloud","zoom2d","pan2d"]},"data":[{"x":["Pierce"],"y":[0.0011433523675964579],"hoverinfo":"text","hovertemplate":"County: Pierce<br>Waterway type: DamWeir<br>Area: 0<extra><\/extra>","type":"bar","name":"DamWeir","marker":{"color":"rgba(82,139,139,1)","line":{"color":"rgba(82,139,139,1)"}},"textfont":{"color":"rgba(82,139,139,1)"},"error_y":{"color":"rgba(82,139,139,1)"},"error_x":{"color":"rgba(82,139,139,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"y":[51.455181377062232,53.999428953045339,65.121199269721487,34.715091994468168,127.76691275936089,35.604507375502841,37.521496557227863,36.278271370822182,37.488477305386645,30.348302351113755,84.499010548994022],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Waterway type: LakePond<br>Area: 51.5<extra><\/extra>","County: Carver<br>Waterway type: LakePond<br>Area: 54<extra><\/extra>","County: Chisago<br>Waterway type: LakePond<br>Area: 65.1<extra><\/extra>","County: Dakota<br>Waterway type: LakePond<br>Area: 34.7<extra><\/extra>","County: Hennepin<br>Waterway type: LakePond<br>Area: 127.8<extra><\/extra>","County: Pierce<br>Waterway type: LakePond<br>Area: 35.6<extra><\/extra>","County: Ramsey<br>Waterway type: LakePond<br>Area: 37.5<extra><\/extra>","County: Scott<br>Waterway type: LakePond<br>Area: 36.3<extra><\/extra>","County: Sherburne<br>Waterway type: LakePond<br>Area: 37.5<extra><\/extra>","County: St. Croix<br>Waterway type: LakePond<br>Area: 30.3<extra><\/extra>","County: Washington<br>Waterway type: LakePond<br>Area: 84.5<extra><\/extra>"],"type":"bar","name":"LakePond","marker":{"color":"rgba(70,130,180,1)","line":{"color":"rgba(70,130,180,1)"}},"textfont":{"color":"rgba(70,130,180,1)"},"error_y":{"color":"rgba(70,130,180,1)"},"error_x":{"color":"rgba(70,130,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Dakota"],"y":[0.013748289966951394],"hoverinfo":"text","hovertemplate":"County: Dakota<br>Waterway type: Lock Chamber<br>Area: 0<extra><\/extra>","type":"bar","name":"Lock Chamber","marker":{"color":"rgba(125,38,205,1)","line":{"color":"rgba(125,38,205,1)"}},"textfont":{"color":"rgba(125,38,205,1)"},"error_y":{"color":"rgba(125,38,205,1)"},"error_x":{"color":"rgba(125,38,205,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix"],"y":[2.7020237157580103,0.081948932092325649,0.16303729703171452,2.6429793219405995,1.0003370513909149,0.033529763964301851,0.045248992834963447,0.36544148874717264,0.26183212228440644,0.11710463837874487],"hoverinfo":["text","text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Waterway type: Reservoir<br>Area: 2.7<extra><\/extra>","County: Carver<br>Waterway type: Reservoir<br>Area: 0.1<extra><\/extra>","County: Chisago<br>Waterway type: Reservoir<br>Area: 0.2<extra><\/extra>","County: Dakota<br>Waterway type: Reservoir<br>Area: 2.6<extra><\/extra>","County: Hennepin<br>Waterway type: Reservoir<br>Area: 1<extra><\/extra>","County: Pierce<br>Waterway type: Reservoir<br>Area: 0<extra><\/extra>","County: Ramsey<br>Waterway type: Reservoir<br>Area: 0<extra><\/extra>","County: Scott<br>Waterway type: Reservoir<br>Area: 0.4<extra><\/extra>","County: Sherburne<br>Waterway type: Reservoir<br>Area: 0.3<extra><\/extra>","County: St. Croix<br>Waterway type: Reservoir<br>Area: 0.1<extra><\/extra>"],"type":"bar","name":"Reservoir","marker":{"color":"rgba(205,41,144,1)","line":{"color":"rgba(205,41,144,1)"}},"textfont":{"color":"rgba(205,41,144,1)"},"error_y":{"color":"rgba(205,41,144,1)"},"error_x":{"color":"rgba(205,41,144,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Chisago","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne","St. Croix","Washington"],"y":[6.9373702937353414,2.5231467184893965,5.7719637751668476,16.275743965507118,9.2835905928933098,10.285880372576129,4.9255052929674168,4.4212256484727073,9.8303804682993476,6.682803968259849,14.498127280264821],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Waterway type: StreamRiver<br>Area: 6.9<extra><\/extra>","County: Carver<br>Waterway type: StreamRiver<br>Area: 2.5<extra><\/extra>","County: Chisago<br>Waterway type: StreamRiver<br>Area: 5.8<extra><\/extra>","County: Dakota<br>Waterway type: StreamRiver<br>Area: 16.3<extra><\/extra>","County: Hennepin<br>Waterway type: StreamRiver<br>Area: 9.3<extra><\/extra>","County: Pierce<br>Waterway type: StreamRiver<br>Area: 10.3<extra><\/extra>","County: Ramsey<br>Waterway type: StreamRiver<br>Area: 4.9<extra><\/extra>","County: Scott<br>Waterway type: StreamRiver<br>Area: 4.4<extra><\/extra>","County: Sherburne<br>Waterway type: StreamRiver<br>Area: 9.8<extra><\/extra>","County: St. Croix<br>Waterway type: StreamRiver<br>Area: 6.7<extra><\/extra>","County: Washington<br>Waterway type: StreamRiver<br>Area: 14.5<extra><\/extra>"],"type":"bar","name":"StreamRiver","marker":{"color":"rgba(135,206,250,1)","line":{"color":"rgba(135,206,250,1)"}},"textfont":{"color":"rgba(135,206,250,1)"},"error_y":{"color":"rgba(135,206,250,1)"},"error_x":{"color":"rgba(135,206,250,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Anoka","Carver","Dakota","Hennepin","Pierce","Ramsey","Scott","Sherburne"],"y":[19.260541360204805,2.6032982204932997,9.6222925678180147,1.9159725471619928,0.92109656391997319,0.44572488790112774,0.20915767845188174,2.495080013497819],"hoverinfo":["text","text","text","text","text","text","text","text"],"hovertemplate":["County: Anoka<br>Waterway type: SwampMarsh<br>Area: 19.3<extra><\/extra>","County: Carver<br>Waterway type: SwampMarsh<br>Area: 2.6<extra><\/extra>","County: Dakota<br>Waterway type: SwampMarsh<br>Area: 9.6<extra><\/extra>","County: Hennepin<br>Waterway type: SwampMarsh<br>Area: 1.9<extra><\/extra>","County: Pierce<br>Waterway type: SwampMarsh<br>Area: 0.9<extra><\/extra>","County: Ramsey<br>Waterway type: SwampMarsh<br>Area: 0.4<extra><\/extra>","County: Scott<br>Waterway type: SwampMarsh<br>Area: 0.2<extra><\/extra>","County: Sherburne<br>Waterway type: SwampMarsh<br>Area: 2.5<extra><\/extra>"],"type":"bar","name":"SwampMarsh","marker":{"color":"rgba(124,205,124,1)","line":{"color":"rgba(124,205,124,1)"}},"textfont":{"color":"rgba(124,205,124,1)"},"error_y":{"color":"rgba(124,205,124,1)"},"error_x":{"color":"rgba(124,205,124,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-nhd-byCounty-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;16.1: Waterways area by county
@@ -497,11 +477,30 @@ Figure&nbsp;16.1: Waterways area by county
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
         var filterRegex = new RegExp("metrocouncil.org|tel|metrotransit|metrocouncil.metctest.state.mn.us|github.com/Metropolitan-Council|metropolitan-council.github.io");
+      const newWindowLabel = "(opens in a new tab)";
+      const newWindowNoteId = "quarto-ext-newwindow-label";
+      // Links reference one hidden label through aria-describedby, so the
+      // announcement never changes their accessible name.
+      var describeNewWindow = (link) => {
+        if (!window.document.getElementById(newWindowNoteId)) {
+          var newWindowNote = window.document.createElement("span");
+          newWindowNote.id = newWindowNoteId;
+          newWindowNote.hidden = true;
+          newWindowNote.textContent = newWindowLabel;
+          window.document.body.appendChild(newWindowNote);
+        }
+        var describedBy = (link.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+        if (!describedBy.includes(newWindowNoteId)) {
+          describedBy.push(newWindowNoteId);
+          link.setAttribute("aria-describedby", describedBy.join(" "));
+        }
+      }
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
       // Inspect non-navigation links and adorn them if external
-     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
       for (var i=0; i<links.length; i++) {
         const link = links[i];
         if (!isInternal(link.href)) {
@@ -515,10 +514,72 @@ Figure&nbsp;16.1: Waterways area by county
             if (link.getAttribute("rel") === null) {
               link.setAttribute("rel", "noopener");
             }
+            describeNewWindow(link);
+          if (!link.classList.contains('no-external-icon')) {
             // default icon
             link.classList.add("external");
+          }
         }
       }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
       const config = {
         allowHTML: true,
@@ -532,6 +593,7 @@ Figure&nbsp;16.1: Waterways area by county
         interactiveBorder: 10,
         theme: 'quarto',
         placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
       };
       if (contentFn) {
         config.content = contentFn;
@@ -694,44 +756,54 @@ Figure&nbsp;16.1: Waterways area by county
           const lineIds = lines.map((line) => {
             return targetCell + "-" + line;
           })
-          let top = null;
-          let height = null;
-          let parent = null;
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
           if (lineIds.length > 0) {
-              //compute the position of the single el (top and bottom and make a div)
-              const el = window.document.getElementById(lineIds[0]);
-              top = el.offsetTop;
-              height = el.offsetHeight;
-              parent = el.parentElement.parentElement;
-            if (lineIds.length > 1) {
-              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-              height = bottom - top;
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
             }
-            if (top !== null && height !== null && parent !== null) {
-              // cook up a div (if necessary) and position it 
-              let div = window.document.getElementById("code-annotation-line-highlight");
-              if (div === null) {
-                div = window.document.createElement("div");
-                div.setAttribute("id", "code-annotation-line-highlight");
-                div.style.position = 'absolute';
-                parent.appendChild(div);
-              }
-              div.style.top = top - 2 + "px";
-              div.style.height = height + 4 + "px";
-              div.style.left = 0;
-              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-              if (gutterDiv === null) {
-                gutterDiv = window.document.createElement("div");
-                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-                gutterDiv.style.position = 'absolute';
-                const codeCell = window.document.getElementById(targetCell);
-                const gutter = codeCell.querySelector('.code-annotation-gutter');
-                gutter.appendChild(gutterDiv);
-              }
-              gutterDiv.style.top = top - 2 + "px";
-              gutterDiv.style.height = height + 4 + "px";
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
             }
+            placeBand(gutterDiv, el, lastEl);
             selectedAnnoteEl = annoteEl;
           }
         };
@@ -830,7 +902,10 @@ Figure&nbsp;16.1: Waterways area by county
     }
   });
   </script>
-<nav class="page-navigation">
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
   <div class="nav-page nav-page-previous">
       <a href="../_nature/data_nlcd_cover.html" class="pagination-link" aria-label="Land cover data sources">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Land cover data sources</span></span>
