@@ -8,8 +8,8 @@
 
 ### develop regional natural systems sequestration targets based on tree planting and restoration efforts
 
-## restart and rerun when making updates to ghg.ccap@ccap-graphics
-# remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
+## restart and rerun when making updates to ghg.gert
+# remotes::install_github("Metropolitan-Council/ghg.gert")
 # enter 3 ('none') if prompted to update other packages
 # rm(list = ls())
 source("R/_load_pkgs.R")
@@ -19,7 +19,7 @@ source("_meta/data-raw/projections/01_projections_plotter.R")
 source("_meta/data-raw/projections/01_ns_projection_funs.R")
 
 
-# remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
+# remotes::install_github("Metropolitan-Council/ghg.gert")
 
 
 # Load data
@@ -151,7 +151,7 @@ scen1_grassland_2050 <- 10
 scen1_wetland_2050 <-
   round(pct_increase_in_wetland_area_11co, 1) # load rds
 
-mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
+mod_scen1 <- ghg.gert::run_scenario_natural_systems(
   .selected_ctu = "Regional",
   tb_inv = natural_systems_data$regional$inventory,
   tb_future = natural_systems_data$regional$null_projections,
@@ -562,12 +562,12 @@ ppp2050 / bau2050
 #
 #
 #
-# mod_bau <- ghg.ccap::run_scenario_natural_systems(
+# mod_bau <- ghg.gert::run_scenario_natural_systems(
 #   .selected_ctu = "Regional",
 #   tb_inv = natural_systems_data$regional$inventory,
 #   tb_future = natural_systems_data$regional$null_projections,
 #   tb_seq = natural_systems_data$land_cover_carbon,
-#   .enviro_factors = ghg.ccap::enviro_factors,
+#   .enviro_factors = ghg.gert::enviro_factors,
 # )
 #
 # # Scenario 1: Reforest all barren land, 5% of cropland, 10% of grassland, 100% of developed areas
@@ -576,12 +576,12 @@ ppp2050 / bau2050
 # scen1_bare_2050 <- 100
 # scen1_grassland_2050 <- 10
 #
-# mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
+# mod_scen1 <- ghg.gert::run_scenario_natural_systems(
 #   .selected_ctu = "Regional",
 #   tb_inv = natural_systems_data$regional$inventory,
 #   tb_future = natural_systems_data$regional$null_projections,
 #   tb_seq = natural_systems_data$land_cover_carbon,
-#   .enviro_factors = ghg.ccap::enviro_factors,
+#   .enviro_factors = ghg.gert::enviro_factors,
 #
 #   # user inputs here!
 #   .urban_tree_start = 2025,
@@ -604,12 +604,12 @@ ppp2050 / bau2050
 # scen2_bare_2050 <- 100
 # scen2_grassland_2050 <- 20
 #
-# mod_scen2 <- ghg.ccap::run_scenario_natural_systems(
+# mod_scen2 <- ghg.gert::run_scenario_natural_systems(
 #   .selected_ctu = "Regional",
 #   tb_inv = natural_systems_data$regional$inventory,
 #   tb_future = natural_systems_data$regional$null_projections,
 #   tb_seq = natural_systems_data$land_cover_carbon,
-#   .enviro_factors = ghg.ccap::enviro_factors,
+#   .enviro_factors = ghg.gert::enviro_factors,
 #
 #   # user inputs here!
 #   .urban_tree_start = 2025,

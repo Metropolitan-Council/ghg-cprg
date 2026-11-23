@@ -20,34 +20,34 @@
 "Anoka","27003",2020,"National Emissions Inventory",1373556.33
 "Anoka","27003",2021,"Air Emissions Modeling",1528216.17
 "Anoka","27003",2022,"Air Emissions Modeling",1696154.91
-"Anoka","27003",2023,"Interpolation",1662721.34
-"Anoka","27003",2024,"Interpolation",1629287.78
-"Anoka","27003",2025,"Interpolation",1595854.21
-"Anoka","27003",2026,"Interpolation",1562420.65
-"Anoka","27003",2027,"Interpolation",1528987.08
-"Anoka","27003",2028,"Interpolation",1495553.52
-"Anoka","27003",2029,"Interpolation",1462119.96
-"Anoka","27003",2030,"Interpolation",1428686.39
-"Anoka","27003",2031,"Interpolation",1395252.83
-"Anoka","27003",2032,"Interpolation",1361819.26
-"Anoka","27003",2033,"Interpolation",1328385.7
-"Anoka","27003",2034,"Interpolation",1294952.13
-"Anoka","27003",2035,"Interpolation",1261518.57
-"Anoka","27003",2036,"Interpolation",1228085.01
-"Anoka","27003",2037,"Interpolation",1194651.44
-"Anoka","27003",2038,"Interpolation",1161217.88
-"Anoka","27003",2039,"Interpolation",1127784.31
-"Anoka","27003",2040,"Interpolation",1094350.75
-"Anoka","27003",2041,"Interpolation",1060917.18
-"Anoka","27003",2042,"Interpolation",1027483.62
-"Anoka","27003",2043,"Interpolation",994050.06
-"Anoka","27003",2044,"Interpolation",960616.49
-"Anoka","27003",2045,"Interpolation",927182.93
-"Anoka","27003",2046,"Interpolation",893749.36
-"Anoka","27003",2047,"Interpolation",860315.8
-"Anoka","27003",2048,"Interpolation",826882.23
-"Anoka","27003",2049,"Interpolation",793448.67
-"Anoka","27003",2050,"RTDM and EPA MOVES4",760015.1
+"Anoka","27003",2023,"Interpolation",1662628.38
+"Anoka","27003",2024,"Interpolation",1629101.85
+"Anoka","27003",2025,"Interpolation",1595575.32
+"Anoka","27003",2026,"Interpolation",1562048.8
+"Anoka","27003",2027,"Interpolation",1528522.27
+"Anoka","27003",2028,"Interpolation",1494995.74
+"Anoka","27003",2029,"Interpolation",1461469.22
+"Anoka","27003",2030,"Interpolation",1427942.69
+"Anoka","27003",2031,"Interpolation",1394416.16
+"Anoka","27003",2032,"Interpolation",1360889.63
+"Anoka","27003",2033,"Interpolation",1327363.11
+"Anoka","27003",2034,"Interpolation",1293836.58
+"Anoka","27003",2035,"Interpolation",1260310.05
+"Anoka","27003",2036,"Interpolation",1226783.53
+"Anoka","27003",2037,"Interpolation",1193257
+"Anoka","27003",2038,"Interpolation",1159730.47
+"Anoka","27003",2039,"Interpolation",1126203.95
+"Anoka","27003",2040,"Interpolation",1092677.42
+"Anoka","27003",2041,"Interpolation",1059150.89
+"Anoka","27003",2042,"Interpolation",1025624.36
+"Anoka","27003",2043,"Interpolation",992097.84
+"Anoka","27003",2044,"Interpolation",958571.31
+"Anoka","27003",2045,"Interpolation",925044.78
+"Anoka","27003",2046,"Interpolation",891518.26
+"Anoka","27003",2047,"Interpolation",857991.73
+"Anoka","27003",2048,"Interpolation",824465.2
+"Anoka","27003",2049,"Interpolation",790938.67
+"Anoka","27003",2050,"RTDM and EPA MOVES4",757412.15
 "Carver","27019",2002,"EQUATES",460952.93
 "Carver","27019",2003,"EQUATES",470249.81
 "Carver","27019",2004,"EQUATES",471794.37
@@ -69,34 +69,34 @@
 "Carver","27019",2020,"National Emissions Inventory",388798.22
 "Carver","27019",2021,"Air Emissions Modeling",431417.4
 "Carver","27019",2022,"Air Emissions Modeling",480884.07
-"Carver","27019",2023,"Interpolation",473912.44
-"Carver","27019",2024,"Interpolation",466940.82
-"Carver","27019",2025,"Interpolation",459969.19
-"Carver","27019",2026,"Interpolation",452997.57
-"Carver","27019",2027,"Interpolation",446025.94
-"Carver","27019",2028,"Interpolation",439054.31
-"Carver","27019",2029,"Interpolation",432082.69
-"Carver","27019",2030,"Interpolation",425111.06
-"Carver","27019",2031,"Interpolation",418139.44
-"Carver","27019",2032,"Interpolation",411167.81
-"Carver","27019",2033,"Interpolation",404196.19
-"Carver","27019",2034,"Interpolation",397224.56
-"Carver","27019",2035,"Interpolation",390252.93
-"Carver","27019",2036,"Interpolation",383281.31
-"Carver","27019",2037,"Interpolation",376309.68
-"Carver","27019",2038,"Interpolation",369338.06
-"Carver","27019",2039,"Interpolation",362366.43
-"Carver","27019",2040,"Interpolation",355394.81
-"Carver","27019",2041,"Interpolation",348423.18
-"Carver","27019",2042,"Interpolation",341451.56
-"Carver","27019",2043,"Interpolation",334479.93
-"Carver","27019",2044,"Interpolation",327508.3
-"Carver","27019",2045,"Interpolation",320536.68
-"Carver","27019",2046,"Interpolation",313565.05
-"Carver","27019",2047,"Interpolation",306593.43
-"Carver","27019",2048,"Interpolation",299621.8
-"Carver","27019",2049,"Interpolation",292650.18
-"Carver","27019",2050,"RTDM and EPA MOVES4",285678.55
+"Carver","27019",2023,"Interpolation",473889.66
+"Carver","27019",2024,"Interpolation",466895.26
+"Carver","27019",2025,"Interpolation",459900.85
+"Carver","27019",2026,"Interpolation",452906.45
+"Carver","27019",2027,"Interpolation",445912.04
+"Carver","27019",2028,"Interpolation",438917.64
+"Carver","27019",2029,"Interpolation",431923.23
+"Carver","27019",2030,"Interpolation",424928.82
+"Carver","27019",2031,"Interpolation",417934.42
+"Carver","27019",2032,"Interpolation",410940.01
+"Carver","27019",2033,"Interpolation",403945.61
+"Carver","27019",2034,"Interpolation",396951.2
+"Carver","27019",2035,"Interpolation",389956.8
+"Carver","27019",2036,"Interpolation",382962.39
+"Carver","27019",2037,"Interpolation",375967.99
+"Carver","27019",2038,"Interpolation",368973.58
+"Carver","27019",2039,"Interpolation",361979.17
+"Carver","27019",2040,"Interpolation",354984.77
+"Carver","27019",2041,"Interpolation",347990.36
+"Carver","27019",2042,"Interpolation",340995.96
+"Carver","27019",2043,"Interpolation",334001.55
+"Carver","27019",2044,"Interpolation",327007.15
+"Carver","27019",2045,"Interpolation",320012.74
+"Carver","27019",2046,"Interpolation",313018.34
+"Carver","27019",2047,"Interpolation",306023.93
+"Carver","27019",2048,"Interpolation",299029.53
+"Carver","27019",2049,"Interpolation",292035.12
+"Carver","27019",2050,"RTDM and EPA MOVES4",285040.71
 "Chisago","27025",2002,"EQUATES",420249.71
 "Chisago","27025",2003,"EQUATES",428160.02
 "Chisago","27025",2004,"EQUATES",431342.38
@@ -118,34 +118,34 @@
 "Chisago","27025",2020,"National Emissions Inventory",364036.86
 "Chisago","27025",2021,"Air Emissions Modeling",407191.15
 "Chisago","27025",2022,"Air Emissions Modeling",433842.58
-"Chisago","27025",2023,"Interpolation",431529.13
-"Chisago","27025",2024,"Interpolation",429215.67
-"Chisago","27025",2025,"Interpolation",426902.21
-"Chisago","27025",2026,"Interpolation",424588.76
-"Chisago","27025",2027,"Interpolation",422275.3
-"Chisago","27025",2028,"Interpolation",419961.85
-"Chisago","27025",2029,"Interpolation",417648.39
-"Chisago","27025",2030,"Interpolation",415334.94
-"Chisago","27025",2031,"Interpolation",413021.48
-"Chisago","27025",2032,"Interpolation",410708.02
-"Chisago","27025",2033,"Interpolation",408394.57
-"Chisago","27025",2034,"Interpolation",406081.11
-"Chisago","27025",2035,"Interpolation",403767.66
-"Chisago","27025",2036,"Interpolation",401454.2
-"Chisago","27025",2037,"Interpolation",399140.75
-"Chisago","27025",2038,"Interpolation",396827.29
-"Chisago","27025",2039,"Interpolation",394513.83
-"Chisago","27025",2040,"Interpolation",392200.38
-"Chisago","27025",2041,"Interpolation",389886.92
-"Chisago","27025",2042,"Interpolation",387573.47
-"Chisago","27025",2043,"Interpolation",385260.01
-"Chisago","27025",2044,"Interpolation",382946.56
-"Chisago","27025",2045,"Interpolation",380633.1
-"Chisago","27025",2046,"Interpolation",378319.64
-"Chisago","27025",2047,"Interpolation",376006.19
-"Chisago","27025",2048,"Interpolation",373692.73
-"Chisago","27025",2049,"Interpolation",371379.28
-"Chisago","27025",2050,"Expected change in emissions in similar county",369065.82
+"Chisago","27025",2023,"Interpolation",431499.7
+"Chisago","27025",2024,"Interpolation",429156.81
+"Chisago","27025",2025,"Interpolation",426813.93
+"Chisago","27025",2026,"Interpolation",424471.04
+"Chisago","27025",2027,"Interpolation",422128.16
+"Chisago","27025",2028,"Interpolation",419785.27
+"Chisago","27025",2029,"Interpolation",417442.39
+"Chisago","27025",2030,"Interpolation",415099.5
+"Chisago","27025",2031,"Interpolation",412756.62
+"Chisago","27025",2032,"Interpolation",410413.73
+"Chisago","27025",2033,"Interpolation",408070.85
+"Chisago","27025",2034,"Interpolation",405727.96
+"Chisago","27025",2035,"Interpolation",403385.08
+"Chisago","27025",2036,"Interpolation",401042.19
+"Chisago","27025",2037,"Interpolation",398699.31
+"Chisago","27025",2038,"Interpolation",396356.42
+"Chisago","27025",2039,"Interpolation",394013.54
+"Chisago","27025",2040,"Interpolation",391670.65
+"Chisago","27025",2041,"Interpolation",389327.77
+"Chisago","27025",2042,"Interpolation",386984.88
+"Chisago","27025",2043,"Interpolation",384642
+"Chisago","27025",2044,"Interpolation",382299.12
+"Chisago","27025",2045,"Interpolation",379956.23
+"Chisago","27025",2046,"Interpolation",377613.35
+"Chisago","27025",2047,"Interpolation",375270.46
+"Chisago","27025",2048,"Interpolation",372927.58
+"Chisago","27025",2049,"Interpolation",370584.69
+"Chisago","27025",2050,"Expected change in emissions in similar county",368241.81
 "Dakota","27037",2002,"EQUATES",1962864.45
 "Dakota","27037",2003,"EQUATES",1998915.36
 "Dakota","27037",2004,"EQUATES",2006125.88
@@ -167,34 +167,34 @@
 "Dakota","27037",2020,"National Emissions Inventory",1786767.4
 "Dakota","27037",2021,"Air Emissions Modeling",1985009.97
 "Dakota","27037",2022,"Air Emissions Modeling",2100995.88
-"Dakota","27037",2023,"Interpolation",2062249.25
-"Dakota","27037",2024,"Interpolation",2023502.62
-"Dakota","27037",2025,"Interpolation",1984756
-"Dakota","27037",2026,"Interpolation",1946009.37
-"Dakota","27037",2027,"Interpolation",1907262.75
-"Dakota","27037",2028,"Interpolation",1868516.12
-"Dakota","27037",2029,"Interpolation",1829769.5
-"Dakota","27037",2030,"Interpolation",1791022.87
-"Dakota","27037",2031,"Interpolation",1752276.25
-"Dakota","27037",2032,"Interpolation",1713529.62
-"Dakota","27037",2033,"Interpolation",1674783
-"Dakota","27037",2034,"Interpolation",1636036.37
-"Dakota","27037",2035,"Interpolation",1597289.75
-"Dakota","27037",2036,"Interpolation",1558543.12
-"Dakota","27037",2037,"Interpolation",1519796.5
-"Dakota","27037",2038,"Interpolation",1481049.87
-"Dakota","27037",2039,"Interpolation",1442303.25
-"Dakota","27037",2040,"Interpolation",1403556.62
-"Dakota","27037",2041,"Interpolation",1364809.99
-"Dakota","27037",2042,"Interpolation",1326063.37
-"Dakota","27037",2043,"Interpolation",1287316.74
-"Dakota","27037",2044,"Interpolation",1248570.12
-"Dakota","27037",2045,"Interpolation",1209823.49
-"Dakota","27037",2046,"Interpolation",1171076.87
-"Dakota","27037",2047,"Interpolation",1132330.24
-"Dakota","27037",2048,"Interpolation",1093583.62
-"Dakota","27037",2049,"Interpolation",1054836.99
-"Dakota","27037",2050,"RTDM and EPA MOVES4",1016090.37
+"Dakota","27037",2023,"Interpolation",2062243.94
+"Dakota","27037",2024,"Interpolation",2023492.01
+"Dakota","27037",2025,"Interpolation",1984740.08
+"Dakota","27037",2026,"Interpolation",1945988.14
+"Dakota","27037",2027,"Interpolation",1907236.21
+"Dakota","27037",2028,"Interpolation",1868484.28
+"Dakota","27037",2029,"Interpolation",1829732.35
+"Dakota","27037",2030,"Interpolation",1790980.41
+"Dakota","27037",2031,"Interpolation",1752228.48
+"Dakota","27037",2032,"Interpolation",1713476.55
+"Dakota","27037",2033,"Interpolation",1674724.61
+"Dakota","27037",2034,"Interpolation",1635972.68
+"Dakota","27037",2035,"Interpolation",1597220.75
+"Dakota","27037",2036,"Interpolation",1558468.81
+"Dakota","27037",2037,"Interpolation",1519716.88
+"Dakota","27037",2038,"Interpolation",1480964.95
+"Dakota","27037",2039,"Interpolation",1442213.02
+"Dakota","27037",2040,"Interpolation",1403461.08
+"Dakota","27037",2041,"Interpolation",1364709.15
+"Dakota","27037",2042,"Interpolation",1325957.22
+"Dakota","27037",2043,"Interpolation",1287205.28
+"Dakota","27037",2044,"Interpolation",1248453.35
+"Dakota","27037",2045,"Interpolation",1209701.42
+"Dakota","27037",2046,"Interpolation",1170949.49
+"Dakota","27037",2047,"Interpolation",1132197.55
+"Dakota","27037",2048,"Interpolation",1093445.62
+"Dakota","27037",2049,"Interpolation",1054693.69
+"Dakota","27037",2050,"RTDM and EPA MOVES4",1015941.75
 "Hennepin","27053",2002,"EQUATES",5271627.54
 "Hennepin","27053",2003,"EQUATES",5359706.76
 "Hennepin","27053",2004,"EQUATES",5377335.4
@@ -216,34 +216,34 @@
 "Hennepin","27053",2020,"National Emissions Inventory",4872701.92
 "Hennepin","27053",2021,"Air Emissions Modeling",5429056.94
 "Hennepin","27053",2022,"Air Emissions Modeling",5842135.49
-"Hennepin","27053",2023,"Interpolation",5740365.23
-"Hennepin","27053",2024,"Interpolation",5638594.97
-"Hennepin","27053",2025,"Interpolation",5536824.72
-"Hennepin","27053",2026,"Interpolation",5435054.46
-"Hennepin","27053",2027,"Interpolation",5333284.2
-"Hennepin","27053",2028,"Interpolation",5231513.94
-"Hennepin","27053",2029,"Interpolation",5129743.68
-"Hennepin","27053",2030,"Interpolation",5027973.43
-"Hennepin","27053",2031,"Interpolation",4926203.17
-"Hennepin","27053",2032,"Interpolation",4824432.91
-"Hennepin","27053",2033,"Interpolation",4722662.65
-"Hennepin","27053",2034,"Interpolation",4620892.39
-"Hennepin","27053",2035,"Interpolation",4519122.14
-"Hennepin","27053",2036,"Interpolation",4417351.88
-"Hennepin","27053",2037,"Interpolation",4315581.62
-"Hennepin","27053",2038,"Interpolation",4213811.36
-"Hennepin","27053",2039,"Interpolation",4112041.1
-"Hennepin","27053",2040,"Interpolation",4010270.85
-"Hennepin","27053",2041,"Interpolation",3908500.59
-"Hennepin","27053",2042,"Interpolation",3806730.33
-"Hennepin","27053",2043,"Interpolation",3704960.07
-"Hennepin","27053",2044,"Interpolation",3603189.81
-"Hennepin","27053",2045,"Interpolation",3501419.55
-"Hennepin","27053",2046,"Interpolation",3399649.3
-"Hennepin","27053",2047,"Interpolation",3297879.04
-"Hennepin","27053",2048,"Interpolation",3196108.78
-"Hennepin","27053",2049,"Interpolation",3094338.52
-"Hennepin","27053",2050,"RTDM and EPA MOVES4",2992568.26
+"Hennepin","27053",2023,"Interpolation",5739933.02
+"Hennepin","27053",2024,"Interpolation",5637730.55
+"Hennepin","27053",2025,"Interpolation",5535528.09
+"Hennepin","27053",2026,"Interpolation",5433325.62
+"Hennepin","27053",2027,"Interpolation",5331123.15
+"Hennepin","27053",2028,"Interpolation",5228920.68
+"Hennepin","27053",2029,"Interpolation",5126718.21
+"Hennepin","27053",2030,"Interpolation",5024515.75
+"Hennepin","27053",2031,"Interpolation",4922313.28
+"Hennepin","27053",2032,"Interpolation",4820110.81
+"Hennepin","27053",2033,"Interpolation",4717908.34
+"Hennepin","27053",2034,"Interpolation",4615705.87
+"Hennepin","27053",2035,"Interpolation",4513503.41
+"Hennepin","27053",2036,"Interpolation",4411300.94
+"Hennepin","27053",2037,"Interpolation",4309098.47
+"Hennepin","27053",2038,"Interpolation",4206896
+"Hennepin","27053",2039,"Interpolation",4104693.53
+"Hennepin","27053",2040,"Interpolation",4002491.07
+"Hennepin","27053",2041,"Interpolation",3900288.6
+"Hennepin","27053",2042,"Interpolation",3798086.13
+"Hennepin","27053",2043,"Interpolation",3695883.66
+"Hennepin","27053",2044,"Interpolation",3593681.2
+"Hennepin","27053",2045,"Interpolation",3491478.73
+"Hennepin","27053",2046,"Interpolation",3389276.26
+"Hennepin","27053",2047,"Interpolation",3287073.79
+"Hennepin","27053",2048,"Interpolation",3184871.32
+"Hennepin","27053",2049,"Interpolation",3082668.86
+"Hennepin","27053",2050,"RTDM and EPA MOVES4",2980466.39
 "Pierce","55093",2002,"EQUATES",198207.1
 "Pierce","55093",2003,"EQUATES",201886.74
 "Pierce","55093",2004,"EQUATES",190840.6
@@ -265,34 +265,34 @@
 "Pierce","55093",2020,"National Emissions Inventory",175795.23
 "Pierce","55093",2021,"Air Emissions Modeling",198707.33
 "Pierce","55093",2022,"Air Emissions Modeling",194970.39
-"Pierce","55093",2023,"Interpolation",193930.71
-"Pierce","55093",2024,"Interpolation",192891.04
-"Pierce","55093",2025,"Interpolation",191851.36
-"Pierce","55093",2026,"Interpolation",190811.69
-"Pierce","55093",2027,"Interpolation",189772.01
-"Pierce","55093",2028,"Interpolation",188732.34
-"Pierce","55093",2029,"Interpolation",187692.66
-"Pierce","55093",2030,"Interpolation",186652.99
-"Pierce","55093",2031,"Interpolation",185613.31
-"Pierce","55093",2032,"Interpolation",184573.63
-"Pierce","55093",2033,"Interpolation",183533.96
-"Pierce","55093",2034,"Interpolation",182494.28
-"Pierce","55093",2035,"Interpolation",181454.61
-"Pierce","55093",2036,"Interpolation",180414.93
-"Pierce","55093",2037,"Interpolation",179375.26
-"Pierce","55093",2038,"Interpolation",178335.58
-"Pierce","55093",2039,"Interpolation",177295.91
-"Pierce","55093",2040,"Interpolation",176256.23
-"Pierce","55093",2041,"Interpolation",175216.56
-"Pierce","55093",2042,"Interpolation",174176.88
-"Pierce","55093",2043,"Interpolation",173137.21
-"Pierce","55093",2044,"Interpolation",172097.53
-"Pierce","55093",2045,"Interpolation",171057.86
-"Pierce","55093",2046,"Interpolation",170018.18
-"Pierce","55093",2047,"Interpolation",168978.51
-"Pierce","55093",2048,"Interpolation",167938.83
-"Pierce","55093",2049,"Interpolation",166899.16
-"Pierce","55093",2050,"Expected change in emissions in similar county",165859.48
+"Pierce","55093",2023,"Interpolation",193917.49
+"Pierce","55093",2024,"Interpolation",192864.59
+"Pierce","55093",2025,"Interpolation",191811.68
+"Pierce","55093",2026,"Interpolation",190758.78
+"Pierce","55093",2027,"Interpolation",189705.88
+"Pierce","55093",2028,"Interpolation",188652.98
+"Pierce","55093",2029,"Interpolation",187600.08
+"Pierce","55093",2030,"Interpolation",186547.18
+"Pierce","55093",2031,"Interpolation",185494.28
+"Pierce","55093",2032,"Interpolation",184441.38
+"Pierce","55093",2033,"Interpolation",183388.48
+"Pierce","55093",2034,"Interpolation",182335.58
+"Pierce","55093",2035,"Interpolation",181282.68
+"Pierce","55093",2036,"Interpolation",180229.78
+"Pierce","55093",2037,"Interpolation",179176.88
+"Pierce","55093",2038,"Interpolation",178123.98
+"Pierce","55093",2039,"Interpolation",177071.07
+"Pierce","55093",2040,"Interpolation",176018.17
+"Pierce","55093",2041,"Interpolation",174965.27
+"Pierce","55093",2042,"Interpolation",173912.37
+"Pierce","55093",2043,"Interpolation",172859.47
+"Pierce","55093",2044,"Interpolation",171806.57
+"Pierce","55093",2045,"Interpolation",170753.67
+"Pierce","55093",2046,"Interpolation",169700.77
+"Pierce","55093",2047,"Interpolation",168647.87
+"Pierce","55093",2048,"Interpolation",167594.97
+"Pierce","55093",2049,"Interpolation",166542.07
+"Pierce","55093",2050,"Expected change in emissions in similar county",165489.17
 "Ramsey","27123",2002,"EQUATES",2219841.35
 "Ramsey","27123",2003,"EQUATES",2255432.06
 "Ramsey","27123",2004,"EQUATES",2257555.81
@@ -314,34 +314,34 @@
 "Ramsey","27123",2020,"National Emissions Inventory",2138070.59
 "Ramsey","27123",2021,"Air Emissions Modeling",2384580.58
 "Ramsey","27123",2022,"Air Emissions Modeling",2406797.81
-"Ramsey","27123",2023,"Interpolation",2360660.24
-"Ramsey","27123",2024,"Interpolation",2314522.67
-"Ramsey","27123",2025,"Interpolation",2268385.1
-"Ramsey","27123",2026,"Interpolation",2222247.53
-"Ramsey","27123",2027,"Interpolation",2176109.96
-"Ramsey","27123",2028,"Interpolation",2129972.38
-"Ramsey","27123",2029,"Interpolation",2083834.81
-"Ramsey","27123",2030,"Interpolation",2037697.24
-"Ramsey","27123",2031,"Interpolation",1991559.67
-"Ramsey","27123",2032,"Interpolation",1945422.1
-"Ramsey","27123",2033,"Interpolation",1899284.53
-"Ramsey","27123",2034,"Interpolation",1853146.96
-"Ramsey","27123",2035,"Interpolation",1807009.39
-"Ramsey","27123",2036,"Interpolation",1760871.82
-"Ramsey","27123",2037,"Interpolation",1714734.24
-"Ramsey","27123",2038,"Interpolation",1668596.67
-"Ramsey","27123",2039,"Interpolation",1622459.1
-"Ramsey","27123",2040,"Interpolation",1576321.53
-"Ramsey","27123",2041,"Interpolation",1530183.96
-"Ramsey","27123",2042,"Interpolation",1484046.39
-"Ramsey","27123",2043,"Interpolation",1437908.82
-"Ramsey","27123",2044,"Interpolation",1391771.25
-"Ramsey","27123",2045,"Interpolation",1345633.68
-"Ramsey","27123",2046,"Interpolation",1299496.11
-"Ramsey","27123",2047,"Interpolation",1253358.53
-"Ramsey","27123",2048,"Interpolation",1207220.96
-"Ramsey","27123",2049,"Interpolation",1161083.39
-"Ramsey","27123",2050,"RTDM and EPA MOVES4",1114945.82
+"Ramsey","27123",2023,"Interpolation",2360494.13
+"Ramsey","27123",2024,"Interpolation",2314190.44
+"Ramsey","27123",2025,"Interpolation",2267886.76
+"Ramsey","27123",2026,"Interpolation",2221583.08
+"Ramsey","27123",2027,"Interpolation",2175279.39
+"Ramsey","27123",2028,"Interpolation",2128975.71
+"Ramsey","27123",2029,"Interpolation",2082672.02
+"Ramsey","27123",2030,"Interpolation",2036368.34
+"Ramsey","27123",2031,"Interpolation",1990064.66
+"Ramsey","27123",2032,"Interpolation",1943760.97
+"Ramsey","27123",2033,"Interpolation",1897457.29
+"Ramsey","27123",2034,"Interpolation",1851153.61
+"Ramsey","27123",2035,"Interpolation",1804849.92
+"Ramsey","27123",2036,"Interpolation",1758546.24
+"Ramsey","27123",2037,"Interpolation",1712242.55
+"Ramsey","27123",2038,"Interpolation",1665938.87
+"Ramsey","27123",2039,"Interpolation",1619635.19
+"Ramsey","27123",2040,"Interpolation",1573331.5
+"Ramsey","27123",2041,"Interpolation",1527027.82
+"Ramsey","27123",2042,"Interpolation",1480724.14
+"Ramsey","27123",2043,"Interpolation",1434420.45
+"Ramsey","27123",2044,"Interpolation",1388116.77
+"Ramsey","27123",2045,"Interpolation",1341813.08
+"Ramsey","27123",2046,"Interpolation",1295509.4
+"Ramsey","27123",2047,"Interpolation",1249205.72
+"Ramsey","27123",2048,"Interpolation",1202902.03
+"Ramsey","27123",2049,"Interpolation",1156598.35
+"Ramsey","27123",2050,"RTDM and EPA MOVES4",1110294.67
 "Scott","27139",2002,"EQUATES",672909.85
 "Scott","27139",2003,"EQUATES",686067.08
 "Scott","27139",2004,"EQUATES",689773.99
@@ -363,34 +363,34 @@
 "Scott","27139",2020,"National Emissions Inventory",631372.67
 "Scott","27139",2021,"Air Emissions Modeling",699742.11
 "Scott","27139",2022,"Air Emissions Modeling",806327.57
-"Scott","27139",2023,"Interpolation",791647.37
-"Scott","27139",2024,"Interpolation",776967.16
-"Scott","27139",2025,"Interpolation",762286.95
-"Scott","27139",2026,"Interpolation",747606.75
-"Scott","27139",2027,"Interpolation",732926.54
-"Scott","27139",2028,"Interpolation",718246.33
-"Scott","27139",2029,"Interpolation",703566.13
-"Scott","27139",2030,"Interpolation",688885.92
-"Scott","27139",2031,"Interpolation",674205.72
-"Scott","27139",2032,"Interpolation",659525.51
-"Scott","27139",2033,"Interpolation",644845.3
-"Scott","27139",2034,"Interpolation",630165.1
-"Scott","27139",2035,"Interpolation",615484.89
-"Scott","27139",2036,"Interpolation",600804.68
-"Scott","27139",2037,"Interpolation",586124.48
-"Scott","27139",2038,"Interpolation",571444.27
-"Scott","27139",2039,"Interpolation",556764.06
-"Scott","27139",2040,"Interpolation",542083.86
-"Scott","27139",2041,"Interpolation",527403.65
-"Scott","27139",2042,"Interpolation",512723.44
-"Scott","27139",2043,"Interpolation",498043.24
-"Scott","27139",2044,"Interpolation",483363.03
-"Scott","27139",2045,"Interpolation",468682.82
-"Scott","27139",2046,"Interpolation",454002.62
-"Scott","27139",2047,"Interpolation",439322.41
-"Scott","27139",2048,"Interpolation",424642.2
-"Scott","27139",2049,"Interpolation",409962
-"Scott","27139",2050,"RTDM and EPA MOVES4",395281.79
+"Scott","27139",2023,"Interpolation",791705.32
+"Scott","27139",2024,"Interpolation",777083.07
+"Scott","27139",2025,"Interpolation",762460.82
+"Scott","27139",2026,"Interpolation",747838.57
+"Scott","27139",2027,"Interpolation",733216.31
+"Scott","27139",2028,"Interpolation",718594.06
+"Scott","27139",2029,"Interpolation",703971.81
+"Scott","27139",2030,"Interpolation",689349.56
+"Scott","27139",2031,"Interpolation",674727.3
+"Scott","27139",2032,"Interpolation",660105.05
+"Scott","27139",2033,"Interpolation",645482.8
+"Scott","27139",2034,"Interpolation",630860.55
+"Scott","27139",2035,"Interpolation",616238.3
+"Scott","27139",2036,"Interpolation",601616.04
+"Scott","27139",2037,"Interpolation",586993.79
+"Scott","27139",2038,"Interpolation",572371.54
+"Scott","27139",2039,"Interpolation",557749.29
+"Scott","27139",2040,"Interpolation",543127.04
+"Scott","27139",2041,"Interpolation",528504.78
+"Scott","27139",2042,"Interpolation",513882.53
+"Scott","27139",2043,"Interpolation",499260.28
+"Scott","27139",2044,"Interpolation",484638.03
+"Scott","27139",2045,"Interpolation",470015.77
+"Scott","27139",2046,"Interpolation",455393.52
+"Scott","27139",2047,"Interpolation",440771.27
+"Scott","27139",2048,"Interpolation",426149.02
+"Scott","27139",2049,"Interpolation",411526.77
+"Scott","27139",2050,"RTDM and EPA MOVES4",396904.51
 "Sherburne","27141",2002,"EQUATES",460857.36
 "Sherburne","27141",2003,"EQUATES",469648.76
 "Sherburne","27141",2004,"EQUATES",473176.67
@@ -412,34 +412,34 @@
 "Sherburne","27141",2020,"National Emissions Inventory",432402.97
 "Sherburne","27141",2021,"Air Emissions Modeling",477405.44
 "Sherburne","27141",2022,"Air Emissions Modeling",495992.09
-"Sherburne","27141",2023,"Interpolation",493347.23
-"Sherburne","27141",2024,"Interpolation",490702.36
-"Sherburne","27141",2025,"Interpolation",488057.49
-"Sherburne","27141",2026,"Interpolation",485412.63
-"Sherburne","27141",2027,"Interpolation",482767.76
-"Sherburne","27141",2028,"Interpolation",480122.89
-"Sherburne","27141",2029,"Interpolation",477478.03
-"Sherburne","27141",2030,"Interpolation",474833.16
-"Sherburne","27141",2031,"Interpolation",472188.29
-"Sherburne","27141",2032,"Interpolation",469543.43
-"Sherburne","27141",2033,"Interpolation",466898.56
-"Sherburne","27141",2034,"Interpolation",464253.69
-"Sherburne","27141",2035,"Interpolation",461608.83
-"Sherburne","27141",2036,"Interpolation",458963.96
-"Sherburne","27141",2037,"Interpolation",456319.09
-"Sherburne","27141",2038,"Interpolation",453674.23
-"Sherburne","27141",2039,"Interpolation",451029.36
-"Sherburne","27141",2040,"Interpolation",448384.49
-"Sherburne","27141",2041,"Interpolation",445739.63
-"Sherburne","27141",2042,"Interpolation",443094.76
-"Sherburne","27141",2043,"Interpolation",440449.89
-"Sherburne","27141",2044,"Interpolation",437805.03
-"Sherburne","27141",2045,"Interpolation",435160.16
-"Sherburne","27141",2046,"Interpolation",432515.29
-"Sherburne","27141",2047,"Interpolation",429870.43
-"Sherburne","27141",2048,"Interpolation",427225.56
-"Sherburne","27141",2049,"Interpolation",424580.69
-"Sherburne","27141",2050,"Expected change in emissions in similar county",421935.83
+"Sherburne","27141",2023,"Interpolation",493313.58
+"Sherburne","27141",2024,"Interpolation",490635.07
+"Sherburne","27141",2025,"Interpolation",487956.56
+"Sherburne","27141",2026,"Interpolation",485278.05
+"Sherburne","27141",2027,"Interpolation",482599.53
+"Sherburne","27141",2028,"Interpolation",479921.02
+"Sherburne","27141",2029,"Interpolation",477242.51
+"Sherburne","27141",2030,"Interpolation",474564
+"Sherburne","27141",2031,"Interpolation",471885.49
+"Sherburne","27141",2032,"Interpolation",469206.98
+"Sherburne","27141",2033,"Interpolation",466528.46
+"Sherburne","27141",2034,"Interpolation",463849.95
+"Sherburne","27141",2035,"Interpolation",461171.44
+"Sherburne","27141",2036,"Interpolation",458492.93
+"Sherburne","27141",2037,"Interpolation",455814.42
+"Sherburne","27141",2038,"Interpolation",453135.91
+"Sherburne","27141",2039,"Interpolation",450457.4
+"Sherburne","27141",2040,"Interpolation",447778.88
+"Sherburne","27141",2041,"Interpolation",445100.37
+"Sherburne","27141",2042,"Interpolation",442421.86
+"Sherburne","27141",2043,"Interpolation",439743.35
+"Sherburne","27141",2044,"Interpolation",437064.84
+"Sherburne","27141",2045,"Interpolation",434386.33
+"Sherburne","27141",2046,"Interpolation",431707.81
+"Sherburne","27141",2047,"Interpolation",429029.3
+"Sherburne","27141",2048,"Interpolation",426350.79
+"Sherburne","27141",2049,"Interpolation",423672.28
+"Sherburne","27141",2050,"Expected change in emissions in similar county",420993.77
 "St. Croix","55109",2002,"EQUATES",685161.44
 "St. Croix","55109",2003,"EQUATES",699167.86
 "St. Croix","55109",2004,"EQUATES",661656.86
@@ -461,34 +461,34 @@
 "St. Croix","55109",2020,"National Emissions Inventory",784978.83
 "St. Croix","55109",2021,"Air Emissions Modeling",904178.22
 "St. Croix","55109",2022,"Air Emissions Modeling",875644.17
-"St. Croix","55109",2023,"Interpolation",870974.82
-"St. Croix","55109",2024,"Interpolation",866305.46
-"St. Croix","55109",2025,"Interpolation",861636.11
-"St. Croix","55109",2026,"Interpolation",856966.76
-"St. Croix","55109",2027,"Interpolation",852297.41
-"St. Croix","55109",2028,"Interpolation",847628.05
-"St. Croix","55109",2029,"Interpolation",842958.7
-"St. Croix","55109",2030,"Interpolation",838289.35
-"St. Croix","55109",2031,"Interpolation",833619.99
-"St. Croix","55109",2032,"Interpolation",828950.64
-"St. Croix","55109",2033,"Interpolation",824281.29
-"St. Croix","55109",2034,"Interpolation",819611.94
-"St. Croix","55109",2035,"Interpolation",814942.58
-"St. Croix","55109",2036,"Interpolation",810273.23
-"St. Croix","55109",2037,"Interpolation",805603.88
-"St. Croix","55109",2038,"Interpolation",800934.53
-"St. Croix","55109",2039,"Interpolation",796265.17
-"St. Croix","55109",2040,"Interpolation",791595.82
-"St. Croix","55109",2041,"Interpolation",786926.47
-"St. Croix","55109",2042,"Interpolation",782257.11
-"St. Croix","55109",2043,"Interpolation",777587.76
-"St. Croix","55109",2044,"Interpolation",772918.41
-"St. Croix","55109",2045,"Interpolation",768249.06
-"St. Croix","55109",2046,"Interpolation",763579.7
-"St. Croix","55109",2047,"Interpolation",758910.35
-"St. Croix","55109",2048,"Interpolation",754241
-"St. Croix","55109",2049,"Interpolation",749571.65
-"St. Croix","55109",2050,"Expected change in emissions in similar county",744902.29
+"St. Croix","55109",2023,"Interpolation",870915.42
+"St. Croix","55109",2024,"Interpolation",866186.67
+"St. Croix","55109",2025,"Interpolation",861457.92
+"St. Croix","55109",2026,"Interpolation",856729.17
+"St. Croix","55109",2027,"Interpolation",852000.41
+"St. Croix","55109",2028,"Interpolation",847271.66
+"St. Croix","55109",2029,"Interpolation",842542.91
+"St. Croix","55109",2030,"Interpolation",837814.16
+"St. Croix","55109",2031,"Interpolation",833085.41
+"St. Croix","55109",2032,"Interpolation",828356.66
+"St. Croix","55109",2033,"Interpolation",823627.91
+"St. Croix","55109",2034,"Interpolation",818899.16
+"St. Croix","55109",2035,"Interpolation",814170.41
+"St. Croix","55109",2036,"Interpolation",809441.66
+"St. Croix","55109",2037,"Interpolation",804712.91
+"St. Croix","55109",2038,"Interpolation",799984.16
+"St. Croix","55109",2039,"Interpolation",795255.41
+"St. Croix","55109",2040,"Interpolation",790526.65
+"St. Croix","55109",2041,"Interpolation",785797.9
+"St. Croix","55109",2042,"Interpolation",781069.15
+"St. Croix","55109",2043,"Interpolation",776340.4
+"St. Croix","55109",2044,"Interpolation",771611.65
+"St. Croix","55109",2045,"Interpolation",766882.9
+"St. Croix","55109",2046,"Interpolation",762154.15
+"St. Croix","55109",2047,"Interpolation",757425.4
+"St. Croix","55109",2048,"Interpolation",752696.65
+"St. Croix","55109",2049,"Interpolation",747967.9
+"St. Croix","55109",2050,"Expected change in emissions in similar county",743239.15
 "Washington","27163",2002,"EQUATES",1155705.79
 "Washington","27163",2003,"EQUATES",1177085.71
 "Washington","27163",2004,"EQUATES",1179913.88
@@ -510,31 +510,31 @@
 "Washington","27163",2020,"National Emissions Inventory",1041251.88
 "Washington","27163",2021,"Air Emissions Modeling",1152297.27
 "Washington","27163",2022,"Air Emissions Modeling",1249737.85
-"Washington","27163",2023,"Interpolation",1226925.45
-"Washington","27163",2024,"Interpolation",1204113.04
-"Washington","27163",2025,"Interpolation",1181300.63
-"Washington","27163",2026,"Interpolation",1158488.23
-"Washington","27163",2027,"Interpolation",1135675.82
-"Washington","27163",2028,"Interpolation",1112863.41
-"Washington","27163",2029,"Interpolation",1090051.01
-"Washington","27163",2030,"Interpolation",1067238.6
-"Washington","27163",2031,"Interpolation",1044426.19
-"Washington","27163",2032,"Interpolation",1021613.78
-"Washington","27163",2033,"Interpolation",998801.38
-"Washington","27163",2034,"Interpolation",975988.97
-"Washington","27163",2035,"Interpolation",953176.56
-"Washington","27163",2036,"Interpolation",930364.16
-"Washington","27163",2037,"Interpolation",907551.75
-"Washington","27163",2038,"Interpolation",884739.34
-"Washington","27163",2039,"Interpolation",861926.94
-"Washington","27163",2040,"Interpolation",839114.53
-"Washington","27163",2041,"Interpolation",816302.12
-"Washington","27163",2042,"Interpolation",793489.72
-"Washington","27163",2043,"Interpolation",770677.31
-"Washington","27163",2044,"Interpolation",747864.9
-"Washington","27163",2045,"Interpolation",725052.5
-"Washington","27163",2046,"Interpolation",702240.09
-"Washington","27163",2047,"Interpolation",679427.68
-"Washington","27163",2048,"Interpolation",656615.28
-"Washington","27163",2049,"Interpolation",633802.87
-"Washington","27163",2050,"RTDM and EPA MOVES4",610990.46
+"Washington","27163",2023,"Interpolation",1226868.75
+"Washington","27163",2024,"Interpolation",1203999.64
+"Washington","27163",2025,"Interpolation",1181130.53
+"Washington","27163",2026,"Interpolation",1158261.43
+"Washington","27163",2027,"Interpolation",1135392.32
+"Washington","27163",2028,"Interpolation",1112523.22
+"Washington","27163",2029,"Interpolation",1089654.11
+"Washington","27163",2030,"Interpolation",1066785
+"Washington","27163",2031,"Interpolation",1043915.9
+"Washington","27163",2032,"Interpolation",1021046.79
+"Washington","27163",2033,"Interpolation",998177.68
+"Washington","27163",2034,"Interpolation",975308.58
+"Washington","27163",2035,"Interpolation",952439.47
+"Washington","27163",2036,"Interpolation",929570.37
+"Washington","27163",2037,"Interpolation",906701.26
+"Washington","27163",2038,"Interpolation",883832.15
+"Washington","27163",2039,"Interpolation",860963.05
+"Washington","27163",2040,"Interpolation",838093.94
+"Washington","27163",2041,"Interpolation",815224.84
+"Washington","27163",2042,"Interpolation",792355.73
+"Washington","27163",2043,"Interpolation",769486.62
+"Washington","27163",2044,"Interpolation",746617.52
+"Washington","27163",2045,"Interpolation",723748.41
+"Washington","27163",2046,"Interpolation",700879.3
+"Washington","27163",2047,"Interpolation",678010.2
+"Washington","27163",2048,"Interpolation",655141.09
+"Washington","27163",2049,"Interpolation",632271.99
+"Washington","27163",2050,"RTDM and EPA MOVES4",609402.88

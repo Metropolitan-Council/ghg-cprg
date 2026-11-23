@@ -2,10 +2,10 @@ rm(list = ls())
 
 
 
-remotes::install_github("Metropolitan-Council/ghg.ccap", ref = "ccap-graphics")
+remotes::install_github("Metropolitan-Council/ghg.gert")
 source("R/_load_pkgs.R")
 
-# library(ghg.ccap)
+# library(ghg.gert)
 
 # Load data
 natural_systems_data <- c()
@@ -131,12 +131,12 @@ natural_systems_data$regional$null_projections <- regional_projections_2022 %>%
 
 
 
-mod_bau <- ghg.ccap::run_scenario_natural_systems(
+mod_bau <- ghg.gert::run_scenario_natural_systems(
   .selected_ctu = "Regional",
   tb_inv = natural_systems_data$regional$inventory,
   tb_future = natural_systems_data$regional$null_projections,
   tb_seq = natural_systems_data$land_cover_carbon,
-  .enviro_factors = ghg.ccap::enviro_factors,
+  .enviro_factors = ghg.gert::enviro_factors,
 )
 
 # Scenario 1: Reforest all barren land, 5% of cropland, and 10% of grassland
@@ -145,12 +145,12 @@ scen1_cropland_2050 <- 5
 scen1_bare_2050 <- 100
 scen1_grassland_2050 <- 10
 
-mod_scen1 <- ghg.ccap::run_scenario_natural_systems(
+mod_scen1 <- ghg.gert::run_scenario_natural_systems(
   .selected_ctu = "Regional",
   tb_inv = natural_systems_data$regional$inventory,
   tb_future = natural_systems_data$regional$null_projections,
   tb_seq = natural_systems_data$land_cover_carbon,
-  .enviro_factors = ghg.ccap::enviro_factors,
+  .enviro_factors = ghg.gert::enviro_factors,
 
   # user inputs here!
   .urban_tree_start = 2025,
@@ -173,12 +173,12 @@ scen2_cropland_2050 <- 10
 scen2_bare_2050 <- 100
 scen2_grassland_2050 <- 20
 
-mod_scen2 <- ghg.ccap::run_scenario_natural_systems(
+mod_scen2 <- ghg.gert::run_scenario_natural_systems(
   .selected_ctu = "Regional",
   tb_inv = natural_systems_data$regional$inventory,
   tb_future = natural_systems_data$regional$null_projections,
   tb_seq = natural_systems_data$land_cover_carbon,
-  .enviro_factors = ghg.ccap::enviro_factors,
+  .enviro_factors = ghg.gert::enviro_factors,
 
   # user inputs here!
   .urban_tree_start = 2025,
