@@ -1,8 +1,8 @@
 ### develop commercial emissions targets based on forecasted job growth state GCAM models
 
 
-## restart and rerun when making updates to ghg.ccap@ccap-graphics
-# remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
+## restart and rerun when making updates to ghg.gert
+# remotes::install_github("Metropolitan-Council/ghg.gert")
 # enter 3 ('none') if prompted to update other packages
 
 source("R/_load_pkgs.R")
@@ -207,7 +207,7 @@ nonres_ng_pathways <- bind_rows(
 nonres_elec_emissions <- county_emissions %>%
   filter((sector == "Commercial" & category == "Electricity") |
     (sector == "Industrial" & category == "Electricity")) %>%
-  left_join(ghg.ccap::grid_emissions,
+  left_join(ghg.gert::grid_emissions,
     by = c("emissions_year" = "inventory_year")
   ) %>%
   mutate(mwh = value_emissions / mt_co2e_per_mwh)
@@ -234,7 +234,7 @@ nonres_elec_emissions_bau <- total_jobs %>%
       select(county_name, mwh_per_job),
     by = "county_name"
   ) %>%
-  left_join(ghg.ccap::grid_emissions,
+  left_join(ghg.gert::grid_emissions,
     by = "inventory_year"
   ) %>%
   mutate(

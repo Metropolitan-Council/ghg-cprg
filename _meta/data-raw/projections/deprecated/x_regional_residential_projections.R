@@ -1,7 +1,7 @@
 ### develop regional residential emissions targets based on state GCAM models
 
-## restart and rerun when making updates to ghg.ccap@ccap-graphics
-# remotes::install_github("Metropolitan-Council/ghg.ccap@ccap-graphics")
+## restart and rerun when making updates to ghg.gert
+# remotes::install_github("Metropolitan-Council/ghg.gert")
 # enter 3 ('none') if prompted to update other packages
 
 source("R/_load_pkgs.R")

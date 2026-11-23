@@ -16,7 +16,7 @@ interpolate_emissions <- function(df) {
     ungroup()
 }
 
-ctu_index <- ghg.ccap::geog_index %>%
+ctu_index <- ghg.gert::geog_index %>%
   filter(geog_level != "COUNTY")
 
 # regional density_output
