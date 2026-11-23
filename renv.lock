@@ -1509,39 +1509,40 @@
     "councilR": {
       "Package": "councilR",
       "Version": "0.3.0",
-      "Source": "unknown",
+      "Source": "GitHub",
       "Type": "Package",
       "Title": "Functions and Templates for the Metropolitan Council",
       "Date": "2024-12-20",
-      "Authors@R": "c( person(\"Metropolitan Council\", role = \"cph\"), person(\"Liz\", \"Roten\", , \"liz.roten@metc.state.mn.us\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0002-5346-3549\")), person(\"Ellen\", \"Esch\", , \"ellen.esch@metc.state.mn.us\", role = \"ctb\", comment = c(ORCID = \"0000-0002-4253-0910\")), person(\"Mauricio\", \"León\", , \"mauricio.leon@metc.state.mn.us\", role = \"ctb\"), person(\"Brandon\", \"Whited\", , \"brandon.whited@metc.state.mn.us\", role = \"ctb\"), person(\"Laine\", \"McNamara\", , \"laine.mcnamara@metc.state.mn.us\", role = \"rev\") )",
+      "Authors@R": "c( person(\"Metropolitan Council\", role = \"cph\"), person(\"Liz\", \"Roten\", , \"liz.roten@metc.state.mn.us\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0002-5346-3549\")), person(\"Ellen\", \"Esch\", , \"ellen.esch@metc.state.mn.us\", role = \"ctb\", comment = c(ORCID = \"0000-0002-4253-0910\")), person(\"Mauricio\", \"León\", , \"mauricio.leon@metc.state.mn.us\", role = \"ctb\"), person(\"Samuel\", \"Limerick\", , \"samuel.limerick@metc.state.mn.us\", role = \"ctb\"), person(\"Brandon\", \"Whited\", , \"brandon.whited@metc.state.mn.us\", role = \"ctb\"), person(\"Matt\", \"Schroeder\", , \"matt.schroeder@metc.state.mn.us\", role = \"ctb\"), person(\"Laine\", \"McNamara\", , \"laine.mcnamara@metc.state.mn.us\", role = \"rev\") )",
       "Description": "A collection of commonly used templates, color palettes, and functions for R users at the Metropolitan Council.",
       "License": "MIT + file LICENSE",
       "BugReports": "https://github.com/Metropolitan-Council/councilR/issues",
       "Depends": [
-        "R (>= 2.10)"
+        "R (>= 3.5)"
       ],
       "Imports": [
-        "cli (>= 3.6.3)",
-        "data.table (>= 1.16.2)",
-        "DBI (>= 1.2.3)",
-        "dplyr (>= 1.1.4)",
-        "fs (>= 1.6.3)",
-        "ggplot2 (>= 3.5.1)",
-        "ggspatial (>= 1.1.9)",
-        "glue (>= 1.8.0)",
-        "keyring (>= 1.3.2)",
-        "magrittr (>= 2.0.3)",
-        "odbc (>= 1.4.2)",
-        "plotly (>= 4.10.4)",
-        "purrr (>= 1.0.2)",
-        "rlang (>= 1.1.4)",
-        "rstudioapi (>= 0.17.1)",
-        "sf (>= 1.0-16)",
+        "cli (>= 3.6.6)",
+        "data.table (>= 1.18.4)",
+        "DBI (>= 1.3.0)",
+        "dplyr (>= 1.2.1)",
+        "fs (>= 2.1.0)",
+        "ggplot2 (>= 4.0.3)",
+        "ggspatial (>= 1.1.10)",
+        "glue (>= 1.8.1)",
+        "keyring (>= 1.4.1)",
+        "magrittr (>= 2.0.5)",
+        "odbc (>= 1.7.0)",
+        "plotly (>= 4.12.1)",
+        "purrr (>= 1.2.2)",
+        "rlang (>= 1.3.0)",
+        "rstudioapi (>= 0.19.0)",
+        "sf (>= 1.1-1)",
         "tictoc (>= 1.2.1)",
-        "tigris (>= 2.1)",
+        "tigris (>= 2.2.1)",
         "utils"
       ],
       "Suggests": [
+        "arcgislayers (>= 0.6.0)",
         "citr (>= 0.3.2)",
         "cowplot (>= 1.1.1)",
         "curl (>= 4.3.2)",
@@ -1557,7 +1558,7 @@
         "usethis (>= 1.6.1)"
       ],
       "Enhances": [
-        "showtext (>= 0.9-7)",
+        "showtext (>= 0.9-8)",
         "sysfonts (>= 0.8.9)"
       ],
       "VignetteBuilder": "knitr",
@@ -1565,12 +1566,17 @@
       "Encoding": "UTF-8",
       "LazyData": "true",
       "Roxygen": "list(markdown = TRUE)",
-      "RoxygenNote": "7.3.2",
       "Website": "https://github.com/Metropolitan-Council/councilR",
-      "Author": "Metropolitan Council [cph], Liz Roten [cre, aut] (ORCID: <https://orcid.org/0000-0002-5346-3549>), Ellen Esch [ctb] (ORCID: <https://orcid.org/0000-0002-4253-0910>), Mauricio León [ctb], Brandon Whited [ctb], Laine McNamara [rev]",
+      "Config/roxygen2/version": "8.0.0",
+      "Author": "Metropolitan Council [cph], Liz Roten [cre, aut] (ORCID: <https://orcid.org/0000-0002-5346-3549>), Ellen Esch [ctb] (ORCID: <https://orcid.org/0000-0002-4253-0910>), Mauricio León [ctb], Samuel Limerick [ctb], Brandon Whited [ctb], Matt Schroeder [ctb], Laine McNamara [rev]",
       "Maintainer": "Liz Roten <liz.roten@metc.state.mn.us>",
-      "RemoteType": "unknown",
-      "Remotes": "crsh/citr"
+      "RemoteType": "github",
+      "Remotes": "crsh/citr",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "Metropolitan-Council",
+      "RemoteRepo": "councilR",
+      "RemoteRef": "main",
+      "RemoteSha": "7e0db0d2abca6622989b5884873c00f084d9f053"
     },
     "cpp11": {
       "Package": "cpp11",
@@ -2927,6 +2933,70 @@
       "Maintainer": "Brenton M. Wiernik <brenton@wiernik.org>",
       "Repository": "RSPM"
     },
+    "ghg.gert": {
+      "Package": "ghg.gert",
+      "Version": "1.1.0",
+      "Source": "GitHub",
+      "Type": "Package",
+      "Title": "Greenhouse Gas Emissions Reduction Tool for the Twin Cities Metropolitan Region",
+      "Date": "2026-10-10",
+      "Authors@R": "c( person(\"Metropolitan Council\", role = \"cph\"), person(\"Liz\", \"Roten\", , \"liz.roten@metc.state.mn.us\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0002-5346-3549\")), person(\"Peter\", \"Wilfahrt\", , \"peter.wilfahrt@metc.state.mn.us\", role = \"aut\"), person(\"Kenneth\", \"Smith\", , \"kenneth.smith@metc.state.mn.us\", role = \"aut\"), person(\"Ellen\", \"Esch\", , \"ellen.esch@metc.state.mn.us\", role = \"ctb\", comment = c(ORCID = \"0000-0002-4253-0910\")), person(\"Mauricio\", \"León\", , \"mauricio.leon@metc.state.mn.us\", role = \"ctb\"), person(\"Laine\", \"McNamara\", , \"laine.mcnamara@metc.state.mn.us\", role = \"ctb\"), person(\"Zoey\", \"Yandell\", , \"zoey.yandell@metc.state.mn.us\", role = \"ctb\") )",
+      "Description": "Code and data for greenhouse gas inventories, emissions projections, and mitigation scenario analyses for municipalities in the seven-county Twin Cities metropolitan region.",
+      "License": "MIT + file LICENSE",
+      "BugReports": "https://github.com/Metropolitan-Council/ghg.gert/issues",
+      "Depends": [
+        "R (>= 4.1)"
+      ],
+      "Imports": [
+        "cli (>= 3.6.1)",
+        "dplyr (>= 1.1.2)",
+        "janitor (>= 2.2.0)",
+        "lubridate (>= 1.9.4)",
+        "magrittr (>= 2.0.3)",
+        "mathjaxr (>= 1.6.0)",
+        "purrr (>= 1.0.1)",
+        "rlang (>= 1.1.1)",
+        "stats",
+        "stringr (>= 1.5.0)",
+        "tibble (>= 3.2.1)",
+        "tidyr (>= 1.3.0)",
+        "tidyselect (>= 1.2.0)",
+        "units (>= 1.0.1)",
+        "utils"
+      ],
+      "Suggests": [
+        "councilR (>= 0.2.0)",
+        "curl (>= 4.3.2)",
+        "fs (>= 1.5.2)",
+        "ggplot2 (>= 3.3.5)",
+        "gt (>= 0.4.0)",
+        "here (>= 1.0.2)",
+        "knitr (>= 1.34)",
+        "rmarkdown (>= 2.10)",
+        "scales (>= 1.1.1)",
+        "sf (>= 1.0-13)",
+        "testthat (>= 3.1.0)",
+        "wesanderson (>= 0.3.6)"
+      ],
+      "VignetteBuilder": "knitr",
+      "RdMacros": "mathjaxr",
+      "Config/roxygen2/version": "8.1.0",
+      "Config/testthat/edition": "3",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "LazyDataCompression": "xz",
+      "Roxygen": "list(markdown = TRUE)",
+      "Website": "https://github.com/Metropolitan-Council/ghg.gert",
+      "Author": "Metropolitan Council [cph], Liz Roten [cre, aut] (ORCID: <https://orcid.org/0000-0002-5346-3549>), Peter Wilfahrt [aut], Kenneth Smith [aut], Ellen Esch [ctb] (ORCID: <https://orcid.org/0000-0002-4253-0910>), Mauricio León [ctb], Laine McNamara [ctb], Zoey Yandell [ctb]",
+      "Maintainer": "Liz Roten <liz.roten@metc.state.mn.us>",
+      "RemoteType": "github",
+      "Remotes": "github::Metropolitan-Council/councilR",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "Metropolitan-Council",
+      "RemoteRepo": "ghg.gert",
+      "RemoteRef": "main",
+      "RemoteSha": "df2f17214cbb51e483ce35a0aeed886cb0761d12"
+    },
     "globals": {
       "Package": "globals",
       "Version": "0.19.1",
@@ -3315,37 +3385,6 @@
       "Author": "Kirill Müller [aut, cre] (ORCID: <https://orcid.org/0000-0002-1416-3412>), R Consortium [fnd], Posit Software, PBC [fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Maintainer": "Kirill Müller <kirill@cynkra.com>",
       "Repository": "CRAN"
-    },
-    "htmltab": {
-      "Package": "htmltab",
-      "Version": "0.8.2.9000",
-      "Source": "unknown",
-      "Title": "Assemble Data Frames from HTML Tables",
-      "Authors@R": "c(person(\"Christian\", \"Rubba\",  email = \"christian.rubba@gmail.com\", role = c(\"aut\")), person(\"Gerhard\", \"Burger\", email = \"burger.ga@gmail.com\", role = c(\"ctb\", \"cre\"), comment = c(ORCID = \"0000-0003-1062-5576\")), person(\"Roman\", \"Cheplyaka\", email = \"roma@ro-che.info\", role = c(\"ctb\")))",
-      "Description": "HTML tables are a valuable data source but extracting and recasting these data into a useful format can be tedious. This package allows to collect structured information from HTML tables. It is similar to `readHTMLTable()` of the XML package but provides three major advantages. First, the function automatically expands row and column spans in the header and body cells. Second, users are given more control over the identification of header and body rows which will end up in the R table, including semantic header information that appear throughout the body. Third, the function preprocesses table code, corrects common types of malformations, removes unneeded parts and so helps to alleviate the need for tedious post-processing.",
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Imports": [
-        "XML (>= 3.98.1.3)",
-        "httr (>= 1.0.0)"
-      ],
-      "License": "MIT + file LICENSE",
-      "Suggests": [
-        "testthat",
-        "knitr",
-        "tidyr",
-        "rmarkdown",
-        "spelling"
-      ],
-      "URL": "https://github.com/htmltab/htmltab",
-      "BugReports": "https://github.com/htmltab/htmltab/issues",
-      "VignetteBuilder": "knitr",
-      "RoxygenNote": "7.2.3",
-      "Encoding": "UTF-8",
-      "Language": "en-US",
-      "Author": "Christian Rubba [aut], Gerhard Burger [ctb, cre] (ORCID: <https://orcid.org/0000-0003-1062-5576>), Roman Cheplyaka [ctb]",
-      "Maintainer": "Gerhard Burger <burger.ga@gmail.com>"
     },
     "htmltools": {
       "Package": "htmltools",
@@ -6236,7 +6275,7 @@
     },
     "rosm": {
       "Package": "rosm",
-      "Version": "0.3.1",
+      "Version": "0.3.2",
       "Source": "Repository",
       "Type": "Package",
       "Title": "Plot Raster Map Tiles from Open Street Map and Other Sources",
@@ -6270,8 +6309,8 @@
       ],
       "URL": "https://github.com/paleolimbot/rosm",
       "BugReports": "https://github.com/paleolimbot/rosm/issues",
-      "RoxygenNote": "7.3.3",
       "Config/testthat/edition": "3",
+      "Config/roxygen2/version": "8.0.0",
       "NeedsCompilation": "no",
       "Author": "Dewey Dunnington [aut, cre] (ORCID: <https://orcid.org/0000-0002-9415-4582>), Timothée Giraud [ctb]",
       "Repository": "CRAN"
@@ -7914,40 +7953,6 @@
       "NeedsCompilation": "no",
       "Author": "Yihui Xie [aut, cre, cph] (ORCID: <https://orcid.org/0000-0003-0645-5666>), Posit Software, PBC [cph, fnd], Christophe Dervieux [ctb] (ORCID: <https://orcid.org/0000-0003-4474-2498>), Devon Ryan [ctb] (ORCID: <https://orcid.org/0000-0002-8549-0971>), Ethan Heinzen [ctb], Fernando Cagua [ctb]",
       "Maintainer": "Yihui Xie <xie@yihui.name>",
-      "Repository": "CRAN"
-    },
-    "tweenr": {
-      "Package": "tweenr",
-      "Version": "2.0.3",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Interpolate Data for Smooth Animations",
-      "Authors@R": "c(person(given = \"Thomas Lin\", family = \"Pedersen\", role = c(\"aut\", \"cre\"), email = \"thomasp85@gmail.com\", comment = c(ORCID = \"0000-0002-5147-4711\")))",
-      "Maintainer": "Thomas Lin Pedersen <thomasp85@gmail.com>",
-      "Description": "In order to create smooth animation between states of data, tweening is necessary. This package provides a range of functions for creating tweened data that can be used as basis for animation. Furthermore  it adds a number of vectorized interpolaters for common R data  types such as numeric, date and colour.",
-      "URL": "https://github.com/thomasp85/tweenr",
-      "BugReports": "https://github.com/thomasp85/tweenr/issues",
-      "License": "MIT + file LICENSE",
-      "Encoding": "UTF-8",
-      "Depends": [
-        "R (>= 3.2.0)"
-      ],
-      "Imports": [
-        "farver",
-        "magrittr",
-        "rlang",
-        "vctrs"
-      ],
-      "LinkingTo": [
-        "cpp11 (>= 0.4.2)"
-      ],
-      "RoxygenNote": "7.2.3",
-      "Suggests": [
-        "testthat",
-        "covr"
-      ],
-      "NeedsCompilation": "yes",
-      "Author": "Thomas Lin Pedersen [aut, cre] (<https://orcid.org/0000-0002-5147-4711>)",
       "Repository": "CRAN"
     },
     "tweenr": {
